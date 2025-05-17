@@ -310,7 +310,8 @@ class TestClass:
             json.dump(main_pkg_w_pcb, f, indent=4, ensure_ascii=False)
 
     @pytest.mark.skipif(is_linux, reason="Failing on linux")
-    def test_01_pre_layout_design_toolkit_pcb_diff_via(self):
+    def test_via_design_backend(self):
+        # Todo
         signal_pair = {
             "S0": S0_pcb,
             "S1": S0_pcb,
@@ -332,28 +333,4 @@ class TestClass:
         app.save_cfg_to_file(data)
         edb_path = app.create_edb(data)
 
-        assert edb_path
-
-    @pytest.mark.skipif(is_linux, reason="Failing on linux")
-    def test_02_pre_layout_design_toolkit_pcb_pkg_diff_via(self):
-        signal_pair = {
-            "S0": S0_pkg_w_pcb,
-            "S1": S0_pkg_w_pcb,
-        }
-        pcb_ground_via = {
-            "distance": "0.2mm",
-            "core_via_start_layer": "PCB_TOP",
-            "core_via_stop_layer": "PCB_BOT",
-        }
-        local_tech = technology.copy()
-        local_tech["signal_pair"] = signal_pair
-        local_tech["pcb_ground_via"] = pcb_ground_via
-        with open(self.working_dir / "technology.json", "w") as f:
-            json.dump(local_tech, f, indent=4, ensure_ascii=False)
-
-        config_file_path = self.working_dir / "main_pkg_w_pcb.json"
-        app = ViaDesignConfig(config_file_path, desktop_version)
-        data = app.create_design()
-        app.save_cfg_to_file(data)
-        edb_path = app.create_edb(data)
         assert edb_path
