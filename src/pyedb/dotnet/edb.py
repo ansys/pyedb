@@ -1469,6 +1469,7 @@ class Edb(Database):
         return True
 
     def close(self):
+        warnings.warn("Use new property :func:`close_edb` instead.", DeprecationWarning)
         self.close_edb()
 
     def save_edb(self):
