@@ -1481,12 +1481,16 @@ class Edb(Database):
             ``True`` when successful, ``False`` when failed.
 
         """
-        self.save()
+        Database.save(self)
         start_time = time.time()
         self._wait_for_file_release()
         elapsed_time = time.time() - start_time
         self.logger.info("EDB file save time: {0:.2f}ms".format(elapsed_time * 1000.0))
         return True
+
+    def save(self):
+        warnings.warn("Use new property :func:`save_edb` instead.", DeprecationWarning)
+        self.save_edb()
 
     def save_edb_as(self, fname):
         """Save the EDB file as another file.
@@ -1503,7 +1507,7 @@ class Edb(Database):
 
         """
         origin_name = "pyedb_" + os.path.splitext(os.path.split(self.edbpath)[-1])[0]
-        self.save_as(fname)
+        Database.save_as(self, fname)
         start_time = time.time()
         self._wait_for_file_release()
         elapsed_time = time.time() - start_time
@@ -1520,6 +1524,10 @@ class Edb(Database):
             self._logger.add_file_logger(self.log_name, "Edb")
             self._logger.remove_file_logger(origin_name)
         return True
+
+    def save_as(self, path, version=""):
+        warnings.warn("Use new property :func:`save_edb_as` instead.", DeprecationWarning)
+        self.save_edb_as(path)
 
     def execute(self, func):
         """Execute a function.
