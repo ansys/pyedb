@@ -25,7 +25,7 @@ from pathlib import Path
 
 import pytest
 
-from pyedb.extensions.pre_layout_design_toolkit.via_design import ViaDesignConfig
+from pyedb.extensions.pre_layout_design_toolkit.via_design_backend import Signal, DiffSignal, Board
 from pyedb.generic.general_methods import is_linux
 from tests.conftest import desktop_version
 
@@ -284,53 +284,23 @@ class TestClass:
     def init(self, local_scratch):
         working_dir = Path(local_scratch.path)
         self.working_dir = working_dir
-
-        with open(working_dir / "materials.json", "w") as f:
-            json.dump(materials, f, indent=4, ensure_ascii=False)
-
-        with open(working_dir / "padstacks.json", "w") as f:
-            json.dump(padstacks, f, indent=4, ensure_ascii=False)
-
-        with open(working_dir / "pcb_stackup.json", "w") as f:
-            json.dump(pcb_stackup, f, indent=4, ensure_ascii=False)
-
-        with open(working_dir / "pkg_stackup.json", "w") as f:
-            json.dump(pkg_stackup, f, indent=4, ensure_ascii=False)
-
-        with open(self.working_dir / "setup.json", "w") as f:
-            json.dump(setup, f, indent=4, ensure_ascii=False)
-
-        with open(self.working_dir / "pin_map.json", "w") as f:
-            json.dump(pin_map, f, indent=4, ensure_ascii=False)
-
-        with open(self.working_dir / "main.json", "w") as f:
-            json.dump(main, f, indent=4, ensure_ascii=False)
-
-        with open(self.working_dir / "main_pkg_w_pcb.json", "w") as f:
-            json.dump(main_pkg_w_pcb, f, indent=4, ensure_ascii=False)
+        self.cfg_modeler = {
+            "traces": [],
+            "padstacks": {"instances": [], "definitions": []}
+        }
 
     @pytest.mark.skipif(is_linux, reason="Failing on linux")
     def test_via_design_backend(self):
-        # Todo
-        signal_pair = {
-            "S0": S0_pcb,
-            "S1": S0_pcb,
-        }
-        pcb_ground_via = {
-            "distance": "0.2mm",
-            "core_via_start_layer": "PCB_TOP",
-            "core_via_stop_layer": "PCB_BOT",
-        }
-        local_tech = technology.copy()
-        local_tech["signal_pair"] = signal_pair
-        local_tech["pcb_ground_via"] = pcb_ground_via
-        with open(self.working_dir / "technology.json", "w") as f:
-            json.dump(local_tech, f, indent=4, ensure_ascii=False)
-
-        config_file_path = self.working_dir / "main.json"
-        app = ViaDesignConfig(config_file_path, desktop_version)
-        data = app.create_design()
-        app.save_cfg_to_file(data)
-        edb_path = app.create_edb(data)
-
-        assert edb_path
+        cfg_modeler = copy(self.cfg_modeler)
+        trace = Signal.Via.Trace(
+            "trace_name", "net_name", "TOP", "0.1mm", "0.1mm", [[0, "1mm"], ["0.1mm", "0.2mm"]]
+        )
+        trace.populate_config(cfg_modeler)
+        assert cfg_modeler["traces"] == [
+            {'name': 'trace_name', 'layer': 'TOP', 'width': '0.1mm',
+             'incremental_path': [[0, '1mm'], ['0.1mm*1', '0.2mm*1']],
+             'net_name': 'net_name', 'start_cap_style': 'round', 'end_cap_style': 'round', 'corner_style': 'round'},
+            {'name': 'trace_name_void', 'layer': 'TOP', 'width': '0.1mm+2*0.1mm',
+             'incremental_path': [[0, '1mm'], ['0.1mm*1', '0.2mm*1']],
+             'net_name': 'net_name', 'start_cap_style': 'round', 'end_cap_style': 'round', 'corner_style': 'round'}
+        ]

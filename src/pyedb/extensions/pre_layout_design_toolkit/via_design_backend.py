@@ -24,7 +24,7 @@ class Signal:
 
                 self.voids = []
 
-            def create(self, cfg_modeler):
+            def populate_config(self, cfg_modeler):
                 trace = {"name": self.name,
                          "layer": self.layer,
                          "width": self.width,
@@ -111,9 +111,9 @@ class Signal:
                 )
                 self.traces.append(trace)
 
-        def create(self, cfg_modeler):
+        def populate_config(self, cfg_modeler):
             for trace in self.traces:
-                trace.create(cfg_modeler)
+                trace.populate_config(cfg_modeler)
             padstack_instances = {
                 "name": self.name,
                 "definition": self.padstack_def,
@@ -171,11 +171,11 @@ class Signal:
 
             self.vias.append(via)
 
-    def create(self, cfg_modeler):
+    def populate_config(self, cfg_modeler):
         for i in self.padstack_def:
             cfg_modeler["padstacks"]["definitions"].append(i)
         for i in self.vias:
-            i.create(cfg_modeler)
+            i.populate_config(cfg_modeler)
 
 
 class DiffSignal:
