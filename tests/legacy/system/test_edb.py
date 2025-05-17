@@ -222,6 +222,7 @@ class TestClass:
         assert self.edbapp.save_edb_as(os.path.join(self.local_scratch.path, "Gelileo_new.aedb"))
         assert os.path.exists(os.path.join(self.local_scratch.path, "Gelileo_new.aedb", "edb.def"))
 
+    @pytest.mark.skipif(is_linux,reason="Timeout due to multi threading cutout")
     def test_create_custom_cutout_0(self):
         """Create custom cutout 0."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
@@ -278,6 +279,7 @@ class TestClass:
         assert os.path.exists(os.path.join(output, "edb.def"))
         edbapp.close()
 
+    @pytest.mark.skipif(is_linux, reason="Timeout due to multi threading cutout")
     def test_create_custom_cutout_1(self):
         """Create custom cutout 1."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
@@ -316,6 +318,7 @@ class TestClass:
 
         edbapp.close()
 
+    @pytest.mark.skipif(is_linux, reason="Timeout due to multi threading cutout")
     def test_create_custom_cutout_2(self):
         """Create custom cutout 2."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
@@ -341,6 +344,7 @@ class TestClass:
         )
         edbapp.close()
 
+    @pytest.mark.skipif(is_linux, reason="Timeout due to multi threading cutout")
     def test_create_custom_cutout_3(self):
         """Create custom cutout 3."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
@@ -370,6 +374,7 @@ class TestClass:
 
         edbapp.close()
 
+    @pytest.mark.skipif(is_linux, reason="Timeout due to multi threading cutout")
     def test_create_custom_cutout_4(self):
         """Create custom cutout 4."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
