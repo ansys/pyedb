@@ -355,3 +355,19 @@ class TestClass:
         edbapp.materials.update_materials_from_sys_library()
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
         edbapp.close()
+
+    def test_material_thermal_modifier(self):
+        THERMAL_MODIFIER = {
+            "basic_quadratic_temperature_reference": 21,
+            "basic_quadratic_c1": 0.1,
+            "basic_quadratic_c2": 0.1,
+            "advanced_quadratic_lower_limit": -270,
+            "advanced_quadratic_upper_limit": 1001,
+            "advanced_quadratic_auto_calculate": False,
+            "advanced_quadratic_lower_constant": 1.1,
+            "advanced_quadratic_upper_constant": 1.1,
+        }
+        material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, "new_matttt")
+        material = Material(self.edbapp, material_def)
+        material.conductivity = 5.7e8
+        assert material.set_thermal_modifier("conductivity", **THERMAL_MODIFIER)
