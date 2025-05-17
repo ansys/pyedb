@@ -1804,7 +1804,7 @@ class Edb(Database):
         output_aedb_path=None,
         open_cutout_at_end=True,
         use_pyaedt_cutout=True,
-        number_of_threads=4,
+        number_of_threads=1,
         use_pyaedt_extent_computing=True,
         extent_defeature=0,
         remove_single_pin_components=False,
