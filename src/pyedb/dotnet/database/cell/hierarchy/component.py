@@ -575,7 +575,7 @@ class EDBComponent(Group):
         list
         """
         center = self.component_instance.GetCenter()
-        return [center.X.ToDouble(), center.Y.ToDouble()]
+        return [round(center.X.ToDouble(), 6), round(center.Y.ToDouble(), 6)]
 
     @property
     def bounding_box(self):
@@ -591,7 +591,12 @@ class EDBComponent(Group):
         bbox = self.component_instance.GetBBox()
         pt1 = bbox.Item1
         pt2 = bbox.Item2
-        return [pt1.X.ToDouble(), pt1.Y.ToDouble(), pt2.X.ToDouble(), pt2.Y.ToDouble()]
+        return [
+            round(pt1.X.ToDouble(), 6),
+            round(pt1.Y.ToDouble(), 6),
+            round(pt2.X.ToDouble(), 6),
+            round(pt2.Y.ToDouble(), 6),
+        ]
 
     @property
     def rotation(self):
@@ -601,7 +606,7 @@ class EDBComponent(Group):
         -------
         float
         """
-        return self.edbcomponent.GetTransform().Rotation.ToDouble()
+        return round(self.edbcomponent.GetTransform().Rotation.ToDouble(), 6)
 
     @property
     def pinlist(self):
@@ -776,7 +781,7 @@ class EDBComponent(Group):
         float
             Lower elevation of the placement layer.
         """
-        return self.edbcomponent.GetPlacementLayer().Clone().GetLowerElevation()
+        return round(self.edbcomponent.GetPlacementLayer().Clone().GetLowerElevation(), 6)
 
     @property
     def upper_elevation(self):
@@ -788,7 +793,7 @@ class EDBComponent(Group):
             Upper elevation of the placement layer.
 
         """
-        return self.edbcomponent.GetPlacementLayer().Clone().GetUpperElevation()
+        return round(self.edbcomponent.GetPlacementLayer().Clone().GetUpperElevation(), 6)
 
     @property
     def top_bottom_association(self):

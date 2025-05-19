@@ -2383,7 +2383,7 @@ class Components(object):
         obj = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, reference_designator)
         return EDBComponent(self._pedb, obj)
 
-    def get_pin_from_component(self, component, netName=None, pinName=None):
+    def get_pin_from_component(self, component, netName=None, pinName=None, net_name=None, pin_name=None):
         """Retrieve the pins of a component.
 
         Parameters
@@ -2396,6 +2396,14 @@ class Components(object):
         pinName : str, optional
             Filter on the pin name an alternative to
             ``netName``. The default is ``None``.
+        net_name : str, optional
+            Filter on the net name as an alternative to
+            ``pin_name``. The default is ``None``. This parameter is added to add compatibility with grpc and is
+            recommended using it rather than `netName`.
+        pin_name : str, optional
+            Filter on the pin name an alternative to
+            ``netName``. The default is ``None``. This parameter is added to add compatibility with grpc and is
+            recommended using it rather than `pinName`.
 
         Returns
         -------
@@ -2413,6 +2421,14 @@ class Components(object):
         warnings.warn("Use new property :func:`edb.padstacks.get_instances` instead.", DeprecationWarning)
         if not isinstance(component, self._pedb.edb_api.cell.hierarchy.component):
             component = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, component)
+        if pinName:
+            warnings.warn("Use argument `pin_name` instead of `pinName`", DeprecationWarning)
+        if netName:
+            warnings.warn("Use argument `net_name` instead of `netName`", DeprecationWarning)
+        if net_name:
+            netName = net_name
+        if pin_name:
+            pinName = pin_name
         if netName:
             if not isinstance(netName, list):
                 netName = [netName]
@@ -2425,14 +2441,18 @@ class Components(object):
             if not isinstance(pinName, list):
                 pinName = [pinName]
             pins = [
-                p
+                EDBPadstackInstance(p, self._pedb)
                 for p in list(component.LayoutObjs)
                 if int(p.GetObjType()) == 1
                 and p.IsLayoutPin()
                 and (self.get_aedt_pin_name(p) in pinName or p.GetName() in pinName)
             ]
         else:
-            pins = [p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.IsLayoutPin()]
+            pins = [
+                EDBPadstackInstance(p, self._pedb)
+                for p in list(component.LayoutObjs)
+                if int(p.GetObjType()) == 1 and p.IsLayoutPin()
+            ]
         return pins
 
     def get_aedt_pin_name(self, pin):
