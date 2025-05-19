@@ -556,25 +556,27 @@ class Components(object):
         m_pin2_pos = [0.0, 0.0]
         h_pin1_pos = [0.0, 0.0]
         h_pin2_pos = [0.0, 0.0]
-        if not isinstance(mounted_component, self._pedb.edb_api.cell.hierarchy.component):
+        from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
+
+        if not isinstance(mounted_component, EDBComponent):
             return False
-        if not isinstance(hosting_component, self._pedb.edb_api.cell.hierarchy.component):
+        if not isinstance(hosting_component, EDBComponent):
             return False
 
-        if mounted_component_pin1:
-            m_pin1 = self._get_edb_pin_from_pin_name(mounted_component, mounted_component_pin1)
-            m_pin1_pos = self.get_pin_position(m_pin1)
-        if mounted_component_pin2:
-            m_pin2 = self._get_edb_pin_from_pin_name(mounted_component, mounted_component_pin2)
-            m_pin2_pos = self.get_pin_position(m_pin2)
+        if mounted_component_pin1 in mounted_component.pins:
+            m_pin1 = mounted_component.pins[mounted_component_pin1]
+            m_pin1_pos = m_pin1.position
+        if mounted_component_pin2 in mounted_component.pins:
+            m_pin2 = mounted_component.pins[mounted_component_pin2]
+            m_pin2_pos = m_pin2.position
 
-        if hosting_component_pin1:
-            h_pin1 = self._get_edb_pin_from_pin_name(hosting_component, hosting_component_pin1)
-            h_pin1_pos = self.get_pin_position(h_pin1)
+        if hosting_component_pin1 in hosting_component.pins:
+            h_pin1 = hosting_component.pins[hosting_component_pin1]
+            h_pin1_pos = h_pin1.position
 
-        if hosting_component_pin2:
-            h_pin2 = self._get_edb_pin_from_pin_name(hosting_component, hosting_component_pin2)
-            h_pin2_pos = self.get_pin_position(h_pin2)
+        if hosting_component_pin2 in hosting_component.pins:
+            h_pin2 = hosting_component.pins[hosting_component_pin2]
+            h_pin2_pos = h_pin2.position
         #
         vector = [h_pin1_pos[0] - m_pin1_pos[0], h_pin1_pos[1] - m_pin1_pos[1]]
         vector1 = GeometryOperators.v_points(m_pin1_pos, m_pin2_pos)
@@ -586,8 +588,8 @@ class Components(object):
 
         rotation = GeometryOperators.v_angle_sign_2D(vector1, vector2, False)
         if rotation != 0.0:
-            layinst = mounted_component.GetLayout().GetLayoutInstance()
-            cmpinst = layinst.GetLayoutObjInstance(mounted_component, None)
+            layinst = mounted_component._edb_object.GetLayout().GetLayoutInstance()
+            cmpinst = layinst.GetLayoutObjInstance(mounted_component._edb_object, None)
             center = cmpinst.GetCenter()
             center_double = [center.X.ToDouble(), center.Y.ToDouble()]
             vector_center = GeometryOperators.v_points(center_double, m_pin1_pos)
@@ -597,7 +599,7 @@ class Components(object):
             vector = [h_pin1_pos[0] - new_vector[0], h_pin1_pos[1] - new_vector[1]]
 
         if vector:
-            solder_ball_height = self.get_solder_ball_height(mounted_component)
+            solder_ball_height = mounted_component.solder_ball_height
             return True, vector, rotation, solder_ball_height
         self._logger.warning("Failed to compute vector.")
         return False, [0, 0], 0, 0

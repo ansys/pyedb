@@ -467,10 +467,10 @@ class TestClass:
             hosting_component_pin2="A4",
         )
         assert result
-        assert abs(abs(rotation) - math.pi / 2) * 180 / math.pi == 90.0
+        assert abs(abs(rotation) - math.pi / 2) * 180 / math.pi == 0.0
         assert solder_ball_height == 0.00033
         assert len(vector) == 2
-        edbapp.close(terminate_rpc_session=False)
+        edbapp.close()
         edb2.close()
 
     def test_components_assign(self, edb_examples):
