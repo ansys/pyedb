@@ -1461,7 +1461,7 @@ class Edb(Database):
 
         """
         warnings.warn("Use new property :func:`close` instead.", DeprecationWarning)
-        self.close()
+        return self.close()
 
     def close(self):
         """Close EDB and cleanup variables.
@@ -1534,7 +1534,7 @@ class Edb(Database):
 
         """
         warnings.warn("Use new property :func:`save_as` instead.", DeprecationWarning)
-        self.save_as(path)
+        return self.save_as(path)
 
     def save_as(self, path, version=""):
         """Save the EDB file as another file.
