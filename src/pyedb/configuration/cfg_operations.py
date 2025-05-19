@@ -56,9 +56,7 @@ class CfgCutout(CfgBase):
             self.api = self.Grpc(self)
         else:
             self.api = self.DotNet(self)
-        self.auto_identify_nets = kwargs.get(
-            "auto_identify_nets", {"enabled": False, "resistor_below": 100, "inductor_below": 1, "capacitor_above": 1}
-        )
+        self.auto_identify_nets = kwargs.get("auto_identify_nets")
         self.signal_list = kwargs.get("signal_list")
         self.reference_list = kwargs.get("reference_list")
         self.extent_type = kwargs.get("extent_type")
@@ -163,7 +161,16 @@ class CfgOperations(CfgBase):
             self.api = self.Grpc(self)
         else:
             self.api = self.DotNet(self)
-        self.op_cutout = CfgCutout(pedb, **data["cutout"]) if "cutout" in data else None
+        cutout = data.get("cutout", None)
+        if cutout:
+            auto_identify_nets = (
+                cutout.pop("auto_identify_nets")
+                if cutout.get("auto_identify_nets")
+                else {"enabled": False, "resistor_below": 100, "inductor_below": 1, "capacitor_above": 1}
+            )
+            self.op_cutout = CfgCutout(pedb, auto_identify_nets=auto_identify_nets, **cutout)
+        else:
+            self.op_cutout = None
 
     def apply(self):
         """Imports operation information from JSON."""
