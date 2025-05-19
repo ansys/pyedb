@@ -482,9 +482,6 @@ class Configuration:
         # Configure package definitions
         self.cfg_data.package_definitions.apply()
 
-        # Configure operations
-        self.cfg_data.operations.apply()
-
         # Modeler
         self.cfg_data.modeler.apply()
 
@@ -493,6 +490,9 @@ class Configuration:
 
         # Configure probes
         self.cfg_data.probes.apply()
+
+        # Configure operations
+        self.cfg_data.operations.apply()
 
         return True
 
@@ -572,17 +572,17 @@ class Configuration:
         """
         return self.api.export(
             file_path,
-            stackup=True,
-            package_definitions=False,
-            setups=True,
-            sources=True,
-            ports=True,
-            nets=True,
-            pin_groups=True,
-            operations=True,
-            components=True,
-            boundaries=True,
-            s_parameters=True,
-            padstacks=True,
-            general=True,
+            stackup=stackup,
+            package_definitions=package_definitions,
+            setups=setups,
+            sources=sources,
+            ports=ports,
+            nets=nets,
+            pin_groups=pin_groups,
+            operations=operations,
+            components=components,
+            boundaries=boundaries,
+            s_parameters=s_parameters,
+            padstacks=padstacks,
+            general=general,
         )

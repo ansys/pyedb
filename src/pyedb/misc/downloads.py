@@ -30,7 +30,7 @@ import zipfile
 from pyedb.generic.general_methods import is_linux, settings
 
 tmpfold = tempfile.gettempdir()
-EXAMPLE_REPO = "https://github.com/ansys/example-data/raw/master/"
+EXAMPLE_REPO = "https://github.com/ansys/example-data/raw/main/"
 EXAMPLES_PATH = os.path.join(tmpfold, "PyAEDTExamples")
 
 
