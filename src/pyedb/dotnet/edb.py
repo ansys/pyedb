@@ -4720,3 +4720,10 @@ class Edb(Database):
         ET.indent(tree, space="\t", level=0)
         tree.write(control_path)
         return True if os.path.exists(control_path) else False
+
+    def get_variable_value(self, variable_name):
+        """Added to get closer architecture as for grpc."""
+        if variable_name in self.variables:
+            return self.variables[variable_name].value
+        else:
+            return False

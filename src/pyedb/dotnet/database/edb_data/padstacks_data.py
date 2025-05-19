@@ -1261,6 +1261,8 @@ class EDBPadstackInstance(Primitive):
         """
         terminal = self.create_terminal(name)
         if reference:
+            if isinstance(reference, tuple):
+                reference = reference[1]
             ref_terminal = reference.create_terminal(terminal.name + "_ref")
             if reference._edb_object.ToString() == "PinGroup":
                 is_circuit_port = True
@@ -1464,6 +1466,19 @@ class EDBPadstackInstance(Primitive):
             return self._edb_padstackinstance.SetBackDrillParameters(layer, val, False)
 
     @property
+    def backdrill_type(self):
+        """Adding grpc compatibility. DotNet is supporting only layer drill type with adding stub length."""
+        return "layer_drill"
+
+    def get_back_drill_by_layer(self):
+        params = self.backdrill_parameters["from_bottom"]
+        return (
+            params["drill_to_layer"],
+            round(self._pedb.edb_value(params["stub_length"]).ToDouble(), 6),
+            round(self._pedb.edb_value(params["diameter"]).ToDouble(), 6),
+        )
+
+    @property
     def backdrill_bottom(self):
         """Backdrill layer from bottom.
 
@@ -1538,6 +1553,11 @@ class EDBPadstackInstance(Primitive):
                 self._pedb.edb_value(from_top.get("diameter")),
                 False,
             )
+
+    def set_back_drill_by_layer(self, drill_to_layer, diameter, offset):
+        """Method added to bring compatibility with grpc."""
+
+        self.set_backdrill_bottom(drill_depth=drill_to_layer.name, drill_diameter=diameter, offset=offset)
 
     def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from bottom.
