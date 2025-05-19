@@ -1376,64 +1376,13 @@ class TestClass:
         assert round(polygon.center[1], 6) == -0.0045
 
         assert polygon.rotate(angle=45)
-        if edbapp.grpc:
-            # grpc and dotnet have different last digits values
-            assert polygon.bbox == [
-                0.012462681128504282,
-                -0.043037320277837944,
-                0.08953731887149571,
-                0.03403732027783795,
-            ]
-        else:
-            assert polygon.bbox == [
-                0.012462680425333156,
-                -0.043037319574666846,
-                0.08953731957466685,
-                0.034037319574666845,
-            ]
+        assert polygon.bbox == [0.012463, -0.043037, 0.089537, 0.034037]
         assert polygon.rotate(angle=34, center=[0, 0])
-        if edbapp.grpc:
-            # grpc and dotnet have different last digits values
-            assert polygon.bbox == [
-                0.030839512681298656,
-                -0.02515183168439915,
-                0.05875505700187538,
-                0.07472816760474396,
-            ]
-        else:
-            assert polygon.bbox == [
-                0.03083951217158376,
-                -0.025151830651067256,
-                0.05875505636026722,
-                0.07472816865208806,
-            ]
+        assert polygon.bbox == [0.03084, -0.025152, 0.058755, 0.074728]
         assert polygon.scale(factor=1.5)
-        if edbapp.grpc:
-            # grpc and dotnet have different last digits values
-            assert polygon.bbox == [
-                0.023860626601154476,
-                -0.05012183150668493,
-                0.06573394308201956,
-                0.09969816742702975,
-            ]
-        else:
-            assert polygon.bbox == [0.0238606261244129, -0.05012183047685609, 0.06573394240743807, 0.09969816847787688]
+        assert polygon.bbox == [0.023861, -0.050122, 0.065734, 0.099698]
         assert polygon.scale(factor=-0.5, center=[0, 0])
-        if edbapp.grpc:
-            # grpc and dotnet have different last digits values
-            assert polygon.bbox == [
-                -0.03286697154100978,
-                -0.049849083713514875,
-                -0.011930313300577238,
-                0.025060915753342464,
-            ]
-        else:
-            assert polygon.bbox == [
-                -0.032866971203719036,
-                -0.04984908423893844,
-                -0.01193031306220645,
-                0.025060915238428044,
-            ]
+        assert polygon.bbox == [-0.032867, -0.049849, -0.01193, 0.025061]
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
