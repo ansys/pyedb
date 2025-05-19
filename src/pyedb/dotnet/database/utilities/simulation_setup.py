@@ -303,15 +303,15 @@ class SimulationSetup(object):
             frequency_set = [[distribution, start_freq, stop_freq, step]]
 
         if frequency_set in [None, []]:
-            sweep_type = "linear_scale"
+            distribution = "linear_scale"
             start, stop, increment = "50MHz", "5GHz", "50MHz"
-            frequency_set = [[sweep_type, start, stop, increment]]
+            frequency_set = [[distribution, start, stop, increment]]
         elif not isinstance(frequency_set[0], list):
             frequency_set = [frequency_set]
 
         for fs in frequency_set:
-            sweep_type, start, stop, increment = fs
-            sweep_data.add(sweep_type, start, stop, increment)
+            distribution, start, stop, increment = fs
+            sweep_data.add(distribution, start, stop, increment)
 
         for k, v in kwargs.items():
             if k in dir(sweep_data):
