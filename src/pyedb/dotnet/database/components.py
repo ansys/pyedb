@@ -2164,7 +2164,7 @@ class Components(object):
                 rlc.C = self._get_edb_value(cap_value)
             else:
                 rlc.CEnabled = False
-            pin_pair = self._edb.utility.utility.PinPair(from_pin.GetName(), to_pin.GetName())
+            pin_pair = self._edb.utility.utility.PinPair(from_pin.name, to_pin.name)
             rlc_model = self._edb.cell.hierarchy._hierarchy.PinPairModel()
             rlc_model.SetPinPairRlc(pin_pair, rlc)
             if not edb_rlc_component_property.SetModel(rlc_model) or not edb_component.SetComponentProperty(
