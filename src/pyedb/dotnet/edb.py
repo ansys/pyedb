@@ -1451,6 +1451,21 @@ class Edb(Database):
     def close_edb(self):
         """Close EDB and cleanup variables.
 
+        . deprecated:: pyedb 0.47.0
+        Use: func:`close` instead.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        """
+        warnings.warn("Use new property :func:`close` instead.", DeprecationWarning)
+        self.close()
+
+    def close(self):
+        """Close EDB and cleanup variables.
+
         Returns
         -------
         bool
@@ -1468,11 +1483,22 @@ class Edb(Database):
         self._clean_variables()
         return True
 
-    def close(self):
-        warnings.warn("Use new property :func:`close_edb` instead.", DeprecationWarning)
-        self.close_edb()
-
     def save_edb(self):
+        """Save the EDB file.
+
+        . deprecated:: pyedb 0.47.0
+        Use: func:`save` instead.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        """
+        warnings.warn("Use new method :func:`save` instead.", DeprecationWarning)
+        return self.save()
+
+    def save(self):
         """Save the EDB file.
 
         Returns
@@ -1481,6 +1507,7 @@ class Edb(Database):
             ``True`` when successful, ``False`` when failed.
 
         """
+
         Database.save(self)
         start_time = time.time()
         self._wait_for_file_release()
@@ -1488,16 +1515,33 @@ class Edb(Database):
         self.logger.info("EDB file save time: {0:.2f}ms".format(elapsed_time * 1000.0))
         return True
 
-    def save(self):
-        warnings.warn("Use new property :func:`save_edb` instead.", DeprecationWarning)
-        self.save_edb()
+    def save_edb_as(self, path):
+        """Save the EDB file as another file.
 
-    def save_edb_as(self, fname):
+        . deprecated:: pyedb 0.47.0
+        Use: func:`save_as` instead.
+
+
+        Parameters
+        ----------
+        path : str
+            Name of the new file to save to.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        """
+        warnings.warn("Use new property :func:`save_as` instead.", DeprecationWarning)
+        self.save_as(path)
+
+    def save_as(self, path, version=""):
         """Save the EDB file as another file.
 
         Parameters
         ----------
-        fname : str
+        path : str
             Name of the new file to save to.
 
         Returns
@@ -1507,7 +1551,7 @@ class Edb(Database):
 
         """
         origin_name = "pyedb_" + os.path.splitext(os.path.split(self.edbpath)[-1])[0]
-        Database.save_as(self, fname)
+        Database.save_as(self, path)
         start_time = time.time()
         self._wait_for_file_release()
         elapsed_time = time.time() - start_time
@@ -1517,17 +1561,13 @@ class Edb(Database):
             self._logger.remove_file_logger(os.path.splitext(os.path.split(self.log_name)[-1])[0])
 
         self.log_name = os.path.join(
-            os.path.dirname(fname),
-            "pyedb_" + os.path.splitext(os.path.split(fname)[-1])[0] + ".log",
+            os.path.dirname(path),
+            "pyedb_" + os.path.splitext(os.path.split(path)[-1])[0] + ".log",
         )
         if settings.enable_local_log_file:
             self._logger.add_file_logger(self.log_name, "Edb")
             self._logger.remove_file_logger(origin_name)
         return True
-
-    def save_as(self, path, version=""):
-        warnings.warn("Use new property :func:`save_edb_as` instead.", DeprecationWarning)
-        self.save_edb_as(path)
 
     def execute(self, func):
         """Execute a function.
