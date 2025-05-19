@@ -299,7 +299,6 @@ class TestClass:
                 "LVDS_CH04_N",
             ],
             extent_type="Bounding",
-            number_of_threads=4,
             extent_defeature=0.001,
             preserve_components_with_model=True,
             keep_lines_as_path=True,
@@ -334,7 +333,6 @@ class TestClass:
         assert edbapp.cutout(
             signal_list=["1V0"],
             reference_list=["GND"],
-            number_of_threads=4,
             extent_type="ConvexHull",
             custom_extent=points,
             simple_pad_check=False,
@@ -360,7 +358,6 @@ class TestClass:
         assert edbapp.cutout(
             signal_list=["5V"],
             reference_list=["GND"],
-            number_of_threads=4,
             extent_type="ConvexHull",
             use_pyaedt_extent_computing=True,
             check_terminals=True,
@@ -384,7 +381,6 @@ class TestClass:
         assert edbapp.cutout(
             signal_list=["DDR4_DQS0_P", "DDR4_DQS0_N"],
             reference_list=["GND"],
-            number_of_threads=4,
             extent_type="ConvexHull",
             use_pyaedt_extent_computing=True,
             include_pingroups=True,
@@ -401,7 +397,6 @@ class TestClass:
         assert edbapp.cutout(
             signal_list=["trace_n"],
             reference_list=["ground"],
-            number_of_threads=4,
             extent_type="Conformal",
             use_pyaedt_extent_computing=True,
             check_terminals=True,
@@ -418,7 +413,6 @@ class TestClass:
         assert edbapp.cutout(
             signal_list=["DIFF_N", "DIFF_P"],
             reference_list=["GND"],
-            number_of_threads=4,
             extent_type="Conformal",
             use_pyaedt_extent_computing=True,
             check_terminals=True,
