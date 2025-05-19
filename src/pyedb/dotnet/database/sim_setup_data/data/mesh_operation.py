@@ -49,7 +49,12 @@ class MeshOperation(object):
 
     @property
     def net_layer_info(self):
-        """Adding property for grpc compatibility."""
+        """Adding property for grpc compatibility.
+
+        Returns
+        -------
+        The tuple is in this form: (net_name, layer_name, is_sheet)``.
+        """
         layer_inf = []
         for net_name, mesh_op in self.nets_layers_list.items():
             for layer in mesh_op:

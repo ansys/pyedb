@@ -1597,7 +1597,7 @@ class Components(object):
         """
         _pins = [p._edb_object for p in pins if isinstance(p, EDBPadstackInstance)]
         if _pins:
-            pins = pins
+            pins = _pins
         if not component_name:
             component_name = generate_unique_name("Comp_")
         if component_part_name:
