@@ -506,7 +506,9 @@ class Padstacks(object):
             "`pyedb.grpc.core.excitations.create_coax_port` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.create_coax_port(self, padstackinstance, use_dot_separator=use_dot_separator, name=name)
+        self._pedb.source_excitation.create_coax_port(
+            self, padstackinstance, use_dot_separator=use_dot_separator, name=name
+        )
 
     def get_pin_from_component_and_net(self, refdes=None, netname=None):
         """Retrieve pins given a component's reference designator and net name.

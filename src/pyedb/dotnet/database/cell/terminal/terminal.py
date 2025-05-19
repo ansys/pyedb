@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import re
+import warnings
 
 from pyedb.dotnet.database.cell.connectable import Connectable
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
@@ -196,18 +197,35 @@ class Terminal(Connectable):
         return self._edb_object.IsReferenceTerminal()
 
     @property
-    def ref_terminal(self):
-        """Get reference terminal."""
-
+    def reference_terminal(self):
+        """Adding grpc compatibility."""
         edb_terminal = self._edb_object.GetReferenceTerminal()
         if not edb_terminal.IsNull():
             return self._pedb.terminals[edb_terminal.GetName()]
         else:
             return None
 
+    @reference_terminal.setter
+    def reference_terminal(self, value):
+        self._edb_object.SetReferenceTerminal(value._edb_object)
+
+    @property
+    def ref_terminal(self):
+        """Get reference terminal.
+
+        .deprecated:: pyedb 0.47.0
+        Use: attribute:`reference_terminal` instead.
+
+        """
+        warnings.warn(
+            "`ref_terminal` is deprecated, use `reference_terminal` instead.",
+            DeprecationWarning,
+        )
+        return self.reference_terminal
+
     @ref_terminal.setter
     def ref_terminal(self, value):
-        self._edb_object.SetReferenceTerminal(value._edb_object)
+        self.reference_terminal = value
 
     @property
     def reference_object(self):  # pragma : no cover
