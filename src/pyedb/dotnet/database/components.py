@@ -1316,9 +1316,9 @@ class Components(object):
             pin_layers = self._padstack._get_pin_layer_range(pins[0])
             pos_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
                 self._active_layout,
-                pins[0].GetNet(),
-                "{}_{}".format(component.refdes, pins[0].GetName()),
-                pins[0],
+                pins[0].net._edb_object,
+                f"{component.refdes}_{pins[0]._edb_object.GetName()}",
+                pins[0]._edb_object,
                 pin_layers[0],
                 False,
             )
@@ -1326,9 +1326,9 @@ class Components(object):
                 return False
             neg_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
                 self._active_layout,
-                pins[1].GetNet(),
-                "{}_{}_ref".format(component.refdes, pins[1].GetName()),
-                pins[1],
+                pins[1].net._edb_object,
+                f"{component.refdes}_{pins[1]._edb_object.GetName()}_ref",
+                pins[1]._edb_object,
                 pin_layers[0],
                 False,
             )
@@ -1382,9 +1382,9 @@ class Components(object):
             pin_layer = self._padstack._get_pin_layer_range(pins[0])[0]
             pos_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
                 self._active_layout,
-                pins[0].GetNet(),
-                "{}_{}".format(component.refdes, pins[0].GetName()),
-                pins[0],
+                pins[0]._edb_object.GetNet(),
+                f"{component.refdes}_{pins[0]._edb_object.GetName()}",
+                pins[0]._edb_object,
                 pin_layer,
                 False,
             )
@@ -1392,9 +1392,9 @@ class Components(object):
                 return False
             neg_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
                 self._active_layout,
-                pins[1].GetNet(),
-                "{}_{}_ref".format(component.refdes, pins[1].GetName()),
-                pins[1],
+                pins[1]._edb_object.GetNet(),
+                f"{component.refdes}_{pins[1]._edb_object.GetName()}_ref",
+                pins[1]._edb_object,
                 pin_layer,
                 True,
             )
@@ -2304,7 +2304,7 @@ class Components(object):
                             footprint_cell = self.definitions[comp.partname]._edb_object.GetFootprintCell()
                             comp_def = self._edb.definition.ComponentDef.Create(self._db, part_name, footprint_cell)
                             for pin in pinlist:
-                                self._edb.definition.ComponentDefPin.Create(comp_def, pin.GetName())
+                                self._edb.definition.ComponentDefPin.Create(comp_def, pin._edb_object.GetName())
 
                         p_layer = comp.placement_layer
                         refdes_temp = comp.refdes + "_temp"
@@ -2313,7 +2313,7 @@ class Components(object):
                         unmount_comp_list.remove(refdes)
                         comp.edbcomponent.Ungroup(True)
 
-                        pinlist = [self._pedb.layout.find_object_by_id(i.GetId()) for i in pinlist]
+                        pinlist = [self._pedb.layout.find_object_by_id(i.id) for i in pinlist]
                         self.create(pinlist, refdes, p_layer, part_name)
                         self.refresh_components()
                         comp = self.instances[refdes]
@@ -2580,7 +2580,7 @@ class Components(object):
                 for j in [*i.pins.values()]:
                     pin_list.append(j)
         for pin in pin_list:
-            if pin.GetNet().GetName() == net_name:
+            if pin.net_name == net_name:
                 pin_names.append(self.get_aedt_pin_name(pin))
         return pin_names
 
@@ -2607,7 +2607,7 @@ class Components(object):
         """
         netlist = []
         for pin in PinList:
-            netlist.append(pin.GetNet().GetName())
+            netlist.append(pin.net_name)
         return list(set(netlist))
 
     def get_component_net_connection_info(self, refdes):
@@ -2633,9 +2633,9 @@ class Components(object):
         """
         component_pins = self.get_pin_from_component(refdes)
         data = {"refdes": [], "pin_name": [], "net_name": []}
-        for pin_obj in component_pins:
-            pin_name = pin_obj.GetName()
-            net_name = pin_obj.GetNet().GetName()
+        for pin in component_pins:
+            pin_name = pin._edb_object.GetName()
+            net_name = pin._edb_object.GetNet().GetName()
             if pin_name is not None:
                 data["refdes"].append(refdes)
                 data["pin_name"].append(pin_name)

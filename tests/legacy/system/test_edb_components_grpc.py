@@ -332,21 +332,21 @@ class TestClass:
 
     def test_components_type(self, edb_examples):
         """Retrieve components type."""
-        # Done
+        # TODO adding lower on getter since DotNet is returning Capital letter for the first one.
         edb = edb_examples.get_si_verse()
         comp = edb.components["R4"]
         comp.type = "resistor"
-        assert comp.type == "resistor"
+        assert comp.type.lower() == "resistor"
         comp.type = "inductor"
-        assert comp.type == "inductor"
+        assert comp.type.lower() == "inductor"
         comp.type = "capacitor"
-        assert comp.type == "capacitor"
+        assert comp.type.lower() == "capacitor"
         comp.type = "io"
-        assert comp.type == "io"
+        assert comp.type.lower() == "io"
         comp.type = "ic"
-        assert comp.type == "ic"
+        assert comp.type.lower() == "ic"
         comp.type = "other"
-        assert comp.type == "other"
+        assert comp.type.lower() == "other"
         edb.close()
 
     def test_componenets_deactivate_rlc(self, edb_examples):
@@ -377,9 +377,9 @@ class TestClass:
         assert comp_def.part_name == "CAPC2012X12N_new"
         assert len(comp_def.components) > 0
         cap = edbapp.components.definitions["CAPC2012X12N_new"]
-        assert cap.type == "capacitor"
+        assert cap.type.lower() == "capacitor"
         cap.type = "resistor"
-        assert cap.type == "resistor"
+        assert cap.type.lower() == "resistor"
 
         export_path = os.path.join(self.local_scratch.path, "comp_definition.csv")
         # TODO check config file 2.0
@@ -433,11 +433,14 @@ class TestClass:
 
     def test_replace_rlc_by_gap_boundaries(self, edb_examples):
         """Replace RLC component by RLC gap boundaries."""
-        # Done
+        # TODO check how we can return same boundary_type between grpc and dotnet.
         edbapp = edb_examples.get_si_verse()
         for refdes, cmp in edbapp.components.instances.items():
             edbapp.components.replace_rlc_by_gap_boundaries(refdes)
-        rlc_list = [term for term in edbapp.active_layout.terminals if term.boundary_type == "rlc"]
+        if edbapp.grpc:
+            rlc_list = [term for term in list(edbapp.terminals.values()) if term.boundary_type == "rlc"]
+        else:
+            rlc_list = [term for term in list(edbapp.terminals.values()) if term.boundary_type == "RlcBoundary"]
         assert len(rlc_list) == 944
         edbapp.close()
 

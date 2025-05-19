@@ -1076,7 +1076,7 @@ class EdbPadstacks(object):
         return padstackname
 
     def _get_pin_layer_range(self, pin):
-        res, fromlayer, tolayer = pin.GetLayerRange()
+        res, fromlayer, tolayer = pin._edb_object.GetLayerRange()
         if res:
             return fromlayer, tolayer
         else:
