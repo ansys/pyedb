@@ -480,20 +480,20 @@ class EdbSiwave(object):
         >>> edbapp.siwave.create_resistor_on_pin(pins[0], pins[1],50,"res_name")
         """
         resistor = ResistorSource()
-        resistor.positive_node.net = pos_pin.GetNet().GetName()
-        resistor.negative_node.net = neg_pin.GetNet().GetName()
+        resistor.positive_node.net = pos_pin.net_name
+        resistor.negative_node.net = neg_pin.net_name
         resistor.rvalue = rvalue
         if not resistor_name:
             resistor_name = "Res_{}_{}_{}_{}".format(
-                pos_pin.GetComponent().GetName(),
-                pos_pin.GetNet().GetName(),
-                neg_pin.GetComponent().GetName(),
-                neg_pin.GetNet().GetName(),
+                pos_pin.component.name,
+                pos_pin.net_name,
+                neg_pin.component.name,
+                neg_pin.net_name,
             )
         resistor.name = resistor_name
-        resistor.positive_node.component_node = pos_pin.GetComponent()
+        resistor.positive_node.component_node = pos_pin.component
         resistor.positive_node.node_pins = pos_pin
-        resistor.negative_node.component_node = neg_pin.GetComponent()
+        resistor.negative_node.component_node = neg_pin.component
         resistor.negative_node.node_pins = neg_pin
         return self._create_terminal_on_pins(resistor)
 

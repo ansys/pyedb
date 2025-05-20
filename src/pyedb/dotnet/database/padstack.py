@@ -629,9 +629,11 @@ class EdbPadstacks(object):
         if "PadstackDef" in str(type(pin)):
             padparams = pin.GetData().GetPadParametersValue(layername, self.int_to_pad_type(pad_type))
         else:
-            padparams = self._edb.definition.PadstackDefData(pin.GetPadstackDef().GetData()).GetPadParametersValue(
-                layername, self.int_to_pad_type(pad_type)
-            )
+            if not isinstance(pin, EDBPadstackInstance):
+                pin = EDBPadstackInstance(pin, self._pedb)
+            padparams = self._edb.definition.PadstackDefData(
+                pin._edb_object.GetPadstackDef().GetData()
+            ).GetPadParametersValue(layername, self.int_to_pad_type(pad_type))
         if padparams[2]:
             geometry_type = int(padparams[1])
             parameters = [i.ToString() for i in padparams[2]]
@@ -646,7 +648,7 @@ class EdbPadstacks(object):
                 )
             else:
                 padparams = self._edb.definition.PadstackDefData(
-                    pin.GetPadstackDef().GetData()
+                    pin._edb_object.GetPadstackDef().GetData()
                 ).GetPolygonalPadParameters(layername, self.int_to_pad_type(pad_type))
 
             if padparams[0]:
