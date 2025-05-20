@@ -1,4 +1,5 @@
 import os
+import re
 from copy import deepcopy as copy
 from typing import Union
 
@@ -15,16 +16,7 @@ def create_variable(obj, name_suffix, value):
     return var_name
 
 
-class TraceBase:
-    @property
-    def path(self):
-        path = [self.incremental_path[0]]
-        x, y = self.incremental_path[0]
-        for x0, y0 in self.incremental_path[1:]:
-            x = f"{x}+({x0})"
-            y = f"{y}+({y0})"
-            path.append([x, y])
-        return path
+class Trace:
 
     def __init__(self,
                  p_via,
@@ -33,6 +25,7 @@ class TraceBase:
                  layer,
                  width,
                  clearance,
+                 incremental_path: list[list],
                  flip_dx,
                  flip_dy,
                  end_cap_style,
@@ -51,12 +44,24 @@ class TraceBase:
 
         self.voids = []
 
+        self.incremental_path = [
+            i if idx == 0 else [f"{i[0]}*{-1 if self.flip_dx else 1}", f"{i[1]}*{-1 if self.flip_dy else 1}"] for idx, i
+            in enumerate(incremental_path)]
+
+        self.path = [self.incremental_path[0]]
+        x, y = self.incremental_path[0]
+        for x0, y0 in self.incremental_path[1:]:
+            x = f"{x}+({x0})"
+            y = f"{y}+({y0})"
+            self.path.append([x, y])
+
     def populate_config(self, cfg):
         cfg["variables"].extend(self.variables)
         trace = {"name": self.name,
                  "layer": self.layer,
                  "width": self.width,
-                 "incremental_path": self.incremental_path,
+                 # "incremental_path": self.incremental_path,
+                 "path": self.path,
                  "net_name": self.net_name,
                  "start_cap_style": "round",
                  "end_cap_style": self.end_cap_style,
@@ -71,50 +76,19 @@ class TraceBase:
         self.voids.append(trace_void)
 
         if self.port is not None:
-            port = {
-                "name": f"port_{self.name}",
-                "type": "wave_port",
-                "primitive_name": self.name,
-                "point_on_edge": self.path[-1],
-                "horizontal_extent_factor": self.port["horizontal_extent_factor"],
-                "vertical_extent_factor": self.port["vertical_extent_factor"],
-                "pec_launch_width": "0.02mm",
-            }
+            port = self.get_port_cfg()
             cfg["ports"].append(port)
 
-
-class Trace(TraceBase):
-
-    def __init__(self, incremental_path: list[list], **kwargs):
-        super().__init__(**kwargs)
-
-        self.incremental_path = [
-            i if idx == 0 else [f"{i[0]}*{-1 if self.flip_dx else 1}", f"{i[1]}*{-1 if self.flip_dy else 1}"] for idx, i
-            in enumerate(incremental_path)]
-
-
-class DiffTraceVertical(TraceBase):
-    @property
-    def incremental_path(self):
-        temp = [[self.p_via.x, self.p_via.y]]
-
-        if self.p_via.p_signal.is_positive:
-            dx = f"pitch-abs({self.p_via.x}-{self.p_via.p_signal.base_x})-{self.width}/2-{self.separation}/2"
-        else:
-            dx = f"abs({self.p_via.x}-{self.p_via.p_signal.base_x})-{self.width}/2-{self.separation}/2"
-        dx = f"({dx})*{-1 if self.flip_dx else 1}"
-        temp.append([
-            dx,
-            self.p_via.y
-        ]
-        )
-        temp.append([0, self.incremental_path_dy[1]])
-        return temp
-
-    def __init__(self, separation, incremental_path_dy, **kwargs):
-        super().__init__(**kwargs)
-        self.separation = create_variable(self, "separation", separation)
-        self.incremental_path_dy = incremental_path_dy
+    def get_port_cfg(self):
+        return {
+            "name": f"port_{self.name}",
+            "type": "wave_port",
+            "primitive_name": self.name,
+            "point_on_edge": self.path[-1],
+            "horizontal_extent_factor": self.port["horizontal_extent_factor"],
+            "vertical_extent_factor": self.port["vertical_extent_factor"],
+            "pec_launch_width": "0.02mm",
+        }
 
 
 class Signal:
@@ -176,6 +150,7 @@ class Signal:
             self.conductor_layers = conductor_layers
 
             self.traces = []
+            self.fanout_traces = []
             self._voids = []
 
             if connection_trace is not None:
@@ -200,6 +175,9 @@ class Signal:
             for trace in self.traces:
                 trace.populate_config(cfg)
 
+            for trace in self.fanout_traces:
+                trace.populate_config(cfg)
+
             padstack_instance = {
                 "name": self.name,
                 "definition": self.padstack_def,
@@ -222,39 +200,25 @@ class Signal:
             self.anti_pad_diameter = create_variable(self, "anti_pad_diameter", anti_pad_diameter)
             if fanout_trace is not None:
                 layer = fanout_trace["layer"]
-                if not fanout_trace["is_differential"]:
-                    incremental_path = copy([[self.x, self.y]])
-                    incremental_path.extend(fanout_trace["incremental_path"])
 
-                    trace = Trace(
-                        p_via=self,
-                        name=f"{self.net_name}_{layer}_fanout",
-                        net_name=self.net_name,
-                        layer=layer,
-                        width=fanout_trace["width"],
-                        clearance=fanout_trace["clearance"],
-                        incremental_path=incremental_path,
-                        flip_dx=self.flip_dx,
-                        flip_dy=self.flip_dy,
-                        end_cap_style=fanout_trace["end_cap_style"],
-                        port=fanout_trace["port"]
-                    )
-                else:
-                    trace = DiffTraceVertical(
-                        p_via=self,
-                        name=f"{self.net_name}_{layer}_fanout",
-                        net_name=self.net_name,
-                        layer=layer,
-                        width=fanout_trace["width"],
-                        clearance=fanout_trace["clearance"],
-                        flip_dx=self.flip_dx,
-                        flip_dy=self.flip_dy,
-                        end_cap_style=fanout_trace["end_cap_style"],
-                        port=fanout_trace["port"],
-                        separation=fanout_trace["separation"],
-                        incremental_path_dy=fanout_trace["incremental_path_dy"],
-                    )
-                self.traces.append(trace)
+                incremental_path = copy([[self.x, self.y]])
+                incremental_path.extend(fanout_trace["incremental_path"])
+
+                trace = Trace(
+                    p_via=self,
+                    name=f"{self.net_name}_{layer}_fanout",
+                    net_name=self.net_name,
+                    layer=layer,
+                    width=fanout_trace["width"],
+                    clearance=fanout_trace["clearance"],
+                    incremental_path=incremental_path,
+                    flip_dx=self.flip_dx,
+                    flip_dy=self.flip_dy,
+                    end_cap_style=fanout_trace["end_cap_style"],
+                    port=fanout_trace["port"]
+                )
+
+                self.fanout_traces.append(trace)
 
         def populate_config(self, cfg):
             super().populate_config(cfg)
@@ -291,14 +255,13 @@ class Signal:
             voids.extend(via.voids)
         return voids
 
-    def __init__(self, signal_name, name_suffix: Union[None, str], base_x, base_y, stacked_vias,
-                 conductor_layers, invert_flip_dx, invert_flip_dy, is_positive):
-        self.is_positive = is_positive
+    def __init__(self, p_board, signal_name, name_suffix: Union[None, str], base_x, base_y, stacked_vias,
+                 invert_flip_dx, invert_flip_dy):
+        self.p_board = p_board
         self.net_name = signal_name if name_suffix is None else f"{signal_name}_{name_suffix}"
         self.name_suffix = name_suffix
         self.base_x = base_x
         self.base_y = base_y
-        self.conductor_layers = conductor_layers
 
         self.vias = []
         x = self.base_x
@@ -334,7 +297,7 @@ class Signal:
                     connection_trace=connection_trace,
                     with_solder_ball=i["with_solder_ball"],
                     backdrill_parameters=i["backdrill_parameters"],
-                    conductor_layers=self.conductor_layers,
+                    conductor_layers=self.p_board.conductor_layers,
                 )
             else:
                 via = self.Via(p_signal=self,
@@ -354,7 +317,7 @@ class Signal:
                                with_solder_ball=i["with_solder_ball"],
                                backdrill_parameters=i["backdrill_parameters"],
                                fanout_trace=i["fanout_trace"],
-                               conductor_layers=self.conductor_layers,
+                               conductor_layers=self.p_board.conductor_layers,
                                )
             x = via.x
             y = via.y
@@ -364,6 +327,124 @@ class Signal:
     def populate_config(self, cfg_modeler):
         for i in self.vias:
             i.populate_config(cfg_modeler)
+
+
+class DiffSignal:
+    def __init__(self, p_board, name, signals, fanout_trace, stacked_vias):
+        self.p_board = p_board
+        self.name = name
+        self.signal_p_name, self.signal_n_name = signals
+        self.fanout_trace = fanout_trace
+        self.stacked_vias = stacked_vias
+
+        self.variables = []
+        self.voids = []
+        self.diff_ports = []
+
+        p_x, p_y = self.p_board.get_signal_location(self.signal_p_name)[0]
+        n_x, n_y = self.p_board.get_signal_location(self.signal_n_name)[0]
+        p_x = f"{p_x}*pitch"
+        p_y = f"{p_y}*pitch"
+        n_x = f"{n_x}*pitch"
+        n_y = f"{n_y}*pitch"
+
+        vars_sep = {}
+        for idx, trace in self.fanout_trace.items():
+            trace2 = {}
+            trace2["layer"] = trace["layer"]
+            trace2["width"] = trace["width"]
+            trace2["clearance"] = trace["clearance"]
+            trace2["end_cap_style"] = trace["end_cap_style"]
+            trace2["port"] = trace["port"]
+
+            incremental_path_dy = trace["incremental_path_dy"]
+            incremental_path = [[0, incremental_path_dy[0]], [0, incremental_path_dy[1]]]
+            trace2["incremental_path"] = incremental_path
+
+            self.stacked_vias[idx]["fanout_trace"] = trace2
+
+            var_separation = f"{self.name}_{trace['layer']}_fanout_separation"
+            self.variables.append(
+                {"name": var_separation, "value": trace["separation"]},
+            )
+            vars_sep[trace["layer"]] = var_separation
+
+        stacked_vias_reversed = list(reversed(stacked_vias))
+
+        pcb_fanout_center = f"{p_x}+pitch/2"
+        pkg_fanout_center = f"{p_x}+pitch"
+        # fanout_x = f"{diff_center}-({var_separation})/2"
+
+        self.signal_p = Signal(
+            p_board=self.p_board,
+            signal_name=self.name,
+            name_suffix="P",
+            base_x=p_x,
+            base_y=p_y,
+            stacked_vias=stacked_vias_reversed,
+            invert_flip_dx=False,
+            invert_flip_dy=False,
+        )
+
+        diff_ports = {}
+        for v in self.signal_p.vias:
+            for t in v.fanout_traces:
+                var_sep = vars_sep[t.layer]
+                if t.layer.startswith("PCB"):
+                    t.path[1][0] = f"{pcb_fanout_center}-{var_sep}"
+                    t.path[2][0] = f"{pcb_fanout_center}-{var_sep}"
+                else:
+                    t.path[1][0] = f"{pkg_fanout_center}-{var_sep}"
+                    t.path[2][0] = f"{pkg_fanout_center}-{var_sep}"
+
+        self.signal_n = Signal(
+            p_board=self.p_board,
+            signal_name=self.name,
+            name_suffix="N",
+            base_x=n_x,
+            base_y=n_y,
+            stacked_vias=stacked_vias_reversed,
+            invert_flip_dx=True,
+            invert_flip_dy=False,
+        )
+        for v in self.signal_n.vias:
+            for t in v.fanout_traces:
+                var_sep = vars_sep[t.layer]
+                if t.layer.startswith("PCB"):
+                    t.path[1][0] = f"{pcb_fanout_center}+{var_sep}"
+                    t.path[2][0] = f"{pcb_fanout_center}+{var_sep}"
+                else:
+                    t.path[1][0] = f"{pkg_fanout_center}+{var_sep}"
+                    t.path[2][0] = f"{pkg_fanout_center}+{var_sep}"
+
+        for v_idx, v in enumerate(self.signal_p.vias):
+            for t_idx, t_p in enumerate(v.fanout_traces):
+                port_p = t_p.get_port_cfg()
+                t_p.port = None
+                t_n = self.signal_n.vias[v_idx].fanout_traces[t_idx]
+                port_n = t_n.get_port_cfg()
+                t_n.port = None
+                pattern = r'^(.*)_([NPnp])_(.*)$'
+                m1 = re.match(pattern, port_p["name"])
+
+                diff_port = {
+                    "name": f"{m1.group(1)}_{m1.group(3)}",
+                    "type": "diff_wave_port",
+                    "positive_terminal": {"primitive_name": port_p["primitive_name"], "point_on_edge": port_p["point_on_edge"]},
+                    "negative_terminal": {"primitive_name": port_n["primitive_name"], "point_on_edge": port_n["point_on_edge"]},
+                    "horizontal_extent_factor": port_p["horizontal_extent_factor"],
+                    "vertical_extent_factor": port_n["vertical_extent_factor"],
+                    "pec_launch_width": "0,2mm",
+                }
+                self.diff_ports.append(diff_port)
+
+    def populate_config(self, cfg):
+        cfg["variables"].extend(self.variables)
+        self.signal_p.populate_config(cfg)
+        self.voids.extend(self.signal_p.voids)
+        self.signal_n.populate_config(cfg)
+        self.voids.extend(self.signal_n.voids)
+        cfg["ports"].extend(self.diff_ports)
 
 
 class Board:
@@ -401,56 +482,27 @@ class Board:
             stacked_vias_reversed = list(reversed(stacked_vias))
             for x, y in self.get_signal_location(name):
                 s = Signal(
-                    signal_name=f"{name}",
+                    p_board=self,
+                    signal_name=name,
                     name_suffix=None,
                     base_x=f"{x}*pitch",
                     base_y=f"{y}*pitch",
                     stacked_vias=stacked_vias_reversed,
-                    conductor_layers=self.conductor_layers,
                     invert_flip_dx=False,
                     invert_flip_dy=False,
-                    is_positive=True,
                 )
                 signals.append(s)
         return signals
 
     def parser_differential_signals(self, data):
-        signals = []
-        for pair_name, signal_data in data.items():
-            signal_p_name, signal_n_name = signal_data["signals"]
-            fanout = signal_data["fanout_trace"]
-            p_x, p_y = self.get_signal_location(signal_p_name)[0]
-            n_x, n_y = self.get_signal_location(signal_n_name)[0]
-            stacked_vias = signal_data["stacked_vias"]
-            for idx, f in fanout.items():
-                stacked_vias[idx]["fanout_trace"] = f
-            stacked_vias_reversed = list(reversed(stacked_vias))
-
-            signal_p = Signal(
-                signal_name=pair_name,
-                name_suffix="P",
-                base_x=f"{p_x}*pitch",
-                base_y=f"{p_y}*pitch",
-                stacked_vias=stacked_vias_reversed,
-                conductor_layers=self.conductor_layers,
-                invert_flip_dx=False,
-                invert_flip_dy=False,
-                is_positive=True,
-            )
-            signals.append(signal_p)
-            signal_n = Signal(
-                signal_name=pair_name,
-                name_suffix="N",
-                base_x=f"{n_x}*pitch",
-                base_y=f"{n_y}*pitch",
-                stacked_vias=stacked_vias_reversed,
-                conductor_layers=self.conductor_layers,
-                invert_flip_dx=True,
-                invert_flip_dy=False,
-                is_positive=False
-            )
-            signals.append(signal_n)
-        return signals
+        diff_signals = []
+        for name, temp in data.items():
+            signals = temp["signals"]
+            fanout_trace = temp["fanout_trace"]
+            stacked_vias = temp["stacked_vias"]
+            diff_signal = DiffSignal(self, name, signals, fanout_trace, stacked_vias)
+            diff_signals.append(diff_signal)
+        return diff_signals
 
     def populate_config(self, cfg):
         cfg["variables"].extend(self.variables)
@@ -481,9 +533,9 @@ class Board:
             signal.populate_config(cfg)
             voids.extend(signal.voids)
 
-        for signal in self.differential_signals:
-            signal.populate_config(cfg)
-            voids.extend(signal.voids)
+        for diff_signal in self.differential_signals:
+            diff_signal.populate_config(cfg)
+            voids.extend(diff_signal.voids)
 
         matrix = np.array(self.pin_map)
         y_size_count, x_size_count = matrix.shape
