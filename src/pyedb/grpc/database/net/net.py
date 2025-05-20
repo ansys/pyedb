@@ -40,8 +40,8 @@ class Net(GrpcNet):
     >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_net = edb.nets.nets["GND"]
-    >>> edb_net.name # Class Property
-    >>> edb_net.name # EDB Object Property
+    >>> edb_net.name  # Class Property
+    >>> edb_net.name  # EDB Object Property
     """
 
     def __init__(self, pedb, raw_net):

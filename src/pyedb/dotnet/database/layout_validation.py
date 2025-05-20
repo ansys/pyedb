@@ -153,7 +153,7 @@ class LayoutValidation:
         Examples
         --------
 
-        >>> renamed_nets = edb.layout_validation.disjoint_nets(["GND","Net2"])
+        >>> renamed_nets = edb.layout_validation.disjoint_nets(["GND", "Net2"])
         """
         timer_start = self._pedb._logger.reset_timer()
 

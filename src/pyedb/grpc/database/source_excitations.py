@@ -25,8 +25,7 @@ from typing import List, Set, Union
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal
-from ansys.edb.core.terminal.edge_terminal import PrimitiveEdge as GrpcPrimitiveEdge
+from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal, PrimitiveEdge as GrpcPrimitiveEdge
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as GrpcValue
@@ -1111,8 +1110,8 @@ class SourceExcitation:
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> pins =edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.excitation.create_resistor_on_pin(pins[0], pins[1],50,"res_name")
+        >>> pins = edbapp.components.get_pin_from_component("U2A5")
+        >>> edbapp.excitation.create_resistor_on_pin(pins[0], pins[1], 50, "res_name")
         """
         if not resistor_name:
             resistor_name = (
@@ -1374,7 +1373,7 @@ class SourceExcitation:
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edb.excitations.create_voltage_source_on_net("U2A5","V1P5_S3","U2A5","GND",3.3,0,"source_name")
+        >>> edb.excitations.create_voltage_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 3.3, 0, "source_name")
         """
         if not negative_component_name:
             negative_component_name = positive_component_name
@@ -1385,8 +1384,7 @@ class SourceExcitation:
 
         if not source_name:
             source_name = (
-                f"Vsource_{positive_component_name}_{positive_net_name}_"
-                f"{negative_component_name}_{negative_net_name}"
+                f"Vsource_{positive_component_name}_{positive_net_name}_{negative_component_name}_{negative_net_name}"
             )
         return self.create_pin_group_terminal(
             positive_pins=pos_node_pins,
@@ -1438,7 +1436,7 @@ class SourceExcitation:
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edb.excitations.create_voltage_source_on_net("U2A5","V1P5_S3","U2A5","GND",3.3,0,"source_name")
+        >>> edb.excitations.create_voltage_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 3.3, 0, "source_name")
         """
         if not negative_component_name:
             negative_component_name = positive_component_name
@@ -1449,8 +1447,7 @@ class SourceExcitation:
 
         if not source_name:
             source_name = (
-                f"Vsource_{positive_component_name}_{positive_net_name}_"
-                f"{negative_component_name}_{negative_net_name}"
+                f"Vsource_{positive_component_name}_{positive_net_name}_{negative_component_name}_{negative_net_name}"
             )
         return self.create_pin_group_terminal(
             positive_pins=pos_node_pins,

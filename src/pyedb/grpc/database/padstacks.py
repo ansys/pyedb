@@ -23,25 +23,18 @@
 """
 This module contains the `EdbPadstacks` class.
 """
+
 import math
 import warnings
 
 from ansys.edb.core.definition.padstack_def_data import (
     PadGeometryType as GrpcPadGeometryType,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     PadstackDefData as GrpcPadstackDefData,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     PadstackHoleRange as GrpcPadstackHoleRange,
-)
-from ansys.edb.core.definition.padstack_def_data import (
+    PadType as GrpcPadType,
     SolderballPlacement as GrpcSolderballPlacement,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     SolderballShape as GrpcSolderballShape,
 )
-from ansys.edb.core.definition.padstack_def_data import PadType as GrpcPadType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.utility.value import Value as GrpcValue
@@ -294,7 +287,7 @@ class Padstacks(object):
             List of all layout pin groups.
         """
         warnings.warn(
-            "`pingroups` is deprecated and is now located here " "`pyedb.grpc.core.layout.pin_groups` instead.",
+            "`pingroups` is deprecated and is now located here `pyedb.grpc.core.layout.pin_groups` instead.",
             DeprecationWarning,
         )
         return self._layout.pin_groups

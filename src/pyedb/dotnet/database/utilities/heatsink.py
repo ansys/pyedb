@@ -1,5 +1,4 @@
 class HeatSink:
-
     """Heatsink model description.
 
     Parameters

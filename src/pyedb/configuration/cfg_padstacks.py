@@ -103,8 +103,6 @@ class CfgPadstackDefinition(CfgBase):
             def get_solder_ball_definition(self):
                 from ansys.edb.core.definition.solder_ball_property import (
                     SolderballPlacement as GrpcSolderballPlacement,
-                )
-                from ansys.edb.core.definition.solder_ball_property import (
                     SolderballShape as GrpcSolderballShape,
                 )
 
@@ -256,8 +254,6 @@ class CfgPadstackDefinition(CfgBase):
             def set_pad_parameters_to_edb(self, param):
                 from ansys.edb.core.definition.padstack_def_data import (
                     PadGeometryType as GrpcPadGeometryType,
-                )
-                from ansys.edb.core.definition.padstack_def_data import (
                     PadType as GrpcPadType,
                 )
                 from ansys.edb.core.utility.value import Value as GrpcValue

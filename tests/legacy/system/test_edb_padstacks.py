@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """Tests related to Edb padstacks"""
+
 import math
 import os
 from pathlib import Path
@@ -546,6 +547,6 @@ def _assert_inside(rect, pad):
     BASE_MESSAGE = "rectangle is not inside pad as"
     result = rect.Intersect(pad)
     assert len(result) == 1, f"{BASE_MESSAGE} intersection returned more than one lump"
-    assert math.isclose(
-        result[0].Area(), rect.Area()
-    ), f"{BASE_MESSAGE} area of intersection is not equal to rectangle area"
+    assert math.isclose(result[0].Area(), rect.Area()), (
+        f"{BASE_MESSAGE} area of intersection is not equal to rectangle area"
+    )

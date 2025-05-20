@@ -24,17 +24,16 @@
 This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiwave``,
 ``PinGroup``, ``ResistorSource``, ``Source``, ``SourceType``, and ``VoltageSource``.
 """
+
 import os
 import warnings
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.simulation_setup.simulation_setup import (
     Distribution as GrpcDistribution,
-)
-from ansys.edb.core.simulation_setup.simulation_setup import (
     FrequencyData as GrpcFrequencyData,
+    SweepData as GrpcSweepData,
 )
-from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSweepData
 
 from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
 
@@ -300,7 +299,7 @@ class Siwave(object):
 
         """
         warnings.warn(
-            "`_check_gnd` is deprecated and is now located here " "`pyedb.grpc.core.excitations._check_gnd` instead.",
+            "`_check_gnd` is deprecated and is now located here `pyedb.grpc.core.excitations._check_gnd` instead.",
             DeprecationWarning,
         )
         return self._pedb.source_excitation._check_gnd(component_name)

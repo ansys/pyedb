@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """Database."""
+
 import os
 import re
 import sys

@@ -25,15 +25,12 @@ import math
 from ansys.edb.core.definition.padstack_def import PadstackDef as GrpcPadstackDef
 from ansys.edb.core.definition.padstack_def_data import (
     PadGeometryType as GrpcPadGeometryType,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     PadstackHoleRange as GrpcPadstackHoleRange,
+    PadType as GrpcPadType,
 )
-from ansys.edb.core.definition.padstack_def_data import PadType as GrpcPadType
 import ansys.edb.core.geometry.polygon_data
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure
-from ansys.edb.core.hierarchy.structure3d import Structure3D as GrpcStructure3D
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure, Structure3D as GrpcStructure3D
 from ansys.edb.core.primitive.circle import Circle as GrpcCircle
 from ansys.edb.core.utility.value import Value as GrpcValue
 
@@ -720,7 +717,7 @@ class PadstackDef(GrpcPadstackDef):
                         s3d.add_member(cloned_circle2)
                         if not self.data.material.value:
                             self._pedb.logger.warning(
-                                f"Padstack definution {self.name} has no material defined." f"Defaulting to copper"
+                                f"Padstack definution {self.name} has no material defined.Defaulting to copper"
                             )
                             self.data.material = "copper"
                         s3d.set_material(self.data.material.value)

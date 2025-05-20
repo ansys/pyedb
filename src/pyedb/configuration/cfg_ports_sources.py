@@ -776,8 +776,6 @@ class CfgEdgePort:
             from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
             from ansys.edb.core.terminal.edge_terminal import (
                 EdgeTerminal as GrpcEdgeTerminal,
-            )
-            from ansys.edb.core.terminal.edge_terminal import (
                 PrimitiveEdge as GrpcPrimitiveEdge,
             )
             from ansys.edb.core.utility.value import Value as GrpcValue

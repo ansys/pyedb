@@ -22,7 +22,6 @@
 
 """Module gathering utility functions for PyEDB modules."""
 
-
 import math
 
 
