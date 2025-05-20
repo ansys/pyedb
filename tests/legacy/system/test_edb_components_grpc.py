@@ -657,13 +657,23 @@ class TestClass:
         # Done
         edbapp = edb_examples.get_si_verse()
         component: Component = edbapp.components["U8"]
-        assert component.ic_die_properties.die_orientation == "chip_up"
-        component.ic_die_properties.die_orientation = "chip_down"
-        assert component.ic_die_properties.die_orientation == "chip_down"
-        assert component.ic_die_properties.die_type == "none"
-        assert component.ic_die_properties.height == 0.0
-        component.ic_die_properties.height = 1e-3
-        assert component.ic_die_properties.height == 1e-3
+        if edbapp.grpc:
+            assert component.ic_die_properties.die_orientation == "chip_up"
+            component.ic_die_properties.die_orientation = "chip_down"
+            assert component.ic_die_properties.die_orientation == "chip_down"
+            assert component.ic_die_properties.die_type == "none"
+            assert component.ic_die_properties.height == 0.0
+            component.ic_die_properties.height = 1e-3
+            assert component.ic_die_properties.height == 1e-3
+        else:
+            ic_die_properties = component.ic_die_properties
+            assert ic_die_properties.die_orientation == "chip_up"
+            ic_die_properties.orientation = "chip_down"
+            assert ic_die_properties.orientation == "chip_down"
+            assert ic_die_properties.die_type == "none"
+            assert ic_die_properties.height == 0.0
+            ic_die_properties.height = 1e-3
+            assert ic_die_properties.height == 1e-3
         edbapp.close()
 
     def test_rlc_component_302(self, edb_examples):

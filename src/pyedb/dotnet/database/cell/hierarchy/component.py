@@ -44,6 +44,41 @@ except ImportError:
 from pyedb.generic.general_methods import get_filename_without_extension
 
 
+class ICDieProperties:
+    def __init__(self, pedb, edb_object):
+        self._pedb = pedb
+        self._edb_object = edb_object
+
+    @property
+    def die_orientation(self):
+        if str(self._edb_object.GetOrientation()) == "ChipUp":
+            return "chip_up"
+        return "chip_down"
+
+    @die_orientation.setter
+    def die_orientation(self, value):
+        if value == "chip_up" or value == "ChipUp":
+            self._edb_object.SetOrientation(self._pedb.api_class.Definition.DieOrientation.ChipUp)
+        elif value == "chip_down" or value == "ChipDown":
+            self._edb_object.SetOrientation(self._pedb.api_class.Definition.DieOrientation.ChipDown)
+
+    @property
+    def die_type(self):
+        if str(self._edb_object.GetType()) == "NoDie":
+            return "none"
+        elif str(self._edb_object.GetType()) == "FlipChip":
+            return "flip_chip"
+        return "none"
+
+    @property
+    def height(self):
+        return self._edb_object.GetHeight()
+
+    @height.setter
+    def height(self, value):
+        self._edb_object.SetHeight(self._pedb.edb_value(value))
+
+
 class EDBComponent(Group):
     """Manages EDB functionalities for components.
 
@@ -61,6 +96,7 @@ class EDBComponent(Group):
         self.edbcomponent = edb_object
         self._layout_instance = None
         self._comp_instance = None
+        self._ic_die_properties = None
 
     @property
     def name(self):
@@ -148,6 +184,21 @@ class EDBComponent(Group):
         comp_prop = self.component_property
         comp_prop.SetPackageDef(package_def._edb_object)
         self.edbcomponent.SetComponentProperty(comp_prop)
+
+    @property
+    def ic_die_properties(self):
+        """Adding IC properties for grpc compatibility."""
+        if self.type == "IC":
+            if not self._ic_die_properties:
+                self._ic_die_properties = ICDieProperties(self._pedb, self.component_property.GetDieProperty().Clone())
+            return self._ic_die_properties
+        return None
+
+    @ic_die_properties.setter
+    def ic_die_properties(self, value):
+        component_property = self.component_property
+        component_property.SetDieProperties(value)
+        self.component_property = component_property
 
     def create_package_def(self, name="", component_part_name=None):
         """Create a package definition and assign it to the component.
