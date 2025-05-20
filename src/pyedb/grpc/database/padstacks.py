@@ -506,7 +506,9 @@ class Padstacks(object):
             "`pyedb.grpc.core.excitations.create_coax_port` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.create_coax_port(self, padstackinstance, use_dot_separator=use_dot_separator, name=name)
+        self._pedb.source_excitation.create_coax_port(
+            self, padstackinstance, use_dot_separator=use_dot_separator, name=name
+        )
 
     def get_pin_from_component_and_net(self, refdes=None, netname=None):
         """Retrieve pins given a component's reference designator and net name.
@@ -1569,14 +1571,13 @@ class Padstacks(object):
         for id, inst in self.instances.items():
             instances_index[id] = inst.position
         for contour_box in contour_boxes:
-            all_instances = self.instances
             instances = self.get_padstack_instances_id_intersecting_polygon(
                 points=contour_box, padstack_instances_index=instances_index
             )
             if net_filter:
-                instances = [self.instances[id] for id in instances if not self.instances[id].net.name in net_filter]
+                instances = [id for id in instances if not self.instances[id].net.name in net_filter]
             net = self.instances[instances[0]].net.name
-            instances_pts = np.array([self.instances[id].position for id in instances])
+            instances_pts = np.array([self.instances[inst].position for inst in instances])
             convex_hull_contour = ConvexHull(instances_pts)
             contour_points = list(instances_pts[convex_hull_contour.vertices])
             layer = list(self._pedb.stackup.layers.values())[0].name
@@ -1595,9 +1596,15 @@ class Padstacks(object):
                 stop_layer=stop_layer,
             ):
                 self._logger.error(f"Failed to create padstack definition {new_padstack_def}")
-            merged_instance = self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net)
-            merged_via_ids.append(merged_instance.id)
-            [self.instances[id].delete() for id in instances]
+            merged_instance = self.place(
+                position=[0, 0],
+                definition_name=new_padstack_def,
+                net_name=net,
+                fromlayer=start_layer,
+                tolayer=stop_layer,
+            )
+            merged_via_ids.append(merged_instance.edb_uid)
+            [self.instances[inst].delete() for inst in instances]
         return merged_via_ids
 
     def reduce_via_in_bounding_box(self, bounding_box, x_samples, y_samples, nets=None):
@@ -1611,7 +1618,7 @@ class Padstacks(object):
         x_samples : int
         y_samples : int
         nets : str or list, optional
-            net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+            net name of list of nets name applying filtering on pad-stack instances selection. If ``None`` is provided
             all instances are included in the index. Default value is ``None``.
 
         Returns
@@ -1622,10 +1629,11 @@ class Padstacks(object):
 
         padstacks_inbox = self.get_padstack_instances_intersecting_bounding_box(bounding_box, nets)
         if not padstacks_inbox:
-            raise "No pad-stack in bounding box."
+            return False
         else:
             if len(padstacks_inbox) <= (x_samples * y_samples):
-                raise f"more samples {x_samples * y_samples} than existing {len(padstacks_inbox)}"
+                self._pedb.logger.error(f"more samples {x_samples * y_samples} than existing {len(padstacks_inbox)}")
+                return False
             else:
                 # extract ids and positions
                 vias = {item: self.instances[item].position for item in padstacks_inbox}

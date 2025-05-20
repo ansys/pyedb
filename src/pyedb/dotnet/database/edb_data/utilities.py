@@ -69,7 +69,7 @@ class EDBStatistics(object):
 
     @property
     def stackup_thickness(self):
-        return self._stackup_thickness
+        return round(self._stackup_thickness, 6)
 
     @stackup_thickness.setter
     def stackup_thickness(self, value):

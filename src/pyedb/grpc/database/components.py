@@ -276,20 +276,26 @@ class Components(object):
         self._others = {}
         for i in self._pedb.layout.groups:
             self._cmp[i.name] = i
-            if i.type == "resistor":
-                self._res[i.name] = i
-            elif i.type == "capacitor":
-                self._cap[i.name] = i
-            elif i.type == "inductor":
-                self._ind[i.name] = i
-            elif i.type == "ic":
-                self._ics[i.name] = i
-            elif i.type == "io":
-                self._ios[i.name] = i
-            elif i.type == "other":
+            try:
+                if i.type == "resistor":
+                    self._res[i.name] = i
+                elif i.type == "capacitor":
+                    self._cap[i.name] = i
+                elif i.type == "inductor":
+                    self._ind[i.name] = i
+                elif i.type == "ic":
+                    self._ics[i.name] = i
+                elif i.type == "io":
+                    self._ios[i.name] = i
+                elif i.type == "other":
+                    self._others[i.name] = i
+                else:
+                    self._logger.warning(
+                        f"Unknown component type {i.name} found while refreshing components, will ignore"
+                    )
+            except:
+                self._logger.warning(f"Assigning component {i.name} as default type other.")
                 self._others[i.name] = i
-            else:
-                self._logger.warning(f"Unknown component type {i.name} found while refreshing components, will ignore")
         return True
 
     @property

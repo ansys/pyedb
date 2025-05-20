@@ -1317,7 +1317,7 @@ class Modeler(object):
         stat_model.num_resistors = len(self._pedb.components.resistors)
         stat_model.num_inductors = len(self._pedb.components.inductors)
         bbox = self._pedb._hfss.get_layout_bounding_box(self._active_layout)
-        stat_model._layout_size = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        stat_model._layout_size = round(bbox[2] - bbox[0], 6), round(bbox[3] - bbox[1], 6)
         stat_model.num_discrete_components = (
             len(self._pedb.components.Others) + len(self._pedb.components.ICs) + len(self._pedb.components.IOs)
         )
@@ -1328,7 +1328,7 @@ class Modeler(object):
         stat_model.num_traces = len(self._pedb.modeler.paths)
         stat_model.num_polygons = len(self._pedb.modeler.polygons)
         stat_model.num_vias = len(self._pedb.padstacks.instances)
-        stat_model.stackup_thickness = self._pedb.stackup.get_layout_thickness()
+        stat_model.stackup_thickness = round(self._pedb.stackup.get_layout_thickness(), 6)
         if evaluate_area:
             outline_surface = stat_model.layout_size[0] * stat_model.layout_size[1]
             if net_list:
@@ -1343,8 +1343,8 @@ class Modeler(object):
                             surface += prim.length * prim.width
                         if prim.type == "Polygon":
                             surface += prim.polygon_data._edb_object.Area()
-                            stat_model.occupying_surface[layer] = surface
-                            stat_model.occupying_ratio[layer] = surface / outline_surface
+                            stat_model.occupying_surface[layer] = round(surface, 6)
+                            stat_model.occupying_ratio[layer] = round(surface / outline_surface, 6)
         return stat_model
 
     def create_bondwire(
@@ -1361,6 +1361,7 @@ class Modeler(object):
         end_y,
         net,
         bondwire_type="jedec4",
+        start_cell_instance_name=None,
     ):
         """Create a bondwire object.
 
@@ -1390,13 +1391,16 @@ class Modeler(object):
             Y value of end point.
         net : str or :class:`Net <ansys.edb.net.Net>` or None
             Net of the Bondwire.
+        start_cell_instance_name : None
+            Added for grpc compatibility.
 
         Returns
         -------
         :class:`pyedb.dotnet.database.dotnet.primitive.BondwireDotNet`
             Bondwire object created.
         """
-
+        if start_cell_instance_name:
+            self._pedb.logger.warning(f"start_cell_instance_name {start_cell_instance_name} is only valid with grpc.")
         return Bondwire(
             pedb=self._pedb,
             bondwire_type=bondwire_type,

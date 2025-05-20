@@ -35,6 +35,7 @@ import sys
 import tempfile
 import time
 import traceback
+from typing import Union
 import warnings
 from zipfile import ZipFile as zpf
 
@@ -57,7 +58,7 @@ from pyedb.generic.general_methods import (
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.components import Components
-from pyedb.grpc.database.control_file import ControlFile, convert_technology_file
+from pyedb.grpc.database.control_file import ControlFile
 from pyedb.grpc.database.definition.materials import Materials
 from pyedb.grpc.database.hfss import Hfss
 from pyedb.grpc.database.layout.layout import Layout
@@ -110,7 +111,7 @@ class Edb(EdbInit):
     edbpath : str, optional
         Full path to the ``aedb`` folder. The variable can also contain
         the path to a layout to import. Allowed formats are BRD, MCM,
-        XML (IPC2581), GDS, and DXF. The default is ``None``.
+        XML (IPC2581), GDS, ODB++(TGZ and ZIP) and DXF. The default is ``None``.
         For GDS import, the Ansys control file (also XML) should have the same
         name as the GDS file. Only the file extension differs.
     cellname : str, optional
@@ -120,14 +121,25 @@ class Edb(EdbInit):
         owned by HFSS 3D Layout. The default is ``False``.
     edbversion : str, int, float, optional
         Version of EDB to use. The default is ``None``.
-        Examples of input values are ``252``, ``25.2``,``2025.2``,``"2025.2"``.
+        Examples of input values are ``232``, ``23.2``, ``2023.2``, ``"2023.2"``.
     isaedtowned : bool, optional
         Whether to launch EDB from HFSS 3D Layout. The
         default is ``False``.
     oproject : optional
         Reference to the AEDT project object.
+    student_version : bool, optional
+        Whether to open the AEDT student version. The default is ``False.``
+    control_file : str, optional
+            Path to the XML file. The default is ``None``, in which case an attempt is made to find
+            the XML file in the same directory as the board file. To succeed, the XML file and board file
+            must have the same name. Only the extension differs.
+    map_file : str, optional
+        Layer map .map file.
     technology_file : str, optional
-        Technology file full path to be converted to XML before importing or XML. Supported by GDS format only.
+        Full path to technology file to be converted to xml before importing or xml.
+        Supported by GDS format only.
+    layer_filter:str,optional
+        Layer filter .txt file.
     restart_rpc_server : bool, optional
         ``True`` RPC server is terminated and restarted. This will close all open EDB. RPC server is running on single
         instance loading all EDB, enabling this option should be used with caution but can be a solution to release
@@ -188,15 +200,19 @@ class Edb(EdbInit):
 
     def __init__(
         self,
-        edbpath=None,
-        cellname=None,
-        isreadonly=False,
-        edbversion=None,
-        isaedtowned=False,
+        edbpath: Union[str, Path] = None,
+        cellname: str = None,
+        isreadonly: bool = False,
+        edbversion: str = None,
+        isaedtowned: bool = False,
         oproject=None,
         student_version: bool = False,
-        use_ppe=False,
-        technology_file=None,
+        use_ppe: bool = False,
+        control_file: str = None,
+        map_file: str = None,
+        technology_file: str = None,
+        layer_filter: str = None,
+        remove_existing_aedt: bool = False,
         restart_rpc_server=False,
     ):
         edbversion = get_string_version(edbversion)
@@ -247,14 +263,18 @@ class Edb(EdbInit):
                 zipped_file.extractall(edbpath[:-4])
                 self.logger.info("ODB++ unzipped successfully.")
             zipped_file.close()
-            control_file = None
-            if technology_file:
-                if os.path.splitext(technology_file)[1] == ".xml":
-                    control_file = technology_file
-                else:
-                    control_file = convert_technology_file(technology_file, edbversion=edbversion)
             self.logger.info("Translating ODB++ to EDB...")
-            self.import_layout_pcb(edbpath[:-4], working_dir, use_ppe=use_ppe, control_file=control_file)
+            if not self.import_layout_file(
+                edbpath[:-4],
+                working_dir,
+                use_ppe=use_ppe,
+                control_file=control_file,
+                tech_file=technology_file,
+                layer_filter=layer_filter,
+                map_file=map_file,
+            ):
+                raise AttributeError("Translation was unsuccessful")
+                return False
             if settings.enable_local_log_file and self.log_name:
                 self.logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)
@@ -262,14 +282,17 @@ class Edb(EdbInit):
         elif edbpath[-3:] in ["brd", "mcm", "gds", "xml", "dxf", "tgz"]:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
-            control_file = None
-            if technology_file:
-                if os.path.splitext(technology_file)[1] == ".xml":
-                    control_file = technology_file
-                else:
-                    control_file = convert_technology_file(technology_file, edbversion=edbversion)
-            self.import_layout_pcb(edbpath, working_dir, use_ppe=use_ppe, control_file=control_file)
-            self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath[-2:])
+            if not self.import_layout_file(
+                edbpath,
+                working_dir,
+                use_ppe=use_ppe,
+                control_file=control_file,
+                tech_file=technology_file,
+                layer_filter=layer_filter,
+                map_file=map_file,
+            ):
+                raise AttributeError("Translation was unsuccessful")
+                return False
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
             self.open_edb(restart_rpc_server=restart_rpc_server)
@@ -638,12 +661,18 @@ class Edb(EdbInit):
     def import_layout_pcb(
         self,
         input_file,
-        working_dir,
+        working_dir="",
         anstranslator_full_path="",
         use_ppe=False,
         control_file=None,
+        map_file=None,
+        tech_file=None,
+        layer_filter=None,
     ):
         """Import a board file and generate an ``edb.def`` file in the working directory.
+
+        .. deprecated:: 0.42.0
+           Use :func:`import_layout_file` method instead.
 
         This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
 
@@ -651,7 +680,7 @@ class Edb(EdbInit):
         ----------
         input_file : str
             Full path to the board file.
-        working_dir : str
+        working_dir : str, optional
             Directory in which to create the ``aedb`` folder. The name given to the AEDB file
             is the same as the name of the board file.
         anstranslator_full_path : str, optional
@@ -662,10 +691,69 @@ class Edb(EdbInit):
             Path to the XML file. The default is ``None``, in which case an attempt is made to find
             the XML file in the same directory as the board file. To succeed, the XML file and board file
             must have the same name. Only the extension differs.
+        tech_file : str, optional
+            Technology file. The file can be *.ircx, *.vlc.tech, or *.itf
+        map_file : str, optional
+            Layer map .map file.
+        layer_filter:str,optional
+            Layer filter .txt file.
 
         Returns
         -------
-        str: Full path to the AEDB file.
+        Full path to the AEDB file : str
+        """
+        self.logger.warning("import_layout_pcb method is deprecated, use import_layout_file instead.")
+        return self.import_layout_file(
+            input_file,
+            working_dir,
+            anstranslator_full_path,
+            use_ppe,
+            control_file,
+            map_file,
+            tech_file,
+            layer_filter,
+        )
+
+    def import_layout_file(
+        self,
+        input_file,
+        working_dir="",
+        anstranslator_full_path="",
+        use_ppe=False,
+        control_file=None,
+        map_file=None,
+        tech_file=None,
+        layer_filter=None,
+    ):
+        """Import a board file and generate an ``edb.def`` file in the working directory.
+
+        This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
+
+        Parameters
+        ----------
+        input_file : str
+            Full path to the board file.
+        working_dir : str, optional
+            Directory in which to create the ``aedb`` folder. The name given to the AEDB file
+            is the same as the name of the board file.
+        anstranslator_full_path : str, optional
+            Full path to the Ansys translator. The default is ``""``.
+        use_ppe : bool
+            Whether to use the PPE License. The default is ``False``.
+        control_file : str, optional
+            Path to the XML file. The default is ``None``, in which case an attempt is made to find
+            the XML file in the same directory as the board file. To succeed, the XML file and board file
+            must have the same name. Only the extension differs.
+        tech_file : str, optional
+            Technology file. The file can be *.ircx, *.vlc.tech, or *.itf
+        map_file : str, optional
+            Layer map .map file.
+        layer_filter:str,optional
+            Layer filter .txt file.
+
+        Returns
+        -------
+        Full path to the AEDB file : str
 
         """
         self._components = None
@@ -693,13 +781,18 @@ class Edb(EdbInit):
         ]
         if not use_ppe:
             cmd_translator.append("-ppe=false")
-        if control_file and input_file[-3:] not in ["brd", "mcm"]:
+        if control_file and input_file[-3:] not in ["brd", "mcm", "sip"]:
             if is_linux:
                 cmd_translator.append("-c={}".format(control_file))
             else:
                 cmd_translator.append('-c="{}"'.format(control_file))
-        p = subprocess.Popen(cmd_translator)
-        p.wait()
+        if map_file:
+            cmd_translator.append('-g="{}"'.format(map_file))
+        if tech_file:
+            cmd_translator.append('-t="{}"'.format(tech_file))
+        if layer_filter:
+            cmd_translator.append('-f="{}"'.format(layer_filter))
+        subprocess.run(cmd_translator)
         if not os.path.exists(os.path.join(working_dir, aedb_name)):
             self.logger.error("Translator failed to translate.")
             return False
@@ -2019,8 +2112,8 @@ class Edb(EdbInit):
                     nets_to_preserve.extend(el.nets)
         if include_pingroups:
             for pingroup in self.layout.pin_groups:
-                for pin in pingroup.pins:
-                    if pin.net_name in reference_list:
+                for pin_name, pin in pingroup.pins.items():
+                    if pin_name in reference_list:
                         pins_to_preserve.append(pin.edb_uid)
         if check_terminals:
             terms = [

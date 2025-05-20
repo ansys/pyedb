@@ -527,7 +527,7 @@ class Hfss(object):
             "`pyedb.grpc.core.excitations.create_differential_wave_port` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_differential_wave_port(
+        return self._pedb.source_excitation.create_differential_wave_port(
             positive_primitive_id,
             positive_points_on_edge,
             negative_primitive_id,
@@ -579,7 +579,7 @@ class Hfss(object):
             "`pyedb.grpc.core.excitations.create_bundle_wave_port` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.create_bundle_wave_port(
+        return self._pedb.source_excitation.create_bundle_wave_port(
             primitives_id, points_on_edge, port_name, horizontal_extent_factor, vertical_extent_factor, pec_launch_width
         )
 
@@ -720,7 +720,7 @@ class Hfss(object):
             "`pyedb.grpc.core.excitations.create_source_on_component` instead.",
             DeprecationWarning,
         )
-        self._pedb.source_excitation.create_wave_port(
+        return self._pedb.source_excitation.create_wave_port(
             prim_id,
             point_on_edge,
             port_name,
@@ -1241,6 +1241,12 @@ class Hfss(object):
             HfssSimulationSetup as GrpcHfssSimulationSetup,
         )
         from ansys.edb.core.simulation_setup.simulation_setup import (
+            Distribution as GrpcDistribution,
+        )
+        from ansys.edb.core.simulation_setup.simulation_setup import (
+            FrequencyData as GrpcFrequencyData,
+        )
+        from ansys.edb.core.simulation_setup.simulation_setup import (
             SweepData as GrpcSweepData,
         )
 
@@ -1267,7 +1273,10 @@ class Hfss(object):
         sweep_name = f"sweep_{len(setup.sweep_data) + 1}"
         sweep_data = [
             GrpcSweepData(
-                name=sweep_name, distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step_freq
+                name=sweep_name,
+                frequency_data=GrpcFrequencyData(
+                    distribution=GrpcDistribution[distribution], start_f=start_freq, end_f=stop_freq, step=step_freq
+                ),
             )
         ]
         if discrete_sweep:
