@@ -401,7 +401,7 @@ class EdbSiwave(object):
         voltage_source.positive_node.component_node = pos_pin.GetComponent()
         voltage_source.positive_node.node_pins = pos_pin
         voltage_source.negative_node.component_node = neg_pin.GetComponent()
-        voltage_source.negative_node.node_pins = pos_pin
+        voltage_source.negative_node.node_pins = neg_pin
         return self._create_terminal_on_pins(voltage_source)
 
     def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
