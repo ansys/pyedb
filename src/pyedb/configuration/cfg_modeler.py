@@ -58,7 +58,7 @@ class CfgPlane:
 
         # circle
         self.radius = kwargs.get("radius", 0)
-        self.position = kwargs.get("x", [0, 0])
+        self.position = kwargs.get("position", [0, 0])
 
 
 class CfgModeler:
@@ -129,16 +129,6 @@ class CfgModeler:
                             points=p.points, layer_name=p.layer, net_name=p.net_name
                         )
                         obj.aedt_name = p.name
-                    elif p.type == "circle":
-                        obj = self._pedb.modeler.create_circle(
-                            layer_name=p.layer,
-                            net_name=p.net_name,
-                            x=p.position[0],
-                            y=p.position[1],
-                            radius=p.radius,
-                        )
-                    else:
-                        raise
 
                     for v in p.voids:
                         for i in self._pedb.layout.primitives:
@@ -232,6 +222,17 @@ class CfgModeler:
                             main_shape=p.points, layer_name=p.layer, net_name=p.net_name
                         )
                         obj.aedt_name = p.name
+                    elif p.type == "circle":
+                        obj = self._pedb.modeler.create_circle(
+                            layer_name=p.layer,
+                            net_name=p.net_name,
+                            x=p.position[0],
+                            y=p.position[1],
+                            radius=p.radius,
+                        )
+                        obj.aedt_name = p.name
+                    else:
+                        raise
 
                     for v in p.voids:
                         for i in self._pedb.layout.primitives:
