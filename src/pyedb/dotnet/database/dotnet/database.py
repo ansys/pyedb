@@ -484,6 +484,24 @@ class CellClassDotNet:
 
         return PrimitiveDotNet(self._app)
 
+    @property
+    def simulation_setups(self):
+        return self._app.setups
+
+    def get_all_variable_names(self):
+        """Method added for compatibility with grpc.
+
+        Returns
+        -------
+        List[Str]
+            List of variables name.
+
+        """
+        return list(self._app.variable_exists("")[1].GetAllVariableNames())
+
+    def get_variable_value(self, variable_name):
+        return self._app.variables[variable_name]
+
 
 class UtilityDotNet:
     """Utility Edb class."""

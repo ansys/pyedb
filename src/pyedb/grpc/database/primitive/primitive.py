@@ -253,7 +253,12 @@ class Primitive(GrpcPrimitive):
 
         """
         bbox = self.cast().polygon_data.bbox()
-        return [bbox[0].x.value, bbox[0].y.value, bbox[1].x.value, bbox[1].y.value]
+        return [
+            round(bbox[0].x.value, 6),
+            round(bbox[0].y.value, 6),
+            round(bbox[1].x.value, 6),
+            round(bbox[1].y.value, 6),
+        ]
 
     def convert_to_polygon(self):
         """Convert path to polygon.
