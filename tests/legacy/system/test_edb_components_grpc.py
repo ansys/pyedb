@@ -505,7 +505,7 @@ class TestClass:
         assert comp.spice_model
         comp.type = "inductor"
         comp.value = 10  # This command set the model back to ideal RLC
-        assert comp.type == "inductor" and comp.value == 10 and float(comp.ind_value) == 10
+        assert comp.type.lower() == "inductor" and comp.value == 10 and float(comp.ind_value) == 10
 
         edbapp.components["C164"].assign_spice_model(
             spice_path, sub_circuit_name="GRM32ER60J227ME05_DC0V_25degC", terminal_pairs=[["port1", 2], ["port2", 1]]
