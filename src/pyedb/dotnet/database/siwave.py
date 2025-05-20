@@ -261,6 +261,10 @@ class EdbSiwave(object):
         >>> edbapp.siwave.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
         """
         circuit_port = CircuitPort()
+        if not isinstance(pos_pin, EDBPadstackInstance):
+            pos_pin = EDBPadstackInstance(pos_pin, self._pedb)
+        if not isinstance(neg_pin, EDBPadstackInstance):
+            neg_pin = EDBPadstackInstance(neg_pin, self._pedb)
         circuit_port.positive_node.net = pos_pin.net_name
         circuit_port.negative_node.net = neg_pin.net_name
         circuit_port.impedance = impedance
