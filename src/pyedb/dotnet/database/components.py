@@ -820,7 +820,7 @@ class Components(object):
         if refdes and any(refdes.rlc_values):
             return self.deactivate_rlc_component(component=refdes, create_circuit_port=True)
         if not port_name:
-            port_name = "Port_{}_{}".format(pins[0].net_name, pins[0].name)
+            port_name = f"Port_{pins[0].net_name}_{pins[0].name}".replace("-", "_")
 
         if len(pins) > 1 or pingroup_on_single_pin:
             if pec_boundary:
@@ -844,7 +844,7 @@ class Components(object):
                     f"ports only, {len(reference_pins)} reference pins found "
                     f"(pingroup_on_single_pin: {pingroup_on_single_pin})."
                 )
-            ref_group_name = "group_{}_ref".format(port_name)
+            ref_group_name = f"group_{port_name}_ref"
             ref_pin_group = self.create_pingroup_from_pins(reference_pins, ref_group_name)
             ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
         else:
@@ -859,7 +859,7 @@ class Components(object):
             term.SetBoundaryType(self._edb.cell.terminal.BoundaryType.PecBoundary)
             ref_term.SetBoundaryType(self._edb.cell.terminal.BoundaryType.PecBoundary)
             self._logger.info(
-                "PEC boundary created between pin {} and reference pin {}".format(pins[0].name, reference_pins[0].name)
+                f"PEC boundary created between pin {pins[0].name} and reference pin {reference_pins[0].name}"
             )
 
         return term or False

@@ -523,15 +523,23 @@ class TestClass:
 
     def test_pec_boundary_ports(self, edb_examples):
         """Check pec boundary ports."""
-        # Done
+        # TODO check how we can return only pec in dotnet.
         edbapp = edb_examples.get_si_verse()
         edbapp.components.create_port_on_pins(refdes="U1", pins="AU38", reference_pins="AU37", pec_boundary=True)
-        assert edbapp.terminals["Port_GND_U1_AU38"].boundary_type == "pec"
-        assert edbapp.terminals["Port_GND_U1_AU38_ref"].boundary_type == "pec"
+        if edbapp.grpc:
+            assert edbapp.terminals["Port_GND_U1_AU38"].boundary_type == "pec"
+            assert edbapp.terminals["Port_GND_U1_AU38_ref"].boundary_type == "pec"
+        else:
+            assert edbapp.terminals["Port_GND_U1_AU38"].boundary_type == "PecBoundary"
+            assert edbapp.terminals["Port_GND_U1_AU38_ref"].boundary_type == "PecBoundary"
         edbapp.components.deactivate_rlc_component(component="C5", create_circuit_port=True, pec_boundary=True)
         edbapp.components.add_port_on_rlc_component(component="C65", circuit_ports=False, pec_boundary=True)
-        assert edbapp.terminals["C5"].boundary_type == "pec"
-        assert edbapp.terminals["C65"].boundary_type == "pec"
+        if edbapp.grpc:
+            assert edbapp.terminals["C5"].boundary_type == "pec"
+            assert edbapp.terminals["C65"].boundary_type == "pec"
+        else:
+            assert edbapp.terminals["C5"].boundary_type == "PecBoundary"
+            assert edbapp.terminals["C65"].boundary_type == "PecBoundary"
         edbapp.close()
 
     def test_is_top_mounted(self, edb_examples):
