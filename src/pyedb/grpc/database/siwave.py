@@ -24,6 +24,7 @@
 This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiwave``,
 ``PinGroup``, ``ResistorSource``, ``Source``, ``SourceType``, and ``VoltageSource``.
 """
+
 import os
 import warnings
 
@@ -298,7 +299,7 @@ class Siwave(object):
 
         """
         warnings.warn(
-            "`_check_gnd` is deprecated and is now located here " "`pyedb.grpc.core.excitations._check_gnd` instead.",
+            "`_check_gnd` is deprecated and is now located here `pyedb.grpc.core.excitations._check_gnd` instead.",
             DeprecationWarning,
         )
         return self._pedb.source_excitation._check_gnd(component_name)

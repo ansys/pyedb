@@ -23,6 +23,7 @@
 """
 This module contains the `EdbPadstacks` class.
 """
+
 import math
 import warnings
 
@@ -704,8 +705,9 @@ class EdbPadstacks(object):
                             )
                         else:  # pragma no cover
                             self._logger.error(
-                                "Failed to reassign anti-pad value {} on Pads-stack definition {},"
-                                " layer{}".format(str(value), padstack.edb_padstack.GetName(), layer)
+                                "Failed to reassign anti-pad value {} on Pads-stack definition {}, layer{}".format(
+                                    str(value), padstack.edb_padstack.GetName(), layer
+                                )
                             )
                             all_succeed = False
                 padstack.edb_padstack.SetData(cloned_padstack_data)

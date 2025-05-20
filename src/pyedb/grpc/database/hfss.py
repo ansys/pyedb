@@ -23,6 +23,7 @@
 """
 This module contains the ``EdbHfss`` class.
 """
+
 import math
 import warnings
 
@@ -197,8 +198,8 @@ class Hfss(object):
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> pins =edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.hfss.create_voltage_source_on_pin(pins[0], pins[1],50,"source_name")
+        >>> pins = edbapp.components.get_pin_from_component("U2A5")
+        >>> edbapp.hfss.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
         """
         warnings.warn(
             "`create_voltage_source_on_pin` is deprecated and is now located here "
@@ -238,8 +239,8 @@ class Hfss(object):
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> pins =edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.hfss.create_current_source_on_pin(pins[0], pins[1],50,"source_name")
+        >>> pins = edbapp.components.get_pin_from_component("U2A5")
+        >>> edbapp.hfss.create_current_source_on_pin(pins[0], pins[1], 50, "source_name")
         """
         warnings.warn(
             "`create_current_source_on_pin` is deprecated and is now located here "
@@ -277,8 +278,8 @@ class Hfss(object):
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> pins =edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.hfss.create_resistor_on_pin(pins[0], pins[1],50,"res_name")
+        >>> pins = edbapp.components.get_pin_from_component("U2A5")
+        >>> edbapp.hfss.create_resistor_on_pin(pins[0], pins[1], 50, "res_name")
         """
         warnings.warn(
             "`create_resistor_on_pin` is deprecated and is now located here "

@@ -1086,7 +1086,7 @@ class Component(GrpcComponentGroup):
                 return False
         if not reference_net:
             self._pedb.logger.warning(
-                f"No reference net provided for S parameter file {file_path}, net `GND` is " f"assigned by default"
+                f"No reference net provided for S parameter file {file_path}, net `GND` is assigned by default"
             )
             reference_net = "GND"
         n_port_model = GrpcNPortComponentModel.find_by_name(self.component_def, name)

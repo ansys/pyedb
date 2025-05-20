@@ -22,6 +22,7 @@
 
 
 """Database."""
+
 import atexit
 import os
 import signal

@@ -574,7 +574,7 @@ class EdbNets(CommonNets):
         Examples
         --------
 
-        >>> deleted_nets = database.nets.delete(["Net1","Net2"])
+        >>> deleted_nets = database.nets.delete(["Net1", "Net2"])
         """
         warnings.warn("Use :func:`delete` method instead.", DeprecationWarning)
         return self.delete(netlist=netlist)
@@ -595,7 +595,7 @@ class EdbNets(CommonNets):
         Examples
         --------
 
-        >>> deleted_nets = database.nets.delete(["Net1","Net2"])
+        >>> deleted_nets = database.nets.delete(["Net1", "Net2"])
         """
         if isinstance(netlist, str):
             netlist = [netlist]
@@ -736,7 +736,7 @@ class EdbNets(CommonNets):
         Examples
         --------
 
-        >>> renamed_nets = database.nets.find_and_fix_disjoint_nets(["GND","Net2"])
+        >>> renamed_nets = database.nets.find_and_fix_disjoint_nets(["GND", "Net2"])
         """
         warnings.warn("Use new function :func:`edb.layout_validation.disjoint_nets` instead.", DeprecationWarning)
         return self._pedb.layout_validation.disjoint_nets(

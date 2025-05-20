@@ -492,13 +492,13 @@ class VariableManager(object):
         --------
         >>> hfss = Hfss()
         >>> print(hfss.variable_manager.decompose("5mm"))
-        >>> (5.0, 'mm')
+        >>> (5.0, "mm")
         >>> hfss["v1"] = "3N"
         >>> print(hfss.variable_manager.decompose("v1"))
-        >>> (3.0, 'N')
+        >>> (3.0, "N")
         >>> hfss["v2"] = "2*v1"
         >>> print(hfss.variable_manager.decompose("v2"))
-        >>> (6.0, 'N')
+        >>> (6.0, "N")
         """
         if variable_value in self.independent_variable_names:
             val, unit = decompose_variable_value(self[variable_value].expression)
@@ -1008,8 +1008,13 @@ class VariableManager(object):
         creating the property if it does not already exist. Also make
         it read-only and hidden and add a description.
 
-        >>> aedtapp.variable_manager.set_variable(variable_name="p2", expression="10mm", readonly=True, hidden=True,
-        ...                                       description="This is the description of this variable.")
+        >>> aedtapp.variable_manager.set_variable(
+        ...     variable_name="p2",
+        ...     expression="10mm",
+        ...     readonly=True,
+        ...     hidden=True,
+        ...     description="This is the description of this variable.",
+        ... )
 
         Set the value of the project variable ``$p1`` to ``"30mm"``,
         creating the variable if it does not exist.
@@ -1706,7 +1711,7 @@ class Variable(object):
         >>> hfss = Hfss()
         >>> hfss["v1"] = "3N"
         >>> print(hfss.variable_manager["v1"].decompose("v1"))
-        >>> (3.0, 'N')
+        >>> (3.0, "N")
 
         """
         return decompose_variable_value(self.evaluated_value)
@@ -1732,9 +1737,9 @@ class Variable(object):
 
         """
         new_unit_system = unit_system(units)
-        assert (
-            new_unit_system == self.unit_system
-        ), "New unit system {0} is inconsistent with the current unit system {1}."
+        assert new_unit_system == self.unit_system, (
+            "New unit system {0} is inconsistent with the current unit system {1}."
+        )
         self._units = units
         return self
 
@@ -1757,9 +1762,9 @@ class Variable(object):
         >>> from pyedb.dotnet.database.Variables import Variable
 
         >>> v = Variable("10W")
-        >>> assert v.format("f") == '10.000000W'
-        >>> assert v.format("06.2f") == '010.00W'
-        >>> assert v.format("6.2f") == ' 10.00W'
+        >>> assert v.format("f") == "10.000000W"
+        >>> assert v.format("06.2f") == "010.00W"
+        >>> assert v.format("6.2f") == " 10.00W"
 
         """
         return ("{0:" + format + "}{1}").format(self.numeric_value, self._units)
@@ -1850,9 +1855,9 @@ class Variable(object):
 
         """
         assert isinstance(other, Variable), "You can only add a variable with another variable."
-        assert (
-            self.unit_system == other.unit_system
-        ), "Only ``Variable`` objects with the same unit system can be added."
+        assert self.unit_system == other.unit_system, (
+            "Only ``Variable`` objects with the same unit system can be added."
+        )
         result_value = self.value + other.value
         result_units = SI_UNITS[self.unit_system]
         # If the units of the two operands are different, return SI-Units
@@ -1891,9 +1896,9 @@ class Variable(object):
 
         """
         assert isinstance(other, Variable), "You can only subtract a variable from another variable."
-        assert (
-            self.unit_system == other.unit_system
-        ), "Only ``Variable`` objects with the same unit system can be subtracted."
+        assert self.unit_system == other.unit_system, (
+            "Only ``Variable`` objects with the same unit system can be subtracted."
+        )
         result_value = self.value - other.value
         result_units = SI_UNITS[self.unit_system]
         # If the units of the two operands are different, return SI-Units

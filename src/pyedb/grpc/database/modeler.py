@@ -23,6 +23,7 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
+
 import math
 
 from ansys.edb.core.geometry.arc_data import ArcData as GrpcArcData
@@ -407,7 +408,7 @@ class Modeler(object):
         --------
 
         >>> poly = database.modeler.get_polygons_by_layer("GND")
-        >>> points  = database.modeler.get_polygon_points(poly[0])
+        >>> points = database.modeler.get_polygon_points(poly[0])
 
         """
         points = []
@@ -1243,7 +1244,7 @@ class Modeler(object):
         new_poly = poly.polygon_data.defeature(tol=tolerance)
         if not new_poly.points:
             self._pedb.logger.error(
-                f"Defeaturing on polygon {poly.id} returned empty polygon, tolerance threshold " f"might too large. "
+                f"Defeaturing on polygon {poly.id} returned empty polygon, tolerance threshold might too large. "
             )
             return False
         poly.polygon_data = new_poly

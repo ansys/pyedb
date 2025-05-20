@@ -23,6 +23,7 @@
 """
 This module contains the `EdbPadstacks` class.
 """
+
 import math
 import warnings
 
@@ -286,7 +287,7 @@ class Padstacks(object):
             List of all layout pin groups.
         """
         warnings.warn(
-            "`pingroups` is deprecated and is now located here " "`pyedb.grpc.core.layout.pin_groups` instead.",
+            "`pingroups` is deprecated and is now located here `pyedb.grpc.core.layout.pin_groups` instead.",
             DeprecationWarning,
         )
         return self._layout.pin_groups

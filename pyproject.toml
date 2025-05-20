@@ -92,6 +92,11 @@ Discussions = "https://github.com/ansys/pyedb/discussions"
 [tool.ruff]
 line-length = 120
 
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+
 [tool.ruff.lint]
 select = [
     "I" # isort, see https://docs.astral.sh/ruff/rules/#isort-i

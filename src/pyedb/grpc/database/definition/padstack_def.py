@@ -717,7 +717,7 @@ class PadstackDef(GrpcPadstackDef):
                         s3d.add_member(cloned_circle2)
                         if not self.data.material.value:
                             self._pedb.logger.warning(
-                                f"Padstack definution {self.name} has no material defined." f"Defaulting to copper"
+                                f"Padstack definution {self.name} has no material defined.Defaulting to copper"
                             )
                             self.data.material = "copper"
                         s3d.set_material(self.data.material.value)

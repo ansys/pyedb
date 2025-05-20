@@ -23,6 +23,7 @@
 """
 This module contains the ``EdbHfss`` class.
 """
+
 import math
 
 from pyedb.dotnet.database.edb_data.hfss_extent_info import HfssExtentInfo
@@ -174,8 +175,8 @@ class EdbHfss(object):
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> pins =edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.hfss.create_circuit_port_on_pin(pins[0], pins[1],50,"port_name")
+        >>> pins = edbapp.components.get_pin_from_component("U2A5")
+        >>> edbapp.hfss.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
 
         Returns
         -------
@@ -211,8 +212,8 @@ class EdbHfss(object):
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> pins =edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.hfss.create_voltage_source_on_pin(pins[0], pins[1],50,"source_name")
+        >>> pins = edbapp.components.get_pin_from_component("U2A5")
+        >>> edbapp.hfss.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
         """
         return self._pedb.siwave.create_voltage_source_on_pin(pos_pin, neg_pin, voltage_value, phase_value, source_name)
 
@@ -242,8 +243,8 @@ class EdbHfss(object):
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> pins =edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.hfss.create_current_source_on_pin(pins[0], pins[1],50,"source_name")
+        >>> pins = edbapp.components.get_pin_from_component("U2A5")
+        >>> edbapp.hfss.create_current_source_on_pin(pins[0], pins[1], 50, "source_name")
         """
 
         return self._pedb.siwave.create_current_source_on_pin(pos_pin, neg_pin, current_value, phase_value, source_name)
@@ -272,8 +273,8 @@ class EdbHfss(object):
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> pins =edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.hfss.create_resistor_on_pin(pins[0], pins[1],50,"res_name")
+        >>> pins = edbapp.components.get_pin_from_component("U2A5")
+        >>> edbapp.hfss.create_resistor_on_pin(pins[0], pins[1], 50, "res_name")
         """
         return self._pedb.siwave.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
 

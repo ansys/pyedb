@@ -154,8 +154,8 @@ class Edb(EdbInit):
 
     Add a new variable named "s1" to the ``Edb`` instance.
 
-    >>> app['s1'] = "0.25 mm"
-    >>> app['s1']
+    >>> app["s1"] = "0.25 mm"
+    >>> app["s1"]
     >>> 0.00025
 
     Create an ``Edb`` object and open the specified project.
@@ -1206,7 +1206,7 @@ class Edb(EdbInit):
                         continue
         except:
             self.logger.warning(
-                f"Failed to find connected objects on layout_obj " f"{layout_object_instance.layout_obj.id}, skipping."
+                f"Failed to find connected objects on layout_obj {layout_object_instance.layout_obj.id}, skipping."
             )
             pass
         return temp
@@ -1478,7 +1478,7 @@ class Edb(EdbInit):
                 command = [
                     anstranslator_full_path,
                     inputGDS,
-                    f'-o="{control_file_temp}"' f'-t="{tech_file}"',
+                    f'-o="{control_file_temp}"-t="{tech_file}"',
                     f'-g="{map_file}"',
                     f'-f="{layer_filter}"',
                 ]
@@ -1826,7 +1826,7 @@ class Edb(EdbInit):
         Examples
         --------
         >>> from pyedb import Edb
-        >>> edb = Edb(r'C:\\test.aedb', edbversion="2022.2")
+        >>> edb = Edb(r"C:\\test.aedb", edbversion="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
         >>> start = time.time()
@@ -1836,7 +1836,7 @@ class Edb(EdbInit):
         >>>           signal_list.append(net)
         >>> power_list = ["PGND"]
         >>> edb.cutout(signal_list=signal_list, reference_list=power_list, extent_type="Conforming")
-        >>> end_time = str((time.time() - start)/60)
+        >>> end_time = str((time.time() - start) / 60)
         >>> edb.logger.info("Total legacy cutout time in min %s", end_time)
         >>> edb.nets.plot(signal_list, None, color_by_net=True)
         >>> edb.nets.plot(power_list, None, color_by_net=True)
@@ -2595,7 +2595,7 @@ class Edb(EdbInit):
         >>> from pyedb import Edb
         >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2023.2")
 
-        >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
+        >>> options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
         >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
         >>> edb.export_hfss(r"C:\temp")
         """
@@ -2637,7 +2637,7 @@ class Edb(EdbInit):
 
         >>> from pyedb import Edb
         >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
-        >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
+        >>> options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
         >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
         >>> edb.export_q3d(r"C:\temp")
         """
@@ -2689,7 +2689,7 @@ class Edb(EdbInit):
 
         >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
 
-        >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
+        >>> options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
         >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
         >>> edb.export_maxwell(r"C:\temp")
         """
@@ -2840,8 +2840,8 @@ class Edb(EdbInit):
          >>> from pyedb import Edb
          >>> edb_app = Edb()
          >>> boolean_1, ant_length = edb_app.add_project_variable("my_local_variable", "1cm")
-         >>> print(edb_app["$my_local_variable"])    #using getitem
-         >>> edb_app["$my_local_variable"] = "1cm"   #using setitem
+         >>> print(edb_app["$my_local_variable"])  # using getitem
+         >>> edb_app["$my_local_variable"] = "1cm"  # using setitem
 
         """
         if not variable_name.startswith("$"):
@@ -2876,8 +2876,8 @@ class Edb(EdbInit):
         >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> boolean_1, ant_length = edb_app.add_design_variable("my_local_variable", "1cm")
-        >>> print(edb_app["my_local_variable"])    #using getitem
-        >>> edb_app["my_local_variable"] = "1cm"   #using setitem
+        >>> print(edb_app["my_local_variable"])  # using getitem
+        >>> edb_app["my_local_variable"] = "1cm"  # using setitem
         >>> boolean_2, para_length = edb_app.change_design_variable_value("my_parameter", "1m", is_parameter=True
         >>> boolean_3, project_length = edb_app.change_design_variable_value("$my_project_variable", "1m")
 
@@ -2912,7 +2912,7 @@ class Edb(EdbInit):
         >>> edb_app = Edb()
         >>> boolean, ant_length = edb_app.add_design_variable("ant_length", "1cm")
         >>> boolean, ant_length = edb_app.change_design_variable_value("ant_length", "1m")
-        >>> print(edb_app["ant_length"])    #using getitem
+        >>> print(edb_app["ant_length"])  # using getitem
         """
         if self.variable_exists(variable_name):
             if variable_name in self.db.get_all_variable_names():
@@ -3110,7 +3110,7 @@ class Edb(EdbInit):
 
         """
         warnings.warn(
-            "`create_hfss_setup` is deprecated and is now located here " "`pyedb.grpc.core.hfss.add_setup` instead.",
+            "`create_hfss_setup` is deprecated and is now located here `pyedb.grpc.core.hfss.add_setup` instead.",
             DeprecationWarning,
         )
         return self._hfss.add_setup(
@@ -3193,11 +3193,13 @@ class Edb(EdbInit):
         >>> from pyedb import Edb
         >>> edbapp = Edb()
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
-        >>> setup1.add_frequency_sweep(frequency_sweep=[
-        ...                           ["linear count", "0", "1kHz", 1],
-        ...                           ["log scale", "1kHz", "0.1GHz", 10],
-        ...                           ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-        ...                           ])
+        >>> setup1.add_frequency_sweep(
+        ...     frequency_sweep=[
+        ...         ["linear count", "0", "1kHz", 1],
+        ...         ["log scale", "1kHz", "0.1GHz", 10],
+        ...         ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+        ...     ]
+        ... )
         """
         if not name:
             name = generate_unique_name("Siwave_SYZ")
@@ -3969,8 +3971,7 @@ class Edb(EdbInit):
         ]
         if not polys:
             self.logger.error(
-                f"No polygon found with voids on layer {reference_layer} during model creation for "
-                f"arbitrary wave ports"
+                f"No polygon found with voids on layer {reference_layer} during model creation for arbitrary wave ports"
             )
             return False
         void_padstacks = []
@@ -3983,7 +3984,7 @@ class Edb(EdbInit):
 
         if not void_padstacks:
             self.logger.error(
-                "No padstack instances found inside evaluated voids during model creation for arbitrary" "waveports"
+                "No padstack instances found inside evaluated voids during model creation for arbitrarywaveports"
             )
             return False
         cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion, restart_rpc_server=True)

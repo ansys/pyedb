@@ -23,6 +23,7 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
+
 from typing import Union
 
 from ansys.edb.core.layout.layout import Layout as GrpcLayout

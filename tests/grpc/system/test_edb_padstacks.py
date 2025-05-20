@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Tests related to Edb padstacks
-"""
+"""Tests related to Edb padstacks"""
+
 import os
 
 import pytest
