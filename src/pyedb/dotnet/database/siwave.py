@@ -386,21 +386,21 @@ class EdbSiwave(object):
         """
 
         voltage_source = VoltageSource()
-        voltage_source.positive_node.net = pos_pin.GetNet().GetName()
-        voltage_source.negative_node.net = neg_pin.GetNet().GetName()
+        voltage_source.positive_node.net = pos_pin.net_name
+        voltage_source.negative_node.net = neg_pin.net_name
         voltage_source.magnitude = voltage_value
         voltage_source.phase = phase_value
         if not source_name:
             source_name = "VSource_{}_{}_{}_{}".format(
-                pos_pin.GetComponent().GetName(),
-                pos_pin.GetNet().GetName(),
-                neg_pin.GetComponent().GetName(),
-                neg_pin.GetNet().GetName(),
+                pos_pin.component.name,
+                pos_pin.net_name,
+                neg_pin.component.name,
+                neg_pin.net_name,
             )
         voltage_source.name = source_name
-        voltage_source.positive_node.component_node = pos_pin.GetComponent()
+        voltage_source.positive_node.component_node = pos_pin.component
         voltage_source.positive_node.node_pins = pos_pin
-        voltage_source.negative_node.component_node = neg_pin.GetComponent()
+        voltage_source.negative_node.component_node = neg_pin.component
         voltage_source.negative_node.node_pins = neg_pin
         return self._create_terminal_on_pins(voltage_source)
 
