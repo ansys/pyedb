@@ -132,15 +132,12 @@ class TestClass:
         assert edb.components.instances["R1"].pins["1"].component_pin == "1"
 
         assert not edb.components.instances["R1"].pins["1"].component.is_null
-        # TODO add property placement_layer in grpc to be compatible with dotnet.
         assert (
             edb.components.instances["R1"].pins["1"].placement_layer == edb.components.instances["R1"].placement_layer
         )
-        # TODO add property upper_elevation and lower_elevation properties in grpc to be compatible.
         assert (
             edb.components.instances["R1"].pins["1"].upper_elevation == edb.components.instances["R1"].upper_elevation
         )
-        # TODO return top_bottom_association properties in grpc to be compatible.
         assert (
             edb.components.instances["R1"].pins["1"].top_bottom_association
             == edb.components.instances["R1"].top_bottom_association

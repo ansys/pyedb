@@ -261,21 +261,21 @@ class EdbSiwave(object):
         >>> edbapp.siwave.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
         """
         circuit_port = CircuitPort()
-        circuit_port.positive_node.net = pos_pin.GetNet().GetName()
-        circuit_port.negative_node.net = neg_pin.GetNet().GetName()
+        circuit_port.positive_node.net = pos_pin.net_name
+        circuit_port.negative_node.net = neg_pin.net_name
         circuit_port.impedance = impedance
 
         if not port_name:
             port_name = "Port_{}_{}_{}_{}".format(
-                pos_pin.GetComponent().GetName(),
-                pos_pin.GetNet().GetName(),
-                neg_pin.GetComponent().GetName(),
-                neg_pin.GetNet().GetName(),
+                pos_pin.component.name,
+                pos_pin.net_name,
+                neg_pin.component.name,
+                neg_pin.net_name,
             )
         circuit_port.name = port_name
-        circuit_port.positive_node.component_node = pos_pin.GetComponent()
+        circuit_port.positive_node.component_node = pos_pin.component
         circuit_port.positive_node.node_pins = pos_pin
-        circuit_port.negative_node.component_node = neg_pin.GetComponent()
+        circuit_port.negative_node.component_node = neg_pin.component
         circuit_port.negative_node.node_pins = neg_pin
         return self._create_terminal_on_pins(circuit_port)
 
