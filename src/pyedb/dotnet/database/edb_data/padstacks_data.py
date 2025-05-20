@@ -1709,10 +1709,7 @@ class EDBPadstackInstance(Primitive):
     @property
     def name(self):
         """Padstack Instance Name. If it is a pin, the syntax will be like in AEDT ComponentName-PinName."""
-        if self.is_pin:
-            return self.aedt_name
-        else:
-            return self.component_pin
+        return self.component_pin
 
     @name.setter
     def name(self, value):
