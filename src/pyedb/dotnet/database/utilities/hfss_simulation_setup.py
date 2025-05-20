@@ -336,7 +336,7 @@ class HfssSimulationSetup(SimulationSetup):
 
         Parameters
         ----------
-        frequencies : list, tuple, optional
+        frequencies : list, optional
             List or tuple of adaptive frequencies. The default is ``5GHz``.
         max_num_passes : int, optional
             Maximum number of passes. Default is ``10``.
@@ -350,9 +350,8 @@ class HfssSimulationSetup(SimulationSetup):
         """
         self.adaptive_settings.adapt_type = "kMultiFrequencies"
         self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
-        for i in frequencies:
-            if not self.adaptive_settings.add_adaptive_frequency_data(i, max_num_passes, max_delta_s):
-                return False
+        if not self.adaptive_settings.add_multi_adaptive_frequency_data(frequencies, max_num_passes, max_delta_s):
+            return False
         return True
 
     def set_solution_broadband(
