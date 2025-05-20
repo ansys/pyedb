@@ -30,8 +30,7 @@ import os
 import re
 import warnings
 
-from ansys.edb.core.definition.die_property import DieOrientation as GrpDieOrientation
-from ansys.edb.core.definition.die_property import DieType as GrpcDieType
+from ansys.edb.core.definition.die_property import DieOrientation as GrpDieOrientation, DieType as GrpcDieType
 from ansys.edb.core.definition.solder_ball_property import (
     SolderballShape as GrpcSolderballShape,
 )
@@ -1080,8 +1079,7 @@ class Components(object):
     def _get_component_definition(self, name, pins):
         component_definition = ComponentDef.find(self._db, name)
         if component_definition.is_null:
-            from ansys.edb.core.layout.cell import Cell as GrpcCell
-            from ansys.edb.core.layout.cell import CellType as GrpcCellType
+            from ansys.edb.core.layout.cell import Cell as GrpcCell, CellType as GrpcCellType
 
             foot_print_cell = GrpcCell.create(self._pedb.active_db, GrpcCellType.FOOTPRINT_CELL, name)
             component_definition = ComponentDef.create(self._db, name, fp=foot_print_cell)

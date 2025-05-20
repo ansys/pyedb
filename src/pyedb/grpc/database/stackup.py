@@ -40,13 +40,12 @@ from ansys.edb.core.definition.solder_ball_property import (
 from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
 from ansys.edb.core.hierarchy.cell_instance import CellInstance as GrpcCellInstance
 from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
-from ansys.edb.core.layer.layer import LayerType as GrpcLayerType
-from ansys.edb.core.layer.layer import TopBottomAssociation as GrpcTopBottomAssociation
+from ansys.edb.core.layer.layer import LayerType as GrpcLayerType, TopBottomAssociation as GrpcTopBottomAssociation
 from ansys.edb.core.layer.layer_collection import (
+    LayerCollection as GrpcLayerCollection,
     LayerCollectionMode as GrpcLayerCollectionMode,
+    LayerTypeSet as GrpcLayerTypeSet,
 )
-from ansys.edb.core.layer.layer_collection import LayerCollection as GrpcLayerCollection
-from ansys.edb.core.layer.layer_collection import LayerTypeSet as GrpcLayerTypeSet
 from ansys.edb.core.layer.stackup_layer import StackupLayer as GrpcStackupLayer
 from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
 from ansys.edb.core.utility.transform3d import Transform3D as GrpcTransform3D

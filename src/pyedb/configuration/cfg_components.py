@@ -145,8 +145,8 @@ class CfgComponent(CfgBase):
         def _set_ic_die_properties_to_edb(self):
             from ansys.edb.core.definition.die_property import (
                 DieOrientation as GrpcDieOrientation,
+                DieType as GrpcDieType,
             )
-            from ansys.edb.core.definition.die_property import DieType as GrpcDieType
             from ansys.edb.core.utility.value import Value as GrpcValue
 
             cp = self.pyedb_obj.component_property

@@ -1242,11 +1242,7 @@ class Hfss(object):
         )
         from ansys.edb.core.simulation_setup.simulation_setup import (
             Distribution as GrpcDistribution,
-        )
-        from ansys.edb.core.simulation_setup.simulation_setup import (
             FrequencyData as GrpcFrequencyData,
-        )
-        from ansys.edb.core.simulation_setup.simulation_setup import (
             SweepData as GrpcSweepData,
         )
 

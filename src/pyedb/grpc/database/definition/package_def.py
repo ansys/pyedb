@@ -222,9 +222,9 @@ class PackageDef(GrpcPackageDef):
             Fin thickness.
         """
         from ansys.edb.core.utility.heat_sink import (
+            HeatSink as GrpcHeatSink,
             HeatSinkFinOrientation as GrpcHeatSinkFinOrientation,
         )
-        from ansys.edb.core.utility.heat_sink import HeatSink as GrpcHeatSink
 
         if fin_orientation == "x_oriented":
             fin_orientation = GrpcHeatSinkFinOrientation.X_ORIENTED

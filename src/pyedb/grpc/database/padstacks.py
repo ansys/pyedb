@@ -28,20 +28,12 @@ import warnings
 
 from ansys.edb.core.definition.padstack_def_data import (
     PadGeometryType as GrpcPadGeometryType,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     PadstackDefData as GrpcPadstackDefData,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     PadstackHoleRange as GrpcPadstackHoleRange,
-)
-from ansys.edb.core.definition.padstack_def_data import (
+    PadType as GrpcPadType,
     SolderballPlacement as GrpcSolderballPlacement,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     SolderballShape as GrpcSolderballShape,
 )
-from ansys.edb.core.definition.padstack_def_data import PadType as GrpcPadType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.utility.value import Value as GrpcValue

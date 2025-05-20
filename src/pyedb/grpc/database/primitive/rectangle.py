@@ -22,9 +22,9 @@
 
 
 from ansys.edb.core.primitive.rectangle import (
+    Rectangle as GrpcRectangle,
     RectangleRepresentationType as GrpcRectangleRepresentationType,
 )
-from ansys.edb.core.primitive.rectangle import Rectangle as GrpcRectangle
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.primitive.primitive import Primitive

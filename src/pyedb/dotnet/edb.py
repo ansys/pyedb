@@ -42,7 +42,6 @@ import rtree
 
 from pyedb.configuration.configuration import Configuration
 import pyedb.dotnet
-from pyedb.dotnet.database.Variables import decompose_variable_value
 from pyedb.dotnet.database.cell.layout import Layout
 from pyedb.dotnet.database.cell.terminal.terminal import Terminal
 from pyedb.dotnet.database.components import Components
@@ -92,6 +91,7 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
     SiwaveSimulationSetup,
 )
+from pyedb.dotnet.database.Variables import decompose_variable_value
 from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import (
     generate_unique_name,

@@ -633,8 +633,7 @@ class Edb(EdbInit):
         -------
         bool: `True` when succeed `False` if failed.
         """
-        from ansys.edb.core.layout.cell import Cell as GrpcCell
-        from ansys.edb.core.layout.cell import CellType as GrpcCellType
+        from ansys.edb.core.layout.cell import Cell as GrpcCell, CellType as GrpcCellType
 
         self.standalone = self.standalone
         n_try = 10

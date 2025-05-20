@@ -35,8 +35,10 @@ Examples
 
 """
 
-from __future__ import absolute_import  # noreorder
-from __future__ import division
+from __future__ import (
+    absolute_import,  # noreorder
+    division,
+)
 
 import os
 import re
