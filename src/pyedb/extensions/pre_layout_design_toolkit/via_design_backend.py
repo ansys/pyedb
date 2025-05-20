@@ -1,10 +1,15 @@
-import os
+import toml
 import re
+import tempfile
+from pathlib import Path
 from copy import deepcopy as copy
 from typing import Union
 
 import numpy as np
 import pandas as pd
+
+from pyedb import Edb
+import ansys.aedt.core
 
 
 def create_variable(obj, name_suffix, value):
@@ -42,7 +47,7 @@ class Trace:
         self.end_cap_style = end_cap_style
         self.port = port
 
-        self.voids = []
+        # self.voids = []
 
         self.incremental_path = [
             i if idx == 0 else [f"{i[0]}*{-1 if self.flip_dx else 1}", f"{i[1]}*{-1 if self.flip_dy else 1}"] for idx, i
@@ -73,7 +78,8 @@ class Trace:
         trace_void["width"] = f"{self.width}+2*{self.clearance}"
         trace_void["end_cap_style"] = "round"
         cfg["modeler"]["traces"].append(trace_void)
-        self.voids.append(trace_void)
+        self.p_via.p_signal.p_board.voids.append(trace_void)
+        # self.voids.append(trace_void)
 
         if self.port is not None:
             port = self.get_port_cfg()
@@ -104,12 +110,12 @@ class Signal:
         def y(self):
             return f"{self.base_y}+{self.dy}"
 
-        @property
+        """@property
         def voids(self):
             voids = self._voids
             for trace in self.traces:
                 voids.extend(trace.voids)
-            return voids
+            return voids"""
 
         def __init__(self,
                      p_signal,
@@ -151,7 +157,7 @@ class Signal:
 
             self.traces = []
             self.fanout_traces = []
-            self._voids = []
+            # self._voids = []
 
             if connection_trace is not None:
                 trace = Trace(
@@ -232,7 +238,8 @@ class Signal:
                     "radius": f"{self.anti_pad_diameter}/2",
                 }
                 cfg["modeler"]["planes"].append(anti_pad)
-                self.voids.append(anti_pad)
+                # self.voids.append(anti_pad)
+                self.p_signal.p_board.voids.append(anti_pad)
             else:
                 start_layer_idx = self.conductor_layers.index(self.start_layer)
                 stop_layer_idx = self.conductor_layers.index(self.stop_layer)
@@ -246,14 +253,15 @@ class Signal:
                         "radius": f"{self.anti_pad_diameter}/2",
                     }
                     cfg["modeler"]["planes"].append(anti_pad)
-                    self.voids.append(anti_pad)
+                    # self.voids.append(anti_pad)
+                    self.p_signal.p_board.voids.append(anti_pad)
 
-    @property
+    """@property
     def voids(self):
         voids = []
         for via in self.vias:
             voids.extend(via.voids)
-        return voids
+        return voids"""
 
     def __init__(self, p_board, signal_name, name_suffix: Union[None, str], base_x, base_y, stacked_vias,
                  invert_flip_dx, invert_flip_dy):
@@ -266,7 +274,7 @@ class Signal:
         self.vias = []
         x = self.base_x
         y = self.base_y
-        for i in stacked_vias:
+        for v_idx, i in enumerate(stacked_vias):
             dx = i['dx']
             dy = i["dy"]
 
@@ -283,7 +291,7 @@ class Signal:
             if self.net_name.startswith("GND"):
                 via = self.GroundVia(
                     p_signal=self,
-                    name=f"{self.net_name}_{start_layer}_{stop_layer}",
+                    name=f"{self.net_name}_{start_layer}_{stop_layer}_{v_idx}",
                     net_name=self.net_name,
                     padstack_def=i["padstack_def"],
                     start_layer=start_layer,
@@ -338,7 +346,7 @@ class DiffSignal:
         self.stacked_vias = stacked_vias
 
         self.variables = []
-        self.voids = []
+        # self.voids = []
         self.diff_ports = []
 
         p_x, p_y = self.p_board.get_signal_location(self.signal_p_name)[0]
@@ -386,7 +394,6 @@ class DiffSignal:
             invert_flip_dy=False,
         )
 
-        diff_ports = {}
         for v in self.signal_p.vias:
             for t in v.fanout_traces:
                 var_sep = vars_sep[t.layer]
@@ -430,20 +437,22 @@ class DiffSignal:
                 diff_port = {
                     "name": f"{m1.group(1)}_{m1.group(3)}",
                     "type": "diff_wave_port",
-                    "positive_terminal": {"primitive_name": port_p["primitive_name"], "point_on_edge": port_p["point_on_edge"]},
-                    "negative_terminal": {"primitive_name": port_n["primitive_name"], "point_on_edge": port_n["point_on_edge"]},
+                    "positive_terminal": {"primitive_name": port_p["primitive_name"],
+                                          "point_on_edge": port_p["point_on_edge"]},
+                    "negative_terminal": {"primitive_name": port_n["primitive_name"],
+                                          "point_on_edge": port_n["point_on_edge"]},
                     "horizontal_extent_factor": port_p["horizontal_extent_factor"],
                     "vertical_extent_factor": port_n["vertical_extent_factor"],
-                    "pec_launch_width": "0,2mm",
+                    "pec_launch_width": "0.02mm",
                 }
                 self.diff_ports.append(diff_port)
 
     def populate_config(self, cfg):
         cfg["variables"].extend(self.variables)
         self.signal_p.populate_config(cfg)
-        self.voids.extend(self.signal_p.voids)
+        # self.voids.extend(self.signal_p.voids)
         self.signal_n.populate_config(cfg)
-        self.voids.extend(self.signal_n.voids)
+        # self.voids.extend(self.signal_n.voids)
         cfg["ports"].extend(self.diff_ports)
 
 
@@ -453,6 +462,7 @@ class Board:
         return [i["name"] for i in self.stackup if i["type"] == "signal"]
 
     def __init__(self, stackup, padstack_defs, outline_extent, pitch, pin_map, signals, differential_signals):
+        self.voids = []
         self.variables = [{"name": "pitch", "value": pitch, "description": ""}]
 
         self.stackup = stackup
@@ -483,7 +493,7 @@ class Board:
             for x, y in self.get_signal_location(name):
                 s = Signal(
                     p_board=self,
-                    signal_name=name,
+                    signal_name=name if name is not "GND" else f"{name}_{x}{y}",
                     name_suffix=None,
                     base_x=f"{x}*pitch",
                     base_y=f"{y}*pitch",
@@ -528,14 +538,14 @@ class Board:
             }
             cfg["modeler"]["padstack_definitions"].append(pdef)
 
-        voids = []
+        # voids = []
         for signal in self.signals:
             signal.populate_config(cfg)
-            voids.extend(signal.voids)
+            # voids.extend(signal.voids)
 
         for diff_signal in self.differential_signals:
             diff_signal.populate_config(cfg)
-            voids.extend(diff_signal.voids)
+            # voids.extend(diff_signal.voids)
 
         matrix = np.array(self.pin_map)
         y_size_count, x_size_count = matrix.shape
@@ -553,8 +563,62 @@ class Board:
                 "upper_right_point": [x_upper_right, y_upper_right],
                 "voids": []
             }
-            for v in voids:
+            for v in self.voids:
                 if v["layer"] == l:
                     p["voids"].append(v["name"])
             cfg["modeler"]["planes"].append(p)
-        return
+
+
+class ViaDesignBackend:
+    _OUTPUT_DIR = None
+
+    @property
+    def output_dir(self):
+        if self._OUTPUT_DIR is None:
+            output_dir = self.cfg["General"]["output_dir"]
+            if output_dir == "":
+                self._OUTPUT_DIR = Path(tempfile.TemporaryDirectory(suffix=".ansys").name)
+            else:
+                self._OUTPUT_DIR = Path(output_dir)
+        return self._OUTPUT_DIR
+
+    def __init__(self, cfg):
+        cfg_json = {
+            "stackup": {
+                "layers": [],
+                "materials": []
+            },
+            "variables": [],
+            "ports": [],
+            "modeler": {
+                "traces": [],
+                "planes": [],
+                "padstack_definitions": [],
+                "padstack_instances": []
+            }
+        }
+
+        self.cfg = toml.load(cfg) if isinstance(cfg, str) else cfg
+        self.version = self.cfg["General"]["version"]
+        outline_extent = self.cfg["General"]["outline_extent"]
+        pitch = self.cfg["General"]["pitch"]
+
+        board = Board(
+            stackup=self.cfg["stackup"],
+            padstack_defs=self.cfg["padstack_defs"],
+            outline_extent=outline_extent,
+            pitch=pitch,
+            pin_map=self.cfg["pin_map"],
+            signals=self.cfg["signals"],
+            differential_signals=self.cfg["differential_signals"],
+        )
+        board.populate_config(cfg_json)
+
+        self.app = Edb(edbpath=str((Path(self.output_dir) / self.cfg["Title"]).with_suffix(".aedb")), edbversion=self.version)
+        self.app.configuration.load(cfg_json, apply_file=True)
+        self.app.save_edb()
+        self.app.close_edb()
+
+    def launch_h3d(self):
+        h3d = ansys.aedt.core.Hfss3dLayout(project=self.app.edbpath, version=self.version)
+        h3d.release_desktop()

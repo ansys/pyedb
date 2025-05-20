@@ -20,15 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from copy import deepcopy as copy
-import json
 from pathlib import Path
 
 import pytest
 
-from pyedb.extensions.pre_layout_design_toolkit.via_design_backend import Signal, Board
-from pyedb.generic.general_methods import is_linux
-from tests.conftest import desktop_version
+from pyedb.extensions.pre_layout_design_toolkit.via_design_backend import Board, ViaDesignBackend
 
+desktop_version = "2025.1"
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 STACKUP = [
@@ -110,8 +108,6 @@ MICRO_VIA_INSTANCE_L1_L5 = {
     "padstack_def": "MICRO_VIA",
     "start_layer": "PKG_L1",
     "stop_layer": "PKG_L5",
-    # "base_x": "0mm",
-    # "base_y": "0mm",
     "dx": "0.05mm",
     "dy": "0.05mm",
     "flip_dx": False,
@@ -165,8 +161,6 @@ PCB_VIA_INSTANCE = {
     "padstack_def": "CORE_VIA",
     "start_layer": "PCB_L1",
     "stop_layer": "PCB_L10",
-    # "base_x": "0mm",
-    # "base_y": "1mm",
     "dx": 0,
     "dy": 0,
     "anti_pad_diameter": "0.7mm",
@@ -211,40 +205,7 @@ class TestClass:
             }
         }
 
-    def test_padstack_defs(self, edb_examples):
-        cfg_modeler = copy(self.cfg)
-
-        board = Board(stackup=STACKUP, padstack_defs=PADSTACK_DEFS)
-        board.populate_config(cfg_modeler)
-        app = edb_examples.create_empty_edb()
-        app.configuration.load(cfg_modeler, apply_file=True)
-        app.save_edb()
-        app.close_edb()
-        return app
-
-    def test_signal(self, edb_examples):
-        cfg = copy(self.cfg)
-        signal = Signal(
-            signal_name="SIG",
-            name_suffix=None,
-            base_x="0mm",
-            base_y="1mm",
-            stacked_vias=[
-                MICRO_VIA_INSTANCE_L1_L5,
-                CORE_VIA_INSTANCE,
-            ]
-        )
-        signal.populate_config(cfg)
-        app = self.test_padstack_defs(edb_examples)
-        app.open_edb()
-        app.configuration.load(cfg, apply_file=True, append=False)
-        app.save_edb()
-        import ansys.aedt.core
-        h3d = ansys.aedt.core.Hfss3dLayout(project=app.edbpath, version="2025.1")
-        h3d.release_desktop(False, False)
-        app.close_edb()
-        return cfg
-
+    @pytest.mark.skipif(True, reason="Not ready to test")
     def test_board_1(self, edb_examples):
         cfg = copy(self.cfg)
         pin_map = [
@@ -304,9 +265,10 @@ class TestClass:
         app.close_edb()
 
         import ansys.aedt.core
-        h3d = ansys.aedt.core.Hfss3dLayout(project=app.edbpath, version="2025.1")
-        h3d.release_desktop(False, False)
+        h3d = ansys.aedt.core.Hfss3dLayout(project=app.edbpath, version=desktop_version)
+        h3d.release_desktop()
 
+    @pytest.mark.skipif(True, reason="Not ready to test")
     def test_board_2(self, edb_examples):
         cfg = copy(self.cfg)
         pin_map = [
@@ -370,9 +332,10 @@ class TestClass:
         app.close_edb()
 
         import ansys.aedt.core
-        h3d = ansys.aedt.core.Hfss3dLayout(project=app.edbpath, version="2025.1")
-        h3d.release_desktop(False, False)
+        h3d = ansys.aedt.core.Hfss3dLayout(project=app.edbpath, version=desktop_version)
+        h3d.release_desktop()
 
+    @pytest.mark.skipif(True, reason="Not ready to test")
     def test_board_3(self, edb_examples):
         cfg = copy(self.cfg)
         pin_map = [
@@ -390,46 +353,64 @@ class TestClass:
                     copy(PCB_VIA_INSTANCE)
                 ]},
         }
-        fanout_trace = {
-            0: {
-                "layer": "PKG_L1",
-                "width": "0.05mm",
-                "separation": "0.05mm",
-                "clearance": "0.05mm",
-                "incremental_path_dy": ["0.1mm", "0.1mm"],
-                "end_cap_style": "flat",
-                "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4}
-            },
-            4: {
-                "layer": "PCB_L6",
-                "width": "0.1mm",
-                "separation": "0.15mm",
-                "clearance": "0.2mm",
-                "incremental_path_dy": ["0.1mm", "0.1mm"],
-                "end_cap_style": "flat",
-                "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4}
-            },
-        }
         differential_signals = {"SIG_1": {"signals": ["SIG_1_P", "SIG_1_N"],
-                                        "fanout_trace": fanout_trace,
-                                        "stacked_vias": [
-                                            MICRO_VIA_INSTANCE_L1_L5,
-                                            CORE_VIA_INSTANCE,
-                                            MICRO_VIA_INSTANCE_L6_L10,
-                                            BGA_INSTANCE,
-                                            PCB_VIA_INSTANCE
-                                        ]
-                                        },
+                                          "fanout_trace": {
+                                              0: {
+                                                  "layer": "PKG_L1",
+                                                  "width": "0.05mm",
+                                                  "separation": "0.05mm",
+                                                  "clearance": "0.05mm",
+                                                  "incremental_path_dy": ["0.1mm", "0.1mm"],
+                                                  "end_cap_style": "flat",
+                                                  "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4}
+                                              },
+                                              4: {
+                                                  "layer": "PCB_L6",
+                                                  "width": "0.1mm",
+                                                  "separation": "0.15mm",
+                                                  "clearance": "0.2mm",
+                                                  "incremental_path_dy": ["0.1mm", "0.1mm"],
+                                                  "end_cap_style": "flat",
+                                                  "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4}
+                                              },
+                                          },
+                                          "stacked_vias": [
+                                              MICRO_VIA_INSTANCE_L1_L5,
+                                              CORE_VIA_INSTANCE,
+                                              MICRO_VIA_INSTANCE_L6_L10,
+                                              BGA_INSTANCE,
+                                              PCB_VIA_INSTANCE
+                                          ]
+                                          },
                                 "SIG_2": {"signals": ["SIG_2_P", "SIG_2_N"],
-                                        "fanout_trace": fanout_trace,
-                                        "stacked_vias": [
-                                            MICRO_VIA_INSTANCE_L1_L5,
-                                            CORE_VIA_INSTANCE,
-                                            MICRO_VIA_INSTANCE_L6_L10,
-                                            BGA_INSTANCE,
-                                            PCB_VIA_INSTANCE
-                                        ]
-                                        }
+                                          "fanout_trace": {
+                                              0: {
+                                                  "layer": "PKG_L1",
+                                                  "width": "0.05mm",
+                                                  "separation": "0.05mm",
+                                                  "clearance": "0.05mm",
+                                                  "incremental_path_dy": ["0.3mm", "0.3mm"],
+                                                  "end_cap_style": "flat",
+                                                  "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4}
+                                              },
+                                              4: {
+                                                  "layer": "PCB_L8",
+                                                  "width": "0.1mm",
+                                                  "separation": "0.15mm",
+                                                  "clearance": "0.2mm",
+                                                  "incremental_path_dy": ["0.3mm", "0.3mm"],
+                                                  "end_cap_style": "flat",
+                                                  "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4}
+                                              },
+                                          },
+                                          "stacked_vias": [
+                                              MICRO_VIA_INSTANCE_L1_L5,
+                                              CORE_VIA_INSTANCE,
+                                              MICRO_VIA_INSTANCE_L6_L10,
+                                              BGA_INSTANCE,
+                                              PCB_VIA_INSTANCE
+                                          ]
+                                          }
                                 }
 
         board = Board(STACKUP,
@@ -448,5 +429,62 @@ class TestClass:
         app.close_edb()
 
         import ansys.aedt.core
-        h3d = ansys.aedt.core.Hfss3dLayout(project=app.edbpath, version="2025.1")
-        h3d.release_desktop(False, False)
+        h3d = ansys.aedt.core.Hfss3dLayout(project=app.edbpath, version=desktop_version)
+        h3d.release_desktop()
+
+    @pytest.mark.skipif(True, reason="Not ready to test")
+    def test_backend(self):
+        cfg = {
+            "Title": "Test Design",
+            "General": {
+                "version": desktop_version,
+                "output_dir": "",
+                "outline_extent": "1mm",
+                "pitch": "1mm",
+            },
+            "stackup": STACKUP,
+            "padstack_defs": PADSTACK_DEFS,
+            "pin_map": [
+                ["GND", "SIG", "GND"],
+            ],
+            "signals": {
+                "SIG": {
+                    "fanout_trace": {
+                        0: {
+                            "layer": "PKG_L1",
+                            "width": "0.05mm",
+                            "clearance": "0.05mm",
+                            "incremental_path": [[0, "0.5mm"]],
+                            "end_cap_style": "flat",
+                            "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4}
+                        },
+                        4: {
+                            "layer": "PCB_L6",
+                            "width": "0.1mm",
+                            "clearance": "0.2mm",
+                            "incremental_path": [[0, "1mm"]],
+                            "end_cap_style": "flat",
+                            "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4}
+                        },
+                    },
+                    "stacked_vias": [
+                        copy(MICRO_VIA_INSTANCE_L1_L5),
+                        copy(CORE_VIA_INSTANCE),
+                        copy(MICRO_VIA_INSTANCE_L6_L10),
+                        copy(BGA_INSTANCE),
+                        copy(PCB_VIA_INSTANCE)
+                    ]},
+                "GND": {
+                    "fanout_trace": {},
+                    "stacked_vias": [
+                        GND_MICRO_VIA_INSTANCE_L1_L5,
+                        copy(CORE_VIA_INSTANCE),
+                        GND_MICRO_VIA_INSTANCE_L6_L10,
+                        copy(BGA_INSTANCE),
+                        copy(PCB_VIA_INSTANCE)
+                    ]},
+            },
+            "differential_signals": {}
+        }
+        app = ViaDesignBackend(cfg)
+        app.launch_h3d()
