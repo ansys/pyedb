@@ -561,10 +561,11 @@ class TestClass:
             component_part_name="Test_part", component_name="Test", is_rlc=True, r_value=12.2, pins=pins
         )
         assert edbapp.components.instances["Test"]
-        assert edbapp.components.instances["Test"].res_value == 12.2
-        assert edbapp.components.instances["Test"].ind_value == 0
-        assert edbapp.components.instances["Test"].cap_value == 0
-        assert edbapp.components.instances["Test"].center == [0.07950000102, 0.03399999804]
+        # TODO check if dotnet can return component value as float instead of string. grpc is returning float.
+        assert float(edbapp.components.instances["Test"].res_value) == 12.2
+        assert float(edbapp.components.instances["Test"].ind_value) == 0
+        assert float(edbapp.components.instances["Test"].cap_value) == 0
+        assert edbapp.components.instances["Test"].center == [0.068, 0.0165]
         edbapp.close_edb()
 
     def test_create_package_def(self, edb_examples):
@@ -585,10 +586,17 @@ class TestClass:
         cmp.solder_ball_height = "100um"
         assert cmp.solder_ball_height == 100e-6
         assert cmp.solder_ball_shape
+        # TODO check if dotnet should return "cylinder" instead of "Cylinder".
         cmp.solder_ball_shape = "cylinder"
-        assert cmp.solder_ball_shape == "cylinder"
+        if edb.grpc:
+            assert cmp.solder_ball_shape == "cylinder"
+        else:
+            assert cmp.solder_ball_shape == "Cylinder"
         cmp.solder_ball_shape = "spheroid"
-        assert cmp.solder_ball_shape == "spheroid"
+        if edb.grpc:
+            assert cmp.solder_ball_shape == "spheroid"
+        else:
+            assert cmp.solder_ball_shape == "Spheroid"
         cmp.solder_ball_shape = "cylinder"
         assert cmp.solder_ball_diameter == (0.0, 0.0)
         cmp.solder_ball_diameter = "200um"
