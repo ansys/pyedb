@@ -1,15 +1,15 @@
-import toml
+from copy import deepcopy as copy
+from pathlib import Path
 import re
 import tempfile
-from pathlib import Path
-from copy import deepcopy as copy
 from typing import Union
 
+import ansys.aedt.core
 import numpy as np
 import pandas as pd
+import toml
 
 from pyedb import Edb
-import ansys.aedt.core
 
 
 def create_variable(obj, name_suffix, value):
@@ -22,19 +22,20 @@ def create_variable(obj, name_suffix, value):
 
 
 class Trace:
-
-    def __init__(self,
-                 p_via,
-                 name,
-                 net_name,
-                 layer,
-                 width,
-                 clearance,
-                 incremental_path: list[list],
-                 flip_dx,
-                 flip_dy,
-                 end_cap_style,
-                 port: Union[dict, None]):
+    def __init__(
+        self,
+        p_via,
+        name,
+        net_name,
+        layer,
+        width,
+        clearance,
+        incremental_path: list[list],
+        flip_dx,
+        flip_dy,
+        end_cap_style,
+        port: Union[dict, None],
+    ):
         self.p_via = p_via
         self.variables = []
         self.name = name
@@ -50,8 +51,9 @@ class Trace:
         # self.voids = []
 
         self.incremental_path = [
-            i if idx == 0 else [f"{i[0]}*{-1 if self.flip_dx else 1}", f"{i[1]}*{-1 if self.flip_dy else 1}"] for idx, i
-            in enumerate(incremental_path)]
+            i if idx == 0 else [f"{i[0]}*{-1 if self.flip_dx else 1}", f"{i[1]}*{-1 if self.flip_dy else 1}"]
+            for idx, i in enumerate(incremental_path)
+        ]
 
         self.path = [self.incremental_path[0]]
         x, y = self.incremental_path[0]
@@ -62,15 +64,17 @@ class Trace:
 
     def populate_config(self, cfg):
         cfg["variables"].extend(self.variables)
-        trace = {"name": self.name,
-                 "layer": self.layer,
-                 "width": self.width,
-                 # "incremental_path": self.incremental_path,
-                 "path": self.path,
-                 "net_name": self.net_name,
-                 "start_cap_style": "round",
-                 "end_cap_style": self.end_cap_style,
-                 "corner_style": "round"}
+        trace = {
+            "name": self.name,
+            "layer": self.layer,
+            "width": self.width,
+            # "incremental_path": self.incremental_path,
+            "path": self.path,
+            "net_name": self.net_name,
+            "start_cap_style": "round",
+            "end_cap_style": self.end_cap_style,
+            "corner_style": "round",
+        }
         cfg["modeler"]["traces"].append(trace)
 
         trace_void = copy(trace)
@@ -101,7 +105,6 @@ class Signal:
     """vias and traces."""
 
     class GroundVia:
-
         @property
         def x(self):
             return f"{self.base_x}+{self.dx}"
@@ -117,24 +120,25 @@ class Signal:
                 voids.extend(trace.voids)
             return voids"""
 
-        def __init__(self,
-                     p_signal,
-                     name,
-                     net_name,
-                     padstack_def,
-                     start_layer,
-                     stop_layer,
-                     base_x,
-                     base_y,
-                     dx,
-                     dy,
-                     flip_dx,
-                     flip_dy,
-                     connection_trace: Union[dict, Trace],
-                     with_solder_ball,
-                     backdrill_parameters,
-                     conductor_layers: list
-                     ):
+        def __init__(
+            self,
+            p_signal,
+            name,
+            net_name,
+            padstack_def,
+            start_layer,
+            stop_layer,
+            base_x,
+            base_y,
+            dx,
+            dy,
+            flip_dx,
+            flip_dy,
+            connection_trace: Union[dict, Trace],
+            with_solder_ball,
+            backdrill_parameters,
+            conductor_layers: list,
+        ):
             self.p_signal = p_signal
             self.variables = []
             self.name = name
@@ -171,7 +175,7 @@ class Signal:
                     flip_dx=flip_dx,
                     flip_dy=flip_dy,
                     end_cap_style="round",
-                    port=None
+                    port=None,
                 )
                 self.traces.append(trace)
 
@@ -221,7 +225,7 @@ class Signal:
                     flip_dx=self.flip_dx,
                     flip_dy=self.flip_dy,
                     end_cap_style=fanout_trace["end_cap_style"],
-                    port=fanout_trace["port"]
+                    port=fanout_trace["port"],
                 )
 
                 self.fanout_traces.append(trace)
@@ -263,8 +267,17 @@ class Signal:
             voids.extend(via.voids)
         return voids"""
 
-    def __init__(self, p_board, signal_name, name_suffix: Union[None, str], base_x, base_y, stacked_vias,
-                 invert_flip_dx, invert_flip_dy):
+    def __init__(
+        self,
+        p_board,
+        signal_name,
+        name_suffix: Union[None, str],
+        base_x,
+        base_y,
+        stacked_vias,
+        invert_flip_dx,
+        invert_flip_dy,
+    ):
         self.p_board = p_board
         self.net_name = signal_name if name_suffix is None else f"{signal_name}_{name_suffix}"
         self.name_suffix = name_suffix
@@ -275,7 +288,7 @@ class Signal:
         x = self.base_x
         y = self.base_y
         for v_idx, i in enumerate(stacked_vias):
-            dx = i['dx']
+            dx = i["dx"]
             dy = i["dy"]
 
             connection_trace = i["connection_trace"]
@@ -308,25 +321,26 @@ class Signal:
                     conductor_layers=self.p_board.conductor_layers,
                 )
             else:
-                via = self.Via(p_signal=self,
-                               name=f"{self.net_name}_{start_layer}_{stop_layer}",
-                               net_name=self.net_name,
-                               padstack_def=i["padstack_def"],
-                               start_layer=start_layer,
-                               stop_layer=stop_layer,
-                               base_x=x,
-                               base_y=y,
-                               anti_pad_diameter=i["anti_pad_diameter"],
-                               dx=dx,
-                               dy=dy,
-                               flip_dx=flip_x_1,
-                               flip_dy=flip_y_1,
-                               connection_trace=connection_trace,
-                               with_solder_ball=i["with_solder_ball"],
-                               backdrill_parameters=i["backdrill_parameters"],
-                               fanout_trace=i["fanout_trace"],
-                               conductor_layers=self.p_board.conductor_layers,
-                               )
+                via = self.Via(
+                    p_signal=self,
+                    name=f"{self.net_name}_{start_layer}_{stop_layer}",
+                    net_name=self.net_name,
+                    padstack_def=i["padstack_def"],
+                    start_layer=start_layer,
+                    stop_layer=stop_layer,
+                    base_x=x,
+                    base_y=y,
+                    anti_pad_diameter=i["anti_pad_diameter"],
+                    dx=dx,
+                    dy=dy,
+                    flip_dx=flip_x_1,
+                    flip_dy=flip_y_1,
+                    connection_trace=connection_trace,
+                    with_solder_ball=i["with_solder_ball"],
+                    backdrill_parameters=i["backdrill_parameters"],
+                    fanout_trace=i["fanout_trace"],
+                    conductor_layers=self.p_board.conductor_layers,
+                )
             x = via.x
             y = via.y
 
@@ -431,16 +445,20 @@ class DiffSignal:
                 t_n = self.signal_n.vias[v_idx].fanout_traces[t_idx]
                 port_n = t_n.get_port_cfg()
                 t_n.port = None
-                pattern = r'^(.*)_([NPnp])_(.*)$'
+                pattern = r"^(.*)_([NPnp])_(.*)$"
                 m1 = re.match(pattern, port_p["name"])
 
                 diff_port = {
                     "name": f"{m1.group(1)}_{m1.group(3)}",
                     "type": "diff_wave_port",
-                    "positive_terminal": {"primitive_name": port_p["primitive_name"],
-                                          "point_on_edge": port_p["point_on_edge"]},
-                    "negative_terminal": {"primitive_name": port_n["primitive_name"],
-                                          "point_on_edge": port_n["point_on_edge"]},
+                    "positive_terminal": {
+                        "primitive_name": port_p["primitive_name"],
+                        "point_on_edge": port_p["point_on_edge"],
+                    },
+                    "negative_terminal": {
+                        "primitive_name": port_n["primitive_name"],
+                        "point_on_edge": port_n["point_on_edge"],
+                    },
                     "horizontal_extent_factor": port_p["horizontal_extent_factor"],
                     "vertical_extent_factor": port_n["vertical_extent_factor"],
                     "pec_launch_width": "0.02mm",
@@ -471,8 +489,9 @@ class Board:
 
         self.pin_map = pin_map
         self.signals = self.parser_signals(signals) if signals is not None else []
-        self.differential_signals = self.parser_differential_signals(
-            differential_signals) if differential_signals is not None else []
+        self.differential_signals = (
+            self.parser_differential_signals(differential_signals) if differential_signals is not None else []
+        )
 
     def get_signal_location(self, signal_name):
         pin_map = pd.DataFrame(self.pin_map)
@@ -521,11 +540,13 @@ class Board:
         for p in self.padstack_defs:
             regular_pad = []
             for layer in self.conductor_layers:
-                regular_pad.append({
-                    "layer_name": layer,
-                    "shape": "circle",
-                    "diameter": p["pad_diameter"],
-                })
+                regular_pad.append(
+                    {
+                        "layer_name": layer,
+                        "shape": "circle",
+                        "diameter": p["pad_diameter"],
+                    }
+                )
             pdef = {
                 "name": p["name"],
                 "material": "copper",
@@ -561,7 +582,7 @@ class Board:
                 "net_name": "GND",
                 "lower_left_point": [x_lower_left, y_lower_left],
                 "upper_right_point": [x_upper_right, y_upper_right],
-                "voids": []
+                "voids": [],
             }
             for v in self.voids:
                 if v["layer"] == l:
@@ -584,18 +605,10 @@ class ViaDesignBackend:
 
     def __init__(self, cfg):
         cfg_json = {
-            "stackup": {
-                "layers": [],
-                "materials": []
-            },
+            "stackup": {"layers": [], "materials": []},
             "variables": [],
             "ports": [],
-            "modeler": {
-                "traces": [],
-                "planes": [],
-                "padstack_definitions": [],
-                "padstack_instances": []
-            }
+            "modeler": {"traces": [], "planes": [], "padstack_definitions": [], "padstack_instances": []},
         }
 
         self.cfg = toml.load(cfg) if isinstance(cfg, str) else cfg
@@ -614,7 +627,9 @@ class ViaDesignBackend:
         )
         board.populate_config(cfg_json)
 
-        self.app = Edb(edbpath=str((Path(self.output_dir) / self.cfg["Title"]).with_suffix(".aedb")), edbversion=self.version)
+        self.app = Edb(
+            edbpath=str((Path(self.output_dir) / self.cfg["Title"]).with_suffix(".aedb")), edbversion=self.version
+        )
         self.app.configuration.load(cfg_json, apply_file=True)
         self.app.save_edb()
         self.app.close_edb()
