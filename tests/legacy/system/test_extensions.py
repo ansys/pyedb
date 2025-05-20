@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pytest
 
-from pyedb.extensions.pre_layout_design_toolkit.via_design_backend import Board, ViaDesignBackend
+from pyedb.extensions.via_design_backend import Board, ViaDesignBackend
 
 desktop_version = "2025.1"
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
