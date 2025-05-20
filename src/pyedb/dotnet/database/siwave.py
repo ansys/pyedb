@@ -434,21 +434,21 @@ class EdbSiwave(object):
         >>> edbapp.siwave.create_current_source_on_pin(pins[0], pins[1], 50, "source_name")
         """
         current_source = CurrentSource()
-        current_source.positive_node.net = pos_pin.GetNet().GetName()
-        current_source.negative_node.net = neg_pin.GetNet().GetName()
+        current_source.positive_node.net = pos_pin.net_name
+        current_source.negative_node.net = neg_pin.net_name
         current_source.magnitude = current_value
         current_source.phase = phase_value
         if not source_name:
             source_name = "ISource_{}_{}_{}_{}".format(
-                pos_pin.GetComponent().GetName(),
-                pos_pin.GetNet().GetName(),
-                neg_pin.GetComponent().GetName(),
-                neg_pin.GetNet().GetName(),
+                pos_pin.component.name,
+                pos_pin.net_name,
+                neg_pin.component.name,
+                neg_pin.net_name,
             )
         current_source.name = source_name
-        current_source.positive_node.component_node = pos_pin.GetComponent()
+        current_source.positive_node.component_node = pos_pin.component
         current_source.positive_node.node_pins = pos_pin
-        current_source.negative_node.component_node = neg_pin.GetComponent()
+        current_source.negative_node.component_node = neg_pin.component
         current_source.negative_node.node_pins = neg_pin
         return self._create_terminal_on_pins(current_source)
 
