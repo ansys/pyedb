@@ -660,17 +660,17 @@ class EDBComponent(Group):
         """
         cmp_type = int(self.edbcomponent.GetComponentType())
         if cmp_type == 1:
-            return "Resistor"
+            return "resistor"
         elif cmp_type == 2:
-            return "Inductor"
+            return "inductor"
         elif cmp_type == 3:
-            return "Capacitor"
+            return "capacitor"
         elif cmp_type == 4:
-            return "IC"
+            return "ic"
         elif cmp_type == 5:
-            return "IO"
+            return "io"
         elif cmp_type == 0:
-            return "Other"
+            return "other"
 
     @type.setter
     def type(self, new_type):
