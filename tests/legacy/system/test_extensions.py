@@ -197,8 +197,7 @@ class TestClass:
             "modeler": {"traces": [], "planes": [], "padstack_definitions": [], "padstack_instances": []},
         }
 
-    @pytest.mark.skipif(True, reason="Not ready to test")
-    def test_board_1(self, edb_examples):
+    def test_board_signal_via(self, edb_examples):
         cfg = copy(self.cfg)
         pin_map = [
             ["GND", "SIG", "GND"],
@@ -256,16 +255,9 @@ class TestClass:
 
         app = edb_examples.create_empty_edb()
         app.configuration.load(cfg, apply_file=True)
-        app.save_edb()
         app.close_edb()
 
-        import ansys.aedt.core
-
-        h3d = ansys.aedt.core.Hfss3dLayout(project=app.edbpath, version=desktop_version)
-        h3d.release_desktop()
-
-    @pytest.mark.skipif(True, reason="Not ready to test")
-    def test_board_2(self, edb_examples):
+    def test_board_diff_pair(self, edb_examples):
         cfg = copy(self.cfg)
         pin_map = [
             ["GND", "SIG_P", "SIG_N", "GND"],
@@ -328,16 +320,10 @@ class TestClass:
 
         app = edb_examples.create_empty_edb()
         app.configuration.load(cfg, apply_file=True)
-        app.save_edb()
         app.close_edb()
 
-        import ansys.aedt.core
-
-        h3d = ansys.aedt.core.Hfss3dLayout(project=app.edbpath, version=desktop_version)
-        h3d.release_desktop()
-
     @pytest.mark.skipif(True, reason="Not ready to test")
-    def test_board_3(self, edb_examples):
+    def test_board_two_diff_pairs(self, edb_examples):
         cfg = copy(self.cfg)
         pin_map = [
             ["GND", "SIG_1_P", "SIG_1_N", "GND"],
