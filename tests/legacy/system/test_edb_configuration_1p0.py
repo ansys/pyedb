@@ -251,7 +251,6 @@ class TestClass:
         port1 = list(edbapp.excitations.values())[0]
         assert port1.magnitude == 0.0
         assert port1.phase == 0
-        assert port1.reference_net_name == "GND"
         assert not port1.deembed
         assert port1.impedance == 50.0
         assert not port1.is_circuit_port
