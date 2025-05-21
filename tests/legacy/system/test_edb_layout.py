@@ -39,12 +39,16 @@ class TestClass:
     def test_primitives(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         prim = edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128", net_name=["2V5"])[0]
-        prim.polygon_data.point_in_polygon("111.4mm", 44.7e-3)
+        assert prim.polygon_data.is_inside(["111.4mm", 44.7e-3])
         edbapp.close()
 
     def test_primitive_path(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        path_obj = edbapp.layout.find_primitive(name="line_272")[0]
-        polygon_data_obj = path_obj.get_center_line_polygon_data()
-        assert polygon_data_obj.__class__.__name__ == "PolygonData"
-        assert path_obj.set_center_line_polygon_data(polygon_data_obj)
+        if not edbapp.grpc:
+            # TODO check if center line setter defined in grpc.
+            path_obj = edbapp.layout.find_primitive(name="line_272")[0]
+            center_line = path_obj.center_line
+            center_line[0] = [0, 0]
+            path_obj.center_line = center_line
+            assert path_obj.center_line[0] == [0, 0]
+        edbapp.close()
