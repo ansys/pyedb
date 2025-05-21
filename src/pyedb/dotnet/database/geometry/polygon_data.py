@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from typing import Union
+import warnings
 
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.point_data import PointData
@@ -132,9 +133,21 @@ class PolygonData:
         poly = self._edb_object.CreateFromArcs(arcs, flag)
         return PolygonData(self._pedb, poly)
 
-    def point_in_polygon(self, x: Union[str, float], y: Union[str, float]) -> bool:
+    def is_inside(self, x: Union[str, float], y: Union[str, float] = None) -> bool:
         """Determines whether a point is inside the polygon."""
+        if isinstance(x, list) and len(x) == 2:
+            y = x[1]
+            x = x[0]
         return self._edb_object.PointInPolygon(self._pedb.point_data(x, y))
+
+    def point_in_polygon(self, x: Union[str, float], y: Union[str, float] = None) -> bool:
+        """Determines whether a point is inside the polygon.
+
+        ..deprecated:: 0.48.0
+           Use: func:`is_inside` instead.
+        """
+        warnings.warn("Use method is_inside instead", DeprecationWarning)
+        return self.is_inside(x, y)
 
     def get_point(self, index):
         """Gets the point at the index as a PointData object."""
