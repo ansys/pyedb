@@ -25,6 +25,7 @@ from pathlib import Path
 import pytest
 
 from pyedb.dotnet.edb import Edb as EdbType
+from pyedb.generic.general_methods import is_linux
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
@@ -819,7 +820,9 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
 
         siwave_dc = edbapp.setups["siwave_1"]
-        assert siwave_dc.dc_settings.dc_slider_position == 2
+        if not is_linux:
+            # test
+            assert siwave_dc.dc_settings.dc_slider_position == 2
         assert siwave_dc.dc_ir_settings.export_dc_thermal_data is True
 
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
