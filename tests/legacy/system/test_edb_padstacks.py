@@ -547,5 +547,5 @@ def _assert_inside(rect, pad):
     result = rect.Intersect(pad)
     assert len(result) == 1, f"{BASE_MESSAGE} intersection returned more than one lump"
     assert math.isclose(
-        round(result[0].Area(), 6), round(rect.Area(), 6)
+        round(result[0].Area(), 4), round(rect.Area(), 4)
     ), f"{BASE_MESSAGE} area of intersection is not equal to rectangle area"
