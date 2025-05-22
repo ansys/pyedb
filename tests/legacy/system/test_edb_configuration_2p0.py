@@ -987,8 +987,9 @@ class TestClass:
                             "name": "Sweep1",
                             "type": "discrete",
                             "frequencies": [
-                                {"distribution": "log_scale", "start": 1e3, "stop": 1e9, "samples": 10},
-                                {"distribution": "linear_count", "start": 1e9, "stop": 10e9, "points": 11},
+                                "LIN 0.05GHz 0.2GHz 0.01GHz",
+                                "DEC 1e-06GHz 0.0001GHz 10",
+                                "LINC 0.01GHz 0.02GHz 11",
                             ],
                         }
                     ],
