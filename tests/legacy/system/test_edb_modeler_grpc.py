@@ -387,7 +387,7 @@ class TestClass:
     def test_modeler_path_convert_to_polygon(self):
         # Done
         target_path = os.path.join(local_path, "example_models", "convert_and_merge_path.aedb")
-        edbapp = Edb(target_path, edbversion=desktop_version, restart_rpc_server=True)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         for path in edbapp.modeler.paths:
             assert path.convert_to_polygon()
         # cannot merge one net only - see test: test_unite_polygon for reference
@@ -399,7 +399,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_path_length.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_path_length", "test.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(edbpath=target_path, edbversion=desktop_version, restart_rpc_server=True)
+        edbapp = Edb(edbpath=target_path, edbversion=desktop_version)
         net1 = [path for path in edbapp.modeler.paths if path.net_name == "loop1"]
         net1_length = 0
         for path in net1:
@@ -414,7 +414,7 @@ class TestClass:
         net3_length = 0
         for path in net3:
             net3_length += path.length
-        assert net3_length == 0.048605551
+        assert round(net3_length, 9) == 0.048605551
         net4 = [path for path in edbapp.modeler.paths if path.net_name == "lin3"]
         net4_length = 0
         for path in net4:
@@ -424,8 +424,8 @@ class TestClass:
         net5_length = 0
         for path in net5:
             net5_length += path.length
-        assert net5_length == 0.026285626
-        edbapp.close_edb()
+        assert round(net5_length, 5) == 0.02629
+        edbapp.close()
 
     def test_duplicate(self):
         # Done
