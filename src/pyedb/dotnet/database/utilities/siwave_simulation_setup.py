@@ -270,11 +270,8 @@ class SiwaveSimulationSetup(SimulationSetup):
         >>> setup1.add_sweep(name="sw1", frequency_set=["linear count", "1MHz", "100MHz", 10])
         """
         sweep_data = SimulationSetup.add_sweep(
-            self,
-            name=name,
-            frequency_set=frequency_set,
-            sweep_type=sweep_type,
-            **kwargs)
+            self, name=name, frequency_set=frequency_set, sweep_type=sweep_type, **kwargs
+        )
         self._siwave_sweeps_list.append(sweep_data)
         return sweep_data
 
