@@ -66,8 +66,7 @@ class CfgMaterial(CfgBase):
 
         thermal_modifiers = kwargs.get("thermal_modifiers")
         if thermal_modifiers:
-            self.thermal_modifiers = [
-                CfgMaterialPropertyThermalModifier(**i) for i in thermal_modifiers]
+            self.thermal_modifiers = [CfgMaterialPropertyThermalModifier(**i) for i in thermal_modifiers]
 
 
 class CfgLayer(CfgBase):
