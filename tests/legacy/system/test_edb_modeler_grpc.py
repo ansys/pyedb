@@ -27,12 +27,12 @@ import os
 
 import pytest
 
+from pyedb.dotnet.edb import Edb as Edb
 from pyedb.generic.settings import settings
-from pyedb.grpc.edb import Edb as Edb
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
-pytestmark = [pytest.mark.system, pytest.mark.grpc]
+pytestmark = [pytest.mark.system, pytest.mark.dotnet]
 
 
 class TestClass:
@@ -53,13 +53,21 @@ class TestClass:
         poly0 = edbapp.modeler.polygons[0]
         assert edbapp.modeler.polygons[0].clone()
         assert isinstance(poly0.voids, list)
-        assert isinstance(poly0.points_raw, list)
+        # TODO convert point_raw as method in grpc to be compliant with dotnet.
+        assert isinstance(poly0.points_raw(), list)
         assert isinstance(poly0.points(), tuple)
         assert isinstance(poly0.points()[0], list)
         assert poly0.points()[0][0] >= 0.0
-        assert poly0.points_raw[0].x.value >= 0.0
-        assert poly0.type == "polygon"
-        assert not poly0.points_raw[0].is_arc
+        if edbapp.grpc:
+            assert poly0.points_raw()[0].x.value >= 0.0
+        else:
+            assert poly0.points_raw()[0].X.ToDouble() >= 0.0
+        # TODO check is polygon.type should return "polygon" instead of "Polygon",
+        assert poly0.type.lower() == "polygon"
+        if edbapp.grpc:
+            assert not poly0.points_raw()[0].is_arc
+        else:
+            assert not poly0.points_raw()[0].IsArc()
         assert isinstance(poly0.voids, list)
         # TODO check bug 455
         # assert isinstance(poly0.get_closest_point([0.07, 0.0027]), list)
@@ -68,12 +76,12 @@ class TestClass:
         assert isinstance(poly0.longest_arc.length, float)
         assert isinstance(poly0.shortest_arc.length, float)
         assert not poly0.in_polygon([0, 0])
-        # assert isinstance(poly0.arcs[0].center, list)
-        # assert isinstance(poly0.arcs[0].radius, float)
-        assert poly0.arcs[0].is_segment()
-        assert not poly0.arcs[0].is_point()
-        assert not poly0.arcs[0].is_ccw()
-        # assert isinstance(poly0.arcs[0].points_raw, list)
+        # TODO make grpc arc.is_segment a property
+        assert poly0.arcs[0].is_segment
+        # TODO make grpc arc.is_point a property
+        assert not poly0.arcs[0].is_point
+        # TODO make grpc arc.is_cww a property
+        assert not poly0.arcs[0].is_ccw
         assert isinstance(poly0.arcs[0].points, list)
         assert isinstance(poly0.intersection_type(poly0), int)
         assert poly0.is_intersecting(poly0)
@@ -85,10 +93,15 @@ class TestClass:
         poly_with_voids = [poly for poly in edbapp.modeler.polygons if poly.has_voids]
         assert poly_with_voids
         for k in poly_with_voids[0].voids:
-            assert k.edb_uid
+            assert k.id
             assert k.expand(0.0005)
-        poly_167 = [i for i in edbapp.modeler.paths if i.edb_uid == 167][0]
-        assert poly_167.expand(0.0005)
+        if edbapp.grpc:
+            poly_167 = [i for i in edbapp.modeler.paths if i.edb_uid == 167][0]
+        else:
+            poly_167 = [i for i in edbapp.modeler.paths if i.id == 167][0]
+        if edbapp.grpc:
+            # Only available with grpc
+            assert poly_167.expand(0.0005)
         edbapp.close()
 
     def test_modeler_paths(self, edb_examples):
