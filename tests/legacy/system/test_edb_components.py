@@ -602,15 +602,9 @@ class TestClass:
         assert cmp.solder_ball_shape
         # TODO check if dotnet should return "cylinder" instead of "Cylinder".
         cmp.solder_ball_shape = "cylinder"
-        if edb.grpc:
-            assert cmp.solder_ball_shape == "cylinder"
-        else:
-            assert cmp.solder_ball_shape == "Cylinder"
+        assert cmp.solder_ball_shape == "cylinder"
         cmp.solder_ball_shape = "spheroid"
-        if edb.grpc:
-            assert cmp.solder_ball_shape == "spheroid"
-        else:
-            assert cmp.solder_ball_shape == "Spheroid"
+        assert cmp.solder_ball_shape == "spheroid"
         cmp.solder_ball_shape = "cylinder"
         assert cmp.solder_ball_diameter == (0.0, 0.0)
         cmp.solder_ball_diameter = "200um"
