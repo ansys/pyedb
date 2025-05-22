@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
 
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.dotnet.database.utilities.obj_base import ObjBase
@@ -105,14 +106,28 @@ class PackageDef(ObjBase):
         self._edb_object.SetMaximumPower(value)
 
     @property
-    def therm_cond(self):
-        """Thermal conductivity of the package."""
+    def thermal_conductivity(self):
+        """Adding this property for compatibility with grpc."""
         return self._edb_object.GetTherm_Cond().ToDouble()
+
+    @thermal_conductivity.setter
+    def thermal_conductivity(self, value):
+        value = self._pedb.edb_value(value)
+        self._edb_object.SetTherm_Cond(value)
+
+    @property
+    def therm_cond(self):
+        """Thermal conductivity of the package.
+
+        ..deprecated:: 0.48.0
+           Use: func:`thermal_conductivity` property instead.
+        """
+        warnings.warn("Use property thermal_conductivity instead.", DeprecationWarning)
+        return self.thermal_conductivity
 
     @therm_cond.setter
     def therm_cond(self, value):
-        value = self._pedb.edb_value(value)
-        self._edb_object.SetTherm_Cond(value)
+        self.thermal_conductivity = value
 
     @property
     def theta_jb(self):
@@ -153,10 +168,19 @@ class PackageDef(ObjBase):
         heatsink.fin_orientation = fin_orientation
         heatsink.fin_spacing = fin_spacing
         heatsink.fin_thickness = fin_thickness
-        self._edb_object.SetHeatSink(heatsink._edb_object)
+        return self._edb_object.SetHeatSink(heatsink._edb_object)
 
     @property
     def heatsink(self):
+        """Component heatsink.
+
+        ..deprecated:: 0.48.0
+           Use: func:`heat_sink` property instead.
+        """
+        return self.heat_sink
+
+    @property
+    def heat_sink(self):
         """Component heatsink."""
         from pyedb.dotnet.database.utilities.heatsink import HeatSink
 
