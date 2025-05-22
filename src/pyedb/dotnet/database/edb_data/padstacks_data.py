@@ -1696,9 +1696,9 @@ class EDBPadstackInstance(Primitive):
         out = self._edb_padstackinstance.GetPositionAndRotationValue()
         if self._edb_padstackinstance.GetComponent():
             out2 = self._edb_padstackinstance.GetComponent().GetTransform().TransformPoint(out[1])
-            self._position = [out2.X.ToDouble(), out2.Y.ToDouble()]
+            self._position = [round(out2.X.ToDouble(), 6), round(out2.Y.ToDouble(), 6)]
         elif out[0]:
-            self._position = [out[1].X.ToDouble(), out[1].Y.ToDouble()]
+            self._position = [round(out[1].X.ToDouble(), 6), round(out[1].Y.ToDouble(), 6)]
         return self._position
 
     @position.setter
@@ -1724,7 +1724,7 @@ class EDBPadstackInstance(Primitive):
         out = self._edb_padstackinstance.GetPositionAndRotationValue()
 
         if out[0]:
-            return out[2].ToDouble()
+            return round(out[2].ToDouble(), 6)
 
     @property
     def name(self):
@@ -1891,7 +1891,7 @@ class EDBPadstackInstance(Primitive):
             Lower elavation of the placement layer.
         """
         try:
-            return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetLowerElevation()
+            return round(self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetLowerElevation(), 6)
         except AttributeError:  # pragma: no cover
             return None
 
@@ -1905,7 +1905,7 @@ class EDBPadstackInstance(Primitive):
            Upper elevation of the placement layer.
         """
         try:
-            return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetUpperElevation()
+            return round(self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetUpperElevation(), 6)
         except AttributeError:  # pragma: no cover
             return None
 

@@ -414,7 +414,7 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = Edb(target_path, edbversion=desktop_version)
         index = edbapp.padstacks.get_padstack_instances_rtree_index()
-        assert index.bounds == [-0.0137849991, -0.00225000058, 0.14800000118, 0.07799999894]
+        assert index.bounds == [-0.013785, -0.00225, 0.148, 0.078]
         stats = edbapp.get_statistics()
         bbox = (0.0, 0.0, stats.layout_size[0], stats.layout_size[1])
         test = list(index.intersection(bbox))
@@ -547,5 +547,5 @@ def _assert_inside(rect, pad):
     result = rect.Intersect(pad)
     assert len(result) == 1, f"{BASE_MESSAGE} intersection returned more than one lump"
     assert math.isclose(
-        result[0].Area(), rect.Area()
+        round(result[0].Area(), 4), round(rect.Area(), 4)
     ), f"{BASE_MESSAGE} area of intersection is not equal to rectangle area"

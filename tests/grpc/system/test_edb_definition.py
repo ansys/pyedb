@@ -52,7 +52,11 @@ class TestClass:
         sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
         edbapp.definitions.component["CAPC3216X180X55ML20T25"].add_n_port_model(sparam_path, "GRM32_DC0V_25degC_series")
         assert edbapp.definitions.component["CAPC3216X180X55ML20T25"].component_models
-        assert not edbapp.definitions.component["CAPC3216X180X55ML20T25"].component_models[0].is_null
+        # TODO return in grpc component_models as dict{name: model}.
+        if edbapp.grpc:
+            assert not edbapp.definitions.component["CAPC3216X180X55ML20T25"].component_models[0].is_null
+        else:
+            assert not list(edbapp.definitions.component["CAPC3216X180X55ML20T25"].component_models.values())[0].is_null
         assert edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
         # pp = {"pin_order": ["1", "2"]}
         # edbapp.definitions.component["CAPC3216X180X55ML20T25"].set_properties(**pp)
