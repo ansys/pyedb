@@ -128,8 +128,6 @@ CORE_VIA_INSTANCE = {
     "padstack_def": "CORE_VIA",
     "start_layer": "PKG_L5",
     "stop_layer": "PKG_L6",
-    # "base_x": "0mm",
-    # "base_y": "1mm",
     "dx": "0.2mm",
     "dy": "0mm",
     "anti_pad_diameter": "0.5mm",
@@ -139,6 +137,7 @@ CORE_VIA_INSTANCE = {
     "with_solder_ball": False,
     "backdrill_parameters": None,
     "fanout_trace": None,
+"stitching_vias": None
 }
 BGA_INSTANCE = {
     "padstack_def": "BGA",
@@ -425,7 +424,6 @@ class TestClass:
         h3d = ansys.aedt.core.Hfss3dLayout(project=app.edbpath, version=desktop_version)
         h3d.release_desktop()
 
-    @pytest.mark.skipif(True, reason="Not ready to test")
     def test_backend(self):
         cfg = {
             "Title": "Test Design",
@@ -463,7 +461,23 @@ class TestClass:
                     "stacked_vias": [
                         copy(MICRO_VIA_INSTANCE_L1_L5),
                         copy(CORE_VIA_INSTANCE),
-                        copy(MICRO_VIA_INSTANCE_L6_L10),
+                        {
+                            "padstack_def": "CORE_VIA",
+                            "start_layer": "PKG_L5",
+                            "stop_layer": "PKG_L6",
+                            "dx": "0.2mm",
+                            "dy": "0mm",
+                            "anti_pad_diameter": "0.5mm",
+                            "flip_dx": False,
+                            "flip_dy": False,
+                            "connection_trace": {"width": "0.1mm", "clearance": "0.15mm"},
+                            "with_solder_ball": False,
+                            "backdrill_parameters": None,
+                            "fanout_trace": None,
+                            "stitching_vias": {"start_angle": 0, "step_angle": "45deg", "number_of_vias": 4,
+                                               "distance": 0}
+                        }
+                        ,
                         copy(BGA_INSTANCE),
                         copy(PCB_VIA_INSTANCE),
                     ],

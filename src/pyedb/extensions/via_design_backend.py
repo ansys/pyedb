@@ -21,6 +21,19 @@ def create_variable(obj, name_suffix, value):
     return var_name
 
 
+class StitchingVias:
+    def __init__(self, p_via, start_angle, step_angle, number_of_vias, distance, clockwise=True):
+        self.p_via = p_via
+        self.start_angle = start_angle
+        self.step_angle = step_angle
+        self.number_of_vias = number_of_vias
+        self.distance = distance
+        self.clockwise = clockwise
+
+    def populate_config(self, cfg):
+        pass
+
+
 class Trace:
     def __init__(
         self,
@@ -101,142 +114,152 @@ class Trace:
         }
 
 
-class Signal:
-    """vias and traces."""
+class GroundVia:
+    @property
+    def x(self):
+        return f"{self.base_x}+{self.dx}"
 
-    class GroundVia:
-        @property
-        def x(self):
-            return f"{self.base_x}+{self.dx}"
+    @property
+    def y(self):
+        return f"{self.base_y}+{self.dy}"
 
-        @property
-        def y(self):
-            return f"{self.base_y}+{self.dy}"
+    def __init__(
+        self,
+        p_signal,
+        name,
+        net_name,
+        padstack_def,
+        start_layer,
+        stop_layer,
+        base_x,
+        base_y,
+        dx,
+        dy,
+        flip_dx,
+        flip_dy,
+        connection_trace: Union[dict, Trace],
+        with_solder_ball,
+        backdrill_parameters,
+        conductor_layers: list,
+    ):
+        self.p_signal = p_signal
+        self.variables = []
+        self.name = name
+        self.net_name = net_name
+        self.padstack_def = padstack_def
+        self.start_layer = start_layer
+        self.stop_layer = stop_layer
+        self.base_x = base_x
+        self.base_y = base_y
 
-        """@property
-        def voids(self):
-            voids = self._voids
-            for trace in self.traces:
-                voids.extend(trace.voids)
-            return voids"""
+        var_dx = create_variable(self, "dx", dx)
+        var_dy = create_variable(self, "dy", dy)
+        self.flip_dx = flip_dx
+        self.flip_dy = flip_dy
+        self.dx = var_dx if flip_dx is False else f"-1*({var_dx})"
+        self.dy = var_dy if flip_dy is False else f"-1*({var_dy})"
+        self.with_solder_ball = with_solder_ball
+        self.backdrill_parameters = backdrill_parameters
+        self.conductor_layers = conductor_layers
 
-        def __init__(
-            self,
-            p_signal,
-            name,
-            net_name,
-            padstack_def,
-            start_layer,
-            stop_layer,
-            base_x,
-            base_y,
-            dx,
-            dy,
-            flip_dx,
-            flip_dy,
-            connection_trace: Union[dict, Trace],
-            with_solder_ball,
-            backdrill_parameters,
-            conductor_layers: list,
-        ):
-            self.p_signal = p_signal
-            self.variables = []
-            self.name = name
-            self.net_name = net_name
-            self.padstack_def = padstack_def
-            self.start_layer = start_layer
-            self.stop_layer = stop_layer
-            self.base_x = base_x
-            self.base_y = base_y
+        self.traces = []
+        self.fanout_traces = []
+        # self._voids = []
 
-            var_dx = create_variable(self, "dx", dx)
-            var_dy = create_variable(self, "dy", dy)
-            self.flip_dx = flip_dx
-            self.flip_dy = flip_dy
-            self.dx = var_dx if flip_dx is False else f"-1*({var_dx})"
-            self.dy = var_dy if flip_dy is False else f"-1*({var_dy})"
-            self.with_solder_ball = with_solder_ball
-            self.backdrill_parameters = backdrill_parameters
-            self.conductor_layers = conductor_layers
+        if connection_trace is not None:
+            trace = Trace(
+                p_via=self,
+                name=f"{self.name}_trace",
+                net_name=self.net_name,
+                layer=self.stop_layer,
+                width=connection_trace["width"],
+                clearance=connection_trace["clearance"],
+                incremental_path=[[base_x, base_y], [var_dx, var_dy]],
+                flip_dx=flip_dx,
+                flip_dy=flip_dy,
+                end_cap_style="round",
+                port=None,
+            )
+            self.traces.append(trace)
 
-            self.traces = []
-            self.fanout_traces = []
-            # self._voids = []
+    def populate_config(self, cfg):
+        cfg["variables"].extend(self.variables)
 
-            if connection_trace is not None:
-                trace = Trace(
-                    p_via=self,
-                    name=f"{self.name}_trace",
-                    net_name=self.net_name,
-                    layer=self.stop_layer,
-                    width=connection_trace["width"],
-                    clearance=connection_trace["clearance"],
-                    incremental_path=[[base_x, base_y], [var_dx, var_dy]],
-                    flip_dx=flip_dx,
-                    flip_dy=flip_dy,
-                    end_cap_style="round",
-                    port=None,
-                )
-                self.traces.append(trace)
+        for trace in self.traces:
+            trace.populate_config(cfg)
 
-        def populate_config(self, cfg):
-            cfg["variables"].extend(self.variables)
+        for trace in self.fanout_traces:
+            trace.populate_config(cfg)
 
-            for trace in self.traces:
-                trace.populate_config(cfg)
+        padstack_instance = {
+            "name": self.name,
+            "definition": self.padstack_def,
+            "layer_range": [self.start_layer, self.stop_layer],
+            "position": [self.x, self.y],
+            "net_name": self.net_name,
+        }
+        if self.with_solder_ball:
+            padstack_instance["solder_ball_layer"] = self.start_layer
+            padstack_instance["solder_ball_width"] = self.dx
+        if self.backdrill_parameters is not None:
+            padstack_instance["backdrill_parameters"] = self.backdrill_parameters
 
-            for trace in self.fanout_traces:
-                trace.populate_config(cfg)
+        cfg["modeler"]["padstack_instances"].append(padstack_instance)
 
-            padstack_instance = {
-                "name": self.name,
-                "definition": self.padstack_def,
-                "layer_range": [self.start_layer, self.stop_layer],
-                "position": [self.x, self.y],
+
+class Via(GroundVia):
+    def __init__(self,
+                 anti_pad_diameter,
+                 fanout_trace: Union[dict, Trace],
+                 stitching_vias: Union[dict, None],
+                 **kwargs):
+        super().__init__(**kwargs)
+
+        self.anti_pad_diameter = create_variable(self, "anti_pad_diameter", anti_pad_diameter)
+        if fanout_trace is not None:
+            layer = fanout_trace["layer"]
+
+            incremental_path = copy([[self.x, self.y]])
+            incremental_path.extend(fanout_trace["incremental_path"])
+
+            trace = Trace(
+                p_via=self,
+                name=f"{self.net_name}_{layer}_fanout",
+                net_name=self.net_name,
+                layer=layer,
+                width=fanout_trace["width"],
+                clearance=fanout_trace["clearance"],
+                incremental_path=incremental_path,
+                flip_dx=self.flip_dx,
+                flip_dy=self.flip_dy,
+                end_cap_style=fanout_trace["end_cap_style"],
+                port=fanout_trace["port"],
+            )
+            self.fanout_traces.append(trace)
+        self.stitching_vias = StitchingVias(self, **stitching_vias) if stitching_vias is not None else None
+
+    def populate_config(self, cfg):
+        super().populate_config(cfg)
+        if self.start_layer == self.stop_layer:
+            anti_pad = {
+                "type": "circle",
+                "name": f"{self.name}_anti_pad_{self.start_layer}",
+                "layer": self.start_layer,
                 "net_name": self.net_name,
+                "position": [self.x, self.y],
+                "radius": f"{self.anti_pad_diameter}/2",
             }
-            if self.with_solder_ball:
-                padstack_instance["solder_ball_layer"] = self.start_layer
-                padstack_instance["solder_ball_width"] = self.dx
-            if self.backdrill_parameters is not None:
-                padstack_instance["backdrill_parameters"] = self.backdrill_parameters
-
-            cfg["modeler"]["padstack_instances"].append(padstack_instance)
-
-    class Via(GroundVia):
-        def __init__(self, anti_pad_diameter, fanout_trace: Union[dict, Trace], **kwargs):
-            super().__init__(**kwargs)
-
-            self.anti_pad_diameter = create_variable(self, "anti_pad_diameter", anti_pad_diameter)
-            if fanout_trace is not None:
-                layer = fanout_trace["layer"]
-
-                incremental_path = copy([[self.x, self.y]])
-                incremental_path.extend(fanout_trace["incremental_path"])
-
-                trace = Trace(
-                    p_via=self,
-                    name=f"{self.net_name}_{layer}_fanout",
-                    net_name=self.net_name,
-                    layer=layer,
-                    width=fanout_trace["width"],
-                    clearance=fanout_trace["clearance"],
-                    incremental_path=incremental_path,
-                    flip_dx=self.flip_dx,
-                    flip_dy=self.flip_dy,
-                    end_cap_style=fanout_trace["end_cap_style"],
-                    port=fanout_trace["port"],
-                )
-
-                self.fanout_traces.append(trace)
-
-        def populate_config(self, cfg):
-            super().populate_config(cfg)
-            if self.start_layer == self.stop_layer:
+            cfg["modeler"]["planes"].append(anti_pad)
+            # self.voids.append(anti_pad)
+            self.p_signal.p_board.voids.append(anti_pad)
+        else:
+            start_layer_idx = self.conductor_layers.index(self.start_layer)
+            stop_layer_idx = self.conductor_layers.index(self.stop_layer)
+            for i in np.arange(start_layer_idx, stop_layer_idx + 1):
                 anti_pad = {
                     "type": "circle",
-                    "name": f"{self.name}_anti_pad_{self.start_layer}",
-                    "layer": self.start_layer,
+                    "name": f"{self.name}_anti_pad_{self.conductor_layers[i]}",
+                    "layer": self.conductor_layers[i],
                     "net_name": self.net_name,
                     "position": [self.x, self.y],
                     "radius": f"{self.anti_pad_diameter}/2",
@@ -244,28 +267,10 @@ class Signal:
                 cfg["modeler"]["planes"].append(anti_pad)
                 # self.voids.append(anti_pad)
                 self.p_signal.p_board.voids.append(anti_pad)
-            else:
-                start_layer_idx = self.conductor_layers.index(self.start_layer)
-                stop_layer_idx = self.conductor_layers.index(self.stop_layer)
-                for i in np.arange(start_layer_idx, stop_layer_idx + 1):
-                    anti_pad = {
-                        "type": "circle",
-                        "name": f"{self.name}_anti_pad_{self.conductor_layers[i]}",
-                        "layer": self.conductor_layers[i],
-                        "net_name": self.net_name,
-                        "position": [self.x, self.y],
-                        "radius": f"{self.anti_pad_diameter}/2",
-                    }
-                    cfg["modeler"]["planes"].append(anti_pad)
-                    # self.voids.append(anti_pad)
-                    self.p_signal.p_board.voids.append(anti_pad)
 
-    """@property
-    def voids(self):
-        voids = []
-        for via in self.vias:
-            voids.extend(via.voids)
-        return voids"""
+
+class Signal:
+    """vias and traces."""
 
     def __init__(
         self,
@@ -275,8 +280,8 @@ class Signal:
         base_x,
         base_y,
         stacked_vias,
-        invert_flip_dx,
-        invert_flip_dy,
+        flip_x,
+        flip_y,
     ):
         self.p_board = p_board
         self.net_name = signal_name if name_suffix is None else f"{signal_name}_{name_suffix}"
@@ -295,14 +300,14 @@ class Signal:
             start_layer = i["start_layer"]
             stop_layer = i["stop_layer"]
 
-            flip_x_1 = not i["flip_dx"] if invert_flip_dx else i["flip_dx"]
-            flip_y_1 = not i["flip_dy"] if invert_flip_dy else i["flip_dy"]
+            flip_x_1 = not i["flip_dx"] if flip_x else i["flip_dx"]
+            flip_y_1 = not i["flip_dy"] if flip_y else i["flip_dy"]
             if i["padstack_def"].startswith("BGA"):
                 flip_x_1 = False
                 flip_y_1 = False
 
             if self.net_name.startswith("GND"):
-                via = self.GroundVia(
+                via = GroundVia(
                     p_signal=self,
                     name=f"{self.net_name}_{start_layer}_{stop_layer}_{v_idx}",
                     net_name=self.net_name,
@@ -321,7 +326,7 @@ class Signal:
                     conductor_layers=self.p_board.conductor_layers,
                 )
             else:
-                via = self.Via(
+                via = Via(
                     p_signal=self,
                     name=f"{self.net_name}_{start_layer}_{stop_layer}",
                     net_name=self.net_name,
@@ -340,6 +345,7 @@ class Signal:
                     backdrill_parameters=i["backdrill_parameters"],
                     fanout_trace=i["fanout_trace"],
                     conductor_layers=self.p_board.conductor_layers,
+                    stitching_vias=None
                 )
             x = via.x
             y = via.y
@@ -372,7 +378,7 @@ class DiffSignal:
 
         vars_sep = {}
         for idx, trace in self.fanout_trace.items():
-            trace2 = {}
+            trace2 = dict()
             trace2["layer"] = trace["layer"]
             trace2["width"] = trace["width"]
             trace2["clearance"] = trace["clearance"]
@@ -404,8 +410,8 @@ class DiffSignal:
             base_x=p_x,
             base_y=p_y,
             stacked_vias=stacked_vias_reversed,
-            invert_flip_dx=False,
-            invert_flip_dy=False,
+            flip_x=False,
+            flip_y=False,
         )
 
         for v in self.signal_p.vias:
@@ -425,8 +431,8 @@ class DiffSignal:
             base_x=n_x,
             base_y=n_y,
             stacked_vias=stacked_vias_reversed,
-            invert_flip_dx=True,
-            invert_flip_dy=False,
+            flip_x=True,
+            flip_y=False,
         )
         for v in self.signal_n.vias:
             for t in v.fanout_traces:
@@ -517,8 +523,8 @@ class Board:
                     base_x=f"{x}*pitch",
                     base_y=f"{y}*pitch",
                     stacked_vias=stacked_vias_reversed,
-                    invert_flip_dx=False,
-                    invert_flip_dy=False,
+                    flip_x=False,
+                    flip_y=False,
                 )
                 signals.append(s)
         return signals
