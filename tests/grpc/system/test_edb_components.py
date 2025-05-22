@@ -576,9 +576,9 @@ class TestClass:
         )
         assert edbapp.components.instances["Test"]
         # TODO check if dotnet can return component value as float instead of string. grpc is returning float.
-        assert float(edbapp.components.instances["Test"].res_value) == 12.2
-        assert float(edbapp.components.instances["Test"].ind_value) == 0
-        assert float(edbapp.components.instances["Test"].cap_value) == 0
+        assert edbapp.components.instances["Test"].res_value == 12.2
+        assert edbapp.components.instances["Test"].ind_value == 0
+        assert edbapp.components.instances["Test"].cap_value == 0
         if edbapp.grpc:
             # TODO check why grpc is returning different center value.
             assert edbapp.components.instances["Test"].center == [0.07950000102, 0.03399999804]
