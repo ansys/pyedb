@@ -566,7 +566,6 @@ class TestClass:
         test_edb.close()
 
     def test_path_center_line(self):
-        # TODO wait Material class done.
         edb = Edb(edbversion=desktop_version)
         edb.stackup.add_layer("GND", "Gap")
         edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.2mm", material="Duroid (tm)")
