@@ -629,7 +629,7 @@ class Modeler(object):
 
         return primitive
 
-    def create_polygon(self, main_shape, layer_name, voids=[], net_name=""):
+    def create_polygon(self, main_shape=None, layer_name="", voids=[], net_name="", points=None):
         """Create a polygon based on a list of points and voids.
 
         Parameters
@@ -646,13 +646,35 @@ class Modeler(object):
             List of shape objects for voids or points that creates the shapes. The default is``[]``.
         net_name : str, optional
             Name of the net. The default is ``""``.
+        points : list, optional
+            Added for compatibility with grpc.
 
         Returns
         -------
         bool, :class:`dotnet.database.edb_data.primitives.Primitive`
             Polygon when successful, ``False`` when failed.
         """
+        from pyedb.dotnet.database.geometry.polygon_data import PolygonData
+
         net = self._pedb.nets.find_or_create_net(net_name)
+        if points:
+            arcs = []
+            if isinstance(points, PolygonData):
+                points = points.points
+            for _ in range(len(points)):
+                arcs.append(
+                    self._edb.Geometry.ArcData(
+                        self._pedb.point_data(0, 0),
+                        self._pedb.point_data(0, 0),
+                    )
+                )
+            polygonData = self._edb.Geometry.PolygonData.CreateFromArcs(convert_py_list_to_net_list(arcs), True)
+
+            for idx, i in enumerate(points):
+                pdata_0 = self._pedb.edb_value(i[0])
+                pdata_1 = self._pedb.edb_value(i[1])
+                new_points = self._edb.Geometry.PointData(pdata_0, pdata_1)
+                polygonData.SetPoint(idx, new_points)
         if isinstance(main_shape, list):
             arcs = []
             for _ in range(len(main_shape)):
@@ -673,7 +695,8 @@ class Modeler(object):
         elif isinstance(main_shape, Modeler.Shape):
             polygonData = self.shape_to_polygon_data(main_shape)
         else:
-            polygonData = main_shape
+            if not points:
+                polygonData = main_shape
         if not polygonData or polygonData.IsNull():
             raise RuntimeError("Failed to create main shape polygon data")
         for void in voids:

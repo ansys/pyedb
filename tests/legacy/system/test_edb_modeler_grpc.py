@@ -110,18 +110,19 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert len(edbapp.modeler.paths) > 0
         path = edbapp.modeler.paths[0]
-        assert path.type == "path"
+        # TODO check for dotnet primitive.type returning only small letters.
+        assert path.type.lower() == "path"
         assert path.clone()
         assert isinstance(path.width, float)
         path.width = "1mm"
         assert path.width == 0.001
-        assert edbapp.modeler["line_167"].type == "path"
-        assert edbapp.modeler["poly_3022"].type == "polygon"
+        assert edbapp.modeler["line_167"].type.lower() == "path"
+        assert edbapp.modeler["poly_3022"].type.lower() == "polygon"
         line_number = len(edbapp.modeler.primitives)
         edbapp.modeler["line_167"].delete()
         assert edbapp.modeler._primitives == []
         assert line_number == len(edbapp.modeler.primitives) + 1
-        assert edbapp.modeler["poly_3022"].type == "polygon"
+        assert edbapp.modeler["poly_3022"].type.lower() == "polygon"
         edbapp.close()
 
     def test_modeler_primitives_by_layer(self, edb_examples):
@@ -152,8 +153,8 @@ class TestClass:
         assert "1_Top" in edbapp.modeler.polygons_by_layer.keys()
         assert len(edbapp.modeler.polygons_by_layer["1_Top"]) > 0
         assert len(edbapp.modeler.polygons_by_layer["DE1"]) == 0
-        assert edbapp.modeler.rectangles[0].type == "rectangle"
-        assert edbapp.modeler.circles[0].type == "circle"
+        assert edbapp.modeler.rectangles[0].type.lower() == "rectangle"
+        assert edbapp.modeler.circles[0].type.lower() == "circle"
         edbapp.close()
 
     def test_modeler_get_polygons_bounding(self, edb_examples):
