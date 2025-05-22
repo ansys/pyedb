@@ -537,7 +537,7 @@ class TestClass:
         primitives = edbapp.modeler.get_primitive_by_layer_and_point(layer="Inner1(GND1)", point=[20e-3, 30e-3])
         assert primitives
         assert len(primitives) == 1
-        assert primitives[0].type == "polygon"
+        assert primitives[0].type.lower() == "polygon"
         primitives = edbapp.modeler.get_primitive_by_layer_and_point(point=[20e-3, 30e-3])
         assert len(primitives) == 3
         edbapp.close()
@@ -546,17 +546,19 @@ class TestClass:
         # Done
         example_folder = os.path.join(local_path, "example_models", test_subfolder)
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
-        target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
+        temp_directory = os.path.join(self.local_scratch.path, "test_wave_ports")
+        target_path_edb = os.path.join(temp_directory, "test.aedb")
+        work_dir = os.path.join(temp_directory, "_work")
+        output_edb = os.path.join(temp_directory, "wave_ports.aedb")
         self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = Edb(edbpath=target_path_edb, edbversion=desktop_version, restart_rpc_server=True)
-        edbapp.create_model_for_arbitrary_wave_ports(
-            temp_directory=self.local_scratch.path,
-            output_edb="wave_ports.aedb",
+        edbapp = Edb(edbpath=target_path_edb, edbversion=desktop_version)
+        assert edbapp.create_model_for_arbitrary_wave_ports(
+            temp_directory=work_dir,
+            output_edb=output_edb,
             mounting_side="top",
         )
         edbapp.close()
-        edb_model = os.path.join(self.local_scratch.path, "wave_ports.aedb")
-        test_edb = Edb(edbpath=edb_model, edbversion=desktop_version)
+        test_edb = Edb(edbpath=output_edb, edbversion=desktop_version)
         assert len(list(test_edb.nets.signal.keys())) == 13
         assert len(list(test_edb.stackup.layers.keys())) == 3
         assert "ref" in test_edb.stackup.layers
