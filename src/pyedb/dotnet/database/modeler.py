@@ -702,8 +702,12 @@ class Modeler(object):
         else:
             if not points:
                 polygonData = main_shape
-        if not polygonData or polygonData.IsNull():
-            raise RuntimeError("Failed to create main shape polygon data")
+        if isinstance(polygonData, PolygonData):
+            if not polygonData.points:
+                raise RuntimeError("Failed to create main shape polygon data")
+        else:
+            if polygonData.IsNull():
+                raise RuntimeError("Failed to create main shape polygon data")
         for void in voids:
             if isinstance(void, list):
                 void = self.Shape("polygon", points=void)
@@ -717,6 +721,8 @@ class Modeler(object):
                 self._logger.error("Failed to create void polygon data")
                 return False
             polygonData.AddHole(voidPolygonData)
+        if isinstance(polygonData, PolygonData):
+            polygonData = polygonData._edb_object
         polygon = self._pedb._edb.Cell.Primitive.Polygon.Create(
             self._active_layout, layer_name, net.net_obj, polygonData
         )
