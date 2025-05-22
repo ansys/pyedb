@@ -657,7 +657,9 @@ class Modeler(object):
         from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 
         if main_shape:
-            warnings.warn("main_shape argument will be deprecated soon with grpc version, use points instead.")
+            warnings.warn(
+                "main_shape argument will be deprecated soon with grpc version, use points instead.", DeprecationWarning
+            )
 
         net = self._pedb.nets.find_or_create_net(net_name)
         if points:
