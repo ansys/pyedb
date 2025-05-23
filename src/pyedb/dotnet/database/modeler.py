@@ -455,9 +455,16 @@ class Modeler(object):
                 xcoeff = str(xcoeff)
             return xcoeff, ycoeff
 
+        from pyedb.dotnet.database.edb_data.primitives_data import EdbPolygon
+
+        if isinstance(selection_polygon, EdbPolygon):
+            selection_polygon = selection_polygon._edb_object
+        if isinstance(polygon, EdbPolygon):
+            polygon = polygon._edb_object
+
         selection_polygon_data = selection_polygon.GetPolygonData()
-        poligon_data = polygon.GetPolygonData()
-        bound_center = poligon_data.GetBoundingCircleCenter()
+        polygon_data = polygon.GetPolygonData()
+        bound_center = polygon_data.GetBoundingCircleCenter()
         bound_center2 = selection_polygon_data.GetBoundingCircleCenter()
         center = [bound_center.X.ToDouble(), bound_center.Y.ToDouble()]
         center2 = [bound_center2.X.ToDouble(), bound_center2.Y.ToDouble()]
@@ -471,7 +478,7 @@ class Modeler(object):
         prev_point = None
         while continue_iterate:
             try:
-                point = poligon_data.GetPoint(i)
+                point = polygon_data.GetPoint(i)
                 if prev_point != point:
                     check_inside = selection_polygon_data.PointInPolygon(point)
                     if check_inside:
@@ -481,14 +488,14 @@ class Modeler(object):
                             point.X.ToString() + "{}*{}".format(xcoeff, offset_name),
                             point.Y.ToString() + "{}*{}".format(ycoeff, offset_name),
                         )
-                        poligon_data.SetPoint(i, new_points)
+                        polygon_data.SetPoint(i, new_points)
                     prev_point = point
                     i += 1
                 else:
                     continue_iterate = False
             except:
                 continue_iterate = False
-        polygon.SetPolygonData(poligon_data)
+        polygon.SetPolygonData(polygon_data)
         return True
 
     def _create_path(

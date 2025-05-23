@@ -405,7 +405,7 @@ class Terminal(Connectable):
             power_ground_net_names = [gnd_net]
         else:
             power_ground_net_names = [net for net in self._pedb.nets.power.keys()]
-        comp_ref_pins = [i for i in pin_list if i.GetNet().GetName() in power_ground_net_names]
+        comp_ref_pins = [i for i in pin_list if i.net_name in power_ground_net_names]
         if len(comp_ref_pins) == 0:  # pragma: no cover
             self._pedb.logger.error(
                 "Terminal with PadStack Instance Name {} component has no reference pins.".format(ref_pin.GetName())
@@ -414,9 +414,9 @@ class Terminal(Connectable):
         closest_pin_distance = None
         pin_obj = None
         for pin in comp_ref_pins:  # find the distance to all the pins to the terminal pin
-            if pin.GetName() == ref_pin.GetName():  # skip the reference psi
+            if pin.component_pin == ref_pin.GetName():  # skip the reference psi
                 continue  # pragma: no cover
-            _, pin_point, _ = pin.GetPositionAndRotation()
+            _, pin_point, _ = pin._edb_object.GetPositionAndRotation()
             distance = pad_stack_inst_point.Distance(pin_point)
             if closest_pin_distance is None:
                 closest_pin_distance = distance
