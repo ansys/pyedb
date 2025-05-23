@@ -24,11 +24,24 @@ def create_variable(obj, name_suffix, value):
 class StitchingVias:
     def __init__(self, p_via, start_angle, step_angle, number_of_vias, distance, clockwise=True):
         self.p_via = p_via
-        self.start_angle = start_angle
-        self.step_angle = step_angle
-        self.number_of_vias = number_of_vias
+        self.name = f"{self.p_via.name}_stitching_via"
+        self.start_angle = int(start_angle)
+        self.step_angle = int(step_angle)
+        self.number_of_vias = int(number_of_vias)
         self.distance = distance
         self.clockwise = clockwise
+
+        self.vias = []
+        for angle in np.arange(self.start_angle, start_angle+self.step_angle*self.number_of_vias, self.step_angle):
+            GroundVia(
+                p_signal=self.p_via.p_signal,
+                name=self.name,
+                net_name="GND",
+                padstack_def=self.p_via.padstack_def,
+                start_layer=self.p_via.start_layer,
+                stop_layer=self.p_via.stop_layer,
+                
+                      )
 
     def populate_config(self, cfg):
         pass
