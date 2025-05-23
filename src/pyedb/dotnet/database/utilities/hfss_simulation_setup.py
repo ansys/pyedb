@@ -336,7 +336,7 @@ class HfssSimulationSetup(SimulationSetup):
 
         Parameters
         ----------
-        frequencies : list, optional
+        frequencies : list, tuple, optional
             List or tuple of adaptive frequencies. The default is ``5GHz``.
         max_num_passes : int, optional
             Maximum number of passes. Default is ``10``.
