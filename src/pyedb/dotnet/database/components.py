@@ -2362,11 +2362,11 @@ class Components(object):
                 part_name = comp.partname
                 comp_type = comp.type
                 if comp_type == "Resistor":
-                    value = comp.res_value
+                    value = str(comp.res_value)
                 elif comp_type == "Capacitor":
-                    value = comp.cap_value
+                    value = str(comp.cap_value)
                 elif comp_type == "Inductor":
-                    value = comp.ind_value
+                    value = str(comp.ind_value)
                 else:
                     value = ""
                 if not value:
