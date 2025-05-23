@@ -4724,6 +4724,6 @@ class Edb(Database):
     def get_variable_value(self, variable_name):
         """Added to get closer architecture as for grpc."""
         if variable_name in self.variables:
-            return self.variables[variable_name].value
+            return self.variables[variable_name]
         else:
             return False
