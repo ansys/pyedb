@@ -62,7 +62,7 @@ class Path(GrpcPath, Primitive):
         """
         center_line_arcs = self._edb_object.cast().center_line.arc_data
         path_length = 0.0
-        for arc in center_line_arcs[: int(len(center_line_arcs) / 2)]:
+        for arc in center_line_arcs:
             path_length += arc.length
         end_cap_style = self.get_end_cap_style()
         if end_cap_style:

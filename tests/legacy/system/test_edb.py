@@ -201,7 +201,7 @@ class TestClass:
         assert edbapp.modeler.parametrize_trace_width("DDR4_A2")
         edbapp.add_design_variable("my_parameter", "2mm", True)
         assert "my_parameter" in edbapp.active_cell.get_all_variable_names()
-        variable_value = edbapp.active_cell.get_variable_value("my_parameter").value
+        variable_value = edbapp.active_cell.get_variable_value("my_parameter")
         assert variable_value == 2e-3
         if edbapp.grpc:
             assert not edbapp.add_design_variable("my_parameter", "2mm", True)

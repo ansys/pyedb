@@ -461,9 +461,9 @@ class Edb(Database):
         """
         all_vars = dict()
         for i, j in self.project_variables.items():
-            all_vars[i] = j
+            all_vars[i] = j.value
         for i, j in self.design_variables.items():
-            all_vars[i] = j
+            all_vars[i] = j.value
         return all_vars
 
     @property
@@ -4724,6 +4724,6 @@ class Edb(Database):
     def get_variable_value(self, variable_name):
         """Added to get closer architecture as for grpc."""
         if variable_name in self.variables:
-            return self.variables[variable_name].value
+            return self.variables[variable_name]
         else:
             return False
