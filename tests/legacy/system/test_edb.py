@@ -1355,7 +1355,7 @@ class TestClass:
         ]
         edb3.close()
 
-    @pytest.mark.skipif(is_linux, reason="Not supported in IPY")
+    @pytest.mark.skipif(reason="Not supported in IPY")
     def test_solve_siwave(self):
         """Solve EDB with Siwave."""
         target_path = os.path.join(local_path, "example_models", "T40", "ANSYS-HSD_V1_DCIR.aedb")
