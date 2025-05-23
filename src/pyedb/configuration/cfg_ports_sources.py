@@ -391,7 +391,11 @@ class CfgCircuitElement(CfgBase):
         pos_coor_terminal = dict()
         if self.type == "coax":
             pins = self._get_pins(pos_type, pos_value, self.positive_terminal_info.reference_designator)
-            pins = {f"{self.name}_{self.positive_terminal_info.reference_designator}": i for _, i in pins.items()}
+            if len(pins) < 2:
+                pins = {f"{self.name}": i for _, i in pins.items()}
+            else:
+                pins = {f"{self.name}_{name}": i for name, i in pins.items()}
+                self.distributed = True
             pos_objs.update(pins)
         elif pos_type == "coordinates":
             layer = self.positive_terminal_info.layer
