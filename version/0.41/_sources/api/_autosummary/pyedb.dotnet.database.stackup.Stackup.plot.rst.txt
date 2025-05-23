@@ -1,0 +1,6 @@
+plot
+====
+
+.. currentmodule:: pyedb.dotnet.database.stackup
+
+.. automethod:: Stackup.plot

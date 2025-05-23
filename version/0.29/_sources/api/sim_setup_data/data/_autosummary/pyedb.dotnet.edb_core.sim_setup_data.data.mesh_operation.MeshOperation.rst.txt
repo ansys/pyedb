@@ -1,0 +1,30 @@
+﻿MeshOperation
+=============
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.mesh_operation
+
+.. autoclass:: MeshOperation
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      MeshOperation.enabled
+      MeshOperation.max_elements
+      MeshOperation.mesh_operation_type
+      MeshOperation.mesh_region
+      MeshOperation.name
+      MeshOperation.nets_layers_list
+      MeshOperation.refine_inside
+      MeshOperation.restrict_max_elements
+      MeshOperation.type
+   
+   

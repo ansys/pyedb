@@ -1,0 +1,6 @@
+compute\_inductance
+===================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoproperty:: DCSettings.compute_inductance

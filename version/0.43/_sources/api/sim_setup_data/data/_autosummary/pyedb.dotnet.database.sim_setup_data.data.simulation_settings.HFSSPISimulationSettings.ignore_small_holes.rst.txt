@@ -1,0 +1,6 @@
+ignore\_small\_holes
+====================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.ignore_small_holes

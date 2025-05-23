@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data
+
+.. automethod:: RaptorXSimulationSetup.delete

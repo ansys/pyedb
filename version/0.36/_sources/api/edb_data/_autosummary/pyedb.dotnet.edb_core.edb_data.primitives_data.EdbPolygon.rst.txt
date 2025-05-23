@@ -1,0 +1,142 @@
+﻿EdbPolygon
+==========
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.primitives_data
+
+.. autoclass:: EdbPolygon
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      EdbPolygon.add_void
+      
+      
+      EdbPolygon.area
+      
+      
+      EdbPolygon.clone
+      
+      
+      EdbPolygon.convert_to_polygon
+      
+      
+      EdbPolygon.delete
+      
+      
+      EdbPolygon.duplicate_across_layers
+      
+      
+      EdbPolygon.expand
+      
+      
+      EdbPolygon.fix_self_intersections
+      
+      
+      EdbPolygon.get_closest_arc_midpoint
+      
+      
+      EdbPolygon.get_closest_point
+      
+      
+      EdbPolygon.get_connected_object_id_set
+      
+      
+      EdbPolygon.get_connected_objects
+      
+      
+      EdbPolygon.get_hfss_prop
+      
+      
+      EdbPolygon.in_polygon
+      
+      
+      EdbPolygon.intersect
+      
+      
+      EdbPolygon.intersection_type
+      
+      
+      EdbPolygon.is_arc
+      
+      
+      EdbPolygon.is_intersecting
+      
+      
+      EdbPolygon.make_zone_primitive
+      
+      
+      EdbPolygon.move
+      
+      
+      EdbPolygon.move_layer
+      
+      
+      EdbPolygon.points
+      
+      
+      EdbPolygon.points_raw
+      
+      
+      EdbPolygon.remove_hfss_prop
+      
+      
+      EdbPolygon.rotate
+      
+      
+      EdbPolygon.scale
+      
+      
+      EdbPolygon.set_hfss_prop
+      
+      
+      EdbPolygon.subtract
+      
+      
+      EdbPolygon.unite
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      EdbPolygon.aedt_name
+      EdbPolygon.api_class
+      EdbPolygon.arcs
+      EdbPolygon.bbox
+      EdbPolygon.can_be_zone_primitive
+      EdbPolygon.center
+      EdbPolygon.component
+      EdbPolygon.dcir_equipotential_region
+      EdbPolygon.has_self_intersections
+      EdbPolygon.has_voids
+      EdbPolygon.id
+      EdbPolygon.is_negative
+      EdbPolygon.is_null
+      EdbPolygon.is_parameterized
+      EdbPolygon.is_void
+      EdbPolygon.is_zone_primitive
+      EdbPolygon.layer
+      EdbPolygon.layer_name
+      EdbPolygon.longest_arc
+      EdbPolygon.name
+      EdbPolygon.net
+      EdbPolygon.net_name
+      EdbPolygon.owner
+      EdbPolygon.polygon_data
+      EdbPolygon.primitive_type
+      EdbPolygon.shortest_arc
+      EdbPolygon.type
+      EdbPolygon.voids
+   
+   

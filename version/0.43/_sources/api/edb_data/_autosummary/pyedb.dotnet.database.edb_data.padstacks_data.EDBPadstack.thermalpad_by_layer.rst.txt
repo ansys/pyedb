@@ -1,0 +1,6 @@
+thermalpad\_by\_layer
+=====================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstack.thermalpad_by_layer

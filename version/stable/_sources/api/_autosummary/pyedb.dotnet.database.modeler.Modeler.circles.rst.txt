@@ -1,0 +1,6 @@
+circles
+=======
+
+.. currentmodule:: pyedb.dotnet.database.modeler
+
+.. autoproperty:: Modeler.circles

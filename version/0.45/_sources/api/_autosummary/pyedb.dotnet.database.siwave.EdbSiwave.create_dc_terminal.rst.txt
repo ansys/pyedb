@@ -1,0 +1,6 @@
+create\_dc\_terminal
+====================
+
+.. currentmodule:: pyedb.dotnet.database.siwave
+
+.. automethod:: EdbSiwave.create_dc_terminal

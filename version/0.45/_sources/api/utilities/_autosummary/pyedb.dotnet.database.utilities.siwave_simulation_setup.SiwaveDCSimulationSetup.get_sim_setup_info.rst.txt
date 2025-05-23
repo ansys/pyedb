@@ -1,0 +1,6 @@
+get\_sim\_setup\_info
+=====================
+
+.. currentmodule:: pyedb.dotnet.database.utilities.siwave_simulation_setup
+
+.. autoproperty:: SiwaveDCSimulationSetup.get_sim_setup_info

@@ -1,0 +1,6 @@
+num\_nets
+=========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.utilities
+
+.. autoproperty:: EDBStatistics.num_nets

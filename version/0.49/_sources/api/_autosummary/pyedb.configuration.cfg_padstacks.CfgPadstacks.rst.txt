@@ -1,0 +1,30 @@
+﻿CfgPadstacks
+============
+
+.. currentmodule:: pyedb.configuration.cfg_padstacks
+
+.. autoclass:: CfgPadstacks
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgPadstacks.apply
+      
+      
+      CfgPadstacks.clean
+      
+      
+      CfgPadstacks.retrieve_parameters_from_edb
+      
+   
+   
+
+   
+   
+   

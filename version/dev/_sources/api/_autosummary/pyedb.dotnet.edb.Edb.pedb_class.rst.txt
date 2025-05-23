@@ -1,0 +1,6 @@
+pedb\_class
+===========
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.pedb_class

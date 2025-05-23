@@ -1,0 +1,6 @@
+use\_override\_shrink\_fac
+==========================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data
+
+.. autoproperty:: RaptorXSimulationAdvancedSettings.use_override_shrink_fac

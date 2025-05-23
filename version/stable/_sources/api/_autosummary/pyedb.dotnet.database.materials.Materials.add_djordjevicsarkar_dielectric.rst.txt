@@ -1,0 +1,6 @@
+add\_djordjevicsarkar\_dielectric
+=================================
+
+.. currentmodule:: pyedb.dotnet.database.materials
+
+.. automethod:: Materials.add_djordjevicsarkar_dielectric

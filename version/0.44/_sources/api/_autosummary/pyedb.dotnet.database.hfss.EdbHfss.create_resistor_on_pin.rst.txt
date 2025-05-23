@@ -1,0 +1,6 @@
+create\_resistor\_on\_pin
+=========================
+
+.. currentmodule:: pyedb.dotnet.database.hfss
+
+.. automethod:: EdbHfss.create_resistor_on_pin

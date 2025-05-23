@@ -1,0 +1,6 @@
+layout\_instance
+================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.components_data
+
+.. autoproperty:: EDBComponent.layout_instance

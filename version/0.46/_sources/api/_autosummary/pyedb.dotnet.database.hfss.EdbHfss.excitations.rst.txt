@@ -1,0 +1,6 @@
+excitations
+===========
+
+.. currentmodule:: pyedb.dotnet.database.hfss
+
+.. autoproperty:: EdbHfss.excitations
