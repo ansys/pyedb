@@ -308,11 +308,11 @@ class EDBComponent(Group):
         if "GetSolderBallProperty" in dir(self.component_property):
             shape = self.component_property.GetSolderBallProperty().GetShape()
             if shape.value__ == 0:
-                return "None"
+                return "none"
             elif shape.value__ == 1:
-                return "Cylinder"
+                return "cylinder"
             elif shape.value__ == 2:
-                return "Spheroid"
+                return "spheroid"
 
     @solder_ball_shape.setter
     def solder_ball_shape(self, value):
