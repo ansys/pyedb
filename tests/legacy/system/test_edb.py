@@ -1564,9 +1564,9 @@ class TestClass:
             assert vrm.component
             assert vrm.component.refdes == "U1"
             assert vrm.negative_remote_sense_pin
-            assert vrm.negative_remote_sense_pin.name == "U1-A3"
+            assert vrm.negative_remote_sense_pin.name == "A3"
             assert vrm.positive_remote_sense_pin
-            assert vrm.positive_remote_sense_pin.name == "U1-A2"
+            assert vrm.positive_remote_sense_pin.name == "A2"
             assert vrm.voltage == 1.5
             assert vrm.is_active
             assert not vrm.is_null
@@ -1764,50 +1764,28 @@ class TestClass:
             positive_pin_names = [f"{component_name}-{pin}" for pin in positive_pin_names]
             reference_pin_names = [f"{component_name}-{pin}" for pin in reference_pin_names]
         assert len(edbapp.excitations) == 0
-        if edbapp.grpc:
-            assert edbapp.source_excitation.create_port_on_pins(
-                refdes=component_name if pins_mode == "str" else None,
-                pins=(
-                    positive_pin_names
-                    if pins_mode == "str" or pins_mode == "global_str"
-                    else (
-                        positive_pin_numbers
-                        if pins_mode == "int"
-                        else [edbcomp.pins[pin] for pin in positive_pin_names]
-                    )
-                ),
-                reference_pins=(
-                    reference_pin_names
-                    if pins_mode == "str" or pins_mode == "global_str"
-                    else (
-                        reference_pin_numbers
-                        if pins_mode == "int"
-                        else [edbcomp.pins[pin] for pin in reference_pin_names]
-                    )
-                ),
-            )
-        else:
-            assert edbapp.components.create_port_on_pins(
-                refdes=component_name if pins_mode == "str" else None,
-                pins=(
-                    positive_pin_names
-                    if pins_mode == "str" or pins_mode == "global_str"
-                    else (
-                        positive_pin_numbers
-                        if pins_mode == "int"
-                        else [edbcomp.pins[pin] for pin in positive_pin_names]
-                    )
-                ),
-                reference_pins=(
-                    reference_pin_names
-                    if pins_mode == "str" or pins_mode == "global_str"
-                    else (
-                        reference_pin_numbers
-                        if pins_mode == "int"
-                        else [edbcomp.pins[pin] for pin in reference_pin_names]
-                    )
-                ),
-            )
+
+        assert edbapp.components.create_port_on_pins(
+            refdes=component_name if pins_mode == "str" else None,
+            pins=(
+                positive_pin_names
+                if pins_mode == "str" or pins_mode == "global_str"
+                else (
+                    positive_pin_numbers
+                    if pins_mode == "int"
+                    else [edbcomp.pins[pin] for pin in positive_pin_names]
+                )
+            ),
+            reference_pins=(
+                reference_pin_names
+                if pins_mode == "str" or pins_mode == "global_str"
+                else (
+                    reference_pin_numbers
+                    if pins_mode == "int"
+                    else [edbcomp.pins[pin] for pin in reference_pin_names]
+                )
+            ),
+        )
         assert len(edbapp.excitations) == 2
 
     def test_create_circuit_port_on_component_pins_pingroup_on_single_pin(self, edb_examples):

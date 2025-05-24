@@ -811,12 +811,10 @@ class Components(object):
             refdes = EDBComponent(self._pedb, refdes)
         pins = self._get_pins_for_ports(pins, refdes)
         if not pins:
-            self._logger.error("No pins found during port creation. Port is not defined.")
-            return False
+            raise RuntimeError("No pins found during port creation. Port is not defined.")
         reference_pins = self._get_pins_for_ports(reference_pins, refdes)
         if not reference_pins:
-            self._logger.error("No reference pins found during port creation. Port is not defined.")
-            return False
+            raise RuntimeError("No reference pins found during port creation. Port is not defined.")
         if refdes and any(refdes.rlc_values):
             return self.deactivate_rlc_component(component=refdes, create_circuit_port=True)
         if not port_name:
