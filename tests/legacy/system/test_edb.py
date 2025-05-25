@@ -1770,19 +1770,13 @@ class TestClass:
             pins=(
                 positive_pin_names
                 if pins_mode == "str" or pins_mode == "global_str"
-                else (
-                    positive_pin_numbers
-                    if pins_mode == "int"
-                    else [edbcomp.pins[pin] for pin in positive_pin_names]
-                )
+                else (positive_pin_numbers if pins_mode == "int" else [edbcomp.pins[pin] for pin in positive_pin_names])
             ),
             reference_pins=(
                 reference_pin_names
                 if pins_mode == "str" or pins_mode == "global_str"
                 else (
-                    reference_pin_numbers
-                    if pins_mode == "int"
-                    else [edbcomp.pins[pin] for pin in reference_pin_names]
+                    reference_pin_numbers if pins_mode == "int" else [edbcomp.pins[pin] for pin in reference_pin_names]
                 )
             ),
         )
