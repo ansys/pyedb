@@ -25,7 +25,7 @@ import math
 import warnings
 
 from pyedb.dotnet.clr_module import String
-from pyedb.dotnet.database.cell.primitive.primitive import Primitive
+from pyedb.dotnet.database.cell.primitive.primitive import Connectable
 from pyedb.dotnet.database.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.database.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.database.general import (
@@ -1164,7 +1164,7 @@ class EDBPadstack(object):
         return True
 
 
-class EDBPadstackInstance(Primitive):
+class EDBPadstackInstance(Connectable):
     """Manages EDB functionalities for a padstack.
 
     Parameters
