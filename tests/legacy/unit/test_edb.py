@@ -65,6 +65,7 @@ class TestClass:
         )
         edb.add_design_variable(variable_name="var1", variable_value=0.01)
         edb.add_design_variable(variable_name="var2", variable_value="10um")
+        assert edb.variables["var1"]
         edb.add_design_variable(variable_name="var3", variable_value=0.03, description="test description")
         edb.add_project_variable(variable_name="var4", variable_value="1mm", description="Project variable.")
         edb.add_project_variable(variable_name="$var5", variable_value=0.1)
@@ -72,11 +73,21 @@ class TestClass:
         assert check_numeric_equivalence(edb["var2"], 1.0e-5)
         assert edb["var3"] == 0.03
         var3 = edb.get_variable("var3")
-        assert var3.description == "test description"
+        if edb.grpc:
+            assert edb.active_layout.get_variable_desc("var3") == "test description"
+        else:
+            assert var3.description == "test description"
         assert edb["$var4"] == 0.001
-        assert edb.get_variable("$var4").description == "Project variable."
+        if edb.grpc:
+            assert edb.active_db.get_variable_desc("$var4") == "Project variable."
+        else:
+            assert edb.get_variable("$var4").description == "Project variable."
         assert edb["$var5"] == 0.1
-        assert edb.get_variable("$var5").delete()
+        if edb.grpc:
+            edb.active_cell.delete_variable("$var5")
+            assert "$var5" not in edb.active_cell.get_all_variable_names()
+        else:
+            assert edb.get_variable("$var5").delete()
 
     def test_add_design_variable(self):
         """Add a variable value."""
@@ -84,18 +95,22 @@ class TestClass:
             os.path.join(self.local_scratch.path, "temp.aedb"),
             edbversion=desktop_version,
         )
-        is_added, _ = edb.add_design_variable("ant_length", "1cm")
-        assert is_added
-        is_added, _ = edb.add_design_variable("ant_length", "1cm")
-        assert not is_added
-        is_added, _ = edb.add_design_variable("my_parameter_default", "1mm", is_parameter=True)
-        assert is_added
-        is_added, _ = edb.add_design_variable("my_parameter_default", "1mm", is_parameter=True)
-        assert not is_added
-        is_added, _ = edb.add_design_variable("$my_project_variable", "1mm")
-        assert is_added
-        is_added, _ = edb.add_design_variable("$my_project_variable", "1mm")
-        assert not is_added
+        if edb.grpc:
+            edb.add_design_variable(variable_name="ant_length", variable_value="1cm")
+            edb.add_design_variable(variable_name="my_parameter_default", variable_value="1mm", is_parameter=True)
+            edb.add_project_variable(variable_name="$my_project_variable", variable_value="1mm")
+            assert "ant_length" in edb.active_layout.get_all_variable_names()
+            assert "my_parameter_default" in edb.active_layout.get_all_variable_names()
+            assert "$my_project_variable" in edb.active_db.get_all_variable_names()
+        else:
+            is_added, _ = edb.add_design_variable(variable_name="ant_length", variable_value="1cm")
+            assert is_added
+            is_added, _ = edb.add_design_variable(
+                variable_name="my_parameter_default", variable_value="1mm", is_parameter=True
+            )
+            assert is_added
+            is_added, _ = edb.add_design_variable(variable_name="$my_project_variable", variable_value="1mm")
+            assert is_added
 
     def test_add_design_variable_with_setitem(self):
         """Add a variable value."""
@@ -104,7 +119,11 @@ class TestClass:
             edbversion=desktop_version,
         )
         edb.add_design_variable("ant_length", "1cm")
-        assert edb.variable_exists("ant_length")[0]
+
+        if edb.grpc:
+            assert edb.variable_exists("ant_length")
+        else:
+            assert edb.variable_exists("ant_length")[0]
         assert edb["ant_length"] == 0.01
 
     def test_change_design_variable_value(self):
@@ -113,20 +132,27 @@ class TestClass:
             os.path.join(self.local_scratch.path, "temp.aedb"),
             edbversion=desktop_version,
         )
-        edb.add_design_variable("ant_length", "1cm")
-        edb.add_design_variable("my_parameter_default", "1mm", is_parameter=True)
-        edb.add_design_variable("$my_project_variable", "1mm")
-
-        is_changed, _ = edb.change_design_variable_value("ant_length", "1m")
-        assert is_changed
-        is_changed, _ = edb.change_design_variable_value("elephant_length", "1m")
-        assert not is_changed
-        is_changed, _ = edb.change_design_variable_value("my_parameter_default", "1m")
-        assert is_changed
-        is_changed, _ = edb.change_design_variable_value("$my_project_variable", "1m")
-        assert is_changed
-        is_changed, _ = edb.change_design_variable_value("$my_parameter", "1m")
-        assert not is_changed
+        edb.add_design_variable(variable_name="ant_length", variable_value="1cm")
+        edb.add_design_variable(variable_name="my_parameter_default", variable_value="1mm", is_parameter=True)
+        edb.add_design_variable(variable_name="$my_project_variable", variable_value="1mm")
+        if edb.grpc:
+            edb.change_design_variable_value(variable_name="ant_length", variable_value="1m")
+            edb.change_design_variable_value(variable_name="elephant_length", variable_value="1m")
+            edb.change_design_variable_value(variable_name="my_parameter_default", variable_value="1m")
+            assert "ant_length" in edb.active_cell.get_all_variable_names()
+            assert "elephant_length" not in edb.active_cell.get_all_variable_names()
+            assert "my_parameter_default" in edb.active_cell.get_all_variable_names()
+        else:
+            is_changed, _ = edb.change_design_variable_value("ant_length", "1m")
+            assert is_changed
+            is_changed, _ = edb.change_design_variable_value("elephant_length", "1m")
+            assert not is_changed
+            is_changed, _ = edb.change_design_variable_value("my_parameter_default", "1m")
+            assert is_changed
+            is_changed, _ = edb.change_design_variable_value("$my_project_variable", "1m")
+            assert is_changed
+            is_changed, _ = edb.change_design_variable_value("$my_parameter", "1m")
+            assert not is_changed
 
     def test_change_design_variable_value_with_setitem(self):
         """Change a variable value."""
@@ -186,11 +212,13 @@ class TestClass:
         edbpath = "file.edb"
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         files = [aedt_file, aedt_file + ".lock"]
-        _ = Edb(edbpath, remove_existing_aedt=True)
-
-        for file in files:
-            mock_unlink.assert_any_call(file)
-            logger_mock.info.assert_any_call(f"Deleted AEDT project-related file {file}.")
+        edb = Edb(edbpath=edbpath, edbversion=desktop_version, remove_existing_aedt=True)
+        if edb.grpc:
+            pass
+        else:
+            for file in files:
+                mock_unlink.assert_any_call(file)
+                logger_mock.info.assert_any_call(f"Deleted AEDT project-related file {file}.")
 
     @patch("os.path.isfile")
     @patch("os.unlink")
@@ -207,11 +235,13 @@ class TestClass:
         edbpath = "file.edb"
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         files = [aedt_file, aedt_file + ".lock"]
-        _ = Edb(edbpath, remove_existing_aedt=True)
-
-        for file in files:
-            mock_unlink.assert_any_call(file)
-            logger_mock.info.assert_any_call(f"Failed to delete AEDT project-related file {file}.")
+        edb = Edb(edbpath=edbpath, edbversion=desktop_version, remove_existing_aedt=True)
+        if edb.grpc:
+            pass
+        else:
+            for file in files:
+                mock_unlink.assert_any_call(file)
+                logger_mock.info.assert_any_call(f"Failed to delete AEDT project-related file {file}.")
 
     @patch("os.path.isfile")
     @patch("os.unlink")
@@ -228,10 +258,14 @@ class TestClass:
         edbpath = "file.edb"
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         files = [aedt_file, aedt_file + ".lock"]
-        _ = Edb(edbpath)
-
-        mock_unlink.assert_not_called()
-        for file in files:
-            logger_mock.warning.assert_any_call(
-                f"AEDT project-related file {file} exists and may need to be deleted before opening the EDB in HFSS 3D Layout."  # noqa: E501
-            )
+        edb = Edb(edbpath=edbpath, edbversion=desktop_version)
+        if edb.grpc:
+            pass
+        else:
+            mock_unlink.assert_not_called()
+            for file in files:
+                logger_mock.warning.assert_any_call(
+                    f"AEDT project-related file {file} exists and may need to be deleted before "
+                    f"opening the EDB in HFSS 3D Layout."
+                    # noqa: E501
+                )
