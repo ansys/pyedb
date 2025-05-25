@@ -49,7 +49,6 @@ from pyedb.dotnet.database.components import Components
 import pyedb.dotnet.database.dotnet.database
 from pyedb.dotnet.database.dotnet.database import Database
 from pyedb.dotnet.database.edb_data.design_options import EdbDesignOptions
-from pyedb.dotnet.database.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.database.edb_data.ports import (
     BundleWavePort,
     CircuitPort,
@@ -3245,10 +3244,13 @@ class Edb(Database):
         -------
         :class:`pyedb.dotnet.database.edb_data.edbvalue.EdbValue`
         """
-        var_server = self.variable_exists(variable_name)
-        if var_server[0]:
-            tuple_value = var_server[1].GetVariableValue(variable_name)
-            return EdbValue(tuple_value[1])
+
+        for i, j in self.project_variables.items():
+            if i == variable_name:
+                return j
+        for i, j in self.design_variables.items():
+            if i == variable_name:
+                return j
         self.logger.info("Variable %s doesn't exists.", variable_name)
         return None
 

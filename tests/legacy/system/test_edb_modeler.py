@@ -366,10 +366,8 @@ class TestClass:
 
     def test_modeler_primitives_boolean_operation(self):
         """Evaluate modeler primitives boolean operations."""
-        from pyedb.grpc.edb import Edb as Edb
-
         # TODO check bug #464.
-        edb = Edb(edbversion=desktop_version, restart_rpc_server=True)
+        edb = Edb(edbversion=desktop_version)
         edb.stackup.add_layer(layer_name="test")
         x = edb.modeler.create_polygon(layer_name="test", points=[[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]])
         assert not x.is_null
