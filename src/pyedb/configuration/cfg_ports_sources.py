@@ -406,10 +406,14 @@ class CfgCircuitElement(CfgBase):
             pos_coor_terminal[self.name] = self._pedb.get_point_terminal(self.name, net_name, point, layer)
 
         elif pos_type == "padstack":
+            flag = False
             for pds in self._pedb.layout.padstack_instances:
                 if pds.aedt_name == pos_value:
                     pos_objs.update({pos_value: pds})
+                    flag = True
                     break
+            if flag is False:
+                raise ValueError(f"Padstack instance {pos_value} does not exist")
         elif pos_type == "pin":
             pins = {
                 pos_value: self._pedb.components.instances[self.positive_terminal_info.reference_designator].pins[
