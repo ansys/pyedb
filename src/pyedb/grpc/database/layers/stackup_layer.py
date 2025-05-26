@@ -697,3 +697,52 @@ class StackupLayer(GrpcStackupLayer):
             "bottom_hallhuray_surface_ratio": self.bottom_hallhuray_surface_ratio,
         }
         return dict_out
+
+    def _load_layer(self, layer):
+        if layer:
+            self.color = layer["color"]
+            self.type = layer["type"]
+            if isinstance(layer["material"], str):
+                self.material = layer["material"]
+            else:
+                material_data = layer["material"]
+                if material_data is not None:
+                    material_name = layer["material"]["name"]
+                    self._pedb.materials.add_material(material_name, **material_data)
+                    self.material = material_name
+            if layer["dielectric_fill"]:
+                if isinstance(layer["dielectric_fill"], str):
+                    self.dielectric_fill = layer["dielectric_fill"]
+                else:
+                    dielectric_data = layer["dielectric_fill"]
+                    if dielectric_data is not None:
+                        self._pedb.materials.add_material(**dielectric_data)
+                    self.dielectric_fill = layer["dielectric_fill"]["name"]
+            self.thickness = layer["thickness"]
+            self.etch_factor = layer["etch_factor"]
+            self.roughness_enabled = layer["roughness_enabled"]
+            if self.roughness_enabled:
+                self.top_hallhuray_nodule_radius = layer["top_hallhuray_nodule_radius"]
+                self.top_hallhuray_surface_ratio = layer["top_hallhuray_surface_ratio"]
+                self.assign_roughness_model(
+                    "huray",
+                    layer["top_hallhuray_nodule_radius"],
+                    layer["top_hallhuray_surface_ratio"],
+                    apply_on_surface="top",
+                )
+                self.bottom_hallhuray_nodule_radius = layer["bottom_hallhuray_nodule_radius"]
+                self.bottom_hallhuray_surface_ratio = layer["bottom_hallhuray_surface_ratio"]
+                self.assign_roughness_model(
+                    "huray",
+                    layer["bottom_hallhuray_nodule_radius"],
+                    layer["bottom_hallhuray_surface_ratio"],
+                    apply_on_surface="bottom",
+                )
+                self.side_hallhuray_nodule_radius = layer["side_hallhuray_nodule_radius"]
+                self.side_hallhuray_surface_ratio = layer["side_hallhuray_surface_ratio"]
+                self.assign_roughness_model(
+                    "huray",
+                    layer["side_hallhuray_nodule_radius"],
+                    layer["side_hallhuray_surface_ratio"],
+                    apply_on_surface="side",
+                )
