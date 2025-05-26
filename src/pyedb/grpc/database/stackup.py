@@ -1455,7 +1455,7 @@ class Stackup(LayerCollection):
         offset_y=0.0,
         offset_z=0.0,
         place_on_top=True,
-    ):
+    ) -> bool:
         """Place a 3D Component into current layout.
          3D Component ports are not visible via EDB. They will be visible after the EDB has been opened in Ansys
          Electronics Desktop as a project.
@@ -1492,14 +1492,11 @@ class Stackup(LayerCollection):
         ...                                   offset_y="2mm", flipped_stackup=False, place_on_top=True,
         ...                                   )
         """
-        zero_data = GrpcValue(0.0)
-        one_data = GrpcValue(1.0)
-        local_origin = GrpcPoint3DData(0.0, 0.0, 0.0)
         rotation_axis_from = GrpcPoint3DData(1.0, 0.0, 0.0)
         _angle = angle * math.pi / 180.0
         rotation_axis_to = GrpcPoint3DData(math.cos(_angle), -1 * math.sin(_angle), 0.0)
 
-        stackup_target = GrpcLayerCollection(self._pedb.layout.layer_collection)
+        stackup_target = LayerCollection(self._pedb, self._pedb.layout.layer_collection)
         res = stackup_target.get_top_bottom_stackup_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
         target_top_elevation = res[1]
         target_bottom_elevation = res[3]
@@ -1521,9 +1518,12 @@ class Stackup(LayerCollection):
             return False
 
         mcad_model.cell_instance.placement_3d = True
-        mcad_model.cell_instance.transform3d = GrpcTransform3D(
-            local_origin, rotation_axis_from, rotation_axis_to, flip_angle, location
+        transform_rotation = mcad_model.cell_instance.transform3d.create_from_axis_and_angle(
+            axis=rotation_axis_from, angle=flip_angle.value
         )
+        mcad_model.cell_instance.transform3d = transform_rotation
+        transform_translation = mcad_model.cell_instance.transform3d.create_from_offset(offset=location)
+        mcad_model.cell_instance.transform3d = transform_translation
         return True
 
     def residual_copper_area_per_layer(self):
