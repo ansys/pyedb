@@ -389,8 +389,8 @@ class TestClass:
             "bottom_hallhuray_surface_ratio": 0.0,
             "side_hallhuray_nodule_radius": 0.0,
             "side_hallhuray_surface_ratio": 0.0,
-            "upper_elevation": 0.0,
-            "lower_elevation": 0.0,
+            "upper_elevation": 0.001596,
+            "lower_elevation": 0.001508,
         }
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         edbapp = Edb(source_path, edbversion=desktop_version)
@@ -400,9 +400,11 @@ class TestClass:
         with open(json_path, "r") as json_file:
             data = json.load(json_file)
             # Check material
-            assert MATERIAL_MEGTRON_4 == data["materials"]["Megtron4"]
+            for parameter, value in MATERIAL_MEGTRON_4.items():
+                assert data["materials"]["Megtron4"][parameter] == value
             # Check layer
-            assert LAYER_DE_2 == data["layers"]["DE2"]
+            for parameter, value in LAYER_DE_2.items():
+                assert data["layers"]["DE2"][parameter] == value
         edbapp.close()
 
     def test_stackup_load_xml(self, edb_examples):

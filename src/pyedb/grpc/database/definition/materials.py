@@ -99,22 +99,22 @@ def get_line_float_value(line):
 class MaterialProperties(BaseModel):
     """Store material properties."""
 
-    conductivity: Optional[PositiveFloat] = None
-    dielectric_loss_tangent: Optional[PositiveFloat] = None
-    magnetic_loss_tangent: Optional[PositiveFloat] = None
-    mass_density: Optional[PositiveFloat] = None
-    permittivity: Optional[PositiveFloat] = None
-    permeability: Optional[PositiveFloat] = None
-    poisson_ratio: Optional[PositiveFloat] = None
-    specific_heat: Optional[PositiveFloat] = None
-    thermal_conductivity: Optional[PositiveFloat] = None
-    youngs_modulus: Optional[PositiveFloat] = None
-    thermal_expansion_coefficient: Optional[PositiveFloat] = None
-    dc_conductivity: Optional[PositiveFloat] = None
-    dc_permittivity: Optional[PositiveFloat] = None
-    dielectric_model_frequency: Optional[PositiveFloat] = None
-    loss_tangent_at_frequency: Optional[PositiveFloat] = None
-    permittivity_at_frequency: Optional[PositiveFloat] = None
+    conductivity: Optional[PositiveFloat] = 0.0
+    dielectric_loss_tangent: Optional[PositiveFloat] = 0.0
+    magnetic_loss_tangent: Optional[PositiveFloat] = 0.0
+    mass_density: Optional[PositiveFloat] = 0.0
+    permittivity: Optional[PositiveFloat] = 0.0
+    permeability: Optional[PositiveFloat] = 0.0
+    poisson_ratio: Optional[PositiveFloat] = 0.0
+    specific_heat: Optional[PositiveFloat] = 0.0
+    thermal_conductivity: Optional[PositiveFloat] = 0.0
+    youngs_modulus: Optional[PositiveFloat] = 0.0
+    thermal_expansion_coefficient: Optional[PositiveFloat] = 0.0
+    dc_conductivity: Optional[PositiveFloat] = 0.0
+    dc_permittivity: Optional[PositiveFloat] = 0.0
+    dielectric_model_frequency: Optional[PositiveFloat] = 0.0
+    loss_tangent_at_frequency: Optional[PositiveFloat] = 0.0
+    permittivity_at_frequency: Optional[PositiveFloat] = 0.0
 
 
 class Material(GrpcMaterialDef):
@@ -169,7 +169,7 @@ class Material(GrpcMaterialDef):
                 self.__dielectric_model = GrpcDjordjecvicSarkarModel(super().dielectric_material_model.msg)
             return self.__dielectric_model
         except:
-            return None
+            return 0.0
 
     @property
     def conductivity(self):
@@ -184,7 +184,7 @@ class Material(GrpcMaterialDef):
             value = self.get_property(GrpcMaterialProperty.CONDUCTIVITY).value
             return value
         except:
-            return None
+            return 0.0
 
     @conductivity.setter
     def conductivity(self, value):
@@ -210,7 +210,7 @@ class Material(GrpcMaterialDef):
         try:
             return self.dielectric_material_model.dc_conductivity
         except:
-            return
+            return None
 
     @dc_conductivity.setter
     def dc_conductivity(self, value):
@@ -230,7 +230,7 @@ class Material(GrpcMaterialDef):
         try:
             return self.dielectric_material_model.dc_relative_permitivity
         except:
-            return
+            return None
 
     @dc_permittivity.setter
     def dc_permittivity(self, value):
@@ -250,7 +250,7 @@ class Material(GrpcMaterialDef):
         try:
             return self.dielectric_material_model.loss_tangent_at_frequency
         except:
-            return
+            return None
 
     @loss_tangent_at_frequency.setter
     def loss_tangent_at_frequency(self, value):
@@ -270,7 +270,7 @@ class Material(GrpcMaterialDef):
         try:
             return self.dielectric_material_model.frequency
         except:
-            return
+            return None
 
     @dielectric_model_frequency.setter
     def dielectric_model_frequency(self, value):
@@ -291,7 +291,7 @@ class Material(GrpcMaterialDef):
         try:
             return self.dielectric_material_model.relative_permitivity_at_frequency
         except:
-            return
+            return None
 
     @permittivity_at_frequency.setter
     def permittivity_at_frequency(self, value):
@@ -313,7 +313,7 @@ class Material(GrpcMaterialDef):
             value = self.get_property(GrpcMaterialProperty.PERMITTIVITY).value
             return value
         except:
-            return None
+            return 0.0
 
     @permittivity.setter
     def permittivity(self, value):
@@ -334,7 +334,7 @@ class Material(GrpcMaterialDef):
             value = self.get_property(GrpcMaterialProperty.PERMEABILITY).value
             return value
         except:
-            return None
+            return 0.0
 
     @permeability.setter
     def permeability(self, value):
@@ -371,7 +371,7 @@ class Material(GrpcMaterialDef):
         try:
             return self.get_property(GrpcMaterialProperty.DIELECTRIC_LOSS_TANGENT).value
         except:
-            return None
+            return 0.0
 
     @loss_tangent.setter
     def loss_tangent(self, value):
@@ -401,7 +401,7 @@ class Material(GrpcMaterialDef):
             value = self.get_property(GrpcMaterialProperty.MAGNETIC_LOSS_TANGENT).value
             return value
         except:
-            return None
+            return 0.0
 
     @magnetic_loss_tangent.setter
     def magnetic_loss_tangent(self, value):
@@ -422,7 +422,7 @@ class Material(GrpcMaterialDef):
             value = self.get_property(GrpcMaterialProperty.THERMAL_CONDUCTIVITY).value
             return value
         except:
-            return None
+            return 0.0
 
     @thermal_conductivity.setter
     def thermal_conductivity(self, value):
@@ -443,7 +443,7 @@ class Material(GrpcMaterialDef):
             value = self.get_property(GrpcMaterialProperty.MASS_DENSITY).value
             return value
         except:
-            return None
+            return 0.0
 
     @mass_density.setter
     def mass_density(self, value):
@@ -464,7 +464,7 @@ class Material(GrpcMaterialDef):
             value = self.get_property(GrpcMaterialProperty.YOUNGS_MODULUS).value
             return value
         except:
-            return None
+            return 0.0
 
     @youngs_modulus.setter
     def youngs_modulus(self, value):
@@ -483,7 +483,7 @@ class Material(GrpcMaterialDef):
         try:
             return self.get_property(GrpcMaterialProperty.SPECIFIC_HEAT).value
         except:
-            return None
+            return 0.0
 
     @specific_heat.setter
     def specific_heat(self, value):
@@ -502,7 +502,7 @@ class Material(GrpcMaterialDef):
         try:
             return self.get_property(GrpcMaterialProperty.POISSONS_RATIO).value
         except:
-            return None
+            return 0.0
 
     @poisson_ratio.setter
     def poisson_ratio(self, value):
@@ -522,7 +522,7 @@ class Material(GrpcMaterialDef):
         try:
             return self.get_property(GrpcMaterialProperty.THERMAL_EXPANSION_COEFFICIENT).value
         except:
-            return None
+            return 0.0
 
     @thermal_expansion_coefficient.setter
     def thermal_expansion_coefficient(self, value):

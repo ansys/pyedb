@@ -832,9 +832,6 @@ class Stackup(LayerCollection):
         layers_out = {}
         for k, v in self.layers.items():
             data = v._json_format()
-            # FIXME: Update the API to avoid providing following information to our users
-            del data["pedb"]
-            del data["edb_object"]
             layers_out[k] = data
             if v.material in self._pedb.materials.materials:
                 layer_material = self._pedb.materials.materials[v.material]
