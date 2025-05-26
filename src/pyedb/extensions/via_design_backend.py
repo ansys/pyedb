@@ -32,35 +32,48 @@ class StitchingVias:
         self.clockwise = clockwise
 
         self.vias = []
-        for angle in np.arange(self.start_angle, start_angle+self.step_angle*self.number_of_vias, self.step_angle):
-            GroundVia(
+        for idx, angle in enumerate(np.arange(self.start_angle, start_angle + self.step_angle * self.number_of_vias, self.step_angle)):
+            dx = f"cos({angle}deg)*({self.distance}+{self.p_via.anti_pad_diameter})"
+            dy = f"sin({angle}deg)*({self.distance}+{self.p_via.anti_pad_diameter})"
+            via = GroundVia(
                 p_signal=self.p_via.p_signal,
-                name=self.name,
+                name=f"{self.name}_{idx}",
                 net_name="GND",
                 padstack_def=self.p_via.padstack_def,
                 start_layer=self.p_via.start_layer,
                 stop_layer=self.p_via.stop_layer,
-                
-                      )
+                base_x=self.p_via.x,
+                base_y=self.p_via.y,
+                dx=dx,
+                dy=dy,
+                flip_dx=self.p_via.flip_dx,
+                flip_dy=self.p_via.flip_dy,
+                connection_trace=None,
+                with_solder_ball=False,
+                backdrill_parameters=None,
+                conductor_layers=self.p_via.p_signal.p_board.conductor_layers,
+            )
+            self.vias.append(via)
 
     def populate_config(self, cfg):
-        pass
+        for via in self.vias:
+            via.populate_config(cfg)
 
 
 class Trace:
     def __init__(
-        self,
-        p_via,
-        name,
-        net_name,
-        layer,
-        width,
-        clearance,
-        incremental_path: list[list],
-        flip_dx,
-        flip_dy,
-        end_cap_style,
-        port: Union[dict, None],
+            self,
+            p_via,
+            name,
+            net_name,
+            layer,
+            width,
+            clearance,
+            incremental_path: list[list],
+            flip_dx,
+            flip_dy,
+            end_cap_style,
+            port: Union[dict, None],
     ):
         self.p_via = p_via
         self.variables = []
@@ -137,23 +150,23 @@ class GroundVia:
         return f"{self.base_y}+{self.dy}"
 
     def __init__(
-        self,
-        p_signal,
-        name,
-        net_name,
-        padstack_def,
-        start_layer,
-        stop_layer,
-        base_x,
-        base_y,
-        dx,
-        dy,
-        flip_dx,
-        flip_dy,
-        connection_trace: Union[dict, Trace],
-        with_solder_ball,
-        backdrill_parameters,
-        conductor_layers: list,
+            self,
+            p_signal,
+            name,
+            net_name,
+            padstack_def,
+            start_layer,
+            stop_layer,
+            base_x,
+            base_y,
+            dx,
+            dy,
+            flip_dx,
+            flip_dy,
+            connection_trace: Union[dict, Trace],
+            with_solder_ball,
+            backdrill_parameters,
+            conductor_layers: list,
     ):
         self.p_signal = p_signal
         self.variables = []
@@ -281,20 +294,23 @@ class Via(GroundVia):
                 # self.voids.append(anti_pad)
                 self.p_signal.p_board.voids.append(anti_pad)
 
+        if self.stitching_vias is not None:
+            self.stitching_vias.populate_config(cfg)
+
 
 class Signal:
     """vias and traces."""
 
     def __init__(
-        self,
-        p_board,
-        signal_name,
-        name_suffix: Union[None, str],
-        base_x,
-        base_y,
-        stacked_vias,
-        flip_x,
-        flip_y,
+            self,
+            p_board,
+            signal_name,
+            name_suffix: Union[None, str],
+            base_x,
+            base_y,
+            stacked_vias,
+            flip_x,
+            flip_y,
     ):
         self.p_board = p_board
         self.net_name = signal_name if name_suffix is None else f"{signal_name}_{name_suffix}"
@@ -323,7 +339,7 @@ class Signal:
                 via = GroundVia(
                     p_signal=self,
                     name=f"{self.net_name}_{start_layer}_{stop_layer}_{v_idx}",
-                    net_name=self.net_name,
+                    net_name="GND",
                     padstack_def=i["padstack_def"],
                     start_layer=start_layer,
                     stop_layer=stop_layer,
@@ -358,7 +374,7 @@ class Signal:
                     backdrill_parameters=i["backdrill_parameters"],
                     fanout_trace=i["fanout_trace"],
                     conductor_layers=self.p_board.conductor_layers,
-                    stitching_vias=None
+                    stitching_vias=i["stitching_vias"],
                 )
             x = via.x
             y = via.y
@@ -653,6 +669,6 @@ class ViaDesignBackend:
         self.app.save_edb()
         self.app.close_edb()
 
-    def launch_h3d(self):
+    def launch_h3d(self, close_projects, close_desktop):
         h3d = ansys.aedt.core.Hfss3dLayout(project=self.app.edbpath, version=self.version)
-        h3d.release_desktop()
+        h3d.release_desktop(close_projects=close_projects, close_desktop=close_desktop)
