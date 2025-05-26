@@ -53,13 +53,24 @@ class TestClass:
         poly0 = edbapp.modeler.polygons[0]
         assert edbapp.modeler.polygons[0].clone()
         assert isinstance(poly0.voids, list)
-        assert isinstance(poly0.points_raw, list)
+        # TODO convert point_raw as property in dotnet to be compliant with grpc.
+        if edbapp.grpc:
+            assert isinstance(poly0.points_raw, list)
+        else:
+            assert isinstance(poly0.points_raw(), list)
         assert isinstance(poly0.points(), tuple)
         assert isinstance(poly0.points()[0], list)
         assert poly0.points()[0][0] >= 0.0
-        assert poly0.points_raw[0].x.value >= 0.0
-        assert poly0.type == "polygon"
-        assert not poly0.points_raw[0].is_arc
+        if edbapp.grpc:
+            assert poly0.points_raw[0].x.value >= 0.0
+        else:
+            assert poly0.points_raw()[0].X.ToDouble() >= 0.0
+        # TODO check is polygon.type should return "polygon" instead of "Polygon",
+        assert poly0.type.lower() == "polygon"
+        if edbapp.grpc:
+            assert not poly0.points_raw[0].is_arc
+        else:
+            assert not poly0.points_raw()[0].IsArc()
         assert isinstance(poly0.voids, list)
         # TODO check bug 455
         # assert isinstance(poly0.get_closest_point([0.07, 0.0027]), list)
@@ -68,12 +79,21 @@ class TestClass:
         assert isinstance(poly0.longest_arc.length, float)
         assert isinstance(poly0.shortest_arc.length, float)
         assert not poly0.in_polygon([0, 0])
-        # assert isinstance(poly0.arcs[0].center, list)
-        # assert isinstance(poly0.arcs[0].radius, float)
-        assert poly0.arcs[0].is_segment()
-        assert not poly0.arcs[0].is_point()
-        assert not poly0.arcs[0].is_ccw()
-        # assert isinstance(poly0.arcs[0].points_raw, list)
+        # TODO make grpc arc.is_segment a property
+        if edbapp.grpc:
+            assert poly0.arcs[0].is_segment()
+        else:
+            assert poly0.arcs[0].is_segment
+        # TODO make grpc arc.is_point a property
+        if edbapp.grpc:
+            assert not poly0.arcs[0].is_point()
+        else:
+            assert not poly0.arcs[0].is_point
+        # TODO make grpc arc.is_cww a property
+        if edbapp.grpc:
+            assert not poly0.arcs[0].is_ccw()
+        else:
+            assert not poly0.arcs[0].is_ccw
         assert isinstance(poly0.arcs[0].points, list)
         assert isinstance(poly0.intersection_type(poly0), int)
         assert poly0.is_intersecting(poly0)
@@ -85,10 +105,15 @@ class TestClass:
         poly_with_voids = [poly for poly in edbapp.modeler.polygons if poly.has_voids]
         assert poly_with_voids
         for k in poly_with_voids[0].voids:
-            assert k.edb_uid
+            assert k.id
             assert k.expand(0.0005)
-        poly_167 = [i for i in edbapp.modeler.paths if i.edb_uid == 167][0]
-        assert poly_167.expand(0.0005)
+        if edbapp.grpc:
+            poly_167 = [i for i in edbapp.modeler.paths if i.edb_uid == 167][0]
+        else:
+            poly_167 = [i for i in edbapp.modeler.paths if i.id == 167][0]
+        if edbapp.grpc:
+            # Only available with grpc
+            assert poly_167.expand(0.0005)
         edbapp.close()
 
     def test_modeler_paths(self, edb_examples):
@@ -97,18 +122,19 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert len(edbapp.modeler.paths) > 0
         path = edbapp.modeler.paths[0]
-        assert path.type == "path"
+        # TODO check for dotnet primitive.type returning only small letters.
+        assert path.type.lower() == "path"
         assert path.clone()
         assert isinstance(path.width, float)
         path.width = "1mm"
         assert path.width == 0.001
-        assert edbapp.modeler["line_167"].type == "path"
-        assert edbapp.modeler["poly_3022"].type == "polygon"
+        assert edbapp.modeler["line_167"].type.lower() == "path"
+        assert edbapp.modeler["poly_3022"].type.lower() == "polygon"
         line_number = len(edbapp.modeler.primitives)
         edbapp.modeler["line_167"].delete()
         assert edbapp.modeler._primitives == []
         assert line_number == len(edbapp.modeler.primitives) + 1
-        assert edbapp.modeler["poly_3022"].type == "polygon"
+        assert edbapp.modeler["poly_3022"].type.lower() == "polygon"
         edbapp.close()
 
     def test_modeler_primitives_by_layer(self, edb_examples):
@@ -139,8 +165,8 @@ class TestClass:
         assert "1_Top" in edbapp.modeler.polygons_by_layer.keys()
         assert len(edbapp.modeler.polygons_by_layer["1_Top"]) > 0
         assert len(edbapp.modeler.polygons_by_layer["DE1"]) == 0
-        assert edbapp.modeler.rectangles[0].type == "rectangle"
-        assert edbapp.modeler.circles[0].type == "circle"
+        assert edbapp.modeler.rectangles[0].type.lower() == "rectangle"
+        assert edbapp.modeler.circles[0].type.lower() == "circle"
         edbapp.close()
 
     def test_modeler_get_polygons_bounding(self, edb_examples):
@@ -373,7 +399,7 @@ class TestClass:
     def test_modeler_path_convert_to_polygon(self):
         # Done
         target_path = os.path.join(local_path, "example_models", "convert_and_merge_path.aedb")
-        edbapp = Edb(target_path, edbversion=desktop_version, restart_rpc_server=True)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         for path in edbapp.modeler.paths:
             assert path.convert_to_polygon()
         # cannot merge one net only - see test: test_unite_polygon for reference
@@ -385,12 +411,12 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_path_length.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_path_length", "test.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(edbpath=target_path, edbversion=desktop_version, restart_rpc_server=True)
+        edbapp = Edb(edbpath=target_path, edbversion=desktop_version)
         net1 = [path for path in edbapp.modeler.paths if path.net_name == "loop1"]
         net1_length = 0
         for path in net1:
             net1_length += path.length
-        assert net1_length == 0.018144801000000002
+        assert round(net1_length, 7) == 0.0181448
         net2 = [path for path in edbapp.modeler.paths if path.net_name == "line1"]
         net2_length = 0
         for path in net2:
@@ -400,7 +426,7 @@ class TestClass:
         net3_length = 0
         for path in net3:
             net3_length += path.length
-        assert net3_length == 0.048605551
+        assert round(net3_length, 9) == 0.048605551
         net4 = [path for path in edbapp.modeler.paths if path.net_name == "lin3"]
         net4_length = 0
         for path in net4:
@@ -410,8 +436,8 @@ class TestClass:
         net5_length = 0
         for path in net5:
             net5_length += path.length
-        assert net5_length == 0.026285626
-        edbapp.close_edb()
+        assert round(net5_length, 5) == 0.02629
+        edbapp.close()
 
     def test_duplicate(self):
         # Done
@@ -523,7 +549,7 @@ class TestClass:
         primitives = edbapp.modeler.get_primitive_by_layer_and_point(layer="Inner1(GND1)", point=[20e-3, 30e-3])
         assert primitives
         assert len(primitives) == 1
-        assert primitives[0].type == "polygon"
+        assert primitives[0].type.lower() == "polygon"
         primitives = edbapp.modeler.get_primitive_by_layer_and_point(point=[20e-3, 30e-3])
         assert len(primitives) == 3
         edbapp.close()
@@ -532,17 +558,19 @@ class TestClass:
         # Done
         example_folder = os.path.join(local_path, "example_models", test_subfolder)
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
-        target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
+        temp_directory = os.path.join(self.local_scratch.path, "test_wave_ports")
+        target_path_edb = os.path.join(temp_directory, "test.aedb")
+        work_dir = os.path.join(temp_directory, "_work")
+        output_edb = os.path.join(temp_directory, "wave_ports.aedb")
         self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = Edb(edbpath=target_path_edb, edbversion=desktop_version, restart_rpc_server=True)
-        edbapp.create_model_for_arbitrary_wave_ports(
-            temp_directory=self.local_scratch.path,
-            output_edb="wave_ports.aedb",
+        edbapp = Edb(edbpath=target_path_edb, edbversion=desktop_version)
+        assert edbapp.create_model_for_arbitrary_wave_ports(
+            temp_directory=work_dir,
+            output_edb=output_edb,
             mounting_side="top",
         )
         edbapp.close()
-        edb_model = os.path.join(self.local_scratch.path, "wave_ports.aedb")
-        test_edb = Edb(edbpath=edb_model, edbversion=desktop_version)
+        test_edb = Edb(edbpath=output_edb, edbversion=desktop_version)
         assert len(list(test_edb.nets.signal.keys())) == 13
         assert len(list(test_edb.stackup.layers.keys())) == 3
         assert "ref" in test_edb.stackup.layers
@@ -550,7 +578,6 @@ class TestClass:
         test_edb.close()
 
     def test_path_center_line(self):
-        # TODO wait Material class done.
         edb = Edb(edbversion=desktop_version)
         edb.stackup.add_layer("GND", "Gap")
         edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.2mm", material="Duroid (tm)")

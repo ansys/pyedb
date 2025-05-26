@@ -2821,39 +2821,43 @@ class Edb(EdbInit):
         self.logger.info(f"Variable {variable_name} doesn't exists.")
         return False
 
-    def add_project_variable(self, variable_name, variable_value):
+    def add_project_variable(self, variable_name, variable_value, description=None):
         """Add a variable to database. The variable will have the prefix `$`.
 
         Parameters
-         ----------
-         variable_name : str
-             Name of the variable. Name can be provided without ``$`` prefix.
-         variable_value : str, float
-             Value of the variable with units.
+        ----------
+        variable_name : str
+            Name of the variable. Name can be provided without ``$`` prefix.
+        variable_value : str, float
+            Value of the variable with units.
+        description : str, optional.
+            Add variable description.
 
-         Returns
-         -------
-         bool
+        Returns
+        -------
+        bool
 
-         Examples
-         --------
+        Examples
+        --------
 
-         >>> from pyedb import Edb
-         >>> edb_app = Edb()
-         >>> boolean_1, ant_length = edb_app.add_project_variable("my_local_variable", "1cm")
-         >>> print(edb_app["$my_local_variable"])    #using getitem
-         >>> edb_app["$my_local_variable"] = "1cm"   #using setitem
+        >>> from pyedb import Edb
+        >>> edb_app = Edb()
+        >>> boolean_1, ant_length = edb_app.add_project_variable("my_local_variable", "1cm")
+        >>> print(edb_app["$my_local_variable"])    #using getitem
+        >>> edb_app["$my_local_variable"] = "1cm"   #using setitem
 
         """
         if not variable_name.startswith("$"):
             variable_name = f"${variable_name}"
         if not self.variable_exists(variable_name):
-            return self.active_db.add_variable(variable_name, variable_value)
+            var = self.active_db.add_variable(variable_name, variable_value)
+            if description:
+                self.active_db.set_variable_desc(name=variable_name, desc=description)
         else:
             self.logger.error(f"Variable {variable_name} already exists.")
             return False
 
-    def add_design_variable(self, variable_name, variable_value, is_parameter=False):
+    def add_design_variable(self, variable_name, variable_value, is_parameter=False, description=None):
         """Add a variable to edb. The variable can be a design one or a project variable (using ``$`` prefix).
 
         Parameters
@@ -2866,6 +2870,8 @@ class Edb(EdbInit):
         is_parameter : bool, optional
             Whether to add the variable as a local variable. The default is ``False``.
             When ``True``, the variable is added as a parameter default.
+        description : str, optional
+            Add variable description.
 
         Returns
         -------
@@ -2887,7 +2893,10 @@ class Edb(EdbInit):
         if variable_name.startswith("$"):
             variable_name = variable_name[1:]
         if not self.variable_exists(variable_name):
-            return self.active_cell.add_variable(variable_name, variable_value)
+            var = self.active_cell.add_variable(variable_name, variable_value)
+            if description:
+                self.active_cell.set_variable_desc(name=variable_name, desc=description)
+            return var
         else:
             self.logger.error(f"Variable {variable_name} already exists.")
             return False
