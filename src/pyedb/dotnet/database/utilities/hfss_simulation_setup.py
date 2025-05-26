@@ -350,7 +350,7 @@ class HfssSimulationSetup(SimulationSetup):
         """
         self.adaptive_settings.adapt_type = "kMultiFrequencies"
         self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
-        if not self.adaptive_settings.add_multi_adaptive_frequency_data(frequencies, max_num_passes, max_delta_s):
+        if not self.adaptive_settings.add_multi_frequency_adaptive_setup(frequencies, max_num_passes, max_delta_s):
             return False
         return True
 
