@@ -554,6 +554,10 @@ class TestClass:
         assert gap_port.is_circuit_port
         edb.close()
 
+    @pytest.mark.skipif(
+        is_linux and ON_CI,
+        reason="Randomly crashing on Linux.",
+    )
     def test_edb_statistics(self, edb_examples):
         """Get statistics."""
         edb = edb_examples.get_si_verse()
