@@ -312,6 +312,14 @@ class Stackup(LayerCollection):
         super().__init__(pedb, edb_object)
         self._pedb = pedb
 
+    def __getitem__(self, item):
+        if item in self.non_stackup_layers:
+            return Layer(self._pedb, self.find_by_name(item))
+        elif item in self.layers:
+            return StackupLayer(self._pedb, self.find_by_name(item))
+        else:
+            return None
+
     @property
     def _logger(self):
         return self._pedb.logger
@@ -479,11 +487,16 @@ class Stackup(LayerCollection):
 
     @mode.setter
     def mode(self, value):
-        if value == 0 or value == GrpcLayerCollectionMode.LAMINATE or value == "laminate":
+        if value == 0 or value == GrpcLayerCollectionMode.LAMINATE or value == "laminate" or value == "Laminate":
             super(LayerCollection, self.__class__).mode.__set__(self, GrpcLayerCollectionMode.LAMINATE)
-        elif value == 1 or value == GrpcLayerCollectionMode.OVERLAPPING or value == "overlapping":
+        elif (
+            value == 1
+            or value == GrpcLayerCollectionMode.OVERLAPPING
+            or value == "overlapping"
+            or value == "Overlapping"
+        ):
             super(LayerCollection, self.__class__).mode.__set__(self, GrpcLayerCollectionMode.OVERLAPPING)
-        elif value == 2 or value == GrpcLayerCollectionMode.MULTIZONE or value == "multizone":
+        elif value == 2 or value == GrpcLayerCollectionMode.MULTIZONE or value == "multizone" or value == "MultiZone":
             super(LayerCollection, self.__class__).mode.__set__(self, GrpcLayerCollectionMode.MULTIZONE)
         self.update_layout()
 

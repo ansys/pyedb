@@ -205,6 +205,18 @@ class StackupLayer(GrpcStackupLayer):
         self.negative = value
 
     @property
+    def is_stackup_layer(self):
+        """Testing if layer is stackup layer.
+
+        Returns
+        -------
+        `True` if layer type is "signal" or "dielectric".
+        """
+        if self.type in ["signal", "dielectric", "via", "wirebond"]:
+            return True
+        return False
+
+    @property
     def material(self):
         """Material.
 
@@ -605,6 +617,13 @@ class StackupLayer(GrpcStackupLayer):
             else:
                 model = GrpcValue(groisse_roughness)
             self.set_roughness_model(model, r)
+        if [
+            self.get_roughness_model(GrpcRoughnessRegion.TOP),
+            self.get_roughness_model(GrpcRoughnessRegion.BOTTOM),
+            self.get_roughness_model(GrpcRoughnessRegion.SIDE),
+        ]:
+            return True
+        return False
 
     @property
     def properties(self):
