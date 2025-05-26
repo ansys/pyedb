@@ -683,7 +683,10 @@ class TestClass:
         )
         try:
             layout = laminateEdb.active_layout
-            cellInstances = list(layout.CellInstances)
+            if chipEdb.grpc:
+                cellInstances = layout.cell_instances
+            else:
+                cellInstances = list(layout.CellInstances)
             assert len(cellInstances) == 0
             assert chipEdb.stackup.place_in_layout_3d_placement(
                 laminateEdb,
@@ -693,46 +696,69 @@ class TestClass:
                 flipped_stackup=False,
                 place_on_top=True,
             )
-            merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
-            )
-            assert not merged_cell.IsNull()
-            layout = merged_cell.GetLayout()
-            cellInstances = list(layout.CellInstances)
+            if chipEdb.grpc:
+                merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
+                assert not merged_cell.is_null
+            else:
+                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                )
+                assert not merged_cell.IsNull()
+            if chipEdb.grpc:
+                layout = merged_cell.layout
+            else:
+                layout = merged_cell.GetLayout()
+            if chipEdb.grpc:
+                cellInstances = layout.cell_instances
+            else:
+                cellInstances = list(layout.CellInstances)
             assert len(cellInstances) == 1
             cellInstance = cellInstances[0]
-            assert cellInstance.Is3DPlacement()
-            if desktop_version > "2023.1":
-                (
-                    res,
-                    localOrigin,
-                    rotAxisFrom,
-                    rotAxisTo,
-                    angle,
-                    loc,
-                    _,
-                ) = cellInstance.Get3DTransformation()
+            if chipEdb.grpc:
+                assert cellInstance.placement_3d
             else:
-                (
-                    res,
-                    localOrigin,
-                    rotAxisFrom,
-                    rotAxisTo,
-                    angle,
-                    loc,
-                ) = cellInstance.Get3DTransformation()
-            assert res
-            zeroValue = chipEdb.edb_value(0)
-            oneValue = chipEdb.edb_value(1)
-            originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
-            xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
-            assert localOrigin.IsEqual(originPoint)
-            assert rotAxisFrom.IsEqual(xAxisPoint)
-            assert rotAxisTo.IsEqual(xAxisPoint)
-            assert angle.IsEqual(zeroValue)
-            assert loc.IsEqual(chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(190e-6)))
+                assert cellInstance.Is3DPlacement()
+            if chipEdb.grpc:
+                transform = cellInstance.transform3d
+                assert transform.matrix[3][:3] == [0, 0, 0.00016]
+                assert transform.shift.magnitude == 0.00016
+            else:
+                if desktop_version > "2023.1":
+                    (
+                        res,
+                        localOrigin,
+                        rotAxisFrom,
+                        rotAxisTo,
+                        angle,
+                        loc,
+                        _,
+                    ) = cellInstance.Get3DTransformation()
+                else:
+                    (
+                        res,
+                        localOrigin,
+                        rotAxisFrom,
+                        rotAxisTo,
+                        angle,
+                        loc,
+                    ) = cellInstance.Get3DTransformation()
+                assert res
+                zeroValue = chipEdb.edb_value(0)
+                oneValue = chipEdb.edb_value(1)
+                originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+                xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+                assert localOrigin.IsEqual(originPoint)
+                assert rotAxisFrom.IsEqual(xAxisPoint)
+                assert rotAxisTo.IsEqual(xAxisPoint)
+                assert angle.IsEqual(zeroValue)
+                assert loc.IsEqual(
+                    chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(190e-6))
+                )
         finally:
-            chipEdb.close()
+            if chipEdb.grpc:
+                chipEdb.close(terminate_rpc_session=False)
+            else:
+                chipEdb.close()
             laminateEdb.close()
 
     def test_stackup_place_on_bottom_of_lam_with_mold_solder(self):
