@@ -32,7 +32,9 @@ class StitchingVias:
         self.clockwise = clockwise
 
         self.vias = []
-        for idx, angle in enumerate(np.arange(self.start_angle, start_angle + self.step_angle * self.number_of_vias, self.step_angle)):
+        for idx, angle in enumerate(
+            np.arange(self.start_angle, start_angle + self.step_angle * self.number_of_vias, self.step_angle)
+        ):
             dx = f"cos({angle}deg)*({self.distance}+{self.p_via.anti_pad_diameter})"
             dy = f"sin({angle}deg)*({self.distance}+{self.p_via.anti_pad_diameter})"
             via = GroundVia(
@@ -62,18 +64,18 @@ class StitchingVias:
 
 class Trace:
     def __init__(
-            self,
-            p_via,
-            name,
-            net_name,
-            layer,
-            width,
-            clearance,
-            incremental_path: list[list],
-            flip_dx,
-            flip_dy,
-            end_cap_style,
-            port: Union[dict, None],
+        self,
+        p_via,
+        name,
+        net_name,
+        layer,
+        width,
+        clearance,
+        incremental_path: list[list],
+        flip_dx,
+        flip_dy,
+        end_cap_style,
+        port: Union[dict, None],
     ):
         self.p_via = p_via
         self.variables = []
@@ -150,23 +152,23 @@ class GroundVia:
         return f"{self.base_y}+{self.dy}"
 
     def __init__(
-            self,
-            p_signal,
-            name,
-            net_name,
-            padstack_def,
-            start_layer,
-            stop_layer,
-            base_x,
-            base_y,
-            dx,
-            dy,
-            flip_dx,
-            flip_dy,
-            connection_trace: Union[dict, Trace],
-            with_solder_ball,
-            backdrill_parameters,
-            conductor_layers: list,
+        self,
+        p_signal,
+        name,
+        net_name,
+        padstack_def,
+        start_layer,
+        stop_layer,
+        base_x,
+        base_y,
+        dx,
+        dy,
+        flip_dx,
+        flip_dy,
+        connection_trace: Union[dict, Trace],
+        with_solder_ball,
+        backdrill_parameters,
+        conductor_layers: list,
     ):
         self.p_signal = p_signal
         self.variables = []
@@ -234,11 +236,9 @@ class GroundVia:
 
 
 class Via(GroundVia):
-    def __init__(self,
-                 anti_pad_diameter,
-                 fanout_trace: Union[dict, Trace],
-                 stitching_vias: Union[dict, None],
-                 **kwargs):
+    def __init__(
+        self, anti_pad_diameter, fanout_trace: Union[dict, Trace], stitching_vias: Union[dict, None], **kwargs
+    ):
         super().__init__(**kwargs)
 
         self.anti_pad_diameter = create_variable(self, "anti_pad_diameter", anti_pad_diameter)
@@ -302,15 +302,15 @@ class Signal:
     """vias and traces."""
 
     def __init__(
-            self,
-            p_board,
-            signal_name,
-            name_suffix: Union[None, str],
-            base_x,
-            base_y,
-            stacked_vias,
-            flip_x,
-            flip_y,
+        self,
+        p_board,
+        signal_name,
+        name_suffix: Union[None, str],
+        base_x,
+        base_y,
+        stacked_vias,
+        flip_x,
+        flip_y,
     ):
         self.p_board = p_board
         self.net_name = signal_name if name_suffix is None else f"{signal_name}_{name_suffix}"
