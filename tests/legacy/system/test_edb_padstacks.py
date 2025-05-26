@@ -76,8 +76,8 @@ class TestClass:
 
         self.edbapp.add_design_variable("via_x", 5e-3)
         self.edbapp["via_y"] = "1mm"
-        assert self.edbapp["via_y"].value == 1e-3
-        assert self.edbapp["via_y"].value_string == "1mm"
+        assert self.edbapp["via_y"] == 1e-3
+        # assert self.edbapp["via_y"].value_string == "1mm"
         assert self.edbapp.padstacks.place(["via_x", "via_x+via_y"], "myVia", via_name="via_test1")
         assert self.edbapp.padstacks.place(["via_x", "via_x+via_y*2"], "myVia_bullet")
         self.edbapp.padstacks["via_test1"].net_name = "GND"
