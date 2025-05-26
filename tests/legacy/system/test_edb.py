@@ -201,7 +201,7 @@ class TestClass:
         assert edbapp.modeler.parametrize_trace_width("DDR4_A2")
         edbapp.add_design_variable("my_parameter", "2mm", True)
         assert "my_parameter" in edbapp.active_cell.get_all_variable_names()
-        variable_value = edbapp.active_cell.get_variable_value("my_parameter").value
+        variable_value = edbapp.active_cell.get_variable_value("my_parameter")
         assert variable_value == 2e-3
         if edbapp.grpc:
             assert not edbapp.add_design_variable("my_parameter", "2mm", True)
@@ -801,8 +801,11 @@ class TestClass:
         setup1 = edbapp.hfss.add_setup("setup1")
         assert not edbapp.hfss.add_setup("setup1")
         assert setup1.set_solution_single_frequency()
-        assert setup1.set_solution_multi_frequencies()
+        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 1
+        assert setup1.set_solution_multi_frequencies(frequencies=("5GHz", "10GHz", "100GHz"))
+        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 3
         assert setup1.set_solution_broadband()
+        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 2
         if edbapp.grpc:
             setup1.settings.options.enhanced_low_frequency_accuracy = True
             assert setup1.settings.options.enhanced_low_frequency_accuracy
