@@ -57,7 +57,7 @@ class Variable:
         str
 
         """
-        return self._pedb.get_variable(self.name).tostring
+        return self._var_server.GetVariableValue(self.name)[1].ToString()
 
     @property
     def value_object(self):
@@ -77,11 +77,11 @@ class Variable:
         -------
         float
         """
-        return self._pedb.get_variable(self.name).tofloat
+        return self._var_server.GetVariableValue(self.name)[1].ToDouble()
 
     @value.setter
     def value(self, value):
-        self._pedb.change_design_variable_value(self.name, value)
+        self._var_server.SetVariableValue(self.name, self._pedb.edb_value(value))
 
     @property
     def description(self):
