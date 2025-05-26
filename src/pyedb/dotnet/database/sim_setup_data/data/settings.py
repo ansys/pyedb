@@ -289,7 +289,7 @@ class AdaptiveSettings(object):
         self.adaptive_settings.AdaptiveFrequencyDataList.Add(high_freq_adapt_data)
         return self._parent._update_setup()
 
-    def add_multi_adaptive_frequency_data(self, freq_list, max_num_passes=10, max_delta_s=0.02):
+    def add_multi_frequency_adaptive_setup(self, freq_list, max_num_passes=10, max_delta_s=0.02):
         """Add a setup for frequency data.
 
         Parameters
