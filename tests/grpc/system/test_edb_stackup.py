@@ -445,7 +445,7 @@ class TestClass:
             place_on_top=False,
             solder_height=0.0,
         )
-        edb2.close()
+        edb2.close(terminate_rpc_session=False)
         edb2 = Edb(self.target_path, edbversion=desktop_version)
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
@@ -456,7 +456,7 @@ class TestClass:
             place_on_top=False,
             solder_height=0.0,
         )
-        edb2.close()
+        edb2.close(terminate_rpc_session=False)
         edb2 = Edb(self.target_path, edbversion=desktop_version)
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
@@ -467,7 +467,7 @@ class TestClass:
             place_on_top=True,
             solder_height=0.0,
         )
-        edb2.close()
+        edb2.close(terminate_rpc_session=False)
         edb2 = Edb(self.target_path, edbversion=desktop_version)
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
@@ -478,7 +478,7 @@ class TestClass:
             place_on_top=True,
             solder_height=0.0,
         )
-        edb2.close()
+        edb2.close(terminate_rpc_session=False)
         edb1.close()
 
     def test_stackup_place_instance_with_flipped_stackup(self):

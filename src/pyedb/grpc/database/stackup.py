@@ -49,7 +49,6 @@ from ansys.edb.core.layer.layer_collection import LayerCollection as GrpcLayerCo
 from ansys.edb.core.layer.layer_collection import LayerTypeSet as GrpcLayerTypeSet
 from ansys.edb.core.layer.stackup_layer import StackupLayer as GrpcStackupLayer
 from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
-from ansys.edb.core.utility.transform3d import Transform3D as GrpcTransform3D
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.generic.general_methods import ET, generate_unique_name
@@ -1049,10 +1048,14 @@ class Stackup(LayerCollection):
         return round(thickness, 7)
 
     def _get_solder_height(self, layer_name):
+        height = 0.0
         for _, val in self._pedb.components.instances.items():
-            if val.solder_ball_height and val.placement_layer == layer_name:
-                return val.solder_ball_height
-        return 0
+            try:
+                if val.solder_ball_height and val.placement_layer == layer_name:
+                    height = val.solder_ball_height
+            except:
+                pass
+        return height
 
     def _remove_solder_pec(self, layer_name):
         for _, val in self._pedb.components.instances.items():
@@ -1062,7 +1065,7 @@ class Stackup(LayerCollection):
                 port_property.reference_size_auto = False
                 port_property.reference_size = (GrpcValue(0.0), GrpcValue(0.0))
                 comp_prop.port_property = port_property
-                val.edbcomponent.component_property = comp_prop
+                val.component_property = comp_prop
 
     def adjust_solder_dielectrics(self):
         """Adjust the stack-up by adding or modifying dielectric layers that contains Solder Balls.
@@ -1270,7 +1273,7 @@ class Stackup(LayerCollection):
         _offset_y = GrpcValue(offset_y)
 
         if edb_cell.name not in self._pedb.cell_names:
-            list_cells = self._pedb.copy_cells(edb_cell.api_object)
+            list_cells = self._pedb.copy_cells(edb_cell)
             edb_cell = list_cells[0]
         self._pedb.layout.cell.is_blackbox = True
         cell_inst2 = GrpcCellInstance.create(
@@ -1281,9 +1284,9 @@ class Stackup(LayerCollection):
         stackup_source = self._pedb.layout.layer_collection
 
         if place_on_top:
-            cell_inst2.placement_layer = stackup_target.Layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)[0]
+            cell_inst2.placement_layer = list(LayerCollection(self._pedb, stackup_target).layers.values())[0]
         else:
-            cell_inst2.placement_layer = stackup_target.Layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)[-1]
+            cell_inst2.placement_layer = list(LayerCollection(self._pedb, stackup_target).layers.values())[-1]
         cell_inst2.placement_3d = True
         res = stackup_target.get_top_bottom_stackup_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
         target_top_elevation = res[1]
@@ -1311,7 +1314,13 @@ class Stackup(LayerCollection):
         point_loc = GrpcPoint3DData(zero_data, zero_data, zero_data)
         point_from = GrpcPoint3DData(one_data, zero_data, zero_data)
         point_to = GrpcPoint3DData(math.cos(_angle), -1 * math.sin(_angle), zero_data)
-        cell_inst2.transform3d = GrpcTransform3D(point_loc, point_from, point_to, rotation, point3d_t)  # TODO check
+        transform = cell_inst2.transform3d.create_from_one_axis_to_another(from_axis=point_from, to_axis=point_to)
+        cell_inst2.transform3d = transform
+        transform = cell_inst2.transform3d.create_from_axis_and_angle(axis=point_loc, angle=angle)
+        cell_inst2.transform3d = transform
+        transform = cell_inst2.transform3d.create_from_offset(offset=point3d_t)
+        cell_inst2.transform3d = transform
+        # TODO check if component is properly placed.
         return True
 
     def place_instance(
