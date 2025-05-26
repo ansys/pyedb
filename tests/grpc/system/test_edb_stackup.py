@@ -278,7 +278,7 @@ class TestClass:
         edbapp.stackup.mode = "Overlapping"
         assert edbapp.stackup.mode.lower() == "overlapping"
         if not edbapp.grpc:
-            # Multizone has a bug in grpc.
+            # Multizone has a bug in with grpc on getting layer collection after changing mode. #TODO check pyedb code.
             edbapp.stackup.mode = "MultiZone"
             assert edbapp.stackup.mode.lower() == "multiZone"
             edbapp.stackup.mode = "Overlapping"
@@ -295,7 +295,7 @@ class TestClass:
         assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.csv"))
         assert "18_Bottom" in edbapp.stackup.layers.keys()
         assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
-        export_stackup_path = os.path.join(self.local_scratch.path, "export_galileo_stackup.csv")
+        export_stackup_path = os.path.join(self.local_scratch.path, "export_stackup.csv")
         assert export_method(export_stackup_path)
         assert os.path.exists(export_stackup_path)
 
@@ -310,7 +310,7 @@ class TestClass:
         assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.csv"))
         assert "18_Bottom" in edbapp.stackup.layers.keys()
         assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
-        export_stackup_path = os.path.join(self.local_scratch.path, "export_galileo_stackup.csv")
+        export_stackup_path = os.path.join(self.local_scratch.path, "export_stackup.csv")
         assert export_method(export_stackup_path)
         assert os.path.exists(export_stackup_path)
         edbapp.close()
