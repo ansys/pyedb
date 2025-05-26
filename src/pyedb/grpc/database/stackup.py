@@ -1411,7 +1411,7 @@ class Stackup(LayerCollection):
         _offset_y = GrpcValue(offset_y)
 
         if edb_cell.name not in self._pedb.cell_names:
-            list_cells = self._pedb.copy_cells(edb_cell.api_object)
+            list_cells = self._pedb.copy_cells(edb_cell)
             edb_cell = list_cells[0]
         for cell in self._pedb.active_db.top_circuit_cells:
             if cell.name == edb_cell.name:
@@ -1463,7 +1463,13 @@ class Stackup(LayerCollection):
         point_loc = GrpcPoint3DData(zero_data, zero_data, zero_data)
         point_from = GrpcPoint3DData(one_data, zero_data, zero_data)
         point_to = GrpcPoint3DData(math.cos(_angle), -1 * math.sin(_angle), zero_data)
-        cell_inst2.transform3d = (point_loc, point_from, point_to, rotation, point3d_t)  # TODO check
+        transform = cell_inst2.transform3d.create_from_axis_and_angle(axis=point_loc, angle=angle)
+        cell_inst2.transform3d = transform
+        transform = cell_inst2.transform3d.create_from_one_axis_to_another(point_from, point_to)
+        cell_inst2.transform3d = transform
+        transform = cell_inst2.transform3d.create_from_offset(point3d_t)
+        cell_inst2.transform3d = transform
+        # TODO check is position is correct.
         return cell_inst2
 
     def place_a3dcomp_3d_placement(

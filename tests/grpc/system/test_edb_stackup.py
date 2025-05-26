@@ -525,7 +525,7 @@ class TestClass:
             place_on_top=True,
             solder_height=0.0,
         )
-        edb2.close()
+        edb2.close(terminate_rpc_session=False)
         edb1.close()
 
     def test_stackup_place_in_layout_with_flipped_stackup(self):
