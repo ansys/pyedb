@@ -116,8 +116,8 @@ class TestClass:
 
     def test_backend_single(self):
         cfg = {
-            "Title": "Test Design",
-            "General": {
+            "title": "Test Design",
+            "general": {
                 "version": desktop_version,
                 "output_dir": "",
                 "outline_extent": "1mm",
@@ -304,8 +304,8 @@ class TestClass:
 
     def test_backend_diff(self):
         cfg = {
-            "Title": "Test Design",
-            "General": {
+            "title": "Test Design",
+            "general": {
                 "version": desktop_version,
                 "output_dir": "",
                 "outline_extent": "1mm",
@@ -516,8 +516,8 @@ class TestClass:
 
     def test_backend_diff_pcb(self):
         cfg = {
-            "Title": "Test Design",
-            "General": {
+            "title": "Test Design",
+            "general": {
                 "version": desktop_version,
                 "output_dir": "",
                 "outline_extent": "1mm",

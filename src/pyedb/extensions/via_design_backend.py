@@ -639,7 +639,7 @@ class ViaDesignBackend:
     @property
     def output_dir(self):
         if self._OUTPUT_DIR is None:
-            output_dir = self.cfg["General"]["output_dir"]
+            output_dir = self.cfg["general"]["output_dir"]
             if output_dir == "":
                 self._OUTPUT_DIR = Path(tempfile.TemporaryDirectory(suffix=".ansys").name)
             else:
@@ -658,9 +658,9 @@ class ViaDesignBackend:
             self.cfg = toml.load(cfg) if cfg.endswith(".toml") else json.load(cfg)
         else:
             self.cfg = cfg
-        self.version = self.cfg["General"]["version"]
-        outline_extent = self.cfg["General"]["outline_extent"]
-        pitch = self.cfg["General"]["pitch"]
+        self.version = self.cfg["general"]["version"]
+        outline_extent = self.cfg["general"]["outline_extent"]
+        pitch = self.cfg["general"]["pitch"]
 
         board = Board(
             stackup=self.cfg["stackup"],
@@ -674,7 +674,7 @@ class ViaDesignBackend:
         board.populate_config(cfg_json)
 
         self.app = Edb(
-            edbpath=str((Path(self.output_dir) / self.cfg["Title"]).with_suffix(".aedb")), edbversion=self.version
+            edbpath=str((Path(self.output_dir) / self.cfg["title"]).with_suffix(".aedb")), edbversion=self.version
         )
         self.app.configuration.load(cfg_json, apply_file=True)
         self.app.save_edb()
