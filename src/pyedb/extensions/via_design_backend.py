@@ -35,8 +35,8 @@ class StitchingVias:
         for idx, angle in enumerate(
             np.arange(self.start_angle, start_angle + self.step_angle * self.number_of_vias, self.step_angle)
         ):
-            dx = f"cos({angle}deg)*({self.distance}+{self.p_via.anti_pad_diameter})"
-            dy = f"sin({angle}deg)*({self.distance}+{self.p_via.anti_pad_diameter})"
+            dx = f"cos({angle}deg)*({self.distance}+{self.p_via.anti_pad_diameter}/2)"
+            dy = f"sin({angle}deg)*({self.distance}+{self.p_via.anti_pad_diameter}/2)"
             via = GroundVia(
                 p_signal=self.p_via.p_signal,
                 name=f"{self.name}_{idx}",
@@ -247,6 +247,8 @@ class Via(GroundVia):
 
             incremental_path = copy([[self.x, self.y]])
             incremental_path.extend(fanout_trace["incremental_path"])
+            t_flip_dx = fanout_trace["flip_dx"]
+            t_flip_dy = fanout_trace["flip_dy"]
 
             trace = Trace(
                 p_via=self,
@@ -256,8 +258,8 @@ class Via(GroundVia):
                 width=fanout_trace["width"],
                 clearance=fanout_trace["clearance"],
                 incremental_path=incremental_path,
-                flip_dx=self.flip_dx,
-                flip_dy=self.flip_dy,
+                flip_dx=self.flip_dx ^ t_flip_dx,
+                flip_dy=self.flip_dy ^ t_flip_dy,
                 end_cap_style=fanout_trace["end_cap_style"],
                 port=fanout_trace["port"],
             )
@@ -411,6 +413,8 @@ class DiffSignal:
             trace2["layer"] = trace["layer"]
             trace2["width"] = trace["width"]
             trace2["clearance"] = trace["clearance"]
+            trace2["flip_dx"] = trace["flip_dx"]
+            trace2["flip_dy"] = trace["flip_dy"]
             trace2["end_cap_style"] = trace["end_cap_style"]
             trace2["port"] = trace["port"]
 

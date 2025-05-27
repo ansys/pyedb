@@ -397,6 +397,8 @@ class TestClass:
                             "clearance": "0.05mm",
                             "incremental_path_dy": ["0.3mm", "0.3mm"],
                             "end_cap_style": "flat",
+                            "flip_dx": False,
+                            "flip_dy": False,
                             "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4},
                         },
                         4: {
@@ -405,6 +407,8 @@ class TestClass:
                             "separation": "0.15mm",
                             "clearance": "0.2mm",
                             "incremental_path_dy": ["0.1mm", "0.5mm"],
+                            "flip_dx": False,
+                            "flip_dy": True,
                             "end_cap_style": "flat",
                             "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4},
                         },
@@ -431,14 +435,14 @@ class TestClass:
                             "stop_layer": "PKG_L6",
                             "dx": "0.2mm",
                             "dy": "0mm",
-                            "anti_pad_diameter": "0.5mm",
+                            "anti_pad_diameter": "1mm",
                             "flip_dx": False,
                             "flip_dy": False,
                             "connection_trace": {"width": "0.1mm", "clearance": "0.15mm"},
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
                             "fanout_trace": None,
-                            "stitching_vias": {"start_angle": 90, "step_angle": 45, "number_of_vias": 5, "distance": 0},
+                            "stitching_vias": {"start_angle": 90, "step_angle": 45, "number_of_vias": 5, "distance": "0.125mm"},
                         },
                         {
                             "padstack_def": "MICRO_VIA",
@@ -478,7 +482,7 @@ class TestClass:
                             "dy": 0,
                             "anti_pad_diameter": "0.7mm",
                             "flip_dx": False,
-                            "flip_dy": True,
+                            "flip_dy": False,
                             "connection_trace": None,
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
@@ -490,4 +494,4 @@ class TestClass:
             },
         }
         app = ViaDesignBackend(cfg)
-        # app.launch_h3d(False, False)
+        app.launch_h3d(False, False)
