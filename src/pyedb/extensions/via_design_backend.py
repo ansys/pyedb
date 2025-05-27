@@ -95,6 +95,15 @@ class Trace:
             i if idx == 0 else [f"{i[0]}*{-1 if self.flip_dx else 1}", f"{i[1]}*{-1 if self.flip_dy else 1}"]
             for idx, i in enumerate(incremental_path)
         ]
+        self.incremental_path = []
+        for idx, i in enumerate(incremental_path):
+            if idx == 0:
+                self.incremental_path.append(i)
+            else:
+                dx = create_variable(self, name_suffix=f"_dx_{idx}", value=i[0])
+                dy = create_variable(self, name_suffix=f"_dy_{idx}", value=i[1])
+                temp = [f"{dx}*{-1 if self.flip_dx else 1}", f"{dy}*{-1 if self.flip_dy else 1}"]
+                self.incremental_path.append(temp)
 
         self.path = [self.incremental_path[0]]
         x, y = self.incremental_path[0]
@@ -370,7 +379,7 @@ class Signal:
 
                 stitching_vias=i["stitching_vias"],
                 anti_pad_diameter=i["anti_pad_diameter"],
-                fanout_trace=i["fanout_trace"],
+                fanout_trace=i.get("fanout_trace", []),
             )
             x = via.x
             y = via.y
@@ -388,6 +397,8 @@ class DiffSignal:
         self.signal_p_name, self.signal_n_name = signals
         self.fanout_trace = fanout_trace
         self.stacked_vias = stacked_vias
+        for i in self.stacked_vias:
+            i["fanout_trace"] = []
 
         self.variables = []
         # self.voids = []

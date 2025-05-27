@@ -415,7 +415,7 @@ class TestClass:
                             "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4},
                         },
                         {
-                            "via_index": 0,
+                            "via_index": 4,
                             "layer": "PCB_L6",
                             "width": "0.1mm",
                             "separation": "0.15mm",
@@ -513,6 +513,10 @@ class TestClass:
             },
         }
         app = ViaDesignBackend(cfg)
+        import ansys.aedt.core
+        h3d = ansys.aedt.core.Hfss3dLayout(project=app.app.edbpath, version=desktop_version)
+        h3d.release_desktop(close_projects=False, close_desktop=False)
+
 
     def test_backend_diff_pcb(self):
         cfg = {
