@@ -5,7 +5,6 @@ import re
 import tempfile
 from typing import Union
 
-import ansys.aedt.core
 import numpy as np
 import pandas as pd
 import toml
@@ -680,7 +679,3 @@ class ViaDesignBackend:
         self.app.configuration.load(cfg_json, apply_file=True)
         self.app.save_edb()
         self.app.close_edb()
-
-    def launch_h3d(self, close_projects, close_desktop):
-        h3d = ansys.aedt.core.Hfss3dLayout(project=self.app.edbpath, version=self.version)
-        h3d.release_desktop(close_projects=close_projects, close_desktop=close_desktop)

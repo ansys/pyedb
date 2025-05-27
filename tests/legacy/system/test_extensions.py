@@ -301,7 +301,6 @@ class TestClass:
             "differential_signals": {},
         }
         app = ViaDesignBackend(cfg)
-        # app.launch_h3d(False, False)
 
     def test_backend_diff(self):
         cfg = {
@@ -514,7 +513,6 @@ class TestClass:
             },
         }
         app = ViaDesignBackend(cfg)
-        # app.launch_h3d(False, False)
 
     def test_backend_diff_pcb(self):
         cfg = {
@@ -608,4 +606,4 @@ class TestClass:
             },
         }
         app = ViaDesignBackend(cfg)
-        # app.launch_h3d(False, False)
+        #app.launch_h3d(False, False)
