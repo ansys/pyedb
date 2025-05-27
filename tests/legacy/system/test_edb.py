@@ -554,6 +554,10 @@ class TestClass:
         assert gap_port.is_circuit_port
         edb.close()
 
+    @pytest.mark.skipif(
+        is_linux and ON_CI,
+        reason="Randomly crashing on Linux.",
+    )
     def test_edb_statistics(self, edb_examples):
         """Get statistics."""
         edb = edb_examples.get_si_verse()
@@ -801,8 +805,11 @@ class TestClass:
         setup1 = edbapp.hfss.add_setup("setup1")
         assert not edbapp.hfss.add_setup("setup1")
         assert setup1.set_solution_single_frequency()
-        assert setup1.set_solution_multi_frequencies()
+        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 1
+        assert setup1.set_solution_multi_frequencies(frequencies=("5GHz", "10GHz", "100GHz"))
+        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 3
         assert setup1.set_solution_broadband()
+        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 2
         if edbapp.grpc:
             setup1.settings.options.enhanced_low_frequency_accuracy = True
             assert setup1.settings.options.enhanced_low_frequency_accuracy
