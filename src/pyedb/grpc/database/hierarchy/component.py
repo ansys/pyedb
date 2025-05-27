@@ -416,9 +416,10 @@ class Component(GrpcComponentGroup):
         float
             Balls height value.
         """
-        if not self.component_property.solder_ball_property.is_null:
+        try:
             return self.component_property.solder_ball_property.height.value
-        return None
+        except:
+            return None
 
     @solder_ball_height.setter
     def solder_ball_height(self, value):
