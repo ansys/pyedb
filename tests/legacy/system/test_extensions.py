@@ -589,7 +589,10 @@ class TestClass:
                             "flip_dy": False,
                             "connection_trace": None,
                             "with_solder_ball": False,
-                            "backdrill_parameters": None,
+                            "backdrill_parameters": {
+                                "from_bottom": {"drill_to_layer": "PCB_L6", "diameter": "1.2mm",
+                                                "stub_length": "0.15mm"},
+                            },
                             "fanout_trace": list(),
                             "stitching_vias": None,
                         },

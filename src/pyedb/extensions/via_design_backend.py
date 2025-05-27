@@ -1,3 +1,4 @@
+import json
 from copy import deepcopy as copy
 from pathlib import Path
 import re
@@ -654,7 +655,10 @@ class ViaDesignBackend:
             "modeler": {"traces": [], "planes": [], "padstack_definitions": [], "padstack_instances": []},
         }
 
-        self.cfg = toml.load(cfg) if isinstance(cfg, str) else cfg
+        if isinstance(cfg, str):
+            self.cfg = toml.load(cfg) if cfg.endswith(".toml") else json.load(cfg)
+        else:
+            self.cfg = cfg
         self.version = self.cfg["General"]["version"]
         outline_extent = self.cfg["General"]["outline_extent"]
         pitch = self.cfg["General"]["pitch"]
