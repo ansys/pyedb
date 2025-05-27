@@ -108,10 +108,8 @@ class TestClass:
         edb = edb_examples.get_si_verse()
         assert "R1" in list(edb.components.instances.keys())
         assert not edb.components.instances["R1"].is_null
-        if edb.grpc:
-            assert edb.components.instances["R1"].res_value == 6200
-        else:
-            assert edb.components.instances["R1"].res_value == "6.2kOhm"
+        assert edb.grpc
+        assert edb.components.instances["R1"].res_value == 6200
         assert edb.components.instances["R1"].placement_layer == "16_Bottom"
         if edb.grpc:
             assert not edb.components.instances["R1"].component_def.is_null
@@ -496,20 +494,10 @@ class TestClass:
         comp = edbapp.components.instances["R2"]
         assert not comp.assign_rlc_model()
         comp.assign_rlc_model(1, None, 3, False)
-        assert (
-            not comp.is_parallel_rlc
-            and float(comp.res_value) == 1
-            and float(comp.ind_value) == 0
-            and float(comp.cap_value) == 3
-        )
+        assert not comp.is_parallel_rlc and comp.res_value == 1 and comp.ind_value == 0 and comp.cap_value == 3
         comp.assign_rlc_model(1, 2, 3, True)
         assert comp.is_parallel_rlc
-        assert (
-            comp.is_parallel_rlc
-            and float(comp.res_value) == 1
-            and float(comp.ind_value) == 2
-            and float(comp.cap_value) == 3
-        )
+        assert comp.is_parallel_rlc and comp.res_value == 1 and comp.ind_value == 2 and comp.cap_value == 3
         assert comp.rlc_values
         assert not comp.spice_model and not comp.s_param_model and not comp.netlist_model
         comp.assign_s_param_model(sparam_path)
@@ -576,9 +564,9 @@ class TestClass:
         )
         assert edbapp.components.instances["Test"]
         # TODO check if dotnet can return component value as float instead of string. grpc is returning float.
-        assert float(edbapp.components.instances["Test"].res_value) == 12.2
-        assert float(edbapp.components.instances["Test"].ind_value) == 0
-        assert float(edbapp.components.instances["Test"].cap_value) == 0
+        assert edbapp.components.instances["Test"].res_value == 12.2
+        assert edbapp.components.instances["Test"].ind_value == 0
+        assert edbapp.components.instances["Test"].cap_value == 0
         if edbapp.grpc:
             # TODO check why grpc is returning different center value.
             assert edbapp.components.instances["Test"].center == [0.07950000102, 0.03399999804]
@@ -695,11 +683,8 @@ class TestClass:
         assert component
         assert component.name == "TEST"
         assert component.location == [0.13275000120000002, 0.07350000032]
-        if edbapp.grpc:
-            assert component.res_value == 1.2
-        else:
-            # TODO check to change with returning float not a string.
-            assert component.res_value == "1.2"
+        assert edbapp.grpc
+        assert component.res_value == 1.2
         edbapp.close()
 
     def test_export_gds_comp_xml(self, edb_examples):

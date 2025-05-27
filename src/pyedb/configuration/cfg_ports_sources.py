@@ -391,7 +391,11 @@ class CfgCircuitElement(CfgBase):
         pos_coor_terminal = dict()
         if self.type == "coax":
             pins = self._get_pins(pos_type, pos_value, self.positive_terminal_info.reference_designator)
-            pins = {f"{self.name}_{self.positive_terminal_info.reference_designator}": i for _, i in pins.items()}
+            if len(pins) < 2:
+                pins = {f"{self.name}": i for _, i in pins.items()}
+            else:
+                pins = {f"{self.name}_{name}": i for name, i in pins.items()}
+                self.distributed = True
             pos_objs.update(pins)
         elif pos_type == "coordinates":
             layer = self.positive_terminal_info.layer
@@ -402,10 +406,14 @@ class CfgCircuitElement(CfgBase):
             pos_coor_terminal[self.name] = self._pedb.get_point_terminal(self.name, net_name, point, layer)
 
         elif pos_type == "padstack":
+            flag = False
             for pds in self._pedb.layout.padstack_instances:
                 if pds.aedt_name == pos_value:
                     pos_objs.update({pos_value: pds})
+                    flag = True
                     break
+            if flag is False:
+                raise ValueError(f"Padstack instance {pos_value} does not exist")
         elif pos_type == "pin":
             pins = {
                 pos_value: self._pedb.components.instances[self.positive_terminal_info.reference_designator].pins[

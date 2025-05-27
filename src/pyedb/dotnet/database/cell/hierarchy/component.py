@@ -510,7 +510,7 @@ class EDBComponent(Group):
                 return "0"
             for pinpair in pinpairs:
                 pair = model.GetPinPairRlc(pinpair)
-                return pair.R.ToString()
+                return pair.R.ToDouble()
         return None
 
     @res_value.setter
@@ -539,7 +539,7 @@ class EDBComponent(Group):
                 return "0"
             for pinpair in pinpairs:
                 pair = model.GetPinPairRlc(pinpair)
-                return pair.C.ToString()
+                return pair.C.ToDouble()
         return None
 
     @cap_value.setter
@@ -568,7 +568,7 @@ class EDBComponent(Group):
                 return "0"
             for pinpair in pinpairs:
                 pair = model.GetPinPairRlc(pinpair)
-                return pair.L.ToString()
+                return pair.L.ToDouble()
         return None
 
     @ind_value.setter
