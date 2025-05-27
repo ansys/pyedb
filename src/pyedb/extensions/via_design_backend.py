@@ -1,5 +1,5 @@
-import json
 from copy import deepcopy as copy
+import json
 from pathlib import Path
 import re
 import tempfile
@@ -597,9 +597,9 @@ class Board:
             pdef["hole_range"] = "upper_pad_to_lower_pad"
             pdef["pad_parameters"] = {"regular_pad": regular_pad}
             pdef["hole_parameters"] = {
-                    "shape": "circle",
-                    "diameter": p["hole_diameter"],
-                }
+                "shape": "circle",
+                "diameter": p["hole_diameter"],
+            }
 
             cfg["modeler"]["padstack_definitions"].append(pdef)
 

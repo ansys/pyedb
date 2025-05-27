@@ -457,8 +457,12 @@ class TestClass:
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
                             "fanout_trace": list(),
-                            "stitching_vias": {"start_angle": 90, "step_angle": 45, "number_of_vias": 5,
-                                               "distance": "0.125mm"},
+                            "stitching_vias": {
+                                "start_angle": 90,
+                                "step_angle": 45,
+                                "number_of_vias": 5,
+                                "distance": "0.125mm",
+                            },
                         },
                         {
                             "padstack_def": "MICRO_VIA",
@@ -510,7 +514,7 @@ class TestClass:
             },
         }
         app = ViaDesignBackend(cfg)
-        #app.launch_h3d(False, False)
+        # app.launch_h3d(False, False)
 
     def test_backend_diff_pcb(self):
         cfg = {
@@ -590,8 +594,11 @@ class TestClass:
                             "connection_trace": None,
                             "with_solder_ball": False,
                             "backdrill_parameters": {
-                                "from_bottom": {"drill_to_layer": "PCB_L6", "diameter": "1.2mm",
-                                                "stub_length": "0.15mm"},
+                                "from_bottom": {
+                                    "drill_to_layer": "PCB_L6",
+                                    "diameter": "1.2mm",
+                                    "stub_length": "0.15mm",
+                                },
                             },
                             "fanout_trace": list(),
                             "stitching_vias": None,
@@ -601,4 +608,4 @@ class TestClass:
             },
         }
         app = ViaDesignBackend(cfg)
-        #app.launch_h3d(False, False)
+        # app.launch_h3d(False, False)
