@@ -228,7 +228,10 @@ class GroundVia:
         }
         if self.with_solder_ball:
             padstack_instance["solder_ball_layer"] = self.start_layer
-            padstack_instance["solder_ball_width"] = self.dx
+            padstack_instance["layer_range"] = [self.stop_layer, self.stop_layer]
+
+            padstack_instance_upper = copy(padstack_instance)
+            padstack_instance_upper["layer_range"] = [self.start_layer, self.start_layer]
         if self.backdrill_parameters is not None:
             padstack_instance["backdrill_parameters"] = self.backdrill_parameters
 
@@ -237,31 +240,31 @@ class GroundVia:
 
 class Via(GroundVia):
     def __init__(
-        self, anti_pad_diameter, fanout_trace: Union[dict, Trace], stitching_vias: Union[dict, None], **kwargs
+        self, anti_pad_diameter, fanout_trace: list[Union[dict, Trace]], stitching_vias: Union[dict, None], **kwargs
     ):
         super().__init__(**kwargs)
 
         self.anti_pad_diameter = create_variable(self, "anti_pad_diameter", anti_pad_diameter)
-        if fanout_trace is not None:
-            layer = fanout_trace["layer"]
+        for t in fanout_trace:
+            layer = t["layer"]
 
             incremental_path = copy([[self.x, self.y]])
-            incremental_path.extend(fanout_trace["incremental_path"])
-            t_flip_dx = fanout_trace["flip_dx"]
-            t_flip_dy = fanout_trace["flip_dy"]
+            incremental_path.extend(t["incremental_path"])
+            t_flip_dx = t["flip_dx"]
+            t_flip_dy = t["flip_dy"]
 
             trace = Trace(
                 p_via=self,
                 name=f"{self.net_name}_{layer}_fanout",
                 net_name=self.net_name,
                 layer=layer,
-                width=fanout_trace["width"],
-                clearance=fanout_trace["clearance"],
+                width=t["width"],
+                clearance=t["clearance"],
                 incremental_path=incremental_path,
                 flip_dx=self.flip_dx ^ t_flip_dx,
                 flip_dy=self.flip_dy ^ t_flip_dy,
-                end_cap_style=fanout_trace["end_cap_style"],
-                port=fanout_trace["port"],
+                end_cap_style=t["end_cap_style"],
+                port=t["port"],
             )
             self.fanout_traces.append(trace)
         self.stitching_vias = StitchingVias(self, **stitching_vias) if stitching_vias is not None else None
@@ -378,9 +381,9 @@ class Signal:
                     conductor_layers=self.p_board.conductor_layers,
                     stitching_vias=i["stitching_vias"],
                 )
+
             x = via.x
             y = via.y
-
             self.vias.append(via)
 
     def populate_config(self, cfg_modeler):
@@ -408,7 +411,8 @@ class DiffSignal:
         n_y = f"{n_y}*pitch"
 
         vars_sep = {}
-        for idx, trace in self.fanout_trace.items():
+        for trace in self.fanout_trace:
+            via_index = trace["via_index"]
             trace2 = dict()
             trace2["layer"] = trace["layer"]
             trace2["width"] = trace["width"]
@@ -422,7 +426,7 @@ class DiffSignal:
             incremental_path = [[0, incremental_path_dy[0]], [0, incremental_path_dy[1]]]
             trace2["incremental_path"] = incremental_path
 
-            self.stacked_vias[idx]["fanout_trace"] = trace2
+            self.stacked_vias[via_index]["fanout_trace"].append(trace2)
 
             var_separation = f"{self.name}_{trace['layer']}_fanout_separation"
             self.variables.append(
@@ -544,8 +548,9 @@ class Board:
         for name, signal_data in data.items():
             fanout = signal_data["fanout_trace"]
             stacked_vias = signal_data["stacked_vias"]
-            for idx, f in fanout.items():
-                stacked_vias[idx]["fanout_trace"] = f
+            for f in fanout:
+                idx = f["via_index"]
+                stacked_vias[idx]["fanout_trace"].append(f)
 
             stacked_vias_reversed = list(reversed(stacked_vias))
             for x, y in self.get_signal_location(name):
@@ -586,16 +591,15 @@ class Board:
                         "diameter": p["pad_diameter"],
                     }
                 )
-            pdef = {
-                "name": p["name"],
-                "material": "copper",
-                "hole_range": "upper_pad_to_lower_pad",
-                "pad_parameters": {"regular_pad": regular_pad},
-                "hole_parameters": {
+            pdef = copy(p)
+            pdef["material"] = "copper"
+            pdef["hole_range"] = "upper_pad_to_lower_pad"
+            pdef["pad_parameters"] = {"regular_pad": regular_pad}
+            pdef["hole_parameters"] = {
                     "shape": "circle",
                     "diameter": p["hole_diameter"],
-                },
-            }
+                }
+
             cfg["modeler"]["padstack_definitions"].append(pdef)
 
         # voids = []

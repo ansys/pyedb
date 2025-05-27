@@ -90,6 +90,13 @@ PADSTACK_DEFS = [
         "pad_diameter": "0.5mm",
         "hole_diameter": "0.4mm",
         "hole_range": "upper_pad_to_lower_pad",
+        "solder_ball_parameters": {
+            "shape": "spheroid",
+            "diameter": "0.4mm",
+            "mid_diameter": "0.5mm",
+            "placement": "above_padstack",
+            "material": "solder",
+        },
     },
 ]
 
@@ -123,24 +130,30 @@ class TestClass:
             ],
             "signals": {
                 "SIG": {
-                    "fanout_trace": {
-                        0: {
+                    "fanout_trace": [
+                        {
+                            "via_index": 0,
                             "layer": "PKG_L1",
                             "width": "0.05mm",
                             "clearance": "0.05mm",
+                            "flip_dx": False,
+                            "flip_dy": False,
                             "incremental_path": [[0, "0.5mm"]],
                             "end_cap_style": "flat",
                             "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4},
                         },
-                        3: {
+                        {
+                            "via_index": 3,
                             "layer": "PCB_L6",
                             "width": "0.1mm",
                             "clearance": "0.2mm",
+                            "flip_dx": False,
+                            "flip_dy": True,
                             "incremental_path": [[0, "1mm"]],
                             "end_cap_style": "flat",
                             "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4},
                         },
-                    },
+                    ],
                     "stacked_vias": [
                         {
                             "padstack_def": "MICRO_VIA",
@@ -154,7 +167,7 @@ class TestClass:
                             "connection_trace": {"width": "0.1mm", "clearance": "0.15mm"},
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                         {
@@ -169,7 +182,7 @@ class TestClass:
                             "connection_trace": {"width": "0.1mm", "clearance": "0.15mm"},
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": {"start_angle": 0, "step_angle": 45, "number_of_vias": 6, "distance": 0},
                         },
                         {
@@ -184,7 +197,7 @@ class TestClass:
                             "connection_trace": {"width": "0.3mm", "clearance": "0.15mm"},
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                         {
@@ -195,11 +208,11 @@ class TestClass:
                             "dy": 0,
                             "anti_pad_diameter": "0.7mm",
                             "flip_dx": False,
-                            "flip_dy": True,
+                            "flip_dy": False,
                             "connection_trace": None,
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                     ],
@@ -219,7 +232,7 @@ class TestClass:
                             "connection_trace": None,
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                         {
@@ -234,7 +247,7 @@ class TestClass:
                             "connection_trace": None,
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                         {
@@ -249,7 +262,7 @@ class TestClass:
                             "connection_trace": None,
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                         {
@@ -264,7 +277,7 @@ class TestClass:
                             "connection_trace": {"width": "0.3mm", "clearance": "0.15mm"},
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                         {
@@ -279,7 +292,7 @@ class TestClass:
                             "connection_trace": None,
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                     ],
@@ -320,7 +333,7 @@ class TestClass:
                             "connection_trace": None,
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                         {
@@ -335,7 +348,7 @@ class TestClass:
                             "connection_trace": None,
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                         {
@@ -350,7 +363,7 @@ class TestClass:
                             "connection_trace": None,
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                         {
@@ -365,7 +378,7 @@ class TestClass:
                             "connection_trace": {"width": "0.3mm", "clearance": "0.15mm"},
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                         {
@@ -380,7 +393,7 @@ class TestClass:
                             "connection_trace": None,
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                     ],
@@ -389,8 +402,9 @@ class TestClass:
             "differential_signals": {
                 "SIG_1": {
                     "signals": ["SIG_1_P", "SIG_1_N"],
-                    "fanout_trace": {
-                        0: {
+                    "fanout_trace": [
+                        {
+                            "via_index": 0,
                             "layer": "PKG_L1",
                             "width": "0.05mm",
                             "separation": "0.05mm",
@@ -401,7 +415,8 @@ class TestClass:
                             "flip_dy": False,
                             "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4},
                         },
-                        4: {
+                        {
+                            "via_index": 0,
                             "layer": "PCB_L6",
                             "width": "0.1mm",
                             "separation": "0.15mm",
@@ -412,7 +427,7 @@ class TestClass:
                             "end_cap_style": "flat",
                             "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4},
                         },
-                    },
+                    ],
                     "stacked_vias": [
                         {
                             "padstack_def": "MICRO_VIA",
@@ -426,7 +441,7 @@ class TestClass:
                             "connection_trace": {"width": "0.1mm", "clearance": "0.15mm"},
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                         {
@@ -441,8 +456,9 @@ class TestClass:
                             "connection_trace": {"width": "0.1mm", "clearance": "0.15mm"},
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
-                            "stitching_vias": {"start_angle": 90, "step_angle": 45, "number_of_vias": 5, "distance": "0.125mm"},
+                            "fanout_trace": list(),
+                            "stitching_vias": {"start_angle": 90, "step_angle": 45, "number_of_vias": 5,
+                                               "distance": "0.125mm"},
                         },
                         {
                             "padstack_def": "MICRO_VIA",
@@ -456,7 +472,7 @@ class TestClass:
                             "connection_trace": {"width": "0.1mm", "clearance": "0.15mm"},
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                         {
@@ -469,9 +485,9 @@ class TestClass:
                             "flip_dx": False,
                             "flip_dy": False,
                             "connection_trace": {"width": "0.3mm", "clearance": "0.15mm"},
-                            "with_solder_ball": False,
+                            "with_solder_ball": True,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                         {
@@ -486,7 +502,7 @@ class TestClass:
                             "connection_trace": None,
                             "with_solder_ball": False,
                             "backdrill_parameters": None,
-                            "fanout_trace": None,
+                            "fanout_trace": list(),
                             "stitching_vias": None,
                         },
                     ],
@@ -494,4 +510,92 @@ class TestClass:
             },
         }
         app = ViaDesignBackend(cfg)
-        app.launch_h3d(False, False)
+        #app.launch_h3d(False, False)
+
+    def test_backend_diff_pcb(self):
+        cfg = {
+            "Title": "Test Design",
+            "General": {
+                "version": desktop_version,
+                "output_dir": "",
+                "outline_extent": "1mm",
+                "pitch": "1mm",
+            },
+            "stackup": STACKUP,
+            "padstack_defs": PADSTACK_DEFS,
+            "pin_map": [
+                ["GND", "SIG_1_P", "SIG_1_N", "GND"],
+            ],
+            "signals": {
+                "GND": {
+                    "fanout_trace": {},
+                    "stacked_vias": [
+                        {
+                            "padstack_def": "CORE_VIA",
+                            "start_layer": "PCB_L1",
+                            "stop_layer": "PCB_L10",
+                            "dx": 0,
+                            "dy": 0,
+                            "anti_pad_diameter": "0.7mm",
+                            "flip_dx": False,
+                            "flip_dy": True,
+                            "connection_trace": None,
+                            "with_solder_ball": False,
+                            "backdrill_parameters": None,
+                            "fanout_trace": list(),
+                            "stitching_vias": None,
+                        },
+                    ],
+                },
+            },
+            "differential_signals": {
+                "SIG_1": {
+                    "signals": ["SIG_1_P", "SIG_1_N"],
+                    "fanout_trace": [
+                        {
+                            "via_index": 0,
+                            "layer": "PCB_L1",
+                            "width": "0.05mm",
+                            "separation": "0.05mm",
+                            "clearance": "0.05mm",
+                            "incremental_path_dy": ["0.3mm", "0.3mm"],
+                            "end_cap_style": "flat",
+                            "flip_dx": False,
+                            "flip_dy": False,
+                            "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4},
+                        },
+                        {
+                            "via_index": 0,
+                            "layer": "PCB_L6",
+                            "width": "0.1mm",
+                            "separation": "0.15mm",
+                            "clearance": "0.2mm",
+                            "incremental_path_dy": ["0.1mm", "0.5mm"],
+                            "flip_dx": False,
+                            "flip_dy": True,
+                            "end_cap_style": "flat",
+                            "port": {"horizontal_extent_factor": 6, "vertical_extent_factor": 4},
+                        },
+                    ],
+                    "stacked_vias": [
+                        {
+                            "padstack_def": "CORE_VIA",
+                            "start_layer": "PCB_L1",
+                            "stop_layer": "PCB_L10",
+                            "dx": 0,
+                            "dy": 0,
+                            "anti_pad_diameter": "0.7mm",
+                            "flip_dx": False,
+                            "flip_dy": False,
+                            "connection_trace": None,
+                            "with_solder_ball": False,
+                            "backdrill_parameters": None,
+                            "fanout_trace": list(),
+                            "stitching_vias": None,
+                        },
+                    ],
+                },
+            },
+        }
+        app = ViaDesignBackend(cfg)
+        #app.launch_h3d(False, False)
