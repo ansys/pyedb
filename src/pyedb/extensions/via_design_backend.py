@@ -614,9 +614,9 @@ class Board:
         matrix = np.array(self.pin_map)
         y_size_count, x_size_count = matrix.shape
         x_lower_left = f"-1*({self.outline_extent})"
-        x_upper_right = f"({self.outline_extent})+{x_size_count}*pitch"
+        x_upper_right = f"({self.outline_extent})+({x_size_count}-1)*pitch"
         y_lower_left = f"-1*({self.outline_extent})"
-        y_upper_right = f"({self.outline_extent})+{y_size_count}*pitch"
+        y_upper_right = f"({self.outline_extent})+({y_size_count}-1)*pitch"
         for l in self.conductor_layers:
             p = {
                 "type": "rectangle",
