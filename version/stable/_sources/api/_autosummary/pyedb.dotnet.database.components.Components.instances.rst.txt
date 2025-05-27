@@ -1,0 +1,6 @@
+instances
+=========
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. autoproperty:: Components.instances

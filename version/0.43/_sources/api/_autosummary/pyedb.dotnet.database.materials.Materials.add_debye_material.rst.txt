@@ -1,0 +1,6 @@
+add\_debye\_material
+====================
+
+.. currentmodule:: pyedb.dotnet.database.materials
+
+.. automethod:: Materials.add_debye_material

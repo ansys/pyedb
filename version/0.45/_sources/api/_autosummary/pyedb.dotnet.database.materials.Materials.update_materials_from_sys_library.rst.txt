@@ -1,0 +1,6 @@
+update\_materials\_from\_sys\_library
+=====================================
+
+.. currentmodule:: pyedb.dotnet.database.materials
+
+.. automethod:: Materials.update_materials_from_sys_library

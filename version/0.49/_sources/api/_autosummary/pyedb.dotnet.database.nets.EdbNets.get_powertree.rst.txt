@@ -1,0 +1,6 @@
+get\_powertree
+==============
+
+.. currentmodule:: pyedb.dotnet.database.nets
+
+.. automethod:: EdbNets.get_powertree

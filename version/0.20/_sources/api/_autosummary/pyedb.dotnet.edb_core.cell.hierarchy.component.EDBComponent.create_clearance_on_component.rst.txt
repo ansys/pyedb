@@ -1,0 +1,6 @@
+create\_clearance\_on\_component
+================================
+
+.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component
+
+.. automethod:: EDBComponent.create_clearance_on_component

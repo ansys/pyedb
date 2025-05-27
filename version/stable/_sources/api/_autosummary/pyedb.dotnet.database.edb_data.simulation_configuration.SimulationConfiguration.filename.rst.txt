@@ -1,0 +1,6 @@
+filename
+========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfiguration.filename

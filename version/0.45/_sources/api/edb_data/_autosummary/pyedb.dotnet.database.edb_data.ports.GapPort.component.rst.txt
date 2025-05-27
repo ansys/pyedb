@@ -1,0 +1,6 @@
+component
+=========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: GapPort.component

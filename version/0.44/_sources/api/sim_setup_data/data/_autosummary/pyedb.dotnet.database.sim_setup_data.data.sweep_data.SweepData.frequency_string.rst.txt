@@ -1,0 +1,6 @@
+frequency\_string
+=================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.sweep_data
+
+.. autoproperty:: SweepData.frequency_string

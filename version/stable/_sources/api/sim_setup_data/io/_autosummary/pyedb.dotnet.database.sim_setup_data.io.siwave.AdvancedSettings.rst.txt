@@ -1,0 +1,59 @@
+﻿AdvancedSettings
+================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoclass:: AdvancedSettings
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      AdvancedSettings.get_configurations
+      
+      
+      AdvancedSettings.restore_default
+      
+      
+      AdvancedSettings.set_pi_slider
+      
+      
+      AdvancedSettings.set_si_slider
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      AdvancedSettings.automatic_mesh
+      AdvancedSettings.ignore_non_functional_pads
+      AdvancedSettings.include_coplane_coupling
+      AdvancedSettings.include_fringe_coupling
+      AdvancedSettings.include_infinite_ground
+      AdvancedSettings.include_inter_plane_coupling
+      AdvancedSettings.include_split_plane_coupling
+      AdvancedSettings.include_trace_coupling
+      AdvancedSettings.include_vi_sources
+      AdvancedSettings.infinite_ground_location
+      AdvancedSettings.max_coupled_lines
+      AdvancedSettings.mesh_frequency
+      AdvancedSettings.min_pad_area_to_mesh
+      AdvancedSettings.min_plane_area_to_mesh
+      AdvancedSettings.min_void_area
+      AdvancedSettings.perform_erc
+      AdvancedSettings.return_current_distribution
+      AdvancedSettings.sim_setup_info
+      AdvancedSettings.snap_length_threshold
+      AdvancedSettings.xtalk_threshold
+   
+   

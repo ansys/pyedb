@@ -1,0 +1,6 @@
+create\_rlc\_component
+======================
+
+.. currentmodule:: pyedb.dotnet.database.siwave
+
+.. automethod:: EdbSiwave.create_rlc_component

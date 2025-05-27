@@ -1,0 +1,6 @@
+is\_current\_source
+===================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: WavePort.is_current_source

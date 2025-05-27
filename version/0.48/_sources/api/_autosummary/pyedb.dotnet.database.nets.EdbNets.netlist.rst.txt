@@ -1,0 +1,6 @@
+netlist
+=======
+
+.. currentmodule:: pyedb.dotnet.database.nets
+
+.. autoproperty:: EdbNets.netlist

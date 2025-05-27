@@ -1,0 +1,176 @@
+﻿EDBPadstackInstance
+===================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. autoclass:: EDBPadstackInstance
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      EDBPadstackInstance.add_void
+      
+      
+      EDBPadstackInstance.area
+      
+      
+      EDBPadstackInstance.convert_to_polygon
+      
+      
+      EDBPadstackInstance.create_coax_port
+      
+      
+      EDBPadstackInstance.create_port
+      
+      
+      EDBPadstackInstance.create_rectangle_in_pad
+      
+      
+      EDBPadstackInstance.create_terminal
+      
+      
+      EDBPadstackInstance.delete
+      
+      
+      EDBPadstackInstance.expand
+      
+      
+      EDBPadstackInstance.get_closest_arc_midpoint
+      
+      
+      EDBPadstackInstance.get_closest_point
+      
+      
+      EDBPadstackInstance.get_connected_object_id_set
+      
+      
+      EDBPadstackInstance.get_connected_objects
+      
+      
+      EDBPadstackInstance.get_hfss_prop
+      
+      
+      EDBPadstackInstance.get_reference_pins
+      
+      
+      EDBPadstackInstance.get_terminal
+      
+      
+      EDBPadstackInstance.in_polygon
+      
+      
+      EDBPadstackInstance.in_voids
+      
+      
+      EDBPadstackInstance.intersect
+      
+      
+      EDBPadstackInstance.intersection_type
+      
+      
+      EDBPadstackInstance.is_arc
+      
+      
+      EDBPadstackInstance.is_intersecting
+      
+      
+      EDBPadstackInstance.make_zone_primitive
+      
+      
+      EDBPadstackInstance.parametrize_position
+      
+      
+      EDBPadstackInstance.points
+      
+      
+      EDBPadstackInstance.points_raw
+      
+      
+      EDBPadstackInstance.remove_hfss_prop
+      
+      
+      EDBPadstackInstance.scale
+      
+      
+      EDBPadstackInstance.set_backdrill_bottom
+      
+      
+      EDBPadstackInstance.set_backdrill_top
+      
+      
+      EDBPadstackInstance.set_hfss_prop
+      
+      
+      EDBPadstackInstance.subtract
+      
+      
+      EDBPadstackInstance.unite
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      EDBPadstackInstance.aedt_name
+      EDBPadstackInstance.api_class
+      EDBPadstackInstance.arcs
+      EDBPadstackInstance.backdrill_bottom
+      EDBPadstackInstance.backdrill_parameters
+      EDBPadstackInstance.backdrill_top
+      EDBPadstackInstance.bbox
+      EDBPadstackInstance.bounding_box
+      EDBPadstackInstance.can_be_zone_primitive
+      EDBPadstackInstance.center
+      EDBPadstackInstance.component
+      EDBPadstackInstance.component_pin
+      EDBPadstackInstance.dcir_equipotential_region
+      EDBPadstackInstance.has_voids
+      EDBPadstackInstance.id
+      EDBPadstackInstance.is_negative
+      EDBPadstackInstance.is_null
+      EDBPadstackInstance.is_parameterized
+      EDBPadstackInstance.is_pin
+      EDBPadstackInstance.is_void
+      EDBPadstackInstance.is_zone_primitive
+      EDBPadstackInstance.layer
+      EDBPadstackInstance.layer_name
+      EDBPadstackInstance.layer_range_names
+      EDBPadstackInstance.longest_arc
+      EDBPadstackInstance.lower_elevation
+      EDBPadstackInstance.metal_volume
+      EDBPadstackInstance.name
+      EDBPadstackInstance.net
+      EDBPadstackInstance.net_name
+      EDBPadstackInstance.object_instance
+      EDBPadstackInstance.owner
+      EDBPadstackInstance.padstack_definition
+      EDBPadstackInstance.pin
+      EDBPadstackInstance.pin_number
+      EDBPadstackInstance.pingroups
+      EDBPadstackInstance.placement_layer
+      EDBPadstackInstance.polygon_data
+      EDBPadstackInstance.position
+      EDBPadstackInstance.primitive_type
+      EDBPadstackInstance.properties
+      EDBPadstackInstance.rotation
+      EDBPadstackInstance.shortest_arc
+      EDBPadstackInstance.start_layer
+      EDBPadstackInstance.stop_layer
+      EDBPadstackInstance.terminal
+      EDBPadstackInstance.top_bottom_association
+      EDBPadstackInstance.type
+      EDBPadstackInstance.upper_elevation
+      EDBPadstackInstance.voids
+   
+   

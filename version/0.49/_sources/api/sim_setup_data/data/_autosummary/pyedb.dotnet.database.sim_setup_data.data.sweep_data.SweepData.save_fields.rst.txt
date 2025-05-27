@@ -1,0 +1,6 @@
+save\_fields
+============
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.sweep_data
+
+.. autoproperty:: SweepData.save_fields
