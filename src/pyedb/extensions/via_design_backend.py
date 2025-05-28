@@ -50,7 +50,7 @@ class StitchingVias:
                 dy=dy,
                 flip_dx=self.p_via.flip_dx,
                 flip_dy=self.p_via.flip_dy,
-                connection_trace=None,
+                connection_trace=False,
                 with_solder_ball=False,
                 backdrill_parameters=None,
                 conductor_layers=self.p_via.p_signal.p_board.conductor_layers,
@@ -204,7 +204,7 @@ class GroundVia:
         self.fanout_traces = []
         # self._voids = []
 
-        if connection_trace is not None:
+        if connection_trace is not False:
             trace = Trace(
                 p_via=self,
                 name=f"{self.name}_trace",
@@ -242,7 +242,7 @@ class GroundVia:
 
             padstack_instance_upper = copy(padstack_instance)
             padstack_instance_upper["layer_range"] = [self.start_layer, self.start_layer]
-        if self.backdrill_parameters is not None:
+        if self.backdrill_parameters is not False:
             padstack_instance["backdrill_parameters"] = self.backdrill_parameters
 
         cfg["modeler"]["padstack_instances"].append(padstack_instance)
@@ -277,7 +277,7 @@ class Via(GroundVia):
                 port=t["port"],
             )
             self.fanout_traces.append(trace)
-        self.stitching_vias = StitchingVias(self, **stitching_vias) if stitching_vias is not None else None
+        self.stitching_vias = StitchingVias(self, **stitching_vias) if stitching_vias is not False else False
 
     def populate_config(self, cfg):
         super().populate_config(cfg)
@@ -309,7 +309,7 @@ class Via(GroundVia):
                 # self.voids.append(anti_pad)
                 self.p_signal.p_board.voids.append(anti_pad)
 
-        if self.stitching_vias is not None:
+        if self.stitching_vias is not False:
             self.stitching_vias.populate_config(cfg)
 
 
@@ -531,9 +531,9 @@ class Board:
         self.outline_extent = outline_extent
 
         self.pin_map = pin_map
-        self.signals = self.parser_signals(signals) if signals is not None else []
+        self.signals = self.parser_signals(signals) if signals is not False else []
         self.differential_signals = (
-            self.parser_differential_signals(differential_signals) if differential_signals is not None else []
+            self.parser_differential_signals(differential_signals) if differential_signals is not False else []
         )
 
     def get_signal_location(self, signal_name):
