@@ -168,7 +168,6 @@ jobs:
           pytest-postargs: 'tests/integration'
           pytest-extra-args: ${{ env.PYTEST_ARGUMENTS }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          optional-dependencies-name: integration-tests
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3
