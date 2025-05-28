@@ -28,6 +28,7 @@ import json
 import math
 import os
 import re
+from typing import Union
 import warnings
 
 from ansys.edb.core.definition.die_property import DieOrientation as GrpDieOrientation
@@ -59,7 +60,7 @@ from pyedb.grpc.database.utility.sources import SourceType
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
-def resistor_value_parser(r_value):
+def resistor_value_parser(r_value) -> float:
     """Convert a resistor value.
 
     Parameters
@@ -148,7 +149,7 @@ class Components(object):
         return self._pedb.active_db
 
     @property
-    def instances(self):
+    def instances(self) -> dict[str, Component]:
         """All Cell components objects.
 
         Returns
@@ -167,7 +168,7 @@ class Components(object):
         return self._cmp
 
     @property
-    def definitions(self):
+    def definitions(self) -> dict[str, ComponentDef]:
         """Retrieve component definition list.
 
         Returns
@@ -176,11 +177,11 @@ class Components(object):
         return {l.name: ComponentDef(self._pedb, l) for l in self._pedb.component_defs}
 
     @property
-    def nport_comp_definition(self):
+    def nport_comp_definition(self) -> dict[str, Component]:
         """Retrieve Nport component definition list."""
         return {name: l for name, l in self.definitions.items() if l.reference_file}
 
-    def import_definition(self, file_path):
+    def import_definition(self, file_path) -> bool:
         """Import component definition from json file.
 
         Parameters
@@ -214,7 +215,7 @@ class Components(object):
                         pass
         return True
 
-    def export_definition(self, file_path):
+    def export_definition(self, file_path) -> bool:
         """Export component definitions to json file.
 
         Parameters
@@ -224,6 +225,7 @@ class Components(object):
 
         Returns
         -------
+        bool
 
         """
         data = {
@@ -262,9 +264,9 @@ class Components(object):
 
         with codecs.open(file_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
-        return file_path
+        return True
 
-    def refresh_components(self):
+    def refresh_components(self) -> bool:
         """Refresh the component dictionary."""
         self._logger.info("Refreshing the Components dictionary.")
         self._cmp = {}
@@ -299,7 +301,7 @@ class Components(object):
         return True
 
     @property
-    def resistors(self):
+    def resistors(self) -> dict[str, Component]:
         """Resistors.
 
         Returns
@@ -317,7 +319,7 @@ class Components(object):
         return self._res
 
     @property
-    def capacitors(self):
+    def capacitors(self) -> dict[str, Component]:
         """Capacitors.
 
         Returns
@@ -335,7 +337,7 @@ class Components(object):
         return self._cap
 
     @property
-    def inductors(self):
+    def inductors(self) -> dict[str, Component]:
         """Inductors.
 
         Returns
@@ -354,7 +356,7 @@ class Components(object):
         return self._ind
 
     @property
-    def ICs(self):
+    def ICs(self) -> dict[str, Component]:
         """Integrated circuits.
 
         Returns
@@ -373,7 +375,7 @@ class Components(object):
         return self._ics
 
     @property
-    def IOs(self):
+    def IOs(self) -> dict[str, Component]:
         """Circuit inupts and outputs.
 
         Returns
@@ -392,7 +394,7 @@ class Components(object):
         return self._ios
 
     @property
-    def Others(self):
+    def Others(self) -> dict[str, Component]:
         """Other core components.
 
         Returns
@@ -411,7 +413,7 @@ class Components(object):
         return self._others
 
     @property
-    def components_by_partname(self):
+    def components_by_partname(self) -> dict[str, Component]:
         """Components by part name.
 
         Returns
@@ -435,7 +437,7 @@ class Components(object):
                 self._comps_by_part[val.partname] = [val]
         return self._comps_by_part
 
-    def get_component_by_name(self, name):
+    def get_component_by_name(self, name) -> Component:
         """Retrieve a component by name.
 
         Parameters
@@ -451,7 +453,7 @@ class Components(object):
         """
         return self.instances[name]
 
-    def get_pin_from_component(self, component, net_name=None, pin_name=None):
+    def get_pin_from_component(self, component, net_name=None, pin_name=None) -> list:
         """Return component pins.
         Parameters
         ----------
@@ -479,7 +481,7 @@ class Components(object):
             pins = [pin for pin in pins if pin.name == pin_name]
         return pins
 
-    def get_components_from_nets(self, netlist=None):
+    def get_components_from_nets(self, netlist=None) -> list[Component]:
         """Retrieve components from a net list.
 
         Parameters
@@ -609,7 +611,7 @@ class Components(object):
         self._logger.warning("Failed to compute vector.")
         return False, [0, 0], 0, 0
 
-    def get_solder_ball_height(self, cmp):
+    def get_solder_ball_height(self, cmp) -> float:
         """Get component solder ball height.
 
         Parameters
@@ -627,7 +629,7 @@ class Components(object):
             cmp = self.get_component_by_name(cmp)
         return cmp.solder_ball_height
 
-    def get_vendor_libraries(self):
+    def get_vendor_libraries(self) -> ComponentLib:
         """Retrieve all capacitors and inductors libraries from ANSYS installation (used by Siwave).
 
         Returns
@@ -915,7 +917,7 @@ class Components(object):
         component.enabled = False
         return self._pedb.source_excitation.add_rlc_boundary(component.refdes, False)
 
-    def deactivate_rlc_component(self, component=None, create_circuit_port=False, pec_boundary=False):
+    def deactivate_rlc_component(self, component=None, create_circuit_port=False, pec_boundary=False) -> bool:
         """Deactivate RLC component with a possibility to convert it to a circuit port.
 
         Parameters
@@ -1056,7 +1058,7 @@ class Components(object):
             pingroup=pingroup, term_name=term_name, term_type=term_type, isref=isref
         )
 
-    def _is_top_component(self, cmp):
+    def _is_top_component(self, cmp) -> bool:
         """Test the component placement layer.
 
         Parameters
@@ -1112,7 +1114,7 @@ class Components(object):
         c_value=None,
         l_value=None,
         is_parallel=False,
-    ):
+    ) -> bool:
         """Create a component from pins.
 
         Parameters
@@ -1221,7 +1223,7 @@ class Components(object):
 
     def create_component_from_pins(
         self, pins, component_name, placement_layer=None, component_part_name=None
-    ):  # pragma: no cover
+    ) -> bool:  # pragma: no cover
         """Create a component from pins.
 
         .. deprecated:: 0.6.62
@@ -1261,7 +1263,7 @@ class Components(object):
             is_rlc=False,
         )
 
-    def set_component_model(self, componentname, model_type="Spice", modelpath=None, modelname=None):
+    def set_component_model(self, componentname, model_type="Spice", modelpath=None, modelname=None) -> bool:
         """Assign a Spice or Touchstone model to a component.
 
         Parameters
@@ -1340,7 +1342,7 @@ class Components(object):
             component.component_property.model = s_parameter_mod
         return True
 
-    def create_pingroup_from_pins(self, pins, group_name=None):
+    def create_pingroup_from_pins(self, pins, group_name=None) -> Union[PinGroup, bool]:
         """Create a pin group on a component.
 
         Parameters
@@ -1353,8 +1355,7 @@ class Components(object):
 
         Returns
         -------
-        tuple
-            The tuple is structured as: (bool, pingroup).
+        pingroup object.
 
         Examples
         --------
@@ -1395,7 +1396,7 @@ class Components(object):
             pin_group.net = pins[0].net
             return pin_group
 
-    def delete_single_pin_rlc(self, deactivate_only=False):
+    def delete_single_pin_rlc(self, deactivate_only=False) -> list[Component]:
         # type: (bool) -> list
         """Delete all RLC components with a single pin.
         Single pin component model type will be reverted to ``"RLC"``.
@@ -1435,7 +1436,7 @@ class Components(object):
         self._pedb.logger.info("Deleted {} components".format(len(deleted_comps)))
         return deleted_comps
 
-    def delete(self, component_name):
+    def delete(self, component_name) -> bool:
         """Delete a component.
 
         Parameters
@@ -1464,7 +1465,7 @@ class Components(object):
             return True
         return False
 
-    def disable_rlc_component(self, component_name):
+    def disable_rlc_component(self, component_name) -> bool:
         """Disable a RLC component.
 
         Parameters
@@ -1512,7 +1513,7 @@ class Components(object):
         reference_size_x=0,
         reference_size_y=0,
         reference_height=0,
-    ):
+    ) -> bool:
         """Set cylindrical solder balls on a given component.
 
         Parameters
@@ -1610,7 +1611,7 @@ class Components(object):
         ind_value=None,
         cap_value=None,
         isparallel=False,
-    ):
+    ) -> bool:
         """Update values for an RLC component.
 
         Parameters
@@ -1689,7 +1690,7 @@ class Components(object):
         valuefield="Func des",
         comptype="Prod name",
         refdes="Pos / Place",
-    ):
+    ) -> bool:
         """Update the EDC core component values (RLCs) with values coming from a BOM file.
 
         Parameters
@@ -1759,7 +1760,7 @@ class Components(object):
         part_name_col=1,
         comp_type_col=2,
         value_col=3,
-    ):
+    ) -> bool:
         """Load external BOM file.
 
         Parameters
@@ -1839,7 +1840,7 @@ class Components(object):
                 self.instances[comp].enabled = False
         return True
 
-    def export_bom(self, bom_file, delimiter=","):
+    def export_bom(self, bom_file, delimiter=",") -> bool:
         """Export Bom file from layout.
 
         Parameters
@@ -1848,6 +1849,10 @@ class Components(object):
             Full path to the BOM file, which is a delimited text file.
         delimiter : str, optional
             Value to use for the delimiter. The default is ``","``.
+
+        Returns
+        -------
+        bool
         """
         with open(bom_file, "w") as f:
             f.writelines([delimiter.join(["RefDes", "Part name", "Type", "Value\n"])])
@@ -1869,17 +1874,21 @@ class Components(object):
                 f.writelines([delimiter.join([refdes, part_name, comp_type, value + "\n"])])
         return True
 
-    def find_by_reference_designator(self, reference_designator):
+    def find_by_reference_designator(self, reference_designator) -> Component:
         """Find a component.
 
         Parameters
         ----------
         reference_designator : str
             Reference designator of the component.
+
+        Returns
+        -------
+        Component object.
         """
         return self.instances[reference_designator]
 
-    def get_aedt_pin_name(self, pin):
+    def get_aedt_pin_name(self, pin) -> str:
         """Retrieve the pin name that is shown in AEDT.
 
         .. note::
@@ -1919,7 +1928,7 @@ class Components(object):
 
         Returns
         -------
-
+        list of PadstackInstance object.
         """
         comp = self.find_by_reference_designator(reference_designator)
 
@@ -1932,7 +1941,7 @@ class Components(object):
 
         return pins
 
-    def get_pin_position(self, pin):
+    def get_pin_position(self, pin) -> list[float, float]:
         """Retrieve the pin position in meters.
 
         Parameters
@@ -1961,7 +1970,7 @@ class Components(object):
             transformed_pt_pos = pin.component.transform.transform_point(pt_pos)
         return [transformed_pt_pos[0].value, transformed_pt_pos[1].value]
 
-    def get_pins_name_from_net(self, net_name, pin_list=None):
+    def get_pins_name_from_net(self, net_name, pin_list=None) -> list[str]:
         """Retrieve pins belonging to a net.
 
         Parameters
@@ -1996,7 +2005,7 @@ class Components(object):
                     pin_names.append(self.get_aedt_pin_name(pin))
         return pin_names
 
-    def get_nets_from_pin_list(self, pins):
+    def get_nets_from_pin_list(self, pins) -> list[str]:
         """Retrieve nets with one or more pins.
 
         Parameters
@@ -2019,7 +2028,7 @@ class Components(object):
         """
         return list(set([pin.net.name for pin in pins]))
 
-    def get_component_net_connection_info(self, refdes):
+    def get_component_net_connection_info(self, refdes) -> Component:
         """Retrieve net connection information.
 
         Parameters
@@ -2051,7 +2060,7 @@ class Components(object):
                     data["net_name"].append(net_name)
         return data
 
-    def get_rats(self):
+    def get_rats(self) -> list[dict[str, str]]:
         """Retrieve a list of dictionaries of the reference designator, pin names, and net names.
 
         Returns
@@ -2074,7 +2083,7 @@ class Components(object):
             df_list.append(df)
         return df_list
 
-    def get_through_resistor_list(self, threshold=1):
+    def get_through_resistor_list(self, threshold=1) -> list[Component]:
         """Retrieve through resistors.
 
         Parameters
@@ -2108,7 +2117,7 @@ class Components(object):
 
         return through_comp_list
 
-    def short_component_pins(self, component_name, pins_to_short=None, width=1e-3):
+    def short_component_pins(self, component_name, pins_to_short=None, width=1e-3) -> bool:
         """Short pins of component with a trace.
 
         Parameters
@@ -2248,7 +2257,7 @@ class Components(object):
             i += 1
         return True
 
-    def create_pin_group(self, reference_designator, pin_numbers, group_name=None):
+    def create_pin_group(self, reference_designator, pin_numbers, group_name=None) -> Union[tuple[str, PinGroup], bool]:
         """Create pin group on the component.
 
         Parameters
@@ -2288,7 +2297,7 @@ class Components(object):
                         return group_name, PinGroup(self._pedb, pingroup)
         return False
 
-    def create_pin_group_on_net(self, reference_designator, net_name, group_name=None):
+    def create_pin_group_on_net(self, reference_designator, net_name, group_name=None) -> PinGroup:
         """Create pin group on component by net name.
 
         Parameters

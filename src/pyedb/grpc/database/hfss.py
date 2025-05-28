@@ -43,7 +43,7 @@ class Hfss(object):
         self._pedb = p_edb
 
     @property
-    def hfss_extent_info(self):
+    def hfss_extent_info(self) -> HfssExtentInfo:
         """HFSS extent information."""
         return HfssExtentInfo(self._pedb)
 
@@ -1207,7 +1207,7 @@ class Hfss(object):
         stop_freq=20e9,
         step_freq=1e6,
         discrete_sweep=False,
-    ):
+    ) -> HfssSimulationSetup:
         """Add a HFSS analysis to EDB.
 
         Parameters
