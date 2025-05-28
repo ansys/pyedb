@@ -513,10 +513,6 @@ class TestClass:
             },
         }
         app = ViaDesignBackend(cfg)
-        import ansys.aedt.core
-        h3d = ansys.aedt.core.Hfss3dLayout(project=app.app.edbpath, version=desktop_version)
-        h3d.release_desktop(close_projects=False, close_desktop=False)
-
 
     def test_backend_diff_pcb(self):
         cfg = {
@@ -610,4 +606,3 @@ class TestClass:
             },
         }
         app = ViaDesignBackend(cfg)
-        # app.launch_h3d(False, False)
