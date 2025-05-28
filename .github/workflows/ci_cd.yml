@@ -104,20 +104,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fail-level: 'warning'
 
-  doc-build:
-    name: Documentation build
-    runs-on: ubuntu-latest
-    needs: [ doc-style ]
-    steps:
-      - name: Documentation build
-        uses: ansys/actions/doc-build@5dc39c7838f50142138f7ac518ff3e4dca065d97 # v9.0.12
-        with:
-          dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          sphinxopts: '-j auto --color -w build_errors.txt'
-          check-links: false
-          needs-quarto: true
-
   smoke-tests:
     name: Build wheelhouse and smoke tests
     runs-on: ${{ matrix.os }}
@@ -506,7 +492,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build documentation
-        uses: ansys/actions/doc-build@v8
+        uses: ansys/actions/doc-build@5dc39c7838f50142138f7ac518ff3e4dca065d97 # v9.0.12
         with:
           dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
