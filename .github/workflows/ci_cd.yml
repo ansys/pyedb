@@ -63,7 +63,7 @@ jobs:
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
-          python-version: ${{ matrix.python-version }}
+          python-version: ['3.10', '3.11', '3.12', '3.13']
 
       - name: Import python package
         run: |
