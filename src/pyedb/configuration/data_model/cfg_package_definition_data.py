@@ -9,18 +9,6 @@ class CfgHeatSink:
     fin_spacing: float
     fin_thickness: float
 
-    def _import_from_json(self):
-        pass
-
-    def _export_json(self):
-        pass
-
-    def _get_from_edb(self) -> bool:
-        pass
-
-    def _set_to_edb(self) -> bool:
-        pass
-
 
 @dataclass
 class CfgPackageDefinition:
@@ -33,14 +21,7 @@ class CfgPackageDefinition:
     height: float
     heatsink: CfgHeatSink
 
-    def _import_from_json(self):
-        pass
 
-    def _export_json(self):
-        pass
-
-    def _get_from_edb(self) -> bool:
-        pass
-
-    def _set_to_edb(self) -> bool:
-        pass
+@dataclass
+class CfgPackageDefinitions:
+    definitions: list[CfgPackageDefinition] = "default_factory"

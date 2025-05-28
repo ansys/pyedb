@@ -27,14 +27,7 @@ class CfgCutout:
     simple_pad_check: bool = True
     keep_lines_as_path: bool = False
 
-    def _import_from_json(self):
-        pass
 
-    def _export_json(self):
-        pass
-
-    def _get_from_edb(self) -> bool:
-        pass
-
-    def _set_to_edb(self) -> bool:
-        pass
+@dataclass
+class CfgOperations:
+    cutout: CfgCutout = None
