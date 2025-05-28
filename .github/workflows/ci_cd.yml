@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check the title of the pull request
-        uses: ansys/actions/check-pr-title@v8
+        uses: ansys/actions/check-pr-title@v9
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           use-upper-case: true
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check documentation style
-        uses: ansys/actions/doc-style@v8
+        uses: ansys/actions/doc-style@v9
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
