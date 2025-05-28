@@ -142,7 +142,7 @@ jobs:
           attest-provenance: true
       - name: Import python package
         run: |
-          python -c "import ansys.aedt.core; from ansys.aedt.core import __version__"
+          python -c "import pyedb; from pyedb import __version__"
 
 
   unit-tests:
