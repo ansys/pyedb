@@ -29,12 +29,14 @@ class CfgTrace:
     def __init__(self, **kwargs):
         self.name = kwargs.get("name", "")
         self.layer = kwargs["layer"]
-        self.path = kwargs["path"]
+        self.path = kwargs.get("path")
         self.width = kwargs["width"]
         self.net_name = kwargs.get("net_name", "")
         self.start_cap_style = kwargs.get("start_cap_style", "round")
         self.end_cap_style = kwargs.get("end_cap_style", "round")
         self.corner_style = kwargs.get("corner_style", "sharp")
+
+        self.incremental_path = kwargs.get("incremental_path")
 
 
 class CfgPlane:
@@ -53,6 +55,10 @@ class CfgPlane:
 
         # polygon
         self.points = kwargs.get("points", [])
+
+        # circle
+        self.radius = kwargs.get("radius", 0)
+        self.position = kwargs.get("position", [0, 0])
 
 
 class CfgModeler:
@@ -153,16 +159,30 @@ class CfgModeler:
         def set_parameter_to_edb(self):
             if self.parent.traces:
                 for t in self.parent.traces:
-                    obj = self._pedb.modeler.create_trace(
-                        path_list=t.path,
-                        layer_name=t.layer,
-                        net_name=t.net_name,
-                        width=t.width,
-                        start_cap_style=t.start_cap_style,
-                        end_cap_style=t.end_cap_style,
-                        corner_style=t.corner_style,
-                    )
-                    obj.aedt_name = t.name
+                    if t.path:
+                        obj = self._pedb.modeler.create_trace(
+                            path_list=t.path,
+                            layer_name=t.layer,
+                            net_name=t.net_name,
+                            width=t.width,
+                            start_cap_style=t.start_cap_style,
+                            end_cap_style=t.end_cap_style,
+                            corner_style=t.corner_style,
+                        )
+                        obj.aedt_name = t.name
+                    else:
+                        obj = self._pedb.modeler.create_trace(
+                            path_list=[t.incremental_path[0]],
+                            layer_name=t.layer,
+                            net_name=t.net_name,
+                            width=t.width,
+                            start_cap_style=t.start_cap_style,
+                            end_cap_style=t.end_cap_style,
+                            corner_style=t.corner_style,
+                        )
+                        obj.aedt_name = t.name
+                        for x, y in t.incremental_path[1:]:
+                            obj.add_point(x, y, True)
 
             if self.parent.padstack_defs:
                 for p in self.parent.padstack_defs:
@@ -202,6 +222,17 @@ class CfgModeler:
                             main_shape=p.points, layer_name=p.layer, net_name=p.net_name
                         )
                         obj.aedt_name = p.name
+                    elif p.type == "circle":
+                        obj = self._pedb.modeler.create_circle(
+                            layer_name=p.layer,
+                            net_name=p.net_name,
+                            x=p.position[0],
+                            y=p.position[1],
+                            radius=p.radius,
+                        )
+                        obj.aedt_name = p.name
+                    else:
+                        raise
 
                     for v in p.voids:
                         for i in self._pedb.layout.primitives:
