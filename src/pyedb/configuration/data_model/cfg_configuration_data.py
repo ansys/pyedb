@@ -64,7 +64,11 @@ class Configuration:
             self._pedb.configuration.operations = CfgOperations().from_dict(data)
 
     def load_from_layout(self, filter=None):
+        self._pedb.logger.info("Loading components")
         if not self._pedb.components.load_configuration_from_layout(filter=filter):
             raise ("Failed importing components from layout with configuration.", Exception)
+        self._pedb.logger.info("Done")
+        self._pedb.logger.info("Loading nets")
         if not self._pedb.nets.load_configuration_from_layout(filter=filter):
             raise ("Failed importing nets from layout with configuration.", Exception)
+        self._pedb.logger.info("Done")

@@ -2361,7 +2361,7 @@ class Components(object):
                 )
                 cfg_port_properties.reference_offset = edb_component.component_property.port_property.reference_height
                 cfg_component.port_properties = cfg_port_properties
-
+            elif edb_component.type in ["resistor", "inductor", "capacitor"]:
                 cfg_component.rlc_model = CfgPinPairs()
                 for pin_pair in edb_component.model.pin_pairs():
                     cfg_pin_pair = CfgPinPair()
@@ -2371,9 +2371,9 @@ class Components(object):
                         cfg_pin_pair.type = "parallel"
                     else:
                         cfg_pin_pair.type = "series"
-                    cfg_pin_pair.resistance = edb_component.res_value
-                    cfg_pin_pair.inductance = edb_component.ind_value
-                    cfg_pin_pair.capacitance = edb_component.cap_value
+                    cfg_pin_pair.resistance = round(edb_component.res_value, 15)
+                    cfg_pin_pair.inductance = round(edb_component.ind_value, 15)
+                    cfg_pin_pair.capacitance = round(edb_component.cap_value, 15)
                     cfg_component.rlc_model.pin_pairs.append(cfg_pin_pair)
-            self._pedb.configuration.components.append(cfg_component)
+            self._pedb.configuration.components.components.append(cfg_component)
         return True

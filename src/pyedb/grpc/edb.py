@@ -47,7 +47,9 @@ from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
 from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
-from pyedb.configuration.configuration import Configuration
+from pyedb.configuration.data_model.cfg_configuration_data import (
+    Configuration as ConfigurationData,
+)
 from pyedb.generic.constants import unit_converter
 from pyedb.generic.general_methods import (
     generate_unique_name,
@@ -855,7 +857,7 @@ class Edb(EdbInit):
         :class:`Configuration <pyedb.configuration.configuration.Configuration>`.
         """
         if not self._configuration:
-            self._configuration = Configuration(self)
+            self._configuration = ConfigurationData(self)
         return self._configuration
 
     def edb_exception(self, ex_value, tb_data):

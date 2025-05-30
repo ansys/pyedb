@@ -647,13 +647,13 @@ class Nets(CommonNets):
         -------
         bool. `True` when succeed.
         """
-        if not self._pedb.configuration.components:
+        if not self._pedb.configuration.nets:
             self._pedb.configuration.nets = CfgNets()
-        signal_nets = list(self.nets.signal.keys())
-        power_nets = list(self.nets.power.keys())
+        signal_nets = list(self.signal.keys())
+        power_nets = list(self.power.keys())
         if filter:
             signal_nets = [net for net in signal_nets if net in filter]
             power_nets = [net for net in power_nets if net in filter]
         self._pedb.configuration.nets.signal_nets = signal_nets
-        self._pedb.configuration.nets.power = power_nets
+        self._pedb.configuration.nets.power_ground_nets = power_nets
         return True
