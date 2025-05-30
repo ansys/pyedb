@@ -64,6 +64,5 @@ class Configuration:
             self._pedb.configuration.operations = CfgOperations().from_dict(data)
 
     def load_from_layout(self, filter=None):
-        if not self.components:
-            if not self._pedb.load_configuration_from_layout(filter=filter):
-                raise ("Failed importing components from layout with configuration.", Exception)
+        if not self._pedb.components.load_configuration_from_layout(filter=filter):
+            raise ("Failed importing components from layout with configuration.", Exception)

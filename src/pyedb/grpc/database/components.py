@@ -50,6 +50,8 @@ from pyedb.configuration.data_model.cfg_components_data import (
     CfgComponents,
     CfgPinPair,
     CfgPinPairs,
+    CfgPortProperties,
+    CfgSolderBallProperties,
 )
 from pyedb.generic.general_methods import (
     generate_unique_name,
@@ -2341,8 +2343,25 @@ class Components(object):
             cfg_component.enabled = edb_component.enabled
             cfg_component.part_type = edb_component.type
             if edb_component.type == "io":
-                pass
-            if edb_component.type in ["capacitor", "inductor", "resistor"]:
+                cfg_solder_ball_properties = CfgSolderBallProperties()
+                cfg_solder_ball_properties.shape = edb_component.solder_ball_shape
+                cfg_solder_ball_properties.height = edb_component.solder_ball_height
+                cfg_solder_ball_properties.diameter = edb_component.solder_ball_diameter[0]
+                cfg_component.solder_ball_properties = cfg_solder_ball_properties
+
+                cfg_port_properties = CfgPortProperties()
+                cfg_port_properties.reference_size_auto = (
+                    edb_component.component_property.port_property.reference_size_auto
+                )
+                cfg_port_properties.reference_size_x = (
+                    edb_component.component_property.port_property.get_reference_size()[0]
+                )
+                cfg_port_properties.reference_size_y = (
+                    edb_component.component_property.port_property.get_reference_size()[1]
+                )
+                cfg_port_properties.reference_offset = edb_component.component_property.port_property.reference_height
+                cfg_component.port_properties = cfg_port_properties
+
                 cfg_component.rlc_model = CfgPinPairs()
                 for pin_pair in edb_component.model.pin_pairs():
                     cfg_pin_pair = CfgPinPair()
