@@ -2337,7 +2337,7 @@ class Components(object):
             edb_components = [cmp for cmp in list(self.instances.values())]
         if not self._pedb.configuration.components:
             self._pedb.configuration.components = CfgComponents()
-        for _, edb_component in edb_components:
+        for edb_component in edb_components:
             cfg_component = CfgComponent()
             cfg_component.reference_designator = edb_component.refdes
             cfg_component.enabled = edb_component.enabled
