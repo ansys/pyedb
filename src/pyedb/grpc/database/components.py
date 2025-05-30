@@ -45,6 +45,12 @@ from pyedb.component_libraries.ansys_components import (
     ComponentPart,
     Series,
 )
+from pyedb.configuration.data_model.cfg_components_data import (
+    CfgComponent,
+    CfgComponents,
+    CfgPinPair,
+    CfgPinPairs,
+)
 from pyedb.generic.general_methods import (
     generate_unique_name,
     get_filename_without_extension,
@@ -2308,3 +2314,47 @@ class Components(object):
             pin.name for pin in list(self.instances[reference_designator].pins.values()) if pin.net_name == net_name
         ]
         return self.create_pin_group(reference_designator, pins, group_name)
+
+    def load_configuration_from_layout(self, filter=None) -> bool:
+        """Returns Components configuration class from layout.
+
+        Parameters
+        ----------
+        filter : list[str], optional
+            Provide a filter to retrieve only specific components, for instance ["capacitor", "io] will only return
+            `CfgComponents` object with capaitors and io components. When filter is `None` no filter is applied and
+            all components are returned. Default valueis `None`
+
+        Returns
+        -------
+        bool. `True` when succeed.
+        """
+        if filter:
+            edb_components = [cmp for cmp in list(self.instances.values()) if cmp.type in filter]
+        else:
+            edb_components = [cmp for cmp in list(self.instances.values())]
+        if not self._pedb.configuration.components:
+            self._pedb.configuration.components = CfgComponents()
+        for _, edb_component in edb_components:
+            cfg_component = CfgComponent()
+            cfg_component.reference_designator = edb_component.refdes
+            cfg_component.enabled = edb_component.enabled
+            cfg_component.part_type = edb_component.type
+            if edb_component.type == "io":
+                pass
+            if edb_component.type in ["capacitor", "inductor", "resistor"]:
+                cfg_component.rlc_model = CfgPinPairs()
+                for pin_pair in edb_component.model.pin_pairs():
+                    cfg_pin_pair = CfgPinPair()
+                    cfg_pin_pair.p1 = pin_pair[0]
+                    cfg_pin_pair.p2 = pin_pair[1]
+                    if edb_component.is_parallel_rlc:
+                        cfg_pin_pair.type = "parallel"
+                    else:
+                        cfg_pin_pair.type = "series"
+                    cfg_pin_pair.resistance = edb_component.res_value
+                    cfg_pin_pair.inductance = edb_component.ind_value
+                    cfg_pin_pair.capacitance = edb_component.cap_value
+                    cfg_component.rlc_model.pin_pairs.append(cfg_pin_pair)
+            self._pedb.configuration.components.append(cfg_component)
+        return True

@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 
+from dataclasses_json import dataclass_json
 
+
+@dataclass_json
 @dataclass
 class CfgBoundaries:
     open_region: bool = True
@@ -18,15 +21,3 @@ class CfgBoundaries:
     air_box_horizontal_padding: float = 0.15
     air_box_positive_vertical_padding: float = 1
     air_box_negative_vertical_padding: float = 1
-
-    def _import_from_json(self):
-        pass
-
-    def _export_json(self):
-        pass
-
-    def _get_from_edb(self) -> bool:
-        pass
-
-    def _set_to_edb(self) -> bool:
-        pass

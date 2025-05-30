@@ -1,39 +1,46 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+from dataclasses_json import dataclass_json
 
 
+@dataclass_json
 @dataclass
 class CfgFrequency:
-    distribution: str
-    start: float
-    stop: float
-    step: float
-    points: int
-    samples: int
+    distribution: str = ""
+    start: float = 0.0
+    stop: float = 0.0
+    step: float = 0.0
+    points: int = 0
+    samples: int = 0
 
 
+@dataclass_json
 @dataclass
 class CfgFrequencySweep:
-    name: str
-    type: str
-    frequencies: list[CfgFrequency]
+    name: str = ""
+    type: str = ""
+    frequencies: list[CfgFrequency] = field(default_factory=list)
 
 
+@dataclass_json
 @dataclass
 class CfgDcIrSettings:
-    export_dc_thermal_data: bool
+    export_dc_thermal_data: bool = False
 
 
+@dataclass_json
 @dataclass
 class CfgSetup:
-    name: str
-    type: str
-    f_adapt: str
-    max_num_passes: int
-    max_mag_delta_s: float
-    dc_slider_position: int
-    dc_ir_settings: CfgDcIrSettings
+    name: str = ""
+    type: str = ""
+    f_adapt: str = ""
+    max_num_passes: int = 20
+    max_mag_delta_s: float = 0.02
+    dc_slider_position: int = 1
+    dc_ir_settings: CfgDcIrSettings = None
 
 
+@dataclass_json
 @dataclass
 class CfgSetups:
-    setups: list[CfgSetup] = "default_factory"
+    setups: list[CfgSetup] = field(default_factory=list)

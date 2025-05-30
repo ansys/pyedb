@@ -1,36 +1,43 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+from dataclasses_json import dataclass_json
 
 
+@dataclass_json
 @dataclass
 class CfgTerminal:
-    pin: str
-    net: str
+    pin: str = ""
+    net: str = ""
 
 
+@dataclass_json
 @dataclass
 class CfgPort:
-    name: str
-    reference_designator: str
-    type: str
-    positive_terminal: CfgTerminal
-    negative_terminal: CfgTerminal
+    name: str = ""
+    reference_designator: str = ""
+    type: str = ""
+    positive_terminal: CfgTerminal = None
+    negative_terminal: CfgTerminal = None
 
 
+@dataclass_json
 @dataclass
 class CfgSource:
-    name: str
-    reference_designator: str
-    type: str
-    magnitude: float
-    positive_terminal: CfgTerminal
-    negative_terminal: CfgTerminal
+    name: str = ""
+    reference_designator: str = ""
+    type: str = ""
+    magnitude: float = 0.0
+    positive_terminal: CfgTerminal = None
+    negative_terminal: CfgTerminal = None
 
 
+@dataclass_json
 @dataclass
 class CfgPorts:
-    ports: [CfgPort] = "default_factory"
+    ports: list[CfgPort] = field(default_factory=list)
 
 
+@dataclass_json
 @dataclass
 class CfgSources:
-    sources: [CfgSource] = "default_factory"
+    sources: list[CfgSource] = field(default_factory=list)

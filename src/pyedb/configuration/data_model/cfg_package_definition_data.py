@@ -1,27 +1,32 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+from dataclasses_json import dataclass_json
 
 
+@dataclass_json
 @dataclass
 class CfgHeatSink:
-    fin_base_height: float
-    fin_height: float
-    fin_orientation: str
-    fin_spacing: float
-    fin_thickness: float
+    fin_base_height: float = 0.0
+    fin_height: float = 0.0
+    fin_orientation: str = str
+    fin_spacing: float = 0.0
+    fin_thickness: float = 0.0
 
 
+@dataclass_json
 @dataclass
 class CfgPackageDefinition:
-    name: str
-    component_definition: str
-    maximum_power: float
-    therm_cond: float
-    theta_jb: float
-    theta_jc: float
-    height: float
-    heatsink: CfgHeatSink
+    name: str = ""
+    component_definition: str = ""
+    maximum_power: float = 0.0
+    therm_cond: float = 0.0
+    theta_jb: float = 0.0
+    theta_jc: float = 0.0
+    height: float = 0.0
+    heatsink: CfgHeatSink = None
 
 
+@dataclass_json
 @dataclass
 class CfgPackageDefinitions:
-    definitions: list[CfgPackageDefinition] = "default_factory"
+    definitions: list[CfgPackageDefinition] = field(default_factory=list)

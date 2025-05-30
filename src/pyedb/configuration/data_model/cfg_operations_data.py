@@ -1,10 +1,13 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+from dataclasses_json import dataclass_json
 
 
+@dataclass_json
 @dataclass
 class CfgCutout:
-    signal_list: [str]
-    reference_list: [str]
+    signal_list: list[str] = field(default_factory=list)
+    reference_list: list[str] = field(default_factory=list)
     extent_type: str = "ConvexHull"
     expansion_size: float = 0.002
     use_round_corner: bool = False
@@ -28,6 +31,7 @@ class CfgCutout:
     keep_lines_as_path: bool = False
 
 
+@dataclass_json
 @dataclass
 class CfgOperations:
     cutout: CfgCutout = None
