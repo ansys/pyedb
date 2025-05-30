@@ -66,3 +66,5 @@ class Configuration:
     def load_from_layout(self, filter=None):
         if not self._pedb.components.load_configuration_from_layout(filter=filter):
             raise ("Failed importing components from layout with configuration.", Exception)
+        if not self._pedb.nets.load_configuration_from_layout(filter=filter):
+            raise ("Failed importing nets from layout with configuration.", Exception)

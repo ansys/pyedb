@@ -25,6 +25,7 @@ from __future__ import absolute_import  # noreorder
 import warnings
 
 from pyedb.common.nets import CommonNets
+from pyedb.configuration.data_model.cfg_nets_data import CfgNets
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.primitive.bondwire import Bondwire
@@ -631,3 +632,28 @@ class Nets(CommonNets):
         if isinstance(net_names_list, str):
             net_names_list = [net_names_list]
         return self._pedb.modeler.unite_polygons_on_layer(net_names_list=net_names_list)
+
+    def load_configuration_from_layout(self, filter=None) -> bool:
+        """Update nets from layout inn configuration.
+
+        Parameters
+        ----------
+        filter : list[str], optional
+            Provide a filter to retrieve only specific nets, for instance ["GND", "net1"] will only return
+            The nets included in the list. When filter is `None` no filter is applied and all nets are returned.
+            Default valueis `None`
+
+        Returns
+        -------
+        bool. `True` when succeed.
+        """
+        if not self._pedb.configuration.components:
+            self._pedb.configuration.nets = CfgNets()
+        signal_nets = list(self.nets.signal.keys())
+        power_nets = list(self.nets.power.keys())
+        if filter:
+            signal_nets = [net for net in signal_nets if net in filter]
+            power_nets = [net for net in power_nets if net in filter]
+        self._pedb.configuration.nets.signal_nets = signal_nets
+        self._pedb.configuration.nets.power = power_nets
+        return True
