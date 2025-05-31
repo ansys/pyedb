@@ -63,6 +63,11 @@ class Configuration:
             self._pedb.configuration.package_definitions = CfgPackageDefinitions().from_dict(data)
             self._pedb.configuration.operations = CfgOperations().from_dict(data)
 
+    def export_configuration_file(self, file_path):
+        data = self._pedb.configuration.to_dict()
+        with open(file_path, "w") as file:
+            json.dump(data, file, indent=4)
+
     def load_from_layout(self, filter=None):
         self._pedb.logger.info("Loading components")
         if not self._pedb.components.load_configuration_from_layout(filter=filter):

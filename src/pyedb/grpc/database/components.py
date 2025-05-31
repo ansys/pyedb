@@ -2324,8 +2324,8 @@ class Components(object):
         ----------
         filter : list[str], optional
             Provide a filter to retrieve only specific components, for instance ["capacitor", "io] will only return
-            `CfgComponents` object with capaitors and io components. When filter is `None` no filter is applied and
-            all components are returned. Default valueis `None`
+            `CfgComponents` object with capacitors and io components. When filter is `None`, no filter is applied and
+            all components are returned. Default value is `None`
 
         Returns
         -------
@@ -2354,12 +2354,14 @@ class Components(object):
                     edb_component.component_property.port_property.reference_size_auto
                 )
                 cfg_port_properties.reference_size_x = (
-                    edb_component.component_property.port_property.get_reference_size()[0]
+                    edb_component.component_property.port_property.get_reference_size()[0].value
                 )
                 cfg_port_properties.reference_size_y = (
-                    edb_component.component_property.port_property.get_reference_size()[1]
+                    edb_component.component_property.port_property.get_reference_size()[1].value
                 )
-                cfg_port_properties.reference_offset = edb_component.component_property.port_property.reference_height
+                cfg_port_properties.reference_offset = (
+                    edb_component.component_property.port_property.reference_height.value
+                )
                 cfg_component.port_properties = cfg_port_properties
             elif edb_component.type in ["resistor", "inductor", "capacitor"]:
                 cfg_component.rlc_model = CfgPinPairs()
@@ -2377,3 +2379,8 @@ class Components(object):
                     cfg_component.rlc_model.pin_pairs.append(cfg_pin_pair)
             self._pedb.configuration.components.components.append(cfg_component)
         return True
+
+    def apply_configuration_to_layout(self) -> bool:
+        for cfg_cmp in self._pedb.configuration.components.components:
+            edb_component = self.instances[cfg_cmp.reference_designator]
+            return True
