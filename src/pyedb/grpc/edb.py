@@ -47,7 +47,7 @@ from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
 from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
-from pyedb.configuration.data_model.cfg_configuration_data import (
+from pyedb.configuration.data_model.configuration_data import (
     Configuration as ConfigurationData,
 )
 from pyedb.generic.constants import unit_converter

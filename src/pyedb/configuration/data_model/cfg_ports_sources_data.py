@@ -8,6 +8,7 @@ from dataclasses_json import dataclass_json
 class CfgTerminal:
     pin: str = ""
     net: str = ""
+    pin_group: str = ""
 
 
 @dataclass_json

@@ -31,6 +31,7 @@ from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as GrpcValue
 
+from pyedb.configuration.data_model.cfg_ports_sources_data import CfgPort, CfgTerminal
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.components import Component
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
@@ -2567,53 +2568,36 @@ class SourceExcitation:
         p_terminal.reference_terminal = n_terminal
         return self._pedb.create_voltage_probe(p_terminal, n_terminal)
 
-    def load_ports_configuration_from_layout(self):
-        from pyedb.configuration.data_model.cfg_pingroup_data import (
-            CfgPorts as PingCfgPort,
-        )
-        from pyedb.configuration.data_model.cfg_pingroup_data import (
-            CfgTerminal as PinGroupCfgTerminal,
-        )
-        from pyedb.configuration.data_model.cfg_ports_sources_data import (
-            CfgPorts as CfgPorts,
-        )
-        from pyedb.configuration.data_model.cfg_ports_sources_data import CfgPort
-        from pyedb.configuration.data_model.cfg_ports_sources_data import CfgTerminal
+    def load_ports_configuration_from_layout(self) -> list[CfgPort]:
+        """Load configuration port from layout.
 
-        for port in [
-            port
-            for _, port in self.excitations.items()
-            if port.terminal_type == "PinGroupTerminal" and not port.is_reference_terminal
-        ]:
-            cfg_port = PingCfgPort()
-            cfg_port.name = port.name
-            cfg_port.type = "circuit"
-            cfg_port.positive_terminal = PinGroupCfgTerminal()
-            cfg_port.negative_terminal = PinGroupCfgTerminal()
-            cfg_port.positive_terminal.pingroup = port._edb_object.pin_group.name
-            cfg_port.negative_terminal.pingroup = port.reference_terminal.pin_group.name
-            self._pedb.configuration.pin_groups.ports.append(cfg_port)
-
-        for port in [
-            port
-            for _, port in self.excitations.items()
-            if port.terminal_type == "PadstackInstanceTerminal" and not port.is_reference_terminal
-        ]:
-            if not self._pedb.configuration.ports:
-                self._pedb.configuration.ports = CfgPorts()
-            cfg_port = CfgPort()
-            cfg_port.name = port.name
-            cfg_port.reference_designator = port.component.name
-            cfg_port.positive_terminal = port._edb_object.name
-            if not port.reference_terminal and not port.is_circuit_port:
-                cfg_port.type = "coax"
-            elif port.reference_terminal and port.is_circuit_port:
-                cfg_port.type = "circuit"
-            cfg_port.positive_terminal = CfgTerminal()
-            cfg_port.positive_terminal.net = port.net.name
-            cfg_port.positive_terminal.pin = port._edb_object.padstack_instance.name
-            if cfg_port.type == "circuit":
-                cfg_port.negative_terminal = CfgTerminal()
-                cfg_port.negative_terminal.net = port.reference_terminal.net.name
-                cfg_port.negative_terminal.pin = port.reference_terminal.padstack_instance.name
-            self._pedb.configuration.ports.ports.append(cfg_port)
+        Returns
+        -------
+        list[CfgPort]
+            List of configuration ports.
+        """
+        self._pedb.configuration.ports = []
+        for _, port in self.excitations.items():
+            if not port.is_reference_terminal:
+                cfg_port = CfgPort()
+                cfg_port.positive_terminal = CfgTerminal()
+                if port.terminal_type == "PinGroupTerminal":
+                    cfg_port.name = port.name
+                    cfg_port.type = "circuit"
+                    cfg_port.positive_terminal.pin_group = port._edb_object.pin_group.name
+                    cfg_port.negative_terminal = CfgTerminal()
+                    cfg_port.negative_terminal.pin_group = port.reference_terminal.pin_group.name
+                elif port.terminal_type == "PadstackInstanceTerminal":
+                    cfg_port.name = port.name
+                    cfg_port.reference_designator = port.component.name
+                    cfg_port.positive_terminal.pin = port._edb_object.name
+                    cfg_port.positive_terminal.net = port._edb_object.net.name
+                    if not port.reference_terminal and not port.is_circuit_port:
+                        cfg_port.type = "coax"
+                    elif port.reference_terminal and port.is_circuit_port:
+                        cfg_port.type = "circuit"
+                        cfg_port.negative_terminal = CfgTerminal()
+                        cfg_port.negative_terminal.pin = port.reference_terminal.name
+                        cfg_port.negative_terminal.pin = port.reference_terminal.net.name
+                self._pedb.configuration.ports.append(cfg_port)
+        return self._pedb.configuration.ports

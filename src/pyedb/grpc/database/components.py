@@ -2327,12 +2327,11 @@ class Components(object):
         -------
         bool. `True` when succeed.
         """
+        self._pedb.configuration.components = []
         if filter:
             edb_components = [cmp for cmp in list(self.instances.values()) if cmp.type in filter]
         else:
             edb_components = [cmp for cmp in list(self.instances.values())]
-        if not self._pedb.configuration.components:
-            self._pedb.configuration.components = CfgComponents()
         for edb_component in edb_components:
             cfg_component = CfgComponent()
             cfg_component.reference_designator = edb_component.refdes
@@ -2373,7 +2372,7 @@ class Components(object):
                     cfg_pin_pair.inductance = round(edb_component.ind_value, 15)
                     cfg_pin_pair.capacitance = round(edb_component.cap_value, 15)
                     cfg_component.rlc_model.pin_pairs.append(cfg_pin_pair)
-            self._pedb.configuration.components.components.append(cfg_component)
+            self._pedb.configuration.components.append(cfg_component)
         return True
 
     def apply_configuration_to_layout(self) -> bool:

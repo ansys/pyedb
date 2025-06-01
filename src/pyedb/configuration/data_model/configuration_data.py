@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import json
 
 from dataclasses_json import dataclass_json
@@ -29,16 +29,16 @@ class Configuration:
     general: CfgGeneral = None
     boundaries: CfgBoundaries = None
     nets: CfgNets = None
-    components: list[CfgComponent] = field(default_factory=list)
-    pin_groups: list[CfgPinGroup] = field(default_factory=list)
-    sources: list[CfgSource] = field(default_factory=list)
-    ports: list[CfgPort] = field(default_factory=list)
-    setups: list[CfgSetup] = field(default_factory=list)
+    components: list[CfgComponent] = None
+    pin_groups: list[CfgPinGroup] = None
+    sources: list[CfgSource] = None
+    ports: list[CfgPort] = None
+    setups: list[CfgSetup] = None
     stackup: CfgStackup = None
     padstacks: CfgPadStacks = None
-    s_parameters: list[CfgSparameter] = field(default_factory=list)
-    spice_models: list[CfgSpiceModel] = field(default_factory=list)
-    package_definitions: list[CfgPackageDefinition] = field(default_factory=list)
+    s_parameters: list[CfgSparameter] = None
+    spice_models: list[CfgSpiceModel] = None
+    package_definitions: list[CfgPackageDefinition] = None
     operations: CfgOperations = None
 
     # TODO check for variables
@@ -48,19 +48,25 @@ class Configuration:
     def load_file(self, file_path):
         with open(file_path, "r") as file:
             data = json.load(file)
-            self._pedb.configuration.components = CfgComponents(self._pedb).from_dict(data)
             self._pedb.configuration.general = CfgGeneral().from_dict(data)
             self._pedb.configuration.boundaries = CfgBoundaries().from_dict(data)
             self._pedb.configuration.nets = CfgNets.from_dict(data)
-            self._pedb.configuration.pin_groups = CfgPinGroups().from_dict(data)
-            self._pedb.configuration.sources = CfgSources.from_dict(data)
-            self._pedb.configuration.ports = CfgPorts().from_dict(data)
-            self._pedb.configuration.setups = CfgSetups().from_dict(data)
+            self._pedb.configuration.components = [CfgComponent().from_dict(cmp) for cmp in data.get("components", [])]
+            self._pedb.configuration.pin_groups = [CfgPinGroup().from_dict(pg) for pg in data.get("pin_groups", [])]
+            self._pedb.configuration.sources = [CfgSource().from_dict(src) for src in data.get("sources", [])]
+            self._pedb.configuration.ports = [CfgPort().from_dict(port) for port in data.get("ports", [])]
+            self._pedb.configuration.setups = [CfgSetup().from_dict(setup) for setup in data.get("setups", [])]
             self._pedb.configuration.stackup = CfgStackup().from_dict(data)
             self._pedb.configuration.padstacks = CfgPadStacks().from_dict(data)
-            self._pedb.configuration.s_parameters = CfgSparameters().from_dict(data)
-            self._pedb.configuration.spice_models = CfgSpiceModels().from_dict(data)
-            self._pedb.configuration.package_definitions = CfgPackageDefinitions().from_dict(data)
+            self._pedb.configuration.s_parameters = [
+                CfgSparameter().from_dict(sp) for sp in data.get("s_parameters", [])
+            ]
+            self._pedb.configuration.spice_models = [
+                CfgSpiceModel().from_dict(sp) for sp in data.get("spice_models", [])
+            ]
+            self._pedb.configuration.package_definitions = [
+                CfgPackageDefinition().from_dict(pkg) for pkg in data.get("package_definitions", [])
+            ]
             self._pedb.configuration.operations = CfgOperations().from_dict(data)
 
     def export_configuration_file(self, file_path):
@@ -69,14 +75,20 @@ class Configuration:
             json.dump(data, file, indent=4)
 
     def load_from_layout(self, filter=None):
-        self._pedb.logger.info("Loading components")
-        if not self._pedb.components.load_configuration_from_layout(filter=filter):
-            raise "Failed importing components from layout with configuration."
         self._pedb.logger.info("Loading nets")
         if not self._pedb.nets.load_configuration_from_layout(filter=filter):
             raise "Failed importing nets from layout with configuration."
+
+        self._pedb.logger.info("Loading components")
+        if not self._pedb.components.load_configuration_from_layout(filter=filter):
+            raise "Failed importing components from layout with configuration."
+
         self._pedb.logger.info("Loading pin groups")
         if not self._pedb.layout.load_pingroup_configuration_from_layout():
             raise "Failed importing pin groups from layout"
+
+        self._pedb.logger.info("Loading sources")
+
         self._pedb.logger.info("Loading ports")
-        self._pedb.source_excitation.load_ports_configuration_from_layout()
+        if not self._pedb.source_excitation.load_ports_configuration_from_layout():
+            raise "Failed importing ports from layout"

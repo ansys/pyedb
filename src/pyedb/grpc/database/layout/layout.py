@@ -34,7 +34,7 @@ import ansys.edb.core.primitive.polygon
 import ansys.edb.core.primitive.primitive
 import ansys.edb.core.primitive.rectangle
 
-from pyedb.configuration.data_model.cfg_pingroup_data import CfgPinGroup, CfgPinGroups
+from pyedb.configuration.data_model.cfg_pingroup_data import CfgPinGroup
 from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
@@ -242,16 +242,15 @@ class Layout(GrpcLayout):
         return prims
 
     def load_pingroup_configuration_from_layout(self) -> bool:
-        if not self._pedb.configuration.pin_groups:
-            self._pedb.configuration.pin_groups = CfgPinGroups()
         try:
+            self._pedb.configuration.pin_groups = []
             for pin_group in self.pin_groups:
                 cfg_pin_group = CfgPinGroup()
                 cfg_pin_group.pins = list(pin_group.pins.keys())
                 cfg_pin_group.name = pin_group.name
                 cfg_pin_group.reference_designator = pin_group.component.name
                 cfg_pin_group.net = pin_group.net.name
-                self._pedb.configuration.pin_groups.pin_groups.append(cfg_pin_group)
+                self._pedb.configuration.pin_groups.append(cfg_pin_group)
             return True
         except Exception as e:
             raise e.args

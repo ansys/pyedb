@@ -46,3 +46,9 @@ class CfgComponent:
     rlc_model: CfgPinPairs = None
     solder_ball_properties: CfgSolderBallProperties = None
     port_properties: CfgPortProperties = None
+
+
+@dataclass_json
+@dataclass
+class CfgComponents:
+    components: list[CfgComponent]
