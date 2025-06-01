@@ -13,10 +13,3 @@ class CfgSparameter:
     components: list[str] = field(default_factory=list)
     reference_net: str = ""
     reference_net_per_component: dict[str, str] = field(default_factory=dict)
-
-
-@dataclass_json
-@dataclass
-class CfgSparameters:
-    general: dict[str, str] = field(default_factory=dict)
-    s_parameters: list[CfgSparameter] = field(default_factory=list)

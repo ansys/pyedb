@@ -61,7 +61,7 @@ class PinGroup(GrpcPinGroup):
         :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`
             Pin group component.
         """
-        return Component(self._pedb, super().component)
+        return Component(self._pedb, next(iter(self.pins.items()))[1].component)
 
     @component.setter
     def component(self, value):

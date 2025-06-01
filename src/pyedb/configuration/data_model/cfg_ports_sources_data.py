@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from dataclasses_json import dataclass_json
 
@@ -29,15 +29,3 @@ class CfgSource:
     magnitude: float = 0.0
     positive_terminal: CfgTerminal = None
     negative_terminal: CfgTerminal = None
-
-
-@dataclass_json
-@dataclass
-class CfgPorts:
-    ports: list[CfgPort] = field(default_factory=list)
-
-
-@dataclass_json
-@dataclass
-class CfgSources:
-    sources: list[CfgSource] = field(default_factory=list)

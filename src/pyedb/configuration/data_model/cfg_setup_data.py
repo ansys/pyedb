@@ -38,9 +38,3 @@ class CfgSetup:
     max_mag_delta_s: float = 0.02
     dc_slider_position: int = 1
     dc_ir_settings: CfgDcIrSettings = None
-
-
-@dataclass_json
-@dataclass
-class CfgSetups:
-    setups: list[CfgSetup] = field(default_factory=list)

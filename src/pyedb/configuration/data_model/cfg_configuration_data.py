@@ -1,22 +1,22 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 
 from dataclasses_json import dataclass_json
 
 from pyedb.configuration.data_model.cfg_boundaries_data import CfgBoundaries
-from pyedb.configuration.data_model.cfg_components_data import CfgComponents
+from pyedb.configuration.data_model.cfg_components_data import CfgComponent
 from pyedb.configuration.data_model.cfg_general_data import CfgGeneral
 from pyedb.configuration.data_model.cfg_nets_data import CfgNets
 from pyedb.configuration.data_model.cfg_operations_data import CfgOperations
 from pyedb.configuration.data_model.cfg_package_definition_data import (
-    CfgPackageDefinitions,
+    CfgPackageDefinition,
 )
 from pyedb.configuration.data_model.cfg_padsatck_data import CfgPadStacks
-from pyedb.configuration.data_model.cfg_pingroup_data import CfgPinGroups
-from pyedb.configuration.data_model.cfg_ports_sources_data import CfgPorts, CfgSources
-from pyedb.configuration.data_model.cfg_s_parameter_models_data import CfgSparameters
-from pyedb.configuration.data_model.cfg_setup_data import CfgSetups
-from pyedb.configuration.data_model.cfg_spice_models_data import CfgSpiceModels
+from pyedb.configuration.data_model.cfg_pingroup_data import CfgPinGroup
+from pyedb.configuration.data_model.cfg_ports_sources_data import CfgPort, CfgSource
+from pyedb.configuration.data_model.cfg_s_parameter_models_data import CfgSparameter
+from pyedb.configuration.data_model.cfg_setup_data import CfgSetup
+from pyedb.configuration.data_model.cfg_spice_models_data import CfgSpiceModel
 from pyedb.configuration.data_model.cfg_stackup_data import CfgStackup
 
 
@@ -29,16 +29,16 @@ class Configuration:
     general: CfgGeneral = None
     boundaries: CfgBoundaries = None
     nets: CfgNets = None
-    components: CfgComponents = None
-    pin_groups: CfgPinGroups = None
-    sources: CfgSources = None
-    ports: CfgPorts = None
-    setups: CfgSetups = None
+    components: list[CfgComponent] = field(default_factory=list)
+    pin_groups: list[CfgPinGroup] = field(default_factory=list)
+    sources: list[CfgSource] = field(default_factory=list)
+    ports: list[CfgPort] = field(default_factory=list)
+    setups: list[CfgSetup] = field(default_factory=list)
     stackup: CfgStackup = None
     padstacks: CfgPadStacks = None
-    s_parameters: CfgSparameters = None
-    spice_models: CfgSpiceModels = None
-    package_definitions: CfgPackageDefinitions = None
+    s_parameters: list[CfgSparameter] = field(default_factory=list)
+    spice_models: list[CfgSpiceModel] = field(default_factory=list)
+    package_definitions: list[CfgPackageDefinition] = field(default_factory=list)
     operations: CfgOperations = None
 
     # TODO check for variables
@@ -71,9 +71,12 @@ class Configuration:
     def load_from_layout(self, filter=None):
         self._pedb.logger.info("Loading components")
         if not self._pedb.components.load_configuration_from_layout(filter=filter):
-            raise ("Failed importing components from layout with configuration.", Exception)
-        self._pedb.logger.info("Done")
+            raise "Failed importing components from layout with configuration."
         self._pedb.logger.info("Loading nets")
         if not self._pedb.nets.load_configuration_from_layout(filter=filter):
-            raise ("Failed importing nets from layout with configuration.", Exception)
-        self._pedb.logger.info("Done")
+            raise "Failed importing nets from layout with configuration."
+        self._pedb.logger.info("Loading pin groups")
+        if not self._pedb.layout.load_pingroup_configuration_from_layout():
+            raise "Failed importing pin groups from layout"
+        self._pedb.logger.info("Loading ports")
+        self._pedb.source_excitation.load_ports_configuration_from_layout()

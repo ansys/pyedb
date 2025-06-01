@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from dataclasses_json import dataclass_json
 
@@ -24,9 +24,3 @@ class CfgPackageDefinition:
     theta_jc: float = 0.0
     height: float = 0.0
     heatsink: CfgHeatSink = None
-
-
-@dataclass_json
-@dataclass
-class CfgPackageDefinitions:
-    definitions: list[CfgPackageDefinition] = field(default_factory=list)

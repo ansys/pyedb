@@ -36,11 +36,3 @@ class CfgSource:
     magnitude: float = 0.0
     positive_terminal: CfgTerminal = None
     negative_terminal: CfgTerminal = None
-
-
-@dataclass_json
-@dataclass
-class CfgPinGroups:
-    pin_groups: list[CfgPinGroup] = field(default_factory=list)
-    ports: list[CfgPorts] = field(default_factory=list)
-    sources: list[CfgSource] = field(default_factory=list)

@@ -47,7 +47,6 @@ from pyedb.component_libraries.ansys_components import (
 )
 from pyedb.configuration.data_model.cfg_components_data import (
     CfgComponent,
-    CfgComponents,
     CfgPinPair,
     CfgPinPairs,
     CfgPortProperties,
@@ -2283,7 +2282,6 @@ class Components(object):
                 self._pedb.logger.error("No pin found to create pin group")
                 return False
         pingroup = PinGroup.create(self._active_layout, group_name, pins)
-
         if pingroup.is_null:  # pragma: no cover
             raise RuntimeError(f"Failed to create pin group {group_name}.")
         else:

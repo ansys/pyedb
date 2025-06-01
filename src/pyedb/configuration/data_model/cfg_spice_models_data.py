@@ -18,10 +18,3 @@ class CfgSpiceModel:
     sub_circuit_name: str = ""
     apply_to_all: bool = True
     components: [str] = field(default_factory=list)
-
-
-@dataclass_json
-@dataclass
-class CfgSpiceModels:
-    general: CfgSpiceModelLib = None
-    spice_models: list[CfgSpiceModel] = field(default_factory=list)
