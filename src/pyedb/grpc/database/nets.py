@@ -633,7 +633,7 @@ class Nets(CommonNets):
             net_names_list = [net_names_list]
         return self._pedb.modeler.unite_polygons_on_layer(net_names_list=net_names_list)
 
-    def load_configuration_from_layout(self, filter=None) -> bool:
+    def load_configuration_from_layout(self, filter=None) -> CfgNets:
         """Update nets from layout inn configuration.
 
         Parameters
@@ -641,11 +641,11 @@ class Nets(CommonNets):
         filter : list[str], optional
             Provide a filter to retrieve only specific nets, for instance ["GND", "net1"] will only return
             The nets included in the list. When filter is `None` no filter is applied and all nets are returned.
-            Default valueis `None`
+            Default value is `None`
 
         Returns
         -------
-        bool. `True` when succeed.
+        CfgNets object.
         """
         if not self._pedb.configuration.nets:
             self._pedb.configuration.nets = CfgNets()
@@ -656,4 +656,4 @@ class Nets(CommonNets):
             power_nets = [net for net in power_nets if net in filter]
         self._pedb.configuration.nets.signal_nets = signal_nets
         self._pedb.configuration.nets.power_ground_nets = power_nets
-        return True
+        return self._pedb.configuration.nets

@@ -31,7 +31,11 @@ from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as GrpcValue
 
-from pyedb.configuration.data_model.cfg_ports_sources_data import CfgPort, CfgTerminal
+from pyedb.configuration.data_model.cfg_ports_sources_data import (
+    CfgPort,
+    CfgSource,
+    CfgTerminal,
+)
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.components import Component
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
@@ -1077,7 +1081,7 @@ class SourceExcitation:
 
         if not source_name:
             source_name = (
-                f"VSource_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
+                f"ISource_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
             )
         return self._create_terminal_on_pins(
             positive_pin=pos_pin,
@@ -2601,3 +2605,32 @@ class SourceExcitation:
                         cfg_port.negative_terminal.pin = port.reference_terminal.net.name
                 self._pedb.configuration.ports.append(cfg_port)
         return self._pedb.configuration.ports
+
+    def load_sources_configuration_from_layout(self) -> list[CfgSource]:
+        """Load configuration sources from layout.
+
+        Returns
+        -------
+        list[CfgSource]
+            List of configuration sources.
+        """
+        self._pedb.configuration.sources = []
+        for _, source in self.sources.items():
+            if not source.is_reference_terminal:
+                cfg_source = CfgSource()
+                cfg_source.positive_terminal = CfgTerminal()
+                cfg_source.type = source.boundary_type
+                cfg_source.reference_designator = source.component.name
+                cfg_source.name = source.name
+                cfg_source.magnitude = source.magnitude.value
+                cfg_source.negative_terminal = CfgTerminal()
+                if source.terminal_type == "PinGroupTerminal":
+                    cfg_source.positive_terminal.pin_group = source._edb_object.pin_group.name
+                    cfg_source.negative_terminal.pin_group = source.reference_terminal.pin_group.name
+                elif source.terminal_type == "PadstackInstanceTerminal":
+                    cfg_source.positive_terminal.pin = source.params[0].name
+                    cfg_source.positive_terminal.net = source.params[0].net.name
+                    cfg_source.negative_terminal.pin = source.reference_terminal.name
+                    cfg_source.negative_terminal.net = source.reference_terminal.net.name
+                self._pedb.configuration.sources.append(cfg_source)
+        return self._pedb.configuration.sources

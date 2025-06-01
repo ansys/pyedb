@@ -2313,7 +2313,7 @@ class Components(object):
         ]
         return self.create_pin_group(reference_designator, pins, group_name)
 
-    def load_configuration_from_layout(self, filter=None) -> bool:
+    def load_configuration_from_layout(self, filter=None) -> list[CfgComponent]:
         """Returns Components configuration class from layout.
 
         Parameters
@@ -2325,7 +2325,7 @@ class Components(object):
 
         Returns
         -------
-        bool. `True` when succeed.
+        list[CfgComponent.
         """
         self._pedb.configuration.components = []
         if filter:
@@ -2373,7 +2373,7 @@ class Components(object):
                     cfg_pin_pair.capacitance = round(edb_component.cap_value, 15)
                     cfg_component.rlc_model.pin_pairs.append(cfg_pin_pair)
             self._pedb.configuration.components.append(cfg_component)
-        return True
+        return self._pedb.configuration.components
 
     def apply_configuration_to_layout(self) -> bool:
         for cfg_cmp in self._pedb.configuration.components.components:

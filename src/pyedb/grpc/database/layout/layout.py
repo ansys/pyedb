@@ -241,7 +241,13 @@ class Layout(GrpcLayout):
         prims = [i for i in prims if i.net_name in net_name] if net_name is not None else prims
         return prims
 
-    def load_pingroup_configuration_from_layout(self) -> bool:
+    def load_pingroup_configuration_from_layout(self) -> list[CfgPinGroup]:
+        """Load pin group configuration from layout.
+
+        Returns
+        -------
+        list[CfgPinGroup]
+        """
         try:
             self._pedb.configuration.pin_groups = []
             for pin_group in self.pin_groups:
@@ -251,6 +257,6 @@ class Layout(GrpcLayout):
                 cfg_pin_group.reference_designator = pin_group.component.name
                 cfg_pin_group.net = pin_group.net.name
                 self._pedb.configuration.pin_groups.append(cfg_pin_group)
-            return True
+            return self._pedb.configuration.pin_groups
         except Exception as e:
             raise e.args

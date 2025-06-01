@@ -557,7 +557,11 @@ class Edb(EdbInit):
         -------
         Dict: Dic[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
         """
-        return self.terminals
+        return {
+            k: v
+            for k, v in self.terminals.items()
+            if v.boundary_type in ["voltage_source", "current_source"] and not v.is_reference_terminal
+        }
 
     @property
     def voltage_regulator_modules(self):
@@ -4135,3 +4139,6 @@ class Edb(EdbInit):
         ET.indent(tree, space="\t", level=0)
         tree.write(control_path)
         return True if os.path.exists(control_path) else False
+
+    def load_simulation_setup_configuration_from_layout(self):
+        pass
