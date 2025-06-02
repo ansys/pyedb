@@ -866,8 +866,29 @@ class Edb(EdbInit):
         -------
         :class:`Configuration <pyedb.configuration.configuration.Configuration>`.
         """
+        from pyedb.configuration.data_model.cfg_boundaries_data import CfgBoundaries
+        from pyedb.configuration.data_model.cfg_general_data import CfgGeneral
+        from pyedb.configuration.data_model.cfg_nets_data import CfgNets
+        from pyedb.configuration.data_model.cfg_operations_data import CfgOperations
+        from pyedb.configuration.data_model.cfg_padsatck_data import CfgPadStacks
+        from pyedb.configuration.data_model.cfg_stackup_data import CfgStackup
+
         if not self._configuration:
             self._configuration = ConfigurationData(self)
+            self._configuration.general = CfgGeneral()
+            self._configuration.boundaries = CfgBoundaries()
+            self._configuration.nets = CfgNets()
+            self._configuration.components = []
+            self._configuration.pin_groups = []
+            self._configuration.sources = []
+            self._configuration.ports = []
+            self._configuration.setups = []
+            self._configuration.stackup = CfgStackup()
+            self._configuration.padstacks = CfgPadStacks()
+            self._configuration.s_parameters = []
+            self._configuration.spice_models = []
+            self._configuration.package_definitions = []
+            self._configuration.operations = CfgOperations()
         return self._configuration
 
     def edb_exception(self, ex_value, tb_data):

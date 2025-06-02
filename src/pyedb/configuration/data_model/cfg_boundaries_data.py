@@ -14,7 +14,7 @@ class CfgBoundaries:
     dielectric_extents_type: str = "bounding_box"
     dielectric_base_polygon: str = ""
     horizontal_padding: float = 0
-    honor_primitives_on_dielectric_layers: bool = type
+    honor_primitives_on_dielectric_layers: bool = True
     air_box_extents_type: str = "bounding_box"
     air_box_base_polygon: str = ""
     air_box_truncate_model_ground_layers: bool = False
