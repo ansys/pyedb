@@ -708,6 +708,7 @@ class Stackup(LayerCollection):
         else:
             new_layer = self._create_nonstackup_layer(layer_name, layer_type)
             self._set_layout_stackup(new_layer, "non_stackup")
+            return self.non_stackup_layers[layer_name]
         return self.layers[layer_name]
 
     def remove_layer(self, name):
