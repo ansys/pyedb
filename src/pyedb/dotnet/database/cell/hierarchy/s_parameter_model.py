@@ -32,3 +32,10 @@ class SparamModel(object):  # pragma: no cover
     @property
     def reference_net(self):
         return self._edb_model.GetReferenceNet()
+
+    @property
+    def is_null(self):
+        """Adding this property to be compatible with grpc."""
+        if self.name:
+            return False
+        return True

@@ -22,7 +22,7 @@
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-from ansys.edb.core.primitive.primitive import Circle as GrpcCircle
+from ansys.edb.core.primitive.circle import Circle as GrpcCircle
 from ansys.edb.core.primitive.primitive import Primitive as GrpcPrimitive
 
 from pyedb.misc.utilities import compute_arc_points
@@ -253,7 +253,12 @@ class Primitive(GrpcPrimitive):
 
         """
         bbox = self.cast().polygon_data.bbox()
-        return [bbox[0].x.value, bbox[0].y.value, bbox[1].x.value, bbox[1].y.value]
+        return [
+            round(bbox[0].x.value, 6),
+            round(bbox[0].y.value, 6),
+            round(bbox[1].x.value, 6),
+            round(bbox[1].y.value, 6),
+        ]
 
     def convert_to_polygon(self):
         """Convert path to polygon.

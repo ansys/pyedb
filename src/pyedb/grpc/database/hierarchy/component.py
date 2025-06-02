@@ -41,14 +41,18 @@ from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as GrpcPinPairM
 from ansys.edb.core.hierarchy.sparameter_model import (
     SParameterModel as GrpcSParameterModel,
 )
-from ansys.edb.core.primitive.primitive import PadstackInstance as GrpcPadstackInstance
-from ansys.edb.core.terminal.terminals import (
+from ansys.edb.core.hierarchy.spice_model import SPICEModel as GrpcSPICEModel
+from ansys.edb.core.primitive.padstack_instance import (
+    PadstackInstance as GrpcPadstackInstance,
+)
+from ansys.edb.core.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
 )
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
+from pyedb.grpc.database.hierarchy.s_parameter_model import SparamModel
 from pyedb.grpc.database.hierarchy.spice_model import SpiceModel
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
@@ -204,7 +208,13 @@ class Component(GrpcComponentGroup):
         :class:`Model <ansys.edb.core.hierarchy.model.Model>`
 
         """
-        return self.component_property.model
+
+        if isinstance(self.component_property.model, GrpcSPICEModel):
+            return SpiceModel(edb_object=self.component_property.model.msg)
+        elif isinstance(self.component_property.model, GrpcSParameterModel):
+            return SparamModel(edb_object=self.component_property.model.msg)
+        else:
+            return self.component_property.model
 
     @model.setter
     def model(self, value):
@@ -406,9 +416,10 @@ class Component(GrpcComponentGroup):
         float
             Balls height value.
         """
-        if not self.component_property.solder_ball_property.is_null:
+        try:
             return self.component_property.solder_ball_property.height.value
-        return None
+        except:
+            return None
 
     @solder_ball_height.setter
     def solder_ball_height(self, value):

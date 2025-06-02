@@ -20,14 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Union
+from typing import List, Set, Union
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
-from ansys.edb.core.terminal.terminals import EdgeTerminal as GrpcEdgeTerminal
-from ansys.edb.core.terminal.terminals import PrimitiveEdge as GrpcPrimitiveEdge
+from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal
+from ansys.edb.core.terminal.edge_terminal import PrimitiveEdge as GrpcPrimitiveEdge
+from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as GrpcValue
 
@@ -154,6 +154,45 @@ class SourceExcitation:
                 )
         return True
 
+    def create_port(self, terminal, ref_terminal=None, is_circuit_port=False, name=None):
+        """Create a port.
+
+        Parameters
+        ----------
+        terminal : class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
+            class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
+            class:`pyedb.grpc.database.terminals.PointTerminal`,
+            class:`pyedb.grpc.database.terminals.PinGroupTerminal`,
+            Positive terminal of the port.
+        ref_terminal : class:`pyedb.grpc.database.terminals.EdgeTerminal`,
+            class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
+            class:`pyedb.grpc.database.terminals.PointTerminal`,
+            class:`pyedb.grpc.database.terminals.PinGroupTerminal`,
+            optional
+            Negative terminal of the port.
+        is_circuit_port : bool, optional
+            Whether it is a circuit port. The default is ``False``.
+        name: str, optional
+            Name of the created port. The default is None, a random name is generated.
+        Returns
+        -------
+        list: [:class:`GapPort <pyedb.grpc.database.ports.ports.GapPort`>,
+            :class:`WavePort <pyedb.grpc.database.ports.ports.WavePort>`].
+        """
+
+        from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
+
+        if terminal.boundary_type == "port":
+            terminal.boundary_type = GrpcBoundaryType.PORT
+        terminal.is_circuit_port = is_circuit_port
+        if ref_terminal:
+            if ref_terminal.boundary_type == "port":
+                ref_terminal.boundary_type = GrpcBoundaryType.PORT
+            terminal.reference_terminal = ref_terminal
+        if name:
+            terminal.name = name
+        return self._pedb.ports[terminal.name]
+
     def create_port_on_pins(
         self,
         refdes,
@@ -225,7 +264,7 @@ class SourceExcitation:
         if refdes and any(refdes.rlc_values):
             return self._pedb.components.deactivate_rlc_component(component=refdes, create_circuit_port=True)
         if not port_name:
-            port_name = f"Port_{pins[0].net_name}_{pins[0].name}"
+            port_name = f"Port_{pins[0].net_name}_{pins[0].component.name}_{pins[0].name}"
 
         if len(pins) > 1 or pingroup_on_single_pin:
             pec_boundary = False
@@ -267,8 +306,8 @@ class SourceExcitation:
         return term or False
 
     def _get_pins_for_ports(
-        self, pins: Union[int, str, PadstackInstance, list[Union[int, str, PadstackInstance]]], comp: Component
-    ) -> list[PadstackInstance]:
+        self, pins: Union[int, str, PadstackInstance, List[Union[int, str, PadstackInstance]]], comp: Component
+    ) -> List[PadstackInstance]:
         if not isinstance(pins, list):
             pins = [pins]
         result = []
@@ -353,6 +392,14 @@ class SourceExcitation:
         >>> port_type=SourceType.CoaxPort, do_pingroup=False, refnet="GND")
 
         """
+        if isinstance(port_type, int):
+            # Adding DotNet backward compatibility with SourceType
+            type_mapping = {0: "coax_port", 1: "circuit_port"}
+            if port_type in type_mapping:
+                port_type = type_mapping[port_type]
+            else:
+                self._logger.error(f"unsupported port type with method.")
+                return False
         if isinstance(component, str):
             component = self._pedb.components.instances[component]
         if not isinstance(net_list, list):
@@ -395,7 +442,7 @@ class SourceExcitation:
                     "outside the component when not found if argument extend_reference_pins_outside_component is True."
                 )
                 return False
-            pad_params = self._pedb.padstack.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
+            pad_params = self._pedb.padstacks.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
             if not pad_params[0] == 7:
                 if not solder_balls_size:  # pragma no cover
                     sball_diam = min([GrpcValue(val).value for val in pad_params[1]])
@@ -431,7 +478,7 @@ class SourceExcitation:
                 shape=sball_shape,
             )
             for pin in cmp_pins:
-                self._pedb.padstack.create_coax_port(padstackinstance=pin, name=port_name)
+                self._pedb.source_excitation.create_coax_port(padstackinstance=pin, name=port_name)
 
         elif port_type == "circuit_port":  # pragma no cover
             ref_pins = [p for p in list(component.pins.values()) if p.net_name in reference_net]
@@ -506,7 +553,7 @@ class SourceExcitation:
         return True
 
     @staticmethod
-    def _normalize_net_list(net_list) -> set[str]:
+    def _normalize_net_list(net_list) -> Set[str]:
         if not isinstance(net_list, list):
             net_list = [net_list]
         nets = set()
@@ -713,9 +760,19 @@ class SourceExcitation:
         -------
         Edb pin group terminal.
         """
+        from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
+
+        from pyedb.grpc.database.hierarchy.pingroup import PinGroup
+
         if pingroup.is_null:
             self._logger.error(f"{pingroup} is null")
-        pin = PadstackInstance(self._pedb, pingroup.pins[0])
+        if not pingroup.pins:
+            self._pedb.logger.error("No pins defined on pingroup.")
+            return False
+        if isinstance(pingroup, GrpcPinGroup):
+            pingroup = PinGroup(self._pedb, pingroup)
+        pin = list(pingroup.pins.values())[0]
+        pin = PadstackInstance(self._pedb, pin)
         if term_name is None:
             term_name = f"{pin.component.name}.{pin.name}.{pin.net_name}"
         for t in self._pedb.active_layout.terminals:
@@ -784,7 +841,7 @@ class SourceExcitation:
             port_name = generate_unique_name(port_name, n=2)
             self._logger.info("An existing port already has this same name. Renaming to {}.".format(port_name))
         PadstackInstanceTerminal.create(
-            layout=self._pedb._active_layout,
+            layout=self._pedb.active_layout,
             name=port_name,
             padstack_instance=padstackinstance,
             layer=terminal_layer,
@@ -821,7 +878,7 @@ class SourceExcitation:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, tuple):
             point_on_edge = GrpcPointData(point_on_edge)
-        prim = [i for i in self._pedb.modeler.primitives if i.id == prim_id]
+        prim = [i for i in self._pedb.modeler.primitives if i.edb_uid == prim_id]
         if not prim:
             self._pedb.logger.error(f"No primitive found for ID {prim_id}")
             return False
@@ -1570,10 +1627,10 @@ class SourceExcitation:
             port_name = generate_unique_name("diff")
 
         if isinstance(positive_primitive_id, Primitive):
-            positive_primitive_id = positive_primitive_id.id
+            positive_primitive_id = positive_primitive_id.edb_uid
 
         if isinstance(negative_primitive_id, Primitive):
-            negative_primitive_id = negative_primitive_id.id
+            negative_primitive_id = negative_primitive_id.edb_uid
 
         _, pos_term = self.create_wave_port(
             positive_primitive_id,
@@ -1642,7 +1699,7 @@ class SourceExcitation:
             port_name = generate_unique_name("Terminal_")
 
         if isinstance(prim_id, Primitive):
-            prim_id = prim_id.id
+            prim_id = prim_id.edb_uid
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
         pos_edge_term.impedance = GrpcValue(impedance)
         wave_port = WavePort(self._pedb, pos_edge_term)
@@ -2017,7 +2074,7 @@ class SourceExcitation:
             port_name = generate_unique_name("bundle_port")
 
         if isinstance(primitives_id[0], Primitive):
-            primitives_id = [i.id for i in primitives_id]
+            primitives_id = [i.edb_uid for i in primitives_id]
 
         terminals = []
         _port_name = port_name
@@ -2079,6 +2136,30 @@ class SourceExcitation:
         """
         terms = [term for term in self._pedb.layout.terminals]
         return len([i for i in terms if not i.is_reference_terminal])
+
+    def get_point_terminal(self, name, net_name, location, layer) -> PointTerminal:
+        """Place terminal between two points.
+
+        Parameters
+        ----------
+        name : str,
+            Name of the terminal.
+        net_name : str
+            Name of the net.
+        location : list
+            Location of the terminal.
+        layer : str,
+            Layer of the terminal.
+
+        Returns
+        -------
+        :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
+        """
+        from pyedb.grpc.database.terminal.point_terminal import PointTerminal
+
+        return PointTerminal.create(
+            layout=self._pedb.active_layout, name=name, net=net_name, layer=layer, point=location
+        )
 
     def create_rlc_boundary_on_pins(self, positive_pin=None, negative_pin=None, rvalue=0.0, lvalue=0.0, cvalue=0.0):
         """Create hfss rlc boundary on pins.
@@ -2310,6 +2391,37 @@ class SourceExcitation:
                     return terms
             return False
 
+    def create_current_source(self, terminal, ref_terminal):
+        """Create a current source.
+
+        Parameters
+        ----------
+        terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
+            :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            Positive terminal of the source.
+        ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            Negative terminal of the source.
+
+        Returns
+        -------
+        :class:`ExcitationSources <legacy.database.edb_data.ports.ExcitationSources>`
+        """
+        from pyedb.grpc.database.terminal.terminal import Terminal
+
+        term = Terminal(self._pedb, terminal)
+        term.boundary_type = "current_source"
+
+        ref_term = Terminal(self._pedb, ref_terminal)
+        ref_term.boundary_type = "current_source"
+
+        term.ref_terminal = ref_terminal
+        return term
+
     def create_current_source_on_pin_group(
         self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None
     ):
@@ -2350,6 +2462,37 @@ class SourceExcitation:
         pos_terminal.reference_terminal = neg_terminal
         return True
 
+    def create_voltage_source(self, terminal, ref_terminal):
+        """Create a voltage source.
+
+        Parameters
+        ----------
+        terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
+            :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            Positive terminal of the source.
+        ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            Negative terminal of the source.
+
+        Returns
+        -------
+        class:`ExcitationSources <legacy.database.edb_data.ports.ExcitationSources>`
+        """
+        from pyedb.grpc.database.terminal.terminal import Terminal
+
+        term = Terminal(self._pedb, terminal)
+        term.boundary_type = "voltage_source"
+
+        ref_term = Terminal(self._pedb, ref_terminal)
+        ref_term.boundary_type = "voltage_source"
+
+        term.ref_terminal = ref_terminal
+        return term
+
     def create_voltage_source_on_pin_group(
         self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None, impedance=0.001
     ):
@@ -2389,6 +2532,37 @@ class SourceExcitation:
         neg_terminal.name = f"{name}_ref"
         pos_terminal.reference_terminal = neg_terminal
         return True
+
+    def create_voltage_probe(self, terminal, ref_terminal):
+        """Create a voltage probe.
+
+        Parameters
+        ----------
+        terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
+            :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            Positive terminal of the port.
+        ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            Negative terminal of the probe.
+
+        Returns
+        -------
+        :class:`Terminal <pyedb.dotnet.database.edb_data.terminals.Terminal>`
+        """
+        from pyedb.grpc.database.terminal.terminal import Terminal
+
+        term = Terminal(self._pedb, terminal)
+        term.boundary_type = "voltage_probe"
+
+        ref_term = Terminal(self._pedb, ref_terminal)
+        ref_term.boundary_type = "voltage_probe"
+
+        term.ref_terminal = ref_terminal
+        return term
 
     def create_voltage_probe_on_pin_group(self, probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1000000):
         """Create voltage probe between two pin groups.

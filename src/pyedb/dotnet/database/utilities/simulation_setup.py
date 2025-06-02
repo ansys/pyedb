@@ -96,8 +96,6 @@ class SimulationSetup(object):
         if self._edb_object:
             self._name = self._edb_object.GetName()
 
-        self._sweep_list = {}
-
     @property
     def sim_setup_info(self):
         return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_object.GetSimSetupInfo())
@@ -110,6 +108,11 @@ class SimulationSetup(object):
         """Get simulation setup information."""
         warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
         return self.sim_setup_info._edb_object
+
+    @property
+    def is_null(self):
+        """Adding this property for compatibility with grpc."""
+        return self._edb_object.IsNull()
 
     def get_simulation_settings(self):
         sim_settings = self.sim_setup_info.simulation_settings
@@ -239,16 +242,47 @@ class SimulationSetup(object):
         """List of frequency sweeps."""
         return {i.name: i for i in self.sim_setup_info.sweep_data_list}
 
-    def add_sweep(self, name, frequency_set: list = None, **kwargs):
+    @property
+    def sweep_data(self):
+        """Adding property for compatibility with grpc."""
+        return list(self.sweeps.values())
+
+    @sweep_data.setter
+    def sweep_data(self, sweep_data):
+        for sweep in self.sweep_data:
+            self.delete_frequency_sweep(sweep)
+        for sweep in sweep_data:
+            self._add_frequency_sweep(sweep)
+
+    def add_sweep(
+        self,
+        name: str = None,
+        distribution: str = None,
+        start_freq: str = None,
+        stop_freq: str = None,
+        step=None,
+        frequency_set: list = None,
+        sweep_type: str = "interpolation",
+        **kwargs,
+    ):
         """Add frequency sweep.
 
         Parameters
         ----------
         name : str, optional
             Name of the frequency sweep. The default is ``None``.
+        distribution : str, optional
+            Added for grpc compatibility.
+        start_freq : str, optional
+            Added for rpc compatibility.
+        stop_freq : str, optional
+            Added for grpc compatibility.
+        step : optional
+            Added for grpc compatibility.
         frequency_set : list, optional
             List of frequency points. The default is ``None``.
-
+        sweep_type : str, optional
+            Sweep type. The default is ``"interpolation"``. Options are ``"discrete"``,"discrete"``.
         Returns
         -------
 
@@ -262,28 +296,33 @@ class SimulationSetup(object):
             raise ValueError("Sweep {} already exists.".format(name))
 
         sweep_data = SweepData(self._pedb, name=name, sim_setup=self)
+        # adding grpc compatibility
+        if distribution and start_freq and stop_freq and step:
+            if distribution == "linear":
+                distribution = "linear_scale"  # to be compatible with grpc
+            frequency_set = [[distribution, start_freq, stop_freq, step]]
+
+        if frequency_set in [None, []]:
+            distribution = "linear_scale"
+            start, stop, increment = "50MHz", "5GHz", "50MHz"
+            frequency_set = [[distribution, start, stop, increment]]
+        elif not isinstance(frequency_set[0], list):
+            frequency_set = [frequency_set]
+
+        for fs in frequency_set:
+            distribution, start, stop, increment = fs
+            sweep_data.add(distribution, start, stop, increment)
+
         for k, v in kwargs.items():
             if k in dir(sweep_data):
                 setattr(sweep_data, k, v)
-        sweep_data.freq_sweep_type = kwargs.get("sweep_type") if kwargs.get("sweep_type") else "interpolation"
+        sweep_data.type = sweep_type
 
-        if frequency_set is None:
-            sweep_type = "linear_scale"
-            start, stop, increment = "50MHz", "5GHz", "50MHz"
-            sweep_data.add(sweep_type, start, stop, increment)
-        elif len(frequency_set) == 0:
-            pass
-        else:
-            if not isinstance(frequency_set[0], list):
-                frequency_set = [frequency_set]
-            for fs in frequency_set:
-                sweep_data.add(*fs)
-
-        ss_info = self.sim_setup_info
-        ss_info.add_sweep_data(sweep_data)
-        self.set_sim_setup_info(ss_info)
-        self._update_setup()
         return sweep_data
+
+    def delete(self):
+        """Delete current simulation setup."""
+        self._pedb.layout.cell.DeleteSimulationSetup(self.name)
 
     def _add_frequency_sweep(self, sweep_data):
         """Add a frequency sweep.
@@ -293,15 +332,7 @@ class SimulationSetup(object):
         sweep_data: SweepData
         """
         warnings.warn("Use new property :func:`add_sweep_data` instead.", DeprecationWarning)
-        self._sweep_list[sweep_data.name] = sweep_data
-        edb_setup_info = self.sim_setup_info
-
-        if self._setup_type in ["kSIwave", "kHFSS", "kRaptorX", "kHFSSPI"]:
-            for _, v in self._sweep_list.items():
-                edb_setup_info.SweepDataList.Add(v._edb_object)
-
-        self._edb_object = self._set_edb_setup_info(edb_setup_info)
-        self._update_setup()
+        return self.sim_setup_info.add_sweep_data(sweep_data)
 
     def delete_frequency_sweep(self, sweep_data):
         """Delete a frequency sweep.
@@ -311,17 +342,17 @@ class SimulationSetup(object):
             sweep_data : EdbFrequencySweep.
         """
         name = sweep_data.name
-        if name in self._sweep_list:
-            self._sweep_list.pop(name)
+        if name in self.sweeps:
+            self.sweeps.pop(name)
 
         fsweep = []
-        if self.frequency_sweeps:
-            fsweep = [val for key, val in self.frequency_sweeps.items() if not key == name]
+        if self.sweeps:
+            fsweep = [val for key, val in self.sweeps.items() if not key == name]
             self.sim_setup_info._edb_object.SweepDataList.Clear()
             for i in fsweep:
                 self.sim_setup_info._edb_object.SweepDataList.Add(i._edb_object)
             self._update_setup()
-            return True if name in self.frequency_sweeps else False
+            return False if name in self.sweeps else True
 
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.

@@ -556,25 +556,27 @@ class Components(object):
         m_pin2_pos = [0.0, 0.0]
         h_pin1_pos = [0.0, 0.0]
         h_pin2_pos = [0.0, 0.0]
-        if not isinstance(mounted_component, self._pedb.edb_api.cell.hierarchy.component):
+        from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
+
+        if not isinstance(mounted_component, EDBComponent):
             return False
-        if not isinstance(hosting_component, self._pedb.edb_api.cell.hierarchy.component):
+        if not isinstance(hosting_component, EDBComponent):
             return False
 
-        if mounted_component_pin1:
-            m_pin1 = self._get_edb_pin_from_pin_name(mounted_component, mounted_component_pin1)
-            m_pin1_pos = self.get_pin_position(m_pin1)
-        if mounted_component_pin2:
-            m_pin2 = self._get_edb_pin_from_pin_name(mounted_component, mounted_component_pin2)
-            m_pin2_pos = self.get_pin_position(m_pin2)
+        if mounted_component_pin1 in mounted_component.pins:
+            m_pin1 = mounted_component.pins[mounted_component_pin1]
+            m_pin1_pos = m_pin1.position
+        if mounted_component_pin2 in mounted_component.pins:
+            m_pin2 = mounted_component.pins[mounted_component_pin2]
+            m_pin2_pos = m_pin2.position
 
-        if hosting_component_pin1:
-            h_pin1 = self._get_edb_pin_from_pin_name(hosting_component, hosting_component_pin1)
-            h_pin1_pos = self.get_pin_position(h_pin1)
+        if hosting_component_pin1 in hosting_component.pins:
+            h_pin1 = hosting_component.pins[hosting_component_pin1]
+            h_pin1_pos = h_pin1.position
 
-        if hosting_component_pin2:
-            h_pin2 = self._get_edb_pin_from_pin_name(hosting_component, hosting_component_pin2)
-            h_pin2_pos = self.get_pin_position(h_pin2)
+        if hosting_component_pin2 in hosting_component.pins:
+            h_pin2 = hosting_component.pins[hosting_component_pin2]
+            h_pin2_pos = h_pin2.position
         #
         vector = [h_pin1_pos[0] - m_pin1_pos[0], h_pin1_pos[1] - m_pin1_pos[1]]
         vector1 = GeometryOperators.v_points(m_pin1_pos, m_pin2_pos)
@@ -586,8 +588,8 @@ class Components(object):
 
         rotation = GeometryOperators.v_angle_sign_2D(vector1, vector2, False)
         if rotation != 0.0:
-            layinst = mounted_component.GetLayout().GetLayoutInstance()
-            cmpinst = layinst.GetLayoutObjInstance(mounted_component, None)
+            layinst = mounted_component._edb_object.GetLayout().GetLayoutInstance()
+            cmpinst = layinst.GetLayoutObjInstance(mounted_component._edb_object, None)
             center = cmpinst.GetCenter()
             center_double = [center.X.ToDouble(), center.Y.ToDouble()]
             vector_center = GeometryOperators.v_points(center_double, m_pin1_pos)
@@ -597,7 +599,7 @@ class Components(object):
             vector = [h_pin1_pos[0] - new_vector[0], h_pin1_pos[1] - new_vector[1]]
 
         if vector:
-            solder_ball_height = self.get_solder_ball_height(mounted_component)
+            solder_ball_height = mounted_component.solder_ball_height
             return True, vector, rotation, solder_ball_height
         self._logger.warning("Failed to compute vector.")
         return False, [0, 0], 0, 0
@@ -818,7 +820,7 @@ class Components(object):
         if refdes and any(refdes.rlc_values):
             return self.deactivate_rlc_component(component=refdes, create_circuit_port=True)
         if not port_name:
-            port_name = "Port_{}_{}".format(pins[0].net_name, pins[0].name)
+            port_name = f"Port_{pins[0].net_name}_{pins[0].name}".replace("-", "_")
 
         if len(pins) > 1 or pingroup_on_single_pin:
             if pec_boundary:
@@ -842,7 +844,7 @@ class Components(object):
                     f"ports only, {len(reference_pins)} reference pins found "
                     f"(pingroup_on_single_pin: {pingroup_on_single_pin})."
                 )
-            ref_group_name = "group_{}_ref".format(port_name)
+            ref_group_name = f"group_{port_name}_ref"
             ref_pin_group = self.create_pingroup_from_pins(reference_pins, ref_group_name)
             ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
         else:
@@ -857,7 +859,7 @@ class Components(object):
             term.SetBoundaryType(self._edb.cell.terminal.BoundaryType.PecBoundary)
             ref_term.SetBoundaryType(self._edb.cell.terminal.BoundaryType.PecBoundary)
             self._logger.info(
-                "PEC boundary created between pin {} and reference pin {}".format(pins[0].name, reference_pins[0].name)
+                f"PEC boundary created between pin {pins[0].name} and reference pin {reference_pins[0].name}"
             )
 
         return term or False
@@ -947,6 +949,25 @@ class Components(object):
         >>> port_type=SourceType.CoaxPort, do_pingroup=False, refnet="GND")
 
         """
+        # Adding grpc compatibility
+        if not isinstance(port_type, int):
+            if port_type == "circuit_port":
+                port_type = SourceType.CircPort
+            elif port_type == "coaxial_port":
+                port_type = SourceType.CoaxPort
+            elif port_type == "lumped_port":
+                port_type = SourceType.LumpedPort
+            elif port_type == "rlc":
+                port_type = SourceType.Rlc
+            elif port_type == "current_source":
+                port_type = SourceType.Isource
+            elif port_type == "voltage_source":
+                port_type = SourceType.Vsource
+            elif port_type == "dc_terminal":
+                port_type = SourceType.DcTerminal
+            else:
+                self._pedb.logger.error(f"Port type {port_type} seems to be for grpc version but is not compatible.")
+                return False
         if isinstance(component, str):
             component = self.instances[component].edbcomponent
 
@@ -1297,9 +1318,9 @@ class Components(object):
             pin_layers = self._padstack._get_pin_layer_range(pins[0])
             pos_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
                 self._active_layout,
-                pins[0].GetNet(),
-                "{}_{}".format(component.refdes, pins[0].GetName()),
-                pins[0],
+                pins[0].net._edb_object,
+                f"{component.refdes}_{pins[0]._edb_object.GetName()}",
+                pins[0]._edb_object,
                 pin_layers[0],
                 False,
             )
@@ -1307,9 +1328,9 @@ class Components(object):
                 return False
             neg_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
                 self._active_layout,
-                pins[1].GetNet(),
-                "{}_{}_ref".format(component.refdes, pins[1].GetName()),
-                pins[1],
+                pins[1].net._edb_object,
+                f"{component.refdes}_{pins[1]._edb_object.GetName()}_ref",
+                pins[1]._edb_object,
                 pin_layers[0],
                 False,
             )
@@ -1363,9 +1384,9 @@ class Components(object):
             pin_layer = self._padstack._get_pin_layer_range(pins[0])[0]
             pos_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
                 self._active_layout,
-                pins[0].GetNet(),
-                "{}_{}".format(component.refdes, pins[0].GetName()),
-                pins[0],
+                pins[0]._edb_object.GetNet(),
+                f"{component.refdes}_{pins[0]._edb_object.GetName()}",
+                pins[0]._edb_object,
                 pin_layer,
                 False,
             )
@@ -1373,9 +1394,9 @@ class Components(object):
                 return False
             neg_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
                 self._active_layout,
-                pins[1].GetNet(),
-                "{}_{}_ref".format(component.refdes, pins[1].GetName()),
-                pins[1],
+                pins[1]._edb_object.GetNet(),
+                f"{component.refdes}_{pins[1]._edb_object.GetName()}_ref",
+                pins[1]._edb_object,
                 pin_layer,
                 True,
             )
@@ -1576,7 +1597,9 @@ class Components(object):
         >>> edbapp.components.create(pins, "A1New")
 
         """
-        pins = [p._edb_object for p in pins]
+        _pins = [p._edb_object for p in pins if isinstance(p, EDBPadstackInstance)]
+        if _pins:
+            pins = _pins
         if not component_name:
             component_name = generate_unique_name("Comp_")
         if component_part_name:
@@ -1589,8 +1612,6 @@ class Components(object):
             self._active_layout, component_name, compdef.GetName()
         )
 
-        if isinstance(pins[0], EDBPadstackInstance):
-            pins = [i._edb_object for i in pins]
         hosting_component_location = pins[0].GetComponent().GetTransform()
         for pin in pins:
             pin.SetIsLayoutPin(True)
@@ -2145,7 +2166,7 @@ class Components(object):
                 rlc.C = self._get_edb_value(cap_value)
             else:
                 rlc.CEnabled = False
-            pin_pair = self._edb.utility.utility.PinPair(from_pin.GetName(), to_pin.GetName())
+            pin_pair = self._edb.utility.utility.PinPair(from_pin.name, to_pin.name)
             rlc_model = self._edb.cell.hierarchy._hierarchy.PinPairModel()
             rlc_model.SetPinPairRlc(pin_pair, rlc)
             if not edb_rlc_component_property.SetModel(rlc_model) or not edb_component.SetComponentProperty(
@@ -2285,7 +2306,7 @@ class Components(object):
                             footprint_cell = self.definitions[comp.partname]._edb_object.GetFootprintCell()
                             comp_def = self._edb.definition.ComponentDef.Create(self._db, part_name, footprint_cell)
                             for pin in pinlist:
-                                self._edb.definition.ComponentDefPin.Create(comp_def, pin.GetName())
+                                self._edb.definition.ComponentDefPin.Create(comp_def, pin._edb_object.GetName())
 
                         p_layer = comp.placement_layer
                         refdes_temp = comp.refdes + "_temp"
@@ -2294,7 +2315,7 @@ class Components(object):
                         unmount_comp_list.remove(refdes)
                         comp.edbcomponent.Ungroup(True)
 
-                        pinlist = [self._pedb.layout.find_object_by_id(i.GetId()) for i in pinlist]
+                        pinlist = [self._pedb.layout.find_object_by_id(i.id) for i in pinlist]
                         self.create(pinlist, refdes, p_layer, part_name)
                         self.refresh_components()
                         comp = self.instances[refdes]
@@ -2341,11 +2362,11 @@ class Components(object):
                 part_name = comp.partname
                 comp_type = comp.type
                 if comp_type == "Resistor":
-                    value = comp.res_value
+                    value = str(comp.res_value)
                 elif comp_type == "Capacitor":
-                    value = comp.cap_value
+                    value = str(comp.cap_value)
                 elif comp_type == "Inductor":
-                    value = comp.ind_value
+                    value = str(comp.ind_value)
                 else:
                     value = ""
                 if not value:
@@ -2364,7 +2385,7 @@ class Components(object):
         obj = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, reference_designator)
         return EDBComponent(self._pedb, obj)
 
-    def get_pin_from_component(self, component, netName=None, pinName=None):
+    def get_pin_from_component(self, component, netName=None, pinName=None, net_name=None, pin_name=None):
         """Retrieve the pins of a component.
 
         Parameters
@@ -2377,6 +2398,14 @@ class Components(object):
         pinName : str, optional
             Filter on the pin name an alternative to
             ``netName``. The default is ``None``.
+        net_name : str, optional
+            Filter on the net name as an alternative to
+            ``pin_name``. The default is ``None``. This parameter is added to add compatibility with grpc and is
+            recommended using it rather than `netName`.
+        pin_name : str, optional
+            Filter on the pin name an alternative to
+            ``netName``. The default is ``None``. This parameter is added to add compatibility with grpc and is
+            recommended using it rather than `pinName`.
 
         Returns
         -------
@@ -2394,6 +2423,14 @@ class Components(object):
         warnings.warn("Use new property :func:`edb.padstacks.get_instances` instead.", DeprecationWarning)
         if not isinstance(component, self._pedb.edb_api.cell.hierarchy.component):
             component = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, component)
+        if pinName:
+            warnings.warn("Use argument `pin_name` instead of `pinName`", DeprecationWarning)
+        if netName:
+            warnings.warn("Use argument `net_name` instead of `netName`", DeprecationWarning)
+        if net_name:
+            netName = net_name
+        if pin_name:
+            pinName = pin_name
         if netName:
             if not isinstance(netName, list):
                 netName = [netName]
@@ -2406,14 +2443,18 @@ class Components(object):
             if not isinstance(pinName, list):
                 pinName = [pinName]
             pins = [
-                p
+                EDBPadstackInstance(p, self._pedb)
                 for p in list(component.LayoutObjs)
                 if int(p.GetObjType()) == 1
                 and p.IsLayoutPin()
                 and (self.get_aedt_pin_name(p) in pinName or p.GetName() in pinName)
             ]
         else:
-            pins = [p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.IsLayoutPin()]
+            pins = [
+                EDBPadstackInstance(p, self._pedb)
+                for p in list(component.LayoutObjs)
+                if int(p.GetObjType()) == 1 and p.IsLayoutPin()
+            ]
         return pins
 
     def get_aedt_pin_name(self, pin):
@@ -2541,7 +2582,7 @@ class Components(object):
                 for j in [*i.pins.values()]:
                     pin_list.append(j)
         for pin in pin_list:
-            if pin.GetNet().GetName() == net_name:
+            if pin.net_name == net_name:
                 pin_names.append(self.get_aedt_pin_name(pin))
         return pin_names
 
@@ -2568,7 +2609,7 @@ class Components(object):
         """
         netlist = []
         for pin in PinList:
-            netlist.append(pin.GetNet().GetName())
+            netlist.append(pin.net_name)
         return list(set(netlist))
 
     def get_component_net_connection_info(self, refdes):
@@ -2594,9 +2635,9 @@ class Components(object):
         """
         component_pins = self.get_pin_from_component(refdes)
         data = {"refdes": [], "pin_name": [], "net_name": []}
-        for pin_obj in component_pins:
-            pin_name = pin_obj.GetName()
-            net_name = pin_obj.GetNet().GetName()
+        for pin in component_pins:
+            pin_name = pin._edb_object.GetName()
+            net_name = pin._edb_object.GetNet().GetName()
             if pin_name is not None:
                 data["refdes"].append(refdes)
                 data["pin_name"].append(pin_name)

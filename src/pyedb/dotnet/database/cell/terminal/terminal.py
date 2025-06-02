@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import re
+import warnings
 
 from pyedb.dotnet.database.cell.connectable import Connectable
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
@@ -106,20 +107,6 @@ class Terminal(Connectable):
     def layer(self):
         """Get layer of the terminal."""
         return self._pedb.logger.error("Cannot determine terminal layer")
-
-    @property
-    def location(self):
-        """Location of the terminal."""
-        try:
-            _, point_data, _ = self._edb_object.GetParameters()
-            return [point_data.X.ToDouble(), point_data.Y.ToDouble()]
-        except:
-            self._pedb.logger.error("Cannot determine terminal location")
-
-    @location.setter
-    def location(self, value):
-        layer = self.layer
-        self._edb_object.SetParameters(self._pedb.point_data(*value), layer._edb_object)
 
     @property
     def is_circuit_port(self):
@@ -210,18 +197,35 @@ class Terminal(Connectable):
         return self._edb_object.IsReferenceTerminal()
 
     @property
-    def ref_terminal(self):
-        """Get reference terminal."""
-
+    def reference_terminal(self):
+        """Adding grpc compatibility."""
         edb_terminal = self._edb_object.GetReferenceTerminal()
         if not edb_terminal.IsNull():
             return self._pedb.terminals[edb_terminal.GetName()]
         else:
             return None
 
+    @reference_terminal.setter
+    def reference_terminal(self, value):
+        self._edb_object.SetReferenceTerminal(value._edb_object)
+
+    @property
+    def ref_terminal(self):
+        """Get reference terminal.
+
+        .deprecated:: pyedb 0.47.0
+        Use: attribute:`reference_terminal` instead.
+
+        """
+        warnings.warn(
+            "`ref_terminal` is deprecated, use `reference_terminal` instead.",
+            DeprecationWarning,
+        )
+        return self.reference_terminal
+
     @ref_terminal.setter
     def ref_terminal(self, value):
-        self._edb_object.SetReferenceTerminal(value._edb_object)
+        self.reference_terminal = value
 
     @property
     def reference_object(self):  # pragma : no cover
@@ -401,7 +405,7 @@ class Terminal(Connectable):
             power_ground_net_names = [gnd_net]
         else:
             power_ground_net_names = [net for net in self._pedb.nets.power.keys()]
-        comp_ref_pins = [i for i in pin_list if i.GetNet().GetName() in power_ground_net_names]
+        comp_ref_pins = [i for i in pin_list if i.net_name in power_ground_net_names]
         if len(comp_ref_pins) == 0:  # pragma: no cover
             self._pedb.logger.error(
                 "Terminal with PadStack Instance Name {} component has no reference pins.".format(ref_pin.GetName())
@@ -410,9 +414,9 @@ class Terminal(Connectable):
         closest_pin_distance = None
         pin_obj = None
         for pin in comp_ref_pins:  # find the distance to all the pins to the terminal pin
-            if pin.GetName() == ref_pin.GetName():  # skip the reference psi
+            if pin.component_pin == ref_pin.GetName():  # skip the reference psi
                 continue  # pragma: no cover
-            _, pin_point, _ = pin.GetPositionAndRotation()
+            _, pin_point, _ = pin._edb_object.GetPositionAndRotation()
             distance = pad_stack_inst_point.Distance(pin_point)
             if closest_pin_distance is None:
                 closest_pin_distance = distance

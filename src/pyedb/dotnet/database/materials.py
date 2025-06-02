@@ -88,22 +88,22 @@ def get_line_float_value(line):
 class MaterialProperties(BaseModel):
     """Store material properties."""
 
-    conductivity: Optional[PositiveFloat] = None
-    dielectric_loss_tangent: Optional[PositiveFloat] = None
-    magnetic_loss_tangent: Optional[PositiveFloat] = None
-    mass_density: Optional[PositiveFloat] = None
-    permittivity: Optional[PositiveFloat] = None
-    permeability: Optional[PositiveFloat] = None
-    poisson_ratio: Optional[PositiveFloat] = None
-    specific_heat: Optional[PositiveFloat] = None
-    thermal_conductivity: Optional[PositiveFloat] = None
-    youngs_modulus: Optional[PositiveFloat] = None
-    thermal_expansion_coefficient: Optional[PositiveFloat] = None
-    dc_conductivity: Optional[PositiveFloat] = None
-    dc_permittivity: Optional[PositiveFloat] = None
-    dielectric_model_frequency: Optional[PositiveFloat] = None
-    loss_tangent_at_frequency: Optional[PositiveFloat] = None
-    permittivity_at_frequency: Optional[PositiveFloat] = None
+    conductivity: Optional[PositiveFloat] = 0.0
+    dielectric_loss_tangent: Optional[PositiveFloat] = 0.0
+    magnetic_loss_tangent: Optional[PositiveFloat] = 0.0
+    mass_density: Optional[PositiveFloat] = 0.0
+    permittivity: Optional[PositiveFloat] = 0.0
+    permeability: Optional[PositiveFloat] = 0.0
+    poisson_ratio: Optional[PositiveFloat] = 0.0
+    specific_heat: Optional[PositiveFloat] = 0.0
+    thermal_conductivity: Optional[PositiveFloat] = 0.0
+    youngs_modulus: Optional[PositiveFloat] = 0.0
+    thermal_expansion_coefficient: Optional[PositiveFloat] = 0.0
+    dc_conductivity: Optional[PositiveFloat] = 0.0
+    dc_permittivity: Optional[PositiveFloat] = 0.0
+    dielectric_model_frequency: Optional[PositiveFloat] = 0.0
+    loss_tangent_at_frequency: Optional[PositiveFloat] = 0.0
+    permittivity_at_frequency: Optional[PositiveFloat] = 0.0
 
 
 class Material(object):
@@ -115,6 +115,22 @@ class Material(object):
         self.__name: str = material_def.GetName()
         self.__material_def = material_def
         self.__dc_model = material_def.GetDielectricMaterialModel()
+
+        self._pedb = edb
+        self._edb_object = material_def
+        definition = self.__edb_definition
+        self.material_property_id_mapping = {
+            "conductivity": definition.MaterialPropertyId.Conductivity,
+            "permittivity": definition.MaterialPropertyId.Permittivity,
+            "dielectric_loss_tangent": definition.MaterialPropertyId.DielectricLossTangent,
+            "magnetic_loss_tangent": definition.MaterialPropertyId.MagneticLossTangent,
+            "mass_density": definition.MaterialPropertyId.MassDensity,
+            "permeability": definition.MaterialPropertyId.Permeability,
+            "poisson_ratio": definition.MaterialPropertyId.PoissonsRatio,
+            "specific_heat": definition.MaterialPropertyId.SpecificHeat,
+            "thermal_conductivity": definition.MaterialPropertyId.ThermalConductivity,
+            "thermal_expansion_coefficient": definition.MaterialPropertyId.ThermalExpansionCoefficient,
+        }
 
     @property
     def name(self):
@@ -441,6 +457,68 @@ class Material(object):
     #     setattr(self.__properties, name, None)
     #     # Trigger get value on the property
     #     _ = getattr(self, name)
+
+    def set_thermal_modifier(
+        self,
+        property_name: str,
+        basic_quadratic_temperature_reference: float = 21,
+        basic_quadratic_c1: float = 0.1,
+        basic_quadratic_c2: float = 0.1,
+        advanced_quadratic_lower_limit: float = -270,
+        advanced_quadratic_upper_limit: float = 1001,
+        advanced_quadratic_auto_calculate: bool = False,
+        advanced_quadratic_lower_constant: float = 1.1,
+        advanced_quadratic_upper_constant: float = 1.1,
+    ):
+        """Sets the material property thermal modifier of a given material property.
+
+        Parameters
+        ----------
+        property_name : str
+            Name of the property to modify.
+        basic_quadratic_temperature_reference : float, optional
+            The TempRef value in the quadratic model.
+        basic_quadratic_c1 : float, optional
+            The C1 value in the quadratic model.
+        basic_quadratic_c2 : float, optional
+            The C2 value in the quadratic model.
+        advanced_quadratic_lower_limit : float, optional
+            The lower temperature limit where the quadratic model is valid.
+        advanced_quadratic_upper_limit : float, optional
+            The upper temperature limit where the quadratic model is valid.
+        advanced_quadratic_auto_calculate : bool, optional
+             The flag indicating whether or the LowerConstantThermalModifierVal and UpperConstantThermalModifierVal
+             values should be auto calculated.
+        advanced_quadratic_lower_constant : float, optional
+            The constant thermal modifier value for temperatures lower than LowerConstantThermalModifierVal.
+        advanced_quadratic_upper_constant : float, optional
+            The constant thermal modifier value for temperatures greater than UpperConstantThermalModifierVal.
+
+        Returns
+        -------
+
+        """
+        _edb = self._pedb._edb
+        basic = _edb.Utility.BasicQuadraticParams(
+            _edb.Utility.Value(basic_quadratic_temperature_reference),
+            _edb.Utility.Value(basic_quadratic_c1),
+            _edb.Utility.Value(basic_quadratic_c2),
+        )
+        advanced = _edb.Utility.AdvancedQuadraticParams(
+            _edb.Utility.Value(advanced_quadratic_lower_limit),
+            _edb.Utility.Value(advanced_quadratic_upper_limit),
+            advanced_quadratic_auto_calculate,
+            _edb.Utility.Value(advanced_quadratic_lower_constant),
+            _edb.Utility.Value(advanced_quadratic_upper_constant),
+        )
+
+        thermal_modifier = _edb.Definition.MaterialPropertyThermalModifier(basic, advanced)
+        if not self.__material_def.SetThermalModifier(
+            self.material_property_id_mapping[property_name], thermal_modifier
+        ):
+            raise ValueError(f"Fail to set thermal modifier for property {property_name}")
+        else:
+            return True
 
 
 class Materials(object):

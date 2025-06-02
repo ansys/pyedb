@@ -22,8 +22,8 @@
 import math
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.primitive.primitive import Path as GrpcPath
-from ansys.edb.core.primitive.primitive import PathCornerType as GrpcPatCornerType
+from ansys.edb.core.primitive.path import Path as GrpcPath
+from ansys.edb.core.primitive.path import PathCornerType as GrpcPatCornerType
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.primitive.primitive import Primitive
@@ -181,7 +181,7 @@ class Path(GrpcPath, Primitive):
         #     )
         # else:
         return self._pedb.hfss.create_edge_port_vertical(
-            self.id,
+            self.edb_uid,
             pos,
             name,
             50,

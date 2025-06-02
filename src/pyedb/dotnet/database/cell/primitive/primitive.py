@@ -51,7 +51,9 @@ class Primitive(Connectable):
             "invalid": bondwire_type.Invalid,
             "apd": bondwire_type.ApdBondwire,
             "jedec_4": bondwire_type.Jedec4Bondwire,
+            "jedec4": bondwire_type.Jedec4Bondwire,
             "jedec_5": bondwire_type.Jedec5Bondwire,
+            "jedec5": bondwire_type.Jedec5Bondwire,
             "num_of_bondwire_type": bondwire_type.NumOfBondwireType,
         }
         bondwire_cross_section_type = self._pedb._edb.Cell.Primitive.BondwireCrossSectionType
@@ -261,7 +263,12 @@ class Primitive(Connectable):
 
         """
         bbox = self.polygon_data._edb_object.GetBBox()
-        return [bbox.Item1.X.ToDouble(), bbox.Item1.Y.ToDouble(), bbox.Item2.X.ToDouble(), bbox.Item2.Y.ToDouble()]
+        return [
+            round(bbox.Item1.X.ToDouble(), 6),
+            round(bbox.Item1.Y.ToDouble(), 6),
+            round(bbox.Item2.X.ToDouble(), 6),
+            round(bbox.Item2.Y.ToDouble(), 6),
+        ]
 
     def convert_to_polygon(self):
         """Convert path to polygon.

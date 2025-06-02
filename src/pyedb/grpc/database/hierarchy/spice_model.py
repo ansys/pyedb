@@ -46,3 +46,7 @@ class SpiceModel(GrpcSpiceModel):  # pragma: no cover
 
         """
         return self.model_name
+
+    @property
+    def spice_file_path(self):
+        return self.model_path

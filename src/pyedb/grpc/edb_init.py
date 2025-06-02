@@ -22,7 +22,9 @@
 
 
 """Database."""
+import atexit
 import os
+import signal
 import sys
 
 import ansys.edb.core.database as database
@@ -68,13 +70,22 @@ class EdbInit(object):
         oa_directory = os.path.join(self.base_path, "common", "oa")
         os.environ["ANSYS_OADIR"] = oa_directory
         os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
+        # register server kill
+        atexit.register(self._signal_handler)
+        # register signal handlers
+        signal.signal(signal.SIGTERM, self._signal_handler)
+        signal.signal(signal.SIGINT, self._signal_handler)
+
+    @staticmethod
+    def _signal_handler(signum=None, frame=None):
+        RpcSession.kill()
 
     @property
     def db(self):
         """Active database object."""
         return self._db
 
-    def create(self, db_path, port=0, restart_rpc_server=False, kill_all_instances=False):
+    def create(self, db_path, port=0, restart_rpc_server=False):
         """Create a Database at the specified file location.
 
         Parameters
@@ -82,11 +93,11 @@ class EdbInit(object):
         db_path : str
             Path to top-level database folder
 
+        port : int
+            grpc port number.
+
         restart_rpc_server : optional, bool
             Force restarting RPC server when `True`.Default value is `False`
-
-        kill_all_instances : optional, bool.
-            Force killing all RPC server instances, must be used with caution. Default value is `False`.
 
         Returns
         -------
@@ -97,7 +108,6 @@ class EdbInit(object):
                 edb_version=self.edbversion,
                 port=port,
                 restart_server=restart_rpc_server,
-                kill_all_instances=kill_all_instances,
             )
             if not RpcSession.pid:
                 self.logger.error("Failed to start RPC server.")
@@ -105,7 +115,7 @@ class EdbInit(object):
         self._db = database.Database.create(db_path)
         return self._db
 
-    def open(self, db_path, read_only, port=0, restart_rpc_server=False, kill_all_instances=False):
+    def open(self, db_path, read_only, port=0, restart_rpc_server=False):
         """Open an existing Database at the specified file location.
 
         Parameters
@@ -115,11 +125,9 @@ class EdbInit(object):
         read_only : bool
             Obtain read-only access.
         port : optional, int.
-            Specify the port number.If not provided a randon free one is selected. Default value is `0`.
+            Specify the port number. If not provided a randon free one is selected. Default value is `0`.
         restart_rpc_server : optional, bool
             Force restarting RPC server when `True`. Default value is `False`.
-        kill_all_instances : optional, bool.
-            Force killing all RPC server instances, must be used with caution. Default value is `False`.
 
         Returns
         -------
@@ -133,7 +141,6 @@ class EdbInit(object):
                 edb_version=self.edbversion,
                 port=port,
                 restart_server=restart_rpc_server,
-                kill_all_instances=kill_all_instances,
             )
             if not RpcSession.pid:
                 self.logger.error("Failed to start RPC server.")
@@ -154,7 +161,7 @@ class EdbInit(object):
         """Save any changes into a file."""
         return self._db.save()
 
-    def close(self, terminate_rpc_session=True, kill_all_instances=False):
+    def close(self, terminate_rpc_session=True):
         """Close the database.
 
         Parameters
@@ -167,10 +174,7 @@ class EdbInit(object):
         """
         self._db.close()
         self._db = None
-        if kill_all_instances:
-            RpcSession._kill_all_instances()
-            RpcSession.pid = 0
-        elif terminate_rpc_session:
+        if terminate_rpc_session:
             RpcSession.rpc_session.disconnect()
             RpcSession.pid = 0
         return True

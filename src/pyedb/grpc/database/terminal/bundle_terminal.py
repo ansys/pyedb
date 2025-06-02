@@ -20,11 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.terminal.terminals import (
+from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundleTerminal
+from ansys.edb.core.terminal.terminal import (
     SourceTermToGroundType as GrpcSourceTermToGroundType,
 )
-from ansys.edb.core.terminal.terminals import BundleTerminal as GrpcBundleTerminal
-from ansys.edb.core.terminal.terminals import HfssPIType as GrpcHfssPIType
+from ansys.edb.core.terminal.terminal import HfssPIType as GrpcHfssPIType
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.hierarchy.component import Component
@@ -46,7 +46,7 @@ class BundleTerminal(GrpcBundleTerminal):
     """
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+        super().__init__(edb_object.msg)
         self._pedb = pedb
         self._edb_object = edb_object
 

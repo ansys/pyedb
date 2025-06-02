@@ -35,6 +35,7 @@ from pyedb.dotnet.database.general import (
     snake_to_pascal,
 )
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
+from pyedb.generic.data_handlers import float_units
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -1260,6 +1261,8 @@ class EDBPadstackInstance(Primitive):
         """
         terminal = self.create_terminal(name)
         if reference:
+            if isinstance(reference, tuple):
+                reference = reference[1]
             ref_terminal = reference.create_terminal(terminal.name + "_ref")
             if reference._edb_object.ToString() == "PinGroup":
                 is_circuit_port = True
@@ -1463,6 +1466,19 @@ class EDBPadstackInstance(Primitive):
             return self._edb_padstackinstance.SetBackDrillParameters(layer, val, False)
 
     @property
+    def backdrill_type(self):
+        """Adding grpc compatibility. DotNet is supporting only layer drill type with adding stub length."""
+        return "layer_drill"
+
+    def get_back_drill_by_layer(self):
+        params = self.backdrill_parameters["from_bottom"]
+        return (
+            params["drill_to_layer"],
+            round(self._pedb.edb_value(params["stub_length"]).ToDouble(), 6),
+            round(self._pedb.edb_value(params["diameter"]).ToDouble(), 6),
+        )
+
+    @property
     def backdrill_bottom(self):
         """Backdrill layer from bottom.
 
@@ -1537,6 +1553,11 @@ class EDBPadstackInstance(Primitive):
                 self._pedb.edb_value(from_top.get("diameter")),
                 False,
             )
+
+    def set_back_drill_by_layer(self, drill_to_layer, diameter, offset):
+        """Method added to bring compatibility with grpc."""
+
+        self.set_backdrill_bottom(drill_depth=drill_to_layer.name, drill_diameter=diameter, offset=offset)
 
     def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from bottom.
@@ -1675,9 +1696,9 @@ class EDBPadstackInstance(Primitive):
         out = self._edb_padstackinstance.GetPositionAndRotationValue()
         if self._edb_padstackinstance.GetComponent():
             out2 = self._edb_padstackinstance.GetComponent().GetTransform().TransformPoint(out[1])
-            self._position = [out2.X.ToDouble(), out2.Y.ToDouble()]
+            self._position = [round(out2.X.ToDouble(), 6), round(out2.Y.ToDouble(), 6)]
         elif out[0]:
-            self._position = [out[1].X.ToDouble(), out[1].Y.ToDouble()]
+            self._position = [round(out[1].X.ToDouble(), 6), round(out[1].Y.ToDouble(), 6)]
         return self._position
 
     @position.setter
@@ -1703,7 +1724,7 @@ class EDBPadstackInstance(Primitive):
         out = self._edb_padstackinstance.GetPositionAndRotationValue()
 
         if out[0]:
-            return out[2].ToDouble()
+            return round(out[2].ToDouble(), 6)
 
     @property
     def name(self):
@@ -1873,7 +1894,7 @@ class EDBPadstackInstance(Primitive):
             Lower elavation of the placement layer.
         """
         try:
-            return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetLowerElevation()
+            return round(self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetLowerElevation(), 6)
         except AttributeError:  # pragma: no cover
             return None
 
@@ -1887,7 +1908,7 @@ class EDBPadstackInstance(Primitive):
            Upper elevation of the placement layer.
         """
         try:
-            return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetUpperElevation()
+            return round(self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetUpperElevation(), 6)
         except AttributeError:  # pragma: no cover
             return None
 
@@ -1958,15 +1979,18 @@ class EDBPadstackInstance(Primitive):
         pad_shape = padstack_pad.geometry_type
         params = padstack_pad.parameters_values
         polygon_data = padstack_pad._polygon_data_dotnet
+        pad_offset = [float_units(padstack_pad.offset_x), float_units(padstack_pad.offset_y)]
 
         def _rotate(p):
             x = p[0] * math.cos(rotation) - p[1] * math.sin(rotation)
             y = p[0] * math.sin(rotation) + p[1] * math.cos(rotation)
             return [x, y]
 
-        def _translate(p):
-            x = p[0] + padstack_center[0]
-            y = p[1] + padstack_center[1]
+        def _translate(p, t=None):
+            if t is None:
+                t = padstack_center
+            x = p[0] + t[0]
+            y = p[1] + t[1]
             return [x, y]
 
         rect = None
@@ -2092,7 +2116,8 @@ class EDBPadstackInstance(Primitive):
 
         if rect is None or len(rect) != 4:
             return False
-        path = self._pedb.modeler.Shape("polygon", points=rect)
+        offset_rect = [_translate(p, _rotate(pad_offset)) for p in rect]
+        path = self._pedb.modeler.Shape("polygon", points=offset_rect)
         pdata = self._pedb.modeler.shape_to_polygon_data(path)
         new_rect = []
         for point in pdata.Points:
@@ -2142,7 +2167,7 @@ class EDBPadstackInstance(Primitive):
             component_only=component_only,
         )
 
-    def split(self):
+    def split(self) -> list:
         """Split padstack instance into multiple instances. The new instances only connect adjacent layers."""
         pdef_name = self.padstack_definition
         position = self.position
@@ -2151,11 +2176,16 @@ class EDBPadstackInstance(Primitive):
         stackup_layer_range = list(self._pedb.stackup.signal_layers.keys())
         start_idx = stackup_layer_range.index(self.start_layer)
         stop_idx = stackup_layer_range.index(self.stop_layer)
+        temp = []
         for idx, (l1, l2) in enumerate(
             list(zip(stackup_layer_range[start_idx:stop_idx], stackup_layer_range[start_idx + 1 : stop_idx + 1]))
         ):
-            self._pedb.padstacks.place(position, pdef_name, net_name, f"{name}_{idx}", fromlayer=l1, tolayer=l2)
+            pd_inst = self._pedb.padstacks.place(
+                position, pdef_name, net_name, f"{name}_{idx}", fromlayer=l1, tolayer=l2
+            )
+            temp.append(pd_inst)
         self.delete()
+        return temp
 
     def convert_hole_to_conical_shape(self, angle=75):
         """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.

@@ -629,9 +629,11 @@ class EdbPadstacks(object):
         if "PadstackDef" in str(type(pin)):
             padparams = pin.GetData().GetPadParametersValue(layername, self.int_to_pad_type(pad_type))
         else:
-            padparams = self._edb.definition.PadstackDefData(pin.GetPadstackDef().GetData()).GetPadParametersValue(
-                layername, self.int_to_pad_type(pad_type)
-            )
+            if not isinstance(pin, EDBPadstackInstance):
+                pin = EDBPadstackInstance(pin, self._pedb)
+            padparams = self._edb.definition.PadstackDefData(
+                pin._edb_object.GetPadstackDef().GetData()
+            ).GetPadParametersValue(layername, self.int_to_pad_type(pad_type))
         if padparams[2]:
             geometry_type = int(padparams[1])
             parameters = [i.ToString() for i in padparams[2]]
@@ -646,7 +648,7 @@ class EdbPadstacks(object):
                 )
             else:
                 padparams = self._edb.definition.PadstackDefData(
-                    pin.GetPadstackDef().GetData()
+                    pin._edb_object.GetPadstackDef().GetData()
                 ).GetPolygonalPadParameters(layername, self.int_to_pad_type(pad_type))
 
             if padparams[0]:
@@ -1076,7 +1078,7 @@ class EdbPadstacks(object):
         return padstackname
 
     def _get_pin_layer_range(self, pin):
-        res, fromlayer, tolayer = pin.GetLayerRange()
+        res, fromlayer, tolayer = pin._edb_object.GetLayerRange()
         if res:
             return fromlayer, tolayer
         else:
@@ -1153,7 +1155,7 @@ class EdbPadstacks(object):
             Name of the net. The default is ``""``.
         via_name : str, optional
             The default is ``""``.
-        rotation : float, optional
+        rotation : float, str, optional
             Rotation of the padstack in degrees. The default
             is ``0``.
         fromlayer :
@@ -1175,7 +1177,11 @@ class EdbPadstacks(object):
                 padstack = self.definitions[pad].edb_padstack
         position = self._edb.geometry.point_data(position[0], position[1])
         net = self._pedb.nets.find_or_create_net(net_name)
-        rotation = self._get_edb_value(rotation * math.pi / 180)
+        rotation = (
+            self._get_edb_value(rotation * math.pi / 180)
+            if not isinstance(rotation, str)
+            else self._get_edb_value(rotation)
+        )
         sign_layers_values = {i: v for i, v in self._pedb.stackup.signal_layers.items()}
         sign_layers = list(sign_layers_values.keys())
         if not fromlayer:

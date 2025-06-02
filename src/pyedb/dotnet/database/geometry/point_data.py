@@ -35,3 +35,29 @@ class PointData:
                 self._pedb.edb_value(x),
                 self._pedb.edb_value(y),
             )
+
+    @property
+    def x(self):
+        """X value of point."""
+        return self._edb_object.X.ToString()
+
+    @x.setter
+    def x(self, value):
+        self._edb_object.X = self._pedb.edb_value(value)
+
+    @property
+    def x_evaluated(self):
+        return self._edb_object.X.ToDouble()
+
+    @property
+    def y(self):
+        """Y value of point."""
+        return self._edb_object.Y.ToString()
+
+    @y.setter
+    def y(self, value):
+        self._edb_object.Y = self._pedb.edb_value(value)
+
+    @property
+    def y_evaluated(self):
+        return self._edb_object.Y.ToDouble()

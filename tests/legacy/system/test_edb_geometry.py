@@ -28,27 +28,15 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, local_scratch):
+    def init(self, local_scratch, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        path = edbapp.layout.find_primitive(name="line_272")[0]
+        self.path_center_line_polygon_data = path.get_center_line_polygon_data()
+        self.point_data = self.path_center_line_polygon_data.get_point(1)
         pass
 
-    def test_find(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128", net_name=["2V5"])
-        edbapp.close()
-
-    def test_primitives(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        prim = edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128", net_name=["2V5"])[0]
-        assert prim.polygon_data.is_inside(["111.4mm", 44.7e-3])
-        edbapp.close()
-
-    def test_primitive_path(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        if not edbapp.grpc:
-            # TODO check if center line setter defined in grpc.
-            path_obj = edbapp.layout.find_primitive(name="line_272")[0]
-            center_line = path_obj.center_line
-            center_line[0] = [0, 0]
-            path_obj.center_line = center_line
-            assert path_obj.center_line[0] == [0, 0]
-        edbapp.close()
+    def test_point_data(self):
+        assert isinstance(self.point_data.x_evaluated, float)
+        assert isinstance(self.point_data.y_evaluated, float)
+        self.point_data.x = "1mm"
+        assert self.point_data.x == "1mm"

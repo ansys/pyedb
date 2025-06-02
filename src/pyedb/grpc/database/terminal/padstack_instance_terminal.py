@@ -20,10 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.terminal.terminals import (
+from ansys.edb.core.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
 )
-from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
+from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
+
+from pyedb.misc.misc import deprecated_property
 
 
 class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
@@ -44,6 +46,18 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         """
         pos_x, pos_y, rotation = self.padstack_instance.get_position_and_rotation()
         return [pos_x.value, pos_y.value]
+
+    @property
+    def padstack_instance(self):
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+
+        return PadstackInstance(self._pedb, super().padstack_instance)
+
+    @property
+    def component(self):
+        from pyedb.grpc.database.hierarchy.component import Component
+
+        return Component(self._pedb, super().component)
 
     @property
     def location(self):
@@ -169,3 +183,29 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
             "pec": GrpcBoundaryType.PEC,
         }
         super(PadstackInstanceTerminal, self.__class__).boundary_type.__set__(self, mapping[value.name.lower()])
+
+    @property
+    def is_port(self):
+        if self.boundary_type == "port":
+            return True
+        return False
+
+    @property
+    @deprecated_property
+    def ref_terminal(self):
+        """Return reference terminal.
+
+        ..deprecated:: 0.43.0
+           Use: func:`reference_terminal` property instead.
+        """
+        self._pedb.logger.warning("ref_terminal property is deprecated, use reference_terminal property instead.")
+        return self.reference_terminal
+
+    @ref_terminal.setter
+    def ref_terminal(self, value):
+        if isinstance(value, PadstackInstanceTerminal):
+            self.reference_terminal = value
+
+    @property
+    def terminal_type(self):
+        return "PadstackInstanceTerminal"

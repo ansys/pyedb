@@ -261,21 +261,25 @@ class EdbSiwave(object):
         >>> edbapp.siwave.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
         """
         circuit_port = CircuitPort()
-        circuit_port.positive_node.net = pos_pin.GetNet().GetName()
-        circuit_port.negative_node.net = neg_pin.GetNet().GetName()
+        if not isinstance(pos_pin, EDBPadstackInstance):
+            pos_pin = EDBPadstackInstance(pos_pin, self._pedb)
+        if not isinstance(neg_pin, EDBPadstackInstance):
+            neg_pin = EDBPadstackInstance(neg_pin, self._pedb)
+        circuit_port.positive_node.net = pos_pin.net_name
+        circuit_port.negative_node.net = neg_pin.net_name
         circuit_port.impedance = impedance
 
         if not port_name:
             port_name = "Port_{}_{}_{}_{}".format(
-                pos_pin.GetComponent().GetName(),
-                pos_pin.GetNet().GetName(),
-                neg_pin.GetComponent().GetName(),
-                neg_pin.GetNet().GetName(),
+                pos_pin.component.name,
+                pos_pin.net_name,
+                neg_pin.component.name,
+                neg_pin.net_name,
             )
         circuit_port.name = port_name
-        circuit_port.positive_node.component_node = pos_pin.GetComponent()
+        circuit_port.positive_node.component_node = pos_pin.component
         circuit_port.positive_node.node_pins = pos_pin
-        circuit_port.negative_node.component_node = neg_pin.GetComponent()
+        circuit_port.negative_node.component_node = neg_pin.component
         circuit_port.negative_node.node_pins = neg_pin
         return self._create_terminal_on_pins(circuit_port)
 
@@ -386,22 +390,22 @@ class EdbSiwave(object):
         """
 
         voltage_source = VoltageSource()
-        voltage_source.positive_node.net = pos_pin.GetNet().GetName()
-        voltage_source.negative_node.net = neg_pin.GetNet().GetName()
+        voltage_source.positive_node.net = pos_pin.net_name
+        voltage_source.negative_node.net = neg_pin.net_name
         voltage_source.magnitude = voltage_value
         voltage_source.phase = phase_value
         if not source_name:
             source_name = "VSource_{}_{}_{}_{}".format(
-                pos_pin.GetComponent().GetName(),
-                pos_pin.GetNet().GetName(),
-                neg_pin.GetComponent().GetName(),
-                neg_pin.GetNet().GetName(),
+                pos_pin.component.name,
+                pos_pin.net_name,
+                neg_pin.component.name,
+                neg_pin.net_name,
             )
         voltage_source.name = source_name
-        voltage_source.positive_node.component_node = pos_pin.GetComponent()
+        voltage_source.positive_node.component_node = pos_pin.component
         voltage_source.positive_node.node_pins = pos_pin
-        voltage_source.negative_node.component_node = neg_pin.GetComponent()
-        voltage_source.negative_node.node_pins = pos_pin
+        voltage_source.negative_node.component_node = neg_pin.component
+        voltage_source.negative_node.node_pins = neg_pin
         return self._create_terminal_on_pins(voltage_source)
 
     def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
@@ -434,21 +438,21 @@ class EdbSiwave(object):
         >>> edbapp.siwave.create_current_source_on_pin(pins[0], pins[1], 50, "source_name")
         """
         current_source = CurrentSource()
-        current_source.positive_node.net = pos_pin.GetNet().GetName()
-        current_source.negative_node.net = neg_pin.GetNet().GetName()
+        current_source.positive_node.net = pos_pin.net_name
+        current_source.negative_node.net = neg_pin.net_name
         current_source.magnitude = current_value
         current_source.phase = phase_value
         if not source_name:
             source_name = "ISource_{}_{}_{}_{}".format(
-                pos_pin.GetComponent().GetName(),
-                pos_pin.GetNet().GetName(),
-                neg_pin.GetComponent().GetName(),
-                neg_pin.GetNet().GetName(),
+                pos_pin.component.name,
+                pos_pin.net_name,
+                neg_pin.component.name,
+                neg_pin.net_name,
             )
         current_source.name = source_name
-        current_source.positive_node.component_node = pos_pin.GetComponent()
+        current_source.positive_node.component_node = pos_pin.component
         current_source.positive_node.node_pins = pos_pin
-        current_source.negative_node.component_node = neg_pin.GetComponent()
+        current_source.negative_node.component_node = neg_pin.component
         current_source.negative_node.node_pins = neg_pin
         return self._create_terminal_on_pins(current_source)
 
@@ -480,20 +484,20 @@ class EdbSiwave(object):
         >>> edbapp.siwave.create_resistor_on_pin(pins[0], pins[1],50,"res_name")
         """
         resistor = ResistorSource()
-        resistor.positive_node.net = pos_pin.GetNet().GetName()
-        resistor.negative_node.net = neg_pin.GetNet().GetName()
+        resistor.positive_node.net = pos_pin.net_name
+        resistor.negative_node.net = neg_pin.net_name
         resistor.rvalue = rvalue
         if not resistor_name:
             resistor_name = "Res_{}_{}_{}_{}".format(
-                pos_pin.GetComponent().GetName(),
-                pos_pin.GetNet().GetName(),
-                neg_pin.GetComponent().GetName(),
-                neg_pin.GetNet().GetName(),
+                pos_pin.component.name,
+                pos_pin.net_name,
+                neg_pin.component.name,
+                neg_pin.net_name,
             )
         resistor.name = resistor_name
-        resistor.positive_node.component_node = pos_pin.GetComponent()
+        resistor.positive_node.component_node = pos_pin.component
         resistor.positive_node.node_pins = pos_pin
-        resistor.negative_node.component_node = neg_pin.GetComponent()
+        resistor.negative_node.component_node = neg_pin.component
         resistor.negative_node.node_pins = neg_pin
         return self._create_terminal_on_pins(resistor)
 
@@ -811,6 +815,7 @@ class EdbSiwave(object):
 
     def add_siwave_syz_analysis(
         self,
+        name=None,
         accuracy_level=1,
         decade_count=10,
         sweeptype=1,
@@ -823,6 +828,8 @@ class EdbSiwave(object):
 
         Parameters
         ----------
+        name : str optional
+            Setup name.
         accuracy_level : int, optional
            Level of accuracy of SI slider. The default is ``1``.
         decade_count : int
@@ -849,7 +856,7 @@ class EdbSiwave(object):
         :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
             Setup object class.
         """
-        setup = self._pedb.create_siwave_syz_setup()
+        setup = self._pedb.create_siwave_syz_setup(name=name)
         sweep = "linear count"
         if sweeptype == 2:
             sweep = "log scale"

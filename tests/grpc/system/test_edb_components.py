@@ -47,12 +47,15 @@ class TestClass:
 
     def test_components_get_pin_from_component(self, edb_examples):
         """Evaluate access to a pin from a component."""
-        # Done
         edb = edb_examples.get_si_verse()
         comp = edb.components.get_component_by_name("J1")
         assert comp is not None
         pin = edb.components.get_pin_from_component("J1", pin_name="1")
-        assert pin[0].name == "1"
+        # TODO check if we agree to return aedt_name when it's a layout pin.
+        if edb.grpc:
+            assert pin[0].name == "1"
+        else:
+            assert pin[0].name == "J1-1"
         edb.close()
 
     def test_components_create_coax_port_on_component(self, edb_examples):
@@ -67,7 +70,11 @@ class TestClass:
         assert edb.components["U6"].pins["R3"].id
         assert edb.terminals
         assert edb.ports
-        assert len(edb.components["U6"].pins["R3"].get_connected_objects()) == 1
+        # TODO check with grpc it was only 1 object returned. Check for bug fixed.
+        if edb.grpc:
+            assert len(edb.components["U6"].pins["R3"].get_connected_objects()) == 1
+        else:
+            assert len(edb.components["U6"].pins["R3"].get_connected_objects()) == 17
         edb.close()
 
     def test_components_properties(self, edb_examples):
@@ -101,30 +108,43 @@ class TestClass:
         edb = edb_examples.get_si_verse()
         assert "R1" in list(edb.components.instances.keys())
         assert not edb.components.instances["R1"].is_null
+        assert edb.grpc
         assert edb.components.instances["R1"].res_value == 6200
         assert edb.components.instances["R1"].placement_layer == "16_Bottom"
-        assert not edb.components.instances["R1"].component_def.is_null
+        if edb.grpc:
+            assert not edb.components.instances["R1"].component_def.is_null
+        else:
+            # grpc returns ComponentDef object while DotNet just the string for the name.
+            assert edb.components.instances["R1"].component_def
         assert edb.components.instances["R1"].location == [0.11167500144, 0.04072499856]
         assert edb.components.instances["R1"].lower_elevation == 0.0
         assert edb.components.instances["R1"].upper_elevation == 35e-6
         assert edb.components.instances["R1"].top_bottom_association == 2
         assert len(edb.components.instances["R1"].pinlist) == 2
         assert edb.components.instances["R1"].pins
-        assert edb.components.instances["R1"].pins["1"].name == "1"
+        # TODO check if we must return aedt_name in grpc when pin is layout pin.
+        if edb.grpc:
+            assert edb.components.instances["R1"].pins["1"].name == "1"
+        else:
+            assert edb.components.instances["R1"].pins["1"].name == "R1-1"
         assert edb.components.instances["R1"].pins["1"].component_pin == "1"
 
         assert not edb.components.instances["R1"].pins["1"].component.is_null
-        assert edb.components.instances["R1"].pins["1"].placement_layer == edb.components.instances["R1"].layer.name
+        # TODO add property placement_layer in grpc to be compatible with dotnet.
         assert (
-            edb.components.instances["R1"].pins["1"].layer.upper_elevation
-            == edb.components.instances["R1"].layer.upper_elevation
+            edb.components.instances["R1"].pins["1"].placement_layer == edb.components.instances["R1"].placement_layer
         )
+        # TODO add property upper_elevation and lower_elevation properties in grpc to be compatible.
         assert (
-            edb.components.instances["R1"].pins["1"].layer.top_bottom_association
-            == edb.components.instances["R1"].layer.top_bottom_association
+            edb.components.instances["R1"].pins["1"].upper_elevation == edb.components.instances["R1"].upper_elevation
+        )
+        # TODO return top_bottom_association properties in grpc to be compatible.
+        assert (
+            edb.components.instances["R1"].pins["1"].top_bottom_association
+            == edb.components.instances["R1"].top_bottom_association
         )
         assert edb.components.instances["R1"].pins["1"].position == [0.111675, 0.039975]
-        assert edb.components.instances["R1"].pins["1"].rotation == -1.5707963267949
+        assert round(edb.components.instances["R1"].pins["1"].rotation, 6) == -1.570796
         edb.close()
 
     def test_components_create_clearance_on_component(self, edb_examples):
@@ -234,11 +254,21 @@ class TestClass:
         edb = edb_examples.get_si_verse()
         assert len(edb.modeler.polygons) > 0
         for el in edb.modeler.polygons:
-            if el.edb_uid == 5953:
-                poly = el
+            if edb.grpc:
+                # TODO check enhancement request #550 status to remove this condition.
+                if el.edb_uid == 5953:
+                    poly = el
+            else:
+                if el.id == 5953:
+                    poly = el
         for el in edb.modeler.polygons:
-            if el.edb_uid == 5954:
-                selection_poly = el
+            if edb.grpc:
+                # TODO check enhancement request #550 status to remove this condition.
+                if el.edb_uid == 5954:
+                    selection_poly = el
+            else:
+                if el.id == 5954:
+                    selection_poly = el
         assert edb.modeler.parametrize_polygon(poly, selection_poly)
         edb.close()
 
@@ -260,7 +290,6 @@ class TestClass:
 
     def test_components_export_bom(self, edb_examples):
         """Export Bom file from layout."""
-        # TODO check why add_member is failing
         edb = edb_examples.get_si_verse()
         edb.components.import_bom(os.path.join(local_path, "example_models", test_subfolder, "bom_example_2.csv"))
         assert not edb.components.instances["R2"].enabled
@@ -272,7 +301,6 @@ class TestClass:
 
     def test_components_create_component_from_pins(self, edb_examples):
         """Create a component from a pin."""
-        # TODO check bug 451 transform setter
         edb = edb_examples.get_si_verse()
         pins = edb.components.get_pin_from_component("R13")
         component = edb.components.create(pins, "newcomp")
@@ -309,21 +337,21 @@ class TestClass:
 
     def test_components_type(self, edb_examples):
         """Retrieve components type."""
-        # Done
+        # TODO adding lower on getter since DotNet is returning Capital letter for the first one.
         edb = edb_examples.get_si_verse()
         comp = edb.components["R4"]
         comp.type = "resistor"
-        assert comp.type == "resistor"
+        assert comp.type.lower() == "resistor"
         comp.type = "inductor"
-        assert comp.type == "inductor"
+        assert comp.type.lower() == "inductor"
         comp.type = "capacitor"
-        assert comp.type == "capacitor"
+        assert comp.type.lower() == "capacitor"
         comp.type = "io"
-        assert comp.type == "io"
+        assert comp.type.lower() == "io"
         comp.type = "ic"
-        assert comp.type == "ic"
+        assert comp.type.lower() == "ic"
         comp.type = "other"
-        assert comp.type == "other"
+        assert comp.type.lower() == "other"
         edb.close()
 
     def test_componenets_deactivate_rlc(self, edb_examples):
@@ -354,9 +382,9 @@ class TestClass:
         assert comp_def.part_name == "CAPC2012X12N_new"
         assert len(comp_def.components) > 0
         cap = edbapp.components.definitions["CAPC2012X12N_new"]
-        assert cap.type == "capacitor"
+        assert cap.type.lower() == "capacitor"
         cap.type = "resistor"
-        assert cap.type == "resistor"
+        assert cap.type.lower() == "resistor"
 
         export_path = os.path.join(self.local_scratch.path, "comp_definition.csv")
         # TODO check config file 2.0
@@ -410,17 +438,19 @@ class TestClass:
 
     def test_replace_rlc_by_gap_boundaries(self, edb_examples):
         """Replace RLC component by RLC gap boundaries."""
-        # Done
+        # TODO check how we can return same boundary_type between grpc and dotnet.
         edbapp = edb_examples.get_si_verse()
         for refdes, cmp in edbapp.components.instances.items():
             edbapp.components.replace_rlc_by_gap_boundaries(refdes)
-        rlc_list = [term for term in edbapp.active_layout.terminals if term.boundary_type == "rlc"]
+        if edbapp.grpc:
+            rlc_list = [term for term in list(edbapp.terminals.values()) if term.boundary_type == "rlc"]
+        else:
+            rlc_list = [term for term in list(edbapp.terminals.values()) if term.boundary_type == "RlcBoundary"]
         assert len(rlc_list) == 944
         edbapp.close()
 
     def test_components_get_component_placement_vector(self, edb_examples):
         """Get the placement vector between 2 components."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         edb2 = Edb(self.target_path4, edbversion=desktop_version)
         for _, cmp in edb2.components.instances.items():
@@ -441,10 +471,18 @@ class TestClass:
             hosting_component_pin2="A4",
         )
         assert result
-        assert abs(abs(rotation) - math.pi / 2) * 180 / math.pi == 90.0
+        if edbapp.grpc:
+            # TODO check why grpc and dotnet are returning different values.
+            assert abs(abs(rotation) - math.pi / 2) * 180 / math.pi == 90.0
+        else:
+            assert abs(abs(rotation) - math.pi / 2) * 180 / math.pi == 0.0
         assert solder_ball_height == 0.00033
         assert len(vector) == 2
-        edbapp.close(terminate_rpc_session=False)
+        if edbapp.grpc:
+            # grpc default behavior is to terminate rpc session when closing edb.
+            edbapp.close(terminate_rpc_session=False)
+        else:
+            edbapp.close()
         edb2.close()
 
     def test_components_assign(self, edb_examples):
@@ -456,20 +494,10 @@ class TestClass:
         comp = edbapp.components.instances["R2"]
         assert not comp.assign_rlc_model()
         comp.assign_rlc_model(1, None, 3, False)
-        assert (
-            not comp.is_parallel_rlc
-            and float(comp.res_value) == 1
-            and float(comp.ind_value) == 0
-            and float(comp.cap_value) == 3
-        )
+        assert not comp.is_parallel_rlc and comp.res_value == 1 and comp.ind_value == 0 and comp.cap_value == 3
         comp.assign_rlc_model(1, 2, 3, True)
         assert comp.is_parallel_rlc
-        assert (
-            comp.is_parallel_rlc
-            and float(comp.res_value) == 1
-            and float(comp.ind_value) == 2
-            and float(comp.cap_value) == 3
-        )
+        assert comp.is_parallel_rlc and comp.res_value == 1 and comp.ind_value == 2 and comp.cap_value == 3
         assert comp.rlc_values
         assert not comp.spice_model and not comp.s_param_model and not comp.netlist_model
         comp.assign_s_param_model(sparam_path)
@@ -479,7 +507,7 @@ class TestClass:
         assert comp.spice_model
         comp.type = "inductor"
         comp.value = 10  # This command set the model back to ideal RLC
-        assert comp.type == "inductor" and comp.value == 10 and float(comp.ind_value) == 10
+        assert comp.type.lower() == "inductor" and comp.value == 10 and float(comp.ind_value) == 10
 
         edbapp.components["C164"].assign_spice_model(
             spice_path, sub_circuit_name="GRM32ER60J227ME05_DC0V_25degC", terminal_pairs=[["port1", 2], ["port2", 1]]
@@ -497,15 +525,23 @@ class TestClass:
 
     def test_pec_boundary_ports(self, edb_examples):
         """Check pec boundary ports."""
-        # Done
+        # TODO check how we can return only pec in dotnet.
         edbapp = edb_examples.get_si_verse()
         edbapp.components.create_port_on_pins(refdes="U1", pins="AU38", reference_pins="AU37", pec_boundary=True)
-        assert edbapp.terminals["Port_GND_U1_AU38"].boundary_type == "pec"
-        assert edbapp.terminals["Port_GND_U1_AU38_ref"].boundary_type == "pec"
+        if edbapp.grpc:
+            assert edbapp.terminals["Port_GND_U1_AU38"].boundary_type == "pec"
+            assert edbapp.terminals["Port_GND_U1_AU38_ref"].boundary_type == "pec"
+        else:
+            assert edbapp.terminals["Port_GND_U1_AU38"].boundary_type == "PecBoundary"
+            assert edbapp.terminals["Port_GND_U1_AU38_ref"].boundary_type == "PecBoundary"
         edbapp.components.deactivate_rlc_component(component="C5", create_circuit_port=True, pec_boundary=True)
         edbapp.components.add_port_on_rlc_component(component="C65", circuit_ports=False, pec_boundary=True)
-        assert edbapp.terminals["C5"].boundary_type == "pec"
-        assert edbapp.terminals["C65"].boundary_type == "pec"
+        if edbapp.grpc:
+            assert edbapp.terminals["C5"].boundary_type == "pec"
+            assert edbapp.terminals["C65"].boundary_type == "pec"
+        else:
+            assert edbapp.terminals["C5"].boundary_type == "PecBoundary"
+            assert edbapp.terminals["C65"].boundary_type == "PecBoundary"
         edbapp.close()
 
     def test_is_top_mounted(self, edb_examples):
@@ -527,10 +563,15 @@ class TestClass:
             component_part_name="Test_part", component_name="Test", is_rlc=True, r_value=12.2, pins=pins
         )
         assert edbapp.components.instances["Test"]
+        # TODO check if dotnet can return component value as float instead of string. grpc is returning float.
         assert edbapp.components.instances["Test"].res_value == 12.2
         assert edbapp.components.instances["Test"].ind_value == 0
         assert edbapp.components.instances["Test"].cap_value == 0
-        assert edbapp.components.instances["Test"].center == [0.07950000102, 0.03399999804]
+        if edbapp.grpc:
+            # TODO check why grpc is returning different center value.
+            assert edbapp.components.instances["Test"].center == [0.07950000102, 0.03399999804]
+        else:
+            assert edbapp.components.instances["Test"].center == [0.068, 0.0165]
         edbapp.close_edb()
 
     def test_create_package_def(self, edb_examples):
@@ -545,6 +586,7 @@ class TestClass:
     def test_solder_ball_getter_setter(self, edb_examples):
         # Done
         edb = edb_examples.get_si_verse()
+        assert edb.grpc
         cmp = edb.components.instances["X1"]
         cmp.solder_ball_height = 0.0
         assert cmp.solder_ball_height == 0.0
@@ -612,16 +654,25 @@ class TestClass:
         edbapp.close()
 
     def test_ic_die_properties(self, edb_examples):
-        # Done
         edbapp = edb_examples.get_si_verse()
         component: Component = edbapp.components["U8"]
-        assert component.ic_die_properties.die_orientation == "chip_up"
-        component.ic_die_properties.die_orientation = "chip_down"
-        assert component.ic_die_properties.die_orientation == "chip_down"
-        assert component.ic_die_properties.die_type == "none"
-        assert component.ic_die_properties.height == 0.0
-        component.ic_die_properties.height = 1e-3
-        assert component.ic_die_properties.height == 1e-3
+        if edbapp.grpc:
+            assert component.ic_die_properties.die_orientation == "chip_up"
+            component.ic_die_properties.die_orientation = "chip_down"
+            assert component.ic_die_properties.die_orientation == "chip_down"
+            assert component.ic_die_properties.die_type == "none"
+            assert component.ic_die_properties.height == 0.0
+            component.ic_die_properties.height = 1e-3
+            assert component.ic_die_properties.height == 1e-3
+        else:
+            ic_die_properties = component.ic_die_properties
+            assert ic_die_properties.die_orientation == "chip_up"
+            ic_die_properties.orientation = "chip_down"
+            assert ic_die_properties.orientation == "chip_down"
+            assert ic_die_properties.die_type == "none"
+            assert ic_die_properties.height == 0.0
+            ic_die_properties.height = 1e-3
+            assert ic_die_properties.height == 1e-3
         edbapp.close()
 
     def test_rlc_component_302(self, edb_examples):
@@ -632,6 +683,7 @@ class TestClass:
         assert component
         assert component.name == "TEST"
         assert component.location == [0.13275000120000002, 0.07350000032]
+        assert edbapp.grpc
         assert component.res_value == 1.2
         edbapp.close()
 

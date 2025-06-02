@@ -455,9 +455,16 @@ class Modeler(object):
                 xcoeff = str(xcoeff)
             return xcoeff, ycoeff
 
+        from pyedb.dotnet.database.edb_data.primitives_data import EdbPolygon
+
+        if isinstance(selection_polygon, EdbPolygon):
+            selection_polygon = selection_polygon._edb_object
+        if isinstance(polygon, EdbPolygon):
+            polygon = polygon._edb_object
+
         selection_polygon_data = selection_polygon.GetPolygonData()
-        poligon_data = polygon.GetPolygonData()
-        bound_center = poligon_data.GetBoundingCircleCenter()
+        polygon_data = polygon.GetPolygonData()
+        bound_center = polygon_data.GetBoundingCircleCenter()
         bound_center2 = selection_polygon_data.GetBoundingCircleCenter()
         center = [bound_center.X.ToDouble(), bound_center.Y.ToDouble()]
         center2 = [bound_center2.X.ToDouble(), bound_center2.Y.ToDouble()]
@@ -471,7 +478,7 @@ class Modeler(object):
         prev_point = None
         while continue_iterate:
             try:
-                point = poligon_data.GetPoint(i)
+                point = polygon_data.GetPoint(i)
                 if prev_point != point:
                     check_inside = selection_polygon_data.PointInPolygon(point)
                     if check_inside:
@@ -481,14 +488,14 @@ class Modeler(object):
                             point.X.ToString() + "{}*{}".format(xcoeff, offset_name),
                             point.Y.ToString() + "{}*{}".format(ycoeff, offset_name),
                         )
-                        poligon_data.SetPoint(i, new_points)
+                        polygon_data.SetPoint(i, new_points)
                     prev_point = point
                     i += 1
                 else:
                     continue_iterate = False
             except:
                 continue_iterate = False
-        polygon.SetPolygonData(poligon_data)
+        polygon.SetPolygonData(polygon_data)
         return True
 
     def _create_path(
@@ -622,7 +629,7 @@ class Modeler(object):
 
         return primitive
 
-    def create_polygon(self, main_shape, layer_name, voids=[], net_name=""):
+    def create_polygon(self, main_shape=None, layer_name="", voids=[], net_name="", points=None):
         """Create a polygon based on a list of points and voids.
 
         Parameters
@@ -639,13 +646,40 @@ class Modeler(object):
             List of shape objects for voids or points that creates the shapes. The default is``[]``.
         net_name : str, optional
             Name of the net. The default is ``""``.
+        points : list, optional
+            Added for compatibility with grpc.
 
         Returns
         -------
         bool, :class:`dotnet.database.edb_data.primitives.Primitive`
             Polygon when successful, ``False`` when failed.
         """
+        from pyedb.dotnet.database.geometry.polygon_data import PolygonData
+
+        if main_shape:
+            warnings.warn(
+                "main_shape argument will be deprecated soon with grpc version, use points instead.", DeprecationWarning
+            )
+
         net = self._pedb.nets.find_or_create_net(net_name)
+        if points:
+            arcs = []
+            if isinstance(points, PolygonData):
+                points = points.points
+            for _ in range(len(points)):
+                arcs.append(
+                    self._edb.Geometry.ArcData(
+                        self._pedb.point_data(0, 0),
+                        self._pedb.point_data(0, 0),
+                    )
+                )
+            polygonData = self._edb.Geometry.PolygonData.CreateFromArcs(convert_py_list_to_net_list(arcs), True)
+
+            for idx, i in enumerate(points):
+                pdata_0 = self._pedb.edb_value(i[0])
+                pdata_1 = self._pedb.edb_value(i[1])
+                new_points = self._edb.Geometry.PointData(pdata_0, pdata_1)
+                polygonData.SetPoint(idx, new_points)
         if isinstance(main_shape, list):
             arcs = []
             for _ in range(len(main_shape)):
@@ -666,9 +700,14 @@ class Modeler(object):
         elif isinstance(main_shape, Modeler.Shape):
             polygonData = self.shape_to_polygon_data(main_shape)
         else:
-            polygonData = main_shape
-        if not polygonData or polygonData.IsNull():
-            raise RuntimeError("Failed to create main shape polygon data")
+            if not points:
+                polygonData = main_shape
+        if isinstance(polygonData, PolygonData):
+            if not polygonData.points:
+                raise RuntimeError("Failed to create main shape polygon data")
+        else:
+            if polygonData.IsNull():
+                raise RuntimeError("Failed to create main shape polygon data")
         for void in voids:
             if isinstance(void, list):
                 void = self.Shape("polygon", points=void)
@@ -682,6 +721,8 @@ class Modeler(object):
                 self._logger.error("Failed to create void polygon data")
                 return False
             polygonData.AddHole(voidPolygonData)
+        if isinstance(polygonData, PolygonData):
+            polygonData = polygonData._edb_object
         polygon = self._pedb._edb.Cell.Primitive.Polygon.Create(
             self._active_layout, layer_name, net.net_obj, polygonData
         )
@@ -1317,7 +1358,7 @@ class Modeler(object):
         stat_model.num_resistors = len(self._pedb.components.resistors)
         stat_model.num_inductors = len(self._pedb.components.inductors)
         bbox = self._pedb._hfss.get_layout_bounding_box(self._active_layout)
-        stat_model._layout_size = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        stat_model._layout_size = round(bbox[2] - bbox[0], 6), round(bbox[3] - bbox[1], 6)
         stat_model.num_discrete_components = (
             len(self._pedb.components.Others) + len(self._pedb.components.ICs) + len(self._pedb.components.IOs)
         )
@@ -1328,7 +1369,7 @@ class Modeler(object):
         stat_model.num_traces = len(self._pedb.modeler.paths)
         stat_model.num_polygons = len(self._pedb.modeler.polygons)
         stat_model.num_vias = len(self._pedb.padstacks.instances)
-        stat_model.stackup_thickness = self._pedb.stackup.get_layout_thickness()
+        stat_model.stackup_thickness = round(self._pedb.stackup.get_layout_thickness(), 6)
         if evaluate_area:
             outline_surface = stat_model.layout_size[0] * stat_model.layout_size[1]
             if net_list:
@@ -1343,8 +1384,8 @@ class Modeler(object):
                             surface += prim.length * prim.width
                         if prim.type == "Polygon":
                             surface += prim.polygon_data._edb_object.Area()
-                            stat_model.occupying_surface[layer] = surface
-                            stat_model.occupying_ratio[layer] = surface / outline_surface
+                            stat_model.occupying_surface[layer] = round(surface, 6)
+                            stat_model.occupying_ratio[layer] = round(surface / outline_surface, 6)
         return stat_model
 
     def create_bondwire(
@@ -1361,6 +1402,7 @@ class Modeler(object):
         end_y,
         net,
         bondwire_type="jedec4",
+        start_cell_instance_name=None,
     ):
         """Create a bondwire object.
 
@@ -1390,13 +1432,16 @@ class Modeler(object):
             Y value of end point.
         net : str or :class:`Net <ansys.edb.net.Net>` or None
             Net of the Bondwire.
+        start_cell_instance_name : None
+            Added for grpc compatibility.
 
         Returns
         -------
         :class:`pyedb.dotnet.database.dotnet.primitive.BondwireDotNet`
             Bondwire object created.
         """
-
+        if start_cell_instance_name:
+            self._pedb.logger.warning(f"start_cell_instance_name {start_cell_instance_name} is only valid with grpc.")
         return Bondwire(
             pedb=self._pedb,
             bondwire_type=bondwire_type,

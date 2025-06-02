@@ -310,7 +310,7 @@ class HfssSimulationSetup(SimulationSetup):
         self._update_setup()
         return mesh_operation
 
-    def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02):
+    def set_solution_single_frequency(self, frequency="5Ghz", max_num_passes=10, max_delta_s=0.02):
         """Set single-frequency solution.
 
         Parameters
@@ -331,7 +331,7 @@ class HfssSimulationSetup(SimulationSetup):
         self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
         return self.adaptive_settings.add_adaptive_frequency_data(frequency, max_num_passes, max_delta_s)
 
-    def set_solution_multi_frequencies(self, frequencies=("5GHz", "10GHz"), max_num_passes=10, max_delta_s="0.02"):
+    def set_solution_multi_frequencies(self, frequencies=("5Ghz", "10Ghz"), max_num_passes=10, max_delta_s="0.02"):
         """Set multi-frequency solution.
 
         Parameters
@@ -350,13 +350,12 @@ class HfssSimulationSetup(SimulationSetup):
         """
         self.adaptive_settings.adapt_type = "kMultiFrequencies"
         self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
-        for i in frequencies:
-            if not self.adaptive_settings.add_adaptive_frequency_data(i, max_num_passes, max_delta_s):
-                return False
+        if not self.adaptive_settings.add_multi_frequency_adaptive_setup(frequencies, max_num_passes, max_delta_s):
+            return False
         return True
 
     def set_solution_broadband(
-        self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
+        self, low_frequency="5Ghz", high_frequency="10Ghz", max_num_passes=10, max_delta_s="0.02"
     ):
         """Set broadband solution.
 

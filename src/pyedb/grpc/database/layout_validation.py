@@ -37,7 +37,7 @@ class LayoutValidation:
         self._pedb = pedb
         self._layout_instance = self._pedb.layout_instance
 
-    def dc_shorts(self, net_list=None, fix=False):
+    def dc_shorts(self, net_list=None, fix=False) -> list[list[str, str]]:
         """Find DC shorts on layout.
 
         Parameters
@@ -130,7 +130,7 @@ class LayoutValidation:
         clean_disjoints_less_than=0.0,
         order_by_area=False,
         keep_disjoint_pins=False,
-    ):
+    ) -> list[str]:
         """Find and fix disjoint nets from a given netlist.
 
         Parameters
@@ -263,7 +263,7 @@ class LayoutValidation:
 
         return new_nets
 
-    def fix_self_intersections(self, net_list=None):
+    def fix_self_intersections(self, net_list=None) -> bool:
         """Find and fix self intersections from a given netlist.
 
         Parameters
@@ -284,9 +284,9 @@ class LayoutValidation:
             if prim.net_name in net_list:
                 new_prims.extend(prim.fix_self_intersections())
         if new_prims:
-            self._pedb._logger.info("Self-intersections detected and removed.")
+            self._pedb.logger.info("Self-intersections detected and removed.")
         else:
-            self._pedb._logger.info("Self-intersection not found.")
+            self._pedb.logger.info("Self-intersection not found.")
         return True
 
     def illegal_net_names(self, fix=False):
@@ -306,7 +306,7 @@ class LayoutValidation:
         self._pedb._logger.info("Found {} illegal net names.".format(len(renamed_nets)))
         return
 
-    def illegal_rlc_values(self, fix=False):
+    def illegal_rlc_values(self, fix=False) -> list[str]:
         """Find and fix RLC illegal values."""
         inductors = self._pedb.components.inductors
 
@@ -318,7 +318,7 @@ class LayoutValidation:
                 if fix:
                     v.rlc_values = [0, 1, 0]
         self._pedb._logger.info(f"Found {len(temp)} inductors have no value.")
-        return
+        return temp
 
     def padstacks_no_name(self, fix=False):
         pds = self._pedb.layout.padstack_instances

@@ -49,7 +49,6 @@ from ansys.edb.core.layer.layer_collection import LayerCollection as GrpcLayerCo
 from ansys.edb.core.layer.layer_collection import LayerTypeSet as GrpcLayerTypeSet
 from ansys.edb.core.layer.stackup_layer import StackupLayer as GrpcStackupLayer
 from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
-from ansys.edb.core.utility.transform3d import Transform3D as GrpcTransform3D
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.generic.general_methods import ET, generate_unique_name
@@ -138,15 +137,23 @@ class LayerCollection(GrpcLayerCollection):
 
         """
         thickness = GrpcValue(0.0)
+        layer_type_map = {"dielectric": GrpcLayerType.DIELECTRIC_LAYER, "signal": GrpcLayerType.SIGNAL_LAYER}
         if "thickness" in kwargs:
             thickness = GrpcValue(kwargs["thickness"])
         elevation = GrpcValue(0.0)
-        _layer_type = GrpcLayerType.SIGNAL_LAYER
-        if layer_type.lower() == "dielectric":
-            _layer_type = GrpcLayerType.DIELECTRIC_LAYER
+        if "type" in kwargs:
+            _layer_type = layer_type_map[kwargs["type"]]
+        else:
+            _layer_type = layer_type_map[layer_type]
+        if "material" in kwargs:
+            _material = kwargs["material"]
+        else:
+            _material = "copper"
         layer = GrpcStackupLayer.create(
-            name=name, layer_type=_layer_type, thickness=thickness, material="copper", elevation=elevation
+            name=name, layer_type=_layer_type, thickness=thickness, material=_material, elevation=elevation
         )
+        if "fill_material" in kwargs:
+            layer.set_fill_material(kwargs["fill_material"])
         return self._layer_collection.add_layer_bottom(layer)
 
     def add_layer_below(self, name, base_layer_name, layer_type="signal", **kwargs):
@@ -170,11 +177,19 @@ class LayerCollection(GrpcLayerCollection):
         if "thickness" in kwargs:
             thickness = GrpcValue(kwargs["thickness"])
         elevation = GrpcValue(0.0)
-        _layer_type = GrpcLayerType.SIGNAL_LAYER
-        if layer_type.lower() == "dielectric":
-            _layer_type = GrpcLayerType.DIELECTRIC_LAYER
+        if "type" in kwargs:
+            _l_map = {"signal": GrpcLayerType.SIGNAL_LAYER, "dielectric": GrpcLayerType.DIELECTRIC_LAYER}
+            _layer_type = _l_map[kwargs["type"]]
+        else:
+            _layer_type = GrpcLayerType.SIGNAL_LAYER
+            if layer_type.lower() == "dielectric":
+                _layer_type = GrpcLayerType.DIELECTRIC_LAYER
+        if "material" in kwargs:
+            material = kwargs["material"]
+        else:
+            material = "copper"
         layer = GrpcStackupLayer.create(
-            name=name, layer_type=_layer_type, thickness=thickness, material="copper", elevation=elevation
+            name=name, layer_type=_layer_type, thickness=thickness, material=material, elevation=elevation
         )
         return self._layer_collection.add_layer_below(layer, base_layer_name)
 
@@ -295,6 +310,14 @@ class Stackup(LayerCollection):
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
         self._pedb = pedb
+
+    def __getitem__(self, item):
+        if item in self.non_stackup_layers:
+            return Layer(self._pedb, self.find_by_name(item))
+        elif item in self.layers:
+            return StackupLayer(self._pedb, self.find_by_name(item))
+        else:
+            return None
 
     @property
     def _logger(self):
@@ -463,11 +486,16 @@ class Stackup(LayerCollection):
 
     @mode.setter
     def mode(self, value):
-        if value == 0 or value == GrpcLayerCollectionMode.LAMINATE or value == "laminate":
+        if value == 0 or value == GrpcLayerCollectionMode.LAMINATE or value == "laminate" or value == "Laminate":
             super(LayerCollection, self.__class__).mode.__set__(self, GrpcLayerCollectionMode.LAMINATE)
-        elif value == 1 or value == GrpcLayerCollectionMode.OVERLAPPING or value == "overlapping":
+        elif (
+            value == 1
+            or value == GrpcLayerCollectionMode.OVERLAPPING
+            or value == "overlapping"
+            or value == "Overlapping"
+        ):
             super(LayerCollection, self.__class__).mode.__set__(self, GrpcLayerCollectionMode.OVERLAPPING)
-        elif value == 2 or value == GrpcLayerCollectionMode.MULTIZONE or value == "multizone":
+        elif value == 2 or value == GrpcLayerCollectionMode.MULTIZONE or value == "multizone" or value == "MultiZone":
             super(LayerCollection, self.__class__).mode.__set__(self, GrpcLayerCollectionMode.MULTIZONE)
         self.update_layout()
 
@@ -680,6 +708,7 @@ class Stackup(LayerCollection):
         else:
             new_layer = self._create_nonstackup_layer(layer_name, layer_type)
             self._set_layout_stackup(new_layer, "non_stackup")
+            return self.non_stackup_layers[layer_name]
         return self.layers[layer_name]
 
     def remove_layer(self, name):
@@ -695,8 +724,8 @@ class Stackup(LayerCollection):
 
         """
         new_layer_collection = LayerCollection.create()
-        for lyr in self.layers:
-            if not (lyr.name == name):
+        for layer_name, lyr in self.layers.items():
+            if not (layer_name == name):
                 new_layer_collection.add_layer_bottom(lyr)
 
         self._pedb.layout.layer_collection = new_layer_collection
@@ -803,9 +832,6 @@ class Stackup(LayerCollection):
         layers_out = {}
         for k, v in self.layers.items():
             data = v._json_format()
-            # FIXME: Update the API to avoid providing following information to our users
-            del data["pedb"]
-            del data["edb_object"]
             layers_out[k] = data
             if v.material in self._pedb.materials.materials:
                 layer_material = self._pedb.materials.materials[v.material]
@@ -1023,10 +1049,14 @@ class Stackup(LayerCollection):
         return round(thickness, 7)
 
     def _get_solder_height(self, layer_name):
+        height = 0.0
         for _, val in self._pedb.components.instances.items():
-            if val.solder_ball_height and val.placement_layer == layer_name:
-                return val.solder_ball_height
-        return 0
+            try:
+                if val.solder_ball_height and val.placement_layer == layer_name:
+                    height = val.solder_ball_height
+            except:
+                pass
+        return height
 
     def _remove_solder_pec(self, layer_name):
         for _, val in self._pedb.components.instances.items():
@@ -1036,7 +1066,7 @@ class Stackup(LayerCollection):
                 port_property.reference_size_auto = False
                 port_property.reference_size = (GrpcValue(0.0), GrpcValue(0.0))
                 comp_prop.port_property = port_property
-                val.edbcomponent.component_property = comp_prop
+                val.component_property = comp_prop
 
     def adjust_solder_dielectrics(self):
         """Adjust the stack-up by adding or modifying dielectric layers that contains Solder Balls.
@@ -1244,7 +1274,7 @@ class Stackup(LayerCollection):
         _offset_y = GrpcValue(offset_y)
 
         if edb_cell.name not in self._pedb.cell_names:
-            list_cells = self._pedb.copy_cells(edb_cell.api_object)
+            list_cells = self._pedb.copy_cells(edb_cell)
             edb_cell = list_cells[0]
         self._pedb.layout.cell.is_blackbox = True
         cell_inst2 = GrpcCellInstance.create(
@@ -1255,9 +1285,9 @@ class Stackup(LayerCollection):
         stackup_source = self._pedb.layout.layer_collection
 
         if place_on_top:
-            cell_inst2.placement_layer = stackup_target.Layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)[0]
+            cell_inst2.placement_layer = list(LayerCollection(self._pedb, stackup_target).layers.values())[0]
         else:
-            cell_inst2.placement_layer = stackup_target.Layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)[-1]
+            cell_inst2.placement_layer = list(LayerCollection(self._pedb, stackup_target).layers.values())[-1]
         cell_inst2.placement_3d = True
         res = stackup_target.get_top_bottom_stackup_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
         target_top_elevation = res[1]
@@ -1285,7 +1315,13 @@ class Stackup(LayerCollection):
         point_loc = GrpcPoint3DData(zero_data, zero_data, zero_data)
         point_from = GrpcPoint3DData(one_data, zero_data, zero_data)
         point_to = GrpcPoint3DData(math.cos(_angle), -1 * math.sin(_angle), zero_data)
-        cell_inst2.transform3d = GrpcTransform3D(point_loc, point_from, point_to, rotation, point3d_t)  # TODO check
+        transform = cell_inst2.transform3d.create_from_one_axis_to_another(from_axis=point_from, to_axis=point_to)
+        cell_inst2.transform3d = transform
+        transform = cell_inst2.transform3d.create_from_axis_and_angle(axis=point_loc, angle=angle)
+        cell_inst2.transform3d = transform
+        transform = cell_inst2.transform3d.create_from_offset(offset=point3d_t)
+        cell_inst2.transform3d = transform
+        # TODO check if component is properly placed.
         return True
 
     def place_instance(
@@ -1376,7 +1412,7 @@ class Stackup(LayerCollection):
         _offset_y = GrpcValue(offset_y)
 
         if edb_cell.name not in self._pedb.cell_names:
-            list_cells = self._pedb.copy_cells(edb_cell.api_object)
+            list_cells = self._pedb.copy_cells(edb_cell)
             edb_cell = list_cells[0]
         for cell in self._pedb.active_db.top_circuit_cells:
             if cell.name == edb_cell.name:
@@ -1428,7 +1464,13 @@ class Stackup(LayerCollection):
         point_loc = GrpcPoint3DData(zero_data, zero_data, zero_data)
         point_from = GrpcPoint3DData(one_data, zero_data, zero_data)
         point_to = GrpcPoint3DData(math.cos(_angle), -1 * math.sin(_angle), zero_data)
-        cell_inst2.transform3d = (point_loc, point_from, point_to, rotation, point3d_t)  # TODO check
+        transform = cell_inst2.transform3d.create_from_axis_and_angle(axis=point_loc, angle=angle)
+        cell_inst2.transform3d = transform
+        transform = cell_inst2.transform3d.create_from_one_axis_to_another(point_from, point_to)
+        cell_inst2.transform3d = transform
+        transform = cell_inst2.transform3d.create_from_offset(point3d_t)
+        cell_inst2.transform3d = transform
+        # TODO check is position is correct.
         return cell_inst2
 
     def place_a3dcomp_3d_placement(
@@ -1439,7 +1481,7 @@ class Stackup(LayerCollection):
         offset_y=0.0,
         offset_z=0.0,
         place_on_top=True,
-    ):
+    ) -> bool:
         """Place a 3D Component into current layout.
          3D Component ports are not visible via EDB. They will be visible after the EDB has been opened in Ansys
          Electronics Desktop as a project.
@@ -1476,14 +1518,11 @@ class Stackup(LayerCollection):
         ...                                   offset_y="2mm", flipped_stackup=False, place_on_top=True,
         ...                                   )
         """
-        zero_data = GrpcValue(0.0)
-        one_data = GrpcValue(1.0)
-        local_origin = GrpcPoint3DData(0.0, 0.0, 0.0)
         rotation_axis_from = GrpcPoint3DData(1.0, 0.0, 0.0)
         _angle = angle * math.pi / 180.0
         rotation_axis_to = GrpcPoint3DData(math.cos(_angle), -1 * math.sin(_angle), 0.0)
 
-        stackup_target = GrpcLayerCollection(self._pedb.layout.layer_collection)
+        stackup_target = LayerCollection(self._pedb, self._pedb.layout.layer_collection)
         res = stackup_target.get_top_bottom_stackup_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
         target_top_elevation = res[1]
         target_bottom_elevation = res[3]
@@ -1505,9 +1544,12 @@ class Stackup(LayerCollection):
             return False
 
         mcad_model.cell_instance.placement_3d = True
-        mcad_model.cell_instance.transform3d = GrpcTransform3D(
-            local_origin, rotation_axis_from, rotation_axis_to, flip_angle, location
+        transform_rotation = mcad_model.cell_instance.transform3d.create_from_axis_and_angle(
+            axis=rotation_axis_from, angle=flip_angle.value
         )
+        mcad_model.cell_instance.transform3d = transform_rotation
+        transform_translation = mcad_model.cell_instance.transform3d.create_from_offset(offset=location)
+        mcad_model.cell_instance.transform3d = transform_translation
         return True
 
     def residual_copper_area_per_layer(self):

@@ -60,15 +60,15 @@ Documentation for the latest stable release of PyEDB is hosted at
 [PyEDB documentation](https://edb.docs.pyansys.com/version/stable/index.html).
 The documentation has five sections:
 
-- [Getting started](https://edb.docs.pyansys.com/version/version/stable/getting_started/index.html): Describes
+- [Getting started](https://edb.docs.pyansys.com/version/stable/getting_started/index.html): Describes
   how to install PyEDB in user mode.
-- [User guide](https://edb.docs.pyansys.com/version/version/stable/user_guide/index.html): Describes how to
+- [User guide](https://edb.docs.pyansys.com/version/stable/user_guide/index.html#user-guide): Describes how to
   use PyEDB.
-- [API reference](https://edb.docs.pyansys.com/version/version/stable/api/index.html): Provides API member descriptions
+- [API reference](https://edb.docs.pyansys.com/version/stable/api/index.html): Provides API member descriptions
   and usage examples.
-- [Examples](https://edb.docs.pyansys.com/version/version/stable/examples/index.html): Provides examples showing
+- [Examples](https://examples.aedt.docs.pyansys.com/version/dev/examples/high_frequency/layout/index.html): Provides examples showing
   end-to-end workflows for using PyEDB.
-- [Contribute](https://edb.docs.pyansys.com/version/version/stable/contribute.html): Describes how to install
+- [Contribute](https://edb.docs.pyansys.com/version/stable/contributing.html): Describes how to install
   PyEDB in developer mode and how to contribute to this PyAnsys library.
 
 In the upper right corner of the documentation's title bar, there is an option

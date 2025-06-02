@@ -56,12 +56,76 @@ class StackupLayer(GrpcStackupLayer):
         str
             Layer name.
         """
-        return super().type.name.lower()
+        return super().type.name.lower().split("_")[0]
 
     @type.setter
     def type(self, value):
         if value in self._stackup_layer_mapping:
             super(StackupLayer, self.__class__).type.__set__(self, self._stackup_layer_mapping[value])
+
+    def update(self, **kwargs):
+        for k, v in kwargs.items():
+            if k in dir(self):
+                self.__setattr__(k, v)
+            elif k == "roughness":
+                self.roughness_enabled = v["enabled"]
+                if "top" in v:
+                    top_roughness = v["top"]
+                    if top_roughness:
+                        if top_roughness["model"] == "huray":
+                            nodule_radius = top_roughness["nodule_radius"]
+                            surface_ratio = top_roughness["surface_ratio"]
+                            self.assign_roughness_model(
+                                model_type="huray",
+                                huray_radius=nodule_radius,
+                                huray_surface_ratio=surface_ratio,
+                                apply_on_surface="top",
+                            )
+                        elif top_roughness["model"] == "groisse":
+                            roughness = top_roughness["roughness"]
+                            self.assign_roughness_model(
+                                model_type="groisse", groisse_roughness=roughness, apply_on_surface="top"
+                            )
+                    if "bottom" in v:
+                        bottom_roughness = v["bottom"]
+                        if bottom_roughness:
+                            if bottom_roughness["model"] == "huray":
+                                nodule_radius = bottom_roughness["nodule_radius"]
+                                surface_ratio = bottom_roughness["surface_ratio"]
+                                self.assign_roughness_model(
+                                    model_type="huray",
+                                    huray_radius=nodule_radius,
+                                    huray_surface_ratio=surface_ratio,
+                                    apply_on_surface="bottom",
+                                )
+                            elif bottom_roughness["model"] == "groisse":
+                                roughness = bottom_roughness["roughness"]
+                                self.assign_roughness_model(
+                                    model_type="groisse", groisse_roughness=roughness, apply_on_surface="bottom"
+                                )
+                    if "side" in v:
+                        side_roughness = v["side"]
+                        if side_roughness:
+                            if side_roughness["model"] == "huray":
+                                nodule_radius = side_roughness["nodule_radius"]
+                                surface_ratio = side_roughness["surface_ratio"]
+                                self.assign_roughness_model(
+                                    model_type="huray",
+                                    huray_radius=nodule_radius,
+                                    huray_surface_ratio=surface_ratio,
+                                    apply_on_surface="side",
+                                )
+                            elif side_roughness["model"] == "groisse":
+                                roughness = side_roughness["roughness"]
+                                self.assign_roughness_model(
+                                    model_type="groisse", groisse_roughness=roughness, apply_on_surface="side"
+                                )
+
+            elif k == "etching":
+                self.etch_factor_enabled = v["enabled"]
+                self.etch_factor = float(v["factor"])
+            else:
+                self._pedb.logger.error(f"{k} is not a valid layer attribute")
 
     def _create(self, layer_type):
         if layer_type in self._stackup_layer_mapping:
@@ -99,12 +163,12 @@ class StackupLayer(GrpcStackupLayer):
         str
             Material name.
         """
-        if self.is_stackup_layer:
+        if self.type == "signal":
             return self.get_fill_material()
 
     @fill_material.setter
     def fill_material(self, value):
-        if self.is_stackup_layer:
+        if self.type == "signal":
             self.set_fill_material(value)
 
     @property
@@ -141,6 +205,18 @@ class StackupLayer(GrpcStackupLayer):
         self.negative = value
 
     @property
+    def is_stackup_layer(self):
+        """Testing if layer is stackup layer.
+
+        Returns
+        -------
+        `True` if layer type is "signal" or "dielectric".
+        """
+        if self.type in ["signal", "dielectric", "via", "wirebond"]:
+            return True
+        return False
+
+    @property
     def material(self):
         """Material.
 
@@ -165,7 +241,8 @@ class StackupLayer(GrpcStackupLayer):
             Material conductivity value.
         """
         if self.material in self._pedb.materials.materials:
-            return self._pedb.materials[self.material].conductivity
+            condcutivity = self._pedb.materials[self.material].conductivity
+            return condcutivity if condcutivity else 0.0
         return None
 
     @property
@@ -178,7 +255,8 @@ class StackupLayer(GrpcStackupLayer):
             Material permittivity value.
         """
         if self.material in self._pedb.materials.materials:
-            return self._pedb.materials[self.material].permittivity
+            permittivity = self._pedb.materials[self.material].permittivity
+            return permittivity if permittivity else 0.0
         return None
 
     @property
@@ -191,7 +269,8 @@ class StackupLayer(GrpcStackupLayer):
             Material loss tangent value.
         """
         if self.material in self._pedb.materials.materials:
-            return self._pedb.materials[self.material].loss_tangent
+            loss_tangent = self._pedb.materials[self.material].loss_tangent
+            return loss_tangent if loss_tangent else 0.0
         return None
 
     @property
@@ -206,7 +285,7 @@ class StackupLayer(GrpcStackupLayer):
         if self.type == "signal":
             return self.get_fill_material()
         else:
-            return
+            return None
 
     @dielectric_fill.setter
     def dielectric_fill(self, name):
@@ -258,16 +337,24 @@ class StackupLayer(GrpcStackupLayer):
         float
             Nodule radius value.
         """
-        top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
-        if top_roughness_model:
-            return top_roughness_model.nodule_radius.value
-        else:
-            return None
+        try:
+            top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
+            if len(top_roughness_model) == 2:
+                return top_roughness_model[0].value
+            else:
+                return 0.0
+        except:
+            return 0.0
 
     @top_hallhuray_nodule_radius.setter
     def top_hallhuray_nodule_radius(self, value):
-        top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
-        top_roughness_model.nodule_radius = GrpcValue(value)
+        try:
+            top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
+            if len(top_roughness_model) == 2:
+                top_roughness_model[0] = GrpcValue(value)
+                self.set_roughness_model(top_roughness_model, GrpcRoughnessRegion.TOP)
+        except:
+            pass
 
     @property
     def top_hallhuray_surface_ratio(self):
@@ -278,16 +365,24 @@ class StackupLayer(GrpcStackupLayer):
         float
             Surface ratio.
         """
-        top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
-        if top_roughness_model:
-            return top_roughness_model.surface_ratio.value
-        else:
-            return None
+        try:
+            top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
+            if len(top_roughness_model) == 2:
+                return top_roughness_model[1].value
+            else:
+                return 0.0
+        except:
+            return 0.0
 
     @top_hallhuray_surface_ratio.setter
     def top_hallhuray_surface_ratio(self, value):
-        top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
-        top_roughness_model.surface_roughness = GrpcValue(value)
+        try:
+            top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
+            if len(top_roughness_model) == 2:
+                top_roughness_model[1] = GrpcValue(value)
+                self.set_roughness_model(top_roughness_model, GrpcRoughnessRegion.TOP)
+        except:
+            pass
 
     @property
     def bottom_hallhuray_nodule_radius(self):
@@ -298,15 +393,24 @@ class StackupLayer(GrpcStackupLayer):
         float
             Nodule radius.
         """
-        bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
-        if bottom_roughness_model:
-            return bottom_roughness_model.nodule_radius.value
-        return None
+        try:
+            bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
+            if len(bottom_roughness_model) == 2:
+                return round(bottom_roughness_model[0].value, 9)
+            else:
+                return 0.0
+        except:
+            return 0.0
 
     @bottom_hallhuray_nodule_radius.setter
     def bottom_hallhuray_nodule_radius(self, value):
-        top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
-        top_roughness_model.nodule_radius = GrpcValue(value)
+        try:
+            bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
+            if len(bottom_roughness_model) == 2:
+                bottom_roughness_model[0] = GrpcValue(value)
+                self.set_roughness_model(bottom_roughness_model, GrpcRoughnessRegion.BOTTOM)
+        except:
+            pass
 
     @property
     def bottom_hallhuray_surface_ratio(self):
@@ -317,15 +421,24 @@ class StackupLayer(GrpcStackupLayer):
         float
             Surface ratio value.
         """
-        bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
-        if bottom_roughness_model:
-            return bottom_roughness_model.surface_ratio.value
-        return None
+        try:
+            bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
+            if len(bottom_roughness_model) == 2:
+                return bottom_roughness_model[1].value
+            else:
+                return 0.0
+        except:
+            return 0.0
 
     @bottom_hallhuray_surface_ratio.setter
     def bottom_hallhuray_surface_ratio(self, value):
-        top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
-        top_roughness_model.surface_ratio = GrpcValue(value)
+        try:
+            bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
+            if len(bottom_roughness_model) == 2:
+                bottom_roughness_model[1] = GrpcValue(value)
+                self.set_roughness_model(bottom_roughness_model, GrpcRoughnessRegion.BOTTOM)
+        except:
+            pass
 
     @property
     def side_hallhuray_nodule_radius(self):
@@ -337,15 +450,23 @@ class StackupLayer(GrpcStackupLayer):
             Nodule radius value.
 
         """
-        side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
-        if side_roughness_model:
-            return side_roughness_model.nodule_radius.value
-        return None
+        try:
+            side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
+            if len(side_roughness_model) == 2:
+                return round(side_roughness_model[0].value, 9)
+            return 0.0
+        except:
+            return 0.0
 
     @side_hallhuray_nodule_radius.setter
     def side_hallhuray_nodule_radius(self, value):
-        top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
-        top_roughness_model.nodule_radius = GrpcValue(value)
+        try:
+            side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
+            if len(side_roughness_model) == 2:
+                side_roughness_model[0] = GrpcValue(value)
+                self.set_roughness_model(side_roughness_model, GrpcRoughnessRegion.SIDE)
+        except:
+            pass
 
     @property
     def side_hallhuray_surface_ratio(self):
@@ -356,16 +477,107 @@ class StackupLayer(GrpcStackupLayer):
         float
             surface ratio.
         """
-        side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
-        if side_roughness_model:
-            return side_roughness_model.surface_ratio.value
-        else:
-            return None
+        try:
+            side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
+            if len(side_roughness_model) == 2:
+                return side_roughness_model[1].value
+            return 0.0
+        except:
+            return 0.0
 
     @side_hallhuray_surface_ratio.setter
     def side_hallhuray_surface_ratio(self, value):
-        top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
-        top_roughness_model.surface_ratio = GrpcValue(value)
+        try:
+            side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
+            if len(side_roughness_model) == 2:
+                side_roughness_model[1] = GrpcValue(value)
+                self.set_roughness_model(side_roughness_model, GrpcRoughnessRegion.SIDE)
+        except:
+            pass
+
+    @property
+    def top_groisse_roughness(self):
+        """Groisse model on layer top.
+
+        Returns
+        -------
+        float
+            Roughness value.
+        """
+        try:
+            top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
+            if isinstance(top_roughness_model, GrpcValue):
+                return top_roughness_model.value
+            else:
+                return 0.0
+        except:
+            return 0.0
+
+    @top_groisse_roughness.setter
+    def top_groisse_roughness(self, value):
+        try:
+            top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
+            if isinstance(top_roughness_model, GrpcValue):
+                top_roughness_model = GrpcValue(value)
+                self.set_roughness_model(top_roughness_model, GrpcRoughnessRegion.TOP)
+        except:
+            pass
+
+    @property
+    def bottom_groisse_roughness(self):
+        """Groisse model on layer bottom.
+
+        Returns
+        -------
+        float
+            Roughness value.
+        """
+        try:
+            bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
+            if isinstance(bottom_roughness_model, GrpcValue):
+                return bottom_roughness_model.value
+            else:
+                return 0.0
+        except:
+            return 0.0
+
+    @bottom_groisse_roughness.setter
+    def bottom_groisse_roughness(self, value):
+        try:
+            bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
+            if isinstance(bottom_roughness_model, GrpcValue):
+                bottom_roughness_model = GrpcValue(value)
+                self.set_roughness_model(bottom_roughness_model, GrpcRoughnessRegion.BOTTOM)
+        except:
+            pass
+
+    @property
+    def side_groisse_roughness(self):
+        """Groisse model on layer bottom.
+
+        Returns
+        -------
+        float
+            Roughness value.
+        """
+        try:
+            side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
+            if isinstance(side_roughness_model, GrpcValue):
+                return side_roughness_model.value
+            else:
+                return 0.0
+        except:
+            return 0.0
+
+    @side_groisse_roughness.setter
+    def side_groisse_roughness(self, value):
+        try:
+            side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
+            if isinstance(side_roughness_model, GrpcValue):
+                side_roughness_model = GrpcValue(value)
+                self.set_roughness_model(side_roughness_model, GrpcRoughnessRegion.BOTTOM)
+        except Exception as e:
+            self._pedb.logger.error(e)
 
     def assign_roughness_model(
         self,
@@ -400,7 +612,7 @@ class StackupLayer(GrpcStackupLayer):
         elif apply_on_surface == "bottom":
             regions = [GrpcRoughnessRegion.BOTTOM]
         elif apply_on_surface == "side":
-            regions = [GrpcRoughnessRegion.BOTTOM]
+            regions = [GrpcRoughnessRegion.SIDE]
         self.roughness_enabled = True
         for r in regions:
             if model_type == "huray":
@@ -408,3 +620,129 @@ class StackupLayer(GrpcStackupLayer):
             else:
                 model = GrpcValue(groisse_roughness)
             self.set_roughness_model(model, r)
+        if [
+            self.get_roughness_model(GrpcRoughnessRegion.TOP),
+            self.get_roughness_model(GrpcRoughnessRegion.BOTTOM),
+            self.get_roughness_model(GrpcRoughnessRegion.SIDE),
+        ]:
+            return True
+        return False
+
+    @property
+    def properties(self):
+        data = {"name": self.name, "type": self.type, "color": self.color}
+        if self.type == "signal" or self.type == "dielectric":
+            data["material"] = self.material
+            data["thickness"] = self.thickness
+        if self.type == "signal":
+            data["fill_material"] = self.fill_material
+        roughness = {"top": {}, "bottom": {}, "side": {}}
+        if self.top_hallhuray_nodule_radius:
+            roughness["top"]["model"] = "huray"
+            roughness["top"]["nodule_radius"] = self.top_hallhuray_nodule_radius
+            roughness["top"]["surface_ratio"] = self.top_hallhuray_surface_ratio
+
+        elif self.top_groisse_roughness:
+            roughness["top"]["model"] = "groisse"
+            roughness["top"]["roughness"] = self.top_groisse_roughness
+
+        if self.bottom_hallhuray_nodule_radius:
+            roughness["bottom"]["model"] = "huray"
+            roughness["bottom"]["nodule_radius"] = self.bottom_hallhuray_nodule_radius
+            roughness["bottom"]["surface_ratio"] = self.bottom_hallhuray_surface_ratio
+
+        elif self.bottom_groisse_roughness:
+            roughness["bottom"]["model"] = "groisse"
+            roughness["bottom"]["roughness"] = self.bottom_groisse_roughness
+
+        if self.side_hallhuray_nodule_radius:
+            roughness["side"]["model"] = "huray"
+            roughness["side"]["nodule_radius"] = self.side_hallhuray_nodule_radius
+            roughness["side"]["surface_ratio"] = self.side_hallhuray_surface_ratio
+
+        elif self.side_groisse_roughness:
+            roughness["side"]["model"] = "groisse"
+            roughness["side"]["roughness"] = self.side_groisse_roughness
+
+        if roughness["top"] or roughness["bottom"] or roughness["side"]:
+            roughness["enabled"] = True
+        else:
+            roughness["enabled"] = False
+        data["roughness"] = roughness
+        data["etching"] = {"enabled": self.etch_factor_enabled, "factor": self.etch_factor}
+        return data
+
+    def _json_format(self):
+        dict_out = {
+            "color": self.color,
+            "dielectric_fill": self.dielectric_fill,
+            "etch_factor": self.etch_factor,
+            "material": self.material,
+            "loss_tangent": self.loss_tangent,
+            "permittivity": self.permittivity,
+            "conductivity": self.conductivity,
+            "zones": self.zones,
+            "transparency": self.transparency,
+            "name": self.name,
+            "roughness_enabled": self.roughness_enabled,
+            "thickness": self.thickness,
+            "lower_elevation": self.lower_elevation,
+            "upper_elevation": self.upper_elevation,
+            "type": self.type,
+            "top_hallhuray_nodule_radius": self.top_hallhuray_nodule_radius,
+            "top_hallhuray_surface_ratio": self.top_hallhuray_surface_ratio,
+            "side_hallhuray_nodule_radius": self.side_hallhuray_nodule_radius,
+            "side_hallhuray_surface_ratio": self.side_hallhuray_surface_ratio,
+            "bottom_hallhuray_nodule_radius": self.bottom_hallhuray_nodule_radius,
+            "bottom_hallhuray_surface_ratio": self.bottom_hallhuray_surface_ratio,
+        }
+        return dict_out
+
+    def _load_layer(self, layer):
+        if layer:
+            self.color = layer["color"]
+            self.type = layer["type"]
+            if isinstance(layer["material"], str):
+                self.material = layer["material"]
+            else:
+                material_data = layer["material"]
+                if material_data is not None:
+                    material_name = layer["material"]["name"]
+                    self._pedb.materials.add_material(material_name, **material_data)
+                    self.material = material_name
+            if layer["dielectric_fill"]:
+                if isinstance(layer["dielectric_fill"], str):
+                    self.dielectric_fill = layer["dielectric_fill"]
+                else:
+                    dielectric_data = layer["dielectric_fill"]
+                    if dielectric_data is not None:
+                        self._pedb.materials.add_material(**dielectric_data)
+                    self.dielectric_fill = layer["dielectric_fill"]["name"]
+            self.thickness = layer["thickness"]
+            self.etch_factor = layer["etch_factor"]
+            self.roughness_enabled = layer["roughness_enabled"]
+            if self.roughness_enabled:
+                self.top_hallhuray_nodule_radius = layer["top_hallhuray_nodule_radius"]
+                self.top_hallhuray_surface_ratio = layer["top_hallhuray_surface_ratio"]
+                self.assign_roughness_model(
+                    "huray",
+                    layer["top_hallhuray_nodule_radius"],
+                    layer["top_hallhuray_surface_ratio"],
+                    apply_on_surface="top",
+                )
+                self.bottom_hallhuray_nodule_radius = layer["bottom_hallhuray_nodule_radius"]
+                self.bottom_hallhuray_surface_ratio = layer["bottom_hallhuray_surface_ratio"]
+                self.assign_roughness_model(
+                    "huray",
+                    layer["bottom_hallhuray_nodule_radius"],
+                    layer["bottom_hallhuray_surface_ratio"],
+                    apply_on_surface="bottom",
+                )
+                self.side_hallhuray_nodule_radius = layer["side_hallhuray_nodule_radius"]
+                self.side_hallhuray_surface_ratio = layer["side_hallhuray_surface_ratio"]
+                self.assign_roughness_model(
+                    "huray",
+                    layer["side_hallhuray_nodule_radius"],
+                    layer["side_hallhuray_surface_ratio"],
+                    apply_on_surface="side",
+                )

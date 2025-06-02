@@ -20,7 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from ansys.edb.core.utility.hfss_extent_info import (
+    HFSSExtentInfoType as GrpcHfssExtentInfoType,
+)
 from ansys.edb.core.utility.hfss_extent_info import HfssExtentInfo as GrpcHfssExtentInfo
+from ansys.edb.core.utility.hfss_extent_info import OpenRegionType as GrpcOpenRegionType
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 
@@ -37,14 +41,14 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         self._pedb = pedb
         super().__init__()
         self.extent_type_mapping = {
-            "bounding_box": GrpcHfssExtentInfo.HFSSExtentInfoType.BOUNDING_BOX,
-            "conforming": GrpcHfssExtentInfo.HFSSExtentInfoType.CONFORMING,
-            "convex_hull": GrpcHfssExtentInfo.HFSSExtentInfoType.CONVEX_HUL,
-            "polygon": GrpcHfssExtentInfo.HFSSExtentInfoType.POLYGON,
+            "bounding_box": GrpcHfssExtentInfoType.BOUNDING_BOX,
+            "conforming": GrpcHfssExtentInfoType.CONFORMING,
+            "convex_hull": GrpcHfssExtentInfoType.CONVEX_HUL,
+            "polygon": GrpcHfssExtentInfoType.POLYGON,
         }
         self._open_region_type = {
-            "radiation": GrpcHfssExtentInfo.OpenRegionType.RADIATION,
-            "pml": GrpcHfssExtentInfo.OpenRegionType.PML,
+            "radiation": GrpcOpenRegionType.RADIATION,
+            "pml": GrpcOpenRegionType.PML,
         }
         self.hfss_extent_type = self._hfss_extent_info.extent_type
 
@@ -81,12 +85,12 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         float
             Air box horizontal extent value.
         """
-        return self._hfss_extent_info.air_box_horizontal_extent[0]
+        return self._hfss_extent_info.airbox_horizontal[0]
 
     @air_box_horizontal_extent.setter
     def air_box_horizontal_extent(self, value):
         hfss_extent = self._hfss_extent_info
-        hfss_extent.air_box_horizontal_extent = float(value)
+        hfss_extent.airbox_horizontal = (float(value), True)
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -98,12 +102,12 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         bool.
 
         """
-        return self._hfss_extent_info.air_box_positive_vertical_extent[1]
+        return self._hfss_extent_info.airbox_vertical_positive[1]
 
     @air_box_positive_vertical_extent_enabled.setter
     def air_box_positive_vertical_extent_enabled(self, value):
         hfss_exent = self._hfss_extent_info
-        hfss_exent.air_box_positive_vertical_extent = value
+        hfss_exent.airbox_vertical_positive = (0.15, value)
         self._update_hfss_extent_info(hfss_exent)
 
     @property
@@ -116,12 +120,12 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
             Air box positive vertical extent value.
 
         """
-        return self._hfss_extent_info.air_box_positive_vertical_extent[0]
+        return self._hfss_extent_info.airbox_vertical_positive[0]
 
     @air_box_positive_vertical_extent.setter
     def air_box_positive_vertical_extent(self, value):
         hfss_extent = self._hfss_extent_info
-        hfss_extent.air_box_positive_vertical_extent = float(value)
+        hfss_extent.airbox_vertical_positive = (float(value), True)
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -133,12 +137,12 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         bool.
 
         """
-        return self._hfss_extent_info.air_box_negative_vertical_extent[1]
+        return self._hfss_extent_info.airbox_vertical_negative[1]
 
     @air_box_negative_vertical_extent_enabled.setter
     def air_box_negative_vertical_extent_enabled(self, value):
         hfss_extent = self._hfss_extent_info
-        hfss_extent.air_box_negative_vertical_extent = value
+        hfss_extent.airbox_vertical_negative = (0.15, value)
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -151,12 +155,12 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
             Air box negative vertical extent value.
 
         """
-        return self._hfss_extent_info.air_box_negative_vertical_extent[0]
+        return self._hfss_extent_info.airbox_vertical_negative[0]
 
     @air_box_negative_vertical_extent.setter
     def air_box_negative_vertical_extent(self, value):
         hfss_extent = self._hfss_extent_info
-        hfss_extent.air_box_negative_vertical_extent = float(value)
+        hfss_extent.airbox_vertical_negative = (float(value), True)
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -183,7 +187,7 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         -------
         :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
         """
-        return self._hfss_extent_info.dielectric_base_polygon
+        return super().dielectric_base_polygon
 
     @dielectric_base_polygon.setter
     def dielectric_base_polygon(self, value):
@@ -216,12 +220,12 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         float
             Dielectric extent size value.
         """
-        return self._hfss_extent_info.dielectric_extent_size[0]
+        return self._hfss_extent_info.dielectric[0]
 
     @dielectric_extent_size.setter
     def dielectric_extent_size(self, value):
         hfss_extent = self._hfss_extent_info
-        hfss_extent.dielectric_extent_size = value
+        hfss_extent.dielectric = (value, True)
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -256,6 +260,17 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
     @extent_type.setter
     def extent_type(self, value):
         hfss_extent = self._hfss_extent_info
+        if isinstance(value, str):
+            if value.lower() == "bounding_box":
+                value = GrpcHfssExtentInfoType.BOUNDING_BOX
+            elif value.lower() == "conforming":
+                value = GrpcHfssExtentInfoType.CONFORMING
+            elif value.lower() == "convex_hul":
+                value = GrpcHfssExtentInfoType.CONVEX_HUL
+            elif value.lower() == "polygon":
+                value = GrpcHfssExtentInfoType.POLYGON
+            else:
+                raise f"Invalid extent type : {value}"
         hfss_extent.extent_type = value
         self._update_hfss_extent_info(hfss_extent)
 
@@ -328,7 +343,7 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         self._update_hfss_extent_info(hfss_extent)
 
     @property
-    def radiation_level(self):
+    def pml_radiation_factor(self):
         """PML Radiation level to calculate the thickness of boundary.
 
         Returns
@@ -337,12 +352,12 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
             Boundary thickness value.
 
         """
-        return GrpcValue(self._hfss_extent_info.radiation_level).value
+        return self._hfss_extent_info.radiation_level.value
 
-    @radiation_level.setter
-    def radiation_level(self, value):
+    @pml_radiation_factor.setter
+    def pml_radiation_factor(self, value):
         hfss_extent = self._hfss_extent_info
-        hfss_extent.RadiationLevel = GrpcValue(value)
+        hfss_extent.radiation_level = GrpcValue(value)
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -373,12 +388,12 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
             Truncate air box at ground.
 
         """
-        return self._hfss_extent_info.truncate_air_box_at_ground
+        return self._hfss_extent_info.airbox_truncate_at_ground
 
     @truncate_air_box_at_ground.setter
     def truncate_air_box_at_ground(self, value):
         hfss_extent = self._hfss_extent_info
-        hfss_extent.truncate_air_box_at_ground = value
+        hfss_extent.airbox_truncate_at_ground = value
         self._update_hfss_extent_info(hfss_extent)
 
     @property

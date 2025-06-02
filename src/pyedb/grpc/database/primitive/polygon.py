@@ -25,7 +25,7 @@ import math
 
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.primitive.primitive import Polygon as GrpcPolygon
+from ansys.edb.core.primitive.polygon import Polygon as GrpcPolygon
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.primitive.primitive import Primitive
@@ -64,7 +64,7 @@ class Polygon(GrpcPolygon, Primitive):
 
         Returns
         -------
-        List[:class:`Polygon <ansys.edb.core.primitive.primitive.Polygon>`]
+        List[:class:`Polygon <ansys.edb.core.primitive.polygon.Polygon>`]
             All new polygons created from the removal operation.
 
         """
@@ -84,7 +84,7 @@ class Polygon(GrpcPolygon, Primitive):
 
         Returns
         -------
-        :class:`Polygon <ansys.edb.core.primitive.primitive.Polygon>`
+        :class:`Polygon <ansys.edb.core.primitive.polygon.Polygon>`
             Cloned polygon.
 
         """

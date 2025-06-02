@@ -24,9 +24,39 @@ from pyedb.configuration.cfg_common import CfgBase
 
 
 class CfgCutout(CfgBase):
+    class Grpc:
+        def __init__(self, parent):
+            self.parent = parent
+            self._pedb = parent._pedb
+
+        def get_parameters_from_edb(self):
+            if "pyedb_cutout" in self._pedb.stackup.all_layers:
+                polygons = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")
+                if polygons:
+                    poly = polygons[0]
+                    self.parent.custom_extent = poly.polygon_data.points
+                    net_names = []
+                    for name, obj in self._pedb.nets.nets.items():
+                        if obj.primitives:
+                            if obj.primitives[0].layer.name == "pyedb_cutout":
+                                continue
+                            else:
+                                net_names.append(name)
+                    self.parent.reference_list = []
+                    self.parent.signal_list = net_names
+                return self.parent.export_properties()
+
+    class DotNet(Grpc):
+        def __init__(self, parent):
+            super().__init__(parent)
+
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
-
+        if self._pedb.grpc:
+            self.api = self.Grpc(self)
+        else:
+            self.api = self.DotNet(self)
+        self.auto_identify_nets = kwargs.get("auto_identify_nets")
         self.signal_list = kwargs.get("signal_list")
         self.reference_list = kwargs.get("reference_list")
         self.extent_type = kwargs.get("extent_type")
@@ -52,23 +82,7 @@ class CfgCutout(CfgBase):
         self.keep_lines_as_path = kwargs.get("keep_lines_as_path")
 
     def get_data_from_db(self):
-        if "pyedb_cutout" in self._pedb.stackup.all_layers:
-            polygons = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")
-            if polygons:
-                poly = polygons[0]
-                self.custom_extent = poly.polygon_data.points
-
-                net_names = []
-                for name, obj in self._pedb.nets.nets.items():
-                    if obj.primitives:
-                        if obj.primitives[0].layer.name == "pyedb_cutout":
-                            continue
-                        else:
-                            net_names.append(name)
-
-                self.reference_list = []
-                self.signal_list = net_names
-            return self.export_properties()
+        return self.api.get_parameters_from_edb()
 
     def export_properties(self):
         return {
@@ -79,24 +93,88 @@ class CfgCutout(CfgBase):
 
 
 class CfgOperations(CfgBase):
+    class Grpc:
+        def __init__(self, parent):
+            self.parent = parent
+            self._pedb = parent._pedb
+
+        def apply_on_edb(self):
+            if self.parent.op_cutout:
+                cutout_params = self.parent.op_cutout.get_attributes()
+                auto_identify_nets = cutout_params.pop("auto_identify_nets")
+                if auto_identify_nets["enabled"]:
+                    reference_list = cutout_params.get("reference_list", [])
+                    if auto_identify_nets:
+                        self._pedb.nets.generate_extended_nets(
+                            auto_identify_nets["resistor_below"],
+                            auto_identify_nets["inductor_below"],
+                            auto_identify_nets["capacitor_above"],
+                            auto_identify_nets.get("exception_list", []),
+                        )
+                        signal_nets = []
+                        for i in self._pedb.ports.values():
+                            # Positive terminal
+                            extended_net = i.net.extended_net
+                            if extended_net:
+                                temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_list]
+                                temp = [i2 for i2 in temp if i2 not in signal_nets]
+                                signal_nets.extend(temp)
+                            else:
+                                signal_nets.append(i.net.name)
+
+                            # Negative terminal
+                            ref_net = i.ref_terminal.net if i.ref_terminal else None
+                            if ref_net is None:
+                                continue
+                            elif ref_net.name not in reference_list:
+                                extended_net = ref_net.extended_net
+                                if extended_net:
+                                    temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_list]
+                                    temp = [i2 for i2 in temp if i2 not in signal_nets]
+                                    signal_nets.extend(temp)
+                                else:
+                                    signal_nets.append(ref_net.name)
+
+                        cutout_params["signal_list"] = signal_nets
+                polygon_points = self._pedb.cutout(**cutout_params)
+                if "pyedb_cutout" not in self._pedb.stackup.all_layers:
+                    self._pedb.stackup.add_document_layer(name="pyedb_cutout")
+                    self._pedb.modeler.create_polygon(
+                        polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout"
+                    )
+
+        def get_parameter_from_edb(self):
+            self.parent.op_cutout = CfgCutout(self._pedb)
+            data_from_db = self.parent.op_cutout.get_data_from_db()
+            if data_from_db:
+                return {"cutout": data_from_db}
+            else:
+                return {}
+
+    class DotNet(Grpc):
+        def __init__(self, parent):
+            super().__init__(parent)
+
     def __init__(self, pedb, data):
         self._pedb = pedb
-        self.op_cutout = CfgCutout(pedb, **data["cutout"]) if "cutout" in data else None
+        if self._pedb.grpc:
+            self.api = self.Grpc(self)
+        else:
+            self.api = self.DotNet(self)
+        cutout = data.get("cutout", None)
+        if cutout:
+            auto_identify_nets = (
+                cutout.pop("auto_identify_nets")
+                if cutout.get("auto_identify_nets")
+                else {"enabled": False, "resistor_below": 100, "inductor_below": 1, "capacitor_above": 1}
+            )
+            self.op_cutout = CfgCutout(pedb, auto_identify_nets=auto_identify_nets, **cutout)
+        else:
+            self.op_cutout = None
 
     def apply(self):
         """Imports operation information from JSON."""
-        if self.op_cutout:
-            polygon_points = self._pedb.cutout(**self.op_cutout.get_attributes())
-            if "pyedb_cutout" not in self._pedb.stackup.all_layers:
-                self._pedb.stackup.add_document_layer(name="pyedb_cutout")
-                self._pedb.modeler.create_polygon(polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout")
-
-            # create a polygon on pyedb layer
+        self.api.apply_on_edb()
 
     def get_data_from_db(self):
-        self.op_cutout = CfgCutout(self._pedb)
-        data_from_db = self.op_cutout.get_data_from_db()
-        if data_from_db:
-            return {"cutout": data_from_db}
-        else:
-            return {}
+        return self.api.get_parameter_from_edb()

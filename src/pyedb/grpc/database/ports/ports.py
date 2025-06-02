@@ -108,6 +108,10 @@ class GapPort(EdgeTerminal):
             self._edb_object.port_post_processing_prop.renormalizion_z0[1],
         )
 
+    @property
+    def terminal_type(self):
+        return self._edb_object.terminal_type
+
 
 class CircuitPort(GapPort):
     """Manages gap port properties.
@@ -146,7 +150,7 @@ class WavePort(EdgeTerminal):
     """
 
     def __init__(self, pedb, edb_terminal):
-        super().__init__(pedb, edb_terminal.msg)
+        super().__init__(pedb, edb_terminal)
 
     @property
     def horizontal_extent_factor(self):
@@ -161,9 +165,9 @@ class WavePort(EdgeTerminal):
 
     @horizontal_extent_factor.setter
     def horizontal_extent_factor(self, value):
-        self.p = p
-        p = self.p
+        p = self._hfss_port_property
         p["Horizontal Extent Factor"] = value
+        self._hfss_port_property = p
 
     @property
     def vertical_extent_factor(self):
