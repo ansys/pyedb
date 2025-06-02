@@ -1,0 +1,6 @@
+create\_rectangle
+=================
+
+.. currentmodule:: pyedb.dotnet.database.modeler
+
+.. automethod:: Modeler.create_rectangle

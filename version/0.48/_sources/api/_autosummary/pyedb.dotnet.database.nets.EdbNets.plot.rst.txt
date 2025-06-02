@@ -1,0 +1,6 @@
+plot
+====
+
+.. currentmodule:: pyedb.dotnet.database.nets
+
+.. automethod:: EdbNets.plot

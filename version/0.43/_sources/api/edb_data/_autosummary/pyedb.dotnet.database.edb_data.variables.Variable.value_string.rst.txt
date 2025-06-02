@@ -1,0 +1,6 @@
+value\_string
+=============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.variables
+
+.. autoproperty:: Variable.value_string

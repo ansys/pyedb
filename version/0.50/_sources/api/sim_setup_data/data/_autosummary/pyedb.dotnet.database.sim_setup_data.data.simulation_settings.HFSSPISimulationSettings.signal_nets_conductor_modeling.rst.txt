@@ -1,0 +1,6 @@
+signal\_nets\_conductor\_modeling
+=================================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.signal_nets_conductor_modeling

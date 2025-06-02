@@ -1,0 +1,6 @@
+use\_loop\_res\_for\_per\_pin
+=============================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings
+
+.. autoproperty:: SiwaveDCIRSettings.use_loop_res_for_per_pin

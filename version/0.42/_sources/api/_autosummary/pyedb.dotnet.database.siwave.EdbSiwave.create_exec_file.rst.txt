@@ -1,0 +1,6 @@
+create\_exec\_file
+==================
+
+.. currentmodule:: pyedb.dotnet.database.siwave
+
+.. automethod:: EdbSiwave.create_exec_file

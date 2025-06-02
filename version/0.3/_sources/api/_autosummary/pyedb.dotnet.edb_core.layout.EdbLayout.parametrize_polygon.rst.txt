@@ -1,0 +1,6 @@
+parametrize\_polygon
+====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.layout
+
+.. automethod:: EdbLayout.parametrize_polygon

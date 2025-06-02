@@ -1,0 +1,6 @@
+is\_pml\_visible
+================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.is_pml_visible

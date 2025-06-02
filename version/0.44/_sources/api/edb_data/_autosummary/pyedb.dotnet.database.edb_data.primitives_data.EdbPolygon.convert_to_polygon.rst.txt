@@ -1,0 +1,6 @@
+convert\_to\_polygon
+====================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.primitives_data
+
+.. automethod:: EdbPolygon.convert_to_polygon

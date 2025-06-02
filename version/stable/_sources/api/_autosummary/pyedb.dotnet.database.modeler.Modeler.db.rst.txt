@@ -1,0 +1,6 @@
+db
+==
+
+.. currentmodule:: pyedb.dotnet.database.modeler
+
+.. autoproperty:: Modeler.db

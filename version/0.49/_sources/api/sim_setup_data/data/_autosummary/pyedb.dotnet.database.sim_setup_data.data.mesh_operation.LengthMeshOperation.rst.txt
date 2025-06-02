@@ -1,0 +1,34 @@
+﻿LengthMeshOperation
+===================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.mesh_operation
+
+.. autoclass:: LengthMeshOperation
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      LengthMeshOperation.enabled
+      LengthMeshOperation.max_elements
+      LengthMeshOperation.max_length
+      LengthMeshOperation.mesh_operation_type
+      LengthMeshOperation.mesh_region
+      LengthMeshOperation.name
+      LengthMeshOperation.net_layer_info
+      LengthMeshOperation.nets_layers_list
+      LengthMeshOperation.refine_inside
+      LengthMeshOperation.restrict_length
+      LengthMeshOperation.restrict_max_elements
+      LengthMeshOperation.restrict_max_length
+      LengthMeshOperation.type
+   
+   

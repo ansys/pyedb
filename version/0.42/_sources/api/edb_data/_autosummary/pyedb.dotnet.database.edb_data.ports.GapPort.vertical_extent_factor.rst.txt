@@ -1,0 +1,6 @@
+vertical\_extent\_factor
+========================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: GapPort.vertical_extent_factor

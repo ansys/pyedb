@@ -1,0 +1,30 @@
+﻿CfgPinGroups
+============
+
+.. currentmodule:: pyedb.configuration.cfg_pin_groups
+
+.. autoclass:: CfgPinGroups
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgPinGroups.apply
+      
+      
+      CfgPinGroups.export_properties
+      
+      
+      CfgPinGroups.get_data_from_db
+      
+   
+   
+
+   
+   
+   

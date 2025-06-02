@@ -1,0 +1,6 @@
+renormalization\_impedance
+==========================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: GapPort.renormalization_impedance

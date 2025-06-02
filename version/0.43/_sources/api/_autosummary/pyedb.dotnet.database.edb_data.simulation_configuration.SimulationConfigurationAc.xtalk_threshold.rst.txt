@@ -1,0 +1,6 @@
+xtalk\_threshold
+================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationAc.xtalk_threshold

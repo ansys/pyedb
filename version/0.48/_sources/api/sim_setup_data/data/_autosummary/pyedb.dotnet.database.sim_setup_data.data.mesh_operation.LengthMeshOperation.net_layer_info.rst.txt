@@ -1,0 +1,6 @@
+net\_layer\_info
+================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.mesh_operation
+
+.. autoproperty:: LengthMeshOperation.net_layer_info

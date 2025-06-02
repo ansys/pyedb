@@ -1,0 +1,6 @@
+restrict\_max\_length
+=====================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.mesh_operation
+
+.. autoproperty:: LengthMeshOperation.restrict_max_length

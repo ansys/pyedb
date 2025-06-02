@@ -1,0 +1,6 @@
+small\_void\_area
+=================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+.. autoproperty:: DefeatureSettings.small_void_area

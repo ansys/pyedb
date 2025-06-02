@@ -1,0 +1,6 @@
+get\_layout\_statistics
+=======================
+
+.. currentmodule:: pyedb.dotnet.database.modeler
+
+.. automethod:: Modeler.get_layout_statistics

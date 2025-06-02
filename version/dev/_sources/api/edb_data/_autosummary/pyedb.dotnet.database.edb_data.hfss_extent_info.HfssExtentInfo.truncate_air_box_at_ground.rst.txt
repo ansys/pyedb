@@ -1,0 +1,6 @@
+truncate\_air\_box\_at\_ground
+==============================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.truncate_air_box_at_ground

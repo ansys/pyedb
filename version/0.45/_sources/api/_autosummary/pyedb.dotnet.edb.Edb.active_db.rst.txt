@@ -1,0 +1,6 @@
+active\_db
+==========
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.active_db

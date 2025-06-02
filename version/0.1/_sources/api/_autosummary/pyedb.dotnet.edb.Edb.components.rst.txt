@@ -1,0 +1,6 @@
+components
+==========
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.components
