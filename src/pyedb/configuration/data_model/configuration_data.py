@@ -95,7 +95,6 @@ class Configuration:
         if not self._pedb.source_excitation.load_ports_configuration_from_layout():
             raise "Failed importing ports from layout"
 
-
-#       self._pedb.logger.info("Loading setups")
-#        if not self._pedb.load_simulation_setup_configuration_from_layoutt():
-#            raise "Failed importing setups from layout"
+        self._pedb.logger.info("Loading setups")
+        if not self._pedb.load_simulation_setup_configuration_from_layout():
+            raise "Failed importing setups from layout"

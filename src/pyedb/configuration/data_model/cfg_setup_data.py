@@ -38,3 +38,4 @@ class CfgSetup:
     max_mag_delta_s: float = 0.02
     dc_slider_position: int = 1
     dc_ir_settings: CfgDcIrSettings = None
+    freq_sweep: CfgFrequencySweep = None

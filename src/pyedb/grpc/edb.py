@@ -4141,4 +4141,39 @@ class Edb(EdbInit):
         return True if os.path.exists(control_path) else False
 
     def load_simulation_setup_configuration_from_layout(self):
-        pass
+        from pyedb.configuration.data_model.cfg_setup_data import (
+            CfgDcIrSettings,
+            CfgFrequency,
+            CfgFrequencySweep,
+            CfgSetup,
+        )
+
+        self.configuration.setups = []
+        for _, setup in self.setups.items():
+            cfg_setup = CfgSetup()
+            setup_type_mapping = {"HFSS": "HFSS", "SI_WAVE": "siwave_syz", "SI_WAVE_DCIR": "siwave_dc"}
+            cfg_setup.name = setup.name
+            cfg_setup.type = setup_type_mapping[setup.type.name]
+            if setup.type.name == "HFSS":
+                cfg_setup.f_adapt = setup.general.single_frequency_adaptive_solution.adaptive_frequency
+                cfg_setup.max_num_passes = setup.general.single_frequency_adaptive_solution.max_passes
+                cfg_setup.max_mag_delta_s = setup.general.single_frequency_adaptive_solution.max_delta
+            if setup.type.name == "SI_WAVE_DCIR":
+                cfg_setup.dc_ir_settings = CfgDcIrSettings()
+                cfg_setup.dc_ir_settings.export_dc_thermal_data = setup.export_dc_thermal_data
+                cfg_setup.dc_slider_position = setup.dc.dc_slider_pos
+            if setup.type.name == "SI_WAVE":
+                cfg_setup.dc_slider_position = setup.dc.dc_slider_pos
+            cfg_setup.freq_sweep = CfgFrequencySweep()
+            if setup.sweep_data:
+                cfg_setup.freq_sweep.name = setup.sweep_data[0].name
+                if setup.sweep_data[0].type.name == "INTERPOLATING_SWEEP":
+                    cfg_setup.freq_sweep.type = "Interpolation"
+                else:
+                    cfg_setup.freq_sweep.type = "Discrete"
+                for freq_sweep in setup.sweep_data:
+                    cfg_freq = CfgFrequency()
+                    cfg_freq.distribution = freq_sweep.frequency_data.distribution.name
+                    cfg_freq.start = freq_sweep.frequency_data.start_f
+                    cfg_freq.stop = freq_sweep.frequency_data.end_f
+                    cfg_freq.step = freq_sweep.frequency_data.step
