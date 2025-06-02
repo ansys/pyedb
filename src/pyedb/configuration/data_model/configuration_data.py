@@ -76,25 +76,22 @@ class Configuration:
 
     def load_from_layout(self, filter=None):
         self._pedb.logger.info("Loading nets")
-        if not self._pedb.nets.load_configuration_from_layout(filter=filter):
-            raise "Failed importing nets from layout with configuration."
+        self._pedb.nets.load_configuration_from_layout(filter=filter)
 
         self._pedb.logger.info("Loading components")
-        if not self._pedb.components.load_configuration_from_layout(filter=filter):
-            raise "Failed importing components from layout with configuration."
+        self._pedb.components.load_configuration_from_layout(filter=filter)
 
         self._pedb.logger.info("Loading pin groups")
-        if not self._pedb.layout.load_pingroup_configuration_from_layout():
-            raise "Failed importing pin groups from layout"
+        self._pedb.layout.load_pingroup_configuration_from_layout()
 
         self._pedb.logger.info("Loading sources")
-        if not self._pedb.source_excitation.load_sources_configuration_from_layout():
-            raise "Failed importing sources from layout"
+        self._pedb.source_excitation.load_sources_configuration_from_layout()
 
         self._pedb.logger.info("Loading ports")
-        if not self._pedb.source_excitation.load_ports_configuration_from_layout():
-            raise "Failed importing ports from layout"
+        self._pedb.source_excitation.load_ports_configuration_from_layout()
 
         self._pedb.logger.info("Loading setups")
-        if not self._pedb.load_simulation_setup_configuration_from_layout():
-            raise "Failed importing setups from layout"
+        self._pedb.load_simulation_setup_configuration_from_layout()
+
+        self._pedb.logger.info("Loading stackup")
+        self._pedb.load_simulation_setup_configuration_from_layout()

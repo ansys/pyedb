@@ -47,6 +47,12 @@ from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
 from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
+from pyedb.configuration.data_model.cfg_setup_data import (
+    CfgDcIrSettings,
+    CfgFrequency,
+    CfgFrequencySweep,
+    CfgSetup,
+)
 from pyedb.configuration.data_model.configuration_data import (
     Configuration as ConfigurationData,
 )
@@ -4140,14 +4146,14 @@ class Edb(EdbInit):
         tree.write(control_path)
         return True if os.path.exists(control_path) else False
 
-    def load_simulation_setup_configuration_from_layout(self):
-        from pyedb.configuration.data_model.cfg_setup_data import (
-            CfgDcIrSettings,
-            CfgFrequency,
-            CfgFrequencySweep,
-            CfgSetup,
-        )
+    def load_simulation_setup_configuration_from_layout(self) -> list[CfgSetup]:
+        """Import setup configuratiomn from layout.
 
+        Returns
+        -------
+        list[CfgSetup]
+            List of setup configuration.
+        """
         self.configuration.setups = []
         for _, setup in self.setups.items():
             cfg_setup = CfgSetup()
@@ -4177,3 +4183,6 @@ class Edb(EdbInit):
                     cfg_freq.start = freq_sweep.frequency_data.start_f
                     cfg_freq.stop = freq_sweep.frequency_data.end_f
                     cfg_freq.step = freq_sweep.frequency_data.step
+                    cfg_setup.freq_sweep.frequencies.append(cfg_freq)
+            self.configuration.setups.append(cfg_setup)
+        return self.configuration.setups
