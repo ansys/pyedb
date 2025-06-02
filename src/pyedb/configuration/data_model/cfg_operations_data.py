@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Optional
 
 from dataclasses_json import dataclass_json
 
@@ -34,4 +35,4 @@ class CfgCutout:
 @dataclass_json
 @dataclass
 class CfgOperations:
-    cutout: CfgCutout = None
+    cutout: Optional[CfgCutout] = None

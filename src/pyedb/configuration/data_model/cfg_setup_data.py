@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Union
+from typing import Optional, Union
 
 from dataclasses_json import dataclass_json
 
@@ -38,5 +38,5 @@ class CfgSetup:
     max_num_passes: int = 20
     max_mag_delta_s: Union[str, float] = 0.02
     dc_slider_position: int = 1
-    dc_ir_settings: CfgDcIrSettings = None
-    freq_sweep: CfgFrequencySweep = None
+    dc_ir_settings: Optional[CfgDcIrSettings] = None
+    freq_sweep: Optional[CfgFrequencySweep] = None

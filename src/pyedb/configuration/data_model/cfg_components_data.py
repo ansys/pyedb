@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Optional
 
 from dataclasses_json import dataclass_json
 
@@ -9,9 +10,9 @@ class CfgPinPair:
     type: str = "series"
     p1: str = "1"
     p2: str = "2"
-    capacitance: str = None
-    inductance: str = None
-    resistance: str = None
+    capacitance: Optional[str] = None
+    inductance: Optional[str] = None
+    resistance: Optional[str] = None
 
 
 @dataclass_json
@@ -23,9 +24,9 @@ class CfgPinPairs:
 @dataclass_json
 @dataclass
 class CfgSolderBallProperties:
-    shape: str = "None"
-    diameter: str = "0um"
-    height: str = "0um"
+    shape: Optional[str] = "None"
+    diameter: Optional[str] = "0um"
+    height: Optional[str] = "0um"
 
 
 @dataclass_json
@@ -42,10 +43,10 @@ class CfgPortProperties:
 class CfgComponent:
     reference_designator: str = ""
     part_type: str = ""
-    enabled: bool = True
-    rlc_model: CfgPinPairs = None
-    solder_ball_properties: CfgSolderBallProperties = None
-    port_properties: CfgPortProperties = None
+    enabled: Optional[bool] = True
+    rlc_model: Optional[CfgPinPairs] = None
+    solder_ball_properties: Optional[CfgSolderBallProperties] = None
+    port_properties: Optional[CfgPortProperties] = None
 
 
 @dataclass_json

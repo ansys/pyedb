@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from dataclasses_json import dataclass_json
 
@@ -17,8 +18,8 @@ class CfgPort:
     name: str = ""
     reference_designator: str = ""
     type: str = ""
-    positive_terminal: CfgTerminal = None
-    negative_terminal: CfgTerminal = None
+    positive_terminal: Optional[CfgTerminal] = None
+    negative_terminal: Optional[CfgTerminal] = None
 
 
 @dataclass_json
