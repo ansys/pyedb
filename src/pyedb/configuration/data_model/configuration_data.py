@@ -98,3 +98,9 @@ class Configuration:
 
         self._pedb.logger.info("Loading padstacks")
         self._pedb.padstacks.load_configuration_from_layout()
+
+        self._pedb.logger.info("Loading s-parameters definitions")
+        self._pedb.definitions.load_s_parameters_models_from_layout()
+
+        self._pedb.logger.info("Loading spice definitions")
+        self._pedb.definitions.load_spice_models_from_layout()

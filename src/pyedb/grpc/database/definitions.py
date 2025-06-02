@@ -22,6 +22,8 @@
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 
+from pyedb.configuration.data_model.cfg_s_parameter_models_data import CfgSparameter
+from pyedb.configuration.data_model.cfg_spice_models_data import CfgSpiceModel
 from pyedb.grpc.database.definition.component_def import ComponentDef
 from pyedb.grpc.database.definition.package_def import PackageDef
 
@@ -68,3 +70,48 @@ class Definitions:
                 package_def.exterior_boundary = GrpcPolygonData(points=boundary_points)
             return PackageDef(self._pedb, package_def)
         return False
+
+    def load_s_parameters_models_from_layout(self) -> list[CfgSparameter]:
+        """Load S-parameter component definition configuration.
+
+        Returns
+        -------
+        list[CfgSparameter]
+        """
+
+        self._pedb.configuration.s_parameters = []
+        for s_param in [cmp for ref, cmp in self.component.items() if cmp.component_models]:
+            for model in s_param.component_models:
+                if model.component_model_type.name == "N_PORT":
+                    cfg_model = CfgSparameter()
+                    cfg_model.component_definition = s_param.name
+                    cfg_model.name = model.name
+                    cfg_model.components = list(s_param.components.keys())
+                    cfg_model.file_path = s_param.reference_file
+                    cfg_model.apply_to_all = True
+                    cfg_model.reference_net = ""
+                    self._pedb.configuration.s_parameters.append(cfg_model)
+        return self._pedb.configuration.s_parameters
+
+    def load_spice_models_from_layout(self) -> list[CfgSpiceModel]:
+        """Load Spice model component definition configuration.
+
+        Returns
+        -------
+        list[CfgSpiceModel]
+        """
+
+        self._pedb.configuration.spice_models = []
+        for spice in [cmp for ref, cmp in self.component.items() if cmp.component_models]:
+            for model in spice.component_models:
+                if model.component_model_type.name == "SPICE":
+                    cfg_spice = CfgSpiceModel
+                    cfg_spice.component_definition = spice.name
+                    cfg_spice.name = model.name
+                    cfg_spice.components = list(spice.components.keys())
+                    cfg_spice.file_path = spice.reference_file
+                    cfg_spice.apply_to_all = True
+                    cfg_spice.reference_net = ""
+                    cfg_spice.sub_circuit_name = model.name
+                    self._pedb.configuration.spice_models.append(cfg_spice)
+        return self._pedb.configuration.spice_models
