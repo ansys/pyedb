@@ -24,6 +24,7 @@
 This module contains the ``EdbHfss`` class.
 """
 import math
+from typing import Union
 import warnings
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
@@ -1201,13 +1202,19 @@ class Hfss(object):
 
     def add_setup(
         self,
-        name=None,
-        distribution="linear",
-        start_freq=0,
-        stop_freq=20e9,
-        step_freq=1e6,
-        discrete_sweep=False,
-    ):
+        name: str = "",
+        distribution: str = "linear",
+        start_freq: Union[float, str] = "0Hz",
+        stop_freq: Union[float, str] = "20Ghz",
+        step_freq: Union[float, str] = "10Mhz",
+        discrete_sweep: bool = False,
+        solution_type: str = "single_frequency",
+        adaptive_frequency: Union[list[float, str], float, str] = 10e9,
+        max_num_passes: int = 20,
+        max_delta_s: Union[float, list[float]] = 0.02,
+        low_frequency: Union[float, str] = "1Ghz",
+        high_frequency: Union[float, str] = "100Ghz",
+    ) -> HfssSimulationSetup:
         """Add a HFSS analysis to EDB.
 
         Parameters
@@ -1231,6 +1238,23 @@ class Hfss(object):
             distribution. Must be integer in that case.
         discrete_sweep : bool, optional
             Whether the sweep is discrete. The default is ``False``.
+        solution_type : str, optional
+            Give the adaptive solution type. Supported argument `single_frequency`, `multi_frequency`, `broadband`.
+            Default value is `single_frequency`
+        adaptive_frequency : Union[list[float, str], float, str], optional
+            Provide the adaptive solution frequency. Format must be different depending on adaptive solution type.
+            when `single_frequency` is set argument can be a float or string. If `multi_frequency` is set argument must
+            be a list[str, float]. if `broadband` is set argument argument must be a float.
+        max_num_passes : int, optional
+            Provide the maximum number of adaptive passes.
+        max_delta_s : Union[float, list[float]], optional
+            Provide the maximum delta s value for convergence. Format must be different depending on adaptive
+            solution type. When `single_frequency` is set argument must be float. If `multi_frequency` is set argument
+            must be a list[float]. if `broadband` is set argument must be a float.
+        low_frequency : float, optional.
+            Provides the start meshing frequency when broadband adaptive solution is set.
+        high_frequency : float, optional.
+            Provides the high meshing frequency when broadband adaptive solution is set.
 
         Returns
         -------
@@ -1255,9 +1279,43 @@ class Hfss(object):
         if name in self._pedb.setups:
             self._pedb.logger.error(f"HFSS setup {name} already defined.")
             return False
-        setup = GrpcHfssSimulationSetup.create(self._pedb.active_cell, name)
+        setup = HfssSimulationSetup(self._pedb, GrpcHfssSimulationSetup.create(self._pedb.active_cell, name))
         start_freq = self._pedb.number_with_units(start_freq, "Hz")
         stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
+        if solution_type.lower() == "single_frequency":
+            if adaptive_frequency:
+                if isinstance(adaptive_frequency, list):
+                    adaptive_frequency = adaptive_frequency[0]
+            if max_num_passes:
+                if isinstance(max_num_passes, list):
+                    max_num_passes = max_num_passes[0]
+            if max_delta_s:
+                if isinstance(max_delta_s, list):
+                    max_delta_s = max_delta_s[0]
+            setup.set_solution_single_frequency(
+                frequency=str(adaptive_frequency), max_num_passes=max_num_passes, max_delta_s=max_delta_s
+            )
+        if solution_type.lower() == "multi_frequency":
+            if not isinstance(adaptive_frequency, list):
+                self._pedb.logger.warning(
+                    "Setting multi frequency adaptive setup requires to pass a list of frequency " "point"
+                )
+                self._pedb.logger.warning("Defaulting to [1e9, 10e9]")
+                adaptive_frequency = [1e9, 10e9]
+            if not isinstance(max_delta_s, list):
+                self._pedb.logger.warning(
+                    "Setting multi frequency adaptive setup requires to pass a list of max " "delta s point"
+                )
+                self._pedb.logger.warning("Defaulting to [0.02, 0.02]")
+                max_delta_s = [0.02, 0.02]
+                setup.set_solution_multi_frequencies(frequencies=adaptive_frequency, max_delta_s=max_delta_s)
+        if solution_type.lower() == "broadband":
+            setup.set_solution_broadband(
+                low_frequency=low_frequency,
+                high_frequency=high_frequency,
+                max_delta_s=max_delta_s,
+                max_num_passes=max_num_passes,
+            )
         if distribution.lower() == "linear":
             distribution = "LIN"
         elif distribution.lower() == "linear_count":

@@ -4161,9 +4161,9 @@ class Edb(EdbInit):
             cfg_setup.name = setup.name
             cfg_setup.type = setup_type_mapping[setup.type.name]
             if setup.type.name == "HFSS":
-                cfg_setup.f_adapt = setup.general.single_frequency_adaptive_solution.adaptive_frequency
-                cfg_setup.max_num_passes = setup.general.single_frequency_adaptive_solution.max_passes
-                cfg_setup.max_mag_delta_s = setup.general.single_frequency_adaptive_solution.max_delta
+                cfg_setup.f_adapt = setup.settings.general.single_frequency_adaptive_solution.adaptive_frequency
+                cfg_setup.max_num_passes = setup.settings.general.single_frequency_adaptive_solution.max_passes
+                cfg_setup.max_mag_delta_s = setup.settings.general.single_frequency_adaptive_solution.max_delta
             if setup.type.name == "SI_WAVE_DCIR":
                 cfg_setup.dc_ir_settings = CfgDcIrSettings()
                 cfg_setup.dc_ir_settings.export_dc_thermal_data = setup.export_dc_thermal_data

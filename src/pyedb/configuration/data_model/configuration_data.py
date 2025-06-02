@@ -94,4 +94,4 @@ class Configuration:
         self._pedb.load_simulation_setup_configuration_from_layout()
 
         self._pedb.logger.info("Loading stackup")
-        self._pedb.load_simulation_setup_configuration_from_layout()
+        self._pedb.stackup.load_configuration_from_layout()

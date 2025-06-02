@@ -21,6 +21,8 @@
 # SOFTWARE.
 
 
+from typing import Union
+
 from ansys.edb.core.simulation_setup.adaptive_solutions import (
     AdaptiveFrequency as GrpcAdaptiveFrequency,
 )
@@ -75,9 +77,9 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
 
         Parameters
         ----------
-        frequencies : str, List[str].
+        frequencies : str, list[str].
             Adaptive frequencies.
-        max_delta_s : float, List[float].
+        max_delta_s : float, list[float].
             Max delta S values.
 
         Returns
@@ -102,14 +104,20 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
         except:
             return False
 
-    def set_solution_broadband(self, low_frequency="1GHz", high_frequency="10GHz", max_delta_s=0.02, max_num_passes=10):
+    def set_solution_broadband(
+        self,
+        low_frequency: Union[str, float] = "1GHz",
+        high_frequency: Union[str, float] = "10GHz",
+        max_delta_s: float = 0.02,
+        max_num_passes: int = 10,
+    ):
         """Set solution to broadband.
 
         Parameters
         ----------
-        low_frequency : str
+        low_frequency : Union[str, float]
             Low frequency value.
-        high_frequency : str
+        high_frequency : Union[str, float]
             High frequency value.
         max_delta_s : float
             Max delta S value.

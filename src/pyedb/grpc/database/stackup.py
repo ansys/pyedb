@@ -52,6 +52,11 @@ from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
 from ansys.edb.core.utility.transform3d import Transform3D as GrpcTransform3D
 from ansys.edb.core.utility.value import Value as GrpcValue
 
+from pyedb.configuration.data_model.cfg_stackup_data import (
+    CfgLayer,
+    CfgMaterial,
+    CfgStackup,
+)
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
@@ -2588,3 +2593,31 @@ class Stackup(LayerCollection):
         elif show:
             plt.show()
         return plt
+
+    def load_configuration_from_layout(self) -> CfgStackup:
+        """Load layer stackup configuration from layout.
+
+        Returns
+        -------
+        CfgStackup
+            Configuration stackup object.
+        """
+        self._pedb.configuration.stackup = CfgStackup()
+        for _, material in self._pedb.materials.materials.items():
+            cfg_material = CfgMaterial(
+                name=material.name,
+                permittivity=material.permittivity,
+                conductivity=material.conductivity,
+                dielectric_loss_tangent=material.loss_tangent,
+            )
+            self._pedb.configuration.stackup.materials.append(cfg_material)
+        for _, layer in self.layers.items():
+            cfg_layer = CfgLayer(
+                name=layer.name,
+                type=layer.type,
+                material=layer.material,
+                thickness=layer.thickness,
+                fill_material=layer.dielectric_fill,
+            )
+            self._pedb.configuration.stackup.layers.append(cfg_layer)
+        return self._pedb.configuration.stackup
