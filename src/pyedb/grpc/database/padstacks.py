@@ -48,6 +48,11 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 import numpy as np
 import rtree
 
+from pyedb.configuration.data_model.cfg_padsatck_data import (
+    CfgDefinition,
+    CfgInstance,
+    CfgPadStacks,
+)
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
@@ -1659,3 +1664,31 @@ class Padstacks(object):
                     if item not in to_keep:
                         all_instances[item].delete()
                 return True
+
+    def load_configuration_from_layout(self) -> CfgPadStacks:
+        """Load padstack definition configuration.
+
+        Returns
+        -------
+        CfgPadStacks
+        """
+
+        range_mapping = {"upper_pad_to_lower_pad": "through", "unknown_range": "unknown"}
+        self._pedb.configuration.padstacks = CfgPadStacks()
+        for _, padstack_def in self.definitions.items():
+            cfg_def = CfgDefinition(
+                name=padstack_def.name,
+                hole_range=range_mapping[padstack_def.hole_range],
+                hole_material=padstack_def.material,
+                hole_diameter=padstack_def.hole_diameter,
+                hole_plating_thickness=padstack_def.hole_plating_thickness,
+            )
+            self._pedb.configuration.padstacks.definitions.append(cfg_def)
+        for _, padstack_instance in self.instances.items():
+            cfg_instance = CfgInstance(
+                name=padstack_instance.name,
+                backdrill_bottom=padstack_instance.backdrill_bottom,
+                backdrill_top=padstack_instance.backdrill_top,
+            )
+            self._pedb.configuration.padstacks.instances.append(cfg_instance)
+        return self._pedb.configuration.padstacks

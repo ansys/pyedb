@@ -95,3 +95,6 @@ class Configuration:
 
         self._pedb.logger.info("Loading stackup")
         self._pedb.stackup.load_configuration_from_layout()
+
+        self._pedb.logger.info("Loading padstacks")
+        self._pedb.padstacks.load_configuration_from_layout()
