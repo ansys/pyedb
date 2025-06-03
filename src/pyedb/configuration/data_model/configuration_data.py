@@ -103,4 +103,5 @@ class Configuration:
         self._pedb.definitions.load_s_parameters_models_from_layout()
 
         self._pedb.logger.info("Loading spice definitions")
-        self._pedb.definitions.load_spice_models_from_layout()
+        self._pedb.components.load_spice_models_from_layout()
+        # TODO check bug #556 status for Spice model.

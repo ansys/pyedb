@@ -23,7 +23,6 @@
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 
 from pyedb.configuration.data_model.cfg_s_parameter_models_data import CfgSparameter
-from pyedb.configuration.data_model.cfg_spice_models_data import CfgSpiceModel
 from pyedb.grpc.database.definition.component_def import ComponentDef
 from pyedb.grpc.database.definition.package_def import PackageDef
 
@@ -92,26 +91,3 @@ class Definitions:
                     cfg_model.reference_net = ""
                     self._pedb.configuration.s_parameters.append(cfg_model)
         return self._pedb.configuration.s_parameters
-
-    def load_spice_models_from_layout(self) -> list[CfgSpiceModel]:
-        """Load Spice model component definition configuration.
-
-        Returns
-        -------
-        list[CfgSpiceModel]
-        """
-
-        self._pedb.configuration.spice_models = []
-        for spice in [cmp for ref, cmp in self.component.items() if cmp.component_models]:
-            for model in spice.component_models:
-                if model.component_model_type.name == "SPICE":
-                    cfg_spice = CfgSpiceModel
-                    cfg_spice.component_definition = spice.name
-                    cfg_spice.name = model.name
-                    cfg_spice.components = list(spice.components.keys())
-                    cfg_spice.file_path = spice.reference_file
-                    cfg_spice.apply_to_all = True
-                    cfg_spice.reference_net = ""
-                    cfg_spice.sub_circuit_name = model.name
-                    self._pedb.configuration.spice_models.append(cfg_spice)
-        return self._pedb.configuration.spice_models

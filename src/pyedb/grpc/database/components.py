@@ -52,6 +52,7 @@ from pyedb.configuration.data_model.cfg_components_data import (
     CfgPortProperties,
     CfgSolderBallProperties,
 )
+from pyedb.configuration.data_model.cfg_spice_models_data import CfgSpiceModel
 from pyedb.generic.general_methods import (
     generate_unique_name,
     get_filename_without_extension,
@@ -1317,7 +1318,10 @@ class Components(object):
                 for pn in pin_names:
                     spice_mod.add_terminal(terminal=str(terminal), pin=pn)
                     terminal += 1
-                component.component_property.model = spice_mod
+                comp_property = component.component_property
+                comp_property.model = spice_mod
+                component.component_property = comp_property
+                pass
             else:
                 self._logger.error("Wrong number of Pins")
                 return False
@@ -2359,21 +2363,45 @@ class Components(object):
                 )
                 cfg_component.port_properties = cfg_port_properties
             elif edb_component.type in ["resistor", "inductor", "capacitor"]:
-                cfg_component.rlc_model = CfgPinPairs()
-                for pin_pair in edb_component.model.pin_pairs():
-                    cfg_pin_pair = CfgPinPair()
-                    cfg_pin_pair.p1 = pin_pair[0]
-                    cfg_pin_pair.p2 = pin_pair[1]
-                    if edb_component.is_parallel_rlc:
-                        cfg_pin_pair.type = "parallel"
-                    else:
-                        cfg_pin_pair.type = "series"
-                    cfg_pin_pair.resistance = round(edb_component.res_value, 15)
-                    cfg_pin_pair.inductance = round(edb_component.ind_value, 15)
-                    cfg_pin_pair.capacitance = round(edb_component.cap_value, 15)
-                    cfg_component.rlc_model.pin_pairs.append(cfg_pin_pair)
+                if isinstance(edb_component.model, PinPairModel):
+                    cfg_component.rlc_model = CfgPinPairs()
+                    for pin_pair in edb_component.model.pin_pairs():
+                        cfg_pin_pair = CfgPinPair()
+                        cfg_pin_pair.p1 = pin_pair[0]
+                        cfg_pin_pair.p2 = pin_pair[1]
+                        if edb_component.is_parallel_rlc:
+                            cfg_pin_pair.type = "parallel"
+                        else:
+                            cfg_pin_pair.type = "series"
+                        cfg_pin_pair.resistance = round(edb_component.res_value, 15)
+                        cfg_pin_pair.inductance = round(edb_component.ind_value, 15)
+                        cfg_pin_pair.capacitance = round(edb_component.cap_value, 15)
+                        cfg_component.rlc_model.pin_pairs.append(cfg_pin_pair)
             self._pedb.configuration.components.append(cfg_component)
         return self._pedb.configuration.components
+
+    def load_spice_models_from_layout(self) -> list[CfgSpiceModel]:
+        """Load Spice model component definition configuration.
+
+        Returns
+        -------
+        list[CfgSpiceModel]
+        """
+
+        self._pedb.configuration.spice_models = []
+        for spice in [cmp for ref, cmp in self.instances.items() if cmp.component_models]:
+            for model in spice.component_models:
+                if model.component_model_type.name == "SPICE":
+                    cfg_spice = CfgSpiceModel
+                    cfg_spice.component_definition = spice.name
+                    cfg_spice.name = model.name
+                    cfg_spice.components = list(spice.components.keys())
+                    cfg_spice.file_path = spice.reference_file
+                    cfg_spice.apply_to_all = True
+                    cfg_spice.reference_net = ""
+                    cfg_spice.sub_circuit_name = model.name
+                    self._pedb.configuration.spice_models.append(cfg_spice)
+        return self._pedb.configuration.spice_models
 
     def apply_configuration_to_layout(self) -> bool:
         for cfg_cmp in self._pedb.configuration.components.components:
