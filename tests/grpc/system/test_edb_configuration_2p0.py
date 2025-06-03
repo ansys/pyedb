@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -1371,3 +1372,52 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         assert "probe1" in edbapp.probes
         edbapp.close()
+
+    def test_configfile_refactoring(self, edb_examples):
+        edb = edb_examples.get_si_verse()
+        spice_file = os.path.join(edb.edbpath, "GRM32ER72A225KA35_25C_0V.sp")
+        touchstone_file = os.path.join(self.example_models_path, file_folder_path)("TEDB/ANSYS-HSD_V1.aedb")
+        # Add setup
+        setup = edb.hfss.add_setup(name="test_setup")
+        setup.add_sweep("test_sweep")
+
+        # Add port on pin group
+        power_nets = edb.components.instances["U1"].nets
+        power_net = next(net for net in power_nets if net in edb.nets.power and not net == "GND")
+        ref_pin_group = edb.components.create_pin_group_on_net(reference_designator="U1", net_name="GND")
+        positive_pingroup = edb.components.create_pin_group_on_net(reference_designator="U1", net_name=power_net)
+        edb.source_excitation.create_circuit_port_on_pin_group(
+            positive_pingroup[0], neg_pin_group_name=ref_pin_group[0]
+        )
+
+        # Add coax ports
+        pci_nets = [net for net in edb.components.IOs["X1"].nets if "PCIe" in net]
+        edb.source_excitation.create_coax_port_on_component(ref_des_list="X1", net_list=pci_nets)
+
+        # Add sources
+        pos_pin1 = edb.components.ICs["U10"].pins["1"]
+        neg_pin1 = edb.components.ICs["U10"].pins["2"]
+        pos_pin2 = edb.components.ICs["U10"].pins["3"]
+        neg_pin2 = edb.components.ICs["U10"].pins["4"]
+        edb.source_excitation.create_current_source_on_pin(pos_pin=pos_pin1, neg_pin=neg_pin1, current_value=0.85)
+        edb.source_excitation.create_voltage_source_on_pin(pos_pin=pos_pin2, neg_pin=neg_pin2, voltage_value=2.5)
+
+        # Add sparameter
+        for refdes, cmp in edb.components.capacitors.items():
+            edb.components.set_component_model(
+                componentname=refdes, model_type="Touchstone", modelpath=touchstone_file, modelname="test"
+            )
+
+        # Add spice
+        for refdes, cmp in edb.components.inductors.items():
+            edb.components.set_component_model(
+                componentname=refdes, model_type="Spice", modelpath=spice_file, modelname="test2"
+            )
+
+        # deactivate resistors
+        for refdes, comp in edb.components.resistors.items():
+            comp.enabled = False
+
+        edb.configuration.load_from_layout()
+        edb.configuration.export_configuration_file(r"D:\Temp\test_export.json")
+        edb.configuration.load_file(config_file)

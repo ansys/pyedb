@@ -22,6 +22,9 @@
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 
+from pyedb.configuration.data_model.cfg_package_definition_data import (
+    CfgPackageDefinition,
+)
 from pyedb.configuration.data_model.cfg_s_parameter_models_data import CfgSparameter
 from pyedb.grpc.database.definition.component_def import ComponentDef
 from pyedb.grpc.database.definition.package_def import PackageDef
@@ -91,3 +94,18 @@ class Definitions:
                     cfg_model.reference_net = ""
                     self._pedb.configuration.s_parameters.append(cfg_model)
         return self._pedb.configuration.s_parameters
+
+    def load_package_definition_from_layout(self) -> list[CfgPackageDefinition]:
+        """Load package definition configuration from layout.
+
+        Returns
+        -------
+        list[CfgPackageDefinition]
+        """
+        self._pedb.configuration.package_definitions = []
+        for package in self.package:
+            cfg_package = CfgPackageDefinition()
+            cfg_package.name = package.name
+            cfg_package.height = package.height
+            # TODO add remaining parameters
+        return self._pedb.configuration.package_definitions

@@ -210,9 +210,9 @@ class Component(GrpcComponentGroup):
         """
 
         if isinstance(self.component_property.model, GrpcSPICEModel):
-            return SpiceModel(edb_object=self.component_property.model.msg)
+            return SpiceModel(edb_object=self.component_property.model)
         elif isinstance(self.component_property.model, GrpcSParameterModel):
-            return SparamModel(edb_object=self.component_property.model.msg)
+            return SparamModel(edb_object=self.component_property.model)
         else:
             return self.component_property.model
 
