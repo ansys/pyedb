@@ -355,6 +355,12 @@ class TestClass:
                 "type": "coax",
                 "positive_terminal": {"net": "PCIe_Gen4_TX2_CAP_N"},
             },
+            {
+                "name": "coax",
+                "reference_designator": "X1",
+                "type": "coax",
+                "positive_terminal": {"net": "5V"},
+            },
         ]
         data = {"ports": ports}
         edbapp = edb_examples.get_si_verse()
@@ -362,6 +368,10 @@ class TestClass:
         assert edbapp.ports["COAX_U1_AM17"]
         assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"]
         assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"].location
+        assert edbapp.ports["coax_X1_5V_B18"]
+        assert edbapp.ports["coax_X1_5V_B17"]
+        assert edbapp.ports["coax_X1_5V_A18"]
+        assert edbapp.ports["coax_X1_5V_A17"]
         edbapp.close()
 
     def test_05c_ports_circuit_pin_net(self, edb_examples):
@@ -534,7 +544,7 @@ class TestClass:
                     "negative_terminal": {"primitive_name": prim_2.aedt_name, "point_on_edge": ["1mm", "1mm"]},
                     "horizontal_extent_factor": 6,
                     "vertical_extent_factor": 4,
-                    "pec_launch_width": "0,2mm",
+                    "pec_launch_width": "0.2mm",
                 }
             ]
         }
@@ -1227,7 +1237,12 @@ class TestClass:
                         "end_cap_style": "flat",
                         "corner_style": "round",
                     },
-                    {"name": "trace_1_void", "layer": "TOP", "width": "0.3mm", "path": [[0, 0], [0, "10mm"]]},
+                    {
+                        "name": "trace_1_void",
+                        "layer": "TOP",
+                        "width": "0.3mm",
+                        "incremental_path": [[0, 0], [0, "10mm"]],
+                    },
                 ],
                 "padstack_definitions": [
                     {

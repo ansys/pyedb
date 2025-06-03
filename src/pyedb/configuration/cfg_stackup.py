@@ -64,9 +64,9 @@ class CfgMaterial(CfgBase):
         self.specific_heat = kwargs.get("specific_heat", None)
         self.thermal_conductivity = kwargs.get("thermal_conductivity", None)
 
-        self.thermal_modifier = [
-            CfgMaterialPropertyThermalModifier(**i) for i in kwargs.get("thermal_modifier", {}) if i is not None
-        ]
+        thermal_modifiers = kwargs.get("thermal_modifiers")
+        if thermal_modifiers:
+            self.thermal_modifiers = [CfgMaterialPropertyThermalModifier(**i) for i in thermal_modifiers]
 
 
 class CfgLayer(CfgBase):
@@ -162,7 +162,7 @@ class CfgStackup:
                 attrs = mat_in_cfg.get_attributes()
                 mat = self._pedb.materials.add_material(**attrs)
 
-                for i in attrs.get("thermal_modifier", []):
+                for i in attrs.get("thermal_modifiers", []):
                     mat.set_thermal_modifier(**i.to_dict())
 
         def get_materials_from_db(self):

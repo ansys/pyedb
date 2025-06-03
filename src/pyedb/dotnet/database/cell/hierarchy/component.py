@@ -308,11 +308,11 @@ class EDBComponent(Group):
         if "GetSolderBallProperty" in dir(self.component_property):
             shape = self.component_property.GetSolderBallProperty().GetShape()
             if shape.value__ == 0:
-                return "None"
+                return "none"
             elif shape.value__ == 1:
-                return "Cylinder"
+                return "cylinder"
             elif shape.value__ == 2:
-                return "Spheroid"
+                return "spheroid"
 
     @solder_ball_shape.setter
     def solder_ball_shape(self, value):
@@ -510,7 +510,7 @@ class EDBComponent(Group):
                 return "0"
             for pinpair in pinpairs:
                 pair = model.GetPinPairRlc(pinpair)
-                return pair.R.ToString()
+                return pair.R.ToDouble()
         return None
 
     @res_value.setter
@@ -539,7 +539,7 @@ class EDBComponent(Group):
                 return "0"
             for pinpair in pinpairs:
                 pair = model.GetPinPairRlc(pinpair)
-                return pair.C.ToString()
+                return pair.C.ToDouble()
         return None
 
     @cap_value.setter
@@ -568,7 +568,7 @@ class EDBComponent(Group):
                 return "0"
             for pinpair in pinpairs:
                 pair = model.GetPinPairRlc(pinpair)
-                return pair.L.ToString()
+                return pair.L.ToDouble()
         return None
 
     @ind_value.setter
