@@ -209,18 +209,19 @@ class Component(GrpcComponentGroup):
 
         """
 
-        if isinstance(self.component_property.model, GrpcSPICEModel):
+        if isinstance(self.component_property.model, GrpcSPICEModel) or isinstance(
+            self.component_property.model, SpiceModel
+        ):
             return SpiceModel(edb_object=self.component_property.model)
-        elif isinstance(self.component_property.model, GrpcSParameterModel):
+        elif isinstance(self.component_property.model, GrpcSParameterModel) or isinstance(
+            self.component_property.model, SparamModel
+        ):
             return SparamModel(edb_object=self.component_property.model)
         else:
             return self.component_property.model
 
     @model.setter
     def model(self, value):
-        if not isinstance(value, PinPairModel):
-            self._pedb.logger.error("Invalid input. Set model failed.")
-
         comp_prop = self.component_property
         comp_prop.model = value
         self.component_property = comp_prop

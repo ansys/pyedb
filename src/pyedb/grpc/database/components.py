@@ -1321,6 +1321,7 @@ class Components(object):
                 comp_property = component.component_property
                 comp_property.model = spice_mod
                 component.component_property = comp_property
+                self.instances[componentname] = component
             else:
                 self._logger.error("Wrong number of Pins")
                 return False
@@ -2388,7 +2389,7 @@ class Components(object):
         """
 
         self._pedb.configuration.spice_models = []
-        for spice in [cmp for ref, cmp in self.instances.items() if cmp.component_def.component_models]:
+        for spice in [cmp for ref, cmp in self.instances.items() if cmp.model]:
             for model in spice.component_def.component_models:
                 if model.component_model_type.name == "SPICE":
                     cfg_spice = CfgSpiceModel
