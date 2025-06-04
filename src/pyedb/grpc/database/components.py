@@ -1321,9 +1321,6 @@ class Components(object):
                 comp_property = component.component_property
                 comp_property.model = spice_mod
                 component.component_property = comp_property
-                component.model
-                component.model
-                pass
             else:
                 self._logger.error("Wrong number of Pins")
                 return False
