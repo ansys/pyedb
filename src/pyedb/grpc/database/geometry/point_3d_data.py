@@ -31,7 +31,7 @@ class Point3DData(GrpcPoint3DData):
         super().__init__(x, y, z)
 
     @property
-    def x(self):
+    def x(self) -> float:
         """X position.
 
         Returns
@@ -47,7 +47,7 @@ class Point3DData(GrpcPoint3DData):
         self.x = GrpcValue(value)
 
     @property
-    def y(self):
+    def y(self) -> float:
         """Y position.
 
         Returns
@@ -63,7 +63,7 @@ class Point3DData(GrpcPoint3DData):
         self.y = GrpcValue(value)
 
     @property
-    def z(self):
+    def z(self) -> float:
         """Z position.
 
         Returns
