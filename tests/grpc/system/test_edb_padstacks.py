@@ -538,3 +538,13 @@ class TestClass:
         assert edbapp.padstacks.instances[merged_via[0]].start_layer == "layer1"
         assert edbapp.padstacks.instances[merged_via[0]].stop_layer == "layer2"
         edbapp.close()
+
+    def test_padstack_instance_side_number(self, edb_examples):
+        edb = edb_examples.get_si_verse()
+        inst = list(edb.padstacks.instances.values())[0]
+        for _, inst in edb.padstacks.instances.items():
+            inst.side_number
+            inst.side_number = 12
+        assert inst.side_number == 3
+        inst.side_number = 10
+        assert inst.side_number == 10

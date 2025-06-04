@@ -62,6 +62,7 @@ class PadstackInstance(GrpcPadstackInstance):
         self._edb_object = edb_instance
         self._bounding_box = []
         self._position = []
+        self._side_number = None
         self._pdef = None
         self._pedb = pedb
         self._object_instance = None
@@ -670,6 +671,18 @@ class PadstackInstance(GrpcPadstackInstance):
     @aedt_name.setter
     def aedt_name(self, value):
         self.set_product_property(GrpcProductIdType.DESIGNER, 11, value)
+
+    @property
+    def side_number(self) -> float:
+        if not self._side_number:
+            prop_string = "$begin ''\n\tsid=3\n\tmat='copper'\n\tvs='Wirebond'\n$end ''\n"
+            self.set_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21, prop_string)
+        self._side_number = self.get_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21)
+        return self._side_number
+
+    @side_number.setter
+    def side_number(self, value):
+        self._side_number = self.set_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21, value)
 
     def get_backdrill_type(self, from_bottom=True):
         """Return backdrill type
