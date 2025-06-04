@@ -586,23 +586,17 @@ class TestClass:
     def test_solder_ball_getter_setter(self, edb_examples):
         # Done
         edb = edb_examples.get_si_verse()
+        assert edb.grpc
         cmp = edb.components.instances["X1"]
         cmp.solder_ball_height = 0.0
         assert cmp.solder_ball_height == 0.0
         cmp.solder_ball_height = "100um"
         assert cmp.solder_ball_height == 100e-6
         assert cmp.solder_ball_shape
-        # TODO check if dotnet should return "cylinder" instead of "Cylinder".
         cmp.solder_ball_shape = "cylinder"
-        if edb.grpc:
-            assert cmp.solder_ball_shape == "cylinder"
-        else:
-            assert cmp.solder_ball_shape == "Cylinder"
+        assert cmp.solder_ball_shape == "cylinder"
         cmp.solder_ball_shape = "spheroid"
-        if edb.grpc:
-            assert cmp.solder_ball_shape == "spheroid"
-        else:
-            assert cmp.solder_ball_shape == "Spheroid"
+        assert cmp.solder_ball_shape == "spheroid"
         cmp.solder_ball_shape = "cylinder"
         assert cmp.solder_ball_diameter == (0.0, 0.0)
         cmp.solder_ball_diameter = "200um"
