@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from typing import Union
+
 from ansys.edb.core.net.net import Net as GrpcNet
 from ansys.edb.core.primitive.primitive import PrimitiveType as GrpcPrimitiveType
 
@@ -52,8 +54,8 @@ class Net(GrpcNet):
         self._edb_object = raw_net
 
     @property
-    def primitives(self):
-        """Primitives that belongs to the net.
+    def primitives(self) -> list[Union[Path, Polygon, Circle, Rectangle, Bondwire]]:
+        """Primitives that belong to the net.
 
         Returns
         -------
@@ -76,7 +78,7 @@ class Net(GrpcNet):
         return primitives
 
     @property
-    def padstack_instances(self):
+    def padstack_instances(self) -> list[PadstackInstance]:
         """Padstack instance which belong to net.
 
         Returns
@@ -88,7 +90,7 @@ class Net(GrpcNet):
         return [PadstackInstance(self._pedb, i) for i in super().padstack_instances]
 
     @property
-    def components(self):
+    def components(self) -> dict[str, any]:
         """Components connected to net.
 
         Returns
@@ -105,7 +107,7 @@ class Net(GrpcNet):
                     pass
         return components
 
-    def find_dc_short(self, fix=False):
+    def find_dc_short(self, fix=False) -> list[list[str, str]]:
         """Find DC-shorted nets.
 
         Parameters
@@ -159,7 +161,7 @@ class Net(GrpcNet):
             title=None,
         )
 
-    def get_smallest_trace_width(self):
+    def get_smallest_trace_width(self) -> float:
         """Retrieve the smallest trace width from paths.
 
         Returns
