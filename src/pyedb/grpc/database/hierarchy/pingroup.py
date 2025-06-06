@@ -21,6 +21,8 @@
 # SOFTWARE.
 
 
+from typing import Union
+
 from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.utility.value import Value as GrpcValue
@@ -53,7 +55,7 @@ class PinGroup(GrpcPinGroup):
         return self._pedb.active_layout
 
     @property
-    def component(self):
+    def component(self) -> Component:
         """Component.
 
         Return
@@ -69,7 +71,7 @@ class PinGroup(GrpcPinGroup):
             super(PinGroup, self.__class__).component.__set__(self, value)
 
     @property
-    def pins(self):
+    def pins(self) -> dict[str, PadstackInstance]:
         """Pin group pins.
 
         Returns
@@ -79,7 +81,7 @@ class PinGroup(GrpcPinGroup):
         return {i.name: PadstackInstance(self._pedb, i) for i in super().pins}
 
     @property
-    def net(self):
+    def net(self) -> Net:
         """Net.
 
         Returns
@@ -94,7 +96,7 @@ class PinGroup(GrpcPinGroup):
             super(PinGroup, self.__class__).net.__set__(self, value)
 
     @property
-    def net_name(self):
+    def net_name(self) -> str:
         """Net name.
 
         Returns
@@ -106,7 +108,7 @@ class PinGroup(GrpcPinGroup):
         return self.net.name
 
     @property
-    def terminal(self):
+    def terminal(self) -> Union[PinGroupTerminal, None]:
         """Terminal."""
         term = self.pin_group_terminal
         if not term.is_null:
@@ -115,7 +117,7 @@ class PinGroup(GrpcPinGroup):
         else:
             return None
 
-    def create_terminal(self, name=None):
+    def create_terminal(self, name=None) -> PinGroupTerminal:
         """Create a terminal.
 
         Parameters
@@ -136,7 +138,7 @@ class PinGroup(GrpcPinGroup):
         )
         return PinGroupTerminal(self._pedb, term)
 
-    def _json_format(self):
+    def _json_format(self) -> dict[str, any]:
         """Format json.
 
         Returns
@@ -146,7 +148,7 @@ class PinGroup(GrpcPinGroup):
         dict_out = {"component": self.component, "name": self.name, "net": self.net, "node_type": self.node_type}
         return dict_out
 
-    def create_current_source_terminal(self, magnitude=1.0, phase=0, impedance=1e6):
+    def create_current_source_terminal(self, magnitude=1.0, phase=0, impedance=1e6) -> PinGroupTerminal:
         """Create current source terminal.
 
         Parameters
@@ -171,7 +173,7 @@ class PinGroup(GrpcPinGroup):
         terminal.impedance = GrpcValue(impedance)
         return terminal
 
-    def create_voltage_source_terminal(self, magnitude=1, phase=0, impedance=0.001):
+    def create_voltage_source_terminal(self, magnitude=1, phase=0, impedance=0.001) -> PinGroupTerminal:
         """Create voltage source terminal.
 
         Parameters
@@ -196,7 +198,7 @@ class PinGroup(GrpcPinGroup):
         terminal.impedance = GrpcValue(impedance)
         return terminal
 
-    def create_voltage_probe_terminal(self, impedance=1e6):
+    def create_voltage_probe_terminal(self, impedance=1e6) -> PinGroupTerminal:
         """Create voltage probe terminal.
 
         Parameters
@@ -215,7 +217,7 @@ class PinGroup(GrpcPinGroup):
         terminal.impedance = GrpcValue(impedance)
         return terminal
 
-    def create_port_terminal(self, impedance=50):
+    def create_port_terminal(self, impedance=50) -> PinGroupTerminal:
         """Create port terminal.
 
         Parameters
