@@ -50,7 +50,7 @@ class HFSSSimulationSettings(GrpcHFSSSimulationSettings):
         self._pedb = pedb
 
     @property
-    def advanced(self):
+    def advanced(self) -> HFSSAdvancedSettings:
         """HFSS Advanced settings class.
 
 
@@ -62,7 +62,7 @@ class HFSSSimulationSettings(GrpcHFSSSimulationSettings):
         return HFSSAdvancedSettings(self._pedb, self.advanced)
 
     @property
-    def advanced_meshing(self):
+    def advanced_meshing(self) -> HFSSAdvancedMeshingSettings:
         """Advanced meshing class.
 
         Returns
@@ -74,7 +74,7 @@ class HFSSSimulationSettings(GrpcHFSSSimulationSettings):
         return HFSSAdvancedMeshingSettings(self._pedb, self.advanced_meshing)
 
     @property
-    def dcr(self):
+    def dcr(self) -> HFSSDCRSettings:
         """Dcr.
 
         Returns
@@ -85,7 +85,7 @@ class HFSSSimulationSettings(GrpcHFSSSimulationSettings):
         return HFSSDCRSettings(self._pedb, self.dcr)
 
     @property
-    def general(self):
+    def general(self) -> HFSSGeneralSettings:
         """General settings class.
 
         Returns
@@ -96,7 +96,7 @@ class HFSSSimulationSettings(GrpcHFSSSimulationSettings):
         return HFSSGeneralSettings(self._pedb, self.general)
 
     @property
-    def options(self):
+    def options(self) -> HFSSSettingsOptions:
         """HFSS option class.
 
         Returns
@@ -107,7 +107,7 @@ class HFSSSimulationSettings(GrpcHFSSSimulationSettings):
         return HFSSSettingsOptions(self._pedb, self.options)
 
     @property
-    def solver(self):
+    def solver(self) -> HFSSSolverSettings:
         """HFSS solver settings class.
 
         Returns
