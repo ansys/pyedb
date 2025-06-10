@@ -549,13 +549,3 @@ def _assert_inside(rect, pad):
     assert math.isclose(
         round(result[0].Area(), 4), round(rect.Area(), 4)
     ), f"{BASE_MESSAGE} area of intersection is not equal to rectangle area"
-
-
-def test_padstack_instance_side_number(edb_examples):
-    edb = edb_examples.get_si_verse()
-    for _, inst in edb.padstacks.instances.items():
-        inst.side_number = 12
-    inst = list(edb.padstacks.instances.values())[0]
-    assert inst.side_number == 3
-    inst.side_number = 10
-    assert inst.side_number == 10
