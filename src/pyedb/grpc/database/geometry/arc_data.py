@@ -33,7 +33,7 @@ class ArcData(GrpcArcData):
         super.__init__(edb_object.start, edb_object.end, optional)
 
     @property
-    def center(self):
+    def center(self) -> list[float]:
         """Arc data center.
 
         Returns
@@ -45,7 +45,7 @@ class ArcData(GrpcArcData):
         return [self.center.x.value, self.center.y.value]
 
     @property
-    def start(self):
+    def start(self) -> list[float]:
         """Arc data start point.
 
         Returns
@@ -57,7 +57,7 @@ class ArcData(GrpcArcData):
         return [self.start.x.value, self.start.y.value]
 
     @property
-    def end(self):
+    def end(self) -> list[float]:
         """Arc data end point.
 
         Returns
@@ -69,7 +69,7 @@ class ArcData(GrpcArcData):
         return [self.end.x.value, self.end.y.value]
 
     @property
-    def mid_point(self):
+    def mid_point(self) -> list[float]:
         """Arc data mid point.
 
         Returns
@@ -81,7 +81,7 @@ class ArcData(GrpcArcData):
         return [self.midpoint.x.value, self.midpoint.y.value]
 
     @property
-    def points(self):
+    def points(self) -> list[list[float]]:
         """Arc data points.
 
         Returns

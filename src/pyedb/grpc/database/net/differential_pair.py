@@ -35,7 +35,7 @@ class DifferentialPairs:
         self._pedb = pedb
 
     @property
-    def items(self):
+    def items(self) -> dict[str, any]:
         """Extended nets.
 
         Returns
@@ -71,7 +71,7 @@ class DifferentialPairs:
         GrpcDifferentialPair.create(layout=self._pedb.layout, name=name, pos_net=net_p, neg_net=net_n)
         return self.items[name]
 
-    def auto_identify(self, positive_differentiator="_P", negative_differentiator="_N"):
+    def auto_identify(self, positive_differentiator="_P", negative_differentiator="_N") -> list[str]:
         """Auto identify differential pairs by naming conversion.
 
         Parameters
@@ -128,11 +128,11 @@ class DifferentialPair(GrpcDifferentialPair):
         self._pedb = pedb
 
     @property
-    def positive_net(self):
+    def positive_net(self) -> Net:
         """Positive Net."""
         return Net(self._pedb, super().positive_net)
 
     @property
-    def negative_net(self):
+    def negative_net(self) -> Net:
         """Negative Net."""
         return Net(self._pedb, super().negative_net)

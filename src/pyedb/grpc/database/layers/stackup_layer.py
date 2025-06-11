@@ -48,7 +48,7 @@ class StackupLayer(GrpcStackupLayer):
         }
 
     @property
-    def type(self):
+    def type(self) -> str:
         """Layer type.
 
         Returns
@@ -139,7 +139,7 @@ class StackupLayer(GrpcStackupLayer):
             )
 
     @property
-    def lower_elevation(self):
+    def lower_elevation(self) -> float:
         """Lower elevation.
 
         Returns
@@ -155,7 +155,7 @@ class StackupLayer(GrpcStackupLayer):
             super(StackupLayer, self.__class__).lower_elevation.__set__(self, GrpcValue(value))
 
     @property
-    def fill_material(self):
+    def fill_material(self) -> str:
         """The layer's fill material.
 
         Returns
@@ -172,7 +172,7 @@ class StackupLayer(GrpcStackupLayer):
             self.set_fill_material(value)
 
     @property
-    def upper_elevation(self):
+    def upper_elevation(self) -> float:
         """Upper elevation.
 
         Returns
@@ -183,7 +183,7 @@ class StackupLayer(GrpcStackupLayer):
         return round(super().upper_elevation.value, 9)
 
     @property
-    def is_negative(self):
+    def is_negative(self) -> bool:
         """Determine whether this layer is a negative layer.
 
         Returns
@@ -205,7 +205,7 @@ class StackupLayer(GrpcStackupLayer):
         self.negative = value
 
     @property
-    def is_stackup_layer(self):
+    def is_stackup_layer(self) -> bool:
         """Testing if layer is stackup layer.
 
         Returns
@@ -217,7 +217,7 @@ class StackupLayer(GrpcStackupLayer):
         return False
 
     @property
-    def material(self):
+    def material(self) -> str:
         """Material.
 
         Returns
@@ -232,7 +232,7 @@ class StackupLayer(GrpcStackupLayer):
         self.set_material(name)
 
     @property
-    def conductivity(self):
+    def conductivity(self) -> float:
         """Material conductivity.
 
         Returns
@@ -246,7 +246,7 @@ class StackupLayer(GrpcStackupLayer):
         return None
 
     @property
-    def permittivity(self):
+    def permittivity(self) -> float:
         """Material permittivity.
 
         Returns
@@ -260,7 +260,7 @@ class StackupLayer(GrpcStackupLayer):
         return None
 
     @property
-    def loss_tangent(self):
+    def loss_tangent(self) -> float:
         """Material loss_tangent.
 
         Returns
@@ -274,7 +274,7 @@ class StackupLayer(GrpcStackupLayer):
         return None
 
     @property
-    def dielectric_fill(self):
+    def dielectric_fill(self) -> str:
         """Material name of the layer dielectric fill.
 
         Returns
@@ -295,7 +295,7 @@ class StackupLayer(GrpcStackupLayer):
             pass
 
     @property
-    def thickness(self):
+    def thickness(self) -> float:
         """Layer thickness.
 
         Returns
@@ -310,7 +310,7 @@ class StackupLayer(GrpcStackupLayer):
         super(StackupLayer, self.__class__).thickness.__set__(self, GrpcValue(value))
 
     @property
-    def etch_factor(self):
+    def etch_factor(self) -> float:
         """Layer etching factor.
 
         Returns
@@ -329,7 +329,7 @@ class StackupLayer(GrpcStackupLayer):
             super(StackupLayer, self.__class__).etch_factor.__set__(self, GrpcValue(value))
 
     @property
-    def top_hallhuray_nodule_radius(self):
+    def top_hallhuray_nodule_radius(self) -> float:
         """Huray model nodule radius on layer top.
 
         Returns
@@ -357,7 +357,7 @@ class StackupLayer(GrpcStackupLayer):
             pass
 
     @property
-    def top_hallhuray_surface_ratio(self):
+    def top_hallhuray_surface_ratio(self) -> float:
         """Huray model surface ratio on layer top.
 
         Returns
@@ -385,7 +385,7 @@ class StackupLayer(GrpcStackupLayer):
             pass
 
     @property
-    def bottom_hallhuray_nodule_radius(self):
+    def bottom_hallhuray_nodule_radius(self) -> float:
         """Huray model nodule radius on layer bottom.
 
         Returns
@@ -413,7 +413,7 @@ class StackupLayer(GrpcStackupLayer):
             pass
 
     @property
-    def bottom_hallhuray_surface_ratio(self):
+    def bottom_hallhuray_surface_ratio(self) -> float:
         """Huray model surface ratio on layer bottom.
 
         Returns
@@ -441,7 +441,7 @@ class StackupLayer(GrpcStackupLayer):
             pass
 
     @property
-    def side_hallhuray_nodule_radius(self):
+    def side_hallhuray_nodule_radius(self) -> float:
         """Huray model nodule radius on layer sides.
 
         Returns
@@ -469,7 +469,7 @@ class StackupLayer(GrpcStackupLayer):
             pass
 
     @property
-    def side_hallhuray_surface_ratio(self):
+    def side_hallhuray_surface_ratio(self) -> float:
         """Huray model surface ratio on layer sides.
 
         Returns
@@ -496,7 +496,7 @@ class StackupLayer(GrpcStackupLayer):
             pass
 
     @property
-    def top_groisse_roughness(self):
+    def top_groisse_roughness(self) -> float:
         """Groisse model on layer top.
 
         Returns
@@ -524,7 +524,7 @@ class StackupLayer(GrpcStackupLayer):
             pass
 
     @property
-    def bottom_groisse_roughness(self):
+    def bottom_groisse_roughness(self) -> float:
         """Groisse model on layer bottom.
 
         Returns
@@ -552,7 +552,7 @@ class StackupLayer(GrpcStackupLayer):
             pass
 
     @property
-    def side_groisse_roughness(self):
+    def side_groisse_roughness(self) -> float:
         """Groisse model on layer bottom.
 
         Returns
@@ -586,7 +586,7 @@ class StackupLayer(GrpcStackupLayer):
         huray_surface_ratio="2.9",
         groisse_roughness="1um",
         apply_on_surface="all",
-    ):
+    ) -> bool:
         """Assign roughness model on this layer.
 
         Parameters
@@ -603,6 +603,9 @@ class StackupLayer(GrpcStackupLayer):
             Where to assign roughness model. The default is ``"all"``. Options are ``"top"``, ``"bottom"``,
              ``"side"``.
 
+        Returns
+        -------
+        bool
         """
         regions = []
         if apply_on_surface == "all":

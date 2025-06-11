@@ -40,7 +40,7 @@ class HFSSSettingsOptions(GrpcHFSSSettingsOptions):
         self._pedb = _pedb
 
     @property
-    def order_basis(self):
+    def order_basis(self) -> str:
         """Order basis name.
 
         Returns

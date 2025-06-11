@@ -50,7 +50,7 @@ class BundleTerminal(GrpcBundleTerminal):
         self._pedb = pedb
         self._edb_object = edb_object
 
-    def decouple(self):
+    def decouple(self) -> bool:
         """Ungroup a bundle of terminals.
 
         Returns
@@ -60,7 +60,7 @@ class BundleTerminal(GrpcBundleTerminal):
         return self.ungroup()
 
     @property
-    def component(self):
+    def component(self) -> Component:
         """Component.
 
         Returns
@@ -70,7 +70,7 @@ class BundleTerminal(GrpcBundleTerminal):
         return Component(self._pedb, self.component)
 
     @property
-    def impedance(self):
+    def impedance(self) -> float:
         """Impedance value.
 
         Returns
@@ -85,7 +85,7 @@ class BundleTerminal(GrpcBundleTerminal):
         self.impedance = GrpcValue(value)
 
     @property
-    def net(self):
+    def net(self) -> Net:
         """Returns Net object.
 
         Returns
@@ -95,7 +95,7 @@ class BundleTerminal(GrpcBundleTerminal):
         return Net(self._pedb, self.net)
 
     @property
-    def hfss_pi_type(self):
+    def hfss_pi_type(self) -> str:
         """Returns HFSS PI type.
 
         Returns
@@ -118,7 +118,7 @@ class BundleTerminal(GrpcBundleTerminal):
             self.hfss_pi_type = GrpcHfssPIType.LUMPED
 
     @property
-    def reference_layer(self):
+    def reference_layer(self) -> Layer:
         """Returns reference layer.
 
         Returns
@@ -135,7 +135,7 @@ class BundleTerminal(GrpcBundleTerminal):
             self.reference_layer = self._pedb.stackup.signal_layer[value]._edb_object
 
     @property
-    def reference_terminal(self):
+    def reference_terminal(self) -> Terminal:
         """Returns reference terminal.
 
         Returns
@@ -150,7 +150,7 @@ class BundleTerminal(GrpcBundleTerminal):
             self.reference_terminal = value._edb_object
 
     @property
-    def rlc_boundary_parameters(self):
+    def rlc_boundary_parameters(self) -> Rlc:
         """Returns Rlc parameters
 
         Returns
@@ -160,7 +160,7 @@ class BundleTerminal(GrpcBundleTerminal):
         return Rlc(self._pedb, self.rlc)
 
     @property
-    def source_amplitude(self):
+    def source_amplitude(self) -> float:
         """Returns source amplitude.
 
         Returns
@@ -174,7 +174,7 @@ class BundleTerminal(GrpcBundleTerminal):
         self.source_amplitude = GrpcValue(value)
 
     @property
-    def source_phase(self):
+    def source_phase(self) -> float:
         """Returns source phase.
 
         Returns
@@ -188,7 +188,7 @@ class BundleTerminal(GrpcBundleTerminal):
         self.source_phase = GrpcValue(value)
 
     @property
-    def term_to_ground(self):
+    def term_to_ground(self) -> str:
         """Returns terminal to ground.
 
         Returns
@@ -208,7 +208,7 @@ class BundleTerminal(GrpcBundleTerminal):
             self.term_to_ground = GrpcSourceTermToGroundType.POSITIVE
 
     @property
-    def terminals(self):
+    def terminals(self) -> list[Terminal]:
         """Returns terminals list.
 
         Returns
