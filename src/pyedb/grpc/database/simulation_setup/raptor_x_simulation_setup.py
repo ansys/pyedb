@@ -64,7 +64,7 @@ class RaptorXSimulationSetup(GrpcRaptorXSimulationSetup):
 
     def add_sweep(
         self, name=None, distribution="linear", start_freq="0GHz", stop_freq="20GHz", step="10MHz", discrete=False
-    ):
+    ) -> bool:
         """Add a HFSS frequency sweep.
 
         Parameters

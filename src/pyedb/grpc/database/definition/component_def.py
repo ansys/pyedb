@@ -183,12 +183,12 @@ class ComponentDef(GrpcComponentDef):
         return True
 
     @property
-    def reference_file(self):
+    def reference_file(self) -> list[str]:
         """Model reference file.
 
         Returns
         -------
-        List[str]
+        list[str]
             List of reference files.
 
         """

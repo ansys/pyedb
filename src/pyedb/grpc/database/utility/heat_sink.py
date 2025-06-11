@@ -46,7 +46,7 @@ class HeatSink:
         }
 
     @property
-    def fin_base_height(self):
+    def fin_base_height(self) -> float:
         """The base elevation of the fins.
 
         Returns
@@ -61,7 +61,7 @@ class HeatSink:
         self._edb_object.fin_base_height = GrpcValue(value)
 
     @property
-    def fin_height(self):
+    def fin_height(self) -> float:
         """Fin height.
 
         Returns
@@ -77,7 +77,7 @@ class HeatSink:
         self._edb_object.fin_height = GrpcValue(value)
 
     @property
-    def fin_orientation(self):
+    def fin_orientation(self) -> str:
         """Fin orientation.
 
         Returns
@@ -92,7 +92,7 @@ class HeatSink:
         self._edb_object.fin_orientation = self._fin_orientation_type[value]
 
     @property
-    def fin_spacing(self):
+    def fin_spacing(self) -> float:
         """Fin spacing.
 
         Returns
@@ -108,7 +108,7 @@ class HeatSink:
         self._edb_object.fin_spacing = GrpcValue(value)
 
     @property
-    def fin_thickness(self):
+    def fin_thickness(self) -> float:
         """Fin thickness.
 
         Returns
