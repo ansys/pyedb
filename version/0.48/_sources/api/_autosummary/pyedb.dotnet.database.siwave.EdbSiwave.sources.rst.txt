@@ -1,0 +1,6 @@
+sources
+=======
+
+.. currentmodule:: pyedb.dotnet.database.siwave
+
+.. autoproperty:: EdbSiwave.sources

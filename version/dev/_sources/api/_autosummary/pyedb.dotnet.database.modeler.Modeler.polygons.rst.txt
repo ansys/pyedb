@@ -1,0 +1,6 @@
+polygons
+========
+
+.. currentmodule:: pyedb.dotnet.database.modeler
+
+.. autoproperty:: Modeler.polygons

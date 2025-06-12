@@ -1,0 +1,6 @@
+use\_convergence\_matrix
+========================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+.. autoproperty:: AdaptiveSettings.use_convergence_matrix

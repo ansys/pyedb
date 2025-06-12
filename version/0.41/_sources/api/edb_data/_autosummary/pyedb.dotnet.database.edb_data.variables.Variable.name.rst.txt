@@ -1,0 +1,6 @@
+name
+====
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.variables
+
+.. autoproperty:: Variable.name

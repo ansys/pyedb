@@ -1,0 +1,6 @@
+max\_init\_mesh\_edge\_length
+=============================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoproperty:: DCAdvancedSettings.max_init_mesh_edge_length

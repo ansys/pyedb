@@ -1,0 +1,6 @@
+signal\_nets\_error\_tolerance
+==============================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.signal_nets_error_tolerance

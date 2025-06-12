@@ -1,0 +1,6 @@
+export\_gds\_comp\_xml
+======================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.export_gds_comp_xml

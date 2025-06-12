@@ -1,0 +1,6 @@
+get\_connected\_objects
+=======================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. automethod:: EDBPadstackInstance.get_connected_objects

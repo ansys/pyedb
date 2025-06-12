@@ -1,0 +1,72 @@
+﻿SweepData
+=========
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.sweep_data
+
+.. autoclass:: SweepData
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      SweepData.add
+      
+      
+      SweepData.add_frequencies
+      
+      
+      SweepData.clear
+      
+      
+      SweepData.set_frequencies
+      
+      
+      SweepData.set_frequencies_linear_count
+      
+      
+      SweepData.set_frequencies_linear_scale
+      
+      
+      SweepData.set_frequencies_log_scale
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      SweepData.adaptive_sampling
+      SweepData.adv_dc_extrapolation
+      SweepData.auto_s_mat_only_solve
+      SweepData.compute_dc_point
+      SweepData.enforce_causality
+      SweepData.enforce_dc_and_causality
+      SweepData.enforce_passivity
+      SweepData.freq_sweep_type
+      SweepData.frequencies
+      SweepData.frequency_string
+      SweepData.interpolation_use_full_basis
+      SweepData.interpolation_use_port_impedance
+      SweepData.interpolation_use_prop_const
+      SweepData.interpolation_use_s_matrix
+      SweepData.max_solutions
+      SweepData.min_freq_s_mat_only_solve
+      SweepData.min_solved_freq
+      SweepData.name
+      SweepData.passivity_tolerance
+      SweepData.relative_s_error
+      SweepData.save_fields
+      SweepData.save_rad_fields_only
+      SweepData.type
+      SweepData.use_q3d_for_dc
+   
+   

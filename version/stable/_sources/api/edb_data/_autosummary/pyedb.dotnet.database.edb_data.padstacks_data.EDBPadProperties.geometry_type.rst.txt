@@ -1,0 +1,6 @@
+geometry\_type
+==============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadProperties.geometry_type

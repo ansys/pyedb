@@ -1,0 +1,6 @@
+differential\_pairs
+===================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.differential_pairs

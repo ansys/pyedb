@@ -1,0 +1,15 @@
+﻿CfgData
+=======
+
+.. currentmodule:: pyedb.configuration.cfg_data
+
+.. autoclass:: CfgData
+
+   
+
+   
+   
+
+   
+   
+   

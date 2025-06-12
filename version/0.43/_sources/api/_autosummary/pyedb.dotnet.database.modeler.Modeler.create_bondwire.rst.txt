@@ -1,0 +1,6 @@
+create\_bondwire
+================
+
+.. currentmodule:: pyedb.dotnet.database.modeler
+
+.. automethod:: Modeler.create_bondwire

@@ -1,0 +1,6 @@
+parametrize\_trace\_width
+=========================
+
+.. currentmodule:: pyedb.dotnet.database.modeler
+
+.. automethod:: Modeler.parametrize_trace_width

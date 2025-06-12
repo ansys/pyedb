@@ -1,0 +1,6 @@
+extended\_net
+=============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.nets_data
+
+.. autoproperty:: EDBNetsData.extended_net

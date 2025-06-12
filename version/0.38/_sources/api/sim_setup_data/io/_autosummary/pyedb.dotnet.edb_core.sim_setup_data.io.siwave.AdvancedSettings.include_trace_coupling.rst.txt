@@ -1,0 +1,6 @@
+include\_trace\_coupling
+========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
+
+.. autoproperty:: AdvancedSettings.include_trace_coupling

@@ -1,0 +1,6 @@
+refresh\_components
+===================
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.refresh_components

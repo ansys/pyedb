@@ -1,0 +1,6 @@
+number\_of\_layers
+==================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.mesh_operation
+
+.. autoproperty:: SkinDepthMeshOperation.number_of_layers

@@ -1,0 +1,6 @@
+make\_zone\_primitive
+=====================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.primitives_data
+
+.. automethod:: EdbPolygon.make_zone_primitive

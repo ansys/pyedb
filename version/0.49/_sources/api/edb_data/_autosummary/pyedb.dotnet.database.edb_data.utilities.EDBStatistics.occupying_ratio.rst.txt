@@ -1,0 +1,6 @@
+occupying\_ratio
+================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.utilities
+
+.. autoproperty:: EDBStatistics.occupying_ratio

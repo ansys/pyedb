@@ -1,0 +1,6 @@
+is\_negative
+============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.primitives_data
+
+.. autoproperty:: EdbPolygon.is_negative
