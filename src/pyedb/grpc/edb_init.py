@@ -85,7 +85,7 @@ class EdbInit(object):
         """Active database object."""
         return self._db
 
-    def create(self, db_path, port=0, restart_rpc_server=False):
+    def _create(self, db_path, port=0, restart_rpc_server=False):
         """Create a Database at the specified file location.
 
         Parameters
@@ -115,7 +115,7 @@ class EdbInit(object):
         self._db = database.Database.create(db_path)
         return self._db
 
-    def open(self, db_path, read_only, port=0, restart_rpc_server=False):
+    def _open(self, db_path, read_only, port=0, restart_rpc_server=False):
         """Open an existing Database at the specified file location.
 
         Parameters

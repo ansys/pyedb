@@ -579,7 +579,7 @@ class Edb(EdbInit):
         terms = [term for term in self.layout.terminals if term.boundary_type.value == 8]
         return {ter.name: ter for ter in terms}
 
-    def open_edb(self, restart_rpc_server=False) -> bool:
+    def open(self, restart_rpc_server=False) -> bool:
         """Open EDB database.
 
         Returns
@@ -591,7 +591,7 @@ class Edb(EdbInit):
         n_try = 10
         while not self.db and n_try:
             try:
-                self.open(
+                self._open(
                     self.edbpath,
                     self.isreadonly,
                     restart_rpc_server=restart_rpc_server,
@@ -621,7 +621,21 @@ class Edb(EdbInit):
                 self.logger.error("Builder was not initialized.")
             return True
 
-    def create_edb(self, restart_rpc_server=False) -> bool:
+    def open_edb(self, restart_rpc_server=False) -> bool:
+        """Open EDB database.
+
+        .. deprecated:: 0.50.1
+            Use :func:`open` instead.
+
+        Returns
+        -------
+        bool
+            True if successful, False otherwise.
+        """
+        warnings.warn("`open_edb` is deprecated use `open` instead.", DeprecationWarning)
+        return self.open(restart_rpc_server)
+
+    def create(self, restart_rpc_server=False) -> bool:
         """Create new EDB database.
 
         Returns
@@ -636,7 +650,7 @@ class Edb(EdbInit):
         n_try = 10
         while not self.db and n_try:
             try:
-                self.create(self.edbpath, restart_rpc_server=restart_rpc_server)
+                self._create(self.edbpath, restart_rpc_server=restart_rpc_server)
                 n_try -= 1
             except Exception as e:
                 self.logger.error(e.args[0])
@@ -653,6 +667,19 @@ class Edb(EdbInit):
             self._init_objects()
             return True
         return None
+
+    def create_edb(self, restart_rpc_server=False) -> bool:
+        """
+        .. deprecated:: 0.50.1
+            Use :func:`create` instead.
+
+        Returns
+        -------
+        bool
+            True if successful, False otherwise.
+        """
+        warnings.warn("`create_edb` is deprecated use `create` instead.", DeprecationWarning)
+        return self.create(restart_rpc_server)
 
     def import_layout_pcb(
         self,
