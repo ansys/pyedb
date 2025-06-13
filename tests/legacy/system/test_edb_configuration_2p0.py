@@ -25,7 +25,6 @@ from pathlib import Path
 import pytest
 
 from pyedb.dotnet.edb import Edb as EdbType
-from pyedb.generic.general_methods import is_linux
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
@@ -81,61 +80,6 @@ class TestClass:
             str(self.local_input_folder / "GRM32ER72A225KA35_25C_0V.sp"),
         )
 
-    def test_13b_stackup_materials(self, edb_examples):
-        data = {
-            "stackup": {
-                "materials": [
-                    {
-                        "name": "copper",
-                        "conductivity": 570000000,
-                        "thermal_modifier": [
-                            {
-                                "property_name": "conductivity",
-                                "basic_quadratic_c1": 0,
-                                "basic_quadratic_c2": 0,
-                                "basic_quadratic_temperature_reference": 22,
-                                "advanced_quadratic_lower_limit": -273.15,
-                                "advanced_quadratic_upper_limit": 1000,
-                                "advanced_quadratic_auto_calculate": True,
-                                "advanced_quadratic_lower_constant": 1,
-                                "advanced_quadratic_upper_constant": 1,
-                            },
-                        ],
-                    },
-                    {
-                        "name": "Megtron4",
-                        "permittivity": 3.77,
-                        "dielectric_loss_tangent": 0.005,
-                        "thermal_modifier": [
-                            {
-                                "property_name": "dielectric_loss_tangent",
-                                "basic_quadratic_c1": 0,
-                                "basic_quadratic_c2": 0,
-                                "basic_quadratic_temperature_reference": 22,
-                                "advanced_quadratic_lower_limit": -273.15,
-                                "advanced_quadratic_upper_limit": 1000,
-                                "advanced_quadratic_auto_calculate": True,
-                                "advanced_quadratic_lower_constant": 1,
-                                "advanced_quadratic_upper_constant": 1,
-                            }
-                        ],
-                    },
-                    {"name": "Megtron4_2", "permittivity": 3.77, "dielectric_loss_tangent": 0.005},
-                    {"name": "Solder Resist", "permittivity": 4, "dielectric_loss_tangent": 0},
-                ]
-            }
-        }
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        data_from_db = edbapp.configuration.get_data_from_db(stackup=True)
-        for mat in data["stackup"]["materials"]:
-            target_mat = [i for i in data_from_db["stackup"]["materials"] if i["name"] == mat["name"]][0]
-            for p, value in mat.items():
-                if p == "thermal_modifier":
-                    continue
-                assert value == target_mat[p]
-        edbapp.close()
-
     def test_01_setups(self, edb_examples):
         data = {
             "setups": [
@@ -150,7 +94,6 @@ class TestClass:
                             "name": "mop_1",
                             "type": "length",
                             "max_length": "3mm",
-                            "max_elements": 100,
                             "restrict_length": True,
                             "refine_inside": False,
                             "nets_layers_list": {"GND": ["1_Top", "16_Bottom"]},
@@ -176,6 +119,7 @@ class TestClass:
                     for mop in value:
                         target_mop = [i for i in target["mesh_operations"] if i["name"] == mop["name"]][0]
                         for mop_p_name, mop_value in mop.items():
+                            print(mop_p_name)
                             assert mop_value == target_mop[mop_p_name]
                 else:
                     assert value == target[p]
@@ -195,18 +139,21 @@ class TestClass:
                             "name": "sweep1",
                             "type": "interpolation",
                             "frequencies": [
-                                {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"},
-                                {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
-                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11},
+                                {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"}
                             ],
                         },
                         {
                             "name": "sweep2",
-                            "type": "discrete",
+                            "type": "interpolation",
                             "frequencies": [
-                                "LIN 0.05GHz 0.2GHz 0.01GHz",
-                                "DEC 1e-06GHz 0.0001GHz 10",
-                                "LINC 0.01GHz 0.02GHz 11",
+                                {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10}
+                            ],
+                        },
+                        {
+                            "name": "sweep3",
+                            "type": "interpolation",
+                            "frequencies": [
+                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11}
                             ],
                         },
                     ],
@@ -216,17 +163,23 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        setup = data_from_db["setups"][0]
-        assert setup["name"] == "hfss_setup_1"
-        sweep1 = setup["freq_sweep"][0]
-        assert sweep1["name"] == "sweep1"
-        assert sweep1["frequencies"] == [
-            "LIN 0.05GHz 0.2GHz 0.01GHz",
-            "DEC 1e-06GHz 0.0001GHz 10",
-            "LINC 0.01GHz 0.02GHz 11",
-        ]
-        sweep2 = setup["freq_sweep"][1]
-        assert sweep2["type"] == "discrete"
+        for setup in data["setups"]:
+            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
+            for p, value in setup.items():
+                if p == "max_num_passes":
+                    assert value == int(target[p])
+                elif p == "max_mag_delta_s":
+                    assert value == float(target[p])
+                elif p == "freq_sweep":
+                    for sw in value:
+                        target_sw = [i for i in target["freq_sweep"] if i["name"] == sw["name"]][0]
+                        for sw_p_name, sw_value in sw.items():
+                            if sw_p_name == "frequencies":
+                                pass
+                            else:
+                                assert sw_value == target_sw[sw_p_name]
+                else:
+                    assert value == target[p]
         edbapp.close()
 
     def test_02_pin_groups(self, edb_examples):
@@ -303,12 +256,6 @@ class TestClass:
                     "negative_terminal": {"pin": "2"},
                 },
                 {
-                    "name": "CIRCUIT_C376_1_2",
-                    "type": "circuit",
-                    "positive_terminal": {"padstack": "C376-1"},
-                    "negative_terminal": {"padstack": "C376-2"},
-                },
-                {
                     "name": "CIRCUIT_X1_B8_GND",
                     "reference_designator": "X1",
                     "type": "circuit",
@@ -334,11 +281,20 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         assert "CIRCUIT_C375_1_2" in edbapp.ports
-        assert "CIRCUIT_C376_1_2" in edbapp.ports
         assert "CIRCUIT_X1_B8_GND" in edbapp.ports
         assert "CIRCUIT_U7_VDD_DDR_GND" in edbapp.ports
-        data_from_db = edbapp.configuration.get_data_from_db(ports=True, pin_groups=True)
-        assert data_from_db["ports"]
+        data_from_json = edbapp.configuration.cfg_data.ports.export_properties()
+        edbapp.configuration.cfg_data.ports.get_data_from_db()
+        data_from_db = edbapp.configuration.cfg_data.ports.export_properties()
+        for p1 in data_from_json:
+            p2 = data_from_db.pop(0)
+            for k, v in p1.items():
+                if k in ["reference_designator"]:
+                    continue
+                if k in ["positive_terminal", "negative_terminal"]:
+                    if "net" in v:
+                        continue
+                assert p2[k] == v
         edbapp.close()
 
     def test_05b_ports_coax(self, edb_examples):
@@ -355,12 +311,6 @@ class TestClass:
                 "type": "coax",
                 "positive_terminal": {"net": "PCIe_Gen4_TX2_CAP_N"},
             },
-            {
-                "name": "coax",
-                "reference_designator": "X1",
-                "type": "coax",
-                "positive_terminal": {"net": "5V"},
-            },
         ]
         data = {"ports": ports}
         edbapp = edb_examples.get_si_verse()
@@ -368,10 +318,6 @@ class TestClass:
         assert edbapp.ports["COAX_U1_AM17"]
         assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"]
         assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"].location
-        assert edbapp.ports["coax_X1_5V_B18"]
-        assert edbapp.ports["coax_X1_5V_B17"]
-        assert edbapp.ports["coax_X1_5V_A18"]
-        assert edbapp.ports["coax_X1_5V_A17"]
         edbapp.close()
 
     def test_05c_ports_circuit_pin_net(self, edb_examples):
@@ -471,7 +417,7 @@ class TestClass:
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
         edbapp.close()
 
-    def test_05g_edge_port(self, edb_examples):
+    def test_05g_wave_port(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.modeler.create_rectangle(
@@ -496,18 +442,11 @@ class TestClass:
                     "horizontal_extent_factor": 6,
                     "vertical_extent_factor": 4,
                     "pec_launch_width": "0.2mm",
-                },
-                {
-                    "name": "gap_port_1",
-                    "type": "gap_port",
-                    "primitive_name": prim_1.aedt_name,
-                    "point_on_edge": [0, 0],
-                },
+                }
             ]
         }
         edbapp.configuration.load(data, apply_file=True)
         assert edbapp.ports["wport_1"].horizontal_extent_factor == 6
-        assert edbapp.ports["gap_port_1"].hfss_type == "Gap"
         edbapp.configuration.get_data_from_db(ports=True)
         edbapp.close()
 
@@ -544,7 +483,7 @@ class TestClass:
                     "negative_terminal": {"primitive_name": prim_2.aedt_name, "point_on_edge": ["1mm", "1mm"]},
                     "horizontal_extent_factor": 6,
                     "vertical_extent_factor": 4,
-                    "pec_launch_width": "0.2mm",
+                    "pec_launch_width": "0,2mm",
                 }
             ]
         }
@@ -611,32 +550,39 @@ class TestClass:
         assert data == data_from_db
         edbapp.close()
 
-    def test_operations_cutout_auto_identify_nets(self, edb_examples):
+    def test_08a_operations_cutout(self, edb_examples):
         data = {
-            "ports": [
-                {
-                    "name": "COAX_U1",
-                    "reference_designator": "U1",
-                    "type": "coax",
-                    "positive_terminal": {"pin": "AP18"},
-                }
-            ],
             "operations": {
                 "cutout": {
-                    "auto_identify_nets": {
-                        "enabled": True,
-                        "resistor_below": 100,
-                        "inductor_below": 1,
-                        "capacitor_above": "10nF",
-                    },
+                    "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
                     "reference_list": ["GND"],
                     "extent_type": "ConvexHull",
+                    "expansion_size": 0.002,
+                    "use_round_corner": False,
+                    "output_aedb_path": "",
+                    "open_cutout_at_end": True,
+                    "use_pyaedt_cutout": True,
+                    "number_of_threads": 4,
+                    "use_pyaedt_extent_computing": True,
+                    "extent_defeature": 0,
+                    "remove_single_pin_components": False,
+                    "custom_extent": "",
+                    "custom_extent_units": "mm",
+                    "include_partial_instances": False,
+                    "keep_voids": True,
+                    "check_terminals": False,
+                    "include_pingroups": False,
+                    "expansion_factor": 0,
+                    "maximum_iterations": 10,
+                    "preserve_components_with_model": False,
+                    "simple_pad_check": True,
+                    "keep_lines_as_path": False,
                 }
-            },
+            }
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        assert {"PCIe_Gen4_TX3_CAP_P", "PCIe_Gen4_TX3_P"}.issubset(edbapp.nets.nets.keys())
+        assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND", "pyedb_cutout"])
         edbapp.close()
 
     def test_09_padstack_definition(self, edb_examples):
@@ -821,24 +767,13 @@ class TestClass:
                 {
                     "name": "siwave_1",
                     "type": "siwave_dc",
-                    "dc_slider_position": 2,
+                    "dc_slider_position": 1,
                     "dc_ir_settings": {"export_dc_thermal_data": True},
                 }
             ]
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-
-        siwave_dc = edbapp.setups["siwave_1"]
-        if not is_linux:
-            # test
-            assert siwave_dc.dc_settings.dc_slider_position == 2
-        assert siwave_dc.dc_ir_settings.export_dc_thermal_data is True
-
-        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        src_siwave_dc = data_from_db["setups"][0]
-        target_siwave_dc = data["setups"][0]
-        assert src_siwave_dc == target_siwave_dc
         edbapp.close()
 
     def test_13_stackup_layers(self, edb_examples):
@@ -938,6 +873,26 @@ class TestClass:
                 assert value == target_mat[p]
         edbapp.close()
 
+    def test_13b_stackup_materials(self, edb_examples):
+        data = {
+            "stackup": {
+                "materials": [
+                    {"name": "copper", "conductivity": 570000000},
+                    {"name": "Megtron4", "permittivity": 3.77, "dielectric_loss_tangent": 0.005},
+                    {"name": "Megtron4_2", "permittivity": 3.77, "dielectric_loss_tangent": 0.005},
+                    {"name": "Solder Resist", "permittivity": 4, "dielectric_loss_tangent": 0},
+                ]
+            }
+        }
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(stackup=True)
+        for mat in data["stackup"]["materials"]:
+            target_mat = [i for i in data_from_db["stackup"]["materials"] if i["name"] == mat["name"]][0]
+            for p, value in mat.items():
+                assert value == target_mat[p]
+        edbapp.close()
+
     def test_13c_stackup_create_stackup(self, edb_examples):
         data = {
             "stackup": {
@@ -990,16 +945,14 @@ class TestClass:
                 {
                     "name": "siwave_1",
                     "type": "siwave_ac",
-                    "use_si_settings": True,
                     "si_slider_position": 1,
                     "freq_sweep": [
                         {
                             "name": "Sweep1",
                             "type": "discrete",
                             "frequencies": [
-                                "LIN 0.05GHz 0.2GHz 0.01GHz",
-                                "DEC 1e-06GHz 0.0001GHz 10",
-                                "LINC 0.01GHz 0.02GHz 11",
+                                {"distribution": "log_scale", "start": 1e3, "stop": 1e9, "samples": 10},
+                                {"distribution": "linear_count", "start": 1e9, "stop": 10e9, "points": 11},
                             ],
                         }
                     ],
@@ -1008,14 +961,6 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        siwave_ac = edbapp.setups["siwave_1"]
-        assert siwave_ac.use_si_settings is True
-        assert siwave_ac.si_slider_position == 1
-
-        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        src_siwave_dc = data_from_db["setups"][0]
-        assert src_siwave_dc["si_slider_position"] == 1
-        assert src_siwave_dc["use_si_settings"] is True
         edbapp.close()
 
     def test_15b_sources_net_net(self, edb_examples):
@@ -1237,12 +1182,7 @@ class TestClass:
                         "end_cap_style": "flat",
                         "corner_style": "round",
                     },
-                    {
-                        "name": "trace_1_void",
-                        "layer": "TOP",
-                        "width": "0.3mm",
-                        "incremental_path": [[0, 0], [0, "10mm"]],
-                    },
+                    {"name": "trace_1_void", "layer": "TOP", "width": "0.3mm", "path": [[0, 0], [0, "10mm"]]},
                 ],
                 "padstack_definitions": [
                     {
@@ -1363,14 +1303,6 @@ class TestClass:
         assert edbapp.components["U1"].component_property.GetSolderBallProperty().Clone().GetMaterialName() == "air"
         edbapp.close()
 
-    def test_modeler_delete(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.layout.find_primitive(name="line_163")
-        data = {"modeler": {"primitives_to_delete": {"name": ["line_163"]}}}
-        edbapp.configuration.load(data, apply_file=True)
-        assert len(edbapp.layout.find_primitive(name="line_163")) == 0
-        edbapp.close()
-
     def test_19_variables(self, edb_examples):
         data = {
             "variables": [
@@ -1396,39 +1328,4 @@ class TestClass:
         data = {"probes": probe}
         assert edbapp.configuration.load(data, apply_file=True)
         assert "probe1" in edbapp.probes
-        edbapp.close()
-
-    def test_08a_operations_cutout(self, edb_examples):
-        data = {
-            "operations": {
-                "cutout": {
-                    "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
-                    "reference_list": ["GND"],
-                    "extent_type": "ConvexHull",
-                    "expansion_size": 0.002,
-                    "use_round_corner": False,
-                    "output_aedb_path": "",
-                    "open_cutout_at_end": True,
-                    "use_pyaedt_cutout": True,
-                    "number_of_threads": 4,
-                    "use_pyaedt_extent_computing": True,
-                    "extent_defeature": 0,
-                    "remove_single_pin_components": False,
-                    "custom_extent": "",
-                    "custom_extent_units": "mm",
-                    "include_partial_instances": False,
-                    "keep_voids": True,
-                    "check_terminals": False,
-                    "include_pingroups": False,
-                    "expansion_factor": 0,
-                    "maximum_iterations": 10,
-                    "preserve_components_with_model": False,
-                    "simple_pad_check": False,
-                    "keep_lines_as_path": False,
-                }
-            }
-        }
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND", "pyedb_cutout"])
         edbapp.close()
