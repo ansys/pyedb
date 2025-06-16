@@ -2242,3 +2242,30 @@ class Components(object):
             return False
         component.enabled = False
         return self._pedb.source_excitation.add_rlc_boundary(component.refdes, False)
+
+    def add_rlc_boundary(self, component=None, circuit_type=True):
+        """Add RLC gap boundary on component and replace it with a circuit port.
+        The circuit port supports only 2-pin components.
+
+        . deprecated:: pyedb 0.28.0
+        Use :func:`pyedb.grpc.core.excitations.add_rlc_boundary` instead.
+
+        Parameters
+        ----------
+        component : str
+            Reference designator of the RLC component.
+        circuit_type : bool
+            When ``True`` circuit type are defined, if ``False`` gap type will be used instead (compatible with HFSS 3D
+            modeler). Default value is ``True``.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        warnings.warn(
+            "`add_rlc_boundary` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.add_rlc_boundary` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.source_excitation.add_rlc_boundary(self, component=component, circuit_type=circuit_type)
