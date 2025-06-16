@@ -132,7 +132,7 @@ class Component(GrpcComponentGroup):
         self.enabled = value
 
     @property
-    def ic_die_properties(self) -> ICDieProperty:
+    def ic_die_properties(self) -> any:
         """IC Die property.
 
         returns

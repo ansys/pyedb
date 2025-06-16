@@ -576,11 +576,7 @@ class TestClass:
         assert edb_stats.num_inductors
         assert edb_stats.num_capacitors
         assert edb_stats.num_resistors
-        if edb.grpc:
-            # TODO check why grpc give different result.
-            assert edb_stats.occupying_ratio["1_Top"] == 0.282666
-        else:
-            assert edb_stats.occupying_ratio["1_Top"] == 0.301682
+        assert edb_stats.occupying_ratio["1_Top"] == 0.301682
         assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.937467
         if edb.grpc:
             # TODO check why grpc give different result.

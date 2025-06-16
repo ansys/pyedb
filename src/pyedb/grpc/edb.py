@@ -635,7 +635,7 @@ class Edb(EdbInit):
         warnings.warn("`open_edb` is deprecated use `open` instead.", DeprecationWarning)
         return self.open(restart_rpc_server)
 
-    def create(self, restart_rpc_server=False) -> bool:
+    def create(self, restart_rpc_server=False) -> any:
         """Create new EDB database.
 
         Returns
@@ -665,7 +665,7 @@ class Edb(EdbInit):
             )
         if self._active_cell:
             self._init_objects()
-            return True
+            return self._active_cell
         return None
 
     def create_edb(self, restart_rpc_server=False) -> bool:
