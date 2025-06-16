@@ -2206,3 +2206,39 @@ class Components(object):
         return self._pedb.source_excitation.add_port_on_rlc_component(
             component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
         )
+
+    def replace_rlc_by_gap_boundaries(self, component=None):
+        """Replace RLC component by RLC gap boundaries. These boundary types are compatible with 3D modeler export.
+        Only 2 pins RLC components are supported in this command.
+
+        Parameters
+        ----------
+        component : str
+            Reference designator of the RLC component.
+
+        Returns
+        -------
+        bool
+        ``True`` when succeed, ``False`` if it failed.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb(edb_file)
+        >>>  for refdes, cmp in edb.components.capacitors.items():
+        >>>     edb.components.replace_rlc_by_gap_boundaries(refdes)
+        >>> edb.save_edb()
+        >>> edb.close_edb()
+        """
+        if not component:
+            return False
+        if isinstance(component, str):
+            component = self.instances[component]
+            if not component:
+                self._logger.error("component %s not found.", component)
+                return False
+        if component.type in ["other", "ic", "io"]:
+            self._logger.info(f"Component {component.refdes} skipped to deactivate is not an RLC.")
+            return False
+        component.enabled = False
+        return self._pedb.source_excitation.add_rlc_boundary(component.refdes, False)
