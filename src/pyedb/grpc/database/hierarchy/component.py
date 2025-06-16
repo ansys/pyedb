@@ -882,7 +882,11 @@ class Component(GrpcComponentGroup):
         int
             Component pins number.
         """
-        return self.num_pins
+        try:
+            return self.num_pins
+        except Exception as e:
+            self._pedb.logger.error(f"{e}")
+            return 0
 
     @property
     def partname(self) -> str:

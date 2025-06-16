@@ -1797,7 +1797,7 @@ class Edb(EdbInit):
                         break
                     self.close_edb()
                     self.edbpath = legacy_path
-                    self.open_edb()
+                    self.open()
                     i += 1
                     expansion = expansion_size * i
                 if working_cutout:
@@ -2790,7 +2790,10 @@ class Edb(EdbInit):
             return True
         self.logger.reset_timer()
         if not common_reference:
-            common_reference = list(set([i.reference_net.name for i in all_sources if i.reference_net.name]))
+            ref_terminals = [term for term in all_sources if term.is_reference_terminal]
+            common_reference = list(
+                set([i.reference_terminal.net.name for i in all_sources if i.is_reference_terminal])
+            )
             if len(common_reference) > 1:
                 self.logger.error("More than 1 reference found.")
                 return False
@@ -3065,7 +3068,7 @@ class Edb(EdbInit):
         for port in self.excitations.values():
             nets.append(port.net.name)
         for port in self.sources.values():
-            nets.append(port.net_name)
+            nets.append(port.net.name)
         nets = list(set(nets))
         max_width = 0
         for net in nets:
