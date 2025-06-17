@@ -36,11 +36,120 @@ from pyedb.misc.utilities import compute_arc_points
 class Nets(CommonNets):
     """Manages EDB methods for nets management accessible from `Edb.nets` property.
 
-    Examples
-    --------
-    >>> from pyedb import Edb
-    >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
-    >>> edb_nets = edbapp.nets
+        Examples
+        --------
+        from pyedb import Edb
+
+        # Initialize EDB session
+    >>> edbapp = Edb(edbversion="2025.2")
+
+        # Access Nets class
+    >>> nets = edbapp.nets
+
+        # =================
+        # Property examples
+        # =================
+
+        # Get all nets dictionary
+    >>> all_nets = nets.nets
+    >>> print("All nets:", list(all_nets.keys()))
+
+        # Get net names list
+    >>> net_names = nets.netlist
+    >>> print("Net names:", net_names)
+
+        # Get signal nets
+    >>> signal_nets = nets.signal
+    >>> print("Signal nets:", list(signal_nets.keys()))
+
+        # Get power/ground nets
+    >>> power_nets = nets.power
+    >>> print("Power nets:", list(power_nets.keys()))
+
+        # Get nets by components
+    >>> nets_by_comps = nets.nets_by_components
+    >>> print("Nets by components:", nets_by_comps)
+
+        # Get components by nets
+    >>> comps_by_nets = nets.components_by_nets
+    >>> print("Components by nets:", comps_by_nets)
+
+        # ===============
+        # Method examples
+        # ===============
+
+        # Get net by name
+    >>> net_obj = nets["GND"]
+    >>> print(f"Net object: {net_obj.name}")
+
+        # Check net existence
+    >>> if "PCIe_RX" in nets:
+    >>>    print("PCIe_RX exists")
+
+        # Identify eligible power nets
+    >>> eligible_pwr = nets.eligible_power_nets(threshold=0.25)
+    >>> print("Eligible power nets:", [net.name for net in eligible_pwr])
+
+        # Generate extended nets (deprecated)
+    >>> nets.generate_extended_nets(
+    >>> resistor_below=5,
+    >>>inductor_below=0.5,
+    >>> capacitor_above=0.1
+    >>> )
+
+        # Classify nets
+    >>> nets.classify_nets(
+    >>> power_nets=["VDD_CPU", "VDD_MEM"],
+    >>> signal_nets=["PCIe_TX", "ETH_RX"]
+    >>> )
+
+        # Check power/ground status
+    >>> is_power = nets.is_power_gound_net(["VDD_CPU", "PCIe_TX"])
+    >>> print("Is power net:", is_power)
+
+        # Get DC-connected nets
+    >>> dc_connected = nets.get_dcconnected_net_list(
+    >>> ground_nets=["GND"],
+    >>> res_value=0.002
+    >>> )
+        print("DC-connected nets:", dc_connected)
+
+        # Get power tree
+    >>> comp_list, columns, net_group = nets.get_powertree(
+    >>> power_net_name="VDD_CPU",
+    >>> ground_nets=["GND"]
+    >>> )
+    >>> print("Power tree components:", comp_list)
+
+        # Find net by name
+    >>> found_net = nets.get_net_by_name("PCIe_TX")
+    >>> print(f"Found net: {found_net.name}")
+
+         # Delete nets
+    >>> deleted = nets.delete(["Unused_Net", "Test_Net"])
+    >>> print("Deleted nets:", deleted)
+
+        # Find or create net
+    >>> new_net = nets.find_or_create_net(net_name="New_Net")
+    >>> print(f"Created net: {new_net.name}")
+
+        # Check net-component association
+    >>> in_component = nets.is_net_in_component("U1", "VDD_CPU")
+    >>> print("Net in component:", in_component)
+
+        # Find and fix disjoint nets (deprecated)
+    >>> fixed_nets = nets.find_and_fix_disjoint_nets(
+    >>> net_list=["PCIe_TX"],
+    >>> clean_disjoints_less_than=1e-6
+    >>> )
+    >>> print("Fixed nets:", fixed_nets)
+
+        # Merge net polygons
+    >>> merged = nets.merge_nets_polygons(["VDD_CPU", "VDD_MEM"])
+    >>> print("Polygons merged:", merged)
+
+        # Close EDB session
+    >>> edbapp.close()
     """
 
     def __getitem__(self, name):
