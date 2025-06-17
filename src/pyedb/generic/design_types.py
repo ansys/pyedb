@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
 
 
 # lazy imports
@@ -114,6 +115,23 @@ def Edb(
     """
 
     # Use EDB legacy (default choice)
+    if float(edbversion) >= 2025.2:
+        if not grpc:
+            warnings.warn("Your ANSYS AEDT version eligible to gRPC version", UserWarning)
+            warnings.warn("gRPC is not enabled by default, however you might consider using this version", UserWarning)
+            warnings.warn("Please check online documentation for more information", UserWarning)
+            warnings.warn("gRPC is offering better stability and compatibility with Linux", UserWarning)
+            warnings.warn("Note: current DotNet PyEDB will be deprecated starting release 2026.1", UserWarning)
+            warnings.warn("New feature will only be implemented in gRPC version", UserWarning)
+    else:
+        if grpc:
+            warnings.warn(
+                f"gRPC flag was enabled however your ANSYS AEDT version {edbversion} is not compatible", UserWarning
+            )
+            warnings.warn(
+                f"Disabling gRPC, you might consider upgrading your ANSYS version for better experience", UserWarning
+            )
+            grpc = False
     if grpc:
         from pyedb.grpc.edb import Edb as app
     else:
