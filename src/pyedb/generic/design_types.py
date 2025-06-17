@@ -117,7 +117,7 @@ def Edb(
     # Use EDB legacy (default choice)
     if float(edbversion) >= 2025.2:
         if not grpc:
-            warnings.warn("Your ANSYS AEDT version eligible to gRPC version", UserWarning)
+            warnings.warn("Your ANSYS AEDT version is eligible to gRPC version", UserWarning)
             warnings.warn("gRPC is not enabled by default, however you might consider using this version", UserWarning)
             warnings.warn("Please check online documentation for more information", UserWarning)
             warnings.warn("gRPC is offering better stability and compatibility with Linux", UserWarning)
