@@ -586,6 +586,11 @@ class Edb(EdbInit):
         -------
         bool
             True if successful, False otherwise.
+
+        Examples
+        --------
+        Open an existing EDB database:
+        >>> edb = Edb("myproject.aedb")
         """
         self.standalone = self.standalone
         n_try = 10
@@ -773,6 +778,13 @@ class Edb(EdbInit):
         -------
         Full path to the AEDB file : str
 
+        Examples
+        --------
+        Import a BRD file:
+        >>> edb.import_layout_file("my_board.brd", r"C:/project")
+
+        Import a GDS file with control file:
+        >>> edb.import_layout_file("layout.gds", control_file="control.xml")
         """
         self._components = None
         self._core_primitives = None
@@ -833,6 +845,11 @@ class Edb(EdbInit):
         -------
         str or bool
             Output file path if successful, False otherwise.
+
+        Examples
+        --------
+        Export to IPC2581 format:
+        >>> edb.export_to_ipc2581("output.xml")
         """
         if units.lower() not in ["millimeter", "inch", "micron"]:  # pragma no cover
             self.logger.warning("The wrong unit is entered. Setting to the default, millimeter.")
@@ -1265,6 +1282,11 @@ class Edb(EdbInit):
         -------
         bool
             True if successful, False otherwise.
+
+        Examples
+        --------
+        Close the EDB session:
+        >>> edb.close_edb()
         """
         self.close()
         start_time = time.time()
