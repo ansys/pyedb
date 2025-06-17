@@ -1303,6 +1303,11 @@ class Edb(EdbInit):
         -------
         bool
             True if successful, False otherwise.
+
+        Examples
+        --------
+        Save the current EDB:
+        >>> edb.save_edb()
         """
         self.save()
         start_time = time.time()
@@ -1323,6 +1328,11 @@ class Edb(EdbInit):
         -------
         bool
             True if successful, False otherwise.
+
+        Examples
+        --------
+        Save EDB to new location:
+        >>> edb.save_edb_as("new_location.aedb")
         """
         self.save_as(fname)
         start_time = time.time()
@@ -1743,6 +1753,15 @@ class Edb(EdbInit):
         -------
         list or bool
             Cutout boundary points if successful, False otherwise.
+
+        Examples
+        --------
+        Create a basic cutout:
+        >>> edb.cutout(signal_list=["Net1"], reference_list=["GND"])
+
+        Create cutout with custom polygon:
+        >>> custom_poly = [[0,0], [10e-3,0], [10e-3,10e-3], [0,10e-3]]
+        >>> edb.cutout(custom_extent=custom_poly)
         """
         if expansion_factor > 0:
             expansion_size = self.calculate_initial_extent(expansion_factor)
@@ -2485,6 +2504,11 @@ class Edb(EdbInit):
         -------
         str
             Path to generated AEDT file.
+
+        Examples
+        --------
+        Export to HFSS project:
+        >>> edb.export_hfss(r"C:/output", net_list=["SignalNet"])
         """
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
@@ -2516,6 +2540,11 @@ class Edb(EdbInit):
         -------
         str
             Path to generated AEDT file.
+
+        Examples
+        --------
+        Export to Q3D project:
+        >>> edb.export_q3d(r"C:/output")
         """
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
         return siwave_s.export_3d_cad(
@@ -2554,6 +2583,11 @@ class Edb(EdbInit):
         -------
         str
             Path to generated AEDT file.
+
+        Examples
+        --------
+        Export to Maxwell project:
+        >>> edb.export_maxwell(r"C:/output")
         """
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
         return siwave_s.export_3d_cad(
@@ -2572,6 +2606,11 @@ class Edb(EdbInit):
         -------
         str
             Path to SIwave project.
+
+        Examples
+        --------
+        Solve with SIwave:
+        >>> edb.solve_siwave()
         """
         process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
         try:
@@ -3487,6 +3526,15 @@ class Edb(EdbInit):
         -------
         list[str]
             Created parameter names.
+
+        Examples
+        --------
+        Parametrize design elements:
+        >>> params = edb.auto_parametrize_design(
+        ...     layers=True,
+        ...     materials=True,
+        ...     trace_net_filter=["Clock"]
+        ... )
         """
         edb_original_path = self.edbpath
         if output_aedb_path:
