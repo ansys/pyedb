@@ -38,3 +38,4 @@ Working with a component
    create_resistor_on_pin
    create_rlc_component
    create_rlc_boundary_on_pins
+   replace_rlc_component_by_ports
