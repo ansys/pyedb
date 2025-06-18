@@ -877,11 +877,15 @@ class Component(GrpcComponentGroup):
     def numpins(self) -> int:
         """Number of Pins of Component.
 
+        ..deprecated:: 0.51.0
+           Use: func:`num_pins` instead.
         Returns
         -------
         int
             Component pins number.
         """
+
+        warnings.warn("Use num_pins instead.", DeprecationWarning)
         try:
             return self.num_pins
         except Exception as e:
