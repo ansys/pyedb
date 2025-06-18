@@ -89,17 +89,38 @@ class Siwave(object):
 
     @property
     def excitations(self):
-        """Excitation sources in the layout."""
+        """Excitation sources in the layout.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+        >>> excitations = edbapp.siwave.excitations
+        """
         return self._pedb.excitations
 
     @property
     def sources(self):
-        """All sources in the layout."""
+        """All sources in the layout.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+        >>> sources = edbapp.siwave.sources
+        """
         return self._pedb.sources
 
     @property
     def probes(self):
-        """All probes in the layout."""
+        """All probes in the layout.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+        >>> probes = edbapp.siwave.probes
+        """
         return self._pedb.probes
 
     @property
@@ -110,6 +131,14 @@ class Siwave(object):
         -------
         dict
             Dictionary of pin groups with names as keys and pin group objects as values.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+        >>> pin_groups = edbapp.siwave.pin_groups
+        >>> for name, group in pin_groups.items():
+        ...     print(f"Pin group {name} has {len(group.pins)} pins")
         """
         _pingroups = {}
         for el in self._pedb.layout.pin_groups:
@@ -516,6 +545,19 @@ class Siwave(object):
         -------
         bool
             ``True`` if file was created, ``False`` otherwise.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+        >>> # Create exec file with AC and SYZ options
+        >>> success = edbapp.siwave.create_exec_file(add_ac=True, add_syz=True)
+        >>> # Create exec file with Touchstone export
+        >>> success = edbapp.siwave.create_exec_file(
+        ...     add_ac=True,
+        ...     export_touchstone=True,
+        ...     touchstone_file_path="C:/temp/my_touchstone.s2p"
+        ... )
         """
         workdir = os.path.dirname(self._pedb.edbpath)
         file_name = os.path.join(workdir, os.path.splitext(os.path.basename(self._pedb.edbpath))[0] + ".exec")
@@ -576,6 +618,24 @@ class Siwave(object):
         -------
         :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
             Setup object class.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+        >>> # Add SYZ analysis with linear sweep from 1kHz to 10GHz
+        >>> setup = edbapp.siwave.add_siwave_syz_analysis(
+        ...     start_freq=1e3,
+        ...     stop_freq=10e9,
+        ...     distribution="linear"
+        ... )
+        >>> # Add SYZ analysis with decade sweep
+        >>> setup = edbapp.siwave.add_siwave_syz_analysis(
+        ...     start_freq=1e3,
+        ...     stop_freq=10e9,
+        ...     distribution="decade_count",
+        ...     step_freq=10  # 10 points per decade
+        ... )
         """
         setup = self._pedb.create_siwave_syz_setup()
         start_freq = self._pedb.number_with_units(start_freq, "Hz")

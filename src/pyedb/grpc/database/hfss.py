@@ -200,6 +200,12 @@ class Hfss(object):
         -------
         dict
             Dictionary mapping net names to smallest trace widths.
+
+        Examples
+        --------
+        >>> widths = edb.hfss.get_trace_width_for_traces_with_ports()
+        >>> for net_name, width in widths.items():
+        ...     print(f"Net '{net_name}': Smallest width = {width}")
         """
         nets = {}
         for net in self._pedb.excitations_nets:
@@ -925,6 +931,15 @@ class Hfss(object):
         -------
         list
             [min_x, min_y, max_x, max_y] coordinates.
+
+        Examples
+        --------
+        >>> bbox = edb.hfss.get_layout_bounding_box()
+        >>> print(f"Layout Bounding Box: {bbox}")
+        >>>
+        >>> # With custom parameters
+        >>> custom_layout = edb.layouts["MyLayout"]
+        >>> bbox = edb.hfss.get_layout_bounding_box(custom_layout, 5)
         """
         if not layout:
             layout = self._active_layout
