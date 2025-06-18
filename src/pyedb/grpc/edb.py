@@ -378,23 +378,6 @@ class Edb(EdbInit):
                     except:
                         self.logger.info(f"Failed to delete AEDT project-related file {file}.")
 
-    def _clean_variables(self):
-        """Initialize internal variables and perform garbage collection."""
-        self.grpc = True
-        self._materials = None
-        self._components = None
-        self._core_primitives = None
-        self._stackup = None
-        self._padstack = None
-        self._siwave = None
-        self._hfss = None
-        self._nets = None
-        self._layout_instance = None
-        self._variables = None
-        self._active_cell = None
-        self._layout = None
-        self._configuration = None
-
     def _init_objects(self):
         self._components = Components(self)
         self._stackup = Stackup(self, self.layout.layer_collection)
@@ -586,6 +569,11 @@ class Edb(EdbInit):
         -------
         bool
             True if successful, False otherwise.
+
+        Examples
+        --------
+        Open an existing EDB database:
+        >>> edb = Edb("myproject.aedb")
         """
         self.standalone = self.standalone
         n_try = 10
@@ -773,6 +761,13 @@ class Edb(EdbInit):
         -------
         Full path to the AEDB file : str
 
+        Examples
+        --------
+        Import a BRD file:
+        >>> edb.import_layout_file("my_board.brd", r"C:/project")
+
+        Import a GDS file with control file:
+        >>> edb.import_layout_file("layout.gds", control_file="control.xml")
         """
         self._components = None
         self._core_primitives = None
@@ -833,6 +828,11 @@ class Edb(EdbInit):
         -------
         str or bool
             Output file path if successful, False otherwise.
+
+        Examples
+        --------
+        Export to IPC2581 format:
+        >>> edb.export_to_ipc2581("output.xml")
         """
         if units.lower() not in ["millimeter", "inch", "micron"]:  # pragma no cover
             self.logger.warning("The wrong unit is entered. Setting to the default, millimeter.")
@@ -1210,35 +1210,11 @@ class Edb(EdbInit):
             return PointData(x, y)
 
     @staticmethod
-    def _is_file_existing_and_released(filename) -> bool:
-        if os.path.exists(filename):
-            try:
-                os.rename(filename, filename + "_")
-                os.rename(filename + "_", filename)
-                return True
-            except OSError as e:
-                return False
-        else:
-            return False
-
-    @staticmethod
     def _is_file_existing(filename) -> bool:
         if os.path.exists(filename):
             return True
         else:
             return False
-
-    def _wait_for_file_release(self, timeout=30, file_to_release=None) -> bool:
-        if not file_to_release:
-            file_to_release = os.path.join(self.edbpath)
-        tstart = time.time()
-        while True:
-            if self._is_file_existing_and_released(file_to_release):
-                return True
-            elif time.time() - tstart > timeout:
-                return False
-            else:
-                time.sleep(0.250)
 
     def _wait_for_file_exists(self, timeout=30, file_to_release=None, wait_count=4):
         if not file_to_release:
@@ -1261,36 +1237,46 @@ class Edb(EdbInit):
     def close_edb(self) -> bool:
         """Close EDB and clean up resources.
 
+        ..deprecated:: 0.51.0
+           Use: func:`close` instead.
+
         Returns
         -------
         bool
             True if successful, False otherwise.
+
+        Examples
+        --------
+        Close the EDB session:
+        >>> edb.close_edb()
         """
-        self.close()
-        start_time = time.time()
-        self._wait_for_file_release()
-        elapsed_time = time.time() - start_time
-        self.logger.info("EDB file release time: {0:.2f}ms".format(elapsed_time * 1000.0))
-        self._clean_variables()
-        return True
+        warnings.warn("Use method close instead.", DeprecationWarning)
+        return self.close()
 
     def save_edb(self) -> bool:
         """Save current EDB database.
 
+        ..deprecated:: 0.51.0
+           Use: func:`save` instead.
+
         Returns
         -------
         bool
             True if successful, False otherwise.
+
+        Examples
+        --------
+        Save the current EDB:
+        >>> edb.save_edb()
         """
-        self.save()
-        start_time = time.time()
-        self._wait_for_file_release()
-        elapsed_time = time.time() - start_time
-        self.logger.info("EDB file save time: {0:.2f}ms".format(elapsed_time * 1000.0))
-        return True
+        warnings.warn("Use method save instead.", DeprecationWarning)
+        return self.save()
 
     def save_edb_as(self, fname) -> bool:
         """Save EDB database to new location.
+
+        ..deprecated:: 0.51.0
+           Use: func:`save_as` instead.
 
         Parameters
         ----------
@@ -1301,17 +1287,14 @@ class Edb(EdbInit):
         -------
         bool
             True if successful, False otherwise.
+
+        Examples
+        --------
+        Save EDB to new location:
+        >>> edb.save_edb_as("new_location.aedb")
         """
-        self.save_as(fname)
-        start_time = time.time()
-        self._wait_for_file_release()
-        elapsed_time = time.time() - start_time
-        self.logger.info("EDB file save time: {0:.2f}ms".format(elapsed_time * 1000.0))
-        self.edbpath = self.directory
-        self.log_name = os.path.join(
-            os.path.dirname(fname), "pyedb_" + os.path.splitext(os.path.split(fname)[-1])[0] + ".log"
-        )
-        return True
+        warnings.warn("Use method save_as instead.", DeprecationWarning)
+        return self.save_as(fname)
 
     def execute(self, func):
         """Execute EDB utility command (Not implemented in gRPC).
@@ -1721,6 +1704,15 @@ class Edb(EdbInit):
         -------
         list or bool
             Cutout boundary points if successful, False otherwise.
+
+        Examples
+        --------
+        Create a basic cutout:
+        >>> edb.cutout(signal_list=["Net1"], reference_list=["GND"])
+
+        Create cutout with custom polygon:
+        >>> custom_poly = [[0,0], [10e-3,0], [10e-3,10e-3], [0,10e-3]]
+        >>> edb.cutout(custom_extent=custom_poly)
         """
         if expansion_factor > 0:
             expansion_size = self.calculate_initial_extent(expansion_factor)
@@ -2463,6 +2455,11 @@ class Edb(EdbInit):
         -------
         str
             Path to generated AEDT file.
+
+        Examples
+        --------
+        Export to HFSS project:
+        >>> edb.export_hfss(r"C:/output", net_list=["SignalNet"])
         """
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
@@ -2494,6 +2491,11 @@ class Edb(EdbInit):
         -------
         str
             Path to generated AEDT file.
+
+        Examples
+        --------
+        Export to Q3D project:
+        >>> edb.export_q3d(r"C:/output")
         """
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
         return siwave_s.export_3d_cad(
@@ -2532,6 +2534,11 @@ class Edb(EdbInit):
         -------
         str
             Path to generated AEDT file.
+
+        Examples
+        --------
+        Export to Maxwell project:
+        >>> edb.export_maxwell(r"C:/output")
         """
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
         return siwave_s.export_3d_cad(
@@ -2550,6 +2557,11 @@ class Edb(EdbInit):
         -------
         str
             Path to SIwave project.
+
+        Examples
+        --------
+        Solve with SIwave:
+        >>> edb.solve_siwave()
         """
         process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
         try:
@@ -3465,6 +3477,15 @@ class Edb(EdbInit):
         -------
         list[str]
             Created parameter names.
+
+        Examples
+        --------
+        Parametrize design elements:
+        >>> params = edb.auto_parametrize_design(
+        ...     layers=True,
+        ...     materials=True,
+        ...     trace_net_filter=["Clock"]
+        ... )
         """
         edb_original_path = self.edbpath
         if output_aedb_path:
