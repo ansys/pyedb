@@ -623,7 +623,7 @@ class Edb(EdbInit):
         warnings.warn("`open_edb` is deprecated use `open` instead.", DeprecationWarning)
         return self.open(restart_rpc_server)
 
-    def create(self, restart_rpc_server=False) -> bool:
+    def create(self, restart_rpc_server=False) -> any:
         """Create new EDB database.
 
         Returns
@@ -653,7 +653,7 @@ class Edb(EdbInit):
             )
         if self._active_cell:
             self._init_objects()
-            return True
+            return self
         return None
 
     def create_edb(self, restart_rpc_server=False) -> bool:
@@ -1789,7 +1789,7 @@ class Edb(EdbInit):
                         break
                     self.close_edb()
                     self.edbpath = legacy_path
-                    self.open_edb()
+                    self.open()
                     i += 1
                     expansion = expansion_size * i
                 if working_cutout:
@@ -1875,15 +1875,15 @@ class Edb(EdbInit):
         # _cutout.simulation_setups = self.active_cell.simulation_setups see bug #433 status.
         _dbCells = [_cutout]
         if output_aedb_path:
-            db2 = self.create(output_aedb_path)
-            _success = db2.save()
-            _dbCells = _dbCells
+            from ansys.edb.core.database import Database as GrpcDatabase
+
+            db2 = GrpcDatabase.create(output_aedb_path)
             db2.copy_cells(_dbCells)  # Copies cutout cell/design to db2 project
-            if len(list(db2.circuit_cells)) > 0:
-                for net in db2.circuit_cells[0].layout.nets:
+            if len(list(db2.top_circuit_cells)) > 0:
+                for net in db2.top_circuit_cells[0].layout.nets:
                     if not net.name in included_nets_list:
                         net.delete()
-                _success = db2.save()
+                db2.save()
             for c in self.active_db.top_circuit_cells:
                 if c.name == _cutout.name:
                     c.delete()
@@ -1909,7 +1909,7 @@ class Edb(EdbInit):
                         for _cmp in _cmps:
                             _cmp.delete()
                     except:
-                        self._logger.error("Failed to remove single pin components.")
+                        self.logger.error("Failed to remove single pin components.")
                 db2.close()
                 source = os.path.join(output_aedb_path, "edb.def.tmp")
                 target = os.path.join(output_aedb_path, "edb.def")
@@ -2361,7 +2361,9 @@ class Edb(EdbInit):
 
         _dbCells = [_cutout]
         if output_aedb_path:
-            db2 = self.create(output_aedb_path)
+            from ansys.edb.core.database import Database as GrpcDatabase
+
+            db2 = GrpcDatabase.create(output_aedb_path)
             db2.save()
             cell_copied = db2.copy_cells(_dbCells)  # Copies cutout cell/design to db2 project
             cell = cell_copied[0]
@@ -2371,7 +2373,7 @@ class Edb(EdbInit):
                 if c.name == _cutout.name:
                     c.delete()
             if open_cutout_at_end:  # pragma: no cover
-                _success = db2.save()
+                db2.save()
                 self._db = db2
                 self.edbpath = output_aedb_path
                 self._active_cell = cell
@@ -2800,7 +2802,10 @@ class Edb(EdbInit):
             return True
         self.logger.reset_timer()
         if not common_reference:
-            common_reference = list(set([i.reference_net.name for i in all_sources if i.reference_net.name]))
+            ref_terminals = [term for term in all_sources if term.is_reference_terminal]
+            common_reference = list(
+                set([i.reference_terminal.net.name for i in all_sources if i.is_reference_terminal])
+            )
             if len(common_reference) > 1:
                 self.logger.error("More than 1 reference found.")
                 return False
@@ -3075,7 +3080,7 @@ class Edb(EdbInit):
         for port in self.excitations.values():
             nets.append(port.net.name)
         for port in self.sources.values():
-            nets.append(port.net_name)
+            nets.append(port.net.name)
         nets = list(set(nets))
         max_width = 0
         for net in nets:
