@@ -1,0 +1,6 @@
+delete\_single\_pin\_rlc
+========================
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.delete_single_pin_rlc

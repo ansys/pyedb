@@ -1,0 +1,6 @@
+perform\_adaptive\_refinement
+=============================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoproperty:: DCAdvancedSettings.perform_adaptive_refinement

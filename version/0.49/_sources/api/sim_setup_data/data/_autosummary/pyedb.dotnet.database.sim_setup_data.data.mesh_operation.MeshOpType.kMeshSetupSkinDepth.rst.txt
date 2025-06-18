@@ -1,0 +1,6 @@
+kMeshSetupSkinDepth
+===================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.mesh_operation
+
+.. autoattribute:: MeshOpType.kMeshSetupSkinDepth

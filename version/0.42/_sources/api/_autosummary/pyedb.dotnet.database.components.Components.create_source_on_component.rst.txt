@@ -1,0 +1,6 @@
+create\_source\_on\_component
+=============================
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.create_source_on_component

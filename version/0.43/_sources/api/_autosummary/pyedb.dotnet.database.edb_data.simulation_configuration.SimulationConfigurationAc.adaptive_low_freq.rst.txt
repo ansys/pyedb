@@ -1,0 +1,6 @@
+adaptive\_low\_freq
+===================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationAc.adaptive_low_freq

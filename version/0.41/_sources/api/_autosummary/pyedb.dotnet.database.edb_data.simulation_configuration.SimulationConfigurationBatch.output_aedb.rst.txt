@@ -1,0 +1,6 @@
+output\_aedb
+============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationBatch.output_aedb

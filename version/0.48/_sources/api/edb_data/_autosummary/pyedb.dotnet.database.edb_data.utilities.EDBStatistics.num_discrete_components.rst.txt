@@ -1,0 +1,6 @@
+num\_discrete\_components
+=========================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.utilities
+
+.. autoproperty:: EDBStatistics.num_discrete_components

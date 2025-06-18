@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.dotnet.database.utilities.simulation_setup
+
+.. automethod:: SimulationSetup.delete

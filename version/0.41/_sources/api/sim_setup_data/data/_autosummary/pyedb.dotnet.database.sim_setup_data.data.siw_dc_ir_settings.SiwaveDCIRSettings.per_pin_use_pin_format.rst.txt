@@ -1,0 +1,6 @@
+per\_pin\_use\_pin\_format
+==========================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings
+
+.. autoproperty:: SiwaveDCIRSettings.per_pin_use_pin_format

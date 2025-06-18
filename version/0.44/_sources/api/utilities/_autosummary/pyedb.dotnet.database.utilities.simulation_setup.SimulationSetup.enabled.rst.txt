@@ -1,0 +1,6 @@
+enabled
+=======
+
+.. currentmodule:: pyedb.dotnet.database.utilities.simulation_setup
+
+.. autoproperty:: SimulationSetup.enabled

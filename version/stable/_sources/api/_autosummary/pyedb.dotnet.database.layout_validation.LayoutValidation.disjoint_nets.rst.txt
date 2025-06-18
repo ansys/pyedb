@@ -1,0 +1,6 @@
+disjoint\_nets
+==============
+
+.. currentmodule:: pyedb.dotnet.database.layout_validation
+
+.. automethod:: LayoutValidation.disjoint_nets

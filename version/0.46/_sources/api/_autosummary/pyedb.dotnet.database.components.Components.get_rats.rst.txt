@@ -1,0 +1,6 @@
+get\_rats
+=========
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.get_rats

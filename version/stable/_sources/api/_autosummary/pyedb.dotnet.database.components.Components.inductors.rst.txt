@@ -1,0 +1,6 @@
+inductors
+=========
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. autoproperty:: Components.inductors

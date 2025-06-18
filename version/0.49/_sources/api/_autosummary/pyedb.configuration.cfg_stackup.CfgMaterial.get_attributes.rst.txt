@@ -1,0 +1,6 @@
+get\_attributes
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_stackup
+
+.. automethod:: CfgMaterial.get_attributes

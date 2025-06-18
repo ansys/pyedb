@@ -1,0 +1,6 @@
+add\_net
+========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.nets_data
+
+.. automethod:: EDBDifferentialPairData.add_net

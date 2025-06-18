@@ -1,0 +1,40 @@
+﻿CfgOperations
+=============
+
+.. currentmodule:: pyedb.configuration.cfg_operations
+
+.. autoclass:: CfgOperations
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgOperations.apply
+      
+      
+      CfgOperations.get_attributes
+      
+      
+      CfgOperations.get_data_from_db
+      
+      
+      CfgOperations.set_attributes
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CfgOperations.protected_attributes
+   
+   

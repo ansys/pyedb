@@ -1,0 +1,2441 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>EDB: post-layout parameterization &#8212; PyEDB</title>
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css\ansys_sphinx_theme.css?v=a362721a" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=f31ec3dc" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+ 
+<link href="../../_static/css/breadcrumbs.css" rel="stylesheet" />
+
+    <script src="../../_static/documentation_options.js?v=f2fe71c6"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="../../_static/js\table.js?v=b64f5182"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/legacy_standalone/11_post_layout_parameterization';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.22';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Use configuration" href="../use_configuration/index.html" />
+    <link rel="prev" title="EDB: Edit Control File and import gds" href="10_GDS_workflow.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/examples/legacy_standalone/11_post_layout_parameterization.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container"><!-- Debugging: html_theme_options =  -->
+ 
+<!-- Include the MeiliSearch CSS stylesheet only if theme present -->
+<link href="../../_static/css/meilisearch.css" rel="stylesheet" />
+
+<!-- Create a search bar form with a text input and a dropdown selector for the search index -->
+<form
+  class="bd-search d-flex align-items-center"
+  action="../../search.html"
+  method="get"
+>
+  <i class="fa fa-search" aria-hidden="true" id="search-icon"></i>
+  <input
+    type="search"
+    placeholder="Search"
+    class="form-control"
+    id="search-bar-input"
+    autofocus
+  />
+  <span class="search-button__kbd-shortcut"
+    ><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span
+  >
+  <style>
+    .bd-search .search-button__kbd-shortcut {
+      right: 33%;
+    }
+  </style>
+  
+  <select id="indexUidSelector" class="index-select">
+    
+    <option value="pyedb-v0-22">PyEDB</option>
+    
+  </select>
+  
+  <!-- Include the MeiliSearch JavaScript library for the search bar -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+
+    
+  <script>
+    var HOST_URL = "https://backend.search.pyansys.com/";
+    var API_KEY = "9fbccc76c147935ce2b562a9ee0c6669276987572dc1f22491cea72e9e99f35d";
+    var indexUid = "pyedb-v0-22";
+  </script>
+
+  <script src="../../_static/js/meilisearch_theme_wrap.js"></script>
+</form>
+</div>
+  </div>
+   
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/pyansys-logo-black-cropped.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <script>document.write(`<img src="../../_static/pyansys-logo-black-cropped.png" class="logo__image only-dark" alt="PyEDB - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../getting_started/index.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../user_guide/index.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../api/index.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../contributing.html">
+                        Contribute
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.22/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../getting_started/index.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../user_guide/index.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../api/index.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../contributing.html">
+                        Contribute
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.22/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../legacy_pyaedt_integration/index.html">AEDT integration</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Standalone</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="00_EDB_Create_VIA.html">EDB: geometry creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_edb_example.html">EDB: SIwave DC-IR Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_edb_to_ipc2581.html">EDB: IPC2581 export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_rename_nets_and_ports.html">EDB: Rename nets and ports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_Plot_nets.html">EDB: plot nets with Matplotlib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06_Advanced_EDB.html">EDB: parametric via creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_CPWG.html">EDB: fully parametrized CPWG design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_GDS_workflow.html">EDB: Edit Control File and import gds</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">EDB: post-layout parameterization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../use_configuration/index.html">Use configuration</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../index.html" class="nav-link">Examples</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">Standalone</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page">EDB: post-layout parameterization</li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="EDB:-post-layout-parameterization">
+<h1>EDB: post-layout parameterization<a class="headerlink" href="#EDB:-post-layout-parameterization" title="Link to this heading">#</a></h1>
+<p>This example shows you how to parameterize the signal net in post-layout.</p>
+<p>Define input parameters.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">signal_net_name</span> <span class="o">=</span> <span class="s2">&quot;DDR4_ALERT3&quot;</span>
+<span class="n">coplanar_plane_net_name</span> <span class="o">=</span> <span class="s2">&quot;1V0&quot;</span>  <span class="c1"># Specify name of coplanar plane net for adding clearance</span>
+<span class="n">layers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;16_Bottom&quot;</span><span class="p">]</span>  <span class="c1"># Specify layers to parameterize</span>
+</pre></div>
+</div>
+</div>
+<p>Perform required imports.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="kn">import</span> <span class="nn">pyedb</span>
+<span class="kn">from</span> <span class="nn">pyedb.misc.downloads</span> <span class="kn">import</span> <span class="n">download_file</span>
+
+<span class="n">temp_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.ansys&quot;</span><span class="p">)</span>
+
+<span class="c1"># Download and open example layout file in edb format.</span>
+
+<span class="n">edb_path</span> <span class="o">=</span> <span class="n">download_file</span><span class="p">(</span><span class="s2">&quot;edb/ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">temp_dir</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="c1"># Select EDB version (change it manually if needed, e.g. &quot;2024.1&quot;)</span>
+<span class="n">edb_version</span> <span class="o">=</span> <span class="s2">&quot;2024.1&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EDB version: </span><span class="si">{</span><span class="n">edb_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">pyedb</span><span class="o">.</span><span class="n">Edb</span><span class="p">(</span><span class="n">edb_path</span><span class="p">,</span> <span class="n">edbversion</span><span class="o">=</span><span class="n">edb_version</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+EDB version: 2024.1
+PyEDB INFO: StdOut is enabled
+PyEDB INFO: Logger is initialized in EDB.
+PyEDB INFO: legacy v0.22.1
+PyEDB INFO: Python version 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\4279114658.py&#34;, line 17, in &lt;module&gt;
+    edb = pyedb.Edb(edb_path, edbversion=edb_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\generic\design_types.py&#34;, line 110, in Edb
+    return app(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 196, in __init__
+    Database.__init__(self, edbversion=edbversion, student_version=student_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb_core\dotnet\database.py&#34;, line 824, in __init__
+    EdbDotNet.__init__(self, edbversion=edbversion, student_version=student_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb_core\dotnet\database.py&#34;, line 725, in __init__
+    self._logger.enable_stdout_log()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 318, in enable_stdout_log
+    self.info(&#34;StdOut is enabled&#34;)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 346, in info
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;StdOut is enabled&#39;
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\4279114658.py&#34;, line 17, in &lt;module&gt;
+    edb = pyedb.Edb(edb_path, edbversion=edb_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\generic\design_types.py&#34;, line 110, in Edb
+    return app(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 196, in __init__
+    Database.__init__(self, edbversion=edbversion, student_version=student_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb_core\dotnet\database.py&#34;, line 824, in __init__
+    EdbDotNet.__init__(self, edbversion=edbversion, student_version=student_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb_core\dotnet\database.py&#34;, line 731, in __init__
+    self._logger.info(&#34;Logger is initialized in EDB.&#34;)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 346, in info
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Logger is initialized in EDB.&#39;
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\4279114658.py&#34;, line 17, in &lt;module&gt;
+    edb = pyedb.Edb(edb_path, edbversion=edb_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\generic\design_types.py&#34;, line 110, in Edb
+    return app(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 196, in __init__
+    Database.__init__(self, edbversion=edbversion, student_version=student_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb_core\dotnet\database.py&#34;, line 824, in __init__
+    EdbDotNet.__init__(self, edbversion=edbversion, student_version=student_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb_core\dotnet\database.py&#34;, line 732, in __init__
+    self._logger.info(&#34;legacy v%s&#34;, __version__)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 346, in info
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;legacy v%s&#39;
+Arguments: (&#39;0.22.1&#39;,)
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\4279114658.py&#34;, line 17, in &lt;module&gt;
+    edb = pyedb.Edb(edb_path, edbversion=edb_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\generic\design_types.py&#34;, line 110, in Edb
+    return app(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 196, in __init__
+    Database.__init__(self, edbversion=edbversion, student_version=student_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb_core\dotnet\database.py&#34;, line 824, in __init__
+    EdbDotNet.__init__(self, edbversion=edbversion, student_version=student_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb_core\dotnet\database.py&#34;, line 733, in __init__
+    self._logger.info(&#34;Python version %s&#34;, sys.version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 346, in info
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Python version %s&#39;
+Arguments: (&#39;3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]&#39;,)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PyEDB INFO: Database ANSYS-HSD_V1.aedb Opened in 2024.1
+PyEDB INFO: Cell main Opened
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\4279114658.py&#34;, line 17, in &lt;module&gt;
+    edb = pyedb.Edb(edb_path, edbversion=edb_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\generic\design_types.py&#34;, line 110, in Edb
+    return app(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 276, in __init__
+    self.open_edb()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 554, in open_edb
+    self.logger.info(&#34;Database {} Opened in {}&#34;.format(os.path.split(self.edbpath)[-1], self.edbversion))
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 346, in info
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Database ANSYS-HSD_V1.aedb Opened in 2024.1&#39;
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\4279114658.py&#34;, line 17, in &lt;module&gt;
+    edb = pyedb.Edb(edb_path, edbversion=edb_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\generic\design_types.py&#34;, line 110, in Edb
+    return app(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 276, in __init__
+    self.open_edb()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 564, in open_edb
+    self.logger.info(&#34;Cell %s Opened&#34;, self._active_cell.GetName())
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 346, in info
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Cell %s Opened&#39;
+Arguments: (&#39;main&#39;,)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PyEDB INFO: Builder was initialized.
+PyEDB INFO: EDB initialized.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\4279114658.py&#34;, line 17, in &lt;module&gt;
+    edb = pyedb.Edb(edb_path, edbversion=edb_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\generic\design_types.py&#34;, line 110, in Edb
+    return app(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 276, in __init__
+    self.open_edb()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 567, in open_edb
+    self.logger.info(&#34;Builder was initialized.&#34;)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 346, in info
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Builder was initialized.&#39;
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\4279114658.py&#34;, line 17, in &lt;module&gt;
+    edb = pyedb.Edb(edb_path, edbversion=edb_version)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\generic\design_types.py&#34;, line 110, in Edb
+    return app(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 278, in __init__
+    self.logger.info(&#34;EDB initialized.&#34;)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 346, in info
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;EDB initialized.&#39;
+Arguments: ()
+</pre></div></div>
+</div>
+<section id="Create-cutout">
+<h2>Create cutout<a class="headerlink" href="#Create-cutout" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Edb.cutout()</span></code> method takes a list of signal nets as the first argument and a list of reference nets as the second argument.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edb</span><span class="o">.</span><span class="n">cutout</span><span class="p">([</span><span class="n">signal_net_name</span><span class="p">],</span> <span class="p">[</span><span class="n">coplanar_plane_net_name</span><span class="p">,</span> <span class="s2">&quot;GND&quot;</span><span class="p">],</span> <span class="n">remove_single_pin_components</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PyEDB INFO: Cutout Multithread started.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\1658113231.py&#34;, line 1, in &lt;module&gt;
+    edb.cutout([signal_net_name], [coplanar_plane_net_name, &#34;GND&#34;], remove_single_pin_components=True)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 1951, in cutout
+    result = self._create_cutout_multithread(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 2187, in _create_cutout_multithread
+    self.logger.info(&#34;Cutout Multithread started.&#34;)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 346, in info
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Cutout Multithread started.&#39;
+Arguments: ()
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PyEDB INFO: Net clean up Elapsed time: 0m 6sec
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\1658113231.py&#34;, line 1, in &lt;module&gt;
+    edb.cutout([signal_net_name], [coplanar_plane_net_name, &#34;GND&#34;], remove_single_pin_components=True)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 1951, in cutout
+    result = self._create_cutout_multithread(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 2247, in _create_cutout_multithread
+    self.logger.info_timer(&#34;Net clean up&#34;)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 372, in info_timer
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Net clean up Elapsed time: 0m 6sec&#39;
+Arguments: ()
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PyEDB INFO: Expanded Net Polygon Creation Elapsed time: 0m 1sec
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\1658113231.py&#34;, line 1, in &lt;module&gt;
+    edb.cutout([signal_net_name], [coplanar_plane_net_name, &#34;GND&#34;], remove_single_pin_components=True)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 1951, in cutout
+    result = self._create_cutout_multithread(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 2291, in _create_cutout_multithread
+    self.logger.info_timer(&#34;Expanded Net Polygon Creation&#34;)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 372, in info_timer
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Expanded Net Polygon Creation Elapsed time: 0m 1sec&#39;
+Arguments: ()
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PyEDB INFO: Padstack Instances removal completed. 1981 instances removed. Elapsed time: 0m 1sec
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\1658113231.py&#34;, line 1, in &lt;module&gt;
+    edb.cutout([signal_net_name], [coplanar_plane_net_name, &#34;GND&#34;], remove_single_pin_components=True)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 1951, in cutout
+    result = self._create_cutout_multithread(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 2374, in _create_cutout_multithread
+    self.logger.info_timer(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 372, in info_timer
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Padstack Instances removal completed. 1981 instances removed. Elapsed time: 0m 1sec&#39;
+Arguments: ()
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PyEDB INFO: Primitives cleanup completed. 474 primitives deleted. Elapsed time: 0m 4sec
+PyEDB INFO: Deleted 824 additional components
+PyEDB INFO: Deleted 453 components
+PyEDB INFO: Single Pins components deleted Elapsed time: 0m 0sec
+PyEDB INFO: Cutout completed. Elapsed time: 0m 12sec
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\1658113231.py&#34;, line 1, in &lt;module&gt;
+    edb.cutout([signal_net_name], [coplanar_plane_net_name, &#34;GND&#34;], remove_single_pin_components=True)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 1951, in cutout
+    result = self._create_cutout_multithread(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 2395, in _create_cutout_multithread
+    self.logger.info_timer(&#34;Primitives cleanup completed. {} primitives deleted.&#34;.format(len(prims_to_delete)))
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 372, in info_timer
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Primitives cleanup completed. 474 primitives deleted. Elapsed time: 0m 4sec&#39;
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\1658113231.py&#34;, line 1, in &lt;module&gt;
+    edb.cutout([signal_net_name], [coplanar_plane_net_name, &#34;GND&#34;], remove_single_pin_components=True)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 1951, in cutout
+    result = self._create_cutout_multithread(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 2404, in _create_cutout_multithread
+    self.logger.info(&#34;Deleted {} additional components&#34;.format(i))
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 346, in info
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Deleted 824 additional components&#39;
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\1658113231.py&#34;, line 1, in &lt;module&gt;
+    edb.cutout([signal_net_name], [coplanar_plane_net_name, &#34;GND&#34;], remove_single_pin_components=True)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 1951, in cutout
+    result = self._create_cutout_multithread(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 2406, in _create_cutout_multithread
+    self.components.delete_single_pin_rlc()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb_core\components.py&#34;, line 1908, in delete_single_pin_rlc
+    self._pedb._logger.info(&#34;Deleted {} components&#34;.format(len(deleted_comps)))
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 346, in info
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Deleted 453 components&#39;
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\1658113231.py&#34;, line 1, in &lt;module&gt;
+    edb.cutout([signal_net_name], [coplanar_plane_net_name, &#34;GND&#34;], remove_single_pin_components=True)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 1951, in cutout
+    result = self._create_cutout_multithread(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 2407, in _create_cutout_multithread
+    self.logger.info_timer(&#34;Single Pins components deleted&#34;)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 372, in info_timer
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Single Pins components deleted Elapsed time: 0m 0sec&#39;
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\1658113231.py&#34;, line 1, in &lt;module&gt;
+    edb.cutout([signal_net_name], [coplanar_plane_net_name, &#34;GND&#34;], remove_single_pin_components=True)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 1951, in cutout
+    result = self._create_cutout_multithread(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 2412, in _create_cutout_multithread
+    self.logger.info_timer(&#34;Cutout completed.&#34;, timer_start)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 372, in info_timer
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Cutout completed. Elapsed time: 0m 12sec&#39;
+Arguments: ()
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[[0.04833361583642983, 0.06845950802472248],
+ [0.04839217710290317, 0.06820646420842003],
+ [0.048476096302053164, 0.06797637324983577],
+ [0.048586150580908885, 0.06776080406509359],
+ [0.048672445716054995, 0.06762130958381865],
+ [0.05067176818706848, 0.06491330967510935],
+ [0.050769291930717185, 0.0648000049584815],
+ [0.05114842692016208, 0.06442086996903659],
+ [0.05120289468443713, 0.0643703064923304],
+ [0.08720212328418347, 0.03335982576863652],
+ [0.08735511697746182, 0.03325121473069015],
+ [0.0877047359472929, 0.03304936212434437],
+ [0.0882134021373534, 0.032913065429500635],
+ [0.08878659946264658, 0.032913065429500635],
+ [0.08929526565270708, 0.03304936212434437],
+ [0.08979166909779229, 0.03333596078699098],
+ [0.09016403859300909, 0.033708330282207793],
+ [0.09045063725565565, 0.034204733727292984],
+ [0.09058693395049935, 0.034713399917353435],
+ [0.09058693395049935, 0.03503044372649857],
+ [0.09058683166450263, 0.03504474631880416],
+ [0.09048967107082366, 0.04183735396100174],
+ [0.09048926753190141, 0.04185485402368393],
+ [0.08978637017721422, 0.0639458794927306],
+ [0.0897676295798525, 0.0641094442946288],
+ [0.08970628997324057, 0.06441781932138024],
+ [0.0895555258600598, 0.06478179608814026],
+ [0.08937199173688463, 0.06505647431452988],
+ [0.08924732876262124, 0.06520837658818007],
+ [0.0880208395789273, 0.06643486577187402],
+ [0.08788643646933333, 0.06654755746655197],
+ [0.08679664168378841, 0.06730942192276895],
+ [0.08676294623404525, 0.06733197520160766],
+ [0.08667866067063877, 0.06738594842571934],
+ [0.08658597244333009, 0.06743856277022901],
+ [0.08636336408365564, 0.06754969080651728],
+ [0.08602704906993228, 0.06764934763029656],
+ [0.08581990776977562, 0.06767288408064792],
+ [0.08580812308064588, 0.06767415242192924],
+ [0.051806832872544235, 0.07112987171313323],
+ [0.05170565396058174, 0.07113500016000002],
+ [0.050887072320460844, 0.07113500016000002],
+ [0.050691511158220036, 0.07111573906668872],
+ [0.05046879970844227, 0.07107143900497076],
+ [0.050289214965552706, 0.0710178513978896],
+ [0.04953634065667003, 0.07071397723210866],
+ [0.04935457314629638, 0.07061787855828856],
+ [0.04915820200547062, 0.070486667556885],
+ [0.04900629973182032, 0.07036200458262161],
+ [0.04883555655902538, 0.07019126140982673],
+ [0.04868479628064163, 0.06999824426118566],
+ [0.04853182672022683, 0.06974350703807211],
+ [0.048427348957554184, 0.06950305012843623],
+ [0.0483566751331029, 0.0692563340940017],
+ [0.048318457999324806, 0.0690144173068744],
+ [0.04830834906256023, 0.06872046150414503]]
+</pre></div></div>
+</div>
+<p>Retrieve the path segments from the signal net.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="p">[</span><span class="n">signal_net_name</span><span class="p">]</span>
+<span class="n">trace_segments</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">primitives</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">layer_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;Path&quot;</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">trace_segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Create and assign delta w variable per layer.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">trace_segments</span><span class="p">:</span>
+    <span class="n">vname</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">net_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">_dw&quot;</span>
+    <span class="k">if</span> <span class="n">vname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edb</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+        <span class="n">edb</span><span class="p">[</span><span class="n">vname</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;0mm&quot;</span>
+    <span class="n">new_w</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">width</span><span class="si">}</span><span class="s2">+</span><span class="si">{</span><span class="n">vname</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">new_w</span>
+</pre></div>
+</div>
+</div>
+<p>Delete existing clearance.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">trace_segments</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">edb</span><span class="o">.</span><span class="n">modeler</span><span class="o">.</span><span class="n">get_polygons_by_layer</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">layer_name</span><span class="p">,</span> <span class="n">coplanar_plane_net_name</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">voids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_intersecting</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                <span class="n">v</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Create and assign the clearance variable for each layer.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">trace_segments</span><span class="p">:</span>
+    <span class="n">clr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">net_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">_clr&quot;</span>
+    <span class="k">if</span> <span class="n">clr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edb</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+        <span class="n">edb</span><span class="p">[</span><span class="n">clr</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;0.5mm&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get_center_line</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">edb</span><span class="o">.</span><span class="n">modeler</span><span class="o">.</span><span class="n">get_polygons_by_layer</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">layer_name</span><span class="p">,</span> <span class="n">coplanar_plane_net_name</span><span class="p">):</span>
+        <span class="n">void</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">modeler</span><span class="o">.</span><span class="n">create_trace</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">layer_name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">width</span><span class="si">}</span><span class="s2">+</span><span class="si">{</span><span class="n">clr</span><span class="si">}</span><span class="s2">*2&quot;</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">add_void</span><span class="p">(</span><span class="n">void</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Visualize the layout.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">layers</span><span class="o">=</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PyEDB INFO: Nets Point Generation time 1.062 seconds
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\2517840524.py&#34;, line 1, in &lt;module&gt;
+    edb.nets.plot(layers=layers[0], size=2000)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb_core\nets.py&#34;, line 843, in plot
+    object_lists = self.get_plot_data(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb_core\nets.py&#34;, line 759, in get_plot_data
+    self._logger.info(&#34;Nets Point Generation time %s seconds&#34;, round(end_time, 3))
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 346, in info
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;Nets Point Generation time %s seconds&#39;
+Arguments: (1.062,)
+C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\generic\plot.py:144: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+  plt.show()
+</pre></div></div>
+</div>
+<p>Save the AEDB file and close EDB.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">save_edb_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_dir</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;post_layout_parameterization.aedb&quot;</span><span class="p">)</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">save_edb_as</span><span class="p">(</span><span class="n">save_edb_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Edb is saved to &quot;</span><span class="p">,</span> <span class="n">save_edb_path</span><span class="p">)</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">close_edb</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PyEDB INFO: EDB file save time: 0.00ms
+Edb is saved to  C:\Users\ansys\AppData\Local\Temp\tmp4edfc51p.ansys\post_layout_parameterization.aedb
+PyEDB INFO: EDB file release time: 15.68ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\1240618542.py&#34;, line 2, in &lt;module&gt;
+    edb.save_edb_as(save_edb_path)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 1392, in save_edb_as
+    self.logger.info(&#34;EDB file save time: {0:.2f}ms&#34;.format(elapsed_time * 1000.0))
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 346, in info
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;EDB file save time: 0.00ms&#39;
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 74, in emit
+    self.doRollover()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 179, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\logging\handlers.py&#34;, line 115, in rotate
+    os.rename(source, dest)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log&#39; -&gt; &#39;C:\\Users\\ansys\\AppData\\Local\\Temp\\pyedb_ansys.log.1&#39;
+Call stack:
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\runpy.py&#34;, line 86, in _run_code
+    exec(code, run_globals)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel_launcher.py&#34;, line 18, in &lt;module&gt;
+    app.launch_new_instance()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\traitlets\config\application.py&#34;, line 1075, in launch_instance
+    app.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelapp.py&#34;, line 739, in start
+    self.io_loop.start()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\tornado\platform\asyncio.py&#34;, line 205, in start
+    self.asyncio_loop.run_forever()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 603, in run_forever
+    self._run_once()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\base_events.py&#34;, line 1909, in _run_once
+    handle._run()
+  File &#34;C:\actions-runner\_work\_tool\Python\3.10.11\x64\lib\asyncio\events.py&#34;, line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 545, in dispatch_queue
+    await self.process_one()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 534, in process_one
+    await dispatch(*args)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 437, in dispatch_shell
+    await result
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 362, in execute_request
+    await super().execute_request(stream, ident, parent)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\kernelbase.py&#34;, line 778, in execute_request
+    reply_content = await reply_content
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\ipkernel.py&#34;, line 449, in do_execute
+    res = shell.run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\ipykernel\zmqshell.py&#34;, line 549, in run_cell
+    return super().run_cell(*args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3075, in run_cell
+    result = self._run_cell(
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3130, in _run_cell
+    result = runner(coro)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\async_helpers.py&#34;, line 128, in _pseudo_sync_runner
+    coro.send(None)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3334, in run_cell_async
+    has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3517, in run_ast_nodes
+    if await self.run_code(code, result, async_=asy):
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\IPython\core\interactiveshell.py&#34;, line 3577, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &#34;C:\Users\ansys\AppData\Local\Temp\ipykernel_5776\1240618542.py&#34;, line 4, in &lt;module&gt;
+    edb.close_edb()
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\dotnet\edb.py&#34;, line 1353, in close_edb
+    self.logger.info(&#34;EDB file release time: {0:.2f}ms&#34;.format(elapsed_time * 1000.0))
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 346, in info
+    return self._log_on_handler(0, msg, *args, **kwargs)
+  File &#34;C:\actions-runner\_work\pyedb\pyedb\.venv\lib\site-packages\pyedb\edb_logger.py&#34;, line 293, in _log_on_handler
+    self._global.info(message_text, *args, **kwargs)
+Message: &#39;EDB file release time: 15.68ms&#39;
+Arguments: ()
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+True
+</pre></div></div>
+</div>
+<p>Clean up the temporary folder.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">temp_dir</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Create-cutout">Create cutout</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="https://github.com/ansys/pyedb/edit/main/doc/source/examples/legacy_standalone/11_post_layout_parameterization.py">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/examples/legacy_standalone/11_post_layout_parameterization.py.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2024 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  0.16.6. <br />Last updated on
+  <span id="date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var lastModifiedDate = new Date(document.lastModified);
+  var date = lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("date").innerHTML = date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

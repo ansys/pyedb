@@ -1,0 +1,6 @@
+use\_cells\_per\_wavelength
+===========================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data
+
+.. autoproperty:: RaptorXSimulationAdvancedSettings.use_cells_per_wavelength

@@ -1,0 +1,6 @@
+to\_dict
+========
+
+.. currentmodule:: pyedb.configuration.cfg_setup
+
+.. automethod:: CfgSIwaveACSetup.to_dict

@@ -1,0 +1,6 @@
+illegal\_rlc\_values
+====================
+
+.. currentmodule:: pyedb.dotnet.database.layout_validation
+
+.. automethod:: LayoutValidation.illegal_rlc_values

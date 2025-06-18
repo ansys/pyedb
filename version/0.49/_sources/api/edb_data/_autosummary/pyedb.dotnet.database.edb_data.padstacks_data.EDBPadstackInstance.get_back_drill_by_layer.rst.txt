@@ -1,0 +1,6 @@
+get\_back\_drill\_by\_layer
+===========================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. automethod:: EDBPadstackInstance.get_back_drill_by_layer
