@@ -132,7 +132,7 @@ class Component(GrpcComponentGroup):
         self.enabled = value
 
     @property
-    def ic_die_properties(self) -> ICDieProperty:
+    def ic_die_properties(self) -> any:
         """IC Die property.
 
         returns
@@ -877,12 +877,20 @@ class Component(GrpcComponentGroup):
     def numpins(self) -> int:
         """Number of Pins of Component.
 
+        ..deprecated:: 0.51.0
+           Use: func:`num_pins` instead.
         Returns
         -------
         int
             Component pins number.
         """
-        return self.num_pins
+
+        warnings.warn("Use num_pins instead.", DeprecationWarning)
+        try:
+            return self.num_pins
+        except Exception as e:
+            self._pedb.logger.error(f"{e}")
+            return 0
 
     @property
     def partname(self) -> str:

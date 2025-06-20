@@ -535,7 +535,7 @@ class TestClass:
             assert edbapp.terminals["Port_GND_U1_AU38"].boundary_type == "PecBoundary"
             assert edbapp.terminals["Port_GND_U1_AU38_ref"].boundary_type == "PecBoundary"
         edbapp.components.deactivate_rlc_component(component="C5", create_circuit_port=True, pec_boundary=True)
-        edbapp.components.add_port_on_rlc_component(component="C65", circuit_ports=False, pec_boundary=True)
+        edbapp.source_excitation.add_port_on_rlc_component(component="C65", circuit_ports=False, pec_boundary=True)
         if edbapp.grpc:
             assert edbapp.terminals["C5"].boundary_type == "pec"
             assert edbapp.terminals["C65"].boundary_type == "pec"
@@ -578,8 +578,8 @@ class TestClass:
         """Check the creation of package definition."""
         # Done
         edb = edb_examples.get_si_verse()
-        assert edb.components["C200"].create_package_def(component_part_name="SMTC-MECT-110-01-M-D-RA1_V")
-        assert not edb.components["C200"].create_package_def()
+        assert edb.components["C200"].create_package_def(name="SMTC-MECT-110-01-M-D-RA1_V")
+        assert edb.components["C200"].create_package_def()
         assert edb.components["C200"].package_def.name == "C200_CAPC3216X180X55ML20T25"
         edb.close_edb()
 
