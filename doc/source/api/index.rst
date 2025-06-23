@@ -18,22 +18,36 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
   :alt: EDB apps
   :target: https://www.ansys.com/applications/pcbs-ics-ic-packages
 
+.. tab-set::
 
-**Example**
+       .. tab-item:: gRPC
 
-.. code:: python
+            .. code-block:: python
 
-    from pyedb.grpc.edb import Edb
+                from pyedb.grpc.edb import Edb
 
-    edb = Edb("my_project.aedb", edbversion="2025.2")
-    edb.core_components.components["R1"].r_value = 40
-    edb.close_edb()
+                edb = Edb("my_project.aedb", edbversion="2025.2")
+                edb.core_components.components["R1"].r_value = 40
+                edb.close_edb()
+
+            .. toctree::
+               :maxdepth: 2
+
+               edb
+               database/index
+
+        .. tab-item:: DotNet
+
+            .. code-block:: python
+
+                from pyedb.grpc.edb import Edb
+
+                edb = Edb("my_project.aedb", edbversion="2025.2")
+                edb.core_components.components["R1"].r_value = 40
+                edb.close_edb()
 
 
-.. toctree::
-   :maxdepth: 2
 
-   edb
-   database/index
+
 
 
