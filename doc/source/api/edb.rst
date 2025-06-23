@@ -19,7 +19,7 @@ It can be opened and edited using the ``Edb`` class.
 
     from pyedb.grpc.edb import Edb
 
-    # this call returns the Edb class initialized on 2024R2
+    # this call returns the Edb class initialized on 2025R2
     edb = Edb(myedb, edbversion="2025.2")
 
     ...

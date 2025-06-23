@@ -178,13 +178,13 @@ class Edb(EdbInit):
 
     Examples
     --------
-    Create new EDB:
+    >>> # Create new EDB:
     >>> edb = Edb()
 
-    Open existing AEDB:
+    >>> # Open existing AEDB:
     >>> edb = Edb("myproject.aedb")
 
-    Import board file:
+    >>> # Import board file:
     >>> edb = Edb("my_board.brd")
     """
 
