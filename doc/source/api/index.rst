@@ -23,9 +23,9 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
 
 .. code:: python
 
-    from pyedb import Edb
+    from pyedb.grpc.edb import Edb
 
-    edb = Edb("my_project.aedb", edbversion="2023.1")
+    edb = Edb("my_project.aedb", edbversion="2025.2")
     edb.core_components.components["R1"].r_value = 40
     edb.close_edb()
 
@@ -33,12 +33,7 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
 .. toctree::
    :maxdepth: 2
 
-   dotnet/CoreEdb
-   dotnet/edb_data/index
-   dotnet/sim_setup_data/data/index
-   dotnet/sim_setup_data/io/index
-   dotnet/utilities/index
-   dotnet/SiWave
-   SimulationConfigurationv2
+   edb
+   database/index
 
 
