@@ -95,7 +95,7 @@ These classes are the containers of simulation configuration constructors V2.0 f
    :nosignatures:
 
    CfgTerminalInfo
-   CfgCoordianteTerminalInfo
+   CfgCoordinateTerminalInfo
    CfgNearestPinTerminalInfo
    CfgSources
    CfgPorts
