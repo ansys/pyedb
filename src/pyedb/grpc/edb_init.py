@@ -300,7 +300,10 @@ class EdbInit(object):
         version : str
             EDB version to save to. Empty string means current version.
         """
-        return self._db.save_as(path, version)
+        self._db.save_as(path, version)
+        if os.path.exists(path):
+            return True
+        return False
 
     @property
     def directory(self):
