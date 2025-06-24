@@ -81,7 +81,7 @@ if is_linux:  # pragma: no cover
                 )
             runtime_spec = candidates[0]
     # Use specific .NET core runtime
-    if dotnet_root is not None and runtime_config is not None:
+    if dotnet_root is not None and (runtime_config is not None or runtime_spec is not None):
         try:
             load(
                 "coreclr",
