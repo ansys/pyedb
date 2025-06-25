@@ -136,9 +136,9 @@ class CfgComponent(CfgBase):
             die_type = pascal_to_snake(ic_die_prop.die_type.name)
             temp["type"] = die_type
             if not die_type == "no_die":
-                temp["orientation"] = ic_die_prop.die_orientation.name.lower()
+                temp["orientation"] = pascal_to_snake(ic_die_prop.die_orientation.name)
                 if die_type == "wire_bond":
-                    temp["height"] = str(ic_die_prop.height.value)
+                    temp["height"] = ic_die_prop.height.value
 
             self.parent.ic_die_properties = temp
 
@@ -183,10 +183,10 @@ class CfgComponent(CfgBase):
                 uses_solder_ball = solder_ball_prop.uses_solderball
 
                 temp["uses_solder_ball"] = uses_solder_ball
-                temp["shape"] = shape.lower()
-                temp["diameter"] = str(diam)
-                temp["mid_diameter"] = str(mid_diam)
-                temp["height"] = str(height)
+                temp["shape"] = pascal_to_snake(shape)
+                temp["diameter"] = diam
+                temp["mid_diameter"] = mid_diam
+                temp["height"] = height
                 temp["material"] = material
 
                 self.parent.solder_ball_properties = temp
@@ -262,7 +262,7 @@ class CfgComponent(CfgBase):
         def set_parameters_to_edb(self):
             if self.parent.type:
                 self.pyedb_obj.type = self.parent.type
-            if self.parent.enabled is not None:
+            if self.parent.enabled:
                 self.pyedb_obj.enabled = self.parent.enabled
 
             self._set_model_properties_to_edb()
@@ -495,7 +495,7 @@ class CfgComponent(CfgBase):
 
         self.port_properties = kwargs.get("port_properties", {})
         self.solder_ball_properties = kwargs.get("solder_ball_properties", {})
-        self.ic_die_properties = kwargs.get("ic_die_properties", {"type": "no_die"})
+        self.ic_die_properties = kwargs.get("ic_die_properties", {})
         self.pin_pair_model = kwargs.get("pin_pair_model", [])
         self.spice_model = kwargs.get("spice_model", {})
         self.s_parameter_model = kwargs.get("s_parameter_model", {})
