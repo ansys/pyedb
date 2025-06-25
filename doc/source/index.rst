@@ -26,7 +26,7 @@ API to make scripting simpler.
 
     .. grid-item-card:: API reference :fa:`book-bookmark`
         :padding: 2 2 2 2
-        :link: api/index
+        :link: grpc_api/index
         :link-type: doc
 
         Understand PyEDB API endpoints, their capabilities,
@@ -53,7 +53,7 @@ API to make scripting simpler.
 
    getting_started/index
    user_guide/index
-   api/index
+   grpc_api/index
    contributing
 
 Indices and tables

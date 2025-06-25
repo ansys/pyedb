@@ -1,6 +1,6 @@
-=============
-API reference
-=============
+==================
+gRPC API reference
+==================
 
 This section describes EDB functions, classes, and methods
 for EDB apps and modules. Use the search feature or click links
@@ -13,16 +13,12 @@ methods are inherited into the ``Edb`` class.
 If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-only mode.
 
 
-.. tab-set::
 
-       .. tab-item:: gRPC
 
-            .. toctree::
-               :maxdepth: 3
+.. toctree::
+   :maxdepth: 3
 
-               grpc/index
-
-        .. tab-item:: DotNet
+   grpc/index
 
 
 
