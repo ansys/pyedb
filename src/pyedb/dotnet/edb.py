@@ -58,8 +58,6 @@ from pyedb.dotnet.database.edb_data.ports import (
     GapPort,
     WavePort,
 )
-from pyedb.edb_logger import pyedb_logger
-
 from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import (
     RaptorXSimulationSetup,
 )
@@ -94,6 +92,7 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
     SiwaveSimulationSetup,
 )
+from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import (
     generate_unique_name,

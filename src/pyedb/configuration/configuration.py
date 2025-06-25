@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from datetime import datetime
 import json
 import os
-from datetime import datetime
 from pathlib import Path
 
 import toml
@@ -238,21 +238,21 @@ class Configuration:
             return data
 
         def export(
-                self,
-                file_path,
-                stackup=True,
-                package_definitions=False,
-                setups=True,
-                sources=True,
-                ports=True,
-                nets=True,
-                pin_groups=True,
-                operations=True,
-                components=True,
-                boundaries=True,
-                s_parameters=True,
-                padstacks=True,
-                general=True,
+            self,
+            file_path,
+            stackup=True,
+            package_definitions=False,
+            setups=True,
+            sources=True,
+            ports=True,
+            nets=True,
+            pin_groups=True,
+            operations=True,
+            components=True,
+            boundaries=True,
+            s_parameters=True,
+            padstacks=True,
+            general=True,
         ):
             """Export the configuration data from layout to a file.
 
@@ -545,21 +545,21 @@ class Configuration:
         return self.api.get_data_from_db(**kwargs)
 
     def export(
-            self,
-            file_path,
-            stackup=True,
-            package_definitions=False,
-            setups=True,
-            sources=True,
-            ports=True,
-            nets=True,
-            pin_groups=True,
-            operations=True,
-            components=True,
-            boundaries=True,
-            s_parameters=True,
-            padstacks=True,
-            general=True,
+        self,
+        file_path,
+        stackup=True,
+        package_definitions=False,
+        setups=True,
+        sources=True,
+        ports=True,
+        nets=True,
+        pin_groups=True,
+        operations=True,
+        components=True,
+        boundaries=True,
+        s_parameters=True,
+        padstacks=True,
+        general=True,
     ):
         """Export the configuration data from layout to a file.
 

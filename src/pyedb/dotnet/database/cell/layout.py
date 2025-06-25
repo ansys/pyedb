@@ -341,7 +341,7 @@ class Layout(ObjBase):
         return EDBComponent(self._pedb, obj) if obj is not None else None
 
     def find_primitive(
-            self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
+        self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
     ) -> list:
         """Find a primitive objects by layer name.
 

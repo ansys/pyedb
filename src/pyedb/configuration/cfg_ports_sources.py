@@ -90,7 +90,6 @@ class CfgNearestPinTerminalInfo(CfgTerminalInfo):
 
 
 class CfgSources:
-
     def get_pin_group_name(self, src):
         return src._edb_object.GetPinGroup().GetName()
 
@@ -147,7 +146,6 @@ class CfgSources:
 
 
 class CfgPorts:
-
     def get_pin_group(self, port):
         return self._pedb.siwave.pin_groups[port._edb_object.GetPinGroup().GetName()]
 
@@ -659,7 +657,6 @@ class CfgSource(CfgCircuitElement):
 
 
 class CfgProbe(CfgCircuitElement):
-
     def set_parameters_to_edb(self):
         self.create_terminals()
         circuit_elements = []
@@ -678,7 +675,6 @@ class CfgProbe(CfgCircuitElement):
 
 
 class CfgEdgePort:
-
     def set_parameters_to_edb(self):
         point_on_edge = PointData(self._pedb, x=self.point_on_edge[0], y=self.point_on_edge[1])
         primitive = self._pedb.layout.primitives_by_aedt_name[self.primitive_name]
