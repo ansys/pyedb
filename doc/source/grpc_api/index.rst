@@ -2,8 +2,13 @@
 gRPC API reference
 ==================
 
+.. image:: ../resources/from-chips-to-ships-hfss-flex-pcb.png
+  :width: 500
+  :alt: EDB apps
+  :target: https://www.ansys.com/applications/pcbs-ics-ic-packages
+
 This section describes EDB functions, classes, and methods
-for EDB apps and modules. Use the search feature or click links
+for EDB gRPC applications and modules. Use the search feature or click links
 to view API documentation.
 
 The PyEDB API includes classes for apps and modules. You must initialize the
@@ -12,8 +17,34 @@ methods are inherited into the ``Edb`` class.
 
 If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-only mode.
 
+.. note:: PyEDB is now supporting gRPC
+   **Starting ANSYS release 2025.2 PyEDB is compatible with gRPC.**
+   The two main advantages are:
+   - Better compatibility with Linux
+   - PyEDB becomes ready to remote - client services
 
+   If you want to know more about `gRPC <https://grpc.io>`_.
 
+   PyEDB gRPC is providing backward compatibility with previous versions.
+   to enable PyEDB gRPC you have two options.
+
+   - Explicit import:
+   - Using grpc flag:
+
+   .. code:: python
+      # Explicit import
+      from pyedb.grpc.edb import Edb
+
+      # Using grpc flag
+      from pyedb import Edb
+
+      edb = Edb(edbpath=r"my_edb_path", edbversion="2025.2", grpc=True)
+
+   The default grpc flag value is `False` so by default you will still be using PyEDB DotNet.
+   However, starting ** ANSYS release 2026.1, we will start deprecating PyEDB DotNet version **.
+   PyEDB gRPC will become the long term supported version and new features will only be implemented
+   into this one. Therefore we highly encourage our users migrating to gRPC when possible to get the
+   best user experience.
 
 .. toctree::
    :maxdepth: 3

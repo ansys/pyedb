@@ -2,7 +2,7 @@
 PyEDB
 =====
 
-This section describes EDB main class.
+This section describes EDB gRPC main class.
 
 
 .. toctree::
