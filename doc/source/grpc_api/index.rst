@@ -26,25 +26,25 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
    If you want to know more about `gRPC <https://grpc.io>`_.
 
    PyEDB gRPC is providing backward compatibility with previous versions.
-   to enable PyEDB gRPC you have two options.
-
-   - Explicit import:
-   - Using grpc flag:
-
-   .. code:: python
-      # Explicit import
-      from pyedb.grpc.edb import Edb
-
-      # Using grpc flag
-      from pyedb import Edb
-
-      edb = Edb(edbpath=r"my_edb_path", edbversion="2025.2", grpc=True)
 
    The default grpc flag value is `False` so by default you will still be using PyEDB DotNet.
    However, starting ** ANSYS release 2026.1, we will start deprecating PyEDB DotNet version **.
    PyEDB gRPC will become the long term supported version and new features will only be implemented
    into this one. Therefore we highly encourage our users migrating to gRPC when possible to get the
    best user experience.
+
+to enable PyEDB gRPC you have two options.
+   - Explicit import:
+   - Using grpc flag:
+
+.. code:: python
+   # Explicit import
+   from pyedb.grpc.edb import Edb
+
+   # Using grpc flag
+   from pyedb import Edb
+
+   edb = Edb(edbpath=r"my_edb_path", edbversion="2025.2", grpc=True)
 
 .. toctree::
    :maxdepth: 3
