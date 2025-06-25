@@ -3,7 +3,7 @@ gRPC API reference
 ==================
 
 .. image:: ../resources/from-chips-to-ships-hfss-flex-pcb.png
-  :width: 500
+  :width: 400
   :alt: EDB apps
   :target: https://www.ansys.com/applications/pcbs-ics-ic-packages
 
