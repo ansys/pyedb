@@ -304,20 +304,24 @@ class LayoutValidation:
 
     def illegal_rlc_values(self, fix=False):
         """Find and fix RLC illegal values."""
-        inductors = self._pedb.components.inductors
 
-        temp = []
-        for k, v in inductors.items():
-            componentProperty = v.edbcomponent.GetComponentProperty()
-            model = componentProperty.GetModel().Clone()
-            pinpairs = model.PinPairs
+        for name, objs in {
+            "inductors": self._pedb.components.inductors,
+            "resistors": self._pedb.components.resistors,
+            "capacitors": self._pedb.components.capacitors,
+        }.items():
+            temp = []
+            for k, v in objs.items():
+                componentProperty = v.edbcomponent.GetComponentProperty()
+                model = componentProperty.GetModel().Clone()
+                pinpairs = model.PinPairs
 
-            if not len(list(pinpairs)):  # pragma: no cover
-                temp.append(k)
-                if fix:
-                    v.rlc_values = [0, 1, 0]
+                if not len(list(pinpairs)):  # pragma: no cover
+                    temp.append(k)
+                    if fix:
+                        v.rlc_values = [0, 1, 0]
 
-        self._pedb._logger.info("Found {} inductors have no value.".format(len(temp)))
+            self._pedb._logger.info(f"Found {len(temp)} {name} have no value.")
         return
 
     def padstacks_no_name(self, fix=False):
