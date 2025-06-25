@@ -13,38 +13,18 @@ methods are inherited into the ``Edb`` class.
 If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-only mode.
 
 
-.. image:: ../resources/edb_intro.png
-  :width: 800
-  :alt: EDB apps
-  :target: https://www.ansys.com/applications/pcbs-ics-ic-packages
-
 .. tab-set::
 
        .. tab-item:: gRPC
 
-            .. code-block:: python
-
-                from pyedb.grpc.edb import Edb
-
-                edb = Edb("my_project.aedb", edbversion="2025.2")
-                edb.core_components.components["R1"].r_value = 40
-                edb.close_edb()
-
             .. toctree::
-               :maxdepth: 2
+               :maxdepth: 3
 
-               edb
-               database/index
+               grpc/index
 
         .. tab-item:: DotNet
 
-            .. code-block:: python
 
-                from pyedb.grpc.edb import Edb
-
-                edb = Edb("my_project.aedb", edbversion="2025.2")
-                edb.core_components.components["R1"].r_value = 40
-                edb.close_edb()
 
 
 
