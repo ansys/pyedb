@@ -80,6 +80,7 @@ def primitive_cast(pedb, edb_object):
 class Layout(ObjBase):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
+        self._primitives = []
 
     @property
     def cell(self):
@@ -230,7 +231,15 @@ class Layout(ObjBase):
         -------
         list of :class:`dotnet.database.dotnet.primitive.PrimitiveDotNet` cast objects.
         """
-        return [primitive_cast(self._pedb, p) for p in self._edb_object.Primitives if p]
+        primitives = list(self._edb_object.Primitives)
+        if len(primitives) != len(self._primitives):
+            self._primitives = [primitive_cast(self._pedb, p) for p in primitives]
+        return self._primitives
+
+    @property
+    def primitives_by_aedt_name(self) -> dict:
+        """Primitives."""
+        return {i.aedt_name: i for i in self.primitives}
 
     @property
     def bondwires(self):
@@ -332,7 +341,7 @@ class Layout(ObjBase):
         return EDBComponent(self._pedb, obj) if obj is not None else None
 
     def find_primitive(
-        self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
+            self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
     ) -> list:
         """Find a primitive objects by layer name.
 
