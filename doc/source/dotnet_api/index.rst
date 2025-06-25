@@ -1,6 +1,6 @@
-====================
-DotNet API reference
-====================
+=============
+API reference
+=============
 
 This section describes EDB functions, classes, and methods
 for EDB apps and modules. Use the search feature or click links
