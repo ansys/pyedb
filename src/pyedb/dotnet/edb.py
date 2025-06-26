@@ -4749,9 +4749,7 @@ class Edb(Database):
         if not results:
             results = self.edbpath[:-5] + "_compare_results"
             os.mkdir(results)
-        command = os.path.join(self.base_path, "EDBDiff")
-        if is_windows:
-            command += ".exe"
+        command = os.path.join(self.base_path, "EDBDiff.exe")
         cmd_input = [command, input_file, self.edbpath, results]
         subprocess.run(cmd_input)
 
