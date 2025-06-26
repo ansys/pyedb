@@ -1991,6 +1991,6 @@ class TestClass:
     def test_compare_edbs(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         edb_base = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1.aedb")
-        assert edbapp.compare_with_edb(edb_base)
+        assert edbapp.compare(edb_base)
         folder = edbapp.edbpath[:-5] + "_compare_results"
         assert os.path.exists(folder)
