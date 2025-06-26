@@ -1964,3 +1964,10 @@ class TestClass:
         trace_widths = edbapp.hfss.get_trace_width_for_traces_with_ports()
         assert len(trace_widths) > 0
         edbapp.close()
+
+    def test_compare_edbs(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edb_base = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1.aedb")
+        assert edbapp.compare(edb_base)
+        folder = edbapp.edbpath[:-5] + "_compare_results"
+        assert os.path.exists(folder)
