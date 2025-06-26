@@ -193,10 +193,12 @@ class EdbInit(object):
         Parameters
         ----------
         terminate_rpc_session : bool, optional
-
+            Terminate RPC session when closing the database. The default value is `True`.
 
         . note::
-            Unsaved changes will be lost.
+            Unsaved changes will be lost. If multiple databases are open and RPC session is terminated, the connection
+            with all databases will be lost. You might be careful and set to `False` until the last open database
+            remains.
         """
         self._db.close()
         self._db = None

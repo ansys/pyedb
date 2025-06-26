@@ -2,11 +2,6 @@
 gRPC API reference
 ==================
 
-.. image:: ../resources/from-chips-to-ships-hfss-flex-pcb.png
-  :width: 400
-  :alt: EDB apps
-  :target: https://www.ansys.com/applications/pcbs-ics-ic-packages
-
 This section describes EDB functions, classes, and methods
 for EDB gRPC applications and modules. Use the search feature or click links
 to view API documentation.
@@ -38,6 +33,7 @@ to enable PyEDB gRPC you have two options.
    - Using grpc flag:
 
 .. code:: python
+
    # Explicit import
    from pyedb.grpc.edb import Edb
 
