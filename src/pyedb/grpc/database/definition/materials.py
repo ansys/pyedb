@@ -128,7 +128,7 @@ class Material(GrpcMaterialDef):
         self.__dielectric_model = None
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Material name.
 
         Returns
@@ -172,7 +172,7 @@ class Material(GrpcMaterialDef):
             return 0.0
 
     @property
-    def conductivity(self):
+    def conductivity(self) -> float:
         """Get material conductivity.
 
         Returns
@@ -238,7 +238,7 @@ class Material(GrpcMaterialDef):
             self.dielectric_material_model.dc_relative_permitivity = float(value)
 
     @property
-    def loss_tangent_at_frequency(self):
+    def loss_tangent_at_frequency(self) -> float:
         """Material loss tangent at frequency if dielectric model is defined.
 
         Returns
@@ -258,7 +258,7 @@ class Material(GrpcMaterialDef):
             self.dielectric_material_model.loss_tangent_at_frequency = float(value)
 
     @property
-    def dielectric_model_frequency(self):
+    def dielectric_model_frequency(self) -> float:
         """Dielectric model frequency if model is defined.
 
         Returns
@@ -278,7 +278,7 @@ class Material(GrpcMaterialDef):
             self.dielectric_material_model.frequency = float(value)
 
     @property
-    def permittivity_at_frequency(self):
+    def permittivity_at_frequency(self) -> float:
         """Material permittivity at frequency if model is defined.
 
 
@@ -299,7 +299,7 @@ class Material(GrpcMaterialDef):
             self.dielectric_material_model.relative_permitivity_at_frequency = float(value)
 
     @property
-    def permittivity(self):
+    def permittivity(self) -> float:
         """Material permittivity.
 
 
@@ -321,7 +321,7 @@ class Material(GrpcMaterialDef):
         self.set_property(GrpcMaterialProperty.PERMITTIVITY, GrpcValue(value))
 
     @property
-    def permeability(self):
+    def permeability(self) -> float:
         """Material permeability.
 
         Returns
@@ -359,7 +359,7 @@ class Material(GrpcMaterialDef):
         return self.dielectric_loss_tangent
 
     @property
-    def dielectric_loss_tangent(self):
+    def dielectric_loss_tangent(self) -> float:
         """Material loss tangent.
 
         Returns
@@ -389,7 +389,7 @@ class Material(GrpcMaterialDef):
         self.set_property(GrpcMaterialProperty.DIELECTRIC_LOSS_TANGENT, GrpcValue(value))
 
     @property
-    def magnetic_loss_tangent(self):
+    def magnetic_loss_tangent(self) -> float:
         """Material magnetic loss tangent.
 
         Returns
@@ -409,7 +409,7 @@ class Material(GrpcMaterialDef):
         self.set_property(GrpcMaterialProperty.MAGNETIC_LOSS_TANGENT, GrpcValue(value))
 
     @property
-    def thermal_conductivity(self):
+    def thermal_conductivity(self) -> float:
         """Material thermal conductivity.
 
         Returns
@@ -430,7 +430,7 @@ class Material(GrpcMaterialDef):
         self.set_property(GrpcMaterialProperty.THERMAL_CONDUCTIVITY, GrpcValue(value))
 
     @property
-    def mass_density(self):
+    def mass_density(self) -> float:
         """Material mass density.
 
         Returns
@@ -451,7 +451,7 @@ class Material(GrpcMaterialDef):
         self.set_property(GrpcMaterialProperty.MASS_DENSITY, GrpcValue(value))
 
     @property
-    def youngs_modulus(self):
+    def youngs_modulus(self) -> float:
         """Material young modulus.
 
         Returns
@@ -472,7 +472,7 @@ class Material(GrpcMaterialDef):
         self.set_property(GrpcMaterialProperty.YOUNGS_MODULUS, GrpcValue(value))
 
     @property
-    def specific_heat(self):
+    def specific_heat(self) -> float:
         """Material specific heat.
 
         Returns
@@ -491,7 +491,7 @@ class Material(GrpcMaterialDef):
         self.set_property(GrpcMaterialProperty.SPECIFIC_HEAT, GrpcValue(value))
 
     @property
-    def poisson_ratio(self):
+    def poisson_ratio(self) -> float:
         """Material poisson ratio.
 
         Returns
@@ -510,7 +510,7 @@ class Material(GrpcMaterialDef):
         self.set_property(GrpcMaterialProperty.POISSONS_RATIO, GrpcValue(value))
 
     @property
-    def thermal_expansion_coefficient(self):
+    def thermal_expansion_coefficient(self) -> float:
         """Material thermal coefficient.
 
         Returns
@@ -639,7 +639,7 @@ class Materials(object):
         return self.__syslib
 
     @property
-    def materials(self):
+    def materials(self) -> dict[str, Material]:
         """Get materials.
 
         Returns
@@ -652,7 +652,7 @@ class Materials(object):
         }
         return materials
 
-    def add_material(self, name: str, **kwargs):
+    def add_material(self, name: str, **kwargs) -> Material:
         """Add a new material.
 
         Parameters
@@ -690,7 +690,7 @@ class Materials(object):
 
         return material
 
-    def add_conductor_material(self, name, conductivity, **kwargs):
+    def add_conductor_material(self, name, conductivity, **kwargs) -> Material:
         """Add a new conductor material.
 
         Parameters
@@ -712,7 +712,7 @@ class Materials(object):
 
         return material
 
-    def add_dielectric_material(self, name, permittivity, dielectric_loss_tangent, **kwargs):
+    def add_dielectric_material(self, name, permittivity, dielectric_loss_tangent, **kwargs) -> Material:
         """Add a new dielectric material in library.
 
         Parameters
@@ -745,7 +745,7 @@ class Materials(object):
         dc_conductivity=None,
         dc_permittivity=None,
         **kwargs,
-    ):
+    ) -> Material:
         """Add a dielectric using the Djordjevic-Sarkar model.
 
         Parameters
@@ -804,7 +804,7 @@ class Materials(object):
         lower_freqency,
         higher_frequency,
         **kwargs,
-    ):
+    ) -> Material:
         """Add a dielectric with the Debye model.
 
         Parameters
@@ -864,7 +864,7 @@ class Materials(object):
         permittivities,
         loss_tangents,
         **kwargs,
-    ):
+    ) -> Material:
         """Add a dielectric with the Multipole Debye model.
 
         Parameters
@@ -938,7 +938,7 @@ class Materials(object):
         material = Material(self.__edb, material_def)
         return material
 
-    def duplicate(self, material_name, new_material_name):
+    def duplicate(self, material_name, new_material_name) -> Material:
         """Duplicate a material from the database.
 
         Parameters
@@ -983,7 +983,7 @@ class Materials(object):
         )
         self.delete(material_name)
 
-    def delete(self, material_name):
+    def delete(self, material_name) -> bool:
         """Remove a material from the database.
 
         Returns
@@ -1077,7 +1077,7 @@ class Materials(object):
         else:
             return property_name_to_id["InvalidProperty"]
 
-    def load_amat(self, amat_file):
+    def load_amat(self, amat_file) -> bool:
         """Load materials from an AMAT file.
 
         Parameters
@@ -1184,7 +1184,7 @@ class Materials(object):
                         material_description["name"] = match.group(1)
                         in_material_def = True
 
-    def read_materials(self, amat_file):
+    def read_materials(self, amat_file) -> dict[str, Material]:
         """Read materials from an AMAT file.
 
         Parameters
@@ -1207,7 +1207,7 @@ class Materials(object):
 
         return res
 
-    def read_syslib_material(self, material_name):
+    def read_syslib_material(self, material_name) -> dict[str, Material]:
         """Read a specific material from syslib AMAT file.
 
         Parameters

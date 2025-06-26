@@ -50,7 +50,7 @@ class EdgeTerminal(GrpcEdgeTerminal):
         self._edb_object.set_product_property(GrpcProductIdType.DESIGNER, 1, value)
 
     @property
-    def is_wave_port(self):
+    def is_wave_port(self) -> bool:
         if self._hfss_port_property:
             return True
         return False
@@ -112,11 +112,12 @@ class EdgeTerminal(GrpcEdgeTerminal):
         return self._pedb.ports[bundle_terminal.name]
 
     @property
-    def is_port(self):
+    def is_port(self) -> bool:
+        """Added for dotnet compatibility"""
         return True
 
     @property
-    def ref_terminal(self):
+    def ref_terminal(self) -> any:
         """Return refeference terminal.
 
         ..deprecated:: 0.44.0
@@ -132,7 +133,7 @@ class EdgeTerminal(GrpcEdgeTerminal):
         self.reference_terminal = value
 
     @property
-    def hfss_type(self):
+    def hfss_type(self) -> str:
         return self._hfss_type
 
     @hfss_type.setter
@@ -140,5 +141,5 @@ class EdgeTerminal(GrpcEdgeTerminal):
         self._hfss_type = value
 
     @property
-    def terminal_type(self):
+    def terminal_type(self) -> str:
         return "EdgeTerminal"

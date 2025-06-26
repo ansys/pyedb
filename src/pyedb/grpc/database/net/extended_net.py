@@ -30,7 +30,7 @@ class ExtendedNets:
         self._pedb = pedb
 
     @property
-    def items(self):
+    def items(self) -> dict[str, any]:
         """Extended nets.
 
         Returns
@@ -44,7 +44,6 @@ class ExtendedNets:
         return nets
 
     def create(self, name, net):
-        # type: (str, str|list)->ExtendedNet
         """Create a new Extended net.
 
         Parameters
@@ -70,7 +69,7 @@ class ExtendedNets:
         return self.items[name]
 
     def auto_identify_signal(self, resistor_below=10, inductor_below=1, capacitor_above=1e-9, exception_list=None):
-        # type: (int | float, int | float, int |float, list) -> list
+        # type: (int | float, int | float, int |float, list) -> list[ExtendedNet]
         """Get extended signal net and associated components.
 
         Parameters
@@ -142,7 +141,7 @@ class ExtendedNets:
         include_signal=True,
         include_power=True,
     ):
-        # type: (int | float, int | float, int |float, list, bool, bool) -> list
+        # type: (int | float, int | float, int |float, list, bool, bool) -> list[ExtendedNet]
         """Get extended net and associated components.
 
         Parameters
@@ -275,7 +274,7 @@ class ExtendedNet(GrpcExtendedNet):
         return {net.name: Net(self._pedb, net) for net in super().nets}
 
     @property
-    def components(self):
+    def components(self) -> dict[str, any]:
         """Dictionary of components.
 
         Returns
@@ -289,7 +288,7 @@ class ExtendedNet(GrpcExtendedNet):
         return comps
 
     @property
-    def rlc(self):
+    def rlc(self) -> dict[str, any]:
         """Dictionary of RLC components.
 
         Returns
@@ -302,7 +301,7 @@ class ExtendedNet(GrpcExtendedNet):
         }
 
     @property
-    def serial_rlc(self):
+    def serial_rlc(self) -> dict[str, any]:
         """Dictionary of serial RLC components.
 
         Returns
@@ -321,7 +320,7 @@ class ExtendedNet(GrpcExtendedNet):
         return res
 
     @property
-    def shunt_rlc(self):
+    def shunt_rlc(self) -> dict[str, any]:
         """Dictionary of shunt RLC components.
 
         Returns

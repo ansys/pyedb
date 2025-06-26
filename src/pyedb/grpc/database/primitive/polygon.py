@@ -38,7 +38,7 @@ class Polygon(GrpcPolygon, Primitive):
         self._pedb = pedb
 
     @property
-    def type(self):
+    def type(self) -> str:
         """Primitive type.
 
         Return
@@ -50,7 +50,7 @@ class Polygon(GrpcPolygon, Primitive):
         return self.primitive_type.name.lower()
 
     @property
-    def has_self_intersections(self):
+    def has_self_intersections(self) -> bool:
         """Check if Polygon has self intersections.
 
         Returns
@@ -59,7 +59,7 @@ class Polygon(GrpcPolygon, Primitive):
         """
         return self.polygon_data.has_self_intersections()
 
-    def fix_self_intersections(self):
+    def fix_self_intersections(self) -> list[any]:
         """Remove self intersections if they exist.
 
         Returns
@@ -96,7 +96,7 @@ class Polygon(GrpcPolygon, Primitive):
             duplicated_polygon.add_void(void)
         return duplicated_polygon
 
-    def duplicate_across_layers(self, layers):
+    def duplicate_across_layers(self, layers) -> bool:
         """Duplicate across layer a primitive object.
 
         Parameters:
@@ -127,7 +127,7 @@ class Polygon(GrpcPolygon, Primitive):
                 return False
         return True
 
-    def move(self, vector):
+    def move(self, vector) -> bool:
         """Move polygon along a vector.
 
         Parameters
@@ -152,7 +152,7 @@ class Polygon(GrpcPolygon, Primitive):
             return True
         return False
 
-    def scale(self, factor, center=None):
+    def scale(self, factor, center=None) -> bool:
         """Scales the polygon relative to a center point by a factor.
 
         Parameters
@@ -182,7 +182,7 @@ class Polygon(GrpcPolygon, Primitive):
                 return True
         return False
 
-    def rotate(self, angle, center=None):
+    def rotate(self, angle, center=None) -> bool:
         """Rotate polygon around a center point by an angle.
 
         Parameters
@@ -215,7 +215,7 @@ class Polygon(GrpcPolygon, Primitive):
                 return True
         return False
 
-    def move_layer(self, layer):
+    def move_layer(self, layer) -> bool:
         """Move polygon to given layer.
 
         Parameters
@@ -237,7 +237,7 @@ class Polygon(GrpcPolygon, Primitive):
         self,
         point_data,
         include_partial=True,
-    ):
+    ) -> bool:
         """Check if padstack Instance is in given polygon data.
 
         Parameters

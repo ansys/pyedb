@@ -43,7 +43,7 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
         self._pedb = pedb
         self._name = name
 
-    def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02):
+    def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02) -> bool:
         """Set HFSS single frequency solution.
         Parameters
         ----------
@@ -70,7 +70,7 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
         except:
             return False
 
-    def set_solution_multi_frequencies(self, frequencies="5GHz", max_delta_s=0.02):
+    def set_solution_multi_frequencies(self, frequencies="5GHz", max_delta_s=0.02) -> bool:
         """Set HFSS setup multi frequencies adaptive.
 
         Parameters

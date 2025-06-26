@@ -38,8 +38,8 @@ class SiwaveSimulationSetup(GrpcSIWaveSimulationSetup):
         self._pedb = pedb
 
     @property
-    def type(self):
-        """Simulatiom setup type.
+    def type(self) -> str:
+        """Simulation setup type.
 
         Returns
         -------
@@ -65,7 +65,7 @@ class SiwaveSimulationSetup(GrpcSIWaveSimulationSetup):
         step="10MHz",
         discrete=False,
         frequency_set=None,
-    ):
+    ) -> bool:
         """Add a HFSS frequency sweep.
 
         Parameters
