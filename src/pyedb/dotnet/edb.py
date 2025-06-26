@@ -4731,7 +4731,7 @@ class Edb(Database):
             return False
 
     def compare_with_edb(self, input_file, results=""):
-        """Compares if two edb files are exactly the same.
+        """Compares current open database with another one.
 
         Parameters
         ----------
