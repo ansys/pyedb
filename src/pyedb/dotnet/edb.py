@@ -4730,7 +4730,7 @@ class Edb(Database):
         else:
             return False
 
-    def compare_with_edb(self, input_file, results=""):
+    def compare(self, input_file, results=""):
         """Compares current open database with another one.
 
         Parameters
