@@ -27,7 +27,6 @@ import sys
 
 from pyedb import __version__
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
-from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import (
     env_path,
     env_path_student,
@@ -704,7 +703,6 @@ class EdbDotNet(object):
     """Edb Dot Net Class."""
 
     def __init__(self, edbversion, student_version=False):
-        self._logger = pyedb_logger
         if not edbversion:  # pragma: no cover
             try:
                 edbversion = "20{}.{}".format(list_installed_ansysem()[0][-3:-1], list_installed_ansysem()[0][-1:])

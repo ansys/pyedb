@@ -67,7 +67,6 @@ class Modeler(object):
 
     def __init__(self, p_edb):
         self._pedb = p_edb
-        self._primitives = []
 
     @property
     def _edb(self):
