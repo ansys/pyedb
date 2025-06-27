@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from datetime import datetime
 import json
 import os
 from pathlib import Path
@@ -446,50 +447,76 @@ class Configuration:
             self.cfg_data.general.apply()
 
         # Configure boundary settings
+        now = datetime.now()
         if self.cfg_data.boundaries:
             self.cfg_data.boundaries.apply()
+        self._pedb.logger.info(f"Updating boundaries finished. Time lapse {datetime.now() - now}")
+        now = datetime.now()
 
         # Configure nets
         if self.cfg_data.nets:
             self.cfg_data.nets.apply()
+        self._pedb.logger.info(f"Updating nets finished. Time lapse {datetime.now() - now}")
+        now = datetime.now()
 
         # Configure components
         self.cfg_data.components.apply()
+        self._pedb.logger.info(f"Updating components finished. Time lapse {datetime.now() - now}")
+        now = datetime.now()
 
         # Configure pin groups
         self.cfg_data.pin_groups.apply()
+        self._pedb.logger.info(f"Creating pin groups finished. Time lapse {datetime.now() - now}")
+        now = datetime.now()
 
         # Configure sources
         self.cfg_data.sources.apply()
+        self._pedb.logger.info(f"Placing sources finished. Time lapse {datetime.now() - now}")
+        now = datetime.now()
 
         # Configure setup
         self.cfg_data.setups.apply()
+        self._pedb.logger.info(f"Creating setups finished. Time lapse {datetime.now() - now}")
+        now = datetime.now()
 
         # Configure stackup
         self.api.configuration_stackup(kwargs)
+        self._pedb.logger.info(f"Updating stackup finished. Time lapse {datetime.now() - now}")
+        now = datetime.now()
 
         # Configure padstacks
         if self.cfg_data.padstacks:
             self.cfg_data.padstacks.apply()
+        self._pedb.logger.info(f"Applying padstacks finished. Time lapse {datetime.now() - now}")
+        now = datetime.now()
 
         # Configure S-parameter
         self.cfg_data.s_parameters.apply()
+        self._pedb.logger.info(f"Applying S-parameters finished. Time lapse {datetime.now() - now}")
+        now = datetime.now()
 
         # Configure SPICE models
         for spice_model in self.cfg_data.spice_models:
             spice_model.apply()
+        self._pedb.logger.info(f"Assigning Spice models finished. Time lapse {datetime.now() - now}")
+        now = datetime.now()
 
         # Configure package definitions
         self.cfg_data.package_definitions.apply()
+        self._pedb.logger.info(f"Applying package definitions finished. Time lapse {datetime.now() - now}")
+        now = datetime.now()
 
         # Modeler
         self.cfg_data.modeler.apply()
 
         # Configure ports
         self.cfg_data.ports.apply()
+        self._pedb.logger.info(f"Placing ports finished. Time lapse {datetime.now() - now}")
+        now = datetime.now()
 
         # Configure probes
         self.cfg_data.probes.apply()
+        self._pedb.logger.info(f"Placing probes finished. Time lapse {datetime.now() - now}")
 
         # Configure operations
         self.cfg_data.operations.apply()

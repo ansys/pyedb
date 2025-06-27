@@ -25,6 +25,7 @@
 This module is implicitly loaded in HFSS 3D Layout when launched.
 
 """
+from datetime import datetime
 from itertools import combinations
 import os
 from pathlib import Path
@@ -91,6 +92,7 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
     SiwaveSimulationSetup,
 )
+from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import (
     generate_unique_name,
@@ -195,6 +197,10 @@ class Edb(Database):
         layer_filter: str = None,
         remove_existing_aedt: bool = False,
     ):
+        self._logger = pyedb_logger
+        now = datetime.now()
+        self.logger.info(f"Star initializing Edb {now.time()}")
+
         if isinstance(edbpath, Path):
             edbpath = str(edbpath)
 
@@ -290,7 +296,7 @@ class Edb(Database):
                 self._logger.add_file_logger(self.log_name, "Edb")
             self.open_edb()
         if self.active_cell:
-            self.logger.info("EDB initialized.")
+            self.logger.info(f"EDB initialized.Time lapse {datetime.now() - now}")
         else:
             raise AttributeError("Failed to initialize DLLs.")
 
