@@ -47,3 +47,14 @@ SYZ
 (?i)stackup(?:\s3D|s)?
 vias
 XML
+grpc
+gRPC
+Edb
+xml
+Rlc
+S-Parameter
+netlist
+Pingroup
+pingroup
+Padstack
+Spice

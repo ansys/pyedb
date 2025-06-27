@@ -85,10 +85,11 @@ class DifferentialPairs:
         -------
         list
             A list containing identified differential pair names.
+
         Examples
         --------
         >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", edbversion="2023.1")
+        >>> edbapp = Edb("myaedbfolder", edbversion="2025.2")
         >>> edb_nets = edbapp.differential_pairs.auto_identify()
         """
         nets = self._pedb.nets.nets

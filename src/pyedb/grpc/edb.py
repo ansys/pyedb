@@ -178,13 +178,13 @@ class Edb(EdbInit):
 
     Examples
     --------
-    Create new EDB:
+    >>> # Create new EDB:
     >>> edb = Edb()
 
-    Open existing AEDB:
+    >>> # Open existing AEDB:
     >>> edb = Edb("myproject.aedb")
 
-    Import board file:
+    >>> # Import board file:
     >>> edb = Edb("my_board.brd")
     """
 
@@ -486,7 +486,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        dict[str, Union[:class:`GapPort`, :class:`WavePort`, :class:`CoaxPort`]]
+        dict[str, list[:class:`GapPort` or :class:`WavePort` or :class:`CoaxPort`]]
             Port names and objects.
         """
         terminals = [term for term in self.layout.terminals if not term.is_reference_terminal]
@@ -572,7 +572,7 @@ class Edb(EdbInit):
 
         Examples
         --------
-        Open an existing EDB database:
+        >>> # Open an existing EDB database:
         >>> edb = Edb("myproject.aedb")
         """
         self.standalone = self.standalone
@@ -763,10 +763,9 @@ class Edb(EdbInit):
 
         Examples
         --------
-        Import a BRD file:
+        >>> # Import a BRD file:
         >>> edb.import_layout_file("my_board.brd", r"C:/project")
-
-        Import a GDS file with control file:
+        >>> # Import a GDS file with control file:
         >>> edb.import_layout_file("layout.gds", control_file="control.xml")
         """
         self._components = None
@@ -831,7 +830,7 @@ class Edb(EdbInit):
 
         Examples
         --------
-        Export to IPC2581 format:
+        >>> # Export to IPC2581 format:
         >>> edb.export_to_ipc2581("output.xml")
         """
         if units.lower() not in ["millimeter", "inch", "micron"]:  # pragma no cover
@@ -1238,7 +1237,7 @@ class Edb(EdbInit):
         """Close EDB and clean up resources.
 
         ..deprecated:: 0.51.0
-           Use: func:`close` instead.
+           Use :func:`close` instead.
 
         Returns
         -------
@@ -1257,17 +1256,8 @@ class Edb(EdbInit):
         """Save current EDB database.
 
         ..deprecated:: 0.51.0
-           Use: func:`save` instead.
+           Use :func:`save` instead.
 
-        Returns
-        -------
-        bool
-            True if successful, False otherwise.
-
-        Examples
-        --------
-        Save the current EDB:
-        >>> edb.save_edb()
         """
         warnings.warn("Use method save instead.", DeprecationWarning)
         return self.save()
@@ -1276,22 +1266,7 @@ class Edb(EdbInit):
         """Save EDB database to new location.
 
         ..deprecated:: 0.51.0
-           Use: func:`save_as` instead.
-
-        Parameters
-        ----------
-        fname : str
-            New AEDB path.
-
-        Returns
-        -------
-        bool
-            True if successful, False otherwise.
-
-        Examples
-        --------
-        Save EDB to new location:
-        >>> edb.save_edb_as("new_location.aedb")
+           Use :func:`save_as` instead.
         """
         warnings.warn("Use method save_as instead.", DeprecationWarning)
         return self.save_as(fname)
@@ -1307,8 +1282,12 @@ class Edb(EdbInit):
         # return self.edb_api.utility.utility.Command.Execute(func)
         pass
 
-    def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False):
-        """Import Cadence board file (Deprecated - use import_layout_file)."""
+    def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False) -> bool:
+        """Import Cadence board file.
+
+        .. deprecated:: 0.50
+        Use :func:`import_layout_file` instead.
+        """
         if self.import_layout_pcb(
             inputBrd,
             working_dir=WorkDir,
@@ -1707,10 +1686,9 @@ class Edb(EdbInit):
 
         Examples
         --------
-        Create a basic cutout:
+        >>> # Create a basic cutout:
         >>> edb.cutout(signal_list=["Net1"], reference_list=["GND"])
-
-        Create cutout with custom polygon:
+        >>> # Create cutout with custom polygon:
         >>> custom_poly = [[0,0], [10e-3,0], [10e-3,10e-3], [0,10e-3]]
         >>> edb.cutout(custom_extent=custom_poly)
         """
@@ -2460,7 +2438,7 @@ class Edb(EdbInit):
 
         Examples
         --------
-        Export to HFSS project:
+        >>> # Export to HFSS project:
         >>> edb.export_hfss(r"C:/output", net_list=["SignalNet"])
         """
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
@@ -2496,7 +2474,7 @@ class Edb(EdbInit):
 
         Examples
         --------
-        Export to Q3D project:
+        >>> # Export to Q3D project:
         >>> edb.export_q3d(r"C:/output")
         """
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
@@ -2539,7 +2517,7 @@ class Edb(EdbInit):
 
         Examples
         --------
-        Export to Maxwell project:
+        >>> # Export to Maxwell project:
         >>> edb.export_maxwell(r"C:/output")
         """
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
@@ -2562,7 +2540,7 @@ class Edb(EdbInit):
 
         Examples
         --------
-        Solve with SIwave:
+        >>> # Solve with SIwave:
         >>> edb.solve_siwave()
         """
         process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
@@ -2762,7 +2740,7 @@ class Edb(EdbInit):
         Returns
         -------
         list
-            [[min_x, min_y], [max_x, max_y]] in meters.
+            list[list[min_x, min_y], list[max_x, max_y]] in meters.
         """
         lay_inst_polygon_data = [obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()]
         layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
@@ -2865,10 +2843,10 @@ class Edb(EdbInit):
 
         Returns
         -------
-        Dict[str,: class:`pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup`] or
-        Dict[str,: class:`pyedb.grpc.database.simulation_setup.siwave_simulation_setup.SiwaveSimulationSetup`] or
-        Dict[str,: class:`SIWaveDCIRSimulationSetup`] or
-        Dict[str,: class:`pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup.RaptorXSimulationSetup`]
+        Dict[str,:class:`HfssSimulationSetup`] or
+        Dict[str,:class:`SiwaveSimulationSetup`] or
+        Dict[str,:class:`SIWaveDCIRSimulationSetup`] or
+        Dict[str,:class:`RaptorXSimulationSetup`]
 
         """
         self._setups = {}
@@ -2919,8 +2897,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        Dict[str,:class:`SiwaveSimulationSetup
-        <pyedb.grpc.database.simulation_setup.siwave_simulation_setup.SiwaveSimulationSetup>`]
+        Dict[str,:class:`SiwaveSimulationSetup`]
         """
         return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSimulationSetup)}
 
@@ -2931,16 +2908,6 @@ class Edb(EdbInit):
 
         . deprecated:: pyedb 0.30.0
         Use :func:`pyedb.grpc.core.hfss.add_setup` instead.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name.
-
-        Returns
-        -------
-        :class:`HfssSimulationSetup <legacy.database.edb_data.hfss_simulation_setup_data.HfssSimulationSetup>`
-
         """
         warnings.warn(
             "`create_hfss_setup` is deprecated and is now located here " "`pyedb.grpc.core.hfss.add_setup` instead.",
@@ -2964,8 +2931,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`RaptorXSimulationSetup
-        <pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup.RaptorXSimulationSetup>`
+        :class:`RaptorXSimulationSetup`
             RaptorX setup or False if unsupported.
         """
         from ansys.edb.core.simulation_setup.raptor_x_simulation_setup import (
@@ -3021,8 +2987,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`SiwaveSimulationSetup
-        <pyedb.grpc.database.simulation_setup.siwave_simulation_setup.SiwaveSimulationSetup>`
+        :class:`SiwaveSimulationSetup`
             SYZ analysis setup.
         """
         if not name:
@@ -3050,8 +3015,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`SIWaveDCIRSimulationSetup
-        <pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup>`
+        :class:`SIWaveDCIRSimulationSetup`
             DC analysis setup.
         """
         if not name:
@@ -3095,8 +3059,8 @@ class Edb(EdbInit):
         self.logger.info(f"The W factor is {expansion_factor}, The initial extent = {max_width}")
         return max_width
 
-    def copy_zones(self, working_directory=None):
-        """Copy multizone EDB project to one new edb per zone.
+    def copy_zones(self, working_directory=None) -> dict[str, tuple[int, GrpcPolygonData]]:
+        """Copy multi-zone EDB project to one new edb per zone.
 
         Parameters
         ----------
@@ -3105,7 +3069,8 @@ class Edb(EdbInit):
 
         Returns
         -------
-           dict[str, [int,: class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`]]
+        dict[str, tuple[int,:class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`]]
+
            Return a dictionary with edb path as key and tuple Zone Id as first item and EDB polygon Data defining
            the region as second item.
 
@@ -3124,7 +3089,7 @@ class Edb(EdbInit):
         edb_zones = {}
         if not self.setups:
             self.siwave.add_siwave_syz_analysis()
-            self.save_edb()
+            self.save()
         for zone_primitive in zone_primitives:
             if zone_primitive:
                 edb_zone_path = os.path.join(working_directory, f"{zone_primitive.id}_{os.path.basename(self.edbpath)}")
@@ -3158,10 +3123,9 @@ class Edb(EdbInit):
 
         Returns
         -------
-        Dict[str: str] or List[str]
-        first dictionary defined_ports with edb name as key and existing port name list as value. Those ports are the
-        ones defined before processing the multizone clipping.
-        second is the list of connected port.
+        dict[str: str] or list[str]
+            first dictionary defined_ports with edb name as key and existing port name list as value. Those ports are
+            the ones defined before processing the multizone clipping. the second is the list of connected port.
 
         """
         terminals = {}
@@ -3280,29 +3244,8 @@ class Edb(EdbInit):
         """Create a port.
 
         ..deprecated:: 0.51.0
-           Use: func:`create_port` has been move to source_excitation.create_port.
+           Use :func:`create_port` has been moved to source_excitation.create_port.
 
-        Parameters
-        ----------
-        terminal : class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
-            class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
-            class:`pyedb.grpc.database.terminals.PointTerminal`,
-            class:`pyedb.grpc.database.terminals.PinGroupTerminal`,
-            Positive terminal of the port.
-        ref_terminal : class:`pyedb.grpc.database.terminals.EdgeTerminal`,
-            class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
-            class:`pyedb.grpc.database.terminals.PointTerminal`,
-            class:`pyedb.grpc.database.terminals.PinGroupTerminal`,
-            optional
-            Negative terminal of the port.
-        is_circuit_port : bool, optional
-            Whether it is a circuit port. The default is ``False``.
-        name: str, optional
-            Name of the created port. The default is None, a random name is generated.
-        Returns
-        -------
-        list: [:class:`GapPort <pyedb.grpc.database.ports.ports.GapPort`>,
-            :class:`WavePort <pyedb.grpc.database.ports.ports.WavePort>`].
         """
 
         warnings.warn("Use create_port from edb.source_excitation.create_port", DeprecationWarning)
@@ -3312,24 +3255,8 @@ class Edb(EdbInit):
         """Create a voltage probe.
 
         ..deprecated:: 0.50.0
-           Use: func:`create_voltage_probe` located in edb.source_excitation.create_voltage_probe instead.
+           Use :func:`create_voltage_probe` has been moved to edb.source_excitation.create_voltage_probe.
 
-        Parameters
-        ----------
-        terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
-            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
-            :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
-            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
-            Positive terminal of the port.
-        ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
-            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
-            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
-            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
-            Negative terminal of the probe.
-
-        Returns
-        -------
-        :class:`Terminal <pyedb.dotnet.database.edb_data.terminals.Terminal>`
         """
         warnings.warn("Use create_voltage_probe located in edb.source_excitation instead", DeprecationWarning)
         return self.source_excitation.create_voltage_probe(terminal, ref_terminal)
@@ -3338,24 +3265,8 @@ class Edb(EdbInit):
         """Create a voltage source.
 
         ..deprecated:: 0.50.0
-           Use: func:`create_voltage_source` located in edb.source_excitation.create_voltage_source instead.
+           Use: func:`create_voltage_source` has been moved to edb.source_excitation.create_voltage_source.
 
-        Parameters
-        ----------
-        terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
-            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
-            :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
-            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
-            Positive terminal of the source.
-        ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
-            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
-            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
-            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
-            Negative terminal of the source.
-
-        Returns
-        -------
-        class:`ExcitationSources <legacy.database.edb_data.ports.ExcitationSources>`
         """
         warnings.warn(
             "use create_voltage_source located in edb.source_excitation.create_voltage_source instead",
@@ -3367,24 +3278,8 @@ class Edb(EdbInit):
         """Create a current source.
 
         ..deprecated:: 0.50.0
-           Use: func:`create_current_source` located in edb.source_excitation.create_current_source instead.
+           Use :func:`create_current_source` has been moved to edb.source_excitation.create_current_source.
 
-        Parameters
-        ----------
-        terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
-            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
-            :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
-            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
-            Positive terminal of the source.
-        ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
-            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
-            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
-            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
-            Negative terminal of the source.
-
-        Returns
-        -------
-        :class:`ExcitationSources <legacy.database.edb_data.ports.ExcitationSources>`
         """
         warnings.warn(
             "use create_current_source located in edb.source_excitation.create_current_source instead",
@@ -3396,22 +3291,7 @@ class Edb(EdbInit):
         """Place terminal between two points.
 
         ..deprecated:: 0.50.0
-           Use: func:`get_point_terminal` located in edb.source_excitation.get_point_terminal instead.
-
-        Parameters
-        ----------
-        name : str,
-            Name of the terminal.
-        net_name : str
-            Name of the net.
-        location : list
-            Location of the terminal.
-        layer : str,
-            Layer of the terminal.
-
-        Returns
-        -------
-        :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
+           Use: func:`get_point_terminal` has been moved to edb.source_excitation.get_point_terminal.
         """
 
         warnings.warn(
@@ -3487,14 +3367,13 @@ class Edb(EdbInit):
         --------
         Parametrize design elements:
         >>> params = edb.auto_parametrize_design(
-        ...     layers=True,
-        ...     materials=True,
-        ...     trace_net_filter=["Clock"]
-        ... )
+        >>>     layers=True,
+        >>>     materials=True,
+        >>>     trace_net_filter=["Clock"])
         """
         edb_original_path = self.edbpath
         if output_aedb_path:
-            self.save_edb_as(output_aedb_path)
+            self.save_as(output_aedb_path)
         if isinstance(trace_net_filter, str):
             trace_net_filter = [trace_net_filter]
         parameters = []
@@ -3682,10 +3561,10 @@ class Edb(EdbInit):
                         void.expand(expand_voids_size, round_corners=False)
 
         if not open_aedb_at_end and self.edbpath != edb_original_path:
-            self.save_edb()
-            self.close_edb()
+            self.save()
+            self.close()
             self.edbpath = edb_original_path
-            self.open_edb()
+            self.open()
         return parameters
 
     @staticmethod

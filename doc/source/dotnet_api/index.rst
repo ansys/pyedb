@@ -39,6 +39,5 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
    dotnet/sim_setup_data/io/index
    dotnet/utilities/index
    dotnet/SiWave
-   SimulationConfigurationv2
 
 

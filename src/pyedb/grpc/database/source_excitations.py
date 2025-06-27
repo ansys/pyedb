@@ -2635,16 +2635,16 @@ class SourceExcitation:
 
         Parameters
         ----------
-        terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
-            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
-            :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
-            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
-            Positive terminal of the source.
-        ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
-            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
-            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
-            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
-            Negative terminal of the source.
+        terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`or
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>` or
+            :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>` or
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`.
+                Positive terminal of the source.
+        ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>` or
+            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal` or
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>` or
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`.
+                Negative terminal of the source.
 
         Returns
         -------

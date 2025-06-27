@@ -54,3 +54,19 @@ nav.bd-links ul li.toctree-l4 > a {
     font-size: .8rem;
     text-indent: 3px;
 }
+/* Two-column layout */
+.multi-column {
+    display: flex;
+    gap: 20px;
+}
+
+.column {
+    flex:1; /* Distribute width equally */
+}
+
+/* Optional: Responsive behavior */
+@media (max-width: 768px) {
+    .multi-column {
+        flex-direction: column;
+    }
+}
