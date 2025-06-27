@@ -192,7 +192,6 @@ class Configuration:
         return True
 
     def configuration_stackup(self):
-
         temp_pdef_data = {}
         for pdef_name, pdef in self._pedb.padstacks.definitions.items():
             pdef_edb_object = pdef._padstack_def_data
@@ -263,9 +262,7 @@ class Configuration:
                 prev_layer_clone = self._pedb.stackup.add_layer_top(**l)
             for idx, l in enumerate(layers):
                 if l["type"] == "dielectric":
-                    prev_layer_clone = self._pedb.stackup.add_layer_below(
-                        base_layer_name=prev_layer_clone.name, **l
-                    )
+                    prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **l)
                 elif l["type"] == "signal":
                     prev_layer_clone = self._pedb.stackup.layers[l["name"]]
 
@@ -303,11 +300,7 @@ class Configuration:
             comp_list = dict()
             if pkgd["apply_to_all"]:
                 comp_list.update(
-                    {
-                        refdes: comp
-                        for refdes, comp in comp_def.components.items()
-                        if refdes not in pkgd["components"]
-                    }
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in pkgd["components"]}
                 )
             else:
                 comp_list.update(
