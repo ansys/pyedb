@@ -163,7 +163,7 @@ class TestClass:
         # Dielectric model defined changing conductivity is not allowed
         assert material.conductivity == 0.0044504017896274855
         assert material.dc_conductivity == 1e-12
-        assert material.dielectric_material_model.dc_relative_permitivity == 5.0
+        assert material.dielectric_material_model.dc_relative_permittivity == 5.0
         assert material.dielectric_material_model.loss_tangent_at_frequency == 0.02
         assert material.loss_tangent_at_frequency == 0.02
         assert material.mass_density == 13.0
