@@ -12,6 +12,5 @@ This section describes EDB utility classes.
    hfss_extent_info
    layout_statistics
    rlc
-   simulation_configuration
    sources
    xml_control_file
