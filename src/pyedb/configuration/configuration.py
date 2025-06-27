@@ -328,40 +328,41 @@ class Configuration:
         def __init__(self, parent):
             super().__init__(parent)
 
-        def configuration_stackup(self, kwargs):
-            if kwargs.get("fix_padstack_def"):
-                from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition
+        def configuration_stackup(self):
 
-                pedb_defs = self._pedb.padstacks.definitions
-                temp = []
-                for _, pdef in pedb_defs.items():
-                    cfg_def = CfgPadstackDefinition(self._pedb, pdef)
-                    cfg_def.api.retrieve_parameters_from_edb()
-                    temp.append(cfg_def)
-                self.parent.cfg_data.stackup.apply()
-                for cfg_pdef in temp:
-                    cfg_pdef.api.set_parameters_to_edb()
-            else:
-                temp_pdef_data = {}
-                for pdef_name, pdef in self._pedb.padstacks.definitions.items():
-                    pdef_data = pdef._padstack_def_data
-                    for lyr_name in list(pdef_data.GetLayerNames()):
-                        result = pdef_data.GetPadParametersValue(
+            from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition
+
+            pedb_defs = self._pedb.padstacks.definitions
+            temp = []
+            for _, pdef in pedb_defs.items():
+                cfg_def = CfgPadstackDefinition(self._pedb, pdef)
+                cfg_def.api.retrieve_parameters_from_edb()
+                temp.append(cfg_def)
+
+            temp_pdef_data = {}
+            for pdef_name, pdef in pedb_defs.items():
+                pdef_edb_object = pdef._padstack_def_data
+                for lyr_name in list(pdef_edb_object.GetLayerNames()):
+                    result = pdef_edb_object.GetPadParametersValue(
+                        lyr_name, self._pedb._edb.Definition.PadType.RegularPad
+                    )
+                    flag, pad_shape, params, offset_x, offset_y, rotation = result
+                    if flag is False:
+                        result = pdef_edb_object.GetPolygonalPadParameters(
                             lyr_name, self._pedb._edb.Definition.PadType.RegularPad
                         )
-                        flag, pad_shape, params, offset_x, offset_y, rotation = result
-                        if flag is False:
-                            result = pdef_data.GetPolygonalPadParameters(
-                                lyr_name, self._pedb._edb.Definition.PadType.RegularPad
-                            )
-                            flag, polygon_data, offset_x, offset_y, rotation = result
-                            if flag:
-                                temp_pdef_data[pdef_name] = pdef_data
-                                break
-                self.parent.cfg_data.stackup.apply()
-                for pdef_name, pdef_data in temp_pdef_data.items():
-                    pdef = self._pedb.padstacks.definitions[pdef_name]
-                    pdef._padstack_def_data = pdef_data
+                        flag, polygon_data, offset_x, offset_y, rotation = result
+                        if flag:
+                            temp_pdef_data[pdef_name] = pdef_edb_object
+                            break
+
+            self.parent.cfg_data.stackup.apply()
+            for cfg_pdef in temp:
+                cfg_pdef.api.set_parameters_to_edb()
+
+            for pdef_name, pdef_data in temp_pdef_data.items():
+                pdef = self._pedb.padstacks.definitions[pdef_name]
+                pdef._padstack_def_data = pdef_data
 
     def __init__(self, pedb):
         self._pedb = pedb
@@ -480,7 +481,7 @@ class Configuration:
         now = datetime.now()
 
         # Configure stackup
-        self.api.configuration_stackup(kwargs)
+        self.api.configuration_stackup()
         self._pedb.logger.info(f"Updating stackup finished. Time lapse {datetime.now() - now}")
         now = datetime.now()
 
