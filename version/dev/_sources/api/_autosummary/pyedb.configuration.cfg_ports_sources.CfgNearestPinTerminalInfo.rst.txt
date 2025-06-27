@@ -1,0 +1,41 @@
+﻿CfgNearestPinTerminalInfo
+=========================
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. autoclass:: CfgNearestPinTerminalInfo
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgNearestPinTerminalInfo.export_properties
+      
+      
+      CfgNearestPinTerminalInfo.get_attributes
+      
+      
+      CfgNearestPinTerminalInfo.set_attributes
+      
+      
+      CfgNearestPinTerminalInfo.update_contact_radius
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CfgNearestPinTerminalInfo.CFG_TERMINAL_TYPES
+      CfgNearestPinTerminalInfo.protected_attributes
+   
+   

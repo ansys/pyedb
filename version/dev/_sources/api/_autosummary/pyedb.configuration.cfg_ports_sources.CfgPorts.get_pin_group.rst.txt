@@ -1,0 +1,6 @@
+get\_pin\_group
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. automethod:: CfgPorts.get_pin_group

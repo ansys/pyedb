@@ -1,0 +1,6 @@
+apply
+=====
+
+.. currentmodule:: pyedb.configuration.cfg_package_definition
+
+.. automethod:: CfgPackageDefinitions.apply

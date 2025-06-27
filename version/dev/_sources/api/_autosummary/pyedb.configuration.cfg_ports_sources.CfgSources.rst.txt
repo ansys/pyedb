@@ -1,0 +1,33 @@
+﻿CfgSources
+==========
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. autoclass:: CfgSources
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgSources.apply
+      
+      
+      CfgSources.export_properties
+      
+      
+      CfgSources.get_data_from_db
+      
+      
+      CfgSources.get_pin_group_name
+      
+   
+   
+
+   
+   
+   

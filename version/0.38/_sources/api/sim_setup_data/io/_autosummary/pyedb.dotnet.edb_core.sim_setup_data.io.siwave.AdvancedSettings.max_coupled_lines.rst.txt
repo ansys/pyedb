@@ -1,0 +1,6 @@
+max\_coupled\_lines
+===================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
+
+.. autoproperty:: AdvancedSettings.max_coupled_lines

@@ -1,0 +1,6 @@
+update\_contact\_radius
+=======================
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. automethod:: CfgTerminalInfo.update_contact_radius
