@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+import warnings
 from datetime import datetime
 import json
 import os
@@ -105,8 +105,10 @@ class Configuration:
                 self._pedb.open_edb()
         return self.cfg_data
 
-    def run(self):
+    def run(self, **kwargs):
         """Apply configuration settings to the current design"""
+        if kwargs.get("fix_padstack_def"):
+            warnings.warn("fix_padstack_def is deprecated.", DeprecationWarning)
 
         if self.cfg_data.variables:
             self.cfg_data.variables.apply()
