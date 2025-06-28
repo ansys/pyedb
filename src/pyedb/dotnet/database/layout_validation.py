@@ -325,21 +325,12 @@ class LayoutValidation:
         return
 
     def padstacks_no_name(self, fix=False):
+        """Find and fix padstacks without aedt_name."""
         pds = self._pedb.layout.padstack_instances
         counts = 0
-        via_count = 1
         for obj in pds:
-            val = String("")
-            _, name = obj._edb_object.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
-            name = str(name).strip("'")
-            if name == "":
+            if obj.aedt_name == "":
                 counts += 1
                 if fix:
-                    if not obj.component:
-                        obj._edb_object.SetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, f"Via{via_count}")
-                        via_count = via_count + 1
-                    else:
-                        obj._edb_object.SetProductProperty(
-                            self._pedb.edb_api.ProductId.Designer, 11, f"{obj.component.name}-{obj.component_pin}"
-                        )
+                    obj.aedt_name = f"via_{obj.id}"
         self._pedb._logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")
