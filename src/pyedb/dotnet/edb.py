@@ -1238,7 +1238,7 @@ class Edb(Database):
         return self._core_primitives
 
     @property
-    def layout(self):
+    def layout(self) -> Layout:
         """Layout object.
 
         Returns
