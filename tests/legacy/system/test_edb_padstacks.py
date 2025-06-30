@@ -182,14 +182,15 @@ class TestClass:
         pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1, "CornerRadius": 1}
         pad.pad_by_layer[pad.via_stop_layer].parameters = [1, 1, 1]
 
-    def test_padstack_get_instance(self):
-        assert self.edbapp.padstacks.get_instances(name="Via1961")
-        assert self.edbapp.padstacks.get_instances(definition_name="v35h15")
-        assert self.edbapp.padstacks.get_instances(net_name="1V0")
-        assert self.edbapp.padstacks.get_instances(component_reference_designator="U7")
+    def test_padstack_get_instance(self, edb_examples):
+        edbapp = edb_examples.get_si_verse(source_file_path="TEDB/ANSYS_SVP_V1_1.aedb")
+        assert edbapp.padstacks.get_instances(name="Via1961")
+        assert edbapp.padstacks.get_instances(definition_name="v35h15")
+        assert edbapp.padstacks.get_instances(net_name="1V0")
+        assert edbapp.padstacks.get_instances(component_reference_designator="U7")
 
         """Access padstack instance by name."""
-        padstack_instances = self.edbapp.padstacks.get_padstack_instance_by_net_name("GND")
+        padstack_instances = edbapp.padstacks.get_padstack_instance_by_net_name("GND")
         assert len(padstack_instances)
         padstack_1 = padstack_instances[0]
         assert padstack_1.id
@@ -199,6 +200,7 @@ class TestClass:
                 v.name = "TestInst"
                 assert v.name == "TestInst"
                 break
+        edbapp.close()
 
     def test_padstack_duplicate_padstack(self):
         """Duplicate a padstack."""
