@@ -641,7 +641,7 @@ class CfgSource(CfgCircuitElement):
                         elif t.is_reference_terminal:
                             continue
                 else:
-                    raise AttributeError("Unsupported terminal type.")
+                    raise AttributeError(f"Unsupported terminal type {t.terminal_type}.")
 
         return circuit_elements
 

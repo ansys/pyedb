@@ -353,13 +353,14 @@ class PinGroup(object):
         name : str, optional
             Name of the terminal.
         """
+
+        if name in self._pedb.terminals:  # pragma: no cover
+            raise RuntimeError(f"Terminal {name} already exists.")
         if not name:
             name = generate_unique_name(self.name)
-        from pyedb.dotnet.database.cell.terminal.pingroup_terminal import (
-            PinGroupTerminal,
-        )
 
-        term = PinGroupTerminal(self._pedb, self._edb_object)
+        term = self._pedb.pedb_class.database.cell.terminal.pingroup_terminal.PinGroupTerminal(self._pedb,
+                                                                                                      self._edb_object)
         term = term.create(name, self.net_name, self.name)
         return term
 
