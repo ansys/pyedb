@@ -92,7 +92,7 @@ class PackageDef(GrpcPackageDef):
         return edb_object
 
     @property
-    def exterior_boundary(self):
+    def exterior_boundary(self) -> GrpcPolygonData:
         """Get the exterior boundary of a package definition.
 
         Returns
@@ -107,7 +107,7 @@ class PackageDef(GrpcPackageDef):
         super(PackageDef, self.__class__).exterior_boundary.__set__(self, value)
 
     @property
-    def maximum_power(self):
+    def maximum_power(self) -> float:
         """Maximum power of the package.
 
         Returns
@@ -122,7 +122,7 @@ class PackageDef(GrpcPackageDef):
         super(PackageDef, self.__class__).maximum_power.__set__(self, GrpcValue(value))
 
     @property
-    def therm_cond(self):
+    def therm_cond(self) -> float:
         """Thermal conductivity of the package.
 
         Returns
@@ -138,7 +138,7 @@ class PackageDef(GrpcPackageDef):
         super(PackageDef, self.__class__).thermal_conductivity.__set__(self, GrpcValue(value))
 
     @property
-    def theta_jb(self):
+    def theta_jb(self) -> float:
         """Theta Junction-to-Board of the package.
 
         Returns
@@ -153,7 +153,7 @@ class PackageDef(GrpcPackageDef):
         super(PackageDef, self.__class__).theta_jb.__set__(self, GrpcValue(value))
 
     @property
-    def theta_jc(self):
+    def theta_jc(self) -> float:
         """Theta Junction-to-Case of the package.
 
         Returns
@@ -168,7 +168,7 @@ class PackageDef(GrpcPackageDef):
         super(PackageDef, self.__class__).theta_jc.__set__(self, GrpcValue(value))
 
     @property
-    def height(self):
+    def height(self) -> float:
         """Height of the package.
 
         Returns
@@ -183,7 +183,7 @@ class PackageDef(GrpcPackageDef):
         super(PackageDef, self.__class__).height.__set__(self, GrpcValue(value))
 
     @property
-    def heat_sink(self):
+    def heat_sink(self) -> HeatSink:
         """Package heat sink.
 
         Returns
@@ -206,7 +206,7 @@ class PackageDef(GrpcPackageDef):
         """
         return self.heat_sink
 
-    def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness):
+    def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness) -> HeatSink:
         """Set Heat sink.
         Parameters
         ----------

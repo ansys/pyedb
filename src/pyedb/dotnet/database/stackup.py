@@ -885,6 +885,7 @@ class Stackup(LayerCollection):
         else:
             new_layer = self._create_nonstackup_layer(layer_name, layer_type)
             self._set_layout_stackup(new_layer, "non_stackup")
+            return self.non_stackup_layers[layer_name]
         self.refresh_layer_collection()
         return self.layers[layer_name]
 
@@ -2233,7 +2234,7 @@ class Stackup(LayerCollection):
                     material.loss_tanget = material_properties["DielectricLossTangent"]
         return True
 
-    def _import_xml(self, file_path, rename=False):
+    def _import_xml(self, file_path):
         """Read external xml file and convert into json file.
         You can use xml file to import layer stackup but using json file is recommended.
         see :class:`pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfiguration´ class to
@@ -2303,7 +2304,8 @@ class Stackup(LayerCollection):
                 layers.append(layer)
             stackup_dict["layers"] = layers
         cfg = {"stackup": stackup_dict}
-        return self._pedb.configuration.load(cfg, apply_file=True)
+        self._pedb.configuration.load(cfg)
+        return self._pedb.configuration.run()
 
     def _export_xml(self, file_path):
         """Export stackup information to an external XMLfile.
@@ -2390,7 +2392,7 @@ class Stackup(LayerCollection):
         elif file_path.endswith(".json"):
             return self._import_json(file_path, rename=rename)
         elif file_path.endswith(".xml"):
-            return self._import_xml(file_path, rename=rename)
+            return self._import_xml(file_path)
         else:
             return False
 

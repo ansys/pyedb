@@ -38,7 +38,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         self._pedb = pedb
 
     @property
-    def boundary_type(self):
+    def boundary_type(self) -> str:
         """Boundary type.
 
         Returns
@@ -60,13 +60,13 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         super(PinGroupTerminal, self.__class__).boundary_type.__set__(self, value)
 
     @property
-    def is_port(self):
+    def is_port(self) -> bool:
         if self.boundary_type == "port":
             return True
         return False
 
     @property
-    def magnitude(self):
+    def magnitude(self) -> float:
         """Source magnitude.
 
         Returns
@@ -81,7 +81,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         self.source_amplitude = value
 
     @property
-    def phase(self):
+    def phase(self) -> float:
         """Source phase.
 
         Returns
@@ -96,7 +96,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         self.source_phase = value
 
     @property
-    def source_amplitude(self):
+    def source_amplitude(self) -> float:
         """Source amplitude.
 
         Returns
@@ -111,7 +111,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         super(PinGroupTerminal, self.__class__).source_amplitude.__set__(self, value)
 
     @property
-    def source_phase(self):
+    def source_phase(self) -> float:
         """Source phase.
 
         Returns
@@ -126,7 +126,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         super(PinGroupTerminal, self.__class__).source_phase.__set__(self, value)
 
     @property
-    def impedance(self):
+    def impedance(self) -> float:
         """Terminal impedance.
 
         Returns
@@ -141,7 +141,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         super(PinGroupTerminal, self.__class__).impedance.__set__(self, value)
 
     @property
-    def net(self):
+    def net(self) -> Net:
         """Terminal net.
 
         Returns
@@ -157,7 +157,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         super(PinGroupTerminal, self.__class__).net.__set__(self, value)
 
     @property
-    def pin_group(self):
+    def pin_group(self) -> any:
         """Pingroup.
 
         Returns
@@ -171,7 +171,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         return PinGroup(self._pedb, super().pin_group)
 
     @property
-    def terminal_type(self):
+    def terminal_type(self) -> str:
         return "PinGroupTerminal"
 
     @property
@@ -192,11 +192,11 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         self.reference_terminal = value
 
     @property
-    def hfss_type(self):
+    def hfss_type(self) -> str:
         return "circuit"
 
     @property
-    def is_current_source(self):
+    def is_current_source(self) -> bool:
         if self.boundary_type == "current_source":
             return True
         return False

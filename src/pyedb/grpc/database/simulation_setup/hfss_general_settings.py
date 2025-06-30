@@ -37,7 +37,7 @@ class HFSSGeneralSettings(GrpcHFSSGeneralSettings):
         self._pedb = pedb
 
     @property
-    def adaptive_solution_type(self):
+    def adaptive_solution_type(self) -> str:
         """Adaptive solution type.
 
         Returns

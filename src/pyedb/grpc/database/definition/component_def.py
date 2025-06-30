@@ -44,7 +44,7 @@ class ComponentDef(GrpcComponentDef):
         self._pedb = pedb
 
     @property
-    def part_name(self):
+    def part_name(self) -> str:
         """Component definition name.
 
         Returns
@@ -60,7 +60,7 @@ class ComponentDef(GrpcComponentDef):
         self.name = name
 
     @property
-    def type(self):
+    def type(self) -> str:
         """Component definition type.
 
         Returns
@@ -97,28 +97,28 @@ class ComponentDef(GrpcComponentDef):
             return
 
     @property
-    def components(self):
+    def components(self) -> dict[str, Component]:
         """Component instances belonging to the definition.
 
         Returns
         -------
-        Dict : [str, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`]
+        dict[str, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`]
         """
         comp_list = [Component(self._pedb, l) for l in Component.find_by_def(self._pedb.active_layout, self.part_name)]
         return {comp.refdes: comp for comp in comp_list}
 
     @property
-    def component_pins(self):
+    def component_pins(self) -> list[ComponentPin]:
         """Component pins.
 
         Returns
         -------
-        List[:class:`ComponentPin <pyedb.grpc.database.definition.component_pin.ComponentPin>`]
+        list[:class:`ComponentPin <pyedb.grpc.database.definition.component_pin.ComponentPin>`]
 
         """
         return [ComponentPin(self._pedb, pin) for pin in super().component_pins]
 
-    def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
+    def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False) -> bool:
         """Assign RLC to all components under this part name.
 
         Parameters
@@ -142,15 +142,18 @@ class ComponentDef(GrpcComponentDef):
             comp.assign_rlc_model(res, ind, cap, is_parallel)
         return True
 
-    def assign_s_param_model(self, file_path, model_name=None, reference_net=None):
+    def assign_s_param_model(self, file_path, model_name=None, reference_net=None) -> bool:
         """Assign S-parameter to all components under this part name.
 
         Parameters
         ----------
         file_path : str
             File path of the S-parameter model.
-        name : str, optional
+        model_name : str, optional
             Name of the S-parameter model.
+
+        reference_net : str, optional
+            Name of the reference net.
 
         Returns
         -------
@@ -161,31 +164,31 @@ class ComponentDef(GrpcComponentDef):
             comp.assign_s_param_model(file_path, model_name, reference_net)
         return True
 
-    def assign_spice_model(self, file_path, model_name=None):
+    def assign_spice_model(self, file_path, model_name=None) -> bool:
         """Assign Spice model to all components under this part name.
 
         Parameters
         ----------
         file_path : str
             File path of the Spice model.
-        name : str, optional
+        model_name : str, optional
             Name of the Spice model.
 
         Returns
         -------
-
+        bool
         """
         for comp in list(self.components.values()):
             comp.assign_spice_model(file_path, model_name)
         return True
 
     @property
-    def reference_file(self):
+    def reference_file(self) -> list[str]:
         """Model reference file.
 
         Returns
         -------
-        List[str]
+        list[str]
             List of reference files.
 
         """

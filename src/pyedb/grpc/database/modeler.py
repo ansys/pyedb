@@ -51,7 +51,7 @@ from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 
 
 class Modeler(object):
-    """Manages EDB methods for primitives management accessible from `Edb.modeler` property.
+    """Manages EDB methods for primitives management accessible from `Edb.modeler`.
 
     Examples
     --------
@@ -61,16 +61,22 @@ class Modeler(object):
     """
 
     def __getitem__(self, name):
-        """Get  a layout instance from the Edb project.
+        """Get a primitive instance by name or ID.
 
         Parameters
         ----------
-        name : str, int
+        name : str or int
+            Name or ID of the primitive.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`
+        :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent` or None
+            Primitive instance if found, None otherwise.
 
+        Raises
+        ------
+        TypeError
+            If name is not str or int.
         """
         for i in self.primitives:
             if (
@@ -83,33 +89,74 @@ class Modeler(object):
         return
 
     def __init__(self, p_edb):
+        """Initialize Modeler instance."""
         self._pedb = p_edb
         self._primitives = []
 
     @property
     def _edb(self):
+        """EDB API object.
+
+        Returns
+        -------
+        object
+            EDB API object.
+        """
         return self._pedb
 
     @property
     def _logger(self):
-        """Logger."""
+        """Logger instance.
+
+        Returns
+        -------
+        :class:`logger.Logger`
+            Logger instance.
+        """
         return self._pedb.logger
 
     @property
     def _active_layout(self):
+        """Active layout.
+
+        Returns
+        -------
+        :class:`ansys.edb.core.layout.Layout`
+            Active layout object.
+        """
         return self._pedb.active_layout
 
     @property
     def _layout(self):
+        """Current layout.
+
+        Returns
+        -------
+        :class:`ansys.edb.core.layout.Layout`
+            Layout object.
+        """
         return self._pedb.layout
 
     @property
     def _cell(self):
+        """Active cell.
+
+        Returns
+        -------
+        :class:`ansys.edb.core.hierarchy.Cell`
+            Active cell object.
+        """
         return self._pedb.active_cell
 
     @property
     def db(self):
-        """Db object."""
+        """Database object.
+
+        Returns
+        -------
+        :class:`ansys.edb.core.database.Database`
+            Database object.
+        """
         return self._pedb.active_db
 
     @property
@@ -119,22 +166,22 @@ class Modeler(object):
         Returns
         -------
         dict
-            Dictionary of layers.
+            Dictionary of layers with layer names as keys.
         """
         return self._pedb.stackup.layers
 
     def get_primitive(self, primitive_id):
-        """Retrieve primitive from give id.
+        """Retrieve primitive by ID.
 
         Parameters
         ----------
         primitive_id : int
-            Primitive id.
+            Primitive ID.
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            List of primitives.
+        :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` or bool
+            Primitive object if found, False otherwise.
         """
         for p in self._layout.primitives:
             if p.edb_uid == primitive_id:
@@ -164,23 +211,23 @@ class Modeler(object):
 
     @property
     def primitives(self):
-        """Primitives.
+        """All primitives in the layout.
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            List of primitives.
+        list
+            List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` objects.
         """
         return [self.__mapping_primitive_type(prim) for prim in self._pedb.layout.primitives]
 
     @property
     def polygons_by_layer(self):
-        """Primitives with layer names as keys.
+        """Primitives organized by layer names.
 
         Returns
         -------
         dict
-            Dictionary of primitives with layer names as keys.
+            Dictionary where keys are layer names and values are lists of polygons.
         """
         _primitives_by_layer = {}
         for lay in self.layers:
@@ -189,12 +236,12 @@ class Modeler(object):
 
     @property
     def primitives_by_net(self):
-        """Primitives with net names as keys.
+        """Primitives organized by net names.
 
         Returns
         -------
         dict
-            Dictionary of primitives with nat names as keys.
+            Dictionary where keys are net names and values are lists of primitives.
         """
         _prim_by_net = {}
         for net, net_obj in self._pedb.nets.nets.items():
@@ -203,12 +250,12 @@ class Modeler(object):
 
     @property
     def primitives_by_layer(self):
-        """Primitives with layer names as keys.
+        """Primitives organized by layer names.
 
         Returns
         -------
         dict
-            Dictionary of primitives with layer names as keys.
+            Dictionary where keys are layer names and values are lists of primitives.
         """
         _primitives_by_layer = {}
         for lay in self.layers:
@@ -226,64 +273,62 @@ class Modeler(object):
 
     @property
     def rectangles(self):
-        """Rectangles.
+        """All rectangle primitives.
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            List of rectangles.
-
+        list
+            List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` objects.
         """
         return [Rectangle(self._pedb, i) for i in self.primitives if i.type == "rectangle"]
 
     @property
     def circles(self):
-        """Circles.
+        """All circle primitives.
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            List of circles.
-
+        list
+            List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Circle` objects.
         """
         return [Circle(self._pedb, i) for i in self.primitives if i.type == "circle"]
 
     @property
     def paths(self):
-        """Paths.
+        """All path primitives.
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            List of paths.
+        list
+            List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Path` objects.
         """
         return [Path(self._pedb, i) for i in self.primitives if i.type == "path"]
 
     @property
     def polygons(self):
-        """Polygons.
-
-        Returns
-        -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            List of polygons.
-        """
-        return [Polygon(self._pedb, i) for i in self.primitives if i.type == "polygon"]
-
-    def get_polygons_by_layer(self, layer_name, net_list=None):
-        """Retrieve polygons by a layer.
-
-        Parameters
-        ----------
-        layer_name : str
-            Name of the layer.
-        net_list : list, optional
-            List of net names.
+        """All polygon primitives.
 
         Returns
         -------
         list
-            List of primitive objects.
+            List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Polygon` objects.
+        """
+        return [Polygon(self._pedb, i) for i in self.primitives if i.type == "polygon"]
+
+    def get_polygons_by_layer(self, layer_name, net_list=None):
+        """Retrieve polygons by layer.
+
+        Parameters
+        ----------
+        layer_name : str
+            Layer name.
+        net_list : list, optional
+            List of net names to filter by.
+
+        Returns
+        -------
+        list
+            List of polygon objects.
         """
         objinst = []
         for el in self.polygons:
@@ -296,23 +341,26 @@ class Modeler(object):
         return objinst
 
     def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):
-        """Return primitive given coordinate point [x, y], layer name and nets.
+        """Get primitive at specified point on layer.
 
         Parameters
         ----------
-        point : list
-            Coordinate [x, y]
-
-        layer : list or str, optional
-            list of layer name or layer name applied on filter.
-
-        nets : list or str, optional
-            list of net name or single net name applied on filter
+        point : list, optional
+            [x, y] coordinate point.
+        layer : str or list, optional
+            Layer name(s) to filter by.
+        nets : str or list, optional
+            Net name(s) to filter by.
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            List of primitives, polygons, paths and rectangles.
+        list
+            List of primitive objects at the point.
+
+        Raises
+        ------
+        ValueError
+            If point is invalid.
         """
         from ansys.edb.core.primitive.circle import Circle as GrpcCircle
         from ansys.edb.core.primitive.path import Path as GrpcPath
@@ -358,22 +406,17 @@ class Modeler(object):
 
     @staticmethod
     def get_polygon_bounding_box(polygon):
-        """Retrieve a polygon bounding box.
+        """Get bounding box of polygon.
 
         Parameters
         ----------
-        polygon :
-            Name of the polygon.
+        polygon : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            Polygon primitive.
 
         Returns
         -------
         list
-            List of bounding box coordinates in the format ``[-x, -y, +x, +y]``.
-
-        Examples
-        --------
-        >>> poly = database.modeler.get_polygons_by_layer("GND")
-        >>> bounding = database.modeler.get_polygon_bounding_box(poly[0])
+            Bounding box coordinates [min_x, min_y, max_x, max_y].
         """
         bounding_box = polygon.polygon_data.bbox()
         return [
@@ -385,31 +428,17 @@ class Modeler(object):
 
     @staticmethod
     def get_polygon_points(polygon):
-        """Retrieve polygon points.
-
-        .. note::
-           For arcs, one point is returned.
+        """Get points defining a polygon.
 
         Parameters
         ----------
-        polygon :
-            class: `dotnet.database.edb_data.primitives_data.Primitive`
+        polygon : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            Polygon primitive.
 
         Returns
         -------
         list
-            List of tuples. Each tuple provides x, y point coordinate. If the length of two consecutives tuples
-             from the list equals 2, a segment is defined. The first tuple defines the starting point while the second
-             tuple the ending one. If the length of one tuple equals one, that means a polyline is defined and the value
-             is giving the arc height. Therefore to polyline is defined as starting point for the tuple
-             before in the list, the current one the arc height and the tuple after the polyline ending point.
-
-        Examples
-        --------
-
-        >>> poly = database.modeler.get_polygons_by_layer("GND")
-        >>> points  = database.modeler.get_polygon_points(poly[0])
-
+            List of point coordinates.
         """
         points = []
         i = 0
@@ -432,26 +461,23 @@ class Modeler(object):
         return points
 
     def parametrize_polygon(self, polygon, selection_polygon, offset_name="offsetx", origin=None):
-        """Parametrize pieces of a polygon based on another polygon.
+        """Parametrize polygon points based on another polygon.
 
         Parameters
         ----------
-        polygon :
-            Name of the polygon.
-        selection_polygon :
-            Polygon to use as a filter.
+        polygon : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            Polygon to parametrize.
+        selection_polygon : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            Polygon used for selection.
         offset_name : str, optional
-            Name of the offset to create.  The default is ``"offsetx"``.
+            Name of offset parameter.
         origin : list, optional
-            List of the X and Y origins, which impacts the vector
-            computation and is needed to determine expansion direction.
-            The default is ``None``, in which case the vector is
-            computed from the polygon's center.
+            [x, y] origin point for vector calculation.
 
         Returns
         -------
         bool
-            ``True`` when successful, ``False`` when failed.
+            True if successful, False otherwise.
         """
 
         def calc_slope(point, origin):
@@ -611,34 +637,29 @@ class Modeler(object):
         end_cap_style="Round",
         corner_style="Round",
     ):
-        """
-        Create a trace based on a list of points.
+        """Create trace path.
 
         Parameters
         ----------
         path_list : list
-            List of points.
+            List of [x,y] points.
         layer_name : str
-            Name of the layer on which to create the path.
+            Layer name.
         width : float, optional
-            Width of the path. The default is ``1``.
+            Trace width.
         net_name : str, optional
-            Name of the net. The default is ``""``.
+            Associated net name.
         start_cap_style : str, optional
-            Style of the cap at its start. Options are ``"Round"``,
-            ``"Extended",`` and ``"Flat"``. The default is
-            ``"Round"``.
+            Start cap style ("Round", "Extended", "Flat").
         end_cap_style : str, optional
-            Style of the cap at its end. Options are ``"Round"``,
-            ``"Extended",`` and ``"Flat"``. The default is
-            ``"Round"``.
+            End cap style ("Round", "Extended", "Flat").
         corner_style : str, optional
-            Style of the corner. Options are ``"Round"``,
-            ``"Sharp"`` and ``"Mitered"``. The default is ``"Round"``.
+            Corner style ("Round", "Sharp", "Mitered").
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+        :class:`pyedb.dotnet.database.edb_data.primitives_data.Path` or bool
+            Path object if created, False otherwise.
         """
 
         primitive = self._create_path(
@@ -654,25 +675,23 @@ class Modeler(object):
         return primitive
 
     def create_polygon(self, points, layer_name, voids=[], net_name=""):
-        """Create a polygon based on a list of points and voids.
+        """Create polygon primitive.
 
         Parameters
         ----------
-        points : list of points or PolygonData.
-            - [x, y] coordinate
-            - [x, y, height] for an arc with specific height (between previous point and actual point)
-            - [x, y, rotation, xc, yc] for an arc given a point, rotation and center.
+        points : list or :class:`ansys.edb.core.geometry.polygon_data.PolygonData`
+            Polygon points or PolygonData object.
         layer_name : str
-            Name of the layer on which to create the polygon.
+            Layer name.
         voids : list, optional
-            List of shape objects for voids or points that creates the shapes. The default is``[]``.
+            List of void shapes or points.
         net_name : str, optional
-            Name of the net. The default is ``""``.
+            Associated net name.
 
         Returns
         -------
-        bool, :class:`dotnet.database.edb_data.primitives.Primitive`
-            Polygon when successful, ``False`` when failed.
+        :class:`pyedb.dotnet.database.edb_data.primitives_data.Polygon` or bool
+            Polygon object if created, False otherwise.
         """
         net = self._pedb.nets.find_or_create_net(net_name)
         if isinstance(points, list):
@@ -718,36 +737,35 @@ class Modeler(object):
         corner_radius="0mm",
         rotation="0deg",
     ):
-        """Create rectangle.
+        """Create rectangle primitive.
 
         Parameters
         ----------
         layer_name : str
-            Name of the layer on which to create the rectangle.
-        net_name : str
-            Name of the net. The default is ``""``.
-        lower_left_point : list
-            Lower left point when ``representation_type="lower_left_upper_right"``. The default is ``""``.
-        upper_right_point : list
-            Upper right point when ``representation_type="lower_left_upper_right"``. The default is ``""``.
-        center_point : list
-            Center point when ``representation_type="center_width_height"``. The default is ``""``.
-        width : str
-            Width of the rectangle when ``representation_type="center_width_height"``. The default is ``""``.
-        height : str
-            Height of the rectangle when ``representation_type="center_width_height"``. The default is ``""``.
+            Layer name.
+        net_name : str, optional
+            Associated net name.
+        lower_left_point : list, optional
+            [x,y] lower left point.
+        upper_right_point : list, optional
+            [x,y] upper right point.
+        center_point : list, optional
+            [x,y] center point.
+        width : str or float, optional
+            Rectangle width.
+        height : str or float, optional
+            Rectangle height.
         representation_type : str, optional
-            Type of the rectangle representation. The default is ``lower_left_upper_right``. Options are
-            ``"lower_left_upper_right"`` and ``"center_width_height"``.
+            "lower_left_upper_right" or "center_width_height".
         corner_radius : str, optional
-            Radius of the rectangle corner. The default is ``"0mm"``.
+            Corner radius with units.
         rotation : str, optional
-            Rotation of the rectangle. The default is ``"0deg"``.
+            Rotation angle with units.
 
         Returns
         -------
-         :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            Rectangle when successful, ``False`` when failed.
+        :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` or bool
+            Rectangle object if created, False otherwise.
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "lower_left_upper_right":
@@ -797,26 +815,25 @@ class Modeler(object):
         return False
 
     def create_circle(self, layer_name, x, y, radius, net_name=""):
-        """Create a circle on a specified layer.
+        """Create circle primitive.
 
         Parameters
         ----------
         layer_name : str
-            Name of the layer.
+            Layer name.
         x : float
-            Position on the X axis.
+            Center x-coordinate.
         y : float
-            Position on the Y axis.
+            Center y-coordinate.
         radius : float
-            Radius of the circle.
+            Circle radius.
         net_name : str, optional
-            Name of the net. The default is ``None``, in which case the
-            default name is assigned.
+            Associated net name.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            Objects of the circle created when successful.
+        :class:`pyedb.dotnet.database.edb_data.primitives_data.Circle` or bool
+            Circle object if created, False otherwise.
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
 
@@ -833,22 +850,17 @@ class Modeler(object):
         return False
 
     def delete_primitives(self, net_names):
-        """Delete primitives by net names.
+        """Delete primitives by net name(s).
 
         Parameters
         ----------
-        net_names : str, list
-            Names of the nets to delete.
+        net_names : str or list
+            Net name(s).
 
         Returns
         -------
         bool
-            ``True`` when successful, ``False`` when failed.
-
-        References
-        ----------
-
-        >>> Edb.modeler.delete_primitives(net_names=["GND"])
+            True if successful, False otherwise.
         """
         if not isinstance(net_names, list):  # pragma: no cover
             net_names = [net_names]
@@ -859,22 +871,23 @@ class Modeler(object):
         return True
 
     def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=False):
-        """Get primitives by conditions.
+        """Get primitives with filtering.
 
         Parameters
         ----------
         net_name : str, optional
-            Set filter on net_name. Default is `None`.
+            Net name filter.
         layer_name : str, optional
-            Set filter on layer_name. Default is `None`.
-        prim_type :  str, optional
-            Set filter on primitive type. Default is `None`.
-        is_void : bool
-            Set filter on is_void. Default is 'False'
+            Layer name filter.
+        prim_type : str, optional
+            Primitive type filter.
+        is_void : bool, optional
+            Void primitive filter.
+
         Returns
         -------
         list
-            List of filtered primitives
+            List of filtered primitives.
         """
         prims = []
         for el in self.primitives:
@@ -895,12 +908,12 @@ class Modeler(object):
         return prims
 
     def fix_circle_void_for_clipping(self):
-        """Fix issues when circle void are clipped due to a bug in EDB.
+        """Fix circle void clipping issues.
 
         Returns
         -------
         bool
-            ``True`` when successful, ``False`` when no changes were applied.
+            True if changes made, False otherwise.
         """
         for void_circle in self.circles:
             if not void_circle.is_void:
@@ -922,16 +935,20 @@ class Modeler(object):
 
     @staticmethod
     def add_void(shape, void_shape):
-        """Add a void into a shape.
+        """Add void to shape.
 
         Parameters
         ----------
-        shape : Polygon
-            Shape of the main object.
-        void_shape : list, Path
-            Shape of the voids.
+        shape : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            Main shape.
+        void_shape : list or :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            Void shape(s).
+
+        Returns
+        -------
+        bool
+            True if successful, False otherwise.
         """
-        flag = False
         if not isinstance(void_shape, list):
             void_shape = [void_shape]
         for void in void_shape:
@@ -944,25 +961,6 @@ class Modeler(object):
             if not flag:
                 return flag
         return True
-
-    def shape_to_polygon_data(self, shape):
-        """Convert a shape to polygon data.
-
-        Parameters
-        ----------
-        shape : :class:`pyedb.dotnet.database.modeler.Modeler.Shape`
-            Type of the shape to convert. Options are ``"rectangle"`` and ``"polygon"``.
-        """
-        if shape.type == "polygon":
-            return self._createPolygonDataFromPolygon(shape)
-        elif shape.type == "rectangle":
-            return self._createPolygonDataFromRectangle(shape)
-        else:
-            self._logger.error(
-                "Unsupported shape type %s when creating a polygon primitive.",
-                shape.type,
-            )
-            return None
 
     def _createPolygonDataFromPolygon(self, shape):
         points = shape.points
@@ -1113,23 +1111,23 @@ class Modeler(object):
         parameter_name="trace_width",
         variable_value=None,
     ):
-        """Parametrize a Trace on specific layer or all stackup.
+        """Parametrize trace width.
 
         Parameters
         ----------
-        nets_name : str, list
-            name of the net or list of nets to parametrize.
-        layers_name : str, optional
-            name of the layer or list of layers to which the net to parametrize has to be included.
+        nets_name : str or list
+            Net name(s).
+        layers_name : str or list, optional
+            Layer name(s) filter.
         parameter_name : str, optional
-            name of the parameter to create.
-        variable_value : str, float, optional
-            value with units of parameter to create.
-            If None, the first trace width of Net will be used as parameter value.
+            Parameter name prefix.
+        variable_value : float or str, optional
+            Initial parameter value.
 
         Returns
         -------
         bool
+            True if successful, False otherwise.
         """
         if isinstance(nets_name, str):
             nets_name = [nets_name]
@@ -1155,21 +1153,21 @@ class Modeler(object):
         return True
 
     def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_names_list=[]):
-        """Try to unite all Polygons on specified layer.
+        """Unite polygons on layer.
 
         Parameters
         ----------
-        layer_name : str, optional
-            Name of layer name to unite objects on. The default is ``None``, in which case all layers are taken.
+        layer_name : str or list, optional
+            Layer name(s) to process.
         delete_padstack_gemometries : bool, optional
-            Whether to delete all padstack geometries. The default is ``False``.
-        net_names_list : list[str] : optional
-            Net names list filter. The default is ``[]``, in which case all nets are taken.
+            Whether to delete padstack geometries.
+        net_names_list : list, optional
+            Net names filter.
 
         Returns
         -------
         bool
-            ``True`` is successful.
+            True if successful, False otherwise.
         """
         if isinstance(layer_name, str):
             layer_name = [layer_name]
@@ -1226,20 +1224,19 @@ class Modeler(object):
         return True
 
     def defeature_polygon(self, poly, tolerance=0.001):
-        """Defeature the polygon based on the maximum surface deviation criteria.
+        """Defeature polygon.
 
         Parameters
         ----------
-        maximum_surface_deviation : float
-        poly : Edb Polygon primitive
+        poly : :class:`pyedb.dotnet.database.edb_data.primitives_data.Polygon`
             Polygon to defeature.
         tolerance : float, optional
-            Maximum tolerance criteria. The default is ``0.001``.
+            Maximum surface deviation tolerance.
 
         Returns
         -------
         bool
-            ``True`` when successful, ``False`` when failed.
+            True if successful, False otherwise.
         """
         new_poly = poly.polygon_data.defeature(tol=tolerance)
         if not new_poly.points:
@@ -1251,20 +1248,19 @@ class Modeler(object):
         return True
 
     def get_layout_statistics(self, evaluate_area=False, net_list=None):
-        """Return EDBStatistics object from a layout.
+        """Get layout statistics.
 
         Parameters
         ----------
-
-        evaluate_area : optional bool
-            When True evaluates the layout metal surface, can take time-consuming,
-            avoid using this option on large design.
+        evaluate_area : bool, optional
+            Whether to compute metal area statistics.
+        net_list : list, optional
+            Net list for area computation.
 
         Returns
         -------
-
-        EDBStatistics object.
-
+        :class:`LayoutStatistics`
+            Layout statistics object.
         """
         stat_model = LayoutStatistics()
         stat_model.num_layers = len(list(self._pedb.stackup.layers.values()))
@@ -1319,44 +1315,45 @@ class Modeler(object):
         end_cell_instance_name=None,
         bondwire_type="jedec4",
     ):
-        """Create a bondwire object.
+        """Create bondwire.
 
         Parameters
         ----------
-        bondwire_type : :class:`BondwireType`
-            Type of bondwire: kAPDBondWire or kJDECBondWire types.
         definition_name : str
             Bondwire definition name.
         placement_layer : str
-            Layer name this bondwire will be on.
-        width : :class:`Value <ansys.edb.utility.Value>`
+            Placement layer name.
+        width : float or str
             Bondwire width.
         material : str
-            Bondwire material name.
+            Material name.
         start_layer_name : str
-            Name of start layer.
-        start_x : :class:`Value <ansys.edb.utility.Value>`
-            X value of start point.
-        start_y : :class:`Value <ansys.edb.utility.Value>`
-            Y value of start point.
+            Start layer name.
+        start_x : float or str
+            Start x-coordinate.
+        start_y : float or str
+            Start y-coordinate.
         end_layer_name : str
-            Name of end layer.
-        end_x : :class:`Value <ansys.edb.utility.Value>`
-            X value of end point.
-        end_y : :class:`Value <ansys.edb.utility.Value>`
-            Y value of end point.
-        net : str or :class:`Net <ansys.edb.net.Net>` or None
-            Net of the Bondwire.
+            End layer name.
+        end_x : float or str
+            End x-coordinate.
+        end_y : float or str
+            End y-coordinate.
+        net : str
+            Associated net name.
         start_cell_instance_name : str, optional
-            Cell instance name where the bondwire starts.
+            Start cell instance name.
         end_cell_instance_name : str, optional
-            Cell instance name where the bondwire ends.
+            End cell instance name.
+        bondwire_type : str, optional
+            Bondwire type ("jedec4", "jedec5", "apd").
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.dotnet.primitive.BondwireDotNet`
-            Bondwire object created.
+        :class:`pyedb.dotnet.database.edb_data.primitives_data.Bondwire` or bool
+            Bondwire object if created, False otherwise.
         """
+
         from ansys.edb.core.hierarchy.cell_instance import (
             CellInstance as GrpcCellInstance,
         )
@@ -1414,17 +1411,23 @@ class Modeler(object):
         pins_by_aedt_name=None,
         pins_by_name=None,
     ):
-        """Create a PinGroup.
+        """Create pin group.
 
         Parameters
-        name : str,
-            Name of the PinGroup.
-        pins_by_id : list[int] or None
-            List of pins by ID.
-        pins_by_aedt_name : list[str] or None
-            List of pins by AEDT name.
-        pins_by_name : list[str] or None
-            List of pins by name.
+        ----------
+        name : str
+            Pin group name.
+        pins_by_id : list, optional
+            List of pin IDs.
+        pins_by_aedt_name : list, optional
+            List of pin AEDT names.
+        pins_by_name : list, optional
+            List of pin names.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.database.siwave.pin_group.PinGroup` or bool
+            PinGroup object if created, False otherwise.
         """
         # TODO move this method to components and merge with existing one
         pins = {}

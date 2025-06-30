@@ -54,7 +54,7 @@ class Rectangle(GrpcRectangle, Primitive):
         return self.cast().polygon_data
 
     @property
-    def representation_type(self):
+    def representation_type(self) -> str:
         """Representation type.
 
         Returns

@@ -34,7 +34,7 @@ class PinPairModel(GrpcPinPairModel):
         super().__init__(edb_object.msg)
 
     @property
-    def rlc(self):
+    def rlc(self) -> tuple[str, str]:
         """Rlc mdodel.
 
         Returns
@@ -45,7 +45,7 @@ class PinPairModel(GrpcPinPairModel):
         return super().rlc(self.pin_pairs()[0])
 
     @property
-    def rlc_enable(self):
+    def rlc_enable(self) -> list[bool]:
         """Enable model.
 
         Returns
@@ -62,7 +62,7 @@ class PinPairModel(GrpcPinPairModel):
         self.rlc.c_enabled = GrpcValue(value[2])
 
     @property
-    def resistance(self):
+    def resistance(self) -> float:
         """Resistance.
 
         Returns
@@ -78,7 +78,7 @@ class PinPairModel(GrpcPinPairModel):
         self.rlc.r = GrpcValue(value)
 
     @property
-    def inductance(self):
+    def inductance(self) -> float:
         """Inductance.
 
         Returns
@@ -94,7 +94,7 @@ class PinPairModel(GrpcPinPairModel):
         self.rlc.l = GrpcValue(value)
 
     @property
-    def capacitance(self):
+    def capacitance(self) -> float:
         """Capacitance.
 
         Returns
@@ -110,7 +110,7 @@ class PinPairModel(GrpcPinPairModel):
         self.rlc.c = GrpcValue(value)
 
     @property
-    def rlc_values(self):  # pragma: no cover
+    def rlc_values(self) -> list[float]:
         """Rlc value.
 
         Returns

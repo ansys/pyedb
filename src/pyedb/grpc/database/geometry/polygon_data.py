@@ -54,7 +54,7 @@ class PolygonData(GrpcPolygonData):
             self._edb_object = edb_object
 
     @property
-    def bounding_box(self):
+    def bounding_box(self) -> list[float]:
         """Bounding box.
 
         Returns
@@ -68,7 +68,7 @@ class PolygonData(GrpcPolygonData):
         return [bbox[0].x.value, bbox[0].xyvalue, bbox[1].x.value, bbox[1].y.value]
 
     @property
-    def arcs(self):
+    def arcs(self) -> list[ArcData]:
         """Get the Primitive Arc Data.
 
         Returns
@@ -79,7 +79,7 @@ class PolygonData(GrpcPolygonData):
         return arcs
 
     @property
-    def points(self):
+    def points(self) -> list[list[float]]:
         """Get all points in polygon.
 
         Returns
@@ -95,7 +95,7 @@ class PolygonData(GrpcPolygonData):
         return PolygonData.create_from_points(points=list_of_point_data, closed=closed)
 
     @staticmethod
-    def create_from_bounding_box(points):
+    def create_from_bounding_box(points) -> GrpcPolygonData:
         """Create PolygonData from point list.
 
         Returns
@@ -105,7 +105,7 @@ class PolygonData(GrpcPolygonData):
         """
         return PolygonData.create_from_bounding_box(points=points)
 
-    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> bool:
         """Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
 

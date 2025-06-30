@@ -40,7 +40,7 @@ class RaptorXSimulationSettings(GrpcRaptorXSimulationSettings):
         self._pedb = pedb
 
     @property
-    def advanced(self):
+    def advanced(self) -> RaptorXAdvancedSettings:
         """Advanced class.
 
         Returns
@@ -52,7 +52,7 @@ class RaptorXSimulationSettings(GrpcRaptorXSimulationSettings):
         return RaptorXAdvancedSettings(self._pedb, self.advanced)
 
     @property
-    def general(self):
+    def general(self) -> RaptorXGeneralSettings:
         """General settings class.
 
         Returns

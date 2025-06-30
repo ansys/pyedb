@@ -1185,6 +1185,7 @@ class EDBPadstackInstance(Connectable):
         super().__init__(_pedb, edb_padstackinstance)
         self._edb_padstackinstance = self._edb_object
         self._bounding_box = []
+        self._side_number = None
         self._object_instance = None
         self._position = []
         self._pdef = None
@@ -1794,8 +1795,14 @@ class EDBPadstackInstance(Connectable):
 
         val = String("")
         _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
-        name = str(name).strip("'")
-        return name
+        aedt_name = str(name).strip("'")
+        if aedt_name == "":
+            if self.is_pin and self.component:
+                aedt_name = f"{self.component.name}-{self.component_pin}"
+            elif self.component_pin:
+                aedt_name = self.component_pin
+            self.aedt_name = aedt_name
+        return aedt_name
 
     @aedt_name.setter
     def aedt_name(self, value):
@@ -1916,6 +1923,18 @@ class EDBPadstackInstance(Connectable):
             * -1 Undefined.
         """
         return int(self._edb_padstackinstance.GetGroup().GetPlacementLayer().GetTopBottomAssociation())
+
+    @property
+    def side_number(self) -> float:
+        if not self._side_number:
+            prop_string = "$begin ''\n\tsid=3\n\tmat='copper'\n\tvs='Wirebond'\n$end ''\n"
+            self._edb_padstackinstance.SetProductProperty(self._pedb._edb.ProductId.Designer, 21, prop_string)
+        self._side_number = self._edb_padstackinstance.GetProductProperty(self._pedb._edb.ProductId.Designer, 21)
+        return self._side_number
+
+    @side_number.setter
+    def side_number(self, value):
+        self._side_number = self._edb_padstackinstance.GetProductProperty(self._pedb._edb.ProductId.Designer, 21, value)
 
     def create_rectangle_in_pad(self, layer_name, return_points=False, partition_max_order=16):
         """Create a rectangle inscribed inside a padstack instance pad.

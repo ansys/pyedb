@@ -37,7 +37,7 @@ class Path(GrpcPath, Primitive):
         self._pedb = pedb
 
     @property
-    def width(self):
+    def width(self) -> float:
         """Path width.
 
         Returns
@@ -52,7 +52,7 @@ class Path(GrpcPath, Primitive):
         super(Path, self.__class__).width.__set__(self, GrpcValue(value))
 
     @property
-    def length(self):
+    def length(self) -> float:
         """Path length in meters.
 
         Returns
@@ -62,7 +62,7 @@ class Path(GrpcPath, Primitive):
         """
         center_line_arcs = self._edb_object.cast().center_line.arc_data
         path_length = 0.0
-        for arc in center_line_arcs[: int(len(center_line_arcs) / 2)]:
+        for arc in center_line_arcs:
             path_length += arc.length
         end_cap_style = self.get_end_cap_style()
         if end_cap_style:
@@ -72,7 +72,7 @@ class Path(GrpcPath, Primitive):
                 path_length += self.width / 2
         return round(path_length, 9)
 
-    def add_point(self, x, y, incremental=True):
+    def add_point(self, x, y, incremental=True) -> bool:
         """Add a point at the end of the path.
 
         Parameters
@@ -297,7 +297,7 @@ class Path(GrpcPath, Primitive):
             self._pedb.padstacks.place([x, y], padstack_name, net_name=net_name)
 
     @property
-    def center_line(self):
+    def center_line(self) -> list[float]:
         """Path center line
 
         Returns
@@ -307,7 +307,7 @@ class Path(GrpcPath, Primitive):
         """
         return self.get_center_line()
 
-    def get_center_line(self):
+    def get_center_line(self) -> list[list[float]]:
         """Retrieve center line points list.
 
         Returns
@@ -324,7 +324,7 @@ class Path(GrpcPath, Primitive):
     #         super(Path, self.__class__).polygon_data.__set__(self, polygon_data)
 
     @property
-    def corner_style(self):
+    def corner_style(self) -> str:
         """Path's corner style as string.
 
         Returns

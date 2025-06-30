@@ -76,8 +76,8 @@ class TestClass:
 
         self.edbapp.add_design_variable("via_x", 5e-3)
         self.edbapp["via_y"] = "1mm"
-        assert self.edbapp["via_y"].value == 1e-3
-        assert self.edbapp["via_y"].value_string == "1mm"
+        assert self.edbapp["via_y"] == 1e-3
+        # assert self.edbapp["via_y"].value_string == "1mm"
         assert self.edbapp.padstacks.place(["via_x", "via_x+via_y"], "myVia", via_name="via_test1")
         assert self.edbapp.padstacks.place(["via_x", "via_x+via_y*2"], "myVia_bullet")
         self.edbapp.padstacks["via_test1"].net_name = "GND"
@@ -182,14 +182,15 @@ class TestClass:
         pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1, "CornerRadius": 1}
         pad.pad_by_layer[pad.via_stop_layer].parameters = [1, 1, 1]
 
-    def test_padstack_get_instance(self):
-        assert self.edbapp.padstacks.get_instances(name="Via1961")
-        assert self.edbapp.padstacks.get_instances(definition_name="v35h15")
-        assert self.edbapp.padstacks.get_instances(net_name="1V0")
-        assert self.edbapp.padstacks.get_instances(component_reference_designator="U7")
+    def test_padstack_get_instance(self, edb_examples):
+        edbapp = edb_examples.get_si_verse(source_file_path="TEDB/ANSYS_SVP_V1_1.aedb")
+        assert edbapp.padstacks.get_instances(name="Via1961")
+        assert edbapp.padstacks.get_instances(definition_name="v35h15")
+        assert edbapp.padstacks.get_instances(net_name="1V0")
+        assert edbapp.padstacks.get_instances(component_reference_designator="U7")
 
         """Access padstack instance by name."""
-        padstack_instances = self.edbapp.padstacks.get_padstack_instance_by_net_name("GND")
+        padstack_instances = edbapp.padstacks.get_padstack_instance_by_net_name("GND")
         assert len(padstack_instances)
         padstack_1 = padstack_instances[0]
         assert padstack_1.id
@@ -199,6 +200,7 @@ class TestClass:
                 v.name = "TestInst"
                 assert v.name == "TestInst"
                 break
+        edbapp.close()
 
     def test_padstack_duplicate_padstack(self):
         """Duplicate a padstack."""

@@ -289,6 +289,34 @@ class AdaptiveSettings(object):
         self.adaptive_settings.AdaptiveFrequencyDataList.Add(high_freq_adapt_data)
         return self._parent._update_setup()
 
+    def add_multi_frequency_adaptive_setup(self, freq_list, max_num_passes=10, max_delta_s=0.02):
+        """Add a setup for frequency data.
+
+        Parameters
+        ----------
+        low_frequency : str, float
+            Frequency with units or float frequency (in Hz).
+        high_frequency : str, float
+            Frequency with units or float frequency (in Hz).
+        max_num_passes : int, optional
+            Maximum number of passes. The default is ``10``.
+        max_delta_s : float, optional
+            Maximum delta S. The default is ``0.02``.
+
+        Returns
+        -------
+        bool
+            ``True`` if method is successful, ``False`` otherwise.
+        """
+        self.adaptive_settings.AdaptiveFrequencyDataList.Clear()
+        for i in freq_list:
+            low_freq_adapt_data = self._parent._pedb.simsetupdata.AdaptiveFrequencyData()
+            low_freq_adapt_data.MaxDelta = self._parent._pedb.edb_value(max_delta_s).ToString()
+            low_freq_adapt_data.MaxPasses = max_num_passes
+            low_freq_adapt_data.AdaptiveFrequency = self._parent._pedb.edb_value(i).ToString()
+            self.adaptive_settings.AdaptiveFrequencyDataList.Add(low_freq_adapt_data)
+        return self._parent._update_setup()
+
 
 class DefeatureSettings(object):
     """Manages EDB methods for defeature settings."""

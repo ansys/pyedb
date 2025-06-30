@@ -72,7 +72,7 @@ class Layout(GrpcLayout):
         return self._pedb._active_cell
 
     @property
-    def primitives(self):
+    def primitives(self) -> list[any]:
         prims = []
         for prim in super().primitives:
             if isinstance(prim, ansys.edb.core.primitive.path.Path):
@@ -90,7 +90,7 @@ class Layout(GrpcLayout):
         return prims
 
     @property
-    def terminals(self):
+    def terminals(self) -> list[any]:
         """Get terminals belonging to active layout.
 
         Returns
@@ -113,7 +113,7 @@ class Layout(GrpcLayout):
         return temp
 
     @property
-    def nets(self):
+    def nets(self) -> list[Net]:
         """Nets.
 
         Returns
@@ -124,7 +124,7 @@ class Layout(GrpcLayout):
         return [Net(self._pedb, net) for net in super().nets]
 
     @property
-    def bondwires(self):
+    def bondwires(self) -> list[Bondwire]:
         """Bondwires.
 
         Returns
@@ -135,7 +135,7 @@ class Layout(GrpcLayout):
         return [i for i in self.primitives if i.primitive_type == "bondwire"]
 
     @property
-    def groups(self):
+    def groups(self) -> list[Component]:
         """Groups
 
         Returns
@@ -147,7 +147,7 @@ class Layout(GrpcLayout):
         return [Component(self._pedb, g) for g in self._pedb.active_cell.layout.groups]
 
     @property
-    def pin_groups(self):
+    def pin_groups(self) -> list[PinGroup]:
         """Pin groups.
 
         Returns
@@ -159,7 +159,7 @@ class Layout(GrpcLayout):
         return [PinGroup(self._pedb, i) for i in self._pedb.active_cell.layout.pin_groups]
 
     @property
-    def net_classes(self):
+    def net_classes(self) -> list[NetClass]:
         """Net classes.
 
         Returns
@@ -171,7 +171,7 @@ class Layout(GrpcLayout):
         return [NetClass(self._pedb, i) for i in self._pedb.active_cell.layout.net_classes]
 
     @property
-    def extended_nets(self):
+    def extended_nets(self) -> list[ExtendedNet]:
         """Extended nets.
 
         Returns
@@ -183,7 +183,7 @@ class Layout(GrpcLayout):
         return [ExtendedNet(self._pedb, i) for i in self._pedb.active_cell.layout.extended_nets]
 
     @property
-    def differential_pairs(self):
+    def differential_pairs(self) -> list[DifferentialPair]:
         """Differential pairs.
 
         Returns
@@ -195,13 +195,13 @@ class Layout(GrpcLayout):
         return [DifferentialPair(self._pedb, i) for i in self._pedb.active_cell.layout.differential_pairs]
 
     @property
-    def padstack_instances(self):
+    def padstack_instances(self) -> list[PadstackInstance]:
         """Get all padstack instances in a list."""
         return [PadstackInstance(self._pedb, i) for i in self._pedb.active_cell.layout.padstack_instances]
 
     #
     @property
-    def voltage_regulators(self):
+    def voltage_regulators(self) -> list[VoltageRegulator]:
         """Voltage regulators.
 
         List[:class:`VoltageRegulator <pyedb.grpc.database.layout.voltage_regulator.VoltageRegulator>`.
@@ -212,7 +212,7 @@ class Layout(GrpcLayout):
 
     def find_primitive(
         self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
-    ) -> list:
+    ) -> list[any]:
         """Find a primitive objects by layer name.
         Parameters
         ----------

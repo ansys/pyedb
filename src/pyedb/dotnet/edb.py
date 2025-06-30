@@ -25,6 +25,7 @@
 This module is implicitly loaded in HFSS 3D Layout when launched.
 
 """
+from datetime import datetime
 from itertools import combinations
 import os
 from pathlib import Path
@@ -49,7 +50,6 @@ from pyedb.dotnet.database.components import Components
 import pyedb.dotnet.database.dotnet.database
 from pyedb.dotnet.database.dotnet.database import Database
 from pyedb.dotnet.database.edb_data.design_options import EdbDesignOptions
-from pyedb.dotnet.database.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.database.edb_data.ports import (
     BundleWavePort,
     CircuitPort,
@@ -92,6 +92,7 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
     SiwaveSimulationSetup,
 )
+from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import (
     generate_unique_name,
@@ -196,6 +197,10 @@ class Edb(Database):
         layer_filter: str = None,
         remove_existing_aedt: bool = False,
     ):
+        self._logger = pyedb_logger
+        now = datetime.now()
+        self.logger.info(f"Star initializing Edb {now.time()}")
+
         if isinstance(edbpath, Path):
             edbpath = str(edbpath)
 
@@ -291,7 +296,7 @@ class Edb(Database):
                 self._logger.add_file_logger(self.log_name, "Edb")
             self.open_edb()
         if self.active_cell:
-            self.logger.info("EDB initialized.")
+            self.logger.info(f"EDB initialized.Time lapse {datetime.now() - now}")
         else:
             raise AttributeError("Failed to initialize DLLs.")
 
@@ -461,9 +466,9 @@ class Edb(Database):
         """
         all_vars = dict()
         for i, j in self.project_variables.items():
-            all_vars[i] = j
+            all_vars[i] = j.value
         for i, j in self.design_variables.items():
-            all_vars[i] = j
+            all_vars[i] = j.value
         return all_vars
 
     @property
@@ -1233,7 +1238,7 @@ class Edb(Database):
         return self._core_primitives
 
     @property
-    def layout(self):
+    def layout(self) -> Layout:
         """Layout object.
 
         Returns
@@ -3022,11 +3027,11 @@ class Edb(Database):
         --------
 
         >>> from pyedb import Edb
-        >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2023.2")
+        >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", edbversion="2023.2")
 
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
-        >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
-        >>> edb.export_hfss(r"C:\temp")
+        >>> edb.write_export3d_option_config_file(r"C:\\temp", options_config)
+        >>> edb.export_hfss(r"C:\\temp")
         """
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
@@ -3065,10 +3070,10 @@ class Edb(Database):
         --------
 
         >>> from pyedb import Edb
-        >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
+        >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", edbversion="2021.2")
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
-        >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
-        >>> edb.export_q3d(r"C:\temp")
+        >>> edb.write_export3d_option_config_file("C:\\temp", options_config)
+        >>> edb.export_q3d("C:\\temp")
         """
 
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
@@ -3116,11 +3121,11 @@ class Edb(Database):
 
         >>> from pyedb import Edb
 
-        >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
+        >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", edbversion="2021.2")
 
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
-        >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
-        >>> edb.export_maxwell(r"C:\temp")
+        >>> edb.write_export3d_option_config_file("C:\\temp", options_config)
+        >>> edb.export_maxwell("C:\\temp")
         """
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
         return siwave_s.export_3d_cad(
@@ -3245,10 +3250,13 @@ class Edb(Database):
         -------
         :class:`pyedb.dotnet.database.edb_data.edbvalue.EdbValue`
         """
-        var_server = self.variable_exists(variable_name)
-        if var_server[0]:
-            tuple_value = var_server[1].GetVariableValue(variable_name)
-            return EdbValue(tuple_value[1])
+
+        for i, j in self.project_variables.items():
+            if i == variable_name:
+                return j
+        for i, j in self.design_variables.items():
+            if i == variable_name:
+                return j
         self.logger.info("Variable %s doesn't exists.", variable_name)
         return None
 
@@ -3758,7 +3766,7 @@ class Edb(Database):
         elif not name:
             name = generate_unique_name("setup")
         setup = HfssSimulationSetup(self, name=name)
-        setup.set_solution_single_frequency("1GΗz")
+        setup.set_solution_single_frequency("1Ghz")
         return setup
 
     def create_raptorx_setup(self, name=None):
@@ -3958,7 +3966,7 @@ class Edb(Database):
             Dictionary with EDB path as key and EDB PolygonData as value defining the zone region.
             This dictionary is returned from the command copy_zones():
             >>> edb = Edb(edb_file)
-            >>> zone_dict = edb.copy_zones(r"C:\Temp\test")
+            >>> zone_dict = edb.copy_zones("C:/Temp/test")
 
         common_reference_net : str
             the common reference net name. This net name must be provided to provide a valid project.
@@ -4017,7 +4025,7 @@ class Edb(Database):
                 dictionary terminals with edb name as key and created ports name on clipped signal nets.
                 Dictionary is generated by the command cutout_multizone_layout:
                 >>> edb = Edb(edb_file)
-                >>> edb_zones = edb.copy_zones(r"C:\Temp\test")
+                >>> edb_zones = edb.copy_zones("C:/Temp/test")
                 >>> defined_ports, terminals_info = edb.cutout_multizone_layout(edb_zones, common_reference_net)
                 >>> project_connexions = get_connected_ports(terminals_info)
 
@@ -4724,6 +4732,6 @@ class Edb(Database):
     def get_variable_value(self, variable_name):
         """Added to get closer architecture as for grpc."""
         if variable_name in self.variables:
-            return self.variables[variable_name].value
+            return self.variables[variable_name]
         else:
             return False

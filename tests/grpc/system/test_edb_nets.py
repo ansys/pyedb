@@ -161,7 +161,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_merge_polygon.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_merge_polygon", "test.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(edbpath=target_path, edbversion=desktop_version, restart_rpc_server=True)
+        edbapp = Edb(edbpath=target_path, edbversion=desktop_version)
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
         edbapp.close_edb()
 

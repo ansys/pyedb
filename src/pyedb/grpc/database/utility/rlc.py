@@ -32,7 +32,7 @@ class Rlc(GrpcRlc):
         self._edb_object = edb_object
 
     @property
-    def r(self):
+    def r(self) -> float:
         """R value.
 
         Returns
@@ -48,7 +48,7 @@ class Rlc(GrpcRlc):
         self.r = GrpcValue(value)
 
     @property
-    def l(self):
+    def l(self) -> float:
         """L value.
 
         Returns
@@ -64,7 +64,7 @@ class Rlc(GrpcRlc):
         self.l = GrpcValue(value)
 
     @property
-    def c(self):
+    def c(self) -> float:
         """C value.
 
         Returns

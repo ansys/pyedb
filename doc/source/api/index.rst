@@ -33,12 +33,12 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
 .. toctree::
    :maxdepth: 2
 
-   CoreEdb
-   edb_data/index
-   sim_setup_data/data/index
-   sim_setup_data/io/index
-   utilities/index
-   SiWave
+   dotnet/CoreEdb
+   dotnet/edb_data/index
+   dotnet/sim_setup_data/data/index
+   dotnet/sim_setup_data/io/index
+   dotnet/utilities/index
+   dotnet/SiWave
    SimulationConfigurationv2
 
 

@@ -88,22 +88,22 @@ def get_line_float_value(line):
 class MaterialProperties(BaseModel):
     """Store material properties."""
 
-    conductivity: Optional[PositiveFloat] = None
-    dielectric_loss_tangent: Optional[PositiveFloat] = None
-    magnetic_loss_tangent: Optional[PositiveFloat] = None
-    mass_density: Optional[PositiveFloat] = None
-    permittivity: Optional[PositiveFloat] = None
-    permeability: Optional[PositiveFloat] = None
-    poisson_ratio: Optional[PositiveFloat] = None
-    specific_heat: Optional[PositiveFloat] = None
-    thermal_conductivity: Optional[PositiveFloat] = None
-    youngs_modulus: Optional[PositiveFloat] = None
-    thermal_expansion_coefficient: Optional[PositiveFloat] = None
-    dc_conductivity: Optional[PositiveFloat] = None
-    dc_permittivity: Optional[PositiveFloat] = None
-    dielectric_model_frequency: Optional[PositiveFloat] = None
-    loss_tangent_at_frequency: Optional[PositiveFloat] = None
-    permittivity_at_frequency: Optional[PositiveFloat] = None
+    conductivity: Optional[PositiveFloat] = 0.0
+    dielectric_loss_tangent: Optional[PositiveFloat] = 0.0
+    magnetic_loss_tangent: Optional[PositiveFloat] = 0.0
+    mass_density: Optional[PositiveFloat] = 0.0
+    permittivity: Optional[PositiveFloat] = 0.0
+    permeability: Optional[PositiveFloat] = 0.0
+    poisson_ratio: Optional[PositiveFloat] = 0.0
+    specific_heat: Optional[PositiveFloat] = 0.0
+    thermal_conductivity: Optional[PositiveFloat] = 0.0
+    youngs_modulus: Optional[PositiveFloat] = 0.0
+    thermal_expansion_coefficient: Optional[PositiveFloat] = 0.0
+    dc_conductivity: Optional[PositiveFloat] = 0.0
+    dc_permittivity: Optional[PositiveFloat] = 0.0
+    dielectric_model_frequency: Optional[PositiveFloat] = 0.0
+    loss_tangent_at_frequency: Optional[PositiveFloat] = 0.0
+    permittivity_at_frequency: Optional[PositiveFloat] = 0.0
 
 
 class Material(object):

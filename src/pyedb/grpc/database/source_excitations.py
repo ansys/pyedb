@@ -49,6 +49,159 @@ from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 class SourceExcitation:
+    """Manage sources and excitations.
+
+    Examples
+    --------
+    >>> # Initialize EDB session
+    >>> from pyedb import Edb
+    >>> edb = Edb(edbpath="path/to/your/edb")
+
+    >>> # Access SourceExcitation class
+    >>> source_excitations = edb.source_excitation
+
+    >>> # 1. create_source_on_component
+    >>> # Create voltage source on component pins
+    >>> from pyedb.grpc.database.utility.sources import Source, SourceType
+    >>> source = Source(
+    >>> source_type=SourceType.Vsource,
+    >>> name="V1",
+    >>> positive_node=("U1", "VCC"),
+    >>> negative_node=("U1", "GND"),
+    >>> amplitude="1V",
+    >>> phase="0deg",
+    >>> impedance="50ohm"
+    >>> )
+    >>> source_excitations.create_source_on_component([source])
+
+    >>> # 2. create_port
+    >>> # Create port between two terminals
+    >>> pos_terminal = edb.terminals["MyTerminal"]
+    >>> ref_terminal = edb.terminals["MyRefTerminal"]
+    >>> port = source_excitations.create_port(pos_terminal, ref_terminal)
+
+    >>> # 3. create_port_on_pins
+    >>> # Create circuit port between component pins
+    >>> port_term = source_excitations.create_port_on_pins(
+    >>> refdes="U1",
+    >>> pins="Pin1",
+    >>> reference_pins=["GND_Pin1", "GND_Pin2"],
+    >>> impedance=50,
+    >>> port_name="Port1"
+    >>> )
+
+    >>> # 4. create_port_on_component
+    >>> # Create coaxial ports on component nets
+    >>> source_excitations.create_port_on_component(
+    >>>  component="U1",
+    >>> net_list=["PCIe_RX0", "PCIe_RX1"],
+    >>> port_type=SourceType.CoaxPort,
+    >>> reference_net="GND"
+    >>> )
+
+    >>> # 5. add_port_on_rlc_component
+    >>> # Replace RLC component with circuit port
+    >>> source_excitations.add_port_on_rlc_component("R1")
+
+    >>> # 6. _create_terminal (Internal method - typically not called directly)
+
+    >>> # 7. _create_pin_group_terminal (Internal method)
+
+    >>> # 8. create_coax_port
+    >>> # Create coaxial port on padstack
+    >>> pin = edb.components["U1"].pins["Pin1"]
+    >>> port_name = source_excitations.create_coax_port(pin)
+
+    >>> # 9. create_circuit_port_on_pin
+    >>> # Create circuit port between two pins
+    >>> pin1 = edb.components["U1"].pins["Pin1"]
+    >>> pin2 = edb.components["U1"].pins["Pin2"]
+    >>> port_name = source_excitations.create_circuit_port_on_pin(pin1, pin2, 50, "Port1")
+
+    >>> # 10. create_voltage_source_on_pin
+    >>> # Create voltage source between pins
+    >>> source_name = source_excitations.create_voltage_source_on_pin(pin1, pin2, 3.3, 0, "V1")
+
+    >>> # 11. create_current_source_on_pin
+    >>> # Create current source between pins
+    >>> source_name = source_excitations.create_current_source_on_pin(pin1, pin2, 0.1, 0, "I1")
+
+    >>> # 12. create_resistor_on_pin
+    >>> # Create resistor between pins
+    >>> res_name = source_excitations.create_resistor_on_pin(pin1, pin2, 100, "R1")
+
+    >>> # 13. create_circuit_port_on_net
+    >>> # Create port between component nets
+    >>> port_name = source_excitations.create_circuit_port_on_net(
+    >>> "U1", "SignalNet", "U1", "GND", 50, "Port1"
+    >>> )
+
+    >>> # 14. create_voltage_source_on_net
+    >>> # Create voltage source between nets
+    >>> source_name = source_excitations.create_voltage_source_on_net(
+    >>> "U1", "VCC", "U1", "GND", 5.0, 0, "VCC_Source"
+    >>> )
+
+    >>> # 15. create_current_source_on_net
+    >>> # Create current source between nets
+    >>> source_name = source_excitations.create_current_source_on_net(
+    >>> "U1", "InputNet", "U1", "GND", 0.02, 0, "InputCurrent"
+    >>> )
+
+    >>> # 16. create_coax_port_on_component
+    >>> # Create coaxial ports on component
+    >>> ports = source_excitations.create_coax_port_on_component(
+    >>> ["U1", "U2"],
+    >>> ["PCIe_RX0", "PCIe_TX0"],
+    >>> delete_existing_terminal=True
+    >>> )
+
+    >>> # 17. create_differential_wave_port
+    >>> # Create differential wave port
+    >>> pos_prim = edb.modeler.primitives[0]
+    >>> neg_prim = edb.modeler.primitives[1]
+    >>> port_name, diff_port = source_excitations.create_differential_wave_port(
+    >>> pos_prim.id, [0, 0],
+    >>> neg_prim.id, [0, 0.2],
+    >>> "DiffPort"
+    >>> )
+
+    >>> # 18. create_wave_port
+    >>> # Create wave port
+    >>> port_name, wave_port = source_excitations.create_wave_port(
+    >>> pos_prim.id, [0, 0],
+    >>> "WavePort"
+    >>> )
+
+    >>> # 19. create_bundle_wave_port
+    >>> # Create bundle wave port
+    >>> port_name, bundle_port = source_excitations.create_bundle_wave_port(
+    >>> [pos_prim.id, neg_prim.id],
+    >>> [[0,0], [0,0.2]],
+    >>> "BundlePort"
+    >>> )
+
+    >>> # 20. create_dc_terminal
+    >>> # Create DC terminal
+    >>> source_excitations.create_dc_terminal("U1", "VCC", "VCC_Terminal")
+
+    >>> # 21. create_voltage_probe
+    >>> # Create voltage probe
+    >>> probe = source_excitations.create_voltage_probe(term1, term2)
+
+    >>> # 22. place_voltage_probe
+    >>> # Place voltage probe between points
+    >>> source_excitations.place_voltage_probe(
+    >>> "Probe1",
+    >>> "SignalNet", [0, 0], "TopLayer",
+    >>> "GND", [0.1, 0.1], "BottomLayer"
+    >>> )
+
+    >>> # Save and close EDB
+    >>> edb.save()
+    >>> edb.close()
+    """
+
     def __init__(self, pedb):
         self._pedb = pedb
 
@@ -84,6 +237,13 @@ class SourceExcitation:
         bool
             ``True`` when successful, ``False`` when failed.
 
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> from pyedb.grpc.utility.sources import Source, SourceType
+        >>> edb = Edb()
+        >>> source = Source(source_type=SourceType.Vsource, amplitude="1V", ...)
+        >>> edb.source_excitation.create_source_on_component([source])
         """
 
         if not sources:  # pragma: no cover
@@ -153,6 +313,53 @@ class SourceExcitation:
                     c_value=source.c_value,
                 )
         return True
+
+    def create_port(self, terminal, ref_terminal=None, is_circuit_port=False, name=None):
+        """Create a port.
+
+        Parameters
+        ----------
+        terminal : class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
+            class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
+            class:`pyedb.grpc.database.terminals.PointTerminal`,
+            class:`pyedb.grpc.database.terminals.PinGroupTerminal`,
+            Positive terminal of the port.
+        ref_terminal : class:`pyedb.grpc.database.terminals.EdgeTerminal`,
+            class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
+            class:`pyedb.grpc.database.terminals.PointTerminal`,
+            class:`pyedb.grpc.database.terminals.PinGroupTerminal`,
+            optional
+            Negative terminal of the port.
+        is_circuit_port : bool, optional
+            Whether it is a circuit port. The default is ``False``.
+        name: str, optional
+            Name of the created port. The default is None, a random name is generated.
+        Returns
+        -------
+        list: [:class:`GapPort <pyedb.grpc.database.ports.ports.GapPort`>,
+            :class:`WavePort <pyedb.grpc.database.ports.ports.WavePort>`].
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> term = edb.terminals["MyTerminal"]
+        >>> ref_term = edb.terminals["RefTerminal"]
+        >>> port = edb.source_excitation.create_port(term, ref_term, name="Port1")
+        """
+
+        from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
+
+        if terminal.boundary_type == "port":
+            terminal.boundary_type = GrpcBoundaryType.PORT
+        terminal.is_circuit_port = is_circuit_port
+        if ref_terminal:
+            if ref_terminal.boundary_type == "port":
+                ref_terminal.boundary_type = GrpcBoundaryType.PORT
+            terminal.reference_terminal = ref_terminal
+        if name:
+            terminal.name = name
+        return self._pedb.ports[terminal.name]
 
     def create_port_on_pins(
         self,
@@ -575,6 +782,12 @@ class SourceExcitation:
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.source_excitation.add_port_on_rlc_component("R1")
         """
         from pyedb.grpc.database.components import Component
 
@@ -774,6 +987,12 @@ class SourceExcitation:
         str
             Terminal name.
 
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> pin = edb.padstacks.instances[0]
+        >>> edb.source_excitation.create_coax_port(pin, name="CoaxPort1")
         """
         if isinstance(padstackinstance, int):
             padstackinstance = self._pedb.padstacks.instances[padstackinstance]
@@ -1024,11 +1243,11 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> pins = edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.excitations.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
+        >>> edb = Edb()
+        >>> pin1 = edb.components["U1"].pins["VCC"]
+        >>> pin2 = edb.components["U1"].pins["GND"]
+        >>> edb.source_excitation.create_voltage_source_on_pin(pin1, pin2, 3.3, name="VSource1")
         """
 
         if not source_name:
@@ -1067,11 +1286,11 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> pins = edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.excitations.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
+        >>> edb = Edb()
+        >>> pin1 = edb.components["U1"].pins["IN"]
+        >>> pin2 = edb.components["U1"].pins["GND"]
+        >>> edb.source_excitation.create_current_source_on_pin(pin1, pin2, 0.1, name="ISource1")
         """
 
         if not source_name:
@@ -1108,11 +1327,11 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> pins =edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.excitation.create_resistor_on_pin(pins[0], pins[1],50,"res_name")
+        >>> edb = Edb()
+        >>> pin1 = edb.components["U1"].pins["R1_p"]
+        >>> pin2 = edb.components["U1"].pins["R1_n"]
+        >>> edb.source_excitation.create_resistor_on_pin(pin1, pin2, 50, "R1")
         """
         if not resistor_name:
             resistor_name = (
@@ -1158,10 +1377,9 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edbapp.excitations.create_circuit_port_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 50, "port_name")
+        >>> edb = Edb()
+        >>> edb.source_excitation.create_circuit_port_on_net("U1", "VCC", "U1", "GND", 50, "PowerPort")
         """
         if not negative_component_name:
             negative_component_name = positive_component_name
@@ -1371,10 +1589,9 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edb.excitations.create_voltage_source_on_net("U2A5","V1P5_S3","U2A5","GND",3.3,0,"source_name")
+        >>> edb = Edb()
+        >>> edb.source_excitation.create_voltage_source_on_net("U1", "VCC", "U1", "GND", 3.3, name="VCC_Source")
         """
         if not negative_component_name:
             negative_component_name = positive_component_name
@@ -1435,10 +1652,10 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edb.excitations.create_voltage_source_on_net("U2A5","V1P5_S3","U2A5","GND",3.3,0,"source_name")
+        >>> edb = Edb()
+        >>> edb.source_excitation.create_current_source_on_net("U1", "INPUT", "U1", "GND", 0.1, name="InputCurrent")
+        "InputCurrent"
         """
         if not negative_component_name:
             negative_component_name = positive_component_name
@@ -1483,6 +1700,11 @@ class SourceExcitation:
         bool
             ``True`` when successful, ``False`` when failed.
 
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.source_excitation.create_coax_port_on_component(["U1"], ["RF1", "RF2"])
         """
         coax = []
         if not isinstance(ref_des_list, list):
@@ -1582,7 +1804,9 @@ class SourceExcitation:
 
         Examples
         --------
-        >>> edb.hfss.create_differential_wave_port(0, ["-50mm", "-0mm"], 1, ["-50mm", "-0.2mm"])
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> port_name, port = edb.source_excitation.create_differential_wave_port(0, [0,0], 1, [0,0.2])
         """
         if not port_name:
             port_name = generate_unique_name("diff")
@@ -1654,7 +1878,9 @@ class SourceExcitation:
 
         Examples
         --------
-        >>> edb.excitations.create_wave_port(0, ["-50mm", "-0mm"])
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> port_name, port = edb.source_excitation.create_wave_port(0, [0,0])
         """
         if not port_name:
             port_name = generate_unique_name("Terminal_")
@@ -1717,6 +1943,12 @@ class SourceExcitation:
         -------
         str
             Port name.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> term = edb.source_excitation.create_edge_port_vertical(0, [0,0], reference_layer="TopLayer")
         """
         if not port_name:
             port_name = generate_unique_name("Terminal_")
@@ -1783,6 +2015,12 @@ class SourceExcitation:
         -------
         str
             Name of the port.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.source_excitation.create_edge_port_horizontal(0, [0,0], 1, [0,0.1], "EdgePort")
         """
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
         neg_edge_term = self._create_edge_terminal(ref_prim_id, point_on_ref_edge, port_name + "_ref", is_ref=True)
@@ -1803,7 +2041,7 @@ class SourceExcitation:
 
     def create_lumped_port_on_net(
         self, nets=None, reference_layer=None, return_points_only=False, digit_resolution=6, at_bounding_box=True
-    ):
+    ) -> bool:
         """Create an edge port on nets. This command looks for traces and polygons on the
         nets and tries to assign vertical lumped port.
 
@@ -1831,6 +2069,12 @@ class SourceExcitation:
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> points = edb.source_excitation.create_lumped_port_on_net(["Net1"], return_points_only=True)
         """
         if isinstance(nets, str):
             nets = [self._pedb.nets.signal[nets]]
@@ -1907,7 +2151,9 @@ class SourceExcitation:
                 return edges_pts
         return port_created
 
-    def create_vertical_circuit_port_on_clipped_traces(self, nets=None, reference_net=None, user_defined_extent=None):
+    def create_vertical_circuit_port_on_clipped_traces(
+        self, nets=None, reference_net=None, user_defined_extent=None
+    ) -> list[list[str]]:
         """Create an edge port on clipped signal traces.
 
         Parameters
@@ -1926,6 +2172,12 @@ class SourceExcitation:
         [[str]]
             Nested list of str, with net name as first value, X value for point at border, Y value for point at border,
             and terminal name.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> terminals = edb.source_excitation.create_vertical_circuit_port_on_clipped_traces(["Net1"], "GND")
         """
         if not isinstance(nets, list):
             if isinstance(nets, str):
@@ -2029,7 +2281,9 @@ class SourceExcitation:
 
         Examples
         --------
-        >>> edb.excitations.create_bundle_wave_port(0, ["-50mm", "-0mm"], 1, ["-50mm", "-0.2mm"])
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> port_name, port = edb.source_excitation.create_bundle_wave_port([0,1], [[0,0],[0,0.2]])
         """
         if not port_name:
             port_name = generate_unique_name("bundle_port")
@@ -2069,6 +2323,13 @@ class SourceExcitation:
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> pin = edb.padstacks.instances[0]
+        >>> edb.source_excitation.create_hfss_ports_on_padstack(pin, "Port1")
         """
         top_layer, bottom_layer = pinpos.get_layer_range()
 
@@ -2094,9 +2355,44 @@ class SourceExcitation:
         int
            Number of ports.
 
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> num_ports = edb.source_excitation.get_ports_number()
         """
         terms = [term for term in self._pedb.layout.terminals]
         return len([i for i in terms if not i.is_reference_terminal])
+
+    def get_point_terminal(self, name, net_name, location, layer) -> PointTerminal:
+        """Place terminal between two points.
+
+        Parameters
+        ----------
+        name : str,
+            Name of the terminal.
+        net_name : str
+            Name of the net.
+        location : list
+            Location of the terminal.
+        layer : str,
+            Layer of the terminal.
+
+        Returns
+        -------
+        :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> term = edb.source_excitation.get_point_terminal("Term1", "Net1", [0,0], "TopLayer")
+        """
+        from pyedb.grpc.database.terminal.point_terminal import PointTerminal
+
+        return PointTerminal.create(
+            layout=self._pedb.active_layout, name=name, net=net_name, layer=layer, point=location
+        )
 
     def create_rlc_boundary_on_pins(self, positive_pin=None, negative_pin=None, rvalue=0.0, lvalue=0.0, cvalue=0.0):
         """Create hfss rlc boundary on pins.
@@ -2120,6 +2416,13 @@ class SourceExcitation:
         bool
             ``True`` when successful, ``False`` when failed.
 
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> pin1 = edb.components["U1"].pins["Pin1"]
+        >>> pin2 = edb.components["U1"].pins["Pin2"]
+        >>> term = edb.source_excitation.create_rlc_boundary_on_pins(pin1, pin2, rvalue=50)
         """
 
         if positive_pin and negative_pin:
@@ -2190,17 +2493,11 @@ class SourceExcitation:
 
         Examples
         --------
-
-        >>> edb_path = path_to_edb
-        >>> edb = Edb(edb_path)
-        >>> poly_list = [poly for poly in list(edb.layout.primitives) if poly.GetPrimitiveType() == 2]
-        >>> port_poly = [poly for poly in poly_list if poly.GetId() == 17][0]
-        >>> ref_poly = [poly for poly in poly_list if poly.GetId() == 19][0]
-        >>> port_location = [-65e-3, -13e-3]
-        >>> ref_location = [-63e-3, -13e-3]
-        >>> edb.hfss.create_edge_port_on_polygon(polygon=port_poly, reference_polygon=ref_poly,
-        >>> terminal_point=port_location, reference_point=ref_location)
-
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> poly = edb.modeler.primitives[0]
+        >>> ref_poly = edb.modeler.primitives[1]
+        >>> edb.source_excitation.create_edge_port_on_polygon(poly, ref_poly, [0,0], [0.1,0])
         """
         if not polygon:
             self._logger.error("No polygon provided for port {} creation".format(port_name))
@@ -2275,6 +2572,11 @@ class SourceExcitation:
         PadstackInstanceTerminal
             Created terminal.
 
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> terms = edb.source_excitation.create_port_between_pin_and_layer("U1", "Pin1", "GND", "GND")
         """
         if not pins_name:
             pins_name = []
@@ -2328,6 +2630,43 @@ class SourceExcitation:
                     return terms
             return False
 
+    def create_current_source(self, terminal, ref_terminal):
+        """Create a current source.
+
+        Parameters
+        ----------
+        terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
+            :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            Positive terminal of the source.
+        ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            Negative terminal of the source.
+
+        Returns
+        -------
+        :class:`ExcitationSources <legacy.database.edb_data.ports.ExcitationSources>`
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.source_excitation.create_current_source_on_pin_group("PG1", "PG2", 0.1, name="ISource1")
+        """
+        from pyedb.grpc.database.terminal.terminal import Terminal
+
+        term = Terminal(self._pedb, terminal)
+        term.boundary_type = "current_source"
+
+        ref_term = Terminal(self._pedb, ref_terminal)
+        ref_term.boundary_type = "current_source"
+
+        term.ref_terminal = ref_terminal
+        return term
+
     def create_current_source_on_pin_group(
         self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None
     ):
@@ -2368,6 +2707,43 @@ class SourceExcitation:
         pos_terminal.reference_terminal = neg_terminal
         return True
 
+    def create_voltage_source(self, terminal, ref_terminal):
+        """Create a voltage source.
+
+        Parameters
+        ----------
+        terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
+            :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            Positive terminal of the source.
+        ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            Negative terminal of the source.
+
+        Returns
+        -------
+        class:`ExcitationSources <legacy.database.edb_data.ports.ExcitationSources>`
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.source_excitation.create_voltage_source_on_pin_group("PG1", "PG2", 3.3, name="VSource1")
+        """
+        from pyedb.grpc.database.terminal.terminal import Terminal
+
+        term = Terminal(self._pedb, terminal)
+        term.boundary_type = "voltage_source"
+
+        ref_term = Terminal(self._pedb, ref_terminal)
+        ref_term.boundary_type = "voltage_source"
+
+        term.ref_terminal = ref_terminal
+        return term
+
     def create_voltage_source_on_pin_group(
         self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None, impedance=0.001
     ):
@@ -2388,6 +2764,11 @@ class SourceExcitation:
         -------
         bool
 
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.source_excitation.create_voltage_probe_on_pin_group("Probe1", "PG1", "PG2")
         """
         pos_pin_group = next(pg for pg in self._pedb.layout.pin_groups if pg.name == pos_pin_group_name)
         if not pos_pin_group:
@@ -2407,6 +2788,37 @@ class SourceExcitation:
         neg_terminal.name = f"{name}_ref"
         pos_terminal.reference_terminal = neg_terminal
         return True
+
+    def create_voltage_probe(self, terminal, ref_terminal):
+        """Create a voltage probe.
+
+        Parameters
+        ----------
+        terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
+            :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            Positive terminal of the port.
+        ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            Negative terminal of the probe.
+
+        Returns
+        -------
+        :class:`Terminal <pyedb.dotnet.database.edb_data.terminals.Terminal>`
+        """
+        from pyedb.grpc.database.terminal.terminal import Terminal
+
+        term = Terminal(self._pedb, terminal)
+        term.boundary_type = "voltage_probe"
+
+        ref_term = Terminal(self._pedb, ref_terminal)
+        ref_term.boundary_type = "voltage_probe"
+
+        term.ref_terminal = ref_terminal
+        return term
 
     def create_voltage_probe_on_pin_group(self, probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1000000):
         """Create voltage probe between two pin groups.
@@ -2471,10 +2883,9 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edb.siwave.create_dc_terminal("U2A5", "V1P5_S3", "source_name")
+        >>> edb = Edb()
+        >>> edb.source_excitation.create_dc_terminal("U1", "VCC", "DC_VCC")
         """
 
         node_pin = self._pedb.components.get_pin_from_component(component_name, net_name)
@@ -2504,6 +2915,11 @@ class SourceExcitation:
         -------
         bool
 
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.source_excitation.create_circuit_port_on_pin_group("PG1", "PG2", 50, "Port1")
         """
         pos_pin_group = next(pg for pg in self._pedb.layout.pin_groups if pg.name == pos_pin_group_name)
         if not pos_pin_group:
@@ -2549,6 +2965,13 @@ class SourceExcitation:
             Location of the negative terminal.
         negative_layer : str
             Layer of the negative terminal.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> probe = edb.source_excitation.place_voltage_probe("Probe1", "Net1", [0,0], "TopLayer",
+        ...                                                  "GND", [0.1,0], "TopLayer")
         """
         p_terminal = PointTerminal.create(
             layout=self._pedb.active_layout,

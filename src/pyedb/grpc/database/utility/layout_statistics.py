@@ -59,7 +59,7 @@ class LayoutStatistics(object):
         self._nb_resistors = 0
 
     @property
-    def num_layers(self):
+    def num_layers(self) -> int:
         """Layer number.
 
         Returns
@@ -76,7 +76,7 @@ class LayoutStatistics(object):
             self._nb_layer = value
 
     @property
-    def stackup_thickness(self):
+    def stackup_thickness(self) -> float:
         """Stackup total thickness.
 
         Returns
@@ -94,7 +94,7 @@ class LayoutStatistics(object):
             self._stackup_thickness = value
 
     @property
-    def num_vias(self):
+    def num_vias(self) -> int:
         """Via number.
 
         Returns
@@ -111,7 +111,7 @@ class LayoutStatistics(object):
             self._nb_vias = value
 
     @property
-    def occupying_ratio(self):
+    def occupying_ratio(self) -> float:
         """Occupying ratio.
 
         Returns
@@ -129,7 +129,7 @@ class LayoutStatistics(object):
             self._occupying_ratio = value
 
     @property
-    def occupying_surface(self):
+    def occupying_surface(self) -> bool:
         """Occupying surface.
 
         Returns
@@ -146,7 +146,7 @@ class LayoutStatistics(object):
             self._occupying_surface = value
 
     @property
-    def layout_size(self):
+    def layout_size(self) -> list[float]:
         """Layout size.
 
         Returns
@@ -158,7 +158,7 @@ class LayoutStatistics(object):
         return self._layout_size
 
     @property
-    def num_polygons(self):
+    def num_polygons(self) -> int:
         """Polygon number.
 
         Returns
@@ -175,7 +175,7 @@ class LayoutStatistics(object):
             self._nb_polygons = value
 
     @property
-    def num_traces(self):
+    def num_traces(self) -> int:
         """Trace number.
 
         Returns
@@ -192,7 +192,7 @@ class LayoutStatistics(object):
             self._nb_traces = value
 
     @property
-    def num_nets(self):
+    def num_nets(self) -> int:
         """Net number.
 
         Returns
@@ -209,7 +209,7 @@ class LayoutStatistics(object):
             self._nb_nets = value
 
     @property
-    def num_discrete_components(self):
+    def num_discrete_components(self) -> int:
         """Discrete component number.
 
         Returns
@@ -226,7 +226,7 @@ class LayoutStatistics(object):
             self._nb_discrete_components = value
 
     @property
-    def num_inductors(self):
+    def num_inductors(self) -> int:
         """Inductor number.
 
         Returns
@@ -243,7 +243,7 @@ class LayoutStatistics(object):
             self._nb_inductors = value
 
     @property
-    def num_capacitors(self):
+    def num_capacitors(self) -> int:
         """Capacitor number.
 
         Returns
@@ -260,7 +260,7 @@ class LayoutStatistics(object):
             self._nb_capacitors = value
 
     @property
-    def num_resistors(self):
+    def num_resistors(self) -> int:
         """Resistor number.
 
         Returns

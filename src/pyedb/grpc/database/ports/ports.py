@@ -52,7 +52,7 @@ class GapPort(EdgeTerminal):
         super().__init__(pedb, edb_object)
 
     @property
-    def magnitude(self):
+    def magnitude(self) -> float:
         """Magnitude.
 
         Returns
@@ -63,7 +63,7 @@ class GapPort(EdgeTerminal):
         return self._edb_object.source_amplitude.value
 
     @property
-    def phase(self):
+    def phase(self) -> float:
         """Phase.
 
         Returns
@@ -74,7 +74,7 @@ class GapPort(EdgeTerminal):
         return self._edb_object.source_phase.value
 
     @property
-    def renormalize(self):
+    def renormalize(self) -> bool:
         """Whether renormalize is active.
 
         Returns
@@ -84,7 +84,7 @@ class GapPort(EdgeTerminal):
         return self._edb_object.port_post_processing_prop.do_renormalize
 
     @property
-    def deembed(self):
+    def deembed(self) -> bool:
         """Deembed gap port.
 
         Returns
@@ -95,7 +95,7 @@ class GapPort(EdgeTerminal):
         return self._edb_object.port_post_processing_prop.do_deembed
 
     @property
-    def renormalize_z0(self):
+    def renormalize_z0(self) -> tuple[float, float]:
         """Renormalize Z0 value (real, imag).
 
         Returns
@@ -109,7 +109,13 @@ class GapPort(EdgeTerminal):
         )
 
     @property
-    def terminal_type(self):
+    def terminal_type(self) -> str:
+        """Returns terminal type.
+
+        Returns
+        -------
+        str
+        """
         return self._edb_object.terminal_type
 
 
@@ -153,7 +159,7 @@ class WavePort(EdgeTerminal):
         super().__init__(pedb, edb_terminal)
 
     @property
-    def horizontal_extent_factor(self):
+    def horizontal_extent_factor(self) -> float:
         """Horizontal extent factor.
 
         Returns
@@ -170,7 +176,7 @@ class WavePort(EdgeTerminal):
         self._hfss_port_property = p
 
     @property
-    def vertical_extent_factor(self):
+    def vertical_extent_factor(self) -> float:
         """Vertical extent factor.
 
         Returns
@@ -188,7 +194,7 @@ class WavePort(EdgeTerminal):
         self._hfss_port_property = p
 
     @property
-    def pec_launch_width(self):
+    def pec_launch_width(self) -> float:
         """Launch width for the printed electronic component (PEC).
 
         Returns
@@ -205,7 +211,7 @@ class WavePort(EdgeTerminal):
         self._hfss_port_property = p
 
     @property
-    def deembed(self):
+    def deembed(self) -> bool:
         """Whether deembed is active.
 
         Returns
@@ -222,7 +228,7 @@ class WavePort(EdgeTerminal):
         self._edb_object.port_post_processing_prop = p
 
     @property
-    def deembed_length(self):
+    def deembed_length(self) -> float:
         """Deembed Length.
 
         Returns
@@ -281,7 +287,7 @@ class BundleWavePort(BundleTerminal):
         super().__init__(pedb, edb_object)
 
     @property
-    def _wave_port(self):
+    def _wave_port(self) -> WavePort:
         """ "Wave port.
 
 
@@ -293,7 +299,7 @@ class BundleWavePort(BundleTerminal):
         return WavePort(self._pedb, self.terminals[0]._edb_object)
 
     @property
-    def horizontal_extent_factor(self):
+    def horizontal_extent_factor(self) -> float:
         """Horizontal extent factor.
 
         Returns
@@ -308,7 +314,7 @@ class BundleWavePort(BundleTerminal):
         self._wave_port.horizontal_extent_factor = value
 
     @property
-    def vertical_extent_factor(self):
+    def vertical_extent_factor(self) -> float:
         """Vertical extent factor.
 
         Returns
@@ -323,7 +329,7 @@ class BundleWavePort(BundleTerminal):
         self._wave_port.vertical_extent_factor = value
 
     @property
-    def pec_launch_width(self):
+    def pec_launch_width(self) -> float:
         """Launch width for the printed electronic component (PEC).
 
         Returns
@@ -338,7 +344,7 @@ class BundleWavePort(BundleTerminal):
         self._wave_port.pec_launch_width = value
 
     @property
-    def deembed(self):
+    def deembed(self) -> bool:
         """Whether deembed is active.
 
         Returns
@@ -352,7 +358,7 @@ class BundleWavePort(BundleTerminal):
         self._wave_port.deembed = value
 
     @property
-    def deembed_length(self):
+    def deembed_length(self) -> float:
         """Deembed Length.
 
         Returns

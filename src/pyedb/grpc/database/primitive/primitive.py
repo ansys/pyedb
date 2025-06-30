@@ -51,7 +51,7 @@ class Primitive(GrpcPrimitive):
         self._object_instance = None
 
     @property
-    def type(self):
+    def type(self) -> str:
         """Type of the primitive.
 
         Expected output is among ``"Circle"``, ``"Rectangle"``,``"Polygon"``,``"Path"`` or ``"Bondwire"``.
@@ -87,7 +87,7 @@ class Primitive(GrpcPrimitive):
         return self._object_instance
 
     @property
-    def net_name(self):
+    def net_name(self) -> str:
         """Net name.
 
         Returns
@@ -105,7 +105,7 @@ class Primitive(GrpcPrimitive):
             self.net = self._pedb.nets.nets[value]
 
     @property
-    def layer_name(self):
+    def layer_name(self) -> str:
         """Layer name.
 
         Returns
@@ -121,7 +121,7 @@ class Primitive(GrpcPrimitive):
             self.layer = self._pedb.stackup.layers[value]
 
     @property
-    def voids(self):
+    def voids(self) -> list[any]:
         """Primitive voids.
 
         Returns
@@ -132,7 +132,7 @@ class Primitive(GrpcPrimitive):
         return [Primitive(self._pedb, prim) for prim in super().voids]
 
     @property
-    def aedt_name(self):
+    def aedt_name(self) -> str:
         """Name to be visualized in AEDT.
 
         Returns
@@ -174,7 +174,7 @@ class Primitive(GrpcPrimitive):
         """
         return self._pedb.get_connected_objects(self.object_instance)
 
-    def area(self, include_voids=True):
+    def area(self, include_voids=True) -> float:
         """Return the total area.
 
         Parameters
@@ -218,7 +218,7 @@ class Primitive(GrpcPrimitive):
         return x, y
 
     @property
-    def center(self):
+    def center(self) -> list[float]:
         """Return the primitive bounding box center coordinate.
 
         Returns
@@ -230,7 +230,7 @@ class Primitive(GrpcPrimitive):
         center = self.cast().polygon_data.bounding_circle()[0]
         return [center.x.value, center.y.value]
 
-    def get_connected_object_id_set(self):
+    def get_connected_object_id_set(self) -> list[int]:
         """Produce a list of all geometries physically connected to a given layout object.
 
         Returns
@@ -243,7 +243,7 @@ class Primitive(GrpcPrimitive):
         return [loi.layout_obj.id for loi in layout_inst.get_connected_objects(layout_obj_inst)]
 
     @property
-    def bbox(self):
+    def bbox(self) -> list[float]:
         """Return the primitive bounding box points. Lower left corner, upper right corner.
 
         Returns
@@ -299,7 +299,7 @@ class Primitive(GrpcPrimitive):
         else:
             return 4
 
-    def is_intersecting(self, primitive):
+    def is_intersecting(self, primitive) -> bool:
         """Check if actual primitive and another primitive or polygon data intesects.
 
         Parameters
@@ -312,7 +312,7 @@ class Primitive(GrpcPrimitive):
         """
         return True if self.intersection_type(primitive) >= 1 else False
 
-    def get_closest_point(self, point):
+    def get_closest_point(self, point) -> list[float]:
         """Get the closest point of the primitive to the input data.
 
         Parameters
@@ -342,7 +342,7 @@ class Primitive(GrpcPrimitive):
         return self.polygon_data.arc_data
 
     @property
-    def longest_arc(self):
+    def longest_arc(self) -> float:
         """Longest arc.
 
         Returns
@@ -358,7 +358,7 @@ class Primitive(GrpcPrimitive):
                 len = i.length
         return arc
 
-    def subtract(self, primitives):
+    def subtract(self, primitives) -> list[any]:
         """Subtract active primitive with one or more primitives.
 
         Parameters
@@ -412,7 +412,7 @@ class Primitive(GrpcPrimitive):
                     continue
         return new_polys
 
-    def intersect(self, primitives):
+    def intersect(self, primitives) -> list[any]:
         """Intersect active primitive with one or more primitives.
 
         Parameters
@@ -482,7 +482,7 @@ class Primitive(GrpcPrimitive):
             prim.delete()
         return new_polys
 
-    def unite(self, primitives):
+    def unite(self, primitives) -> list[any]:
         """Unite active primitive with one or more primitives.
 
         Parameters
@@ -535,7 +535,7 @@ class Primitive(GrpcPrimitive):
                     continue
         return new_polys
 
-    def get_closest_arc_midpoint(self, point):
+    def get_closest_arc_midpoint(self, point) -> list[float]:
         """Get the closest arc midpoint of the primitive to the input data.
 
         Parameters
@@ -561,7 +561,7 @@ class Primitive(GrpcPrimitive):
         return [out.x.value, out.y.value]
 
     @property
-    def shortest_arc(self):
+    def shortest_arc(self) -> float:
         """Longest arc.
 
         Returns
@@ -577,7 +577,7 @@ class Primitive(GrpcPrimitive):
                 len = i.length
         return arc
 
-    def add_void(self, point_list):
+    def add_void(self, point_list) -> bool:
         """Add a void to current primitive.
 
         Parameters
@@ -599,7 +599,7 @@ class Primitive(GrpcPrimitive):
             void_poly = self._pedb.modeler.create_polygon(_poly, layer_name=self.layer_name, net_name=self.net.name)
         return self.add_void(void_poly)
 
-    def points(self, arc_segments=6):
+    def points(self, arc_segments=6) -> tuple[float, float]:
         """Return the list of points with arcs converted to segments.
 
         Parameters
@@ -630,7 +630,7 @@ class Primitive(GrpcPrimitive):
 
         return self.polygon_data.points
 
-    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> list[any]:
         """Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
 
@@ -655,7 +655,7 @@ class Primitive(GrpcPrimitive):
             offset=offset, round_corner=round_corners, max_corner_ext=maximum_corner_extension, tol=tolerance
         )
 
-    def scale(self, factor, center=None):
+    def scale(self, factor, center=None) -> bool:
         """Scales the polygon relative to a center point by a factor.
 
         Parameters

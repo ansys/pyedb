@@ -55,7 +55,7 @@ from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 class Padstacks(object):
-    """Manages EDB methods for nets management accessible from `Edb.padstacks` property.
+    """Manages EDB methods for padstacks accessible from `Edb.padstacks` property.
 
     Examples
     --------
@@ -65,16 +65,18 @@ class Padstacks(object):
     """
 
     def __getitem__(self, name):
-        """Get  a padstack definition or instance from the Edb project.
+        """Get a padstack definition or instance from the EDB project.
 
         Parameters
         ----------
         name : str, int
+            Name or ID of the padstack definition or instance.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`
-
+        :class:`pyedb.dotnet.database.definition.padstack_def.PadstackDef` or
+        :class:`pyedb.dotnet.database.primitive.padstack_instance.PadstackInstance`
+        Requested padstack definition or instance. Returns ``None`` if not found.
         """
         if isinstance(name, int) and name in self.instances:
             return self.instances(name)
@@ -128,6 +130,11 @@ class Padstacks(object):
         -------
         object
             EDB.PadType enumerator value.
+
+        Examples
+        --------
+        >>> pad_type = edb_padstacks.int_to_pad_type(0)  # Returns REGULAR_PAD
+        >>> pad_type = edb_padstacks.int_to_pad_type(1)  # Returns ANTI_PAD
         """
 
         if val == 0:
@@ -154,6 +161,11 @@ class Padstacks(object):
         -------
         object
             EDB.PadGeometryType enumerator value.
+
+        Examples
+        --------
+        >>> geom_type = edb_padstacks.int_to_geometry_type(1)  # Returns CIRCLE
+        >>> geom_type = edb_padstacks.int_to_geometry_type(2)  # Returns SQUARE
         """
         if val == 0:
             return GrpcPadGeometryType.PADGEOMTYPE_NO_GEOMETRY
@@ -188,9 +200,14 @@ class Padstacks(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.database.edb_data.padstacks_data.EdbPadstack`]
-            List of definitions via padstack definitions.
+        dict[str, :class:`pyedb.grpc.database.definition.padstack_def.PadstackDef`]
+            Dictionary of padstack definitions with definition names as keys.
 
+        Examples
+        --------
+        >>> all_definitions = edb_padstacks.definitions
+        >>> for name, definition in all_definitions.items():
+        ...     print(f"Padstack: {name}")
         """
         if len(self._definitions) == len(self.db.padstack_defs):
             return self._definitions
@@ -202,13 +219,18 @@ class Padstacks(object):
 
     @property
     def instances(self):
-        """Dictionary  of all padstack instances (vias and pins).
+        """All padstack instances (vias and pins) in the layout.
 
         Returns
         -------
-        dict[int, :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`]
-            List of padstack instances.
+        dict[int, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+            Dictionary of padstack instances with database IDs as keys.
 
+        Examples
+        --------
+        >>> all_instances = edb_padstacks.instances
+        >>> for id, instance in all_instances.items():
+        ...     print(f"Instance {id}: {instance.name}")
         """
         pad_stack_inst = self._pedb.layout.padstack_instances
         if len(self._instances) == len(pad_stack_inst):
@@ -218,13 +240,18 @@ class Padstacks(object):
 
     @property
     def instances_by_name(self):
-        """Dictionary  of all padstack instances (vias and pins) by name.
+        """All padstack instances (vias and pins) indexed by name.
 
         Returns
         -------
-        dict[str, :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`]
-            List of padstack instances.
+        dict[str, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+            Dictionary of padstack instances with names as keys.
 
+        Examples
+        --------
+        >>> named_instances = edb_padstacks.instances_by_name
+        >>> for name, instance in named_instances.items():
+        ...     print(f"Instance named {name}")
         """
         padstack_instances = {}
         for _, edb_padstack_instance in self.instances.items():
@@ -233,28 +260,40 @@ class Padstacks(object):
         return padstack_instances
 
     def find_instance_by_id(self, value: int):
-        """Find a padstack instance by database id.
+        """Find a padstack instance by database ID.
 
         Parameters
         ----------
         value : int
+            Database ID of the padstack instance.
+
+        Returns
+        -------
+        :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance` or None
+            Padstack instance if found, otherwise ``None``.
+
+        Examples
+        --------
+        >>> via = edb_padstacks.find_instance_by_id(123)
+        >>> if via:
+        ...     print(f"Found via: {via.name}")
         """
         return self._pedb.modeler.find_object_by_id(value)
 
     @property
     def pins(self):
-        """Dictionary  of all pins instances (belonging to component).
+        """All pin instances belonging to components.
 
         Returns
         -------
-        dic[str, :class:`dotnet.database.edb_data.definitions.EDBPadstackInstance`]
-            Dictionary of EDBPadstackInstance Components.
-
+        dict[int, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+            Dictionary of pin instances with database IDs as keys.
 
         Examples
         --------
-        >>> edbapp = dotnet.Edb("myproject.aedb")
-        >>> pin_net_name = edbapp.pins[424968329].netname
+        >>> all_pins = edb_padstacks.pins
+        >>> for pin_id, pin in all_pins.items():
+        ...     print(f"Pin {pin_id} belongs to {pin.component.refdes}")
         """
         pins = {}
         for instancename, instance in self.instances.items():
@@ -264,18 +303,18 @@ class Padstacks(object):
 
     @property
     def vias(self):
-        """Dictionary  of all vias instances not belonging to component.
+        """All via instances not belonging to components.
 
         Returns
         -------
-        dic[str, :class:`dotnet.database.edb_data.definitions.EDBPadstackInstance`]
-            Dictionary of EDBPadstackInstance Components.
-
+        dict[int, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+            Dictionary of via instances with database IDs as keys.
 
         Examples
         --------
-        >>> edbapp = dotnet.Edb("myproject.aedb")
-        >>> pin_net_name = edbapp.pins[424968329].netname
+        >>> all_vias = edb_padstacks.vias
+        >>> for via_id, via in all_vias.items():
+        ...     print(f"Via {via_id} on net {via.net_name}")
         """
         pnames = list(self.pins.keys())
         vias = {i: j for i, j in self.instances.items() if i not in pnames}
@@ -292,6 +331,11 @@ class Padstacks(object):
         -------
         list
             List of all layout pin groups.
+
+        Examples
+        --------
+        >>> groups = edb_padstacks.pingroups  # Deprecated
+        >>> groups = edb_padstacks._layout.pin_groups  # New way
         """
         warnings.warn(
             "`pingroups` is deprecated and is now located here " "`pyedb.grpc.core.layout.pin_groups` instead.",
@@ -335,6 +379,15 @@ class Padstacks(object):
         -------
         str
             Name of the padstack if the operation is successful.
+
+        Examples
+        --------
+        >>> via_name = edb_padstacks.create_circular_padstack(
+        ...     padstackname="VIA1",
+        ...     holediam="200um",
+        ...     paddiam="400um",
+        ...     antipaddiam="600um"
+        ... )
         """
 
         padstack_def = PadstackDef.create(self._pedb.db, padstackname)
@@ -412,17 +465,17 @@ class Padstacks(object):
         Parameters
         ----------
         net_names : str, list
-            Names of the nets to delete.
+            Names of the nets whose padstack instances should be deleted.
 
         Returns
         -------
         bool
             ``True`` when successful, ``False`` when failed.
 
-        References
-        ----------
-
-        >>> Edb.padstacks.delete_padstack_instances(net_names=["GND"])
+        Examples
+        --------
+        >>> success = edb_padstacks.delete_padstack_instances("GND")
+        >>> success = edb_padstacks.delete_padstack_instances(["GND", "PWR"])
         """
         if not isinstance(net_names, list):  # pragma: no cover
             net_names = [net_names]
@@ -434,23 +487,28 @@ class Padstacks(object):
         return True
 
     def set_solderball(self, padstackInst, sballLayer_name, isTopPlaced=True, ballDiam=100e-6):
-        """Set solderball for the given PadstackInstance.
+        """Set solderball for a padstack instance.
 
         Parameters
         ----------
-        padstackInst : Edb.Cell.Primitive.PadstackInstance or int
-            Padstack instance id or object.
-        sballLayer_name : str,
-            Name of the layer where the solder ball is placed. No default values.
-        isTopPlaced : bool, optional.
-            Bollean triggering is the solder ball is placed on Top or Bottom of the layer stackup.
-        ballDiam : double, optional,
-            Solder ball diameter value.
+        padstackInst : int or :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`
+            Padstack instance ID or object.
+        sballLayer_name : str
+            Name of the layer where the solder ball is placed.
+        isTopPlaced : bool, optional
+            Whether the solder ball is placed on top of the layer stackup. Default is ``True``.
+        ballDiam : float, optional
+            Solder ball diameter in meters. Default is ``100e-6`` (100 um).
 
         Returns
         -------
         bool
+            ``True`` when successful, ``False`` when failed.
 
+        Examples
+        --------
+        >>> via_id = 123
+        >>> success = edb_padstacks.set_solderball(via_id, "SolderBall_Top", True, 150e-6)
         """
         if isinstance(padstackInst, int):
             psdef = self.definitions[self.instances[padstackInst].padstack_definition].edb_padstack
@@ -511,21 +569,24 @@ class Padstacks(object):
         )
 
     def get_pin_from_component_and_net(self, refdes=None, netname=None):
-        """Retrieve pins given a component's reference designator and net name.
+        """Retrieve pins by component reference designator and net name.
 
         Parameters
         ----------
         refdes : str, optional
-            Reference designator of the component. The default is ``None``.
-        netname : str optional
-            Name of the net. The default is ``None``.
+            Component reference designator.
+        netname : str, optional
+            Net name.
 
         Returns
         -------
-        dict
-            Dictionary of pins if the operation is successful.
-            ``False`` is returned if the net does not belong to the component.
+        list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+            List of matching pin instances.
 
+        Examples
+        --------
+        >>> pins = edb_padstacks.get_pin_from_component_and_net(refdes="U1", netname="VCC")
+        >>> pins = edb_padstacks.get_pin_from_component_and_net(netname="GND")  # All GND pins
         """
         pinlist = []
         if refdes:
@@ -565,6 +626,10 @@ class Padstacks(object):
             Dictionary of pins if the operation is successful.
             ``False`` is returned if the net does not belong to the component.
 
+        Examples
+        --------
+        >>> pins = edb_padstacks.get_pinlist_from_component_and_net(refdes="U1", netname="CLK")  # Deprecated
+        >>> pins = edb_padstacks.get_pin_from_component_and_net(refdes="U1", netname="CLK")  # New way
         """
         warnings.warn(
             "`get_pinlist_from_component_and_net` is deprecated use `get_pin_from_component_and_net` instead.",
@@ -573,21 +638,31 @@ class Padstacks(object):
         return self.get_pin_from_component_and_net(refdes=refdes, netname=netname)
 
     def get_pad_parameters(self, pin, layername, pad_type="regular_pad"):
-        """Get Padstack Parameters from Pin or Padstack Definition.
+        """Get pad parameters for a pin on a specific layer.
 
         Parameters
         ----------
-        pin : Edb.definition.PadstackDef or Edb.definition.PadstackInstance
-            Pin or PadstackDef on which get values.
+        pin : :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`
+            Padstack instance.
         layername : str
-            Layer on which get properties.
-        pad_type : str
-            Pad Type, `"pad"`, `"anti_pad"`, `"thermal_pad"`
+            Layer name.
+        pad_type : str, optional
+            Pad type ("regular_pad", "anti_pad", "thermal_pad"). Default is ``"regular_pad"``.
 
         Returns
         -------
         tuple
-            Tuple of (GeometryType, ParameterList, OffsetX, OffsetY, Rot).
+            (geometry_type, parameters, offset_x, offset_y, rotation) where:
+            - geometry_type : str
+            - parameters : list[float] or list[list[float]]
+            - offset_x : float
+            - offset_y : float
+            - rotation : float
+
+        Examples
+        --------
+        >>> via = edb_padstacks.instances[123]
+        >>> geom_type, params, x, y, rot = edb_padstacks.get_pad_parameters(via, "TOP", "regular_pad")
         """
         if pad_type == "regular_pad":
             pad_type = GrpcPadType.REGULAR_PAD
@@ -620,17 +695,21 @@ class Padstacks(object):
             return 0, [0], 0, 0, 0
 
     def set_all_antipad_value(self, value):
-        """Set all anti-pads from all pad-stack definition to the given value.
+        """Set anti-pad value for all padstack definitions.
 
         Parameters
         ----------
-        value : float, str
-            Anti-pad value.
+        value : float or str
+            Anti-pad value with units (e.g., "0.2mm").
 
         Returns
         -------
         bool
-            ``True`` when successful, ``False`` if an anti-pad value fails to be assigned.
+            ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> success = edb_padstacks.set_all_antipad_value("0.3mm")
         """
         if self.definitions:
             all_succeed = True
@@ -671,21 +750,23 @@ class Padstacks(object):
             return all_succeed
 
     def check_and_fix_via_plating(self, minimum_value_to_replace=0.0, default_plating_ratio=0.2):
-        """Check for minimum via plating ration value, values found below the minimum one are replaced by default
-        plating ratio.
+        """Check and fix via plating ratios below a minimum value.
 
         Parameters
         ----------
-        minimum_value_to_replace : float
-            Plating ratio that is below or equal to this value is to be replaced
-            with the value specified for the next parameter. Default value ``0.0``.
-        default_plating_ratio : float
-            Default value to use for plating ratio. The default value is ``0.2``.
+        minimum_value_to_replace : float, optional
+            Minimum plating ratio threshold. Default is ``0.0``.
+        default_plating_ratio : float, optional
+            Default plating ratio to apply. Default is ``0.2``.
 
         Returns
         -------
         bool
-            ``True`` when successful, ``False`` if an anti-pad value fails to be assigned.
+            ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> success = edb_padstacks.check_and_fix_via_plating(minimum_value_to_replace=0.1)
         """
         for padstack_def in list(self.definitions.values()):
             if padstack_def.hole_plating_ratio <= minimum_value_to_replace:
@@ -696,18 +777,22 @@ class Padstacks(object):
         return True
 
     def get_via_instance_from_net(self, net_list=None):
-        """Get the list for EDB vias from a net name list.
+        """Get via instances by net names.
 
         Parameters
         ----------
-        net_list : str or list
-            The list of the net name to be used for filtering vias. If no net is provided the command will
-            return an all vias list.
+        net_list : str or list, optional
+            Net name(s) for filtering. Returns all vias if ``None``.
 
         Returns
         -------
-        list of Edb.Cell.Primitive.PadstackInstance
-            List of EDB vias.
+        list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+            List of via instances.
+
+        Examples
+        --------
+        >>> vias = edb_padstacks.get_via_instance_from_net("GND")
+        >>> vias = edb_padstacks.get_via_instance_from_net(["GND", "PWR"])
         """
         if net_list and not isinstance(net_list, list):
             net_list = [net_list]
@@ -750,61 +835,66 @@ class Padstacks(object):
         anti_pad_y_size="600um",
         hole_range="upper_pad_to_lower_pad",
     ):
-        """Create a padstack.
+        """Create a padstack definition.
 
         Parameters
         ----------
         padstackname : str, optional
-            Name of the padstack. The default is ``None``.
+            Name of the padstack definition.
         holediam : str, optional
-            Diameter of the hole with units. The default is ``"300um"``.
+            Hole diameter with units. Default is ``"300um"``.
         paddiam : str, optional
-            Diameter of the pad with units, used with ``"Circle"`` shape. The default is ``"400um"``.
+            Pad diameter with units. Default is ``"400um"``.
         antipaddiam : str, optional
-            Diameter of the antipad with units. The default is ``"600um"``.
+            Anti-pad diameter with units. Default is ``"600um"``.
         pad_shape : str, optional
-            Shape of the pad. The default is ``"Circle``. Options are ``"Circle"``, ``"Rectangle"`` and ``"Polygon"``.
+            Pad geometry type ("Circle", "Rectangle", "Polygon"). Default is ``"Circle"``.
         antipad_shape : str, optional
-            Shape of the antipad. The default is ``"Circle"``. Options are ``"Circle"`` ``"Rectangle"`` and
-            ``"Bullet"``.
+            Anti-pad geometry type ("Circle", "Rectangle", "Bullet", "Polygon"). Default is ``"Circle"``.
         x_size : str, optional
-            Only applicable to bullet and rectangle shape. The default is ``"600um"``.
+            X-size for rectangular/bullet shapes. Default is ``"600um"``.
         y_size : str, optional
-            Only applicable to bullet and rectangle shape. The default is ``"600um"``.
-        corner_radius :
-            Only applicable to bullet shape. The default is ``"300um"``.
+            Y-size for rectangular/bullet shapes. Default is ``"600um"``.
+        corner_radius : str, optional
+            Corner radius for bullet shapes. Default is ``"300um"``.
         offset_x : str, optional
-            X offset of antipad. The default is ``"0.0"``.
+            X-offset for anti-pad. Default is ``"0.0"``.
         offset_y : str, optional
-            Y offset of antipad. The default is ``"0.0"``.
+            Y-offset for anti-pad. Default is ``"0.0"``.
         rotation : str, optional
-            rotation of antipad. The default is ``"0.0"``.
+            Rotation for anti-pad in degrees. Default is ``"0.0"``.
         has_hole : bool, optional
-            Whether this padstack has a hole.
+            Whether the padstack has a hole. Default is ``True``.
         pad_offset_x : str, optional
-            Padstack offset in X direction.
+            X-offset for pad. Default is ``"0.0"``.
         pad_offset_y : str, optional
-            Padstack offset in Y direction.
+            Y-offset for pad. Default is ``"0.0"``.
         pad_rotation : str, optional
-            Padstack rotation.
+            Rotation for pad in degrees. Default is ``"0.0"``.
+        pad_polygon : list or :class:`ansys.edb.core.geometry.PolygonData`, optional
+            Polygon points for custom pad shape.
+        antipad_polygon : list or :class:`ansys.edb.core.geometry.PolygonData`, optional
+            Polygon points for custom anti-pad shape.
+        polygon_hole : list or :class:`ansys.edb.core.geometry.PolygonData`, optional
+            Polygon points for custom hole shape.
         start_layer : str, optional
-            Start layer of the padstack definition.
+            Starting layer name.
         stop_layer : str, optional
-            Stop layer of the padstack definition.
+            Ending layer name.
         add_default_layer : bool, optional
-            Add ``"Default"`` to padstack definition. Default is ``False``.
+            Whether to add "Default" layer. Default is ``False``.
         anti_pad_x_size : str, optional
-            Only applicable to bullet and rectangle shape. The default is ``"600um"``.
+            Anti-pad X-size. Default is ``"600um"``.
         anti_pad_y_size : str, optional
-            Only applicable to bullet and rectangle shape. The default is ``"600um"``.
+            Anti-pad Y-size. Default is ``"600um"``.
         hole_range : str, optional
-            Define the padstack hole range. Arguments supported, ``"through"``, ``"begin_on_upper_pad"``,
-            ``"end_on_lower_pad"``, ``"upper_pad_to_lower_pad"``.
+            Hole range type ("through", "begin_on_upper_pad", "end_on_lower_pad", "upper_pad_to_lower_pad").
+            Default is ``"upper_pad_to_lower_pad"``.
 
         Returns
         -------
         str
-            Name of the padstack if the operation is successful.
+            Name of the created padstack definition.
         """
         holediam = GrpcValue(holediam)
         paddiam = GrpcValue(paddiam)
@@ -949,19 +1039,19 @@ class Padstacks(object):
             return False
 
     def duplicate(self, target_padstack_name, new_padstack_name=""):
-        """Duplicate a padstack.
+        """Duplicate a padstack definition.
 
         Parameters
         ----------
         target_padstack_name : str
-            Name of the padstack to be duplicated.
+            Name of the padstack definition to duplicate.
         new_padstack_name : str, optional
-            Name of the new padstack.
+            Name for the new padstack definition.
 
         Returns
         -------
         str
-            Name of the new padstack.
+            Name of the new padstack definition.
         """
         new_padstack_definition_data = GrpcPadstackDefData(self.definitions[target_padstack_name].data.msg)
         if not new_padstack_name:
@@ -982,33 +1072,33 @@ class Padstacks(object):
         solderlayer=None,
         is_pin=False,
     ):
-        """Place a via.
+        """Place a padstack instance.
 
         Parameters
         ----------
-        position : list
-            List of float values for the [x,y] positions where the via is to be placed.
+        position : list[float, float]
+            [x, y] position for placement.
         definition_name : str
-            Name of the padstack definition.
+            Padstack definition name.
         net_name : str, optional
-            Name of the net. The default is ``""``.
+            Net name. Default is ``""``.
         via_name : str, optional
-            The default is ``""``.
+            Instance name. Default is ``""``.
         rotation : float, optional
-            Rotation of the padstack in degrees. The default
-            is ``0``.
-        fromlayer :
-            The default is ``None``.
-        tolayer :
-            The default is ``None``.
-        solderlayer :
-            The default is ``None``.
+            Rotation in degrees. Default is ``0.0``.
+        fromlayer : str, optional
+            Starting layer name.
+        tolayer : str, optional
+            Ending layer name.
+        solderlayer : str, optional
+            Solder ball layer name.
         is_pin : bool, optional
-            Whether if the padstack is a pin or not. Default is `False`.
+            Whether the instance is a pin. Default is ``False``.
 
         Returns
         -------
-        :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`
+        :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance` or bool
+            Created padstack instance or ``False`` if failed.
         """
         padstack_def = None
         for pad in list(self.definitions.keys()):
@@ -1060,19 +1150,19 @@ class Padstacks(object):
             return False
 
     def remove_pads_from_padstack(self, padstack_name, layer_name=None):
-        """Remove the Pad from a padstack on a specific layer by setting it as a 0 thickness circle.
+        """Remove pads from a padstack definition on specified layers.
 
         Parameters
         ----------
         padstack_name : str
-            padstack name
-        layer_name : str, optional
-            Layer name on which remove the PadParameters. If None, all layers will be taken.
+            Padstack definition name.
+        layer_name : str or list, optional
+            Layer name(s). Applies to all layers if ``None``.
 
         Returns
         -------
         bool
-            ``True`` if successful.
+            ``True`` when successful, ``False`` when failed.
         """
         pad_type = GrpcPadType.REGULAR_PAD
         pad_geo = GrpcPadGeometryType.PADGEOMTYPE_CIRCLE
@@ -1111,40 +1201,39 @@ class Padstacks(object):
         antipad_y_offset=0,
         antipad_rotation=0,
     ):
-        """Set pad and antipad properties of the padstack.
+        """Set pad and anti-pad properties for a padstack definition.
 
         Parameters
         ----------
         padstack_name : str
-            Name of the padstack.
-        layer_name : str, optional
-            Name of the layer. If None, all layers will be taken.
+            Padstack definition name.
+        layer_name : str or list, optional
+            Layer name(s). Applies to all layers if ``None``.
         pad_shape : str, optional
-            Shape of the pad. The default is ``"Circle"``. Options are ``"Circle"``,  ``"Square"``, ``"Rectangle"``,
-            ``"Oval"`` and ``"Bullet"``.
-        pad_params : str, optional
-            Dimension of the pad. The default is ``"0"``.
-        pad_x_offset : str, optional
-            X offset of the pad. The default is ``"0"``.
-        pad_y_offset : str, optional
-            Y offset of the pad. The default is ``"0"``.
-        pad_rotation : str, optional
-            Rotation of the pad. The default is ``"0"``.
+            Pad geometry type ("Circle", "Square", "Rectangle", "Oval", "Bullet"). Default is ``"Circle"``.
+        pad_params : float or list, optional
+            Pad dimension(s). Default is ``0``.
+        pad_x_offset : float, optional
+            Pad X-offset. Default is ``0``.
+        pad_y_offset : float, optional
+            Pad Y-offset. Default is ``0``.
+        pad_rotation : float, optional
+            Pad rotation in degrees. Default is ``0``.
         antipad_shape : str, optional
-            Shape of the antipad. The default is ``"0"``.
-        antipad_params : str, optional
-            Dimension of the antipad. The default is ``"0"``.
-        antipad_x_offset : str, optional
-            X offset of the antipad. The default is ``"0"``.
-        antipad_y_offset : str, optional
-            Y offset of the antipad. The default is ``"0"``.
-        antipad_rotation : str, optional
-            Rotation of the antipad. The default is ``"0"``.
+            Anti-pad geometry type ("Circle", "Square", "Rectangle", "Oval", "Bullet"). Default is ``"Circle"``.
+        antipad_params : float or list, optional
+            Anti-pad dimension(s). Default is ``0``.
+        antipad_x_offset : float, optional
+            Anti-pad X-offset. Default is ``0``.
+        antipad_y_offset : float, optional
+            Anti-pad Y-offset. Default is ``0``.
+        antipad_rotation : float, optional
+            Anti-pad rotation in degrees. Default is ``0``.
 
         Returns
         -------
         bool
-            ``True`` if successful.
+            ``True`` when successful, ``False`` when failed.
         """
         shape_dict = {
             "Circle": GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
@@ -1204,26 +1293,28 @@ class Padstacks(object):
         component_reference_designator=None,
         component_pin=None,
     ):
-        """Get padstack instances by conditions.
+        """Get padstack instances by search criteria.
 
         Parameters
         ----------
         name : str, optional
-            Name of the padstack.
+            Instance name.
         pid : int, optional
-            Id of the padstack.
-        definition_name : str, list, optional
-            Name of the padstack definition.
-        net_name : str, optional
-            The net name to be used for filtering padstack instances.
-        component_pin: str, optional
-            Pin Number of the component.
+            Database ID.
+        definition_name : str or list, optional
+            Padstack definition name(s).
+        net_name : str or list, optional
+            Net name(s).
+        component_reference_designator : str or list, optional
+            Component reference designator(s).
+        component_pin : str or list, optional
+            Component pin number(s).
+
         Returns
         -------
-        list
-            List of :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`.
+        list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+            List of matching padstack instances.
         """
-
         instances_by_id = self.instances
         if pid:
             return instances_by_id[pid]
@@ -1255,35 +1346,25 @@ class Padstacks(object):
     def get_reference_pins(
         self, positive_pin, reference_net="gnd", search_radius=5e-3, max_limit=0, component_only=True
     ):
-        """Search for reference pins using given criteria.
+        """Find reference pins near a specified pin.
 
         Parameters
         ----------
-        positive_pin : EDBPadstackInstance
-            Pin used for evaluating the distance on the reference pins found.
+        positive_pin : :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`
+            Target pin.
         reference_net : str, optional
-            Reference net. The default is ``"gnd"``.
+            Reference net name. Default is ``"gnd"``.
         search_radius : float, optional
-            Search radius for finding padstack instances. The default is ``5e-3``.
+            Search radius in meters. Default is ``5e-3`` (5 mm).
         max_limit : int, optional
-            Maximum limit for the padstack instances found. The default is ``0``, in which
-            case no limit is applied. The maximum limit value occurs on the nearest
-            reference pins from the positive one that is found.
+            Maximum number of pins to return. Default is ``0`` (no limit).
         component_only : bool, optional
-            Whether to limit the search to component padstack instances only. The
-            default is ``True``. When ``False``, the search is extended to the entire layout.
+            Whether to search only in component pins. Default is ``True``.
 
         Returns
         -------
-        list
-            List of :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`.
-
-        Examples
-        --------
-        >>> edbapp = Edb("target_path")
-        >>> pin = edbapp.components.instances["J5"].pins["19"]
-        >>> reference_pins = edbapp.padstacks.get_reference_pins(positive_pin=pin, reference_net="GND",
-        >>> search_radius=5e-3, max_limit=0, component_only=True)
+        list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+            List of reference pins.
         """
         pinlist = []
         if not positive_pin:

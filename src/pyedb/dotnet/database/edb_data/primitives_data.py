@@ -522,9 +522,9 @@ class EDBArcs(object):
             xt, yt = self._app._active_cell.primitive._get_points_for_plot(my_net_points, arc_segments)
             if not xt:
                 return []
-            x, y = GeometryOperators.orient_polygon(xt, yt, clockwise=True)
-            return x, y
+            x, y = list(GeometryOperators.orient_polygon(xt, yt, clockwise=True))
+            return [x, y]
         except:
             x = []
             y = []
-        return x, y
+        return [x, y]
