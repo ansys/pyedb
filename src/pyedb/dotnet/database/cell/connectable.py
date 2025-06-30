@@ -83,3 +83,12 @@ class Connectable(LayoutObj):
             return None
         else:
             return EDBComponent(self._pedb, edb_comp)
+
+    def get_connected_objects(self):
+        """Get connected objects.
+
+        Returns
+        -------
+        list
+        """
+        return self._pedb.get_connected_objects(self._layout_obj_instance)
