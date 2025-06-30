@@ -24,7 +24,7 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
 
    The default grpc flag value is `False` so by default uses PyEDB DotNet.
    PyEDB gRPC becomes the long term supported version and new features are only implemented
-   into this one. Therefore we highly encourage users migrating to gRPC when possible to get the
+   into this one. Therefore users are highly encouraged migrating to gRPC when possible to get the
    best user experience.
 
 to enable PyEDB gRPC you have two options.
