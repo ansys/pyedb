@@ -48,6 +48,14 @@ vias
 [gG][rR][pP][cC]
 [rR][lL][cC]
 [sS]-[pP]arameter
-netlist
 [pP]in[gG]roup
 [sS]pice
+[aA]arc[dD]ata
+[aA]rc
+[dD]ata
+[pP}olygon
+[dD]ata
+[pP]olygon[dD]ata
+[pP]oint
+[dD]ata
+[pP]oint[dD]ata
