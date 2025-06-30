@@ -54,3 +54,15 @@ vias
 [Pp]oint
 [Dd]ata
 [Pp]oint[Dd]ata
+[Pp]in
+[Pp]air
+[Mm]odel
+[Dd]ifferential
+[Nn]et
+[Cc]lass
+[Rr]aptor
+[Xx]
+[Ll]ayer
+3D
+[Pp]ackage
+[Dd]efinition
