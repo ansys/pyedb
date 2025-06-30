@@ -23,7 +23,6 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
    PyEDB gRPC is providing backward compatibility with previous versions.
 
    The default grpc flag value is `False` so by default uses PyEDB DotNet.
-   However, starting **ANSYS release 2026.1, we will start deprecating PyEDB DotNet version**.
    PyEDB gRPC becomes the long term supported version and new features are only implemented
    into this one. Therefore we highly encourage users migrating to gRPC when possible to get the
    best user experience.

@@ -29,6 +29,7 @@ matplotlib
 Maxwell(?:\s(?:2D|3D|Circuit))?
 [Nn]etlist
 opensslp(?i)PyAnsys
+openssl
 [Pp]y[Pp][Ii]
 Python
 Python.NET
@@ -66,3 +67,5 @@ vias
 3D
 [Pp]ackage
 [Dd]efinition
+[Vv]oltage
+[Rr]egulator
