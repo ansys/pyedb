@@ -48,7 +48,7 @@ vias
 [Aa]arc[Dd]ata
 [Aa]rc
 [Dd]ata
-[Pp}olygon
+[Pp]olygon
 [Dd]ata
 [Pp]olygon[Dd]ata
 [Pp]oint
