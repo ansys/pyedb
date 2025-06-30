@@ -27,11 +27,11 @@ libssl
 [Ll]ayout
 matplotlib
 Maxwell(?:\s(?:2D|3D|Circuit))?
-netlist
+[nN]etlist
 openssl
 [pP]ad[sS]tack(?:s)?
 postprocessing
-(?i)Pyedb
+(?i)[pP][yY][eE][dD][bB]
 (?i)Pyaedt
 (?i)PyAnsys
 [Pp]y[Pp][Ii]
@@ -39,7 +39,6 @@ Python
 Python.NET
 Q3D
 [rR]aptor[xX]
-RLC
 SimulationConfiguration
 S[Ii]wave
 [sS][yY][zZ]
