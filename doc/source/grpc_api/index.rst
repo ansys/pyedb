@@ -27,7 +27,7 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
    into this one. Therefore users are highly encouraged migrating to gRPC when possible to get the
    best user experience.
 
-to enable PyEDB gRPC you have two options.
+To enable PyEDB gRPC you have two options.
 - Explicit import
 - Using grpc flag
 
