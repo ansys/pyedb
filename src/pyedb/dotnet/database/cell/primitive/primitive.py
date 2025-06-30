@@ -149,15 +149,6 @@ class Primitive(Connectable):
         """
         return self._edb_object.IsVoid()
 
-    def get_connected_objects(self):
-        """Get connected objects.
-
-        Returns
-        -------
-        list
-        """
-        return self._pedb.get_connected_objects(self._layout_obj_instance)
-
     def area(self, include_voids=True):
         """Return the total area.
 
