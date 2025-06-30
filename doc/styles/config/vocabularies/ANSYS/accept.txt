@@ -28,12 +28,7 @@ libssl
 matplotlib
 Maxwell(?:\s(?:2D|3D|Circuit))?
 [nN]etlist
-openssl
-[pP]ad[sS]tack(?:s)?
-postprocessing
-(?i)[pP][yY][eE][dD][bB]
-(?i)Pyaedt
-(?i)PyAnsys
+opensslp(?i)PyAnsys
 [Pp]y[Pp][Ii]
 Python
 Python.NET
