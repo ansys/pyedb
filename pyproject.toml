@@ -37,7 +37,7 @@ dependencies = [
     "shapely",
     "scikit-rf",
     "ansys-edb-core>=0.2.0.dev0",
-    "ansys-api-edb",
+    "ansys-api-edb>=0.2.0.dev0",
     "psutil",
     ]
 
