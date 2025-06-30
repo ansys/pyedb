@@ -36,8 +36,8 @@ dependencies = [
     "toml == 0.10.2",
     "shapely",
     "scikit-rf",
-    "ansys-edb-core",
-    "ansys-api-edb",
+    "ansys-edb-core>=0.2.0.dev4",
+    "ansys-api-edb>=0.2.dev6",
     "psutil",
     ]
 
