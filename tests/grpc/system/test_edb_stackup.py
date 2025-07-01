@@ -800,8 +800,8 @@ class TestClass:
                 assert cellInstance.Is3DPlacement()
             if chipEdb.grpc:
                 transform = cellInstance.transform3d
-                assert transform.matrix[3][:3] == [0, 0, 0.00016]
-                assert transform.shift.magnitude == 0.00016
+                assert transform.matrix[3][:3] == [0, 0, 0.00019]
+                assert transform.shift.magnitude == 0.00019
             else:
                 if desktop_version > "2023.1":
                     (
@@ -891,8 +891,8 @@ class TestClass:
                 assert cellInstance.Is3DPlacement()
             if chipEdb.grpc:
                 transform = cellInstance.transform3d
-                assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, 1e-05]
-                assert round(transform.shift.magnitude, 6) == 1e-5
+                assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, -2e-05]
+                assert round(transform.shift.magnitude, 6) == 2e-5
             else:
                 if desktop_version > "2023.1":
                     (
@@ -1159,8 +1159,8 @@ class TestClass:
                 assert cellInstance.Is3DPlacement()
             if chipEdb.grpc:
                 transform = cellInstance.transform3d
-                assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, 5e-05]
-                assert round(transform.shift.magnitude, 6) == 5e-5
+                assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, 2e-05]
+                assert round(transform.shift.magnitude, 6) == 2e-5
             else:
                 if desktop_version > "2023.1":
                     (
@@ -1247,8 +1247,8 @@ class TestClass:
                 assert cellInstance.Is3DPlacement()
             if chipEdb.grpc:
                 transform = cellInstance.transform3d
-                assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, 5e-05]
-                assert round(transform.shift.magnitude, 6) == 5e-5
+                assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, 2e-05]
+                assert round(transform.shift.magnitude, 6) == 2e-5
             else:
                 if desktop_version > "2023.1":
                     (

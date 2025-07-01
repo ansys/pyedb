@@ -228,14 +228,14 @@ class Material(GrpcMaterialDef):
 
         """
         try:
-            return self.dielectric_material_model.dc_relative_permitivity
+            return self.dielectric_material_model.dc_relative_permittivity
         except:
             return None
 
     @dc_permittivity.setter
     def dc_permittivity(self, value):
         if self.dielectric_material_model:
-            self.dielectric_material_model.dc_relative_permitivity = float(value)
+            self.dielectric_material_model.dc_relative_permittivity = float(value)
 
     @property
     def loss_tangent_at_frequency(self) -> float:
@@ -289,14 +289,14 @@ class Material(GrpcMaterialDef):
 
         """
         try:
-            return self.dielectric_material_model.relative_permitivity_at_frequency
+            return self.dielectric_material_model.relative_permittivity_at_frequency
         except:
             return None
 
     @permittivity_at_frequency.setter
     def permittivity_at_frequency(self, value):
         if self.dielectric_material_model:
-            self.dielectric_material_model.relative_permitivity_at_frequency = float(value)
+            self.dielectric_material_model.relative_permittivity_at_frequency = float(value)
 
     @property
     def permittivity(self) -> float:
@@ -771,14 +771,14 @@ class Materials(object):
             raise ValueError(f"Material names are case-insensitive and {name.lower()} already exists.")
 
         material_model = GrpcDjordjecvicSarkarModel.create()
-        material_model.relative_permitivity_at_frequency = permittivity_at_frequency
+        material_model.relative_permittivity_at_frequency = permittivity_at_frequency
         material_model.loss_tangent_at_frequency = loss_tangent_at_frequency
         material_model.frequency = dielectric_model_frequency
         if dc_conductivity is not None:
             material_model.dc_conductivity = dc_conductivity
             material_model.use_dc_relative_conductivity = True
         if dc_permittivity is not None:
-            material_model.dc_relative_permitivity = dc_permittivity
+            material_model.dc_relative_permittivity = dc_permittivity
         try:
             material = self.__add_dielectric_material_model(name, material_model)
             for key, value in kwargs.items():
@@ -841,7 +841,7 @@ class Materials(object):
         material_model = GrpcDebyeModel.create()
         material_model.frequency_range = (lower_freqency, higher_frequency)
         material_model.loss_tangent_at_high_low_frequency = (loss_tangent_low, loss_tangent_high)
-        material_model.relative_permitivity_at_high_low_frequency = (permittivity_low, permittivity_high)
+        material_model.relative_permittivity_at_high_low_frequency = (permittivity_low, permittivity_high)
         try:
             material = self.__add_dielectric_material_model(name, material_model)
             for key, value in kwargs.items():
