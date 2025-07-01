@@ -373,11 +373,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build documentation
-        uses: ansys/actions/doc-build@5dc39c7838f50142138f7ac518ff3e4dca065d97 # v9.0.12
+        uses: ansys/actions/doc-build@8d3e4946f36c2a7d447b92e34b1022a5c9dc77a7 # v10.0.12
         with:
           dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          sphinxopts: '-j auto --color -w build_errors.txt'
+          sphinxopts: '-j 1 --color -w build_errors.txt'
           check-links: false
           needs-quarto: true
 
