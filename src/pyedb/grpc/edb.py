@@ -3942,7 +3942,11 @@ class Edb(EdbInit):
             results = self.edbpath[:-5] + "_compare_results"
             os.mkdir(results)
         command = os.path.join(self.base_path, "EDBDiff.exe")
-        cmd_input = [command, input_file, self.edbpath, results]
+        if is_linux:
+            mono_path = os.path.join(self.base_path, "common/mono/Linux64/bin/mono")
+            cmd_input = [mono_path, command, input_file, self.edbpath, results]
+        else:
+            cmd_input = [command, input_file, self.edbpath, results]
         subprocess.run(cmd_input)
 
         if not os.path.exists(os.path.join(results, "EDBDiff.csv")):
