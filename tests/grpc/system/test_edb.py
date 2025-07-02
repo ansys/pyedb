@@ -1964,3 +1964,8 @@ class TestClass:
         trace_widths = edbapp.hfss.get_trace_width_for_traces_with_ports()
         assert len(trace_widths) > 0
         edbapp.close()
+
+    def test_add_cpa_simulation_setup(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        cpa_setup = edbapp.siwave.add_cpa_analysis()
+        pass

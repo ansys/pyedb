@@ -36,6 +36,9 @@ from ansys.edb.core.simulation_setup.simulation_setup import (
 )
 from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSweepData
 
+from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
+    SIWaveCPASimulationSetup,
+)
 from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
 
 
@@ -581,6 +584,14 @@ class Siwave(object):
             f.write("SaveSiw\n")
 
         return True if os.path.exists(file_name) else False
+
+    def add_cpa_analysis(self, name=None, cpa_configuration=None):
+        if not name:
+            from pyedb.generic.general_methods import generate_unique_name
+
+            name = generate_unique_name("cpa_setup")
+        cpa_setup = SIWaveCPASimulationSetup(self._pedb, name=name, siwave_cpa_setup=cpa_configuration)
+        return cpa_setup
 
     def add_siwave_syz_analysis(
         self,
