@@ -50,7 +50,6 @@ class ChannelSetup:
     die_name: str = ""
     pin_grouping_mode: str = "perpin"  # usediepingroups and ploc are supported
     channel_component_exposure: list[str] = field(default_factory=list)
-    expose: bool = True
     vrm_setup: Vrm = None
 
 
