@@ -110,8 +110,7 @@ class Configuration:
         if kwargs.get("fix_padstack_def"):
             warnings.warn("fix_padstack_def is deprecated.", DeprecationWarning)
 
-        if self.cfg_data.variables:
-            self.cfg_data.variables.apply()
+        self.apply_variables()
 
         if self.cfg_data.general:
             self.cfg_data.general.apply()
@@ -292,6 +291,14 @@ class Configuration:
         primitives = self._pedb.layout.find_primitive(**modeler.primitives_to_delete)
         for i in primitives:
             i.delete()
+
+    def apply_variables(self):
+        inst = self.cfg_data.variables
+        for i in inst.variables:
+            if i.name.startswith("$"):
+                self._pedb.add_project_variable(i.name, i.value)
+            else:
+                self._pedb.add_design_variable(i.name, i.value)
 
     def configuration_stackup(self):
         temp_pdef_data = {}
