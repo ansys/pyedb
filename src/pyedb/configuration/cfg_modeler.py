@@ -24,7 +24,7 @@ from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition, CfgPadstackInstance
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, TypedDict
+from typing import List, Optional, Dict, Any, TypedDict, Union
 
 
 @dataclass
@@ -48,17 +48,17 @@ class CfgPlane:
     type: str = "rectangle"
 
     # rectangle
-    lower_left_point: List[float] = field(default_factory=list)
-    upper_right_point: List[float] = field(default_factory=list)
-    corner_radius: float = 0
-    rotation: float = 0
+    lower_left_point: list[Union[float, str]] = field(default_factory=list)
+    upper_right_point: list[Union[float, str]] = field(default_factory=list)
+    corner_radius: Union[float, str] = 0
+    rotation: Union[float, str] = 0
     voids: List[Any] = field(default_factory=list)
 
     # polygon
     points: List[List[float]] = field(default_factory=list)
 
     # circle
-    radius: float = 0
+    radius: Union[float, str] = 0
     position: List[float] = field(default_factory=lambda: [0, 0])
 
 
@@ -97,7 +97,13 @@ class CfgModeler:
             self.add_trace(**trace_data)
 
         for plane_data in data.get("planes", []):
-            self.add_plane(**plane_data)
+            shape = plane_data.pop("type")
+            if shape == "rectangle":
+                self.add_rectangular_plane(**plane_data)
+            elif shape == "circle":
+                self.add_circular_plane(**plane_data)
+            elif shape == "polygon":
+                self.add_polygon_plane(**plane_data)
 
     def add_trace(self,
                   layer: str,
@@ -145,6 +151,52 @@ class CfgModeler:
             corner_radius=corner_radius,
             rotation=rotation,
             voids=voids,
+        )
+        self.planes.append(plane_obj)
+        return name
+
+    def add_circular_plane(self,
+                           layer: str,
+                           name: str = "",
+                           net_name: str = "",
+                           corner_radius: float = 0,
+                           rotation: float = 0,
+                           voids: Optional[List[Any]] = "",
+                           radius: Union[float, str] = 0,
+                           position: List[Union[float, str]] = "",
+                           ):
+        plane_obj = CfgPlane(
+            name=name,
+            layer=layer,
+            net_name=net_name,
+            type="circle",
+            corner_radius=corner_radius,
+            rotation=rotation,
+            voids=voids,
+            radius=radius,
+            position=position
+        )
+        self.planes.append(plane_obj)
+        return name
+
+    def add_polygon_plane(self,
+                          layer: str,
+                          name: str = "",
+                          net_name: str = "",
+                          corner_radius: float = 0,
+                          rotation: float = 0,
+                          voids: Optional[List[Any]] = "",
+                          points: List[List[float]] = ""
+                          ):
+        plane_obj = CfgPlane(
+            name=name,
+            layer=layer,
+            net_name=net_name,
+            type="circle",
+            corner_radius=corner_radius,
+            rotation=rotation,
+            voids=voids,
+            points=points
         )
         self.planes.append(plane_obj)
         return name

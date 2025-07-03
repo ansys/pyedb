@@ -47,7 +47,7 @@ class CfgBase:
 class CfgVar:
     name: str
     value: Union[int, float]
-    description: Optional[str]
+    description: Optional[str] = ""
 
 
 @dataclass
