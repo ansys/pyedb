@@ -22,7 +22,6 @@
 
 import re
 
-from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.primitives_data import Primitive
 from pyedb.generic.general_methods import generate_unique_name
@@ -304,38 +303,33 @@ class LayoutValidation:
 
     def illegal_rlc_values(self, fix=False):
         """Find and fix RLC illegal values."""
-        inductors = self._pedb.components.inductors
 
-        temp = []
-        for k, v in inductors.items():
-            componentProperty = v.edbcomponent.GetComponentProperty()
-            model = componentProperty.GetModel().Clone()
-            pinpairs = model.PinPairs
+        for name, objs in {
+            "inductors": self._pedb.components.inductors,
+            "resistors": self._pedb.components.resistors,
+            "capacitors": self._pedb.components.capacitors,
+        }.items():
+            temp = []
+            for k, v in objs.items():
+                componentProperty = v.edbcomponent.GetComponentProperty()
+                model = componentProperty.GetModel().Clone()
+                pinpairs = model.PinPairs
 
-            if not len(list(pinpairs)):  # pragma: no cover
-                temp.append(k)
-                if fix:
-                    v.rlc_values = [0, 1, 0]
+                if not len(list(pinpairs)):  # pragma: no cover
+                    temp.append(k)
+                    if fix:
+                        v.rlc_values = [0, 1, 0]
 
-        self._pedb._logger.info("Found {} inductors have no value.".format(len(temp)))
+            self._pedb._logger.info(f"Found {len(temp)} {name} have no value.")
         return
 
     def padstacks_no_name(self, fix=False):
+        """Find and fix padstacks without aedt_name."""
         pds = self._pedb.layout.padstack_instances
         counts = 0
-        via_count = 1
         for obj in pds:
-            val = String("")
-            _, name = obj._edb_object.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
-            name = str(name).strip("'")
-            if name == "":
+            if obj.aedt_name == "":
                 counts += 1
                 if fix:
-                    if not obj.component:
-                        obj._edb_object.SetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, f"Via{via_count}")
-                        via_count = via_count + 1
-                    else:
-                        obj._edb_object.SetProductProperty(
-                            self._pedb.edb_api.ProductId.Designer, 11, f"{obj.component.name}-{obj.component_pin}"
-                        )
+                    obj.aedt_name = f"via_{obj.id}"
         self._pedb._logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")

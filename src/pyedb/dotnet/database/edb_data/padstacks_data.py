@@ -1807,8 +1807,14 @@ class EDBPadstackInstance(Primitive):
 
         val = String("")
         _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
-        name = str(name).strip("'")
-        return name
+        aedt_name = str(name).strip("'")
+        if aedt_name == "":
+            if self.is_pin and self.component:
+                aedt_name = f"{self.component.name}-{self.component_pin}"
+            elif self.component_pin:
+                aedt_name = self.component_pin
+            self.aedt_name = aedt_name
+        return aedt_name
 
     @aedt_name.setter
     def aedt_name(self, value):
