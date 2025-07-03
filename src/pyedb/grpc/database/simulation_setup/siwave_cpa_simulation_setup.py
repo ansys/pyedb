@@ -24,18 +24,18 @@ class ChannelSetup:
     def __init_values(self):
         self.die_name = ""
         self.pin_grouping_mode = "perpin"
-        self.channel_component_exposure = ""
+        self.channel_component_exposure = {}
 
     @property
     def die_name(self):
         return self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_DIE_NAME
-        )
+        ).value
 
     @die_name.setter
     def die_name(self, value):
         self._pedb.active_cell.set_product_property(
-            GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_DIE_NAME, GrpcValue(value)
+            GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_DIE_NAME, value
         )
 
     @property
@@ -43,7 +43,7 @@ class ChannelSetup:
         mode_mapping = {-1: "perpin", 0: "ploc", 1: "usediepingroups"}
         pg_mode = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_PIN_GROUPING_MODE, self.die_name
-        )
+        ).value
         return mode_mapping[int(pg_mode)]
 
     @pin_grouping_mode.setter
@@ -63,7 +63,7 @@ class ChannelSetup:
     def channel_component_exposure(self):
         cmp_exposure = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_COMPONENT_EXPOSURE_CONFIG
-        )
+        ).value
         cmp_dict = {}
         for comp in cmp_exposure.split("*"):
             _comp = comp.split(":")
@@ -139,6 +139,8 @@ class SolverOptions:
         self.adaptive_refinement_rl_max_passes = 10
         self.adaptive_refinement_cg_percent_error = 0.02
         self.adaptive_refinement_rl_percent_error = 0.02
+        self.rl_percent_refinement_per_pass = 0.33
+        self.cg_percent_refinement_per_pass = 0.33
 
     @property
     def mode(self):
@@ -184,7 +186,7 @@ class SolverOptions:
     def extraction_frequency(self):
         return self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_EXTRACTION_FREQUENCY
-        )
+        ).value
 
     @extraction_frequency.setter
     def extraction_frequency(self, value):
@@ -317,11 +319,11 @@ class SolverOptions:
     def small_hole_diameter(self):
         _res = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SMALL_HOLE_DIAMETER
-        )
+        ).value
         if _res == "-1":
             return -1
         else:
-            return GrpcValue(_res).value
+            return _res
 
     @small_hole_diameter.setter
     def small_hole_diameter(self, value):
@@ -336,7 +338,9 @@ class SolverOptions:
 
     @property
     def model_type(self):
-        return self._pedb.active_cell.get_product_property(GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_MODEL_TYPE)
+        return self._pedb.active_cell.get_product_property(
+            GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_MODEL_TYPE
+        ).value
 
     @model_type.setter
     def model_type(self, value):
@@ -346,9 +350,11 @@ class SolverOptions:
 
     @property
     def adaptive_refinement_cg_max_passes(self):
-        return self._pedb.active_cell.get_product_property(
-            GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_MAX_PASSES
-        ).value
+        return int(
+            self._pedb.active_cell.get_product_property(
+                GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_MAX_PASSES
+            ).value
+        )
 
     @adaptive_refinement_cg_max_passes.setter
     def adaptive_refinement_cg_max_passes(self, value):
@@ -361,7 +367,7 @@ class SolverOptions:
         return float(
             self._pedb.active_cell.get_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_PERCENT_ERROR
-            )
+            ).value
         )
 
     @adaptive_refinement_cg_percent_error.setter
@@ -375,7 +381,7 @@ class SolverOptions:
         return float(
             self._pedb.active_cell.get_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_PERCENT_REFINEMENT_PER_PASS
-            )
+            ).value
         )
 
     @cg_percent_refinement_per_pass.setter
@@ -391,7 +397,7 @@ class SolverOptions:
         return int(
             self._pedb.active_cell.get_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_MAX_PASSES
-            )
+            ).value
         )
 
     @adaptive_refinement_rl_max_passes.setter
@@ -405,7 +411,7 @@ class SolverOptions:
         return float(
             self._pedb.active_cell.get_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_PERCENT_ERROR
-            )
+            ).value
         )
 
     @adaptive_refinement_rl_percent_error.setter
@@ -419,7 +425,7 @@ class SolverOptions:
         return float(
             self._pedb.active_cell.get_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_PERCENT_REFINEMENT_PER_PASS
-            )
+            ).value
         )
 
     @rl_percent_refinement_per_pass.setter

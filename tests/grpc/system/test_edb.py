@@ -1969,5 +1969,47 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         cpa_setup = edbapp.siwave.add_cpa_analysis(name="test_cpa")
         assert cpa_setup.name == "test_cpa"
+        cpa_setup.name = "test_cpa2"
+        assert cpa_setup.name == "test_cpa2"
+        assert cpa_setup.mode == "no_channel"
+        cpa_setup.mode = "channel"
+        assert cpa_setup.mode == "channel"
+        assert cpa_setup.model_type == "esd_r"
+        cpa_setup.model_type = "rlcg"
+        assert cpa_setup.model_type == "rlcg"
+        assert cpa_setup.net_processing_mode == "all"
+        cpa_setup.net_processing_mode = "userdefined"
+        assert cpa_setup.net_processing_mode == "userdefined"
+        assert cpa_setup.use_q3d
+        cpa_setup.use_q3d = False
+        assert not cpa_setup.use_q3d
+        assert cpa_setup.solver_options.adaptive_refinement_cg_max_passes == 10
+        cpa_setup.solver_options.adaptive_refinement_cg_max_passes = 20
+        assert cpa_setup.solver_options.adaptive_refinement_cg_max_passes == 20
+        assert cpa_setup.solver_options.adaptive_refinement_cg_percent_error == 0.02
+        cpa_setup.solver_options.adaptive_refinement_cg_percent_error = 0.05
+        assert cpa_setup.solver_options.adaptive_refinement_cg_percent_error == 0.05
+        assert cpa_setup.solver_options.adaptive_refinement_rl_max_passes == 10
+        cpa_setup.solver_options.adaptive_refinement_rl_max_passes = 20
+        assert cpa_setup.solver_options.adaptive_refinement_rl_max_passes == 20
+        assert cpa_setup.solver_options.adaptive_refinement_rl_percent_error == 0.02
+        cpa_setup.solver_options.adaptive_refinement_rl_percent_error = 0.001
+        assert cpa_setup.solver_options.adaptive_refinement_rl_percent_error == 0.001
+        assert cpa_setup.solver_options.cg_percent_refinement_per_pass == 0.33
+        cpa_setup.solver_options.cg_percent_refinement_per_pass = 0.45
+        assert cpa_setup.solver_options.cg_percent_refinement_per_pass == 0.45
+        assert not cpa_setup.solver_options.compute_ac_rl
+        cpa_setup.solver_options.compute_ac_rl = True
+        assert cpa_setup.solver_options.compute_ac_rl
+        assert not cpa_setup.solver_options.compute_capacitance
+        cpa_setup.solver_options.compute_capacitance = True
+        assert cpa_setup.solver_options.compute_capacitance
+        assert not cpa_setup.solver_options.compute_dc_cg
+        cpa_setup.solver_options.compute_dc_cg = True
+        assert cpa_setup.solver_options.compute_dc_cg
+        assert not cpa_setup.solver_options.compute_dc_rl
+        cpa_setup.solver_options.compute_dc_rl = True
+        assert cpa_setup.solver_options.compute_dc_rl
+
         cpa_setup.solver_options.adaptive_refinement_cg_max_passes = 10
         assert cpa_setup.solver_options.adaptive_refinement_cg_max_passes == 10
