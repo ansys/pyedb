@@ -269,7 +269,7 @@ class Configuration:
                     )
                     obj.aedt_name = p.name
                 else:
-                    raise
+                    raise RuntimeError(f"Plane type {p.type} not supported")
 
                 for v in p.voids:
                     for i in self._pedb.layout.primitives:
