@@ -585,12 +585,12 @@ class Siwave(object):
 
         return True if os.path.exists(file_name) else False
 
-    def add_cpa_analysis(self, name=None, cpa_configuration=None):
+    def add_cpa_analysis(self, name=None, siwave_cpa_setup_class=None):
         if not name:
             from pyedb.generic.general_methods import generate_unique_name
 
             name = generate_unique_name("cpa_setup")
-        cpa_setup = SIWaveCPASimulationSetup(self._pedb, name=name, siwave_cpa_setup=cpa_configuration)
+        cpa_setup = SIWaveCPASimulationSetup(self._pedb, name=name, siwave_cpa_setup_class=siwave_cpa_setup_class)
         return cpa_setup
 
     def add_siwave_syz_analysis(

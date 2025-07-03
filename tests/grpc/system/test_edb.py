@@ -1967,5 +1967,7 @@ class TestClass:
 
     def test_add_cpa_simulation_setup(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        cpa_setup = edbapp.siwave.add_cpa_analysis()
-        pass
+        cpa_setup = edbapp.siwave.add_cpa_analysis(name="test_cpa")
+        assert cpa_setup.name == "test_cpa"
+        cpa_setup.solver_options.adaptive_refinement_cg_max_passes = 10
+        assert cpa_setup.solver_options.adaptive_refinement_cg_max_passes == 10

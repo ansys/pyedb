@@ -19,6 +19,12 @@ class ChannelSetup:
     def __init__(self, pedb):
         self._pedb = pedb
         self._vrm = Vrm(pedb)
+        self.__init_values()
+
+    def __init_values(self):
+        self.die_name = ""
+        self.pin_grouping_mode = "perpin"
+        self.channel_component_exposure = ""
 
     @property
     def die_name(self):
@@ -29,7 +35,7 @@ class ChannelSetup:
     @die_name.setter
     def die_name(self, value):
         self._pedb.active_cell.set_product_property(
-            GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_DIE_NAME, value
+            GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_DIE_NAME, GrpcValue(value)
         )
 
     @property
@@ -116,6 +122,23 @@ class ChannelSetup:
 class SolverOptions:
     def __init__(self, pedb):
         self._pedb = pedb
+        self.__init_values()
+
+    def __init_values(self):
+        self.mode = "si"
+        self.custom_refinement = False
+        self.extraction_frequency = "10Ghz"
+        self.compute_capacitance = True
+        self.compute_dc_rl = True
+        self.compute_dc_parameters = True
+        self.compute_dc_cg = True
+        self.compute_ac_rl = True
+        self.ground_power_nets_for_si = True
+        self.small_hole_diameter = 0.0
+        self.adaptive_refinement_cg_max_passes = 10
+        self.adaptive_refinement_rl_max_passes = 10
+        self.adaptive_refinement_cg_percent_error = 0.02
+        self.adaptive_refinement_rl_percent_error = 0.02
 
     @property
     def mode(self):
@@ -323,11 +346,9 @@ class SolverOptions:
 
     @property
     def adaptive_refinement_cg_max_passes(self):
-        return int(
-            self._pedb.active_cell.get_product_property(
-                GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_MAX_PASSES
-            )
-        )
+        return self._pedb.active_cell.get_product_property(
+            GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_MAX_PASSES
+        ).value
 
     @adaptive_refinement_cg_max_passes.setter
     def adaptive_refinement_cg_max_passes(self, value):
@@ -426,10 +447,19 @@ class SIWaveCPASimulationSetup:
             == name
         ):
             self._pedb.active_cell.set_product_property(GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME, name)
+        self.__init_values()
+
+    def __init_values(self):
+        self.mode = "channel"
+        self.model_type = "rlcg"
+        self.use_q3d = False
+        self.net_processing_mode = "all"
 
     @property
     def name(self) -> str:
-        return self._pedb.active_cell.get_product_property(GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME)
+        return self._pedb.active_cell.get_product_property(
+            GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME
+        ).value
 
     @name.setter
     def name(self, value):
