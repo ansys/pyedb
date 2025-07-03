@@ -36,8 +36,8 @@ dependencies = [
     "toml == 0.10.2",
     "shapely",
     "scikit-rf",
-    "ansys-edb-core",
-    "ansys-api-edb",
+    "ansys-edb-core>=0.2.0.dev0",
+    "ansys-api-edb>=0.2.0.dev0",
     "psutil",
     ]
 
@@ -52,7 +52,7 @@ tests = [
     "shapely"
 ]
 doc = [
-    "ansys-sphinx-theme>=0.10.0,<1.4",
+    "ansys-sphinx-theme>=1.0.0,<1.5",
     "imageio>=2.30.0,<2.37",
     "ipython>=8.13.0,<8.32",
     "jupyterlab>=4.0.0,<4.4",

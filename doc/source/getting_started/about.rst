@@ -32,7 +32,7 @@ like HFSS or SIwave. Thus, you can deploy completely non-graphical flows, from l
 translation through simulation results.
 
 Additionally, you can use PyAEDT to import an AEDB file into AEDT to view a project,
-combine 3D designs, or perform simulation postprocessing. EDB also supports 3D component models.
+combine 3D designs, or perform simulation post processing. EDB also supports 3D component models.
 
 Why use PyEDB?
 --------------
@@ -45,7 +45,7 @@ handling and editing large and complex layout designs. PyEDB is the best choice 
 design automation. Its headless architecture also makes it well suited on both Windows and Linux.
 
 PyEDB loads and saves AEDB files, which can natively be read by AEDT and Ansys SIwave to visualize
-and edit projects, run simulations, or perform postprocessing. AEDB files are project self-contained,
+and edit projects, run simulations, or perform post processing. AEDB files are project self-contained,
 meaning that ready-to-solve projects can be written with PyEDB. Therefore Ansys solvers can directly
 load AEDB files graphically or in batch non-graphically to support submission for job scheduling on a cluster.
 

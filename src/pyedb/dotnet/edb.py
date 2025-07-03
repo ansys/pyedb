@@ -25,6 +25,7 @@
 This module is implicitly loaded in HFSS 3D Layout when launched.
 
 """
+from datetime import datetime
 from itertools import combinations
 import os
 from pathlib import Path
@@ -91,6 +92,7 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
     SiwaveSimulationSetup,
 )
+from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import (
     generate_unique_name,
@@ -195,6 +197,10 @@ class Edb(Database):
         layer_filter: str = None,
         remove_existing_aedt: bool = False,
     ):
+        self._logger = pyedb_logger
+        now = datetime.now()
+        self.logger.info(f"Star initializing Edb {now.time()}")
+
         if isinstance(edbpath, Path):
             edbpath = str(edbpath)
 
@@ -290,7 +296,7 @@ class Edb(Database):
                 self._logger.add_file_logger(self.log_name, "Edb")
             self.open_edb()
         if self.active_cell:
-            self.logger.info("EDB initialized.")
+            self.logger.info(f"EDB initialized.Time lapse {datetime.now() - now}")
         else:
             raise AttributeError("Failed to initialize DLLs.")
 
@@ -1232,7 +1238,7 @@ class Edb(Database):
         return self._core_primitives
 
     @property
-    def layout(self):
+    def layout(self) -> Layout:
         """Layout object.
 
         Returns
@@ -4729,3 +4735,37 @@ class Edb(Database):
             return self.variables[variable_name]
         else:
             return False
+
+    def compare(self, input_file, results=""):
+        """Compares current open database with another one.
+
+        Parameters
+        ----------
+        input_file : str
+            Path to the edb file.
+        results: str, optional
+            Path to directory in which results will be saved. If no path is given, a new "_compare_results"
+            directory will be created with the same naming and path as the .aedb folder.
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        self.save()
+        if not results:
+            results = self.edbpath[:-5] + "_compare_results"
+            os.mkdir(results)
+        command = os.path.join(self.base_path, "EDBDiff.exe")
+        if is_linux:
+            mono_path = os.path.join(self.base_path, "common/mono/Linux64/bin/mono")
+            cmd_input = [mono_path, command, input_file, self.edbpath, results]
+        else:
+            cmd_input = [command, input_file, self.edbpath, results]
+        subprocess.run(cmd_input)
+
+        if not os.path.exists(os.path.join(results, "EDBDiff.csv")):
+            self.logger.error("Comparison execution failed")
+            return False
+        else:
+            self.logger.info("Comparison correctly completed")
+            return True

@@ -180,7 +180,7 @@ def setup(app):
     app.connect("builder-inited", check_pandoc_installed)
     app.connect("source-read", adjust_image_path)
     app.connect("html-page-context", check_example_error)
-    app.connect("build-finished", remove_doctree)
+    app.connect("build-finished", remove_doctree, priority=600)
     app.connect("build-finished", check_build_finished_without_error)
 
 
@@ -400,12 +400,6 @@ html_theme_options = {
             "icon": "fa fa-file-pdf fa-fw",
         },
     ],
-    "use_meilisearch": {
-        "api_key": os.getenv("MEILISEARCH_PUBLIC_API_KEY", ""),
-        "index_uids": {
-            f"pyedb-v{get_version_match(__version__).replace('.', '-')}": "PyEDB",
-        },
-    },
 }
 
 html_static_path = ["_static"]
