@@ -192,7 +192,7 @@ class CfgModeler:
             name=name,
             layer=layer,
             net_name=net_name,
-            type="circle",
+            type="polygon",
             corner_radius=corner_radius,
             rotation=rotation,
             voids=voids,
