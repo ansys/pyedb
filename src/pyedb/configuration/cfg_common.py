@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from dataclasses import dataclass
-from typing import Optional, Union, List
+from typing import List, Optional, Union
 
 
 class CfgBase:

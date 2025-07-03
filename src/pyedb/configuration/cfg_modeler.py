@@ -20,11 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, TypedDict, Union
+
 from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition, CfgPadstackInstance
-
-from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, TypedDict, Union
 
 
 @dataclass
@@ -71,6 +71,7 @@ class PrimitivesToDeleteDict(TypedDict, total=False):
 @dataclass
 class CfgModeler:
     """Manage configuration general settings."""
+
     traces: List[CfgTrace] = field(default_factory=list)
     planes: List[CfgPlane] = field(default_factory=list)
 
@@ -79,16 +80,10 @@ class CfgModeler:
         self.traces = []
         self.planes = []
 
-        self.padstack_defs = [
-            CfgPadstackDefinition(pedb, None, **i) for i in data.get("padstack_definitions", [])
-        ]
-        self.padstack_instances = [
-            CfgPadstackInstance(pedb, None, **i) for i in data.get("padstack_instances", [])
-        ]
+        self.padstack_defs = [CfgPadstackDefinition(pedb, None, **i) for i in data.get("padstack_definitions", [])]
+        self.padstack_instances = [CfgPadstackInstance(pedb, None, **i) for i in data.get("padstack_instances", [])]
 
-        self.components = [
-            CfgComponent(pedb, None, **i) for i in data.get("components", [])
-        ]
+        self.components = [CfgComponent(pedb, None, **i) for i in data.get("components", [])]
         self.primitives_to_delete: PrimitivesToDeleteDict = data.get(
             "primitives_to_delete", {"layer_name": [], "name": [], "net_name": []}
         )
@@ -105,16 +100,18 @@ class CfgModeler:
             elif shape == "polygon":
                 self.add_polygon_plane(**plane_data)
 
-    def add_trace(self,
-                  layer: str,
-                  width: str,
-                  name: str,
-                  net_name: str = "",
-                  start_cap_style: str = "round",
-                  end_cap_style: str = "round",
-                  corner_style: str = "sharp",
-                  path: Optional[Any] = None,
-                  incremental_path: Optional[Any] = None):
+    def add_trace(
+        self,
+        layer: str,
+        width: str,
+        name: str,
+        net_name: str = "",
+        start_cap_style: str = "round",
+        end_cap_style: str = "round",
+        corner_style: str = "sharp",
+        path: Optional[Any] = None,
+        incremental_path: Optional[Any] = None,
+    ):
         """Add a trace from a dictionary of parameters."""
 
         trace_obj = CfgTrace(
@@ -131,16 +128,17 @@ class CfgModeler:
         self.traces.append(trace_obj)
         return name
 
-    def add_rectangular_plane(self,
-                              layer: str,
-                              name: str = "",
-                              net_name: str = "",
-                              lower_left_point: List[float] = "",
-                              upper_right_point: List[float] = "",
-                              corner_radius: float = 0,
-                              rotation: float = 0,
-                              voids: Optional[List[Any]] = "",
-                              ):
+    def add_rectangular_plane(
+        self,
+        layer: str,
+        name: str = "",
+        net_name: str = "",
+        lower_left_point: List[float] = "",
+        upper_right_point: List[float] = "",
+        corner_radius: float = 0,
+        rotation: float = 0,
+        voids: Optional[List[Any]] = "",
+    ):
         plane_obj = CfgPlane(
             name=name,
             layer=layer,
@@ -155,16 +153,17 @@ class CfgModeler:
         self.planes.append(plane_obj)
         return name
 
-    def add_circular_plane(self,
-                           layer: str,
-                           name: str = "",
-                           net_name: str = "",
-                           corner_radius: float = 0,
-                           rotation: float = 0,
-                           voids: Optional[List[Any]] = "",
-                           radius: Union[float, str] = 0,
-                           position: List[Union[float, str]] = "",
-                           ):
+    def add_circular_plane(
+        self,
+        layer: str,
+        name: str = "",
+        net_name: str = "",
+        corner_radius: float = 0,
+        rotation: float = 0,
+        voids: Optional[List[Any]] = "",
+        radius: Union[float, str] = 0,
+        position: List[Union[float, str]] = "",
+    ):
         plane_obj = CfgPlane(
             name=name,
             layer=layer,
@@ -174,20 +173,21 @@ class CfgModeler:
             rotation=rotation,
             voids=voids,
             radius=radius,
-            position=position
+            position=position,
         )
         self.planes.append(plane_obj)
         return name
 
-    def add_polygon_plane(self,
-                          layer: str,
-                          name: str = "",
-                          net_name: str = "",
-                          corner_radius: float = 0,
-                          rotation: float = 0,
-                          voids: Optional[List[Any]] = "",
-                          points: List[List[float]] = ""
-                          ):
+    def add_polygon_plane(
+        self,
+        layer: str,
+        name: str = "",
+        net_name: str = "",
+        corner_radius: float = 0,
+        rotation: float = 0,
+        voids: Optional[List[Any]] = "",
+        points: List[List[float]] = "",
+    ):
         plane_obj = CfgPlane(
             name=name,
             layer=layer,
@@ -196,7 +196,7 @@ class CfgModeler:
             corner_radius=corner_radius,
             rotation=rotation,
             voids=voids,
-            points=points
+            points=points,
         )
         self.planes.append(plane_obj)
         return name
