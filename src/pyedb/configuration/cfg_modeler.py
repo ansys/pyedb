@@ -68,12 +68,16 @@ class PrimitivesToDeleteDict(TypedDict, total=False):
     net_name: List[str]
 
 
+@dataclass
 class CfgModeler:
     """Manage configuration general settings."""
+    traces: List[CfgTrace] = field(default_factory=list)
+    planes: List[CfgPlane] = field(default_factory=list)
 
     def __init__(self, pedb, data: Dict):
         self._pedb = pedb
-        self.traces: List[CfgTrace] = []
+        self.traces = []
+        self.planes = []
 
         self.padstack_defs = [
             CfgPadstackDefinition(pedb, None, **i) for i in data.get("padstack_definitions", [])
@@ -81,7 +85,7 @@ class CfgModeler:
         self.padstack_instances = [
             CfgPadstackInstance(pedb, None, **i) for i in data.get("padstack_instances", [])
         ]
-        self.planes: List[CfgPlane] = [CfgPlane(**i) for i in data.get("planes", [])]
+
         self.components = [
             CfgComponent(pedb, None, **i) for i in data.get("components", [])
         ]
@@ -90,10 +94,57 @@ class CfgModeler:
         )
 
         for trace_data in data.get("traces", []):
-            self.add_trace(trace_data)
+            self.add_trace(**trace_data)
 
-    def add_trace(self, trace_data: Dict[str, Any]):
+        for plane_data in data.get("planes", []):
+            self.add_plane(**plane_data)
+
+    def add_trace(self,
+                  layer: str,
+                  width: str,
+                  name: str,
+                  net_name: str = "",
+                  start_cap_style: str = "round",
+                  end_cap_style: str = "round",
+                  corner_style: str = "sharp",
+                  path: Optional[Any] = None,
+                  incremental_path: Optional[Any] = None):
         """Add a trace from a dictionary of parameters."""
 
-        trace_obj = CfgTrace(**trace_data)
+        trace_obj = CfgTrace(
+            name,
+            layer,
+            path,
+            width,
+            net_name,
+            start_cap_style,
+            end_cap_style,
+            corner_style,
+            incremental_path,
+        )
         self.traces.append(trace_obj)
+        return name
+
+    def add_rectangular_plane(self,
+                              layer: str,
+                              name: str = "",
+                              net_name: str = "",
+                              lower_left_point: List[float] = "",
+                              upper_right_point: List[float] = "",
+                              corner_radius: float = 0,
+                              rotation: float = 0,
+                              voids: Optional[List[Any]] = "",
+                              ):
+        plane_obj = CfgPlane(
+            name=name,
+            layer=layer,
+            net_name=net_name,
+            type="rectangle",
+            lower_left_point=lower_left_point,
+            upper_right_point=upper_right_point,
+            corner_radius=corner_radius,
+            rotation=rotation,
+            voids=voids,
+        )
+        self.planes.append(plane_obj)
+        return name
