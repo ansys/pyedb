@@ -29,15 +29,15 @@ from typing import List, Optional, Dict, Any, TypedDict, Union
 
 @dataclass
 class CfgTrace:
-    name: str = ""
-    layer: str = ""
-    path: Optional[Any] = None
-    width: str = ""
-    net_name: str = ""
-    start_cap_style: str = "round"
-    end_cap_style: str = "round"
-    corner_style: str = "sharp"
-    incremental_path: Optional[Any] = None
+    name: str
+    layer: str
+    path: List[List[Union[float, str]]]
+    width: str
+    net_name: str
+    start_cap_style: str
+    end_cap_style: str
+    corner_style: str
+    incremental_path: List[List[Union[float, str]]]
 
 
 @dataclass
@@ -48,8 +48,8 @@ class CfgPlane:
     type: str = "rectangle"
 
     # rectangle
-    lower_left_point: list[Union[float, str]] = field(default_factory=list)
-    upper_right_point: list[Union[float, str]] = field(default_factory=list)
+    lower_left_point: List[Union[float, str]] = field(default_factory=list)
+    upper_right_point: List[Union[float, str]] = field(default_factory=list)
     corner_radius: Union[float, str] = 0
     rotation: Union[float, str] = 0
     voids: List[Any] = field(default_factory=list)
