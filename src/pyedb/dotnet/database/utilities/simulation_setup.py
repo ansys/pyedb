@@ -377,5 +377,5 @@ class SimulationSetup(object):
         ...     ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
         ...     ])
         """
-        warnings.warn("`create_component_from_pins` is deprecated. Use `add_sweep` method instead.", DeprecationWarning)
+        warnings.warn("`add_frequency_sweep` is deprecated. Use `add_sweep` method instead.", DeprecationWarning)
         return self.add_sweep(name, frequency_sweep)
