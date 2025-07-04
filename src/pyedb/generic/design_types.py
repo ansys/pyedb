@@ -22,6 +22,11 @@
 
 
 # lazy imports
+
+from pyedb.dotnet.edb import Edb as EdbDotnet
+from pyedb.grpc.edb import Edb as EdbGrpc
+
+
 def Edb(
     edbpath=None,
     cellname=None,
@@ -34,7 +39,7 @@ def Edb(
     technology_file=None,
     grpc=False,
     control_file=None,
-):
+) -> EdbDotnet:
     """Provides the EDB application interface.
 
         This module inherits all objects that belong to EDB.
@@ -235,10 +240,7 @@ def Edb(
     """
 
     # Use EDB legacy (default choice)
-    if grpc:
-        from pyedb.grpc.edb import Edb as app
-    else:
-        from pyedb.dotnet.edb import Edb as app
+    app = EdbGrpc if grpc else EdbDotnet
     return app(
         edbpath=edbpath,
         cellname=cellname,
