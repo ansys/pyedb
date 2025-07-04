@@ -277,10 +277,9 @@ class Configuration:
                             self._pedb.modeler.add_void(obj, i)
 
         if modeler.components:
-            pedb_p_inst = self._pedb.padstacks.instances_by_name
             for c in modeler.components:
                 obj = self._pedb.components.create(
-                    [pedb_p_inst[i] for i in c.pins],
+                    c.pins,
                     component_name=c.reference_designator,
                     placement_layer=c.placement_layer,
                     component_part_name=c.definition,
