@@ -70,6 +70,9 @@ import warnings
 from zipfile import ZipFile as zpf
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.hierarchy.layout_component import (
+    LayoutComponent as GrpcLayoutComponent,
+)
 import ansys.edb.core.layout.cell
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
@@ -3834,3 +3837,38 @@ class Edb(EdbInit):
         else:
             self.logger.info("Comparison correctly completed")
             return True
+
+    def import_layout_component(self, component_path) -> GrpcLayoutComponent:
+        """Import a layout component inside the current layout and place it at the origin.
+        This feature is only supported with PyEDB gRPC. Encryption is not yet supported.
+
+        Parameters
+        ----------
+        component_path : str
+            Layout component path (.aedbcomp file).
+
+        Returns
+        -------
+            class:`LayoutComponent <ansys.edb.core.hierarchy.layout_component.LayoutComponent>`.
+        """
+
+        return GrpcLayoutComponent.import_layout_component(layout=self.active_layout, aedb_comp_path=component_path)
+
+    def export_layout_component(self, component_path) -> bool:
+        """Export a layout component from the current layout.
+        This feature is only supported with PyEDB gRPC. Encryption is not yet supported.
+
+        Parameters
+        ----------
+        component_path : str
+            Layout component path (.aedbcomp file).
+
+        Returns
+        -------
+        bool
+            `True` if layout component is successfully exported, `False` otherwise.
+        """
+
+        return GrpcLayoutComponent.export_layout_component(
+            layout=self.active_layout, output_aedb_comp_path=component_path
+        )

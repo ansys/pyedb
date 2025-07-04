@@ -1971,3 +1971,13 @@ class TestClass:
         assert edbapp.compare(edb_base)
         folder = edbapp.edbpath[:-5] + "_compare_results"
         assert os.path.exists(folder)
+
+    def test_create_layout_component(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        out_file = os.path.join(self.local_scratch.path, "test.aedbcomp")
+        edbapp.export_layout_component(component_path=out_file)
+        assert os.path.isfile(out_file)
+        edbapp.close()
+        edbapp = Edb(edbversion=desktop_version)
+        layout_comp = edbapp.import_layout_component(out_file)
+        assert not layout_comp.cell_instance.is_null
