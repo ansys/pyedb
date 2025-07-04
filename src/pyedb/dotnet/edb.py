@@ -104,6 +104,12 @@ from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
 
+GRPC_WARNING = (
+    "Your ANSYS AEDT version is eligible to gRPC version, "
+    "You might consider switching to that version for better user experience."
+    "For more information please check this link: https://edb.docs.pyansys.com/version/dev/grpc_api/index.html"
+)
+
 
 class Edb(Database):
     """Provides the EDB application interface.
@@ -199,6 +205,8 @@ class Edb(Database):
             edbpath = str(edbpath)
 
         edbversion = get_string_version(edbversion)
+        if float(edbversion) >= 2025.2:
+            warnings.warn(GRPC_WARNING, UserWarning)
         self._clean_variables()
         Database.__init__(self, edbversion=edbversion, student_version=student_version)
         self.standalone = True

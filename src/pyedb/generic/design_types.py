@@ -21,6 +21,12 @@
 # SOFTWARE.
 import warnings
 
+GRPC_WARNING = (
+    "Your ANSYS AEDT version is eligible to gRPC version, "
+    "You might consider switching to that version for better user experience."
+    "For more information please check this link: https://edb.docs.pyansys.com/version/dev/grpc_api/index.html"
+)
+
 
 # lazy imports
 def Edb(
@@ -117,21 +123,10 @@ def Edb(
     # Use EDB legacy (default choice)
     if float(edbversion) >= 2025.2:
         if not grpc:
-            warnings.warn("Your ANSYS AEDT version is eligible to gRPC version", UserWarning)
-            warnings.warn("gRPC is not enabled by default, however you might consider using this version", UserWarning)
-            warnings.warn("Please check online documentation for more information", UserWarning)
-            warnings.warn("gRPC is offering better stability and compatibility with Linux", UserWarning)
-            warnings.warn("Note: current DotNet PyEDB will be deprecated starting release 2026.1", UserWarning)
-            warnings.warn("New feature will only be implemented in gRPC version", UserWarning)
+            warnings.warn(GRPC_WARNING, UserWarning)
     else:
         if grpc:
-            warnings.warn(
-                f"gRPC flag was enabled however your ANSYS AEDT version {edbversion} is not compatible", UserWarning
-            )
-            warnings.warn(
-                f"Disabling gRPC, you might consider upgrading your ANSYS version for better experience", UserWarning
-            )
-            grpc = False
+            raise f"gRPC flag was enabled however your ANSYS AEDT version {edbversion} is not compatible"
     if grpc:
         from pyedb.grpc.edb import Edb as app
     else:
