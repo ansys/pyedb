@@ -397,8 +397,7 @@ class Edb(Database):
 
     @property
     def pedb_class(self):
-        if not self.grpc:
-            return pyedb.dotnet
+        return pyedb.dotnet
 
     @property
     def grpc(self):
