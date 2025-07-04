@@ -290,19 +290,20 @@ class Modeler(object):
             self._logger.error("Provided point must be a list of two values")
             return False
         pt = self._edb.geometry.point_data(point[0], point[1])
-        if isinstance(nets, str):
-            nets = [nets]
-        elif nets and not isinstance(nets, list) and len(nets) == len([net for net in nets if isinstance(net, str)]):
+
+        if nets:
+            if isinstance(nets, str):
+                nets = [nets]
             _nets = []
             for net in nets:
                 if net not in self._pedb.nets:
-                    self._logger.error(
+                    self._logger.warning(
                         f"Net {net} used to find primitive from layer point and net not found, skipping it."
                     )
                 else:
                     _nets.append(self._pedb.nets[net].net_obj)
             if _nets:
-                nets = _nets
+                nets = convert_py_list_to_net_list(_nets)
         _obj_instances = list(self._pedb.layout_instance.FindLayoutObjInstance(pt, None, nets).Items)
         returned_obj = []
         if layer:
@@ -324,10 +325,7 @@ class Modeler(object):
         else:
             for obj in _obj_instances:
                 obj_id = obj.GetLayoutObj().GetId()
-                [
-                    returned_obj.append(Primitive(p, self._pedb))
-                    for p in [obj for obj in self.primitives if obj.id == obj_id]
-                ]
+                [returned_obj.append(p) for p in [obj for obj in self.primitives if obj.id == obj_id]]
         return returned_obj
 
     def get_polygon_bounding_box(self, polygon):
