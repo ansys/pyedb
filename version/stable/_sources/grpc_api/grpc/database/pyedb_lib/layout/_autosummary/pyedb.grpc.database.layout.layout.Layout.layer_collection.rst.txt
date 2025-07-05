@@ -1,0 +1,6 @@
+layer\_collection
+=================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. autoproperty:: Layout.layer_collection

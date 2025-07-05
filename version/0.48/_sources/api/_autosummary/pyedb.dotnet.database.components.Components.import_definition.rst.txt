@@ -1,0 +1,6 @@
+import\_definition
+==================
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.import_definition

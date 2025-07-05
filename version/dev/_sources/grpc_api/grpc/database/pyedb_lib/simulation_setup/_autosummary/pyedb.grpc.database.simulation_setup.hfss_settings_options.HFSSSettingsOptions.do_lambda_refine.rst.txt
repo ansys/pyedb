@@ -1,0 +1,6 @@
+do\_lambda\_refine
+==================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_settings_options
+
+.. autoproperty:: HFSSSettingsOptions.do_lambda_refine

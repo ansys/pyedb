@@ -1,0 +1,6 @@
+add\_sweep
+==========
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.hfss_simulation_setup
+
+.. automethod:: HfssSimulationSetup.add_sweep

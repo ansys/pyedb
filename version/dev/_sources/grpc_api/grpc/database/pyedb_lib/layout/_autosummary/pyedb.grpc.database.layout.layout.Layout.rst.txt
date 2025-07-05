@@ -1,0 +1,121 @@
+﻿Layout
+======
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. autoclass:: Layout
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Layout.add_menu_variable
+      
+      
+      Layout.add_variable
+      
+      
+      Layout.compress_primitives
+      
+      
+      Layout.convert_primitives_to_vias
+      
+      
+      Layout.create_3d_comp
+      
+      
+      Layout.create_hfss
+      
+      
+      Layout.create_mesh_region
+      
+      
+      Layout.create_stride
+      
+      
+      Layout.create_value
+      
+      
+      Layout.delete_variable
+      
+      
+      Layout.expanded_extent
+      
+      
+      Layout.find_primitive
+      
+      
+      Layout.get_all_variable_names
+      
+      
+      Layout.get_variable_desc
+      
+      
+      Layout.get_variable_value
+      
+      
+      Layout.group_vias
+      
+      
+      Layout.is_parameter
+      
+      
+      Layout.reconstruct_arcs
+      
+      
+      Layout.set_variable_desc
+      
+      
+      Layout.set_variable_value
+      
+      
+      Layout.snap_primitives
+      
+      
+      Layout.snap_vias
+      
+      
+      Layout.synchronize_bend_manager
+      
+      
+      Layout.unite_primitives
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Layout.board_bend_defs
+      Layout.bondwires
+      Layout.cell
+      Layout.cell_instances
+      Layout.differential_pairs
+      Layout.extended_nets
+      Layout.fixed_zone_primitive
+      Layout.groups
+      Layout.id
+      Layout.is_null
+      Layout.layer_collection
+      Layout.layout_instance
+      Layout.msg
+      Layout.net_classes
+      Layout.nets
+      Layout.padstack_instances
+      Layout.pin_groups
+      Layout.port_reference_terminals_connected
+      Layout.primitives
+      Layout.terminals
+      Layout.voltage_regulators
+      Layout.zone_primitives
+   
+   

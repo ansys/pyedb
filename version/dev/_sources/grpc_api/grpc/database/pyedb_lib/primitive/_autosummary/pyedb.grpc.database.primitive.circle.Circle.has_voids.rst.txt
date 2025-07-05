@@ -1,0 +1,6 @@
+has\_voids
+==========
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. autoproperty:: Circle.has_voids

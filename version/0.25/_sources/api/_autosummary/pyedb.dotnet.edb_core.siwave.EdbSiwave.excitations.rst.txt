@@ -1,0 +1,6 @@
+excitations
+===========
+
+.. currentmodule:: pyedb.dotnet.edb_core.siwave
+
+.. autoproperty:: EdbSiwave.excitations

@@ -1,0 +1,6 @@
+is\_convex
+==========
+
+.. currentmodule:: pyedb.grpc.database.geometry.polygon_data
+
+.. automethod:: PolygonData.is_convex

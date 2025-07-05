@@ -1,0 +1,6 @@
+icepak
+======
+
+.. currentmodule:: pyedb.siwave
+
+.. autoproperty:: Siwave.icepak

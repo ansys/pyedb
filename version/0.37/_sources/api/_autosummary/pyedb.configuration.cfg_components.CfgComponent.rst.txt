@@ -1,0 +1,43 @@
+﻿CfgComponent
+============
+
+.. currentmodule:: pyedb.configuration.cfg_components
+
+.. autoclass:: CfgComponent
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgComponent.get_attributes
+      
+      
+      CfgComponent.retrieve_model_properties_from_edb
+      
+      
+      CfgComponent.retrieve_parameters_from_edb
+      
+      
+      CfgComponent.set_attributes
+      
+      
+      CfgComponent.set_parameters_to_edb
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CfgComponent.protected_attributes
+   
+   
