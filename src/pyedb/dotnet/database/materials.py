@@ -31,7 +31,6 @@ import warnings
 
 from pydantic import BaseModel, confloat
 
-from pyedb import Edb
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.exceptions import MaterialModelException
 
@@ -109,8 +108,8 @@ class MaterialProperties(BaseModel):
 class Material(object):
     """Manage EDB methods for material property management."""
 
-    def __init__(self, edb: Edb, material_def):
-        self.__edb: Edb = edb
+    def __init__(self, edb, material_def):
+        self.__edb = edb
         self.__edb_definition = edb.edb_api.definition
         self.__name: str = material_def.GetName()
         self.__material_def = material_def
@@ -551,7 +550,7 @@ class Materials(object):
         "thermal_expansion_coefficient": 1.5e-05,
     }
 
-    def __init__(self, edb: Edb):
+    def __init__(self, edb):
         self.__edb = edb
         self.__edb_definition = edb.edb_api.definition
         self.__syslib = os.path.join(self.__edb.base_path, "syslib")

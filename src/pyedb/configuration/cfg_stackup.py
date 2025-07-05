@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb import Edb
 from pyedb.configuration.cfg_common import CfgBase
 
 
@@ -242,7 +241,7 @@ class CfgStackup:
                 elif l.type == "signal":
                     prev_layer_clone = self._pedb.stackup.layers[l.name]
 
-    def __init__(self, pedb: Edb, data):
+    def __init__(self, pedb, data):
         self._pedb = pedb
         if self._pedb.grpc:
             self.api = self.Grpc(self)

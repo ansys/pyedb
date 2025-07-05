@@ -24,7 +24,6 @@
 # lazy imports
 
 from pyedb.dotnet.edb import Edb as EdbDotnet
-from pyedb.grpc.edb import Edb as EdbGrpc
 
 
 def Edb(
@@ -240,6 +239,7 @@ def Edb(
     """
 
     # Use EDB legacy (default choice)
+    from pyedb.grpc.edb import Edb as EdbGrpc
     app = EdbGrpc if grpc else EdbDotnet
     return app(
         edbpath=edbpath,
