@@ -240,6 +240,7 @@ def Edb(
 
     # Use EDB legacy (default choice)
     from pyedb.grpc.edb import Edb as EdbGrpc
+
     app = EdbGrpc if grpc else EdbDotnet
     return app(
         edbpath=edbpath,
