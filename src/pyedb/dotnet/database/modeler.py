@@ -289,8 +289,7 @@ class Modeler(object):
         if not isinstance(point, list) and len(point) == 2:
             self._logger.error("Provided point must be a list of two values")
             return False
-        pt = self._edb.geometry.point_data(point[0], point[1])
-
+        pt = self._edb.geometry.point_data(self._pedb.edb_value(point[0]), self._pedb.edb_value(point[1]))
         if nets:
             if isinstance(nets, str):
                 nets = [nets]
