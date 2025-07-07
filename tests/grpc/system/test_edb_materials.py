@@ -32,8 +32,8 @@ from ansys.edb.core.definition.djordjecvic_sarkar_model import (
 from ansys.edb.core.definition.material_def import MaterialDef as GrpcMaterialDef
 import pytest
 
+from pyedb.generic.data_handlers import MaterialProperties
 from pyedb.grpc.database.definition.materials import Material, Materials
-from src.pyedb.generic.data_handlers import MaterialProperties
 from tests.conftest import local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]

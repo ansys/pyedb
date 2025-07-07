@@ -33,7 +33,7 @@ import warnings
 from pyedb import Edb
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.exceptions import MaterialModelException
-from src.pyedb.generic.data_handlers import MaterialProperties
+from pyedb.generic.data_handlers import MaterialProperties
 
 logger = logging.getLogger(__name__)
 

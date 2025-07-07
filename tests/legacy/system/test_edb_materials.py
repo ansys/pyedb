@@ -33,7 +33,7 @@ from pyedb.dotnet.database.materials import (
     Material,
     Materials,
 )
-from src.pyedb.generic.data_handlers import MaterialProperties
+from pyedb.generic.data_handlers import MaterialProperties
 from tests.conftest import local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]

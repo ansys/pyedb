@@ -45,7 +45,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb import Edb
 from pyedb.exceptions import MaterialModelException
-from src.pyedb.generic.data_handlers import MaterialProperties
+from pyedb.generic.data_handlers import MaterialProperties
 
 logger = logging.getLogger(__name__)
 
