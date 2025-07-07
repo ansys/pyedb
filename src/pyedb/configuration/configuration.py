@@ -43,6 +43,11 @@ class Configuration:
         self._spice_model_library = ""
         self.cfg_data = CfgData(self._pedb)
 
+    def __apply_with_logging(self, label: str, func):
+        start = datetime.now()
+        func()
+        self._pedb.logger.info(f"{label} finished. Time lapse {datetime.now() - start}")
+
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
         """Import configuration settings from a configure file.
 
@@ -116,79 +121,33 @@ class Configuration:
             self.cfg_data.general.apply()
 
         # Configure boundary settings
-        now = datetime.now()
         if self.cfg_data.boundaries:
-            self.cfg_data.boundaries.apply()
-        self._pedb.logger.info(f"Updating boundaries finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+            self.__apply_with_logging("Updating boundaries", self.cfg_data.boundaries.apply)
 
-        # Configure nets
         if self.cfg_data.nets:
-            self.cfg_data.nets.apply()
-        self._pedb.logger.info(f"Updating nets finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+            self.__apply_with_logging("Updating nets", self.cfg_data.nets.apply)
 
-        # Configure components
-        self.cfg_data.components.apply()
-        self._pedb.logger.info(f"Updating components finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+        self.__apply_with_logging("Updating components", self.cfg_data.components.apply)
+        self.__apply_with_logging("Creating pin groups", self.cfg_data.pin_groups.apply)
+        self.__apply_with_logging("Placing sources", self.cfg_data.sources.apply)
+        self.__apply_with_logging("Creating setups", self.cfg_data.setups.apply)
 
-        # Configure pin groups
-        self.cfg_data.pin_groups.apply()
-        self._pedb.logger.info(f"Creating pin groups finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+        self.__apply_with_logging("Applying materials", self.apply_materials)
+        self.__apply_with_logging("Updating stackup", self.configuration_stackup)
 
-        # Configure sources
-        self.cfg_data.sources.apply()
-        self._pedb.logger.info(f"Placing sources finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Configure setup
-        self.cfg_data.setups.apply()
-        self._pedb.logger.info(f"Creating setups finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Configure stackup
-        self.configuration_stackup()
-        self._pedb.logger.info(f"Updating stackup finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Configure padstacks
         if self.cfg_data.padstacks:
-            self.cfg_data.padstacks.apply()
-        self._pedb.logger.info(f"Applying padstacks finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+            self.__apply_with_logging("Applying padstacks", self.cfg_data.padstacks.apply)
 
-        # Configure S-parameter
-        self.cfg_data.s_parameters.apply()
-        self._pedb.logger.info(f"Applying S-parameters finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+        self.__apply_with_logging("Applying S-parameters", self.cfg_data.s_parameters.apply)
 
-        # Configure SPICE models
         for spice_model in self.cfg_data.spice_models:
-            spice_model.apply()
-        self._pedb.logger.info(f"Assigning Spice models finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+            self.__apply_with_logging(f"Assigning Spice model {spice_model}", spice_model.apply)
 
-        # Configure package definitions
-        self.cfg_data.package_definitions.apply()
-        self._pedb.logger.info(f"Applying package definitions finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Modeler
-        self.apply_modeler()
-
-        # Configure ports
-        self.cfg_data.ports.apply()
-        self._pedb.logger.info(f"Placing ports finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Configure probes
-        self.cfg_data.probes.apply()
-        self._pedb.logger.info(f"Placing probes finished. Time lapse {datetime.now() - now}")
-
-        # Configure operations
-        self.cfg_data.operations.apply()
+        self.__apply_with_logging("Applying package definitions", self.cfg_data.package_definitions.apply)
+        self.__apply_with_logging("Applying modeler", self.apply_modeler)
+        self.__apply_with_logging("Placing ports", self.cfg_data.ports.apply)
+        self.__apply_with_logging("Placing probes", self.cfg_data.probes.apply)
+        self.__apply_with_logging("Applying operations", self.cfg_data.operations.apply)
 
         return True
 
@@ -299,22 +258,41 @@ class Configuration:
             else:
                 self._pedb.add_design_variable(i.name, i.value)
 
+    def apply_materials(self):
+        """Apply material settings to the current design"""
+        cfg_stackup = self.cfg_data.stackup
+        if len(cfg_stackup.materials):
+            materials_in_db = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
+            for mat_in_cfg in cfg_stackup.materials:
+                if mat_in_cfg.name.lower() in materials_in_db:
+                    self._pedb.materials.delete_material(materials_in_db[mat_in_cfg.name.lower()])
+
+                attrs = mat_in_cfg.model_dump(exclude_none=True)
+                mat = self._pedb.materials.add_material(**attrs)
+
+                for i in attrs.get("thermal_modifiers", []):
+                    mat.set_thermal_modifier(**i.to_dict())
+
+
     def configuration_stackup(self):
+        # After import stackup, padstacks lose their definitions. They need to be fixed after loading stackup
+        # step 1, archive padstack definitions
         temp_pdef_data = {}
         for pdef_name, pdef in self._pedb.padstacks.definitions.items():
             pdef_edb_object = pdef._padstack_def_data
             temp_pdef_data[pdef_name] = pdef_edb_object
-
+        # step 2, archive padstack instance layer map
         temp_p_inst_layer_map = {}
         for p_inst in self._pedb.layout.padstack_instances:
             temp_p_inst_layer_map[p_inst.id] = p_inst._edb_object.GetLayerMap()
 
         self.cfg_data.stackup.apply()
 
+        # restore padstack definitions
         for pdef_name, pdef_data in temp_pdef_data.items():
             pdef = self._pedb.padstacks.definitions[pdef_name]
             pdef._padstack_def_data = pdef_data
-
+        # restore padstack instance layer map
         for p_inst in self._pedb.layout.padstack_instances:
             p_inst._edb_object.SetLayerMap(temp_p_inst_layer_map[p_inst.id])
 

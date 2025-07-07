@@ -86,8 +86,6 @@ class CfgStackup:
 
     def apply(self):
         """Apply configuration settings to the current design"""
-        if len(self.materials):
-            self.__apply_materials()
 
         input_signal_layers = [i for i in self.layers if i.type.lower() == "signal"]
 
@@ -105,19 +103,6 @@ class CfgStackup:
         for l_attrs in layers:
             attrs = l_attrs.model_dump(exclude_none=True)
             self._pedb.stackup.add_layer_bottom(**attrs)
-
-    def __apply_materials(self):
-        """Apply material settings to the current design"""
-        materials_in_db = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
-        for mat_in_cfg in self.materials:
-            if mat_in_cfg.name.lower() in materials_in_db:
-                self._pedb.materials.delete_material(materials_in_db[mat_in_cfg.name.lower()])
-
-            attrs = mat_in_cfg.model_dump(exclude_none=True)
-            mat = self._pedb.materials.add_material(**attrs)
-
-            for i in attrs.get("thermal_modifiers", []):
-                mat.set_thermal_modifier(**i.to_dict())
 
     def get_materials_from_db(self):
         materials = []
