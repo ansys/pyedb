@@ -21,6 +21,28 @@
 # SOFTWARE.
 
 
+from typing import TYPE_CHECKING, Literal, Union, overload
+
+if TYPE_CHECKING:
+    from pyedb.dotnet.edb import Edb as EdbDotnet
+    from pyedb.grpc.edb import Edb as EdbGrpc
+
+
+@overload
+def Edb(*, grpc: Literal[True], **kwargs) -> EdbGrpc:
+    ...
+
+
+@overload
+def Edb(*, grpc: Literal[False] = False, **kwargs) -> EdbDotnet:
+    ...
+
+
+@overload
+def Edb(*, grpc: bool, **kwargs) -> Union[EdbGrpc, EdbDotnet]:
+    ...
+
+
 # lazy imports
 def Edb(
     edbpath=None,
