@@ -23,6 +23,7 @@
 """Tests related to Edb
 """
 
+from dataclasses import asdict
 import os
 
 import pytest
@@ -30,9 +31,9 @@ import pytest
 from pyedb.dotnet.database.materials import (
     PERMEABILITY_DEFAULT_VALUE,
     Material,
-    MaterialProperties,
     Materials,
 )
+from src.pyedb.generic.data_handlers import MaterialProperties
 from tests.conftest import local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -115,9 +116,9 @@ class TestClass:
         material = Material(self.edbapp, material_def)
         for property in PROPERTIES:
             setattr(material, property, FLOAT_VALUE)
-        expected_result = MaterialProperties(
-            **{field: FLOAT_VALUE for field in MaterialProperties.__annotations__}
-        ).model_dump()
+        expected_result = asdict(
+            MaterialProperties(**{field: FLOAT_VALUE for field in MaterialProperties.__annotations__})
+        )
         expected_result["name"] = MATERIAL_NAME
         # Material without DC model has None value for each DC properties
         for property in DC_PROPERTIES:
@@ -134,9 +135,9 @@ class TestClass:
         material = Material(self.edbapp, material_def)
         for property in DC_PROPERTIES:
             setattr(material, property, FLOAT_VALUE)
-        expected_result = MaterialProperties(
-            **{field: FLOAT_VALUE for field in MaterialProperties.__annotations__}
-        ).model_dump()
+        expected_result = asdict(
+            MaterialProperties(**{field: FLOAT_VALUE for field in MaterialProperties.__annotations__})
+        )
         expected_result["name"] = MATERIAL_NAME
 
         material_dict = material.to_dict()
@@ -150,9 +151,9 @@ class TestClass:
         for property in PROPERTIES:
             setattr(material, property, FLOAT_VALUE)
         expected_value = FLOAT_VALUE + 1
-        material_dict = MaterialProperties(
-            **{field: expected_value for field in MaterialProperties.__annotations__}
-        ).model_dump()
+        material_dict = asdict(
+            MaterialProperties(**{field: expected_value for field in MaterialProperties.__annotations__})
+        )
 
         material.update(material_dict)
         for property in PROPERTIES + DC_PROPERTIES:
@@ -256,7 +257,7 @@ class TestClass:
     def test_materials_duplicate(self):
         """Evalue duplicate material."""
         materials = Materials(self.edbapp)
-        kwargs = MaterialProperties(**{field: 12 for field in MaterialProperties.__annotations__}).model_dump()
+        kwargs = asdict(MaterialProperties(**{field: 12 for field in MaterialProperties.__annotations__}))
         material = materials.add_material(MATERIAL_NAME, **kwargs)
         other_name = "OtherMaterial"
 
