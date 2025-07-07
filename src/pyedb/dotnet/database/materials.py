@@ -361,7 +361,7 @@ class Material(object):
         properties = self.__load_all_properties()
 
         res = {"name": self.name}
-        res.update(properties.model_dump())
+        res.update(asdict(properties))
         return res
 
     def update(self, input_dict: dict):
