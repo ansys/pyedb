@@ -29,17 +29,17 @@ if TYPE_CHECKING:
 
 
 @overload
-def Edb(*, grpc: Literal[True], **kwargs) -> EdbGrpc:
+def Edb(*, grpc: Literal[True], **kwargs) -> "EdbGrpc":
     ...
 
 
 @overload
-def Edb(*, grpc: Literal[False] = False, **kwargs) -> EdbDotnet:
+def Edb(*, grpc: Literal[False] = False, **kwargs) -> "EdbDotnet":
     ...
 
 
 @overload
-def Edb(*, grpc: bool, **kwargs) -> Union[EdbGrpc, EdbDotnet]:
+def Edb(*, grpc: bool, **kwargs) -> Union["EdbGrpc", "EdbDotnet"]:
     ...
 
 
