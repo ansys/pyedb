@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from typing import Optional, List
+from typing import Optional, List, Union
 
 from pyedb import Edb
 from pyedb.configuration.cfg_common import CfgBase
@@ -52,14 +52,33 @@ class CfgMaterial(BaseModel):
     thermal_modifiers: Optional[List[CfgMaterialPropertyThermalModifier]] = None
 
 
+class RoughnessSideModel(BaseModel):
+    model: str
+    nodule_radius: Optional[str] = None  # e.g., '0.1um'
+    surface_ratio: Optional[str] = None  # e.g., '1'
+    roughness: Optional[str] = None      # e.g., '2um' for non-huray
+
+
+class RoughnessModel(BaseModel):
+    top: Optional[RoughnessSideModel] = None
+    bottom: Optional[RoughnessSideModel] = None
+    side: Optional[RoughnessSideModel] = None
+
+
+class EtchingModel(BaseModel):
+    factor: Optional[Union[float, str]] = 0.5
+    etch_power_ground_nets: Optional[bool] = False
+    enabled: Optional[bool] = False
+
+
 class CfgLayer(BaseModel):
-    name: str
-    type: str
+    name: Optional[str] = None
+    type: Optional[str] = None
     material: Optional[str] = None
     fill_material: Optional[str] = None
-    thickness: Optional[float] = None
-    roughness: Optional[float] = None
-    etching: Optional[float] = None
+    thickness: Optional[Union[float, str]] = None
+    roughness: Optional[RoughnessModel] = None
+    etching: Optional[EtchingModel] = None
 
 
 class CfgStackup:
@@ -83,7 +102,7 @@ class CfgStackup:
         layers = list()
         layers.extend(self.layers)
         for l_attrs in layers:
-            attrs = l_attrs.get_attributes()
+            attrs = l_attrs.model_dump(exclude_none=True)
             self._pedb.stackup.add_layer_bottom(**attrs)
 
     def __apply_materials(self):
@@ -150,7 +169,7 @@ class CfgStackup:
             if l.type == "signal":
                 layer_id = lc_signal_layers[signal_idx]
                 layer_name = id_name[layer_id]
-                attrs = l.get_attributes()
+                attrs = l.model_dump(exclude_none=True)
                 self._pedb.stackup.layers[layer_name].update(**attrs)
                 signal_idx = signal_idx + 1
 
