@@ -22,32 +22,21 @@
 
 from __future__ import absolute_import  # noreorder
 
+from dataclasses import asdict
 import difflib
 import logging
 import os
 import re
-from typing import Optional, Union
+from typing import Union
 import warnings
-
-from pydantic import BaseModel, confloat
 
 from pyedb import Edb
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.exceptions import MaterialModelException
+from src.pyedb.generic.data_handlers import MaterialProperties
 
 logger = logging.getLogger(__name__)
 
-# TODO: Once we are Python3.9+ change PositiveInt implementation like
-# from annotated_types import Gt
-# from typing_extensions import Annotated
-# PositiveFloat = Annotated[float, Gt(0)]
-try:
-    from annotated_types import Gt
-    from typing_extensions import Annotated
-
-    PositiveFloat = Annotated[float, Gt(0)]
-except:
-    PositiveFloat = confloat(gt=0)
 
 ATTRIBUTES = [
     "conductivity",
@@ -83,27 +72,6 @@ def get_line_float_value(line):
         return float(re.split(",|=", line)[-1].strip("'\n)"))
     except ValueError:
         return None
-
-
-class MaterialProperties(BaseModel):
-    """Store material properties."""
-
-    conductivity: Optional[PositiveFloat] = 0.0
-    dielectric_loss_tangent: Optional[PositiveFloat] = 0.0
-    magnetic_loss_tangent: Optional[PositiveFloat] = 0.0
-    mass_density: Optional[PositiveFloat] = 0.0
-    permittivity: Optional[PositiveFloat] = 0.0
-    permeability: Optional[PositiveFloat] = 0.0
-    poisson_ratio: Optional[PositiveFloat] = 0.0
-    specific_heat: Optional[PositiveFloat] = 0.0
-    thermal_conductivity: Optional[PositiveFloat] = 0.0
-    youngs_modulus: Optional[PositiveFloat] = 0.0
-    thermal_expansion_coefficient: Optional[PositiveFloat] = 0.0
-    dc_conductivity: Optional[PositiveFloat] = 0.0
-    dc_permittivity: Optional[PositiveFloat] = 0.0
-    dielectric_model_frequency: Optional[PositiveFloat] = 0.0
-    loss_tangent_at_frequency: Optional[PositiveFloat] = 0.0
-    permittivity_at_frequency: Optional[PositiveFloat] = 0.0
 
 
 class Material(object):
@@ -432,7 +400,7 @@ class Material(object):
     def __load_all_properties(self) -> MaterialProperties:
         """Load all properties of the material."""
         res = MaterialProperties()
-        for property in res.model_dump().keys():
+        for property in asdict(res).keys():
             value = getattr(self, property)
             setattr(res, property, value)
         return res

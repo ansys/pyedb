@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+from dataclasses import dataclass, fields
 from decimal import Decimal
 import json
 import math
 import random
 import re
 import string
+from typing import Optional
 
 from pyedb.generic.general_methods import settings
 
@@ -309,3 +311,38 @@ def json_to_dict(fn):  # pragma: no cover
             error = "Error reading json: {} at line {}".format(e.msg, e.lineno)
             settings.logger.error(error)
     return json_data
+
+
+@dataclass(slots=True)
+class MaterialProperties:
+    """Store material properties."""
+
+    conductivity: Optional[float] = 0.0
+    dielectric_loss_tangent: Optional[float] = 0.0
+    magnetic_loss_tangent: Optional[float] = 0.0
+    mass_density: Optional[float] = 0.0
+    permittivity: Optional[float] = 0.0
+    permeability: Optional[float] = 0.0
+    poisson_ratio: Optional[float] = 0.0
+    specific_heat: Optional[float] = 0.0
+    thermal_conductivity: Optional[float] = 0.0
+    youngs_modulus: Optional[float] = 0.0
+    thermal_expansion_coefficient: Optional[float] = 0.0
+    dc_conductivity: Optional[float] = 0.0
+    dc_permittivity: Optional[float] = 0.0
+    dielectric_model_frequency: Optional[float] = 0.0
+    loss_tangent_at_frequency: Optional[float] = 0.0
+    permittivity_at_frequency: Optional[float] = 0.0
+
+    def __post_init__(self):
+        for field in fields(self):
+            value = getattr(self, field.name)
+            self._check_value(field.name, value)
+
+    def __setattr__(self, name, value):
+        self._check_value(name, value)
+        object.__setattr__(self, name, value)
+
+    def _check_value(self, name, value):
+        if value is not None and value < 0.0:
+            raise ValueError(f"{name} must be >= 0.0, got {value}")
