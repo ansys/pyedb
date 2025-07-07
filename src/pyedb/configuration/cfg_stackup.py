@@ -81,173 +81,117 @@ class CfgLayer(CfgBase):
 
 
 class CfgStackup:
-    class Grpc:
-        def __init__(self, parent):
-            self.parent = parent
-            self._pedb = parent._pedb
 
-        def apply(self):
-            """Apply configuration settings to the current design"""
-            if len(self.parent.materials):
-                self.__apply_materials()
+    def apply(self):
+        """Apply configuration settings to the current design"""
+        if len(self.materials):
+            self.__apply_materials()
 
-            input_signal_layers = [i for i in self.parent.layers if i.type.lower() == "signal"]
+        input_signal_layers = [i for i in self.layers if i.type.lower() == "signal"]
 
-            if len(self.parent.layers):
-                if len(self._pedb.stackup.signal_layers) == 0:
-                    self.__create_stackup()
-                elif not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
-                    raise Exception(f"Input signal layer count do not match.")
-                else:
-                    self.__apply_layers()
-
-        def __create_stackup(self):
-            layers = list()
-            layers.extend(self.parent.layers)
-            for l_attrs in layers:
-                attrs = l_attrs.get_attributes()
-                self._pedb.stackup.add_layer_bottom(**attrs)
-
-        def __apply_layers(self):
-            """Apply layer settings to the current design"""
-            layers = list()
-            layers.extend(self.parent.layers)
-
-            removal_list = []
-            lc_signal_layers = []
-            for name, obj in self._pedb.stackup.all_layers.items():
-                if obj.type == "dielectric":
-                    removal_list.append(name)
-                elif obj.type == "signal":
-                    lc_signal_layers.append(obj.id)
-            for l in removal_list:
-                self._pedb.stackup.remove_layer(l)
-
-            # update all signal layers
-            id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
-            signal_idx = 0
-            for l in layers:
-                if l.type == "signal":
-                    layer_id = lc_signal_layers[signal_idx]
-                    layer_name = id_name[layer_id]
-                    attrs = l.get_attributes()
-                    self._pedb.stackup.layers[layer_name].update(**attrs)
-                    signal_idx = signal_idx + 1
-
-            # add all dielectric layers. Dielectric layers must be added last. Otherwise,
-            # dielectric layer will occupy signal and document layer id.
-            prev_layer_clone = None
-            l = layers.pop(0)
-            if l.type == "signal":
-                prev_layer_clone = self._pedb.stackup.layers[l.name]
+        if len(self.layers):
+            if len(self._pedb.stackup.signal_layers) == 0:
+                self.__create_stackup()
+            elif not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
+                raise Exception(f"Input signal layer count do not match.")
             else:
-                attrs = l.get_attributes()
-                prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
-            for idx, l in enumerate(layers):
-                if l.type == "dielectric":
-                    attrs = l.get_attributes()
-                    prev_layer_clone = self._pedb.stackup.add_layer_below(
-                        base_layer_name=prev_layer_clone.name, **attrs
-                    )
-                elif l.type == "signal":
-                    prev_layer_clone = self._pedb.stackup.layers[l.name]
+                self.__apply_layers()
 
-        def __apply_materials(self):
-            """Apply material settings to the current design"""
-            materials_in_db = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
-            for mat_in_cfg in self.parent.materials:
-                if mat_in_cfg.name.lower() in materials_in_db:
-                    self._pedb.materials.delete_material(materials_in_db[mat_in_cfg.name.lower()])
+    def __create_stackup(self):
+        layers = list()
+        layers.extend(self.layers)
+        for l_attrs in layers:
+            attrs = l_attrs.get_attributes()
+            self._pedb.stackup.add_layer_bottom(**attrs)
 
-                attrs = mat_in_cfg.get_attributes()
-                mat = self._pedb.materials.add_material(**attrs)
+    def __apply_materials(self):
+        """Apply material settings to the current design"""
+        materials_in_db = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
+        for mat_in_cfg in self.materials:
+            if mat_in_cfg.name.lower() in materials_in_db:
+                self._pedb.materials.delete_material(materials_in_db[mat_in_cfg.name.lower()])
 
-                for i in attrs.get("thermal_modifiers", []):
-                    mat.set_thermal_modifier(**i.to_dict())
+            attrs = mat_in_cfg.get_attributes()
+            mat = self._pedb.materials.add_material(**attrs)
 
-        def get_materials_from_db(self):
-            materials = []
-            for name, p in self._pedb.materials.materials.items():
-                mat = {}
-                for p_name in CfgMaterial().__dict__:
-                    mat[p_name] = getattr(p, p_name, None)
-                materials.append(mat)
-            return materials
+            for i in attrs.get("thermal_modifiers", []):
+                mat.set_thermal_modifier(**i.to_dict())
 
-        def get_layers_from_db(self):
-            layers = []
-            for name, obj in self._pedb.stackup.all_layers.items():
-                layers.append(obj.properties)
-            return layers
+    def get_materials_from_db(self):
+        materials = []
+        for name, p in self._pedb.materials.materials.items():
+            mat = {}
+            for p_name in CfgMaterial().__dict__:
+                mat[p_name] = getattr(p, p_name, None)
+            materials.append(mat)
+        return materials
 
-        def get_data_from_db(self):
-            """Get configuration data from layout.
+    def get_layers_from_db(self):
+        layers = []
+        for name, obj in self._pedb.stackup.all_layers.items():
+            layers.append(obj.properties)
+        return layers
 
-            Returns
-            -------
-            dict
-            """
-            stackup = {}
-            materials = self.get_materials_from_db()
-            stackup["materials"] = materials
-            layers = self.get_layers_from_db()
-            stackup["layers"] = layers
-            return stackup
+    def get_data_from_db(self):
+        """Get configuration data from layout.
 
-    class DotNet(Grpc):
-        def __init__(self, parent):
-            super().__init__(parent)
+        Returns
+        -------
+        dict
+        """
+        stackup = {}
+        materials = self.get_materials_from_db()
+        stackup["materials"] = materials
+        layers = self.get_layers_from_db()
+        stackup["layers"] = layers
+        return stackup
 
-        def __apply_layers(self):
-            """Apply layer settings to the current design"""
-            layers = list()
-            layers.extend(self.parent.layers)
+    def __apply_layers(self):
+        """Apply layer settings to the current design"""
+        layers = list()
+        layers.extend(self.layers)
 
-            removal_list = []
-            lc_signal_layers = []
-            for name, obj in self._pedb.stackup.all_layers.items():
-                if obj.type == "dielectric":
-                    removal_list.append(name)
-                elif obj.type == "signal":
-                    lc_signal_layers.append(obj.id)
-            for l in removal_list:
-                self._pedb.stackup.remove_layer(l)
+        removal_list = []
+        lc_signal_layers = []
+        for name, obj in self._pedb.stackup.all_layers.items():
+            if obj.type == "dielectric":
+                removal_list.append(name)
+            elif obj.type == "signal":
+                lc_signal_layers.append(obj.id)
+        for l in removal_list:
+            self._pedb.stackup.remove_layer(l)
 
-            # update all signal layers
-            id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
-            signal_idx = 0
-            for l in layers:
-                if l.type == "signal":
-                    layer_id = lc_signal_layers[signal_idx]
-                    layer_name = id_name[layer_id]
-                    attrs = l.get_attributes()
-                    self._pedb.stackup.layers[layer_name].update(**attrs)
-                    signal_idx = signal_idx + 1
-
-            # add all dielectric layers. Dielectric layers must be added last. Otherwise,
-            # dielectric layer will occupy signal and document layer id.
-            prev_layer_clone = None
-            l = layers.pop(0)
+        # update all signal layers
+        id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
+        signal_idx = 0
+        for l in layers:
             if l.type == "signal":
-                prev_layer_clone = self._pedb.stackup.layers[l.name]
-            else:
+                layer_id = lc_signal_layers[signal_idx]
+                layer_name = id_name[layer_id]
                 attrs = l.get_attributes()
-                prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
-            for idx, l in enumerate(layers):
-                if l.type == "dielectric":
-                    attrs = l.get_attributes()
-                    prev_layer_clone = self._pedb.stackup.add_layer_below(
-                        base_layer_name=prev_layer_clone.name, **attrs
-                    )
-                elif l.type == "signal":
-                    prev_layer_clone = self._pedb.stackup.layers[l.name]
+                self._pedb.stackup.layers[layer_name].update(**attrs)
+                signal_idx = signal_idx + 1
+
+        # add all dielectric layers. Dielectric layers must be added last. Otherwise,
+        # dielectric layer will occupy signal and document layer id.
+        prev_layer_clone = None
+        l = layers.pop(0)
+        if l.type == "signal":
+            prev_layer_clone = self._pedb.stackup.layers[l.name]
+        else:
+            attrs = l.get_attributes()
+            prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
+        for idx, l in enumerate(layers):
+            if l.type == "dielectric":
+                attrs = l.get_attributes()
+                prev_layer_clone = self._pedb.stackup.add_layer_below(
+                    base_layer_name=prev_layer_clone.name, **attrs
+                )
+            elif l.type == "signal":
+                prev_layer_clone = self._pedb.stackup.layers[l.name]
 
     def __init__(self, pedb: Edb, data):
         self._pedb = pedb
-        if self._pedb.grpc:
-            self.api = self.Grpc(self)
-        else:
-            self.api = self.DotNet(self)
         self.materials = [CfgMaterial(**mat) for mat in data.get("materials", [])]
         self.layers = [CfgLayer(**lay) for lay in data.get("layers", [])]
 
@@ -270,21 +214,3 @@ class CfgStackup:
                         CfgMaterial(name=i.material, **self._pedb.materials.default_dielectric_property_values)
                     )
                     materials.append(i.material)
-
-    def apply(self):
-        self.api.apply()
-
-    def get_materials_from_db(self):
-        return self.api.get_materials_from_db()
-
-    def get_layers_from_db(self):
-        return self.api.get_layers_from_db()
-
-    def get_data_from_db(self):
-        """Get configuration data from layout.
-
-        Returns
-        -------
-        dict
-        """
-        return self.api.get_data_from_db()
