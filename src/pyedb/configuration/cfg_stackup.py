@@ -19,65 +19,47 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from typing import Optional, List
 
 from pyedb import Edb
 from pyedb.configuration.cfg_common import CfgBase
+from pydantic import BaseModel, Field
 
 
-class CfgMaterialPropertyThermalModifier:
-    def __init__(self, **kwargs):
-        self.property_name = kwargs["property_name"]
-        self.basic_quadratic_c1 = kwargs.get("basic_quadratic_c1", 0)
-        self.basic_quadratic_c2 = kwargs.get("basic_quadratic_c2", 0)
-        self.basic_quadratic_temperature_reference = kwargs.get("basic_quadratic_temperature_reference", 22)
-        self.advanced_quadratic_lower_limit = kwargs.get("advanced_quadratic_lower_limit", -273.15)
-        self.advanced_quadratic_upper_limit = kwargs.get("advanced_quadratic_upper_limit", 1000)
-
-        self.advanced_quadratic_auto_calculate = kwargs.get("advanced_quadratic_auto_calculate", True)
-        self.advanced_quadratic_lower_constant = kwargs.get("advanced_quadratic_lower_constant", 1)
-        self.advanced_quadratic_upper_constant = kwargs.get("advanced_quadratic_upper_constant", 1)
-
-    def to_dict(self):
-        return {
-            "property_name": self.property_name,
-            "basic_quadratic_c1": self.basic_quadratic_c1,
-            "basic_quadratic_c2": self.basic_quadratic_c2,
-            "basic_quadratic_temperature_reference": self.basic_quadratic_temperature_reference,
-            "advanced_quadratic_lower_limit": self.advanced_quadratic_lower_limit,
-            "advanced_quadratic_upper_limit": self.advanced_quadratic_upper_limit,
-            "advanced_quadratic_auto_calculate": self.advanced_quadratic_auto_calculate,
-            "advanced_quadratic_lower_constant": self.advanced_quadratic_lower_constant,
-            "advanced_quadratic_upper_constant": self.advanced_quadratic_upper_constant,
-        }
+class CfgMaterialPropertyThermalModifier(BaseModel):
+    property_name: str
+    basic_quadratic_c1: float = 0
+    basic_quadratic_c2: float = 0
+    basic_quadratic_temperature_reference: float = 22
+    advanced_quadratic_lower_limit: float = -273.15
+    advanced_quadratic_upper_limit: float = 1000
+    advanced_quadratic_auto_calculate: bool = True
+    advanced_quadratic_lower_constant: float = 1
+    advanced_quadratic_upper_constant: float = 1
 
 
-class CfgMaterial(CfgBase):
-    def __init__(self, **kwargs):
-        self.name = kwargs.get("name", None)
-        self.permittivity = kwargs.get("permittivity", None)
-        self.conductivity = kwargs.get("conductivity", None)
-        self.dielectric_loss_tangent = kwargs.get("dielectric_loss_tangent", None)
-        self.magnetic_loss_tangent = kwargs.get("magnetic_loss_tangent", None)
-        self.mass_density = kwargs.get("mass_density", None)
-        self.permeability = kwargs.get("permeability", None)
-        self.poisson_ratio = kwargs.get("poisson_ratio", None)
-        self.specific_heat = kwargs.get("specific_heat", None)
-        self.thermal_conductivity = kwargs.get("thermal_conductivity", None)
-
-        thermal_modifiers = kwargs.get("thermal_modifiers")
-        if thermal_modifiers:
-            self.thermal_modifiers = [CfgMaterialPropertyThermalModifier(**i) for i in thermal_modifiers]
+class CfgMaterial(BaseModel):
+    name: str
+    permittivity: Optional[float] = None
+    conductivity: Optional[float] = None
+    dielectric_loss_tangent: Optional[float] = None
+    magnetic_loss_tangent: Optional[float] = None
+    mass_density: Optional[float] = None
+    permeability: Optional[float] = None
+    poisson_ratio: Optional[float] = None
+    specific_heat: Optional[float] = None
+    thermal_conductivity: Optional[float] = None
+    thermal_modifiers: Optional[List[CfgMaterialPropertyThermalModifier]] = None
 
 
-class CfgLayer(CfgBase):
-    def __init__(self, **kwargs):
-        self.name = kwargs.get("name", None)
-        self.type = kwargs.get("type", None)
-        self.material = kwargs.get("material", None)
-        self.fill_material = kwargs.get("fill_material", None)
-        self.thickness = kwargs.get("thickness", None)
-        self.roughness = kwargs.get("roughness", None)
-        self.etching = kwargs.get("etching", None)
+class CfgLayer(BaseModel):
+    name: str
+    type: str
+    material: Optional[str] = None
+    fill_material: Optional[str] = None
+    thickness: Optional[float] = None
+    roughness: Optional[float] = None
+    etching: Optional[float] = None
 
 
 class CfgStackup:
@@ -111,7 +93,7 @@ class CfgStackup:
             if mat_in_cfg.name.lower() in materials_in_db:
                 self._pedb.materials.delete_material(materials_in_db[mat_in_cfg.name.lower()])
 
-            attrs = mat_in_cfg.get_attributes()
+            attrs = mat_in_cfg.model_dump(exclude_none=True)
             mat = self._pedb.materials.add_material(**attrs)
 
             for i in attrs.get("thermal_modifiers", []):
@@ -121,7 +103,7 @@ class CfgStackup:
         materials = []
         for name, p in self._pedb.materials.materials.items():
             mat = {}
-            for p_name in CfgMaterial().__dict__:
+            for p_name in CfgMaterial.model_fields.keys():
                 mat[p_name] = getattr(p, p_name, None)
             materials.append(mat)
         return materials
