@@ -126,7 +126,7 @@ def Edb(
             warnings.warn(GRPC_WARNING, UserWarning)
     else:
         if grpc:
-            raise f"gRPC flag was enabled however your ANSYS AEDT version {edbversion} is not compatible"
+            raise ValueError(f"gRPC flag was enabled however your ANSYS AEDT version {edbversion} is not compatible")
     if grpc:
         from pyedb.grpc.edb import Edb as app
     else:
