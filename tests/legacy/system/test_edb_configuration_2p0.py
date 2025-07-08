@@ -1388,8 +1388,6 @@ class TestClass:
         assert edbapp2.configuration.cfg_data.variables.model_dump() == data
         edbapp2.close()
 
-
-
     def test_probes(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         probe = [

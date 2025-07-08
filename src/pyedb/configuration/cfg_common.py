@@ -20,8 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pydantic import BaseModel
 from typing import List, Optional, Union
+
+from pydantic import BaseModel
 
 
 class CfgBase:
