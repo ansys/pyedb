@@ -1994,3 +1994,20 @@ class TestClass:
         assert edbapp.compare(edb_base)
         folder = edbapp.edbpath[:-5] + "_compare_results"
         assert os.path.exists(folder)
+
+    def test_syz_simulation_settings(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        syz_setup = edbapp.siwave.add_siwave_syz_analysis()
+        syz_setup.use_custom_settings = False
+        assert not syz_setup.use_custom_settings
+        syz_setup.advanced_settings.min_void_area = "4mm2"
+        assert syz_setup.advanced_settings.min_void_area == "4mm2"
+        syz_setup.advanced_settings.automatic_mesh = True
+        assert syz_setup.advanced_settings.automatic_mesh
+        syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh = "0.5mm2"
+        assert syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh == "0.5mm2"
+        syz_setup.dc_settings.use_dc_custom_settings = False
+        assert not syz_setup.dc_settings.use_dc_custom_settings
+        syz_sweep = syz_setup.add_sweep()
+        syz_sweep.enforce_causality = False
+        assert not syz_sweep.enforce_causality
