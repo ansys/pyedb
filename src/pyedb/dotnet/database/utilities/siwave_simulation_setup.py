@@ -132,6 +132,21 @@ class SiwaveSimulationSetup(SimulationSetup):
         return AdvancedSettings(self)
 
     @property
+    def dc_advanced_settings(self):
+        """Siwave DC advanced settings.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
+        """
+        return DCAdvancedSettings(self)
+
+    @property
+    def dc_settings(self):
+        """SIwave DC setting."""
+        return DCSettings(self)
+
+    @property
     def sim_setup_info(self):
         """Overrides the default sim_setup_info object."""
         return self.get_sim_setup_info
