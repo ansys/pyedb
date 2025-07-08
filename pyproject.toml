@@ -44,7 +44,7 @@ dependencies = [
 [project.optional-dependencies]
 tests = [
     "matplotlib>=3.5.0,<3.11",
-    "mock>=5.1.0,<5.2",
+    "mock>=5.1.0,<5.3",
     "pytest>=7.4.0,<8.5",
     "pytest-cov>=4.0.0,<6.1",
     "pytest-xdist>=3.5.0,<3.7",
