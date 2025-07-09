@@ -133,7 +133,7 @@ class Configuration:
         self.__apply_with_logging("Creating setups", self.cfg_data.setups.apply)
 
         self.__apply_with_logging("Applying materials", self.apply_materials)
-        self.__apply_with_logging("Updating stackup", self.configuration_stackup)
+        self.__apply_with_logging("Updating stackup", self.apply_stackup)
 
         if self.cfg_data.padstacks:
             self.__apply_with_logging("Applying padstacks", self.cfg_data.padstacks.apply)
@@ -273,8 +273,7 @@ class Configuration:
                 for i in attrs.get("thermal_modifiers", []):
                     mat.set_thermal_modifier(**i.to_dict())
 
-
-    def configuration_stackup(self):
+    def apply_stackup(self):
         # After import stackup, padstacks lose their definitions. They need to be fixed after loading stackup
         # step 1, archive padstack definitions
         temp_pdef_data = {}
@@ -286,7 +285,16 @@ class Configuration:
         for p_inst in self._pedb.layout.padstack_instances:
             temp_p_inst_layer_map[p_inst.id] = p_inst._edb_object.GetLayerMap()
 
-        self.cfg_data.stackup.apply()
+        layers = self.cfg_data.stackup.layers
+
+        input_signal_layers = [i for i in layers if i.type.lower() == "signal"]
+
+        if len(self._pedb.stackup.signal_layers) == 0:
+            self.__create_stackup()
+        elif not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
+            raise Exception(f"Input signal layer count do not match.")
+        else:
+            self.__apply_layers()
 
         # restore padstack definitions
         for pdef_name, pdef_data in temp_pdef_data.items():

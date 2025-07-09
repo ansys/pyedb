@@ -87,20 +87,12 @@ class CfgStackup:
     def apply(self):
         """Apply configuration settings to the current design"""
 
-        input_signal_layers = [i for i in self.layers if i.type.lower() == "signal"]
 
-        if len(self.layers):
-            if len(self._pedb.stackup.signal_layers) == 0:
-                self.__create_stackup()
-            elif not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
-                raise Exception(f"Input signal layer count do not match.")
-            else:
-                self.__apply_layers()
 
     def __create_stackup(self):
-        layers = list()
-        layers.extend(self.layers)
-        for l_attrs in layers:
+        layers_ = list()
+        layers_.extend(self.layers)
+        for l_attrs in layers_:
             attrs = l_attrs.model_dump(exclude_none=True)
             self._pedb.stackup.add_layer_bottom(**attrs)
 
