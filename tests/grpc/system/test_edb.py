@@ -2054,6 +2054,7 @@ class TestClass:
         cpa_cfg.solver_options.return_path_net_for_loop_parameters = False
         vrm = Vrm(name="test_vrm", voltage=2.5, reference_net="GND", power_net="VDD")
         cpa_cfg.channel_setup.vrm_setup = [vrm]
+        cpa_cfg.channel_setup.pin_grouping_mode = "perpin"
         cpa_cfg.channel_setup.die_name = "die_test"
         cpa_cfg.channel_setup.channel_component_exposure = {"U1": True, "X1": True}
 
@@ -2067,7 +2068,14 @@ class TestClass:
         assert cpa_setup.model_type == "rlcg"
         assert cpa_setup.channel_setup.channel_component_exposure == {"U1": True, "X1": True}
         assert cpa_setup.channel_setup.die_name == "die_test"
-        # TODO test pin_group_mode & vrm
+
+        assert cpa_setup.channel_setup.pin_grouping_mode == "perpin"
+
+        assert len(cpa_setup.channel_setup.vrm) == 1
+        assert cpa_setup.channel_setup.vrm[0].name == "test_vrm"
+        assert cpa_setup.channel_setup.vrm[0].voltage == 2.5
+        assert cpa_setup.channel_setup.vrm[0].reference_net == "GND"
+        assert cpa_setup.channel_setup.vrm[0].power_net == "VDD"
         assert cpa_setup.solver_options.compute_dc_parameters == True
         assert cpa_setup.solver_options.compute_ac_rl == True
         assert cpa_setup.solver_options.compute_capacitance == True

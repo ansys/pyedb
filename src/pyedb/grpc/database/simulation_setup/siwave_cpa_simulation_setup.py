@@ -40,9 +40,9 @@ class ChannelSetup:
     def pin_grouping_mode(self):
         mode_mapping = {-1: "perpin", 0: "ploc", 1: "usediepingroups"}
         pg_mode = self._pedb.active_cell.get_product_property(
-            GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_PIN_GROUPING_MODE, self.die_name
+            GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_PIN_GROUPING_MODE
         ).value
-        return mode_mapping[int(pg_mode)]
+        return mode_mapping[int(pg_mode.split(":")[1])] if pg_mode else "perpin"
 
     @pin_grouping_mode.setter
     def pin_grouping_mode(self, value):
@@ -85,17 +85,21 @@ class ChannelSetup:
     def vrm(self):
         vrm = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_VRM_SETUP
-        )
+        ).value
         vrm_list = []
         for _vrm in vrm.split("*"):
             vrm_obj = Vrm()
-            _vrm_values = _vrm.plit(":")
+            _vrm_values = _vrm.split(":")
+            if len(_vrm_values) != 4:
+                raise ValueError(
+                    f"Invalid VRM format: {_vrm}. Expected format is 'name:voltage:power_net:reference_net'."
+                )
             vrm_obj.name = _vrm_values[0]
-            vrm_obj.voltage = _vrm_values[1]
+            vrm_obj.voltage = float(_vrm_values[1])
             vrm_obj.power_net = _vrm_values[2]
             vrm_obj.reference_net = _vrm_values[3]
             vrm_list.append(vrm_obj)
-        return
+        return vrm_list
 
     @vrm.setter
     def vrm(self, value):
@@ -107,7 +111,11 @@ class ChannelSetup:
                 if vrm_str:
                     vrm_str += "*"
                 vrm_str += vrm.name
+                vrm_str += ":"
+                vrm_str += str(vrm.voltage)
+                vrm_str += ":"
                 vrm_str += vrm.power_net
+                vrm_str += ":"
                 vrm_str += vrm.reference_net
         self._pedb.active_cell.set_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_VRM_SETUP, vrm_str
