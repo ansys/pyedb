@@ -98,17 +98,12 @@ from pyedb.generic.general_methods import (
     is_linux,
     is_windows,
 )
+from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
-
-GRPC_WARNING = (
-    "Your ANSYS AEDT version is eligible to gRPC version, "
-    "You might consider switching to that version for better user experience."
-    "For more information please check this link: https://edb.docs.pyansys.com/version/dev/grpc_api/index.html"
-)
 
 
 class Edb(Database):
@@ -206,7 +201,7 @@ class Edb(Database):
 
         edbversion = get_string_version(edbversion)
         if float(edbversion) >= 2025.2:
-            warnings.warn(GRPC_WARNING, UserWarning)
+            warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
         self._clean_variables()
         Database.__init__(self, edbversion=edbversion, student_version=student_version)
         self.standalone = True
