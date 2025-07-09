@@ -2068,9 +2068,7 @@ class TestClass:
         assert cpa_setup.model_type == "rlcg"
         assert cpa_setup.channel_setup.channel_component_exposure == {"U1": True, "X1": True}
         assert cpa_setup.channel_setup.die_name == "die_test"
-
         assert cpa_setup.channel_setup.pin_grouping_mode == "perpin"
-
         assert len(cpa_setup.channel_setup.vrm) == 1
         assert cpa_setup.channel_setup.vrm[0].name == "test_vrm"
         assert cpa_setup.channel_setup.vrm[0].voltage == 2.5
