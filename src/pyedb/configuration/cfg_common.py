@@ -19,6 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from dataclasses import dataclass
+from typing import List, Optional, Union
 
 
 class CfgBase:
@@ -41,21 +43,14 @@ class CfgBase:
             setattr(pedb_object, attr, value)
 
 
+@dataclass
 class CfgVar:
-    def __init__(self, **kwargs):
-        self.name = kwargs["name"]
-        self.value = kwargs["value"]
-        self.description = kwargs.get("description", "")
+    name: str
+    value: Union[int, float]
+    description: Optional[str] = ""
 
 
+@dataclass
 class CfgVariables:
-    def __init__(self, pedb, data):
-        self._pedb = pedb
-        self.variables = [CfgVar(**i) for i in data]
-
-    def apply(self):
-        for i in self.variables:
-            if i.name.startswith("$"):
-                self._pedb.add_project_variable(i.name, i.value)
-            else:
-                self._pedb.add_design_variable(i.name, i.value)
+    def __init__(self, data: List):
+        self.variables: List[CfgVar] = [CfgVar(**i) for i in data]

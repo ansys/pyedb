@@ -110,8 +110,7 @@ class Configuration:
         if kwargs.get("fix_padstack_def"):
             warnings.warn("fix_padstack_def is deprecated.", DeprecationWarning)
 
-        if self.cfg_data.variables:
-            self.cfg_data.variables.apply()
+        self.apply_variables()
 
         if self.cfg_data.general:
             self.cfg_data.general.apply()
@@ -177,7 +176,7 @@ class Configuration:
         now = datetime.now()
 
         # Modeler
-        self.cfg_data.modeler.apply()
+        self.apply_modeler()
 
         # Configure ports
         self.cfg_data.ports.apply()
@@ -192,6 +191,113 @@ class Configuration:
         self.cfg_data.operations.apply()
 
         return True
+
+    def apply_modeler(self):
+        modeler = self.cfg_data.modeler
+        if modeler.traces:
+            for t in modeler.traces:
+                if t.path:
+                    obj = self._pedb.modeler.create_trace(
+                        path_list=t.path,
+                        layer_name=t.layer,
+                        net_name=t.net_name,
+                        width=t.width,
+                        start_cap_style=t.start_cap_style,
+                        end_cap_style=t.end_cap_style,
+                        corner_style=t.corner_style,
+                    )
+                    obj.aedt_name = t.name
+                else:
+                    obj = self._pedb.modeler.create_trace(
+                        path_list=[t.incremental_path[0]],
+                        layer_name=t.layer,
+                        net_name=t.net_name,
+                        width=t.width,
+                        start_cap_style=t.start_cap_style,
+                        end_cap_style=t.end_cap_style,
+                        corner_style=t.corner_style,
+                    )
+                    obj.aedt_name = t.name
+                    for x, y in t.incremental_path[1:]:
+                        obj.add_point(x, y, True)
+
+        if modeler.padstack_defs:
+            for p in modeler.padstack_defs:
+                pdata = self._pedb._edb.Definition.PadstackDefData.Create()
+                pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
+                pdef.SetData(pdata)
+                pdef = self._pedb.pedb_class.database.edb_data.padstacks_data.EDBPadstack(pdef, self._pedb.padstacks)
+                p.pyedb_obj = pdef
+                p.api.set_parameters_to_edb()
+
+        if modeler.padstack_instances:
+            for p in modeler.padstack_instances:
+                p_inst = self._pedb.padstacks.place(
+                    via_name=p.name,
+                    net_name=p.net_name,
+                    position=p.position,
+                    definition_name=p.definition,
+                    rotation=p.rotation if p.rotation is not None else 0,
+                )
+                p.pyedb_obj = p_inst
+                p.api.set_parameters_to_edb()
+
+        if modeler.planes:
+            for p in modeler.planes:
+                if p.type == "rectangle":
+                    obj = self._pedb.modeler.create_rectangle(
+                        layer_name=p.layer,
+                        net_name=p.net_name,
+                        lower_left_point=p.lower_left_point,
+                        upper_right_point=p.upper_right_point,
+                        corner_radius=p.corner_radius,
+                        rotation=p.rotation,
+                    )
+                    obj.aedt_name = p.name
+                elif p.type == "polygon":
+                    obj = self._pedb.modeler.create_polygon(
+                        main_shape=p.points, layer_name=p.layer, net_name=p.net_name
+                    )
+                    obj.aedt_name = p.name
+                elif p.type == "circle":
+                    obj = self._pedb.modeler.create_circle(
+                        layer_name=p.layer,
+                        net_name=p.net_name,
+                        x=p.position[0],
+                        y=p.position[1],
+                        radius=p.radius,
+                    )
+                    obj.aedt_name = p.name
+                else:
+                    raise RuntimeError(f"Plane type {p.type} not supported")
+
+                for v in p.voids:
+                    for i in self._pedb.layout.primitives:
+                        if i.aedt_name == v:
+                            self._pedb.modeler.add_void(obj, i)
+
+        if modeler.components:
+            for c in modeler.components:
+                obj = self._pedb.components.create(
+                    c.pins,
+                    component_name=c.reference_designator,
+                    placement_layer=c.placement_layer,
+                    component_part_name=c.definition,
+                )
+                c.pyedb_obj = obj
+                c.api.set_parameters_to_edb()
+
+        primitives = self._pedb.layout.find_primitive(**modeler.primitives_to_delete)
+        for i in primitives:
+            i.delete()
+
+    def apply_variables(self):
+        inst = self.cfg_data.variables
+        for i in inst.variables:
+            if i.name.startswith("$"):
+                self._pedb.add_project_variable(i.name, i.value)
+            else:
+                self._pedb.add_design_variable(i.name, i.value)
 
     def configuration_stackup(self):
         temp_pdef_data = {}

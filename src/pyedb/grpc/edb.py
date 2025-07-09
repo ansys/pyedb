@@ -70,6 +70,9 @@ import warnings
 from zipfile import ZipFile as zpf
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.hierarchy.layout_component import (
+    LayoutComponent as GrpcLayoutComponent,
+)
 import ansys.edb.core.layout.cell
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
@@ -3800,3 +3803,72 @@ class Edb(EdbInit):
         ET.indent(tree, space="\t", level=0)
         tree.write(control_path)
         return True if os.path.exists(control_path) else False
+
+    def compare(self, input_file, results=""):
+        """Compares current open database with another one.
+
+        Parameters
+        ----------
+        input_file : str
+            Path to the edb file.
+        results: str, optional
+            Path to directory in which results will be saved. If no path is given, a new "_compare_results"
+            directory will be created with the same naming and path as the .aedb folder.
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        self.save()
+        if not results:
+            results = self.edbpath[:-5] + "_compare_results"
+            os.mkdir(results)
+        command = os.path.join(self.base_path, "EDBDiff.exe")
+        if is_linux:
+            mono_path = os.path.join(self.base_path, "common/mono/Linux64/bin/mono")
+            cmd_input = [mono_path, command, input_file, self.edbpath, results]
+        else:
+            cmd_input = [command, input_file, self.edbpath, results]
+        subprocess.run(cmd_input)
+
+        if not os.path.exists(os.path.join(results, "EDBDiff.csv")):
+            self.logger.error("Comparison execution failed")
+            return False
+        else:
+            self.logger.info("Comparison correctly completed")
+            return True
+
+    def import_layout_component(self, component_path) -> GrpcLayoutComponent:
+        """Import a layout component inside the current layout and place it at the origin.
+        This feature is only supported with PyEDB gRPC. Encryption is not yet supported.
+
+        Parameters
+        ----------
+        component_path : str
+            Layout component path (.aedbcomp file).
+
+        Returns
+        -------
+            class:`LayoutComponent <ansys.edb.core.hierarchy.layout_component.LayoutComponent>`.
+        """
+
+        return GrpcLayoutComponent.import_layout_component(layout=self.active_layout, aedb_comp_path=component_path)
+
+    def export_layout_component(self, component_path) -> bool:
+        """Export a layout component from the current layout.
+        This feature is only supported with PyEDB gRPC. Encryption is not yet supported.
+
+        Parameters
+        ----------
+        component_path : str
+            Layout component path (.aedbcomp file).
+
+        Returns
+        -------
+        bool
+            `True` if layout component is successfully exported, `False` otherwise.
+        """
+
+        return GrpcLayoutComponent.export_layout_component(
+            layout=self.active_layout, output_aedb_comp_path=component_path
+        )

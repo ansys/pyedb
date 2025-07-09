@@ -397,8 +397,7 @@ class Edb(Database):
 
     @property
     def pedb_class(self):
-        if not self.grpc:
-            return pyedb.dotnet
+        return pyedb.dotnet
 
     @property
     def grpc(self):
@@ -4735,3 +4734,37 @@ class Edb(Database):
             return self.variables[variable_name]
         else:
             return False
+
+    def compare(self, input_file, results=""):
+        """Compares current open database with another one.
+
+        Parameters
+        ----------
+        input_file : str
+            Path to the edb file.
+        results: str, optional
+            Path to directory in which results will be saved. If no path is given, a new "_compare_results"
+            directory will be created with the same naming and path as the .aedb folder.
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        self.save()
+        if not results:
+            results = self.edbpath[:-5] + "_compare_results"
+            os.mkdir(results)
+        command = os.path.join(self.base_path, "EDBDiff.exe")
+        if is_linux:
+            mono_path = os.path.join(self.base_path, "common/mono/Linux64/bin/mono")
+            cmd_input = [mono_path, command, input_file, self.edbpath, results]
+        else:
+            cmd_input = [command, input_file, self.edbpath, results]
+        subprocess.run(cmd_input)
+
+        if not os.path.exists(os.path.join(results, "EDBDiff.csv")):
+            self.logger.error("Comparison execution failed")
+            return False
+        else:
+            self.logger.info("Comparison correctly completed")
+            return True
