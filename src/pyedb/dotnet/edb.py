@@ -3695,6 +3695,7 @@ class Edb(Database):
         Dict[str, :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
 
         """
+
         setups = {}
         for i in list(self.active_cell.SimulationSetups):
             if i.GetType().ToString().endswith("kHFSS"):
@@ -3707,6 +3708,21 @@ class Edb(Database):
                 setups[i.GetName()] = RaptorXSimulationSetup(self, i)
             elif i.GetType().ToString().endswith("kHFSSPI"):
                 setups[i.GetName()] = HFSSPISimulationSetup(self, i)
+        try:
+            cpa_setup_name = self.active_cell.GetProductProperty(
+                GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME
+            )[-1]
+        except:
+            cpa_setup_name = ""
+        if cpa_setup_name:
+            from pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup import (
+                SIWaveCPASimulationSetup,
+            )
+
+            if not cpa_setup_name in self._setups:
+                self._setups[cpa_setup_name] = SIWaveCPASimulationSetup(self, cpa_setup_name)
+            else:
+                self.logger.warning(f"Siwave CPA setup {cpa_setup_name} already exists in EDB.")
         return setups
 
     @property

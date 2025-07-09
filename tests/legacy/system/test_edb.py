@@ -2050,6 +2050,12 @@ class TestClass:
         assert cpa_setup.solver_options.rl_percent_refinement_per_pass == 0.66
         cpa_setup.solver_options.small_hole_diameter = 0.1
         assert cpa_setup.solver_options.small_hole_diameter == 0.1
+        cpa_setup = edbapp.setups["test_cpa2"]
+        assert cpa_setup.name == "test_cpa2"
+        assert cpa_setup.mode == "channel"
+        assert cpa_setup.model_type == "rlcg"
+        assert cpa_setup.net_processing_mode == "all"
+        assert not cpa_setup.use_q3d_solver
         edbapp.close()
 
     def test_load_cpa_cfg(self, edb_examples):

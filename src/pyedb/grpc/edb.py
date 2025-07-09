@@ -114,6 +114,9 @@ from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import (
 from pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup import (
     RaptorXSimulationSetup,
 )
+from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
+    SIWaveCPASimulationSetup,
+)
 from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup,
 )
@@ -2841,7 +2844,13 @@ class Edb(EdbInit):
     @property
     def setups(
         self,
-    ) -> Union[HfssSimulationSetup, SiwaveSimulationSetup, SIWaveDCIRSimulationSetup, RaptorXSimulationSetup]:
+    ) -> Union[
+        HfssSimulationSetup,
+        SiwaveSimulationSetup,
+        SIWaveDCIRSimulationSetup,
+        RaptorXSimulationSetup,
+        SIWaveCPASimulationSetup,
+    ]:
         """Get the dictionary of all EDB HFSS and SIwave setups.
 
         Returns
@@ -2850,8 +2859,13 @@ class Edb(EdbInit):
         Dict[str,:class:`SiwaveSimulationSetup`] or
         Dict[str,:class:`SIWaveDCIRSimulationSetup`] or
         Dict[str,:class:`RaptorXSimulationSetup`]
+        Dict[str,:class:`SIWaveCPASimulationSetup`]
 
         """
+        from ansys.edb.core.database import ProductIdType as GrpcProductIdType
+
+        from pyedb.siwave_core.product_properties import SIwaveProperties
+
         self._setups = {}
         for setup in self.active_cell.simulation_setups:
             setup = setup.cast()
@@ -2864,6 +2878,17 @@ class Edb(EdbInit):
                 self._setups[setup.name] = SIWaveDCIRSimulationSetup(self, setup)
             elif setup_type == "RAPTOR_X":
                 self._setups[setup.name] = RaptorXSimulationSetup(self, setup)
+        try:
+            cpa_setup_name = self.active_cell.get_product_property(
+                GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME
+            ).value
+        except:
+            cpa_setup_name = ""
+        if cpa_setup_name:
+            if not cpa_setup_name in self._setups:
+                self._setups[cpa_setup_name] = SIWaveCPASimulationSetup(self, cpa_setup_name)
+            else:
+                self.logger.warning(f"Siwave CPA setup {cpa_setup_name} already exists in EDB.")
         return self._setups
 
     @property
