@@ -1979,7 +1979,7 @@ class TestClass:
         assert cpa_setup.net_processing_mode == "all"
         cpa_setup.net_processing_mode = "userdefined"
         assert cpa_setup.net_processing_mode == "userdefined"
-        assert not cpa_setup.use_q3d
+        assert not cpa_setup.use_q3d_solver
         cpa_setup.use_q3d = True
         assert cpa_setup.use_q3d
         assert cpa_setup.solver_options.adaptive_refinement_cg_max_passes == 10
