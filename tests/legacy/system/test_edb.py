@@ -1987,3 +1987,128 @@ class TestClass:
         trace_widths = edbapp.hfss.get_trace_width_for_traces_with_ports()
         assert len(trace_widths) > 0
         edbapp.close()
+
+    def test_add_cpa_simulation_setup(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        cpa_setup = edbapp.siwave.add_cpa_analysis(name="test_cpa")
+        assert cpa_setup.name == "test_cpa"
+        cpa_setup.name = "test_cpa2"
+        assert cpa_setup.name == "test_cpa2"
+        cpa_setup.mode = "channel"
+        assert cpa_setup.mode == "channel"
+        assert cpa_setup.model_type == "rlcg"
+        cpa_setup.model_type = "esd_r"
+        assert cpa_setup.model_type == "esd_r"
+        assert cpa_setup.net_processing_mode == "all"
+        cpa_setup.net_processing_mode = "userdefined"
+        assert cpa_setup.net_processing_mode == "userdefined"
+        assert not cpa_setup.use_q3d
+        cpa_setup.use_q3d = True
+        assert cpa_setup.use_q3d
+        assert cpa_setup.solver_options.adaptive_refinement_cg_max_passes == 10
+        cpa_setup.solver_options.adaptive_refinement_cg_max_passes = 20
+        assert cpa_setup.solver_options.adaptive_refinement_cg_max_passes == 20
+        assert cpa_setup.solver_options.adaptive_refinement_cg_percent_error == 0.02
+        cpa_setup.solver_options.adaptive_refinement_cg_percent_error = 0.05
+        assert cpa_setup.solver_options.adaptive_refinement_cg_percent_error == 0.05
+        assert cpa_setup.solver_options.adaptive_refinement_rl_max_passes == 10
+        cpa_setup.solver_options.adaptive_refinement_rl_max_passes = 20
+        assert cpa_setup.solver_options.adaptive_refinement_rl_max_passes == 20
+        assert cpa_setup.solver_options.adaptive_refinement_rl_percent_error == 0.02
+        cpa_setup.solver_options.adaptive_refinement_rl_percent_error = 0.001
+        assert cpa_setup.solver_options.adaptive_refinement_rl_percent_error == 0.001
+        assert cpa_setup.solver_options.cg_percent_refinement_per_pass == 0.33
+        cpa_setup.solver_options.cg_percent_refinement_per_pass = 0.45
+        assert cpa_setup.solver_options.cg_percent_refinement_per_pass == 0.45
+        assert cpa_setup.solver_options.compute_ac_rl
+        cpa_setup.solver_options.compute_ac_rl = False
+        assert not cpa_setup.solver_options.compute_ac_rl
+        assert cpa_setup.solver_options.compute_capacitance
+        cpa_setup.solver_options.compute_capacitance = False
+        assert not cpa_setup.solver_options.compute_capacitance
+        assert cpa_setup.solver_options.compute_dc_cg
+        cpa_setup.solver_options.compute_dc_cg = False
+        assert not cpa_setup.solver_options.compute_dc_cg
+        assert cpa_setup.solver_options.compute_dc_rl
+        cpa_setup.solver_options.compute_dc_rl = False
+        assert not cpa_setup.solver_options.compute_dc_rl
+        assert not cpa_setup.solver_options.custom_refinement
+        cpa_setup.solver_options.custom_refinement = True
+        assert cpa_setup.solver_options.custom_refinement
+        assert cpa_setup.solver_options.extraction_frequency == "10Ghz"
+        cpa_setup.solver_options.extraction_frequency = "20Ghz"
+        assert cpa_setup.solver_options.extraction_frequency == "20Ghz"
+        assert cpa_setup.solver_options.ground_power_nets_for_si
+        cpa_setup.solver_options.ground_power_nets_for_si = False
+        assert not cpa_setup.solver_options.ground_power_nets_for_si
+        assert cpa_setup.solver_options.mode == "si"
+        cpa_setup.solver_options.mode = "pi"
+        assert cpa_setup.solver_options.mode == "pi"
+        assert not cpa_setup.solver_options.model_type
+        assert cpa_setup.solver_options.rl_percent_refinement_per_pass == 0.33
+        cpa_setup.solver_options.rl_percent_refinement_per_pass = 0.66
+        assert cpa_setup.solver_options.rl_percent_refinement_per_pass == 0.66
+        cpa_setup.solver_options.small_hole_diameter = 0.1
+        assert cpa_setup.solver_options.small_hole_diameter == 0.1
+
+    def test_load_cpa_cfg(self, edb_examples):
+        from pyedb.siwave_core.cpa.simulation_setup_data_model import (
+            SIwaveCpaSetup,
+            Vrm,
+        )
+
+        cpa_cfg = SIwaveCpaSetup()
+        cpa_cfg.name = "test_cpa"
+        cpa_cfg.mode = "channel"
+        cpa_cfg.net_processing_mode = "userspecified"
+        cpa_cfg.use_q3d_solver = True
+        cpa_cfg.nets_to_process = ["VDD", "GND"]
+        cpa_cfg.return_path_net_for_loop_parameters = True
+        cpa_cfg.solver_options.small_hole_diameter = "auto"
+        cpa_cfg.solver_options.extraction_frequency = "15Ghz"
+        cpa_cfg.solver_options.custom_refinement = False
+        cpa_cfg.solver_options.compute_dc_parameters = True
+        cpa_cfg.solver_options.compute_ac_rl = True
+        cpa_cfg.solver_options.compute_capacitance = True
+        cpa_cfg.solver_options.rl_percent_refinement_per_pass = 0.45
+        cpa_cfg.solver_options.compute_dc_cg = True
+        cpa_cfg.solver_options.compute_dc_rl = True
+        cpa_cfg.solver_options.ground_power_ground_nets_for_si = True
+        cpa_cfg.solver_options.return_path_net_for_loop_parameters = False
+        vrm = Vrm(name="test_vrm", voltage=2.5, reference_net="GND", power_net="VDD")
+        cpa_cfg.channel_setup.vrm_setup = [vrm]
+        cpa_cfg.channel_setup.pin_grouping_mode = "perpin"
+        cpa_cfg.channel_setup.die_name = "die_test"
+        cpa_cfg.channel_setup.channel_component_exposure = {"U1": True, "X1": True}
+
+        cfg_dict = cpa_cfg.to_dict()
+        assert cfg_dict["name"] == "test_cpa"
+        cfg_dict["name"] = "test_cpa2"
+        cpa_cfg = cpa_cfg.from_dict(cfg_dict)
+        edbapp = edb_examples.get_si_verse()
+        cpa_setup = edbapp.siwave.add_cpa_analysis(siwave_cpa_setup_class=cpa_cfg)
+        assert cpa_setup.name == "test_cpa2"
+        assert cpa_setup.mode == "channel"
+        assert cpa_setup.net_processing_mode == "userspecified"
+        assert cpa_setup.use_q3d_solver
+        assert cpa_setup.nets_to_process == ["VDD", "GND"]
+        assert cpa_setup.model_type == "rlcg"
+        assert cpa_setup.channel_setup.channel_component_exposure == {"U1": True, "X1": True}
+        assert cpa_setup.channel_setup.die_name == "die_test"
+        assert cpa_setup.channel_setup.pin_grouping_mode == "perpin"
+        assert len(cpa_setup.channel_setup.vrm) == 1
+        assert cpa_setup.channel_setup.vrm[0].name == "test_vrm"
+        assert cpa_setup.channel_setup.vrm[0].voltage == 2.5
+        assert cpa_setup.channel_setup.vrm[0].reference_net == "GND"
+        assert cpa_setup.channel_setup.vrm[0].power_net == "VDD"
+        assert cpa_setup.solver_options.compute_dc_parameters == True
+        assert cpa_setup.solver_options.compute_ac_rl == True
+        assert cpa_setup.solver_options.compute_capacitance == True
+        assert cpa_setup.solver_options.compute_dc_cg == True
+        assert cpa_setup.solver_options.compute_dc_rl == True
+        assert cpa_setup.solver_options.rl_percent_refinement_per_pass == 0.45
+        assert cpa_setup.solver_options.small_hole_diameter == "auto"
+        assert cpa_setup.solver_options.extraction_frequency == "15Ghz"
+        assert cpa_setup.solver_options.ground_power_nets_for_si == True
+        assert not cpa_setup.solver_options.return_path_net_for_loop_parameters
+        edbapp.close()
