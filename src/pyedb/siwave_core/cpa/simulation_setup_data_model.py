@@ -1,8 +1,9 @@
-from dataclasses import dataclass, field
+from typing import Dict, List
+
+from pydantic import BaseModel, Field
 
 
-@dataclass
-class SolverOptions:
+class SolverOptions(BaseModel):
     extraction_mode: str = "si"
     custom_refinement: bool = False
     extraction_frequency: str = "10Ghz"
@@ -22,30 +23,27 @@ class SolverOptions:
     return_path_net_for_loop_parameters: bool = True
 
 
-@dataclass
-class Vrm:
+class Vrm(BaseModel):
     name: str = ""
     voltage: float = 0.0
     power_net: str = ""
     reference_net: str = ""
 
 
-@dataclass
-class ChannelSetup:
+class ChannelSetup(BaseModel):
     die_name: str = ""
-    pin_grouping_mode: str = "perpin"  # usediepingroups and ploc are supported
-    channel_component_exposure: dict[str, bool] = field(default_factory=dict)
-    vrm_setup: list[Vrm] = field(default_factory=list)
+    pin_grouping_mode: str = "perpin"
+    channel_component_exposure: Dict[str, bool] = Field(default_factory=dict)
+    vrm_setup: List[Vrm] = Field(default_factory=list)
 
 
-@dataclass
-class SIwaveCpaSetup:
+class SIwaveCpaSetup(BaseModel):
     name: str = ""
     mode: str = "channel"
     model_type: str = "rlcg"
     use_q3d_solver: bool = True
     net_processing_mode: str = "userspecified"
     return_path_net_for_loop_parameters: str = ""
-    channel_setup: ChannelSetup = field(default_factory=ChannelSetup)
-    solver_options: SolverOptions = field(default_factory=SolverOptions)
-    nets_to_process: list[str] = field(default_factory=list)
+    channel_setup: ChannelSetup = Field(default_factory=ChannelSetup)
+    solver_options: SolverOptions = Field(default_factory=SolverOptions)
+    nets_to_process: List[str] = Field(default_factory=list)
