@@ -43,7 +43,7 @@ class SIwaveCpaSetup(BaseModel):
     model_type: str = "rlcg"
     use_q3d_solver: bool = True
     net_processing_mode: str = "userspecified"
-    return_path_net_for_loop_parameters: str = ""
+    return_path_net_for_loop_parameters: bool = True
     channel_setup: ChannelSetup = Field(default_factory=ChannelSetup)
     solver_options: SolverOptions = Field(default_factory=SolverOptions)
     nets_to_process: List[str] = Field(default_factory=list)

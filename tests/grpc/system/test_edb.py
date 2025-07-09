@@ -2058,9 +2058,13 @@ class TestClass:
         cpa_cfg.channel_setup.die_name = "die_test"
         cpa_cfg.channel_setup.channel_component_exposure = {"U1": True, "X1": True}
 
+        cfg_dict = cpa_cfg.to_dict()
+        assert cfg_dict["name"] == "test_cpa"
+        cfg_dict["name"] = "test_cpa2"
+        cpa_cfg = cpa_cfg.from_dict(cfg_dict)
         edbapp = edb_examples.get_si_verse()
         cpa_setup = edbapp.siwave.add_cpa_analysis(siwave_cpa_setup_class=cpa_cfg)
-        assert cpa_setup.name == "test_cpa"
+        assert cpa_setup.name == "test_cpa2"
         assert cpa_setup.mode == "channel"
         assert cpa_setup.net_processing_mode == "userspecified"
         assert cpa_setup.use_q3d_solver
