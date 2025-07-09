@@ -2002,7 +2002,7 @@ class TestClass:
         assert cpa_setup.net_processing_mode == "all"
         cpa_setup.net_processing_mode = "userdefined"
         assert cpa_setup.net_processing_mode == "userdefined"
-        assert not cpa_setup.use_q3d
+        assert not cpa_setup.use_q3d_solver
         cpa_setup.use_q3d = True
         assert cpa_setup.use_q3d
         assert cpa_setup.solver_options.adaptive_refinement_cg_max_passes == 10
@@ -2050,6 +2050,7 @@ class TestClass:
         assert cpa_setup.solver_options.rl_percent_refinement_per_pass == 0.66
         cpa_setup.solver_options.small_hole_diameter = 0.1
         assert cpa_setup.solver_options.small_hole_diameter == 0.1
+        edbapp.close()
 
     def test_load_cpa_cfg(self, edb_examples):
         from pyedb.siwave_core.cpa.simulation_setup_data_model import (

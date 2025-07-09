@@ -26,20 +26,20 @@ class ChannelSetup:
     @property
     def die_name(self):
         return self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_CHANNEL_DIE_NAME
-        )
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_DIE_NAME
+        )[1]
 
     @die_name.setter
     def die_name(self, value):
         self._pedb.active_cell.SetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_CHANNEL_DIE_NAME, value
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_DIE_NAME, value
         )
 
     @property
     def pin_grouping_mode(self):
         mode_mapping = {-1: "perpin", 0: "ploc", 1: "usediepingroups"}
         pg_mode = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_CHANNEL_PIN_GROUPING_MODE
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_PIN_GROUPING_MODE
         )
         return mode_mapping[int(pg_mode.split(":")[1])] if pg_mode else "perpin"
 
@@ -53,7 +53,7 @@ class ChannelSetup:
         if not value in [-1, 0, 1]:
             raise f"wrong value {value}"
         self._pedb.active_cell.SetProductProperty(
-            self._pedb.Edb.ProductId.Siwave,
+            self._pedb._edb.ProductId.SIWave,
             SIwaveProperties.CPA_CHANNEL_PIN_GROUPING_MODE,
             self.die_name + ":" + str(value),
         )
@@ -61,7 +61,7 @@ class ChannelSetup:
     @property
     def channel_component_exposure(self):
         cmp_exposure = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.SiwaveE, SIwaveProperties.CPA_CHANNEL_COMPONENT_EXPOSURE_CONFIG
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_COMPONENT_EXPOSURE_CONFIG
         )
         cmp_dict = {}
         for comp in cmp_exposure.split("*"):
@@ -79,7 +79,7 @@ class ChannelSetup:
                 channel_comp_exposure += "*"
             channel_comp_exposure += f"{comp}:{int(enabled)}"
         self._pedb.active_cell.SetProductProperty(
-            self._pedb.Edb.ProductId.Siwave,
+            self._pedb._edb.ProductId.SIWave,
             SIwaveProperties.CPA_CHANNEL_COMPONENT_EXPOSURE_CONFIG,
             channel_comp_exposure,
         )
@@ -87,7 +87,7 @@ class ChannelSetup:
     @property
     def vrm(self):
         vrm = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_CHANNEL_VRM_SETUP
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_VRM_SETUP
         )
         vrm_list = []
         for _vrm in vrm.split("*"):
@@ -121,7 +121,7 @@ class ChannelSetup:
                 vrm_str += ":"
                 vrm_str += vrm.reference_net
         self._pedb.active_cell.SetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_CHANNEL_VRM_SETUP, vrm_str
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_VRM_SETUP, vrm_str
         )
 
     # vrm_setup: Vrm = None
@@ -176,7 +176,7 @@ class SolverOptions:
     @property
     def extraction_mode(self):
         mode = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_EXTRACTION_MODE
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_EXTRACTION_MODE
         )
         if mode == "1":
             return "si"
@@ -186,18 +186,18 @@ class SolverOptions:
     def extraction_mode(self, value):
         if value == "si":
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_EXTRACTION_MODE, "1"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_EXTRACTION_MODE, "1"
             )
         else:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_EXTRACTION_MODE, "0"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_EXTRACTION_MODE, "0"
             )
 
     @property
     def custom_refinement(self):
         refine = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_CUSTOM_REFINEMENT
-        ).value
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CUSTOM_REFINEMENT
+        )[-1]
         if refine == "1":
             return True
         return False
@@ -206,31 +206,31 @@ class SolverOptions:
     def custom_refinement(self, value):
         if value:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_CUSTOM_REFINEMENT, "1"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CUSTOM_REFINEMENT, "1"
             )
         else:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_CUSTOM_REFINEMENT, "0"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CUSTOM_REFINEMENT, "0"
             )
 
     @property
     def extraction_frequency(self):
         return self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_EXTRACTION_FREQUENCY
-        )
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_EXTRACTION_FREQUENCY
+        )[-1]
 
     @extraction_frequency.setter
     def extraction_frequency(self, value):
         freq = self._pedb.edb_value(value).ToString()
         self._pedb.active_cell.SetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_EXTRACTION_FREQUENCY, freq
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_EXTRACTION_FREQUENCY, freq
         )
 
     @property
     def compute_capacitance(self):
         compute = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_COMPUTE_CAPACITANCE
-        ).value
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_COMPUTE_CAPACITANCE
+        )[-1]
         if compute == "1":
             return True
         return False
@@ -239,18 +239,18 @@ class SolverOptions:
     def compute_capacitance(self, value):
         if value:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_COMPUTE_CAPACITANCE, "1"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_COMPUTE_CAPACITANCE, "1"
             )
         else:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_COMPUTE_CAPACITANCE, "0"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_COMPUTE_CAPACITANCE, "0"
             )
 
     @property
     def compute_dc_parameters(self):
         compute = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_COMPUTE_DC_PARAMS
-        ).value
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_COMPUTE_DC_PARAMS
+        )[-1]
         if compute == "1":
             return True
         return False
@@ -259,18 +259,18 @@ class SolverOptions:
     def compute_dc_parameters(self, value):
         if value:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_COMPUTE_DC_PARAMS, "1"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_COMPUTE_DC_PARAMS, "1"
             )
         else:
             self._pedb.active_cell.GetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_COMPUTE_DC_PARAMS, "0"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_COMPUTE_DC_PARAMS, "0"
             )
 
     @property
     def compute_dc_rl(self):
         _res = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_RL
-        )
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_RL
+        )[-1]
         if _res == "1":
             return True
         return False
@@ -279,18 +279,18 @@ class SolverOptions:
     def compute_dc_rl(self, value):
         if value:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_RL, "1"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_RL, "1"
             )
         else:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_RL, "0"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_RL, "0"
             )
 
     @property
     def compute_dc_cg(self):
         _res = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_CG
-        )
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_CG
+        )[-1]
         if _res == "1":
             return True
         return False
@@ -299,18 +299,18 @@ class SolverOptions:
     def compute_dc_cg(self, value):
         if value:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_CG, "1"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_CG, "1"
             )
         else:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_CG, "0"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_CG, "0"
             )
 
     @property
     def compute_ac_rl(self):
         _res = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_AC_PARAMS_COMPUTE_RL
-        )
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_AC_PARAMS_COMPUTE_RL
+        )[-1]
         if _res == "1":
             return True
         return False
@@ -319,18 +319,18 @@ class SolverOptions:
     def compute_ac_rl(self, value):
         if value:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_AC_PARAMS_COMPUTE_RL, "1"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_AC_PARAMS_COMPUTE_RL, "1"
             )
         else:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_AC_PARAMS_COMPUTE_RL, "0"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_AC_PARAMS_COMPUTE_RL, "0"
             )
 
     @property
     def ground_power_nets_for_si(self):
         _res = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_GROUND_PG_NETS_FOR_SI
-        )
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_GROUND_PG_NETS_FOR_SI
+        )[-1]
         if _res == "1":
             return True
         return False
@@ -339,18 +339,18 @@ class SolverOptions:
     def ground_power_nets_for_si(self, value):
         if value:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_GROUND_PG_NETS_FOR_SI, "1"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_GROUND_PG_NETS_FOR_SI, "1"
             )
         else:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_GROUND_PG_NETS_FOR_SI, "0"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_GROUND_PG_NETS_FOR_SI, "0"
             )
 
     @property
     def small_hole_diameter(self):
         _res = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_SMALL_HOLE_DIAMETER
-        )
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_SMALL_HOLE_DIAMETER
+        )[-1]
         if _res == "-1":
             return "auto"
         else:
@@ -360,11 +360,11 @@ class SolverOptions:
     def small_hole_diameter(self, value):
         if value == "auto" or value == -1:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_SMALL_HOLE_DIAMETER, "-1"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_SMALL_HOLE_DIAMETER, "-1"
             )
         else:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave,
+                self._pedb._edb.ProductId.SIWave,
                 SIwaveProperties.CPA_SMALL_HOLE_DIAMETER,
                 self._pedb.edb_value(value).ToString(),
             )
@@ -372,41 +372,41 @@ class SolverOptions:
     @property
     def model_type(self):
         return self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_MODEL_TYPE
-        )
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_MODEL_TYPE
+        )[-1]
 
     @model_type.setter
     def model_type(self, value):
         self._pedb.active_cell.SetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_MODEL_TYPE, value.lower()
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_MODEL_TYPE, value.lower()
         )
 
     @property
     def adaptive_refinement_cg_max_passes(self):
         return int(
             self._pedb.active_cell.GetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_MAX_PASSES
-            )
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_MAX_PASSES
+            )[-1]
         )
 
     @adaptive_refinement_cg_max_passes.setter
     def adaptive_refinement_cg_max_passes(self, value):
         self._pedb.active_cell.SetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_MAX_PASSES, str(int(value))
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_MAX_PASSES, str(int(value))
         )
 
     @property
     def adaptive_refinement_cg_percent_error(self):
         return float(
             self._pedb.active_cell.GetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_PERCENT_ERROR
-            )
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_PERCENT_ERROR
+            )[-1]
         )
 
     @adaptive_refinement_cg_percent_error.setter
     def adaptive_refinement_cg_percent_error(self, value):
         self._pedb.active_cell.SetProductProperty(
-            self._pedb.Edb.ProductId.Siwave,
+            self._pedb._edb.ProductId.SIWave,
             SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_PERCENT_ERROR,
             str(float(value)),
         )
@@ -415,14 +415,15 @@ class SolverOptions:
     def cg_percent_refinement_per_pass(self):
         return float(
             self._pedb.active_cell.GetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_PERCENT_REFINEMENT_PER_PASS
-            )
+                self._pedb._edb.ProductId.SIWave,
+                SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_PERCENT_REFINEMENT_PER_PASS,
+            )[-1]
         )
 
     @cg_percent_refinement_per_pass.setter
     def cg_percent_refinement_per_pass(self, value):
         self._pedb.active_cell.SetProductProperty(
-            self._pedb.Edb.ProductId.Siwave,
+            self._pedb._edb.ProductId.SIWave,
             SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_PERCENT_REFINEMENT_PER_PASS,
             str(float(value)),
         )
@@ -432,29 +433,29 @@ class SolverOptions:
         return int(
             float(
                 self._pedb.active_cell.GetProductProperty(
-                    self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_MAX_PASSES
-                )
+                    self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_MAX_PASSES
+                )[-1]
             )
         )
 
     @adaptive_refinement_rl_max_passes.setter
     def adaptive_refinement_rl_max_passes(self, value):
         self._pedb.active_cell.SetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_MAX_PASSES, str(float(value))
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_MAX_PASSES, str(float(value))
         )
 
     @property
     def adaptive_refinement_rl_percent_error(self):
         return float(
             self._pedb.active_cell.GetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_PERCENT_ERROR
-            )
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_PERCENT_ERROR
+            )[-1]
         )
 
     @adaptive_refinement_rl_percent_error.setter
     def adaptive_refinement_rl_percent_error(self, value):
         self._pedb.active_cell.SetProductProperty(
-            self._pedb.Edb.ProductId.Siwave,
+            self._pedb._edb.ProductId.SIWave,
             SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_PERCENT_ERROR,
             str(float(value)),
         )
@@ -463,14 +464,15 @@ class SolverOptions:
     def rl_percent_refinement_per_pass(self):
         return float(
             self._pedb.active_cell.GetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_PERCENT_REFINEMENT_PER_PASS
-            )
+                self._pedb._edb.ProductId.SIWave,
+                SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_PERCENT_REFINEMENT_PER_PASS,
+            )[-1]
         )
 
     @rl_percent_refinement_per_pass.setter
     def rl_percent_refinement_per_pass(self, value):
         self._pedb.active_cell.SetProductProperty(
-            self._pedb.Edb.ProductId.Siwave,
+            self._pedb._edb.ProductId.SIWave,
             SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_PERCENT_REFINEMENT_PER_PASS,
             str(float(value)),
         )
@@ -478,8 +480,8 @@ class SolverOptions:
     @property
     def return_path_net_for_loop_parameters(self):
         _res = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_RETURN_PATH_NET_FOR_LOOP_PARAMS
-        )
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_RETURN_PATH_NET_FOR_LOOP_PARAMS
+        )[-1]
         if _res == "1":
             return True
         return False
@@ -488,11 +490,11 @@ class SolverOptions:
     def return_path_net_for_loop_parameters(self, value):
         if value:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_RETURN_PATH_NET_FOR_LOOP_PARAMS, "1"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_RETURN_PATH_NET_FOR_LOOP_PARAMS, "1"
             )
         else:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_RETURN_PATH_NET_FOR_LOOP_PARAMS, "0"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_RETURN_PATH_NET_FOR_LOOP_PARAMS, "0"
             )
 
 
@@ -508,13 +510,13 @@ class SIWaveCPASimulationSetup:
 
         if (
             not self._pedb.active_cell.GetProductProperty(
-                self._pedb.Edb.ProductId.Siwave,
+                self._pedb._edb.ProductId.SIWave,
                 SIwaveProperties.CPA_SIM_NAME,
             )
             == name
         ):
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_SIM_NAME, name
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_SIM_NAME, name
             )
 
     def __init_values(self):
@@ -536,17 +538,21 @@ class SIWaveCPASimulationSetup:
 
     @property
     def name(self) -> str:
-        return self._pedb.active_cell.GetProductProperty(self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_SIM_NAME)
+        return self._pedb.active_cell.GetProductProperty(
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_SIM_NAME
+        )[-1]
 
     @name.setter
     def name(self, value):
-        self._pedb.active_cell.SetProductProperty(self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_SIM_NAME, value)
+        self._pedb.active_cell.SetProductProperty(
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_SIM_NAME, value
+        )
 
     @property
     def mode(self):
         cpa_mode = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_CHANNEL_SETUP
-        )
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_SETUP
+        )[-1]
         if cpa_mode == "1":
             return "channel"
         return "no_channel"
@@ -555,18 +561,18 @@ class SIWaveCPASimulationSetup:
     def mode(self, value):
         if value == "channel":
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_CHANNEL_SETUP, "1"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_SETUP, "1"
             )
         else:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_CHANNEL_SETUP, "0"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_SETUP, "0"
             )
 
     @property
     def model_type(self):
         mod_type = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_ESD_R_MODEL
-        )
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_ESD_R_MODEL
+        )[-1]
         if mod_type == "0":
             return "rlcg"
         else:
@@ -576,11 +582,11 @@ class SIWaveCPASimulationSetup:
     def model_type(self, value):
         if value == "rlcg":
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_ESD_R_MODEL, "0"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_ESD_R_MODEL, "0"
             )
         elif value == "esd_r":
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_ESD_R_MODEL, "1"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_ESD_R_MODEL, "1"
             )
 
     @property
@@ -588,8 +594,8 @@ class SIWaveCPASimulationSetup:
         return bool(
             int(
                 self._pedb.active_cell.GetProductProperty(
-                    self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_USE_Q3D_SOLVER
-                )
+                    self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_USE_Q3D_SOLVER
+                )[-1]
             )
         )
 
@@ -597,23 +603,23 @@ class SIWaveCPASimulationSetup:
     def use_q3d_solver(self, value):
         if value:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_USE_Q3D_SOLVER, "1"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_USE_Q3D_SOLVER, "1"
             )
         else:
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_USE_Q3D_SOLVER, "0"
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_USE_Q3D_SOLVER, "0"
             )
 
     @property
     def net_processing_mode(self):
         return self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_NET_PROCESSING_MODE
-        )
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_NET_PROCESSING_MODE
+        )[-1]
 
     @net_processing_mode.setter
     def net_processing_mode(self, value):
         self._pedb.active_cell.SetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_NET_PROCESSING_MODE, str(value)
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_NET_PROCESSING_MODE, str(value)
         )
 
     @property
@@ -637,8 +643,8 @@ class SIWaveCPASimulationSetup:
     @property
     def nets_to_process(self):
         nets = self._pedb.active_cell.GetProductProperty(
-            self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_NETS_TO_PROCESS
-        )
+            self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_NETS_TO_PROCESS
+        )[-1]
         return nets.split("*")
 
     @nets_to_process.setter
@@ -646,7 +652,7 @@ class SIWaveCPASimulationSetup:
         if isinstance(value, list):
             nets = "*".join(value)
             self._pedb.active_cell.SetProductProperty(
-                self._pedb.Edb.ProductId.Siwave, SIwaveProperties.CPA_NETS_TO_PROCESS, nets
+                self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_NETS_TO_PROCESS, nets
             )
         else:
             raise TypeError("nets_to_process must be a list of strings.")
