@@ -47,3 +47,21 @@ class SIwaveCpaSetup(BaseModel):
     channel_setup: ChannelSetup = Field(default_factory=ChannelSetup)
     solver_options: SolverOptions = Field(default_factory=SolverOptions)
     nets_to_process: List[str] = Field(default_factory=list)
+
+    @classmethod
+    def from_dict(cls, data: Dict) -> "SIwaveCpaSetup":
+        """Convert dictionary to SIwaveCpaSetup object."""
+        if "channel_setup" in data:
+            data["channel_setup"] = ChannelSetup(**data["channel_setup"])
+        if "solver_options" in data:
+            data["solver_options"] = SolverOptions(**data["solver_options"])
+        return cls(**data)
+
+    def to_dict(self) -> Dict:
+        """Convert SIwaveCpaSetup object to dictionary."""
+        data = self.model_dump()
+        if self.channel_setup:
+            data["channel_setup"] = self.channel_setup.model_dump()
+        if self.solver_options:
+            data["solver_options"] = self.solver_options.model_dump()
+        return data
