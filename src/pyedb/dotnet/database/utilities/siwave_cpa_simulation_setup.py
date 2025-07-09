@@ -40,7 +40,7 @@ class ChannelSetup:
         mode_mapping = {-1: "perpin", 0: "ploc", 1: "usediepingroups"}
         pg_mode = self._pedb.active_cell.GetProductProperty(
             self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_PIN_GROUPING_MODE
-        )
+        )[-1]
         return mode_mapping[int(pg_mode.split(":")[1])] if pg_mode else "perpin"
 
     @pin_grouping_mode.setter
@@ -62,7 +62,7 @@ class ChannelSetup:
     def channel_component_exposure(self):
         cmp_exposure = self._pedb.active_cell.GetProductProperty(
             self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_COMPONENT_EXPOSURE_CONFIG
-        )
+        )[-1]
         cmp_dict = {}
         for comp in cmp_exposure.split("*"):
             _comp = comp.split(":")
@@ -88,7 +88,7 @@ class ChannelSetup:
     def vrm(self):
         vrm = self._pedb.active_cell.GetProductProperty(
             self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_VRM_SETUP
-        )
+        )[-1]
         vrm_list = []
         for _vrm in vrm.split("*"):
             vrm_obj = Vrm()
