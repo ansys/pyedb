@@ -35,23 +35,156 @@ from pyedb.misc.misc import list_installed_ansysem
 def convert_technology_file(tech_file, edbversion=None, control_file=None):
     """Convert a technology file to EDB control file (XML).
 
-    Parameters
-    ----------
-    tech_file : str
-        Full path to technology file.
-    edbversion : str, optional
-        EDB version to use. If ``None``, uses latest available version.
-    control_file : str, optional
-        Output control file path. If ``None``, uses same path and name as ``tech_file``.
+        Parameters
+        ----------
+        tech_file : str
+            Full path to technology file.
+        edbversion : str, optional
+            EDB version to use. If ``None``, uses latest available version.
+        control_file : str, optional
+            Output control file path. If ``None``, uses same path and name as ``tech_file``.
 
-    Returns
-    -------
-    str or bool
-        Full path to created control file if successful, ``False`` otherwise.
+        Returns
+        -------
+        str or bool
+            Full path to created control file if successful, ``False`` otherwise.
 
-    Notes
-    -----
-    This function is only supported on Linux systems.
+        Notes
+        -----
+        This function is only supported on Linux systems.
+
+        Example
+        -------
+        # Example 1: Converting a technology file to control file
+    >>> converted_file = convert_technology_file(
+    >>> tech_file="/path/to/tech.t",
+    >>> edbversion="2025.2",
+    >>> control_file="/path/to/output.xml"
+    >>> )
+    >>> if converted_file:
+    >>> print(f"Converted to: {converted_file}")
+
+        # Example 2: Creating a material
+    >>> from pyedb import ControlFileMaterial
+    >>> material = ControlFileMaterial(
+    >>> "Copper",
+    >>> {"Permittivity": 1.0, "Conductivity": 5.8e7}
+    >>> )
+
+        # Example 3: Creating a dielectric layer
+    >>> from pyedb import ControlFileDielectric
+    >>> dielectric = ControlFileDielectric(
+    >>> "Core",
+    >>> {"Thickness": "0.2mm", "Material": "FR4"}
+    >>> )
+
+        # Example 4: Creating a signal layer
+    >>> from pyedb import ControlFileLayer
+    >>> signal_layer = ControlFileLayer(
+    >>> "TopLayer",
+    >>> {"Type": "signal", "Material": "Copper", "Thickness": "0.035mm"}
+    >>> )
+
+        # Example 5: Creating a via layer
+    >>> from pyedb import ControlFileVia
+    >>> via_layer = ControlFileVia(
+    >>> "Via1",
+    >>> {"StartLayer": "TopLayer", "StopLayer": "BottomLayer"}
+    >>> )
+    >>> via_layer.create_via_group = True
+    >>> via_layer.tolerance = "0.1mm"
+
+        # Example 6: Managing stackup
+    >>> from pyedb import ControlFileStackup
+    >>> stackup = ControlFileStackup(units="mm")
+    >>> stackup.add_material("FR4", permittivity=4.4, dielectric_loss_tg=0.02)
+    >>> stackup.add_layer("L1", elevation=0, material="Copper", thickness=0.035)
+    >>> stackup.add_dielectric("Diel1", material="FR4", thickness=0.2)
+    >>> stackup.add_via("Via1", start_layer="L1", stop_layer="L2")
+
+        # Example 7: Configuring import options
+    >>> from pyedb import ControlFileImportOptions
+    >>> import_ops = ControlFileImportOptions()
+    >>> import_ops.auto_close = True
+    >>> import_ops.defeature_tolerance = 0.001
+
+        # Example 8: Setting up simulation extents
+    >>> from pyedb import ControlExtent
+    >>> extent = ControlExtent(
+    >>> type="Conforming",
+    >>> diel_hactor=0.3,
+    >>> airbox_hfactor=0.5
+    >>> )
+
+        # Example 9: Creating circuit ports
+    >>> from pyedb import ControlCircuitPt
+    >>> port = ControlCircuitPt("Port1", 0, 0, "TopLayer", 1, 0, "TopLayer", 50)
+
+        # Example 10: Managing components
+    >>> from pyedb import ControlFileComponent
+    >>> comp = ControlFileComponent()
+    >>> comp.refdes = "U1"
+    >>> comp.add_pin("Pin1", 0.5, 0.5, "TopLayer")
+    >>> comp.add_port("Port1", 50, "Pin1", refpin="GND")
+
+        # Example 11: Component management
+    >>> from pyedb import ControlFileComponents
+    >>> components = ControlFileComponents()
+    >>> ic = components.add_component("U1", "BGA", "IC", die_type="Flip chip")
+    >>> ic.add_pin("A1", 1.0, 1.0, "TopLayer")
+
+         # Example 12: Boundary setup
+    >>> from pyedb import ControlFileBoundaries
+    >>> boundaries = ControlFileBoundaries()
+    >>> boundaries.add_port("Port1", 0, 0, "L1", 1, 0, "L1", 50)
+    >>> boundaries.add_extent(diel_hactor=0.3)
+
+        # Example 13: Frequency sweep configuration
+    >>> from pyedb import ControlFileSweep
+    >>> sweep = ControlFileSweep(
+    >>> "Sweep1", "1GHz", "10GHz", "0.1GHz",
+    >>> "Interpolating", "LinearStep", True
+    >>> )
+
+        # Example 14: Mesh operation setup
+    >>> from pyedb import ControlFileMeshOp
+    >>> mesh_op = ControlFileMeshOp(
+    >>> "FineMesh", "Region1", "MeshOperationSkinDepth",
+    >>> {"Net1": "TopLayer"}
+    >>> )
+    >>> mesh_op.skin_depth = "1um"
+
+        # Example 15: Simulation setup configuration
+    >>> from pyedb import ControlFileSetup
+    >>> setup = ControlFileSetup("SimSetup1")
+    >>> setup.frequency = "5GHz"
+    >>> setup.add_sweep("Sweep1", "1GHz", "10GHz", "0.5GHz")
+    >>> setup.add_mesh_operation("Mesh1", "Chip", "MeshOperationLength", {"PWR": "Top"})
+
+        # Example 16: Setup management
+    >>> from pyedb import ControlFileSetups
+    >>> setups = ControlFileSetups()
+    >>> sim_setup = setups.add_setup("MySetup", "10GHz")
+    >>> sim_setup.add_sweep("Swp1", "1GHz", "20GHz", 100, step_type="LinearCount")
+
+        # Example 17: Main control file creation
+    >>> from pyedb import ControlFile
+
+        # Create from scratch
+    >>> ctrl = ControlFile()
+    >>> ctrl.stackup.add_material("Copper", conductivity=5.8e7)
+    >>> ctrl.stackup.add_layer("Signal", thickness=0.035, material="Copper")
+    >>> ctrl.boundaries.add_port("Input", 0, 0, "Signal", 1, 0, "Signal", 50)
+    >>> ctrl.write_xml("/path/to/control.xml")
+
+        # Parse existing file
+    >>> ctrl = ControlFile(xml_input="/path/to/existing.xml")
+
+        # Convert technology file
+    >>> ctrl = ControlFile(tecnhology="/path/to/tech.t")
+
+        # Apply layer mapping
+    >>> ctrl.parse_layer_map("/path/to/layer_map.txt")
     """
     if is_linux:  # pragma: no cover
         if not edbversion:

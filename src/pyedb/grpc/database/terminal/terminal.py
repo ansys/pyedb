@@ -441,7 +441,7 @@ class Terminal(GrpcTerminal):
             return PadstackInstance(self._pedb.pin_obj)
 
     @property
-    def magnitude(self) -> FLOAT:
+    def magnitude(self) -> float:
         """Get the magnitude of the source.
 
         Returns

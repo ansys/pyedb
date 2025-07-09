@@ -27,7 +27,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 
 
 class PinPairModel(GrpcPinPairModel):
-    """Manage pin pair model."""
+    """Manage pin-pair model."""
 
     def __init__(self, pedb, edb_object):
         self._pedb_comp = pedb

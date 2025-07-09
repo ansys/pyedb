@@ -1095,7 +1095,7 @@ class PadstackInstance(GrpcPadstackInstance):
 
     def get_reference_pins(
         self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True
-    ) -> list[PadstackInstance]:
+    ) -> list[any]:
         """Search for reference pins using given criteria.
 
         Parameters

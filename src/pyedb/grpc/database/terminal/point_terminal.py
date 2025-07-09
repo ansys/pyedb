@@ -69,7 +69,7 @@ class PointTerminal(GrpcPointTerminal):
             super(PointTerminal, self.__class__).layer.__set__(self, value)
 
     @property
-    def ref_terminal(self) -> PointTerminal:
+    def ref_terminal(self) -> any:
         """Reference terminal.
 
         Returns
@@ -84,7 +84,7 @@ class PointTerminal(GrpcPointTerminal):
         super().reference_terminal = value
 
     @property
-    def reference_terminal(self) -> PointTerminal:
+    def reference_terminal(self) -> any:
         """Reference terminal.
 
         Returns

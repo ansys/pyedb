@@ -130,6 +130,11 @@ class Padstacks(object):
         -------
         object
             EDB.PadType enumerator value.
+
+        Examples
+        --------
+        >>> pad_type = edb_padstacks.int_to_pad_type(0)  # Returns REGULAR_PAD
+        >>> pad_type = edb_padstacks.int_to_pad_type(1)  # Returns ANTI_PAD
         """
 
         if val == 0:
@@ -156,6 +161,11 @@ class Padstacks(object):
         -------
         object
             EDB.PadGeometryType enumerator value.
+
+        Examples
+        --------
+        >>> geom_type = edb_padstacks.int_to_geometry_type(1)  # Returns CIRCLE
+        >>> geom_type = edb_padstacks.int_to_geometry_type(2)  # Returns SQUARE
         """
         if val == 0:
             return GrpcPadGeometryType.PADGEOMTYPE_NO_GEOMETRY
@@ -192,6 +202,12 @@ class Padstacks(object):
         -------
         dict[str, :class:`pyedb.grpc.database.definition.padstack_def.PadstackDef`]
             Dictionary of padstack definitions with definition names as keys.
+
+        Examples
+        --------
+        >>> all_definitions = edb_padstacks.definitions
+        >>> for name, definition in all_definitions.items():
+        ...     print(f"Padstack: {name}")
         """
         if len(self._definitions) == len(self.db.padstack_defs):
             return self._definitions
@@ -209,6 +225,12 @@ class Padstacks(object):
         -------
         dict[int, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
             Dictionary of padstack instances with database IDs as keys.
+
+        Examples
+        --------
+        >>> all_instances = edb_padstacks.instances
+        >>> for id, instance in all_instances.items():
+        ...     print(f"Instance {id}: {instance.name}")
         """
         pad_stack_inst = self._pedb.layout.padstack_instances
         if len(self._instances) == len(pad_stack_inst):
@@ -224,6 +246,12 @@ class Padstacks(object):
         -------
         dict[str, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
             Dictionary of padstack instances with names as keys.
+
+        Examples
+        --------
+        >>> named_instances = edb_padstacks.instances_by_name
+        >>> for name, instance in named_instances.items():
+        ...     print(f"Instance named {name}")
         """
         padstack_instances = {}
         for _, edb_padstack_instance in self.instances.items():
@@ -243,6 +271,12 @@ class Padstacks(object):
         -------
         :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance` or None
             Padstack instance if found, otherwise ``None``.
+
+        Examples
+        --------
+        >>> via = edb_padstacks.find_instance_by_id(123)
+        >>> if via:
+        ...     print(f"Found via: {via.name}")
         """
         return self._pedb.modeler.find_object_by_id(value)
 
@@ -254,6 +288,12 @@ class Padstacks(object):
         -------
         dict[int, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
             Dictionary of pin instances with database IDs as keys.
+
+        Examples
+        --------
+        >>> all_pins = edb_padstacks.pins
+        >>> for pin_id, pin in all_pins.items():
+        ...     print(f"Pin {pin_id} belongs to {pin.component.refdes}")
         """
         pins = {}
         for instancename, instance in self.instances.items():
@@ -269,6 +309,12 @@ class Padstacks(object):
         -------
         dict[int, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
             Dictionary of via instances with database IDs as keys.
+
+        Examples
+        --------
+        >>> all_vias = edb_padstacks.vias
+        >>> for via_id, via in all_vias.items():
+        ...     print(f"Via {via_id} on net {via.net_name}")
         """
         pnames = list(self.pins.keys())
         vias = {i: j for i, j in self.instances.items() if i not in pnames}
@@ -285,6 +331,11 @@ class Padstacks(object):
         -------
         list
             List of all layout pin groups.
+
+        Examples
+        --------
+        >>> groups = edb_padstacks.pingroups  # Deprecated
+        >>> groups = edb_padstacks._layout.pin_groups  # New way
         """
         warnings.warn(
             "`pingroups` is deprecated and is now located here " "`pyedb.grpc.core.layout.pin_groups` instead.",
@@ -328,6 +379,15 @@ class Padstacks(object):
         -------
         str
             Name of the padstack if the operation is successful.
+
+        Examples
+        --------
+        >>> via_name = edb_padstacks.create_circular_padstack(
+        ...     padstackname="VIA1",
+        ...     holediam="200um",
+        ...     paddiam="400um",
+        ...     antipaddiam="600um"
+        ... )
         """
 
         padstack_def = PadstackDef.create(self._pedb.db, padstackname)
@@ -411,6 +471,11 @@ class Padstacks(object):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> success = edb_padstacks.delete_padstack_instances("GND")
+        >>> success = edb_padstacks.delete_padstack_instances(["GND", "PWR"])
         """
         if not isinstance(net_names, list):  # pragma: no cover
             net_names = [net_names]
@@ -439,6 +504,11 @@ class Padstacks(object):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> via_id = 123
+        >>> success = edb_padstacks.set_solderball(via_id, "SolderBall_Top", True, 150e-6)
         """
         if isinstance(padstackInst, int):
             psdef = self.definitions[self.instances[padstackInst].padstack_definition].edb_padstack
@@ -512,6 +582,11 @@ class Padstacks(object):
         -------
         list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
             List of matching pin instances.
+
+        Examples
+        --------
+        >>> pins = edb_padstacks.get_pin_from_component_and_net(refdes="U1", netname="VCC")
+        >>> pins = edb_padstacks.get_pin_from_component_and_net(netname="GND")  # All GND pins
         """
         pinlist = []
         if refdes:
@@ -551,6 +626,10 @@ class Padstacks(object):
             Dictionary of pins if the operation is successful.
             ``False`` is returned if the net does not belong to the component.
 
+        Examples
+        --------
+        >>> pins = edb_padstacks.get_pinlist_from_component_and_net(refdes="U1", netname="CLK")  # Deprecated
+        >>> pins = edb_padstacks.get_pin_from_component_and_net(refdes="U1", netname="CLK")  # New way
         """
         warnings.warn(
             "`get_pinlist_from_component_and_net` is deprecated use `get_pin_from_component_and_net` instead.",
@@ -579,6 +658,11 @@ class Padstacks(object):
             - offset_x : float
             - offset_y : float
             - rotation : float
+
+        Examples
+        --------
+        >>> via = edb_padstacks.instances[123]
+        >>> geom_type, params, x, y, rot = edb_padstacks.get_pad_parameters(via, "TOP", "regular_pad")
         """
         if pad_type == "regular_pad":
             pad_type = GrpcPadType.REGULAR_PAD
@@ -622,6 +706,10 @@ class Padstacks(object):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> success = edb_padstacks.set_all_antipad_value("0.3mm")
         """
         if self.definitions:
             all_succeed = True
@@ -675,6 +763,10 @@ class Padstacks(object):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> success = edb_padstacks.check_and_fix_via_plating(minimum_value_to_replace=0.1)
         """
         for padstack_def in list(self.definitions.values()):
             if padstack_def.hole_plating_ratio <= minimum_value_to_replace:
@@ -696,6 +788,11 @@ class Padstacks(object):
         -------
         list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
             List of via instances.
+
+        Examples
+        --------
+        >>> vias = edb_padstacks.get_via_instance_from_net("GND")
+        >>> vias = edb_padstacks.get_via_instance_from_net(["GND", "PWR"])
         """
         if net_list and not isinstance(net_list, list):
             net_list = [net_list]

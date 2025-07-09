@@ -20,6 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from typing import List, Optional, Union
+
+from pydantic import BaseModel
+
 
 class CfgBase:
     protected_attributes = ["pedb", "pyedb_obj", "api"]
@@ -41,21 +45,14 @@ class CfgBase:
             setattr(pedb_object, attr, value)
 
 
-class CfgVar:
-    def __init__(self, **kwargs):
-        self.name = kwargs["name"]
-        self.value = kwargs["value"]
-        self.description = kwargs.get("description", "")
+class CfgVar(BaseModel):
+    name: str
+    value: Union[int, float, str]
+    description: Optional[str] = ""
 
 
-class CfgVariables:
-    def __init__(self, pedb, data):
-        self._pedb = pedb
-        self.variables = [CfgVar(**i) for i in data]
+class CfgVariables(BaseModel):
+    variables: List[CfgVar] = []
 
-    def apply(self):
-        for i in self.variables:
-            if i.name.startswith("$"):
-                self._pedb.add_project_variable(i.name, i.value)
-            else:
-                self._pedb.add_design_variable(i.name, i.value)
+    def add_variable(self, name, value, description=""):
+        self.variables.append(CfgVar(name=name, value=value, description=description))

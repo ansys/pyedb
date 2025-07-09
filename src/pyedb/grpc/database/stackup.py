@@ -94,7 +94,14 @@ class LayerCollection(GrpcLayerCollection):
         self._pedb = pedb
 
     def update_layout(self):
-        """Update the layout with the current layer collection."""
+        """Update the layout with the current layer collection.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.stackup.update_layout()
+        """
         self._pedb.layout.layer_collection = self
 
     def add_layer_top(self, name, layer_type="signal", **kwargs):
@@ -115,6 +122,13 @@ class LayerCollection(GrpcLayerCollection):
         -------
         :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
             Layer object created.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> top_layer = edb.stackup.add_layer_top("NewTopLayer", layer_type="signal", thickness="0.1mm",
+        ... material="copper")
         """
         thickness = GrpcValue(0.0)
         if "thickness" in kwargs:
@@ -147,6 +161,13 @@ class LayerCollection(GrpcLayerCollection):
         -------
         :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
             Layer object created.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> bot_layer = edb.stackup.add_layer_bottom("NewBottomLayer", layer_type="signal", thickness="0.1mm",
+        ... material="copper")
         """
         thickness = GrpcValue(0.0)
         layer_type_map = {"dielectric": GrpcLayerType.DIELECTRIC_LAYER, "signal": GrpcLayerType.SIGNAL_LAYER}
@@ -188,6 +209,12 @@ class LayerCollection(GrpcLayerCollection):
         -------
         :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
             Layer object created.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> new_layer = edb.stackup.add_layer_below("NewLayer", "TopLayer", layer_type="dielectric", thickness="0.05mm")
         """
         thickness = GrpcValue(0.0)
         if "thickness" in kwargs:
@@ -229,6 +256,12 @@ class LayerCollection(GrpcLayerCollection):
         -------
         :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
             Layer object created.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> new_layer = edb.stackup.add_layer_above("NewLayer", "BottomLayer", layer_type="signal", thickness="0.05mm")
         """
         thickness = GrpcValue(0.0)
         if "thickness" in kwargs:
@@ -258,6 +291,12 @@ class LayerCollection(GrpcLayerCollection):
         -------
         :class:`pyedb.grpc.database.layers.layer.Layer`
             Layer object created.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> outline_layer = edb.stackup.add_document_layer("Outline", layer_type="outline")
         """
         added_layer = self.add_layer_top(name)
         added_layer.type = GrpcLayerType.USER_LAYER
@@ -286,6 +325,12 @@ class LayerCollection(GrpcLayerCollection):
         -------
         dict[str, :class:`pyedb.grpc.database.layers.layer.Layer`]
             Dictionary of non-stackup layers.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> non_stackup = edb.stackup.non_stackup_layers
         """
         return {
             layer.name: Layer(self._pedb, layer) for layer in self.get_layers(GrpcLayerTypeSet.NON_STACKUP_LAYER_SET)
@@ -299,6 +344,12 @@ class LayerCollection(GrpcLayerCollection):
         -------
         dict[str, :class:`pyedb.grpc.database.layers.layer.Layer`]
             Dictionary of all layers.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> all_layers = edb.stackup.all_layers
         """
         return {layer.name: Layer(self._pedb, layer) for layer in self.get_layers(GrpcLayerTypeSet.ALL_LAYER_SET)}
 
@@ -310,6 +361,12 @@ class LayerCollection(GrpcLayerCollection):
         -------
         dict[str, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
             Dictionary of signal layers.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> signal_layers = edb.stackup.signal_layers
         """
         return {
             layer.name: StackupLayer(self._pedb, layer) for layer in self.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
@@ -323,6 +380,12 @@ class LayerCollection(GrpcLayerCollection):
         -------
         dict[str, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
             Dictionary of dielectric layers.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> dielectric_layers = edb.stackup.dielectric_layers
         """
         return {
             layer.name: StackupLayer(self._pedb, layer)
@@ -337,6 +400,12 @@ class LayerCollection(GrpcLayerCollection):
         -------
         list[list[int, str]]
             List of layers with their IDs and names.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> layers_by_id = edb.stackup.layers_by_id
         """
         return [[obj.id, name] for name, obj in self.all_layers.items()]
 
@@ -348,6 +417,12 @@ class LayerCollection(GrpcLayerCollection):
         -------
         dict[str, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
             Dictionary of stackup layers.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> layers = edb.stackup.layers
         """
         return {obj.name: StackupLayer(self._pedb, obj) for obj in self.get_layers(GrpcLayerTypeSet.STACKUP_LAYER_SET)}
 
@@ -418,6 +493,12 @@ class Stackup(LayerCollection):
         -------
         float
             Stackup thickness.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> thickness = edb.stackup.thickness
         """
         return self.get_layout_thickness()
 
@@ -429,6 +510,12 @@ class Stackup(LayerCollection):
         -------
         int
             Number of layers.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> num_layers = edb.stackup.num_layers
         """
         return len(list(self.layers.keys()))
 
@@ -441,7 +528,7 @@ class Stackup(LayerCollection):
         dielectric_material="FR4_epoxy",
         soldermask=True,
         soldermask_thickness="20um",
-    ):  # pragma: no cover
+    ) -> bool:  # pragma: no cover
         """Create a symmetric stackup.
 
         Parameters
@@ -465,6 +552,12 @@ class Stackup(LayerCollection):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.stackup.create_symmetric_stackup(layer_count=4)
         """
         if not np:
             self._pedb.logger.error("Numpy is needed. Please, install it first.")
@@ -566,6 +659,12 @@ class Stackup(LayerCollection):
             - ``"laminate"``
             - ``"overlapping"``
             - ``"multizone"``
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> mode = edb.stackup.mode
         """
         return super().mode.name.lower()
 
@@ -699,6 +798,12 @@ class Stackup(LayerCollection):
         -------
         bool
             ``True`` when successful.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.stackup.add_outline_layer()
         """
         return self.add_document_layer(name="Outline", layer_type="outline")
 

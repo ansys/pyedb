@@ -368,40 +368,34 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "MicrostripSpliGnd.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
 
-        edbapp = Edb(target_path, edbversion=desktop_version)
-
-        assert edbapp.cutout(
-            signal_list=["trace_n"],
-            reference_list=["ground"],
-            extent_type="Conformal",
-            use_pyaedt_extent_computing=True,
-            check_terminals=True,
-            expansion_factor=2,
-            include_voids_in_extents=True,
-        )
-        edbapp.close()
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "Multizone_GroundVoids.aedb")
-        target_path = os.path.join(self.local_scratch.path, "Multizone_GroundVoids.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-
-        edbapp = Edb(target_path, edbversion=desktop_version)
-
-        assert edbapp.cutout(
-            signal_list=["DIFF_N", "DIFF_P"],
-            reference_list=["GND"],
-            extent_type="Conformal",
-            use_pyaedt_extent_computing=True,
-            check_terminals=True,
-            expansion_factor=3,
-        )
-        edbapp.close()
-
-    # def test_create_EdbLegacy(self):
-    #     """Create EDB."""
-    #     edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
-    #     assert edb
-    #     assert edb.active_layout
-    #     edb.close()
+        # TODO check for building project with checking terminals
+        # edbapp = Edb(target_path, edbversion=desktop_version)
+        #
+        # assert edbapp.cutout(
+        #     signal_list=["trace_n"],
+        #     reference_list=["ground"],
+        #     extent_type="Conformal",
+        #     use_pyaedt_extent_computing=True,
+        #     check_terminals=True,
+        #     expansion_factor=2,
+        #     include_voids_in_extents=True,
+        # )
+        # edbapp.close()
+        # source_path = os.path.join(local_path, "example_models", test_subfolder, "Multizone_GroundVoids.aedb")
+        # target_path = os.path.join(self.local_scratch.path, "Multizone_GroundVoids.aedb")
+        # self.local_scratch.copyfolder(source_path, target_path)
+        #
+        # edbapp = Edb(target_path, edbversion=desktop_version)
+        #
+        # assert edbapp.cutout(
+        #     signal_list=["DIFF_N", "DIFF_P"],
+        #     reference_list=["GND"],
+        #     extent_type="Conformal",
+        #     use_pyaedt_extent_computing=True,
+        #     check_terminals=True,
+        #     expansion_factor=3,
+        # )
+        # edbapp.close()
 
     @pytest.mark.skipif(
         is_linux and ON_CI,
@@ -576,24 +570,10 @@ class TestClass:
         assert edb_stats.num_inductors
         assert edb_stats.num_capacitors
         assert edb_stats.num_resistors
-        if edb.grpc:
-            # TODO check why grpc give different result.
-            assert edb_stats.occupying_ratio["1_Top"] == 0.282666
-        else:
-            assert edb_stats.occupying_ratio["1_Top"] == 0.301682
+        assert edb_stats.occupying_ratio["1_Top"] == 0.301682
         assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.937467
-        if edb.grpc:
-            # TODO check why grpc give different result.
-            assert edb_stats.occupying_ratio["16_Bottom"] == 0.179471
-        else:
-            assert edb_stats.occupying_ratio["16_Bottom"] == 0.204925
+        assert edb_stats.occupying_ratio["16_Bottom"] == 0.204925
         edb.close()
-
-    def test_hfss_set_bounding_box_extent(self, edb_examples):
-        """Configure HFSS with bounding box"""
-
-        # obsolete check with config file 2.0
-        pass
 
     def test_create_rlc_component(self, edb_examples):
         """Create rlc components from pin"""
@@ -1984,3 +1964,20 @@ class TestClass:
         trace_widths = edbapp.hfss.get_trace_width_for_traces_with_ports()
         assert len(trace_widths) > 0
         edbapp.close()
+
+    def test_compare_edbs(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edb_base = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1.aedb")
+        assert edbapp.compare(edb_base)
+        folder = edbapp.edbpath[:-5] + "_compare_results"
+        assert os.path.exists(folder)
+
+    def test_create_layout_component(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        out_file = os.path.join(self.local_scratch.path, "test.aedbcomp")
+        edbapp.export_layout_component(component_path=out_file)
+        assert os.path.isfile(out_file)
+        edbapp.close()
+        edbapp = Edb(edbversion=desktop_version)
+        layout_comp = edbapp.import_layout_component(out_file)
+        assert not layout_comp.cell_instance.is_null

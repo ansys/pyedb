@@ -59,7 +59,7 @@ class Polygon(GrpcPolygon, Primitive):
         """
         return self.polygon_data.has_self_intersections()
 
-    def fix_self_intersections(self) -> list[Polygon]:
+    def fix_self_intersections(self) -> list[any]:
         """Remove self intersections if they exist.
 
         Returns

@@ -2159,3 +2159,113 @@ class Components(object):
             pin.name for pin in list(self.instances[reference_designator].pins.values()) if pin.net_name == net_name
         ]
         return self.create_pin_group(reference_designator, pins, group_name)
+
+    def deactivate_rlc_component(self, component=None, create_circuit_port=False, pec_boundary=False):
+        """Deactivate RLC component with a possibility to convert it to a circuit port.
+
+        Parameters
+        ----------
+        component : str
+            Reference designator of the RLC component.
+
+        create_circuit_port : bool, optional
+            Whether to replace the deactivated RLC component with a circuit port. The default
+            is ``False``.
+        pec_boundary : bool, optional
+            Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
+            a perfect short is created between the pin and impedance is ignored. This
+            parameter is only supported on a port created between two pins, such as
+            when there is no pin group.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb_file = r'C:\my_edb_file.aedb'
+        >>> edb = Edb(edb_file)
+        >>> for cmp in list(edb.components.instances.keys()):
+        >>>     edb.components.deactivate_rlc_component(component=cmp, create_circuit_port=False)
+        >>> edb.save_edb()
+        >>> edb.close_edb()
+        """
+        if not component:
+            return False
+        if isinstance(component, str):
+            component = self.instances[component]
+            if not component:
+                self._logger.error("component %s not found.", component)
+                return False
+        if component.type in ["other", "ic", "io"]:
+            self._logger.info(f"Component {component.refdes} passed to deactivate is not an RLC.")
+            return False
+        component.is_enabled = False
+        return self._pedb.source_excitation.add_port_on_rlc_component(
+            component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
+        )
+
+    def replace_rlc_by_gap_boundaries(self, component=None):
+        """Replace RLC component by RLC gap boundaries. These boundary types are compatible with 3D modeler export.
+        Only 2 pins RLC components are supported in this command.
+
+        Parameters
+        ----------
+        component : str
+            Reference designator of the RLC component.
+
+        Returns
+        -------
+        bool
+        ``True`` when succeed, ``False`` if it failed.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb(edb_file)
+        >>>  for refdes, cmp in edb.components.capacitors.items():
+        >>>     edb.components.replace_rlc_by_gap_boundaries(refdes)
+        >>> edb.save_edb()
+        >>> edb.close_edb()
+        """
+        if not component:
+            return False
+        if isinstance(component, str):
+            component = self.instances[component]
+            if not component:
+                self._logger.error("component %s not found.", component)
+                return False
+        if component.type in ["other", "ic", "io"]:
+            self._logger.info(f"Component {component.refdes} skipped to deactivate is not an RLC.")
+            return False
+        component.enabled = False
+        return self._pedb.source_excitation.add_rlc_boundary(component.refdes, False)
+
+    def add_rlc_boundary(self, component=None, circuit_type=True):
+        """Add RLC gap boundary on component and replace it with a circuit port.
+        The circuit port supports only 2-pin components.
+
+        . deprecated:: pyedb 0.28.0
+        Use :func:`pyedb.grpc.core.excitations.add_rlc_boundary` instead.
+
+        Parameters
+        ----------
+        component : str
+            Reference designator of the RLC component.
+        circuit_type : bool
+            When ``True`` circuit type are defined, if ``False`` gap type will be used instead (compatible with HFSS 3D
+            modeler). Default value is ``True``.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        warnings.warn(
+            "`add_rlc_boundary` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.add_rlc_boundary` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.source_excitation.add_rlc_boundary(self, component=component, circuit_type=circuit_type)
