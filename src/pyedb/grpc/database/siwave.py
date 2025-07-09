@@ -589,7 +589,10 @@ class Siwave(object):
         if not name:
             from pyedb.generic.general_methods import generate_unique_name
 
-            name = generate_unique_name("cpa_setup")
+            if not siwave_cpa_setup_class:
+                name = generate_unique_name("cpa_setup")
+            else:
+                name = siwave_cpa_setup_class.name
         cpa_setup = SIWaveCPASimulationSetup(self._pedb, name=name, siwave_cpa_setup_class=siwave_cpa_setup_class)
         return cpa_setup
 
