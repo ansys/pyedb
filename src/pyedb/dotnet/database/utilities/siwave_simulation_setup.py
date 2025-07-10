@@ -10,8 +10,6 @@ from pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings import (
 )
 from pyedb.dotnet.database.sim_setup_data.io.siwave import (
     AdvancedSettings,
-    DCAdvancedSettings,
-    DCSettings,
 )
 from pyedb.dotnet.database.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import is_linux
@@ -130,21 +128,6 @@ class SiwaveSimulationSetup(SimulationSetup):
     def advanced_settings(self):
         """SIwave advanced settings."""
         return AdvancedSettings(self)
-
-    @property
-    def dc_advanced_settings(self):
-        """Siwave DC advanced settings.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
-        """
-        return DCAdvancedSettings(self)
-
-    @property
-    def dc_settings(self):
-        """SIwave DC setting."""
-        return DCSettings(self)
 
     @property
     def sim_setup_info(self):
@@ -370,21 +353,6 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         self.use_custom_settings = False
         self.dc_settings.dc_slider_position = value
         self.dc_advanced_settings.set_dc_slider(value)
-
-    @property
-    def dc_settings(self):
-        """SIwave DC setting."""
-        return DCSettings(self)
-
-    @property
-    def dc_advanced_settings(self):
-        """Siwave DC advanced settings.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
-        """
-        return DCAdvancedSettings(self)
 
     @property
     def source_terms_to_ground(self):

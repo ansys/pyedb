@@ -27,6 +27,10 @@ import warnings
 from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInfo
 from pyedb.dotnet.database.sim_setup_data.data.sweep_data import SweepData
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.dotnet.database.sim_setup_data.io.siwave import (
+    DCAdvancedSettings,
+    DCSettings,
+)
 
 
 class SimulationSetupType(Enum):
@@ -379,3 +383,18 @@ class SimulationSetup(object):
         """
         warnings.warn("`add_frequency_sweep` is deprecated. Use `add_sweep` method instead.", DeprecationWarning)
         return self.add_sweep(name, frequency_sweep)
+
+    @property
+    def dc_settings(self):
+        """SIwave DC setting."""
+        return DCSettings(self)
+
+    @property
+    def dc_advanced_settings(self):
+        """Siwave DC advanced settings.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
+        """
+        return DCAdvancedSettings(self)
