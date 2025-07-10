@@ -27,6 +27,7 @@ import warnings
 
 import toml
 
+from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
 from pyedb.dotnet.database.definition.package_def import PackageDef
 
@@ -34,7 +35,7 @@ from pyedb.dotnet.database.definition.package_def import PackageDef
 class Configuration:
     """Enables export and import of a JSON configuration file that can be applied to a new or existing design."""
 
-    def __init__(self, pedb):
+    def __init__(self, pedb: Edb):
         self._pedb = pedb
 
         self._components = self._pedb.components.instances
@@ -251,12 +252,20 @@ class Configuration:
             i.delete()
 
     def apply_variables(self):
+        """Set variables into database."""
         inst = self.cfg_data.variables
         for i in inst.variables:
             if i.name.startswith("$"):
-                self._pedb.add_project_variable(i.name, i.value)
+                self._pedb.add_project_variable(i.name, i.value, i.description)
             else:
-                self._pedb.add_design_variable(i.name, i.value)
+                self._pedb.add_design_variable(i.name, i.value, description=i.description)
+
+    def get_variables(self):
+        """Retrieve variables from database."""
+        for name, obj in self._pedb.design_variables.items():
+            self.cfg_data.variables.add_variable(name, obj.value_string, obj.description)
+        for name, obj in self._pedb.project_variables.items():
+            self.cfg_data.variables.add_variable(name, obj.value_string, obj.description)
 
     def apply_materials(self):
         """Apply material settings to the current design"""
