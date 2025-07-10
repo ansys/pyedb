@@ -1177,7 +1177,7 @@ class Modeler(object):
         self,
         layer_name: Optional[Union[str, List[str]]] = None,
         delete_padstack_gemometries: bool = False,
-        net_names_list: List[str] = None,
+        net_names_list: Optional[List[str]] = None,
     ) -> bool:
         """Unite polygons on layer.
 
