@@ -29,7 +29,6 @@ import toml
 
 from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
-from pyedb.dotnet.database.definition.package_def import PackageDef
 
 
 class Configuration:
@@ -282,7 +281,41 @@ class Configuration:
                 for i in attrs.get("thermal_modifiers", []):
                     mat.set_thermal_modifier(**i.to_dict())
 
+    def get_materials(self):
+        """Retrieve materials from the current design.
+
+        Parameters
+        ----------
+        append: bool, optional
+            If `True`, append materials to the current material list.
+        """
+
+        self.cfg_data.stackup.materials = []
+        for name, mat in self._pedb.materials.materials.items():
+            self.cfg_data.stackup.add_material(**mat.to_dict())
+
     def apply_stackup(self):
+        layers = self.cfg_data.stackup.layers
+        input_signal_layers = [i for i in layers if i.type.lower() == "signal"]
+        if len(input_signal_layers) == 0:
+            return
+        elif len(self._pedb.stackup.signal_layers) == 0:
+            self.__create_stackup()
+        elif not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
+            raise Exception(f"Input signal layer count do not match.")
+        else:
+            self.__update_stackup()
+
+    def __create_stackup(self):
+        layers_ = list()
+        layers_.extend(self.cfg_data.stackup.layers)
+        for l_attrs in layers_:
+            attrs = l_attrs.model_dump(exclude_none=True)
+            self._pedb.stackup.add_layer_bottom(**attrs)
+
+    def __update_stackup(self):
+        """Apply layer settings to the current design"""
+
         # After import stackup, padstacks lose their definitions. They need to be fixed after loading stackup
         # step 1, archive padstack definitions
         temp_pdef_data = {}
@@ -294,17 +327,50 @@ class Configuration:
         for p_inst in self._pedb.layout.padstack_instances:
             temp_p_inst_layer_map[p_inst.id] = p_inst._edb_object.GetLayerMap()
 
-        layers = self.cfg_data.stackup.layers
+        # ----------------------------------------------------------------------
+        # Apply stackup
+        layers = list()
+        layers.extend(self.cfg_data.stackup.layers)
 
-        input_signal_layers = [i for i in layers if i.type.lower() == "signal"]
+        removal_list = []
+        lc_signal_layers = []
+        for name, obj in self._pedb.stackup.all_layers.items():
+            if obj.type == "dielectric":
+                removal_list.append(name)
+            elif obj.type == "signal":
+                lc_signal_layers.append(obj.id)
+        for l in removal_list:
+            self._pedb.stackup.remove_layer(l)
 
-        if len(self._pedb.stackup.signal_layers) == 0:
-            self.__create_stackup()
-        elif not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
-            raise Exception(f"Input signal layer count do not match.")
+        # update all signal layers
+        id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
+        signal_idx = 0
+        for l in layers:
+            if l.type == "signal":
+                layer_id = lc_signal_layers[signal_idx]
+                layer_name = id_name[layer_id]
+                attrs = l.model_dump(exclude_none=True)
+                self._pedb.stackup.layers[layer_name].update(**attrs)
+                signal_idx = signal_idx + 1
+
+        # add all dielectric layers. Dielectric layers must be added last. Otherwise,
+        # dielectric layer will occupy signal and document layer id.
+        l = layers.pop(0)
+        if l.type == "signal":
+            prev_layer_clone = self._pedb.stackup.layers[l.name]
         else:
-            self.__apply_layers()
+            attrs = l.model_dump(exclude_none=True)
+            prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
+        for idx, l in enumerate(layers):
+            if l.type == "dielectric":
+                attrs = l.model_dump(exclude_none=True)
+                prev_layer_clone = self._pedb.stackup.add_layer_below(
+                    base_layer_name=prev_layer_clone.name, **attrs
+                )
+            elif l.type == "signal":
+                prev_layer_clone = self._pedb.stackup.layers[l.name]
 
+        # ----------------------------------------------------------------------
         # restore padstack definitions
         for pdef_name, pdef_data in temp_pdef_data.items():
             pdef = self._pedb.padstacks.definitions[pdef_name]
@@ -312,105 +378,6 @@ class Configuration:
         # restore padstack instance layer map
         for p_inst in self._pedb.layout.padstack_instances:
             p_inst._edb_object.SetLayerMap(temp_p_inst_layer_map[p_inst.id])
-
-    def _load_stackup(self):
-        """Imports stackup information from json."""
-        data = self.data["stackup"]
-        materials = data.get("materials")
-
-        if materials:
-            edb_materials = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
-            for mat in materials:
-                name = mat["name"].lower()
-                if name in edb_materials:
-                    self._pedb.materials.delete_material(edb_materials[name])
-            for mat in materials:
-                self._pedb.materials.add_material(**mat)
-
-        layers = data.get("layers")
-
-        if layers:
-            input_signal_layers = [i for i in layers if i["type"].lower() == "signal"]
-            if not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
-                self._pedb.logger.error("Input signal layer count do not match.")
-                return False
-
-            removal_list = []
-            lc_signal_layers = []
-            for name, obj in self._pedb.stackup.all_layers.items():
-                if obj.type == "dielectric":
-                    removal_list.append(name)
-                elif obj.type == "signal":
-                    lc_signal_layers.append(obj.id)
-            for l in removal_list:
-                self._pedb.stackup.remove_layer(l)
-
-            # update all signal layers
-            id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
-            signal_idx = 0
-            for l in layers:
-                if l["type"] == "signal":
-                    layer_id = lc_signal_layers[signal_idx]
-                    layer_name = id_name[layer_id]
-                    self._pedb.stackup.layers[layer_name].update(**l)
-                    signal_idx = signal_idx + 1
-
-            # add all dielectric layers. Dielectric layers must be added last. Otherwise,
-            # dielectric layer will occupy signal and document layer id.
-            prev_layer_clone = None
-            l = layers.pop(0)
-            if l["type"] == "signal":
-                prev_layer_clone = self._pedb.stackup.layers[l["name"]]
-            else:
-                prev_layer_clone = self._pedb.stackup.add_layer_top(**l)
-            for idx, l in enumerate(layers):
-                if l["type"] == "dielectric":
-                    prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **l)
-                elif l["type"] == "signal":
-                    prev_layer_clone = self._pedb.stackup.layers[l["name"]]
-
-    def _load_package_def(self):
-        """Imports package definition information from JSON."""
-        comps = self._pedb.components.instances
-        for pkgd in self.data["package_definitions"]:
-            name = pkgd["name"]
-            if name in self._pedb.definitions.package:
-                self._pedb.definitions.package[name].delete()
-            extent_bounding_box = pkgd.get("extent_bounding_box", None)
-            if extent_bounding_box:
-                package_def = PackageDef(self._pedb, name=name, extent_bounding_box=extent_bounding_box)
-            else:
-                package_def = PackageDef(self._pedb, name=name, component_part_name=pkgd["component_definition"])
-            package_def.maximum_power = pkgd["maximum_power"]
-            package_def.therm_cond = pkgd["therm_cond"]
-            package_def.theta_jb = pkgd["theta_jb"]
-            package_def.theta_jc = pkgd["theta_jc"]
-            package_def.height = pkgd["height"]
-
-            heatsink = pkgd.get("heatsink", None)
-            if heatsink:
-                package_def.set_heatsink(
-                    heatsink["fin_base_height"],
-                    heatsink["fin_height"],
-                    heatsink["fin_orientation"],
-                    heatsink["fin_spacing"],
-                    heatsink["fin_thickness"],
-                )
-
-            comp_def_name = pkgd["component_definition"]
-            comp_def = self._pedb.definitions.component[comp_def_name]
-
-            comp_list = dict()
-            if pkgd["apply_to_all"]:
-                comp_list.update(
-                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in pkgd["components"]}
-                )
-            else:
-                comp_list.update(
-                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes in pkgd["components"]}
-                )
-            for _, i in comp_list.items():
-                i.package_def = name
 
     def get_data_from_db(self, **kwargs):
         """Get configuration data from layout.
@@ -428,7 +395,8 @@ class Configuration:
         if kwargs.get("general", False):
             data["general"] = self.cfg_data.general.get_data_from_db()
         if kwargs.get("stackup", False):
-            data["stackup"] = self.cfg_data.stackup.get_data_from_db()
+            pass
+            # todo data["stackup"] = self.cfg_data.stackup.get_data_from_db()
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):

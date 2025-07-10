@@ -22,34 +22,12 @@
 from typing import Optional, List, Union
 
 from pyedb import Edb
-from pyedb.configuration.cfg_common import CfgBase
-from pydantic import BaseModel, Field
+from pyedb.dotnet.database.materials import MaterialProperties
+from pydantic import BaseModel
 
 
-class CfgMaterialPropertyThermalModifier(BaseModel):
-    property_name: str
-    basic_quadratic_c1: float = 0
-    basic_quadratic_c2: float = 0
-    basic_quadratic_temperature_reference: float = 22
-    advanced_quadratic_lower_limit: float = -273.15
-    advanced_quadratic_upper_limit: float = 1000
-    advanced_quadratic_auto_calculate: bool = True
-    advanced_quadratic_lower_constant: float = 1
-    advanced_quadratic_upper_constant: float = 1
-
-
-class CfgMaterial(BaseModel):
+class CfgMaterial(MaterialProperties):
     name: str
-    permittivity: Optional[float] = None
-    conductivity: Optional[float] = None
-    dielectric_loss_tangent: Optional[float] = None
-    magnetic_loss_tangent: Optional[float] = None
-    mass_density: Optional[float] = None
-    permeability: Optional[float] = None
-    poisson_ratio: Optional[float] = None
-    specific_heat: Optional[float] = None
-    thermal_conductivity: Optional[float] = None
-    thermal_modifiers: Optional[List[CfgMaterialPropertyThermalModifier]] = None
 
 
 class RoughnessSideModel(BaseModel):
@@ -84,26 +62,8 @@ class CfgLayer(BaseModel):
 
 class CfgStackup:
 
-    def apply(self):
-        """Apply configuration settings to the current design"""
-
-
-
-    def __create_stackup(self):
-        layers_ = list()
-        layers_.extend(self.layers)
-        for l_attrs in layers_:
-            attrs = l_attrs.model_dump(exclude_none=True)
-            self._pedb.stackup.add_layer_bottom(**attrs)
-
-    def get_materials_from_db(self):
-        materials = []
-        for name, p in self._pedb.materials.materials.items():
-            mat = {}
-            for p_name in CfgMaterial.model_fields.keys():
-                mat[p_name] = getattr(p, p_name, None)
-            materials.append(mat)
-        return materials
+    def add_material(self, name, **kwargs):
+        self.materials.append(CfgMaterial(name=name, **kwargs))
 
     def get_layers_from_db(self):
         layers = []
@@ -124,50 +84,6 @@ class CfgStackup:
         layers = self.get_layers_from_db()
         stackup["layers"] = layers
         return stackup
-
-    def __apply_layers(self):
-        """Apply layer settings to the current design"""
-        layers = list()
-        layers.extend(self.layers)
-
-        removal_list = []
-        lc_signal_layers = []
-        for name, obj in self._pedb.stackup.all_layers.items():
-            if obj.type == "dielectric":
-                removal_list.append(name)
-            elif obj.type == "signal":
-                lc_signal_layers.append(obj.id)
-        for l in removal_list:
-            self._pedb.stackup.remove_layer(l)
-
-        # update all signal layers
-        id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
-        signal_idx = 0
-        for l in layers:
-            if l.type == "signal":
-                layer_id = lc_signal_layers[signal_idx]
-                layer_name = id_name[layer_id]
-                attrs = l.model_dump(exclude_none=True)
-                self._pedb.stackup.layers[layer_name].update(**attrs)
-                signal_idx = signal_idx + 1
-
-        # add all dielectric layers. Dielectric layers must be added last. Otherwise,
-        # dielectric layer will occupy signal and document layer id.
-        prev_layer_clone = None
-        l = layers.pop(0)
-        if l.type == "signal":
-            prev_layer_clone = self._pedb.stackup.layers[l.name]
-        else:
-            attrs = l.model_dump(exclude_none=True)
-            prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
-        for idx, l in enumerate(layers):
-            if l.type == "dielectric":
-                attrs = l.model_dump(exclude_none=True)
-                prev_layer_clone = self._pedb.stackup.add_layer_below(
-                    base_layer_name=prev_layer_clone.name, **attrs
-                )
-            elif l.type == "signal":
-                prev_layer_clone = self._pedb.stackup.layers[l.name]
 
     def __init__(self, pedb: Edb, data):
         self._pedb = pedb
