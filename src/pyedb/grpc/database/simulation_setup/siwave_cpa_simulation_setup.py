@@ -7,18 +7,44 @@ from pyedb.siwave_core.product_properties import SIwaveProperties
 
 
 class ChannelSetup:
+    """
+    Represents the setup configuration for a channel in SIwave CPA simulations.
+
+    Attributes:
+        die_name (str): The name of the die associated with the channel setup.
+        pin_grouping_mode (str): The mode for pin grouping. Options are "perpin", "ploc", or "usediepingroups".
+        channel_component_exposure (dict): A dictionary mapping component names to their exposure status (True/False).
+        vrm (list): A list of VRM (Voltage Regulator Module) configurations.
+    """
+
     def __init__(self, pedb, cfg_channel_setup=None):
+        """
+        Initializes the ChannelSetup instance.
+
+        Args:
+            pedb: The database object representing the active cell.
+            cfg_channel_setup: Optional configuration object to initialize the channel setup.
+        """
         self._pedb = pedb
         self.__init_values()
         if cfg_channel_setup:
             self._apply_cfg_object(cfg_channel_setup)
 
     def __init_values(self):
+        """
+        Initializes default values for the channel setup attributes.
+        """
         self.die_name = ""
         self.pin_grouping_mode = "perpin"
         self.channel_component_exposure = {}
 
     def _apply_cfg_object(self, channel_setup):
+        """
+        Applies the configuration object to set up the channel.
+
+        Args:
+            channel_setup: The configuration object containing channel setup data.
+        """
         self.die_name = channel_setup.die_name
         self.channel_component_exposure = channel_setup.channel_component_exposure
         self.pin_grouping_mode = channel_setup.pin_grouping_mode
@@ -26,18 +52,36 @@ class ChannelSetup:
 
     @property
     def die_name(self):
+        """
+        Gets the die name from the database.
+
+        Returns:
+            str: The die name.
+        """
         return self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_DIE_NAME
         ).value
 
     @die_name.setter
     def die_name(self, value):
+        """
+        Sets the die name in the database.
+
+        Args:
+            value (str): The die name to set.
+        """
         self._pedb.active_cell.set_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_DIE_NAME, value
         )
 
     @property
     def pin_grouping_mode(self):
+        """
+        Gets the pin grouping mode from the database.
+
+        Returns:
+            str: The pin grouping mode ("perpin", "ploc", or "usediepingroups").
+        """
         mode_mapping = {-1: "perpin", 0: "ploc", 1: "usediepingroups"}
         pg_mode = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_PIN_GROUPING_MODE
@@ -46,19 +90,35 @@ class ChannelSetup:
 
     @pin_grouping_mode.setter
     def pin_grouping_mode(self, value):
+        """
+        Sets the pin grouping mode in the database.
+
+        Args:
+            value (str or int): The pin grouping mode ("perpin", "ploc", or "usediepingroups") or its
+            corresponding integer value.
+
+        Raises:
+            ValueError: If the provided value is not supported.
+        """
         mapping = {"perpin": -1, "ploc": 0, "usediepingroups": 1}
         if isinstance(value, str):
             if not value in mapping:
-                raise f"value {value} not supported, must be {list(mapping.keys())}"
+                raise ValueError(f"value {value} not supported, must be {list(mapping.keys())}")
             value = mapping[value]
         if not value in [-1, 0, 1]:
-            raise f"wrong value {value}"
+            raise ValueError(f"wrong value {value}")
         self._pedb.active_cell.set_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_PIN_GROUPING_MODE, self.die_name + ":" + str(value)
         )
 
     @property
     def channel_component_exposure(self):
+        """
+        Gets the channel component exposure configuration from the database.
+
+        Returns:
+            dict: A dictionary mapping component names to their exposure status (True/False).
+        """
         cmp_exposure = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_COMPONENT_EXPOSURE_CONFIG
         ).value
@@ -70,8 +130,17 @@ class ChannelSetup:
 
     @channel_component_exposure.setter
     def channel_component_exposure(self, value):
+        """
+        Sets the channel component exposure configuration in the database.
+
+        Args:
+            value (dict): A dictionary mapping component names to their exposure status (True/False).
+
+        Raises:
+            ValueError: If the input is not a dictionary.
+        """
         if not isinstance(value, dict):
-            raise "Channel component exposure input must be a dictionary."
+            raise ValueError("Channel component exposure input must be a dictionary.")
         channel_comp_exposure = ""
         for comp, enabled in value.items():
             if channel_comp_exposure:
@@ -83,6 +152,15 @@ class ChannelSetup:
 
     @property
     def vrm(self):
+        """
+        Gets the VRM (Voltage Regulator Module) setup from the database.
+
+        Returns:
+            list: A list of Vrm objects representing the VRM setup.
+
+        Raises:
+            ValueError: If the VRM format is invalid.
+        """
         vrm = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_VRM_SETUP
         ).value
@@ -103,8 +181,17 @@ class ChannelSetup:
 
     @vrm.setter
     def vrm(self, value):
+        """
+        Sets the VRM (Voltage Regulator Module) setup in the database.
+
+        Args:
+            value (list): A list of Vrm objects representing the VRM setup.
+
+        Raises:
+            ValueError: If the input is not a list.
+        """
         if not isinstance(value, list):
-            raise "vrm setter must have list as input."
+            raise ValueError("vrm setter must have list as input.")
         vrm_str = ""
         for vrm in value:
             if isinstance(vrm, pyedb.siwave_core.cpa.simulation_setup_data_model.Vrm):
@@ -121,19 +208,46 @@ class ChannelSetup:
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_VRM_SETUP, vrm_str
         )
 
-    # vrm_setup: Vrm = None
-
 
 class SolverOptions:
+    """
+    Represents solver options configuration for SIwave CPA simulations.
+
+    Attributes:
+        extraction_mode (str): Extraction mode ('si' or 'pi')
+        custom_refinement (bool): Whether to use custom refinement settings
+        extraction_frequency (str): Frequency for extraction (e.g. '10Ghz')
+        compute_capacitance (bool): Whether to compute capacitance
+        compute_dc_parameters (bool): Whether to compute DC parameters
+        compute_dc_rl (bool): Whether to compute DC RL parameters
+        compute_dc_cg (bool): Whether to compute DC CG parameters
+        compute_ac_rl (bool): Whether to compute AC RL parameters
+        ground_power_nets_for_si (bool): Whether to ground power nets for SI analysis
+        small_hole_diameter (float|str): Small hole diameter value or 'auto'
+        adaptive_refinement_cg_max_passes (int): Max passes for CG adaptive refinement
+        adaptive_refinement_rl_max_passes (int): Max passes for RL adaptive refinement
+        adaptive_refinement_cg_percent_error (float): Target error for CG refinement
+        adaptive_refinement_rl_percent_error (float): Target error for RL refinement
+        rl_percent_refinement_per_pass (float): RL refinement percentage per pass
+        cg_percent_refinement_per_pass (float): CG refinement percentage per pass
+        return_path_net_for_loop_parameters (bool): Whether to use return path net
+    """
+
     def __init__(self, pedb, cfg_solver_options=None):
+        """
+        Initialize solver options.
+
+        Args:
+            pedb: Database object containing the active cell
+            cfg_solver_options: Optional configuration object to initialize settings
+        """
         self._pedb = pedb
         self.__init_values()
         if cfg_solver_options:
             self._apply_cfg_object(cfg_solver_options)
 
-    def __init_values(
-        self,
-    ):
+    def __init_values(self):
+        """Initialize default values for solver options."""
         self.mode = "si"
         self.custom_refinement = False
         self.extraction_frequency = "10Ghz"
@@ -153,6 +267,32 @@ class SolverOptions:
         self.return_path_net_for_loop_parameters = True
 
     def _apply_cfg_object(self, solver_options):
+        """
+        Applies the configuration object to set up solver options.
+
+        Args:
+            solver_options: The configuration object containing solver options data.
+                - extraction_mode (str): The extraction mode ('si' or 'pi').
+                - custom_refinement (bool): Whether to use custom refinement settings.
+                - extraction_frequency (str): Frequency for extraction (e.g., '10Ghz').
+                - compute_capacitance (bool): Whether to compute capacitance.
+                - compute_dc_parameters (bool): Whether to compute DC parameters.
+                - compute_dc_rl (bool): Whether to compute DC RL parameters.
+                - compute_dc_cg (bool): Whether to compute DC CG parameters.
+                - compute_ac_rl (bool): Whether to compute AC RL parameters.
+                - ground_power_nets_for_si (bool): Whether to ground power nets for SI analysis.
+                - small_hole_diameter (float|str): Small hole diameter value or 'auto'.
+                - adaptive_refinement_cg_max_passes (int): Max passes for CG adaptive refinement.
+                - adaptive_refinement_rl_max_passes (int): Max passes for RL adaptive refinement.
+                - adaptive_refinement_cg_percent_error (float): Target error for CG refinement.
+                - adaptive_refinement_rl_percent_error (float): Target error for RL refinement.
+                - rl_percent_refinement_per_pass (float): RL refinement percentage per pass.
+                - cg_percent_refinement_per_pass (float): CG refinement percentage per pass.
+                - return_path_net_for_loop_parameters (bool): Whether to use return path net for loop parameters.
+
+        Raises:
+            AttributeError: If the `solver_options` object does not have the expected attributes.
+        """
         self.extraction_mode = solver_options.extraction_mode
         self.custom_refinement = solver_options.custom_refinement
         self.extraction_frequency = solver_options.extraction_frequency
@@ -172,6 +312,12 @@ class SolverOptions:
 
     @property
     def extraction_mode(self):
+        """
+        Gets the extraction mode from the database.
+
+        Returns:
+            str: The extraction mode. Returns "si" if the mode is set to "1", otherwise "pi".
+        """
         mode = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_EXTRACTION_MODE
         ).value
@@ -192,6 +338,12 @@ class SolverOptions:
 
     @property
     def custom_refinement(self):
+        """
+        Gets the custom refinement setting from the database.
+
+        Returns:
+            bool: True if custom refinement is enabled, False otherwise.
+        """
         refine = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CUSTOM_REFINEMENT
         ).value
@@ -212,6 +364,12 @@ class SolverOptions:
 
     @property
     def extraction_frequency(self):
+        """
+        Gets the extraction frequency from the database.
+
+        Returns:
+            str: The extraction frequency value as a string.
+        """
         return self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_EXTRACTION_FREQUENCY
         ).value
@@ -225,6 +383,12 @@ class SolverOptions:
 
     @property
     def compute_capacitance(self):
+        """
+        Gets the compute capacitance setting from the database.
+
+        Returns:
+            bool: True if capacitance computation is enabled, False otherwise.
+        """
         compute = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_COMPUTE_CAPACITANCE
         ).value
@@ -245,6 +409,12 @@ class SolverOptions:
 
     @property
     def compute_dc_parameters(self):
+        """
+        Gets the compute DC parameters setting from the database.
+
+        Returns:
+            bool: True if DC parameters computation is enabled, False otherwise.
+        """
         compute = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_COMPUTE_DC_PARAMS
         ).value
@@ -274,6 +444,12 @@ class SolverOptions:
 
     @compute_dc_rl.setter
     def compute_dc_rl(self, value):
+        """
+        Gets the compute DC RL parameters setting from the database.
+
+        Returns:
+            bool: True if DC RL parameters computation is enabled, False otherwise.
+        """
         if value:
             self._pedb.active_cell.set_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_RL, "1"
@@ -285,6 +461,12 @@ class SolverOptions:
 
     @property
     def compute_dc_cg(self):
+        """
+        Gets the compute DC CG parameters setting from the database.
+
+        Returns:
+            bool: True if DC CG parameters computation is enabled, False otherwise.
+        """
         _res = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_CG
         ).value
@@ -305,6 +487,12 @@ class SolverOptions:
 
     @property
     def compute_ac_rl(self):
+        """
+        Gets the compute AC RL parameters setting from the database.
+
+        Returns:
+            bool: True if AC RL parameters computation is enabled, False otherwise.
+        """
         _res = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_AC_PARAMS_COMPUTE_RL
         ).value
@@ -325,6 +513,12 @@ class SolverOptions:
 
     @property
     def ground_power_nets_for_si(self):
+        """
+        Gets the ground power nets for SI analysis setting from the database.
+
+        Returns:
+            bool: True if grounding power nets for SI analysis is enabled, False otherwise.
+        """
         _res = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_GROUND_PG_NETS_FOR_SI
         ).value
@@ -345,6 +539,12 @@ class SolverOptions:
 
     @property
     def small_hole_diameter(self):
+        """
+        Gets the small hole diameter setting from the database.
+
+        Returns:
+            float|str: The small hole diameter as a float, or 'auto' if the value is set to -1.
+        """
         _res = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SMALL_HOLE_DIAMETER
         ).value
@@ -366,6 +566,12 @@ class SolverOptions:
 
     @property
     def model_type(self):
+        """
+        Gets the model type setting from the database.
+
+        Returns:
+            str: The model type. Returns "rlcg" if the model type is set to "0", otherwise "esd_r".
+        """
         return self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_MODEL_TYPE
         ).value
@@ -378,6 +584,12 @@ class SolverOptions:
 
     @property
     def adaptive_refinement_cg_max_passes(self):
+        """
+        Gets the maximum number of passes for CG adaptive refinement from the database.
+
+        Returns:
+            int: The maximum number of passes for CG adaptive refinement.
+        """
         return int(
             self._pedb.active_cell.get_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_MAX_PASSES
@@ -392,6 +604,12 @@ class SolverOptions:
 
     @property
     def adaptive_refinement_cg_percent_error(self):
+        """
+        Gets the target error percentage for CG adaptive refinement from the database.
+
+        Returns:
+            float: The target error percentage for CG adaptive refinement.
+        """
         return float(
             self._pedb.active_cell.get_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_PERCENT_ERROR
@@ -406,6 +624,12 @@ class SolverOptions:
 
     @property
     def cg_percent_refinement_per_pass(self):
+        """
+        Gets the percentage of CG refinement per pass from the database.
+
+        Returns:
+            float: The percentage of CG refinement per pass.
+        """
         return float(
             self._pedb.active_cell.get_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_CG_PERCENT_REFINEMENT_PER_PASS
@@ -422,6 +646,12 @@ class SolverOptions:
 
     @property
     def adaptive_refinement_rl_max_passes(self):
+        """
+        Gets the maximum number of passes for RL adaptive refinement from the database.
+
+        Returns:
+            int: The maximum number of passes for RL adaptive refinement.
+        """
         return int(
             float(
                 self._pedb.active_cell.get_product_property(
@@ -438,6 +668,12 @@ class SolverOptions:
 
     @property
     def adaptive_refinement_rl_percent_error(self):
+        """
+        Gets the target error percentage for RL adaptive refinement from the database.
+
+        Returns:
+            float: The target error percentage for RL adaptive refinement.
+        """
         return float(
             self._pedb.active_cell.get_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_PERCENT_ERROR
@@ -452,6 +688,12 @@ class SolverOptions:
 
     @property
     def rl_percent_refinement_per_pass(self):
+        """
+        Gets the percentage of RL refinement per pass from the database.
+
+        Returns:
+            float: The percentage of RL refinement per pass.
+        """
         return float(
             self._pedb.active_cell.get_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ADAPTIVE_REFINEMENT_RL_PERCENT_REFINEMENT_PER_PASS
@@ -468,6 +710,12 @@ class SolverOptions:
 
     @property
     def return_path_net_for_loop_parameters(self):
+        """
+        Gets the return path net setting for loop parameters from the database.
+
+        Returns:
+            bool: True if the return path net is enabled for loop parameters, False otherwise.
+        """
         _res = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_RETURN_PATH_NET_FOR_LOOP_PARAMS
         ).value
@@ -488,7 +736,24 @@ class SolverOptions:
 
 
 class SIWaveCPASimulationSetup:
+    """
+    Represents the setup configuration for SIwave CPA simulations.
+
+    Attributes:
+        _pedb: The database object representing the active cell.
+        _channel_setup (ChannelSetup): The channel setup configuration.
+        _solver_options (SolverOptions): The solver options configuration.
+    """
+
     def __init__(self, pedb, name=None, siwave_cpa_setup_class=None):
+        """
+        Initializes the SIWaveCPASimulationSetup instance.
+
+        Args:
+            pedb: The database object representing the active cell.
+            name (str, optional): The name of the simulation setup.
+            siwave_cpa_setup_class (SIwaveCpaSetup, optional): An optional configuration object to initialize the setup.
+        """
         self._pedb = pedb
         self._channel_setup = ChannelSetup(pedb)
         self._solver_options = SolverOptions(pedb)
@@ -507,12 +772,21 @@ class SIWaveCPASimulationSetup:
             self._pedb.active_cell.set_product_property(GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME, name)
 
     def __init_values(self):
+        """
+        Initializes default values for the simulation setup attributes.
+        """
         self.mode = "channel"
         self.model_type = "rlcg"
         self.use_q3d_solver = False
         self.net_processing_mode = "all"
 
     def _apply_cfg_object(self, siwave_cpa_setup_class):
+        """
+        Applies the configuration object to set up the simulation.
+
+        Args:
+            siwave_cpa_setup_class (SIwaveCpaSetup): The configuration object containing simulation setup data.
+        """
         if isinstance(siwave_cpa_setup_class, SIwaveCpaSetup):
             self.name = siwave_cpa_setup_class.name
             self.mode = siwave_cpa_setup_class.mode
@@ -525,16 +799,34 @@ class SIWaveCPASimulationSetup:
 
     @property
     def name(self) -> str:
+        """
+        Gets the name of the simulation setup.
+
+        Returns:
+            str: The name of the simulation setup.
+        """
         return self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME
         ).value
 
     @name.setter
     def name(self, value):
+        """
+        Sets the name of the simulation setup.
+
+        Args:
+            value (str): The name to set.
+        """
         self._pedb.active_cell.set_product_property(GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME, value)
 
     @property
     def mode(self):
+        """
+        Gets the mode of the simulation setup.
+
+        Returns:
+            str: The mode of the simulation setup ("channel" or "no_channel").
+        """
         cpa_mode = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_SETUP
         ).value
@@ -544,6 +836,12 @@ class SIWaveCPASimulationSetup:
 
     @mode.setter
     def mode(self, value):
+        """
+        Sets the mode of the simulation setup.
+
+        Args:
+            value (str): The mode to set ("channel" or "no_channel").
+        """
         if value == "channel":
             self._pedb.active_cell.set_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_SETUP, "1"
@@ -555,6 +853,12 @@ class SIWaveCPASimulationSetup:
 
     @property
     def model_type(self):
+        """
+        Gets the model type of the simulation setup.
+
+        Returns:
+            str: The model type ("rlcg" or "esd_r").
+        """
         mod_type = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ESD_R_MODEL
         ).value
@@ -565,6 +869,12 @@ class SIWaveCPASimulationSetup:
 
     @model_type.setter
     def model_type(self, value):
+        """
+        Sets the model type of the simulation setup.
+
+        Args:
+            value (str): The model type to set ("rlcg" or "esd_r").
+        """
         if value == "rlcg":
             self._pedb.active_cell.set_product_property(GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ESD_R_MODEL, "0")
         elif value == "esd_r":
@@ -572,6 +882,12 @@ class SIWaveCPASimulationSetup:
 
     @property
     def use_q3d_solver(self):
+        """
+        Gets the Q3D solver usage setting.
+
+        Returns:
+            bool: True if the Q3D solver is used, False otherwise.
+        """
         return bool(
             int(
                 self._pedb.active_cell.get_product_property(
@@ -582,6 +898,12 @@ class SIWaveCPASimulationSetup:
 
     @use_q3d_solver.setter
     def use_q3d_solver(self, value):
+        """
+        Sets the Q3D solver usage setting.
+
+        Args:
+            value (bool): True to use the Q3D solver, False otherwise.
+        """
         if value:
             self._pedb.active_cell.set_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_USE_Q3D_SOLVER, "1"
@@ -593,36 +915,78 @@ class SIWaveCPASimulationSetup:
 
     @property
     def net_processing_mode(self):
+        """
+        Gets the net processing mode.
+
+        Returns:
+            str: The net processing mode.
+        """
         return self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_NET_PROCESSING_MODE
         ).value
 
     @net_processing_mode.setter
     def net_processing_mode(self, value):
+        """
+        Sets the net processing mode.
+
+        Args:
+            value (str): The net processing mode to set.
+        """
         self._pedb.active_cell.set_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_NET_PROCESSING_MODE, str(value)
         )
 
     @property
     def channel_setup(self):
+        """
+        Gets the channel setup configuration.
+
+        Returns:
+            ChannelSetup: The channel setup configuration.
+        """
         return self._channel_setup
 
     @channel_setup.setter
     def channel_setup(self, value):
+        """
+        Sets the channel setup configuration.
+
+        Args:
+            value (ChannelSetup): The channel setup configuration to set.
+        """
         if isinstance(value, ChannelSetup):
             self._channel_setup = value
 
     @property
     def solver_options(self):
+        """
+        Gets the solver options configuration.
+
+        Returns:
+            SolverOptions: The solver options configuration.
+        """
         return self._solver_options
 
     @solver_options.setter
     def solver_options(self, value):
+        """
+        Sets the solver options configuration.
+
+        Args:
+            value (SolverOptions): The solver options configuration to set.
+        """
         if isinstance(value, SolverOptions):
             self._solver_options = value
 
     @property
     def nets_to_process(self):
+        """
+        Gets the list of nets to process.
+
+        Returns:
+            list: A list of nets to process.
+        """
         nets = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_NETS_TO_PROCESS
         ).value
@@ -630,6 +994,15 @@ class SIWaveCPASimulationSetup:
 
     @nets_to_process.setter
     def nets_to_process(self, value):
+        """
+        Sets the list of nets to process.
+
+        Args:
+            value (list): A list of nets to process.
+
+        Raises:
+            TypeError: If the input is not a list of strings.
+        """
         if isinstance(value, list):
             nets = "*".join(value)
             self._pedb.active_cell.set_product_property(
