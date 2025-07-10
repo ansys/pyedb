@@ -77,6 +77,6 @@ class CfgData(object):
 
         self.modeler = CfgModeler(self._pedb, data=kwargs.get("modeler", {}))
 
-        self.variables = CfgVariables(data=kwargs.get("variables", []))
+        self.variables = CfgVariables(variables=kwargs.get("variables", []))
 
         self.probes = CfgProbes(self._pedb, data=kwargs.get("probes", []))
