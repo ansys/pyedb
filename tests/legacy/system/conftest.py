@@ -108,6 +108,10 @@ class EdbExamples:
         aedb = self._copy_file_folder_into_local_folder("TEDB/component_no_ref_pins.aedb")
         return Edb(aedb, edbversion=desktop_version)
 
+    @staticmethod
+    def load_edb(edb_path):
+        return Edb(edb_path, edbversion=desktop_version)
+
 
 @pytest.fixture(scope="module")
 def add_legacy_edb(local_scratch):
