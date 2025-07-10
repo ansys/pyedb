@@ -8,7 +8,11 @@ from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInf
 from pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings import (
     SiwaveDCIRSettings,
 )
-from pyedb.dotnet.database.sim_setup_data.io.siwave import AdvancedSettings
+from pyedb.dotnet.database.sim_setup_data.io.siwave import (
+    AdvancedSettings,
+    DCAdvancedSettings,
+    DCSettings,
+)
 from pyedb.dotnet.database.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import is_linux
 
@@ -276,8 +280,23 @@ class SiwaveSimulationSetup(SimulationSetup):
         """List of frequency sweeps."""
         return {i.name: i for i in self._siwave_sweeps_list}
 
+    @property
+    def dc_settings(self):
+        """SIwave DC setting."""
+        return DCSettings(self)
 
-class SiwaveDCSimulationSetup(SimulationSetup):
+    @property
+    def dc_advanced_settings(self):
+        """Siwave DC advanced settings.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
+        """
+        return DCAdvancedSettings(self)
+
+
+class SiwaveDCSimulationSetup(SiwaveSimulationSetup):
     """Manages EDB methods for SIwave DC simulation setup."""
 
     def __init__(self, pedb, edb_object=None, name: str = None):
