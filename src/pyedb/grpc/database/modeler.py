@@ -411,7 +411,7 @@ class Modeler(object):
         return returned_obj
 
     @staticmethod
-    def get_polygon_bounding_box(polygon) -> List[float]:
+    def get_polygon_bounding_box(polygon: Primitive) -> List[float]:
         """Get bounding box of polygon.
 
         Parameters
