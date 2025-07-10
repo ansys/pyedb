@@ -24,6 +24,7 @@
 import os
 import re
 import sys
+import warnings
 
 from pyedb import __version__
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
@@ -34,6 +35,7 @@ from pyedb.generic.general_methods import (
     is_linux,
     settings,
 )
+from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
 from pyedb.misc.misc import list_installed_ansysem
 
 
@@ -710,6 +712,8 @@ class EdbDotNet(object):
             except IndexError:
                 raise Exception("No ANSYSEM_ROOTxxx is found.")
         self.edbversion = edbversion
+        if float(self.edbversion) >= 2025.2:
+            warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
         self.student_version = student_version
         """Initialize DLLs."""
         from pyedb.dotnet.clr_module import _clr, edb_initialized
