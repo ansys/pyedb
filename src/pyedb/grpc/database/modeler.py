@@ -684,7 +684,7 @@ class Modeler(object):
         self,
         points: Union[List[List[float]], GrpcPolygonData],
         layer_name: str,
-        voids: List[Any] = None,
+        voids: Optional[List[Any]] = [],
         net_name: str = "",
     ) -> Optional[Primitive]:
         """Create polygon primitive.
