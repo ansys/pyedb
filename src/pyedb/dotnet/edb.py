@@ -3711,7 +3711,7 @@ class Edb(Database):
                 setups[i.GetName()] = HFSSPISimulationSetup(self, i)
         try:
             cpa_setup_name = self.active_cell.GetProductProperty(
-                self._edb._edb.ProductId.SIWave, SIwaveProperties.CPA_SIM_NAME
+                self._edb.ProductId.SIWave, SIwaveProperties.CPA_SIM_NAME
             )[-1]
         except:
             cpa_setup_name = ""
