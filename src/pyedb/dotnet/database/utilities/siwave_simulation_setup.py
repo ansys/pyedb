@@ -296,7 +296,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         return DCAdvancedSettings(self)
 
 
-class SiwaveDCSimulationSetup(SiwaveSimulationSetup):
+class SiwaveDCSimulationSetup(SimulationSetup):
     """Manages EDB methods for SIwave DC simulation setup."""
 
     def __init__(self, pedb, edb_object=None, name: str = None):
@@ -370,6 +370,21 @@ class SiwaveDCSimulationSetup(SiwaveSimulationSetup):
         self.use_custom_settings = False
         self.dc_settings.dc_slider_position = value
         self.dc_advanced_settings.set_dc_slider(value)
+
+    @property
+    def dc_settings(self):
+        """SIwave DC setting."""
+        return DCSettings(self)
+
+    @property
+    def dc_advanced_settings(self):
+        """Siwave DC advanced settings.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
+        """
+        return DCAdvancedSettings(self)
 
     @property
     def source_terms_to_ground(self):
