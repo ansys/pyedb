@@ -23,7 +23,7 @@ from typing import Optional, List, Union
 
 from pyedb import Edb
 from pyedb.dotnet.database.materials import MaterialProperties
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class CfgMaterial(MaterialProperties):
@@ -61,14 +61,11 @@ class CfgLayer(BaseModel):
 
 
 class CfgStackup(BaseModel):
+    materials: List[CfgMaterial] = Field(default_factory=list)
+    layers: List[CfgLayer] = Field(default_factory=list)
 
     def add_material(self, name, **kwargs):
         self.materials.append(CfgMaterial(name=name, **kwargs))
 
     def add_layer_at_bottom(self, name, **kwargs):
         self.layers.append(CfgLayer(name=name, **kwargs))
-
-    def __init__(self, pedb: Edb, data):
-        self._pedb = pedb
-        self.materials = [CfgMaterial(**mat) for mat in data.get("materials", [])]
-        self.layers = [CfgLayer(**lay) for lay in data.get("layers", [])]
