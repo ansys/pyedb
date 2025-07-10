@@ -435,6 +435,12 @@ class SolverOptions:
 
     @property
     def compute_dc_rl(self):
+        """
+        Gets the compute DC RL parameters setting from the database.
+
+        Returns:
+            bool: True if DC RL parameters computation is enabled, False otherwise.
+        """
         _res = self._pedb.active_cell.get_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_RL
         ).value
@@ -444,12 +450,6 @@ class SolverOptions:
 
     @compute_dc_rl.setter
     def compute_dc_rl(self, value):
-        """
-        Gets the compute DC RL parameters setting from the database.
-
-        Returns:
-            bool: True if DC RL parameters computation is enabled, False otherwise.
-        """
         if value:
             self._pedb.active_cell.set_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_DC_PARAMS_COMPUTE_RL, "1"
@@ -811,12 +811,6 @@ class SIWaveCPASimulationSetup:
 
     @name.setter
     def name(self, value):
-        """
-        Sets the name of the simulation setup.
-
-        Args:
-            value (str): The name to set.
-        """
         self._pedb.active_cell.set_product_property(GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME, value)
 
     @property
@@ -836,12 +830,6 @@ class SIWaveCPASimulationSetup:
 
     @mode.setter
     def mode(self, value):
-        """
-        Sets the mode of the simulation setup.
-
-        Args:
-            value (str): The mode to set ("channel" or "no_channel").
-        """
         if value == "channel":
             self._pedb.active_cell.set_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_SETUP, "1"
@@ -869,12 +857,6 @@ class SIWaveCPASimulationSetup:
 
     @model_type.setter
     def model_type(self, value):
-        """
-        Sets the model type of the simulation setup.
-
-        Args:
-            value (str): The model type to set ("rlcg" or "esd_r").
-        """
         if value == "rlcg":
             self._pedb.active_cell.set_product_property(GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_ESD_R_MODEL, "0")
         elif value == "esd_r":
@@ -898,12 +880,6 @@ class SIWaveCPASimulationSetup:
 
     @use_q3d_solver.setter
     def use_q3d_solver(self, value):
-        """
-        Sets the Q3D solver usage setting.
-
-        Args:
-            value (bool): True to use the Q3D solver, False otherwise.
-        """
         if value:
             self._pedb.active_cell.set_product_property(
                 GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_USE_Q3D_SOLVER, "1"
@@ -927,12 +903,6 @@ class SIWaveCPASimulationSetup:
 
     @net_processing_mode.setter
     def net_processing_mode(self, value):
-        """
-        Sets the net processing mode.
-
-        Args:
-            value (str): The net processing mode to set.
-        """
         self._pedb.active_cell.set_product_property(
             GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_NET_PROCESSING_MODE, str(value)
         )
@@ -949,12 +919,6 @@ class SIWaveCPASimulationSetup:
 
     @channel_setup.setter
     def channel_setup(self, value):
-        """
-        Sets the channel setup configuration.
-
-        Args:
-            value (ChannelSetup): The channel setup configuration to set.
-        """
         if isinstance(value, ChannelSetup):
             self._channel_setup = value
 
@@ -970,12 +934,6 @@ class SIWaveCPASimulationSetup:
 
     @solver_options.setter
     def solver_options(self, value):
-        """
-        Sets the solver options configuration.
-
-        Args:
-            value (SolverOptions): The solver options configuration to set.
-        """
         if isinstance(value, SolverOptions):
             self._solver_options = value
 
@@ -994,15 +952,6 @@ class SIWaveCPASimulationSetup:
 
     @nets_to_process.setter
     def nets_to_process(self, value):
-        """
-        Sets the list of nets to process.
-
-        Args:
-            value (list): A list of nets to process.
-
-        Raises:
-            TypeError: If the input is not a list of strings.
-        """
         if isinstance(value, list):
             nets = "*".join(value)
             self._pedb.active_cell.set_product_property(
