@@ -2888,10 +2888,7 @@ class Edb(EdbInit):
         except:
             cpa_setup_name = ""
         if cpa_setup_name:
-            if not cpa_setup_name in self._setups:
-                setups[cpa_setup_name] = SIWaveCPASimulationSetup(self, cpa_setup_name)
-            else:
-                self.logger.warning(f"Siwave CPA setup {cpa_setup_name} already exists in EDB.")
+            setups[cpa_setup_name] = SIWaveCPASimulationSetup(self, cpa_setup_name)
         return setups
 
     @property
