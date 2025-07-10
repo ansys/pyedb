@@ -104,6 +104,7 @@ from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflow import Workflow
 
 
@@ -3710,7 +3711,7 @@ class Edb(Database):
                 setups[i.GetName()] = HFSSPISimulationSetup(self, i)
         try:
             cpa_setup_name = self.active_cell.GetProductProperty(
-                GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME
+                self._edb._edb.ProductId.SIWave, SIwaveProperties.CPA_SIM_NAME
             )[-1]
         except:
             cpa_setup_name = ""
@@ -3719,10 +3720,7 @@ class Edb(Database):
                 SIWaveCPASimulationSetup,
             )
 
-            if not cpa_setup_name in self._setups:
-                self._setups[cpa_setup_name] = SIWaveCPASimulationSetup(self, cpa_setup_name)
-            else:
-                self.logger.warning(f"Siwave CPA setup {cpa_setup_name} already exists in EDB.")
+            setups[cpa_setup_name] = SIWaveCPASimulationSetup(self, cpa_setup_name)
         return setups
 
     @property
