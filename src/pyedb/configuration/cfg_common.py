@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from dataclasses import dataclass
+
 from typing import List, Optional, Union
+
+from pydantic import BaseModel
 
 
 class CfgBase:
@@ -43,14 +45,14 @@ class CfgBase:
             setattr(pedb_object, attr, value)
 
 
-@dataclass
-class CfgVar:
+class CfgVar(BaseModel):
     name: str
-    value: Union[int, float]
+    value: Union[int, float, str]
     description: Optional[str] = ""
 
 
-@dataclass
-class CfgVariables:
-    def __init__(self, data: List):
-        self.variables: List[CfgVar] = [CfgVar(**i) for i in data]
+class CfgVariables(BaseModel):
+    variables: List[CfgVar] = []
+
+    def add_variable(self, name, value, description=""):
+        self.variables.append(CfgVar(name=name, value=value, description=description))
