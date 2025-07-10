@@ -60,52 +60,15 @@ class CfgLayer(BaseModel):
     etching: Optional[EtchingModel] = None
 
 
-class CfgStackup:
+class CfgStackup(BaseModel):
 
     def add_material(self, name, **kwargs):
         self.materials.append(CfgMaterial(name=name, **kwargs))
 
-    def get_layers_from_db(self):
-        layers = []
-        for name, obj in self._pedb.stackup.all_layers.items():
-            layers.append(obj.properties)
-        return layers
-
-    def get_data_from_db(self):
-        """Get configuration data from layout.
-
-        Returns
-        -------
-        dict
-        """
-        stackup = {}
-        materials = self.get_materials_from_db()
-        stackup["materials"] = materials
-        layers = self.get_layers_from_db()
-        stackup["layers"] = layers
-        return stackup
+    def add_layer_at_bottom(self, name, **kwargs):
+        self.layers.append(CfgLayer(name=name, **kwargs))
 
     def __init__(self, pedb: Edb, data):
         self._pedb = pedb
         self.materials = [CfgMaterial(**mat) for mat in data.get("materials", [])]
         self.layers = [CfgLayer(**lay) for lay in data.get("layers", [])]
-
-        materials = [m.name for m in self.materials]
-        for i in self.layers:
-            if i.type == "signal":
-                if i.material not in materials:
-                    self.materials.append(
-                        CfgMaterial(name=i.material, **self._pedb.materials.default_conductor_property_values)
-                    )
-                    materials.append(i.material)
-                if i.fill_material not in materials:
-                    self.materials.append(
-                        CfgMaterial(name=i.fill_material, **self._pedb.materials.default_dielectric_property_values)
-                    )
-                    materials.append(i.fill_material)
-            elif i.type == "dielectric":
-                if i.material not in materials:
-                    self.materials.append(
-                        CfgMaterial(name=i.material, **self._pedb.materials.default_dielectric_property_values)
-                    )
-                    materials.append(i.material)

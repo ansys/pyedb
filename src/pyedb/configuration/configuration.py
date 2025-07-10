@@ -299,7 +299,27 @@ class Configuration:
         input_signal_layers = [i for i in layers if i.type.lower() == "signal"]
         if len(input_signal_layers) == 0:
             return
-        elif len(self._pedb.stackup.signal_layers) == 0:
+        else:  # Create materials with default properties used in stackup but not defined
+            materials = [m.name for m in self.cfg_data.stackup.materials]
+            for i in self.cfg_data.stackup.layers:
+                if i.type == "signal":
+                    if i.material not in materials:
+                        self.cfg_data.stackup.add_missing_materials(
+                            name=i.material,
+                            **self._pedb.materials.default_conductor_property_values)
+
+                    if i.fill_material not in materials:
+                        self.cfg_data.stackup.add_missing_materials(
+                            name=i.material,
+                            **self._pedb.materials.default_dielectric_property_values)
+
+                elif i.type == "dielectric":
+                    if i.material not in materials:
+                        self.cfg_data.stackup.add_missing_materials(
+                            name=i.material,
+                            **self._pedb.materials.default_dielectric_property_values)
+
+        if len(self._pedb.stackup.signal_layers) == 0:
             self.__create_stackup()
         elif not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
             raise Exception(f"Input signal layer count do not match.")
@@ -379,6 +399,11 @@ class Configuration:
         for p_inst in self._pedb.layout.padstack_instances:
             p_inst._edb_object.SetLayerMap(temp_p_inst_layer_map[p_inst.id])
 
+    def get_stackup(self):
+        self.cfg_data.stackup.layers = []
+        for name, obj in self._pedb.stackup.all_layers.items():
+            self.cfg_data.stackup.add_layer_at_bottom(**obj.properties)
+
     def get_data_from_db(self, **kwargs):
         """Get configuration data from layout.
 
@@ -395,7 +420,9 @@ class Configuration:
         if kwargs.get("general", False):
             data["general"] = self.cfg_data.general.get_data_from_db()
         if kwargs.get("stackup", False):
-            pass
+            self.get_materials()
+            self.get_stackup()
+
             # todo data["stackup"] = self.cfg_data.stackup.get_data_from_db()
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
@@ -443,21 +470,21 @@ class Configuration:
         return data
 
     def export(
-        self,
-        file_path,
-        stackup=True,
-        package_definitions=False,
-        setups=True,
-        sources=True,
-        ports=True,
-        nets=True,
-        pin_groups=True,
-        operations=True,
-        components=True,
-        boundaries=True,
-        s_parameters=True,
-        padstacks=True,
-        general=True,
+            self,
+            file_path,
+            stackup=True,
+            package_definitions=False,
+            setups=True,
+            sources=True,
+            ports=True,
+            nets=True,
+            pin_groups=True,
+            operations=True,
+            components=True,
+            boundaries=True,
+            s_parameters=True,
+            padstacks=True,
+            general=True,
     ):
         """Export the configuration data from layout to a file.
 
