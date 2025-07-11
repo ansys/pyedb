@@ -811,7 +811,7 @@ class ControlFileImportOptions:
         self.min_bondwire_width: float = 0.0
         self.antipad_repalce_radius: float = 0.0
         self.gdsii_scaling_factor: float = 0.0
-        self.delte_empty_non_laminate_signal_layers: bool = False
+        self.delete_empty_non_laminate_signal_layers: bool = False
 
     def _write_xml(self, root: ET.Element) -> bool:
         """Write control file to XML element.
