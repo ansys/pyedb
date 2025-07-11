@@ -1660,7 +1660,7 @@ class ControlFile:
                             break
         return True
 
-    def parse_xml(self, xml_input) -> bool:
+    def parse_xml(self, xml_input: str) -> bool:
         """Parse an XML control file and populate the object.
 
         Parameters
