@@ -24,9 +24,6 @@
 
 
 import math
-import xml.etree.ElementTree as ET
-from pathlib import Path
-from typing import Union
 
 
 def compute_arc_points(p1, p2, h, n=6, tol=1e-12):
@@ -101,21 +98,3 @@ def compute_arc_points(p1, p2, h, n=6, tol=1e-12):
         yr.reverse()
 
     return xr, yr
-
-
-def read_xml_to_dict(file_path: Union[str, Path]) -> dict:
-    tree = ET.parse(file_path)
-    root = tree.getroot()
-
-    # Recursive function to convert XML to a dictionary
-    def xml_to_dict(elem):
-        node = dict(elem.attrib)  # Start with attributes
-        for child in elem:
-            child_dict = xml_to_dict(child)
-            if child.tag not in node:
-                node[child.tag] = []
-            node[child.tag].append(child_dict)
-        return node
-
-    # Convert root element to dictionary
-    return {root.tag: xml_to_dict(root)}
