@@ -304,18 +304,18 @@ class Configuration:
             for i in self.cfg_data.stackup.layers:
                 if i.type == "signal":
                     if i.material not in materials:
-                        self.cfg_data.stackup.add_missing_materials(
+                        self.cfg_data.stackup.add_material(
                             name=i.material,
                             **self._pedb.materials.default_conductor_property_values)
 
                     if i.fill_material not in materials:
-                        self.cfg_data.stackup.add_missing_materials(
+                        self.cfg_data.stackup.add_material(
                             name=i.material,
                             **self._pedb.materials.default_dielectric_property_values)
 
                 elif i.type == "dielectric":
                     if i.material not in materials:
-                        self.cfg_data.stackup.add_missing_materials(
+                        self.cfg_data.stackup.add_material(
                             name=i.material,
                             **self._pedb.materials.default_dielectric_property_values)
 
@@ -422,8 +422,8 @@ class Configuration:
         if kwargs.get("stackup", False):
             self.get_materials()
             self.get_stackup()
+            data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True)
 
-            # todo data["stackup"] = self.cfg_data.stackup.get_data_from_db()
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):

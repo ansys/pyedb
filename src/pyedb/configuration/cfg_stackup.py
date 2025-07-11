@@ -20,14 +20,47 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from typing import Optional, List, Union
-
-from pyedb import Edb
-from pyedb.dotnet.database.materials import MaterialProperties
 from pydantic import BaseModel, Field
+
+from pyedb.misc.utilities import read_xml_to_dict
+
+
+class CfgMaterialPropertyThermalModifier(BaseModel):
+    property_name: str
+    basic_quadratic_c1: float = 0
+    basic_quadratic_c2: float = 0
+    basic_quadratic_temperature_reference: float = 22
+    advanced_quadratic_lower_limit: float = -273.15
+    advanced_quadratic_upper_limit: float = 1000
+    advanced_quadratic_auto_calculate: bool = True
+    advanced_quadratic_lower_constant: float = 1
+    advanced_quadratic_upper_constant: float = 1
+
+
+class MaterialProperties(BaseModel):
+    """Store material properties."""
+
+    conductivity: Optional[Union[str, float]] = None
+    dielectric_loss_tangent: Optional[Union[str, float]] = None
+    magnetic_loss_tangent: Optional[Union[str, float]] = None
+    mass_density: Optional[Union[str, float]] = None
+    permittivity: Optional[Union[str, float]] = None
+    permeability: Optional[Union[str, float]] = None
+    poisson_ratio: Optional[Union[str, float]] = None
+    specific_heat: Optional[Union[str, float]] = None
+    thermal_conductivity: Optional[Union[str, float]] = None
+    youngs_modulus: Optional[Union[str, float]] = None
+    thermal_expansion_coefficient: Optional[Union[str, float]] = None
+    dc_conductivity: Optional[Union[str, float]] = None
+    dc_permittivity: Optional[Union[str, float]] = None
+    dielectric_model_frequency: Optional[Union[str, float]] = None
+    loss_tangent_at_frequency: Optional[Union[str, float]] = None
+    permittivity_at_frequency: Optional[Union[str, float]] = None
 
 
 class CfgMaterial(MaterialProperties):
     name: str
+    thermal_modifiers: Optional[list[CfgMaterialPropertyThermalModifier]] = None
 
 
 class RoughnessSideModel(BaseModel):
@@ -69,3 +102,8 @@ class CfgStackup(BaseModel):
 
     def add_layer_at_bottom(self, name, **kwargs):
         self.layers.append(CfgLayer(name=name, **kwargs))
+
+    @classmethod
+    def from_xml(cls, file_path):
+        data = read_xml_to_dict(file_path)
+

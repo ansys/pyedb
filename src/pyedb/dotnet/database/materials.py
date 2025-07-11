@@ -85,18 +85,6 @@ def get_line_float_value(line):
         return None
 
 
-class CfgMaterialPropertyThermalModifier(BaseModel):
-    property_name: str
-    basic_quadratic_c1: float = 0
-    basic_quadratic_c2: float = 0
-    basic_quadratic_temperature_reference: float = 22
-    advanced_quadratic_lower_limit: float = -273.15
-    advanced_quadratic_upper_limit: float = 1000
-    advanced_quadratic_auto_calculate: bool = True
-    advanced_quadratic_lower_constant: float = 1
-    advanced_quadratic_upper_constant: float = 1
-
-
 class MaterialProperties(BaseModel):
     """Store material properties."""
 
@@ -116,7 +104,6 @@ class MaterialProperties(BaseModel):
     dielectric_model_frequency: Optional[PositiveFloat] = 0.0
     loss_tangent_at_frequency: Optional[PositiveFloat] = 0.0
     permittivity_at_frequency: Optional[PositiveFloat] = 0.0
-    thermal_modifiers: Optional[list[CfgMaterialPropertyThermalModifier]] = None
 
 
 class Material(object):

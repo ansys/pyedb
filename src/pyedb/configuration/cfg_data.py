@@ -64,7 +64,7 @@ class CfgData(object):
 
         self.setups = CfgSetups(self._pedb, setups_data=kwargs.get("setups", []))
 
-        self.stackup = CfgStackup(self._pedb, data=kwargs.get("stackup", {}))
+        self.stackup = CfgStackup(**kwargs.get("stackup", {}))
 
         self.s_parameters = CfgSParameters(self._pedb, kwargs.get("s_parameters", []), self.general.s_parameter_library)
 
