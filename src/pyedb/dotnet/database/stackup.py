@@ -2250,62 +2250,11 @@ class Stackup(LayerCollection):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        if not colors:
-            self._pedb.logger.error("Matplotlib is needed. Please, install it first.")
-            return False
-        tree = ET.parse(file_path)
-        root = tree.getroot()
-        stackup = root.find("Stackup")
-        stackup_dict = {}
-        if stackup.find("Materials"):
-            mats = []
-            for m in stackup.find("Materials").findall("Material"):
-                temp = dict()
-                for i in list(m):
-                    value = list(i)[0].text
-                    temp[i.tag] = value
-                mat = {"name": m.attrib["Name"]}
-                temp_dict = {
-                    "Permittivity": "permittivity",
-                    "Conductivity": "conductivity",
-                    "DielectricLossTangent": "dielectric_loss_tangent",
-                }
-                for i in temp_dict.keys():
-                    value = temp.get(i, None)
-                    if value:
-                        mat[temp_dict[i]] = value
-                mats.append(mat)
-            stackup_dict["materials"] = mats
 
-        stackup_section = stackup.find("Layers")
-        if stackup_section:
-            length_unit = stackup_section.attrib["LengthUnit"]
-            layers = []
-            for l in stackup.find("Layers").findall("Layer"):
-                temp = l.attrib
-                layer = dict()
-                temp_dict = {
-                    "Name": "name",
-                    "Color": "color",
-                    "Material": "material",
-                    "Thickness": "thickness",
-                    "Type": "type",
-                    "FillMaterial": "fill_material",
-                }
-                for i in temp_dict.keys():
-                    value = temp.get(i, None)
-                    if value:
-                        if i == "Thickness":
-                            value = str(round(float(value), 6)) + length_unit
-                        value = "signal" if value == "conductor" else value
-                        if i == "Color":
-                            value = [int(x * 255) for x in list(colors.to_rgb(value))]
-                        layer[temp_dict[i]] = value
-                layers.append(layer)
-            stackup_dict["layers"] = layers
-        cfg = {"stackup": stackup_dict}
-        self._pedb.configuration.load(cfg)
-        return self._pedb.configuration.run()
+        self._edb_object.ImportFromControlFile(file_path)
+        flag = self._pedb.layout._edb_object.SetLayerCollection(self._edb_object)
+        self.refresh_layer_collection()
+        return flag
 
     def _export_xml(self, file_path):
         """Export stackup information to an external XMLfile.
