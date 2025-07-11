@@ -809,7 +809,7 @@ class ControlFileImportOptions:
         self.max_antipad_radius: float = 0.0
         self.extracta_use_pin_names: bool = False
         self.min_bondwire_width: float = 0.0
-        self.antipad_repalce_radius: float = 0.0
+        self.antipad_replace_radius: float = 0.0
         self.gdsii_scaling_factor: float = 0.0
         self.delte_empty_non_laminate_signal_layers: bool = False
 
