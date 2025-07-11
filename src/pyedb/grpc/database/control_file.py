@@ -1577,8 +1577,8 @@ class ControlFile:
         self.stackup = ControlFileStackup()
         if xml_input:
             self.parse_xml(xml_input)
-        if tecnhology:
-            self.parse_technology(tecnhology)
+        if technology:
+            self.parse_technology(technology)
         if layer_map:
             self.parse_layer_map(layer_map)
         self.boundaries = ControlFileBoundaries()
