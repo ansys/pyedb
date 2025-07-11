@@ -809,7 +809,7 @@ class ControlFileImportOptions:
         self.max_antipad_radius: float = 0.0
         self.extracta_use_pin_names: bool = False
         self.min_bondwire_width: float = 0.0
-        self.antipad_repalce_radius: float = 0.0
+        self.antipad_replace_radius: float = 0.0
         self.gdsii_scaling_factor: float = 0.0
         self.delete_empty_non_laminate_signal_layers: bool = False
 
@@ -1313,7 +1313,7 @@ class ControlFileMeshOp:
 
     def __init__(self, name: str, region: str, type: str, nets_layers: Dict[str, str]) -> None:
         self.name: str = name
-        self.region: str = name
+        self.region: str = region
         self.type: str = type
         self.nets_layers: Dict[str, str] = nets_layers
         self.num_max_elem: int = 1000
@@ -1561,7 +1561,7 @@ class ControlFile:
     """
 
     def __init__(
-        self, xml_input: Optional[str] = None, tecnhology: Optional[str] = None, layer_map: Optional[str] = None
+        self, xml_input: Optional[str] = None, technology: Optional[str] = None, layer_map: Optional[str] = None
     ) -> None:
         """Initialize control file object.
 
@@ -1660,7 +1660,7 @@ class ControlFile:
                             break
         return True
 
-    def parse_xml(self, xml_input) -> bool:
+    def parse_xml(self, xml_input: str) -> bool:
         """Parse an XML control file and populate the object.
 
         Parameters
