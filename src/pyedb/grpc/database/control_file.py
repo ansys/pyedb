@@ -1313,7 +1313,7 @@ class ControlFileMeshOp:
 
     def __init__(self, name: str, region: str, type: str, nets_layers: Dict[str, str]) -> None:
         self.name: str = name
-        self.region: str = name
+        self.region: str = region
         self.type: str = type
         self.nets_layers: Dict[str, str] = nets_layers
         self.num_max_elem: int = 1000
