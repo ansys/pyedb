@@ -121,7 +121,7 @@ class TestClass:
                         ],
                     },
                     {"name": "Megtron4_2", "permittivity": 3.77, "dielectric_loss_tangent": 0.005},
-                    {"name": "Solder Resist", "permittivity": 4, "dielectric_loss_tangent": 0},
+                    {"name": "Solder Resist", "permittivity": 4, "dielectric_loss_tangent": 0.035},
                 ]
             }
         }
