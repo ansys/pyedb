@@ -1,0 +1,6 @@
+add\_sweep\_data
+================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.sim_setup_info
+
+.. automethod:: SimSetupInfo.add_sweep_data

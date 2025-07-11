@@ -1,0 +1,6 @@
+bundle\_terminal
+================
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. autoproperty:: EdgeTerminal.bundle_terminal

@@ -1,0 +1,6 @@
+model\_validate\_json
+=====================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: MaterialProperties.model_validate_json

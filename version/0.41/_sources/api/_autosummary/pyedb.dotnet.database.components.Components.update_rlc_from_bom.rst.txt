@@ -1,0 +1,6 @@
+update\_rlc\_from\_bom
+======================
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.update_rlc_from_bom

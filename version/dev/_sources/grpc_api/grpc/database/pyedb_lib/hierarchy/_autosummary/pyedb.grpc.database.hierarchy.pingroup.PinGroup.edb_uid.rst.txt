@@ -1,0 +1,6 @@
+edb\_uid
+========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pingroup
+
+.. autoproperty:: PinGroup.edb_uid

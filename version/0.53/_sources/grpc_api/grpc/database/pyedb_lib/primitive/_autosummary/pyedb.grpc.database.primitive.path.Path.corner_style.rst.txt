@@ -1,0 +1,6 @@
+corner\_style
+=============
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. autoproperty:: Path.corner_style

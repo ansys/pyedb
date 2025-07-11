@@ -1,0 +1,6 @@
+edb\_uid
+========
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. autoproperty:: Terminal.edb_uid

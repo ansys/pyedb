@@ -1,0 +1,6 @@
+type
+====
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.mesh_operation
+
+.. autoproperty:: MeshOperation.type

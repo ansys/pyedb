@@ -1,0 +1,6 @@
+theta\_jc
+=========
+
+.. currentmodule:: pyedb.grpc.database.definition.package_def
+
+.. autoproperty:: PackageDef.theta_jc

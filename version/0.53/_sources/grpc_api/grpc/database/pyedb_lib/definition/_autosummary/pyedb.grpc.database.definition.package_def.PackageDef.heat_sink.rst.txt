@@ -1,0 +1,6 @@
+heat\_sink
+==========
+
+.. currentmodule:: pyedb.grpc.database.definition.package_def
+
+.. autoproperty:: PackageDef.heat_sink

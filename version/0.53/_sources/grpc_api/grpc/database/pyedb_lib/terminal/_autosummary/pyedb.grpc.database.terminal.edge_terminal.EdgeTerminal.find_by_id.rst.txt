@@ -1,0 +1,6 @@
+find\_by\_id
+============
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. automethod:: EdgeTerminal.find_by_id

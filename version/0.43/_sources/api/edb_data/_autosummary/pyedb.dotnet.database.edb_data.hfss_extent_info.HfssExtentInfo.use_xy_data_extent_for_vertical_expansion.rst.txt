@@ -1,0 +1,6 @@
+use\_xy\_data\_extent\_for\_vertical\_expansion
+===============================================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.use_xy_data_extent_for_vertical_expansion

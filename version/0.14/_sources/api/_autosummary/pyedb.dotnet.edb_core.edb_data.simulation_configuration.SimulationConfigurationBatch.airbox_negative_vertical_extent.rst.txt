@@ -1,0 +1,6 @@
+airbox\_negative\_vertical\_extent
+==================================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationBatch.airbox_negative_vertical_extent
