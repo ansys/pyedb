@@ -1561,7 +1561,7 @@ class ControlFile:
     """
 
     def __init__(
-        self, xml_input: Optional[str] = None, tecnhology: Optional[str] = None, layer_map: Optional[str] = None
+        self, xml_input: Optional[str] = None, technology: Optional[str] = None, layer_map: Optional[str] = None
     ) -> None:
         """Initialize control file object.
 
