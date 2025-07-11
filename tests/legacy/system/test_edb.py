@@ -168,7 +168,20 @@ class TestClass:
         """Add a sywave AC analysis."""
         # Done
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.siwave.add_siwave_syz_analysis(start_freq="=1GHz", stop_freq="10GHz", step_freq="10MHz")
+        syz_setup = edbapp.siwave.add_siwave_syz_analysis(start_freq="=1GHz", stop_freq="10GHz", step_freq="10MHz")
+        syz_setup.use_custom_settings = False
+        assert not syz_setup.use_custom_settings
+        syz_setup.advanced_settings.min_void_area = "4mm2"
+        assert syz_setup.advanced_settings.min_void_area == "4mm2"
+        syz_setup.advanced_settings.automatic_mesh = True
+        assert syz_setup.advanced_settings.automatic_mesh
+        syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh = "0.5mm2"
+        assert syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh == "0.5mm2"
+        syz_setup.dc_settings.use_dc_custom_settings = False
+        assert not syz_setup.dc_settings.use_dc_custom_settings
+        syz_sweep = syz_setup.add_sweep()
+        syz_sweep.enforce_causality = False
+        assert not syz_sweep.enforce_causality
         edbapp.close()
 
     def test_siwave_add_dc_analysis(self, edb_examples):

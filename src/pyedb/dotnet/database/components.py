@@ -1597,9 +1597,15 @@ class Components(object):
         >>> edbapp.components.create(pins, "A1New")
 
         """
-        _pins = [p._edb_object for p in pins if isinstance(p, EDBPadstackInstance)]
-        if _pins:
-            pins = _pins
+        _pins = []
+        for p in pins:
+            if isinstance(p, EDBPadstackInstance):
+                _pins.append(p._edb_object)
+            elif isinstance(p, str):
+                _pins.append(self._pedb.padstacks.instances_by_name[p]._edb_object)
+            else:
+                _pins.append(p)
+        pins = _pins
         if not component_name:
             component_name = generate_unique_name("Comp_")
         if component_part_name:

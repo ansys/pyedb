@@ -1374,14 +1374,19 @@ class TestClass:
     def test_19_variables(self, edb_examples):
         data = {
             "variables": [
-                {"name": "var_1", "value": "1mm", "description": "No description"},
+                {"name": "var_1", "value": "1mm", "description": "des1"},
                 {"name": "$var_2", "value": "1mm", "description": "No description"},
             ]
         }
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.configuration.load(data, apply_file=True)
+        edbapp.save()
         edbapp.close()
+        edbapp2 = edb_examples.load_edb(edbapp.edbpath)
+        edbapp2.configuration.get_variables()
+        assert edbapp2.configuration.cfg_data.variables.model_dump() == data
+        edbapp2.close()
 
     def test_probes(self, edb_examples):
         edbapp = edb_examples.get_si_verse()

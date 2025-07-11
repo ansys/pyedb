@@ -76,7 +76,9 @@ class LayerEdbClass(object):
 
     @fill_material.setter
     def fill_material(self, value):
-        self._edb_object.SetFillMaterial(value)
+        layer_clone = self._edb_layer
+        layer_clone.SetFillMaterial(value)
+        self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
 
     @property
     def _stackup_layer_mapping(self):
