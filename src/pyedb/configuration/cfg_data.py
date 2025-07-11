@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pydantic import BaseModel
 
 from pyedb.configuration.cfg_boundaries import CfgBoundaries
 from pyedb.configuration.cfg_common import CfgVariables

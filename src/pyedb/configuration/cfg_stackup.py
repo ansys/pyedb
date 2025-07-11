@@ -23,8 +23,6 @@ from typing import List, Optional, Union
 
 from pydantic import BaseModel, Field
 
-from pyedb.misc.utilities import read_xml_to_dict
-
 
 class CfgMaterialPropertyThermalModifier(BaseModel):
     property_name: str
