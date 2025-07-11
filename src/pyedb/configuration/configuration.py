@@ -305,19 +305,19 @@ class Configuration:
                 if i.type == "signal":
                     if i.material not in materials:
                         self.cfg_data.stackup.add_material(
-                            name=i.material,
-                            **self._pedb.materials.default_conductor_property_values)
+                            name=i.material, **self._pedb.materials.default_conductor_property_values
+                        )
 
                     if i.fill_material not in materials:
                         self.cfg_data.stackup.add_material(
-                            name=i.material,
-                            **self._pedb.materials.default_dielectric_property_values)
+                            name=i.material, **self._pedb.materials.default_dielectric_property_values
+                        )
 
                 elif i.type == "dielectric":
                     if i.material not in materials:
                         self.cfg_data.stackup.add_material(
-                            name=i.material,
-                            **self._pedb.materials.default_dielectric_property_values)
+                            name=i.material, **self._pedb.materials.default_dielectric_property_values
+                        )
 
         if len(self._pedb.stackup.signal_layers) == 0:
             self.__create_stackup()
@@ -384,9 +384,7 @@ class Configuration:
         for idx, l in enumerate(layers):
             if l.type == "dielectric":
                 attrs = l.model_dump(exclude_none=True)
-                prev_layer_clone = self._pedb.stackup.add_layer_below(
-                    base_layer_name=prev_layer_clone.name, **attrs
-                )
+                prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **attrs)
             elif l.type == "signal":
                 prev_layer_clone = self._pedb.stackup.layers[l.name]
 
@@ -473,22 +471,22 @@ class Configuration:
         return data
 
     def export(
-            self,
-            file_path,
-            stackup=True,
-            package_definitions=False,
-            setups=True,
-            sources=True,
-            ports=True,
-            nets=True,
-            pin_groups=True,
-            operations=True,
-            components=True,
-            boundaries=True,
-            s_parameters=True,
-            padstacks=True,
-            general=True,
-            variables=True,
+        self,
+        file_path,
+        stackup=True,
+        package_definitions=False,
+        setups=True,
+        sources=True,
+        ports=True,
+        nets=True,
+        pin_groups=True,
+        operations=True,
+        components=True,
+        boundaries=True,
+        s_parameters=True,
+        padstacks=True,
+        general=True,
+        variables=True,
     ):
         """Export the configuration data from layout to a file.
 
@@ -542,7 +540,7 @@ class Configuration:
             s_parameters=s_parameters,
             padstacks=padstacks,
             general=general,
-            variables=variables
+            variables=variables,
         )
 
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)

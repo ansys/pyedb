@@ -24,9 +24,9 @@
 
 
 import math
-import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Union
+import xml.etree.ElementTree as ET
 
 
 def compute_arc_points(p1, p2, h, n=6, tol=1e-12):

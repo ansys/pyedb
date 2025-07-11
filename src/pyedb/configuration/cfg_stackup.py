@@ -19,7 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from typing import Optional, List, Union
+from typing import List, Optional, Union
+
 from pydantic import BaseModel, Field
 
 from pyedb.misc.utilities import read_xml_to_dict
@@ -67,7 +68,7 @@ class RoughnessSideModel(BaseModel):
     model: str
     nodule_radius: Optional[str] = None  # e.g., '0.1um'
     surface_ratio: Optional[str] = None  # e.g., '1'
-    roughness: Optional[str] = None      # e.g., '2um' for non-huray
+    roughness: Optional[str] = None  # e.g., '2um' for non-huray
 
 
 class RoughnessModel(BaseModel):
