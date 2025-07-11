@@ -64,7 +64,7 @@ class Hfss(object):
         return HfssExtentInfo(self._pedb)
 
     @property
-    def _logger(self):
+    def _logger(self) -> None:
         """Logger instance for message handling.
 
         Returns
@@ -75,7 +75,7 @@ class Hfss(object):
         return self._pedb.logger
 
     @property
-    def _edb(self):
+    def _edb(self) -> None:
         """EDB API object.
 
         Returns
