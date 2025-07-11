@@ -40,6 +40,9 @@ from pyedb.dotnet.database.edb_data.sources import (
     VoltageSource,
 )
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup import (
+    SIWaveCPASimulationSetup,
+)
 from pyedb.generic.constants import SolverType, SweepType
 from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
 from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
@@ -1506,6 +1509,17 @@ class EdbSiwave(object):
 
         """
         return SiwaveScanConfig(self._pedb, scan_type)
+
+    def add_cpa_analysis(self, name=None, siwave_cpa_setup_class=None):
+        if not name:
+            from pyedb.generic.general_methods import generate_unique_name
+
+            if not siwave_cpa_setup_class:
+                name = generate_unique_name("cpa_setup")
+            else:
+                name = siwave_cpa_setup_class.name
+        cpa_setup = SIWaveCPASimulationSetup(self._pedb, name=name, siwave_cpa_setup_class=siwave_cpa_setup_class)
+        return cpa_setup
 
     @icepak_use_minimal_comp_defaults.setter
     def icepak_use_minimal_comp_defaults(self, value):

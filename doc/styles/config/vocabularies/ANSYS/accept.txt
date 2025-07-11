@@ -70,3 +70,4 @@ vias
 [Vv]oltage
 [Rr]egulator
 [Cc]onnectable
+[Cc][Pp][Aa]

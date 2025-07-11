@@ -114,6 +114,9 @@ from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import (
 from pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup import (
     RaptorXSimulationSetup,
 )
+from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
+    SIWaveCPASimulationSetup,
+)
 from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup,
 )
@@ -2841,7 +2844,16 @@ class Edb(EdbInit):
     @property
     def setups(
         self,
-    ) -> Union[HfssSimulationSetup, SiwaveSimulationSetup, SIWaveDCIRSimulationSetup, RaptorXSimulationSetup]:
+    ) -> dict[
+        str,
+        Union[
+            HfssSimulationSetup,
+            SiwaveSimulationSetup,
+            SIWaveDCIRSimulationSetup,
+            RaptorXSimulationSetup,
+            SIWaveCPASimulationSetup,
+        ],
+    ]:
         """Get the dictionary of all EDB HFSS and SIwave setups.
 
         Returns
@@ -2850,21 +2862,34 @@ class Edb(EdbInit):
         Dict[str,:class:`SiwaveSimulationSetup`] or
         Dict[str,:class:`SIWaveDCIRSimulationSetup`] or
         Dict[str,:class:`RaptorXSimulationSetup`]
+        Dict[str,:class:`SIWaveCPASimulationSetup`]
 
         """
-        self._setups = {}
+        from ansys.edb.core.database import ProductIdType as GrpcProductIdType
+
+        from pyedb.siwave_core.product_properties import SIwaveProperties
+
+        setups = {}
         for setup in self.active_cell.simulation_setups:
             setup = setup.cast()
             setup_type = setup.type.name
             if setup_type == "HFSS":
-                self._setups[setup.name] = HfssSimulationSetup(self, setup)
+                setups[setup.name] = HfssSimulationSetup(self, setup)
             elif setup_type == "SI_WAVE":
-                self._setups[setup.name] = SiwaveSimulationSetup(self, setup)
+                setups[setup.name] = SiwaveSimulationSetup(self, setup)
             elif setup_type == "SI_WAVE_DCIR":
-                self._setups[setup.name] = SIWaveDCIRSimulationSetup(self, setup)
+                setups[setup.name] = SIWaveDCIRSimulationSetup(self, setup)
             elif setup_type == "RAPTOR_X":
-                self._setups[setup.name] = RaptorXSimulationSetup(self, setup)
-        return self._setups
+                setups[setup.name] = RaptorXSimulationSetup(self, setup)
+        try:
+            cpa_setup_name = self.active_cell.get_product_property(
+                GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME
+            ).value
+        except:
+            cpa_setup_name = ""
+        if cpa_setup_name:
+            setups[cpa_setup_name] = SIWaveCPASimulationSetup(self, cpa_setup_name)
+        return setups
 
     @property
     def hfss_setups(self) -> dict[str, HfssSimulationSetup]:

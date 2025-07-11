@@ -104,6 +104,7 @@ from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflow import Workflow
 
 
@@ -3695,6 +3696,7 @@ class Edb(Database):
         Dict[str, :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
 
         """
+
         setups = {}
         for i in list(self.active_cell.SimulationSetups):
             if i.GetType().ToString().endswith("kHFSS"):
@@ -3707,6 +3709,18 @@ class Edb(Database):
                 setups[i.GetName()] = RaptorXSimulationSetup(self, i)
             elif i.GetType().ToString().endswith("kHFSSPI"):
                 setups[i.GetName()] = HFSSPISimulationSetup(self, i)
+        try:
+            cpa_setup_name = self.active_cell.GetProductProperty(
+                self._edb.ProductId.SIWave, SIwaveProperties.CPA_SIM_NAME
+            )[-1]
+        except:
+            cpa_setup_name = ""
+        if cpa_setup_name:
+            from pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup import (
+                SIWaveCPASimulationSetup,
+            )
+
+            setups[cpa_setup_name] = SIWaveCPASimulationSetup(self, cpa_setup_name)
         return setups
 
     @property
