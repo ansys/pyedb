@@ -416,14 +416,17 @@ class Configuration:
 
         """
         self._pedb.logger.info("Getting data from layout database.")
+        self.get_variables()
+        self.get_materials()
+        self.get_stackup()
+
         data = {}
         if kwargs.get("general", False):
             data["general"] = self.cfg_data.general.get_data_from_db()
+        if kwargs.get("variables", False):
+            data["variables"] = self.cfg_data.variables.model_dump(exclude_none=True)
         if kwargs.get("stackup", False):
-            self.get_materials()
-            self.get_stackup()
             data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True)
-
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):
@@ -485,6 +488,7 @@ class Configuration:
             s_parameters=True,
             padstacks=True,
             general=True,
+            variables=True,
     ):
         """Export the configuration data from layout to a file.
 
@@ -518,6 +522,8 @@ class Configuration:
             Whether to export padstacks.
         general : bool
             Whether to export general information.
+        variables : bool
+            Whether to export variable.
         Returns
         -------
         bool
@@ -536,6 +542,7 @@ class Configuration:
             s_parameters=s_parameters,
             padstacks=padstacks,
             general=general,
+            variables=variables
         )
 
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)

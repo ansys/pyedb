@@ -102,8 +102,3 @@ class CfgStackup(BaseModel):
 
     def add_layer_at_bottom(self, name, **kwargs):
         self.layers.append(CfgLayer(name=name, **kwargs))
-
-    @classmethod
-    def from_xml(cls, file_path):
-        data = read_xml_to_dict(file_path)
-
