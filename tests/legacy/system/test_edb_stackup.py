@@ -426,7 +426,7 @@ class TestClass:
 
     def test_stackup_load_xml(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.stackup.load(os.path.join(local_path, "example_models",test_subfolder, "ansys_pcb_stackup.xml"))
+        assert edbapp.stackup.load(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml"))
         assert "Inner1" in list(edbapp.stackup.layers.keys())  # Renamed layer
         assert "DE1" not in edbapp.stackup.layers.keys()  # Removed layer
         assert edbapp.stackup.export(os.path.join(self.local_scratch.path, "stackup.xml"))
