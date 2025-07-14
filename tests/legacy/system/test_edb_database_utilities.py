@@ -32,7 +32,6 @@ class TestClass:
         pass
 
     def test_value(self, edb_examples):
-
         edbapp = edb_examples.create_empty_edb()
 
         edb_value = edbapp.edb_api.utility.value("4000mm")
