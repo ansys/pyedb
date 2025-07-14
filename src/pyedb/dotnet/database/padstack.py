@@ -25,6 +25,7 @@ This module contains the `EdbPadstacks` class.
 """
 from collections import defaultdict
 import math
+from typing import Dict, List
 import warnings
 
 import numpy as np
@@ -1874,7 +1875,7 @@ class EdbPadstacks(object):
                 return True
 
     @staticmethod
-    def dbscan(padstack_dict, eps, min_samples):
+    def dbscan(padstack_dict, eps, min_samples) -> Dict[str, List[str]]:
         """
         density based spatial clustering for padstack instances
 

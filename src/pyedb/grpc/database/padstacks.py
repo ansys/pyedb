@@ -23,7 +23,9 @@
 """
 This module contains the `EdbPadstacks` class.
 """
+from collections import defaultdict
 import math
+from typing import Dict, List
 import warnings
 
 from ansys.edb.core.definition.padstack_def_data import (
@@ -1740,3 +1742,70 @@ class Padstacks(object):
                     if item not in to_keep:
                         all_instances[item].delete()
                 return True
+
+    @staticmethod
+    def dbscan(padstack_dict, eps, min_samples) -> Dict[str, List[str]]:
+        """
+        density based spatial clustering for padstack instances
+
+        Parameters
+        ----------
+        padstack_dict : dict.
+            "padstack_id": [x1, y1]
+
+        eps: float
+            maximum distance between two points be included in one cluster
+
+        min_samples: int
+            minimum number of points that a cluster must have
+
+        Returns
+        -------
+        dict
+            clusters {"cluster id": [padstack ids]} <
+        """
+
+        ids = list(padstack_dict.keys())
+        xy_array = np.array([padstack_dict[pid] for pid in ids])
+        n = len(ids)
+
+        labels = -1 * np.ones(n, dtype=int)
+        visited = np.zeros(n, dtype=bool)
+        cluster_id = 0
+
+        def region_query(point_idx):
+            distances = np.linalg.norm(xy_array - xy_array[point_idx], axis=1)
+            return np.where(distances <= eps)[0]
+
+        def expand_cluster(point_idx, neighbors):
+            nonlocal cluster_id
+            labels[point_idx] = cluster_id
+            i = 0
+            while i < len(neighbors):
+                neighbor_idx = neighbors[i]
+                if not visited[neighbor_idx]:
+                    visited[neighbor_idx] = True
+                    neighbor_neighbors = region_query(neighbor_idx)
+                    if len(neighbor_neighbors) >= min_samples:
+                        neighbors = np.concatenate((neighbors, neighbor_neighbors))
+                if labels[neighbor_idx] == -1:
+                    labels[neighbor_idx] = cluster_id
+                i += 1
+
+        for point_idx in range(n):
+            if visited[point_idx]:
+                continue
+            visited[point_idx] = True
+            neighbors = region_query(point_idx)
+            if len(neighbors) < min_samples:
+                labels[point_idx] = -1
+            else:
+                expand_cluster(point_idx, neighbors)
+                cluster_id += 1
+
+        # group point IDs by label
+        clusters = defaultdict(list)
+        for i, label in enumerate(labels):
+            clusters[int(label)].append(ids[i])
+
+        return dict(clusters)

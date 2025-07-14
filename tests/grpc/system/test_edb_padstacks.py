@@ -538,3 +538,23 @@ class TestClass:
         assert edbapp.padstacks.instances[merged_via[0]].start_layer == "layer1"
         assert edbapp.padstacks.instances[merged_via[0]].stop_layer == "layer2"
         edbapp.close()
+
+
+def test_dbscan():
+    source_path = os.path.join(local_path, "example_models", "TEDB", "merge_via_4layers.aedb")
+    edbapp = Edb(edbpath=source_path, edbversion=desktop_version)
+
+    # "NET_1" one cluster with 20 vias
+    net_vias = [_x.edb_uid for _x in edbapp.padstacks.get_via_instance_from_net("NET_1")]
+    all_vias = {via_id: edbapp.padstacks.instances[via_id].position for via_id in net_vias}
+    clusters1 = edbapp.padstacks.dbscan(all_vias, eps=2e-3, min_samples=3)
+
+    # all nets two clusters with 21 vias each
+    net_vias = [_x.edb_uid for _x in edbapp.padstacks.get_via_instance_from_net()]
+    all_vias = {via_id: edbapp.padstacks.instances[via_id].position for via_id in net_vias}
+    clusters2 = edbapp.padstacks.dbscan(all_vias, eps=2e-3, min_samples=3)
+
+    assert len(clusters1) == 1
+    assert len(clusters1[0]) == 20
+    assert len(clusters2) == 2
+    assert len(clusters2[1]) == 21
