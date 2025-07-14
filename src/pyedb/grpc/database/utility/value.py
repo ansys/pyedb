@@ -29,4 +29,4 @@ class Value(float, GrpcValue):
 
     def __new__(cls, edb_obj) -> float:
         cls._edb_obj = edb_obj
-        return super().__new__(cls, float(GrpcValue(edb_obj).double))
+        return super().__new__(cls, float(round(GrpcValue(edb_obj).double, 9)))
