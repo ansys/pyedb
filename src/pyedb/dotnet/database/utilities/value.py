@@ -47,7 +47,7 @@ class Value(float):
         return self.__class__(self._pedb, edb_object)
 
     def log10(self):
-        """Square root of the value."""
+        """Base-10 logarithm of the value."""
         edb_object = self._pedb.edb_value(f"log10({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
