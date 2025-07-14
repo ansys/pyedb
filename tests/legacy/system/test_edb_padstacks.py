@@ -551,3 +551,20 @@ def _assert_inside(rect, pad):
     assert math.isclose(
         round(result[0].Area(), 4), round(rect.Area(), 4)
     ), f"{BASE_MESSAGE} area of intersection is not equal to rectangle area"
+
+
+def test_dbscan():
+    source_path = Path(__file__).parent.parent.parent / "example_models" / "TEDB" / "merge_via_4layers.aedb"
+    edbapp = Edb(edbpath=source_path)
+    net_vias = [_x.GetId() for _x in edbapp.padstacks.get_via_instance_from_net("NET_1")]
+    all_vias = {via_id: edbapp.padstacks.instances[via_id].position for via_id in net_vias}
+    clusters1 = edbapp.padstacks.dbscan(all_vias, eps=2e-3, min_samples=3)
+
+    net_vias = [_x.GetId() for _x in edbapp.padstacks.get_via_instance_from_net()]
+    all_vias = {via_id: edbapp.padstacks.instances[via_id].position for via_id in net_vias}
+    clusters2 = edbapp.padstacks.dbscan(all_vias, eps=2e-3, min_samples=3)
+
+    assert len(clusters1) == 1
+    assert len(clusters1[0]) == 20
+    assert len(clusters2) == 2
+    assert len(clusters2[1]) == 21
