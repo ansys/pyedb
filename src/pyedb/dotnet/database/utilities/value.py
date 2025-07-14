@@ -52,31 +52,31 @@ class Value(float):
         return self.__class__(self._pedb, edb_object)
 
     def sin(self):
-        """Square root of the value."""
+        """Sine of the value."""
         edb_object = self._pedb.edb_value(f"sin({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def cos(self):
-        """Square root of the value."""
+        """Cosine of the value."""
         edb_object = self._pedb.edb_value(f"cos({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def asin(self):
-        """Square root of the value."""
+        """Arcsine of the value."""
         edb_object = self._pedb.edb_value(f"asin({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def acos(self):
-        """Square root of the value."""
+        """Arccosine of the value."""
         edb_object = self._pedb.edb_value(f"acos({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def tan(self):
-        """Tangent."""
+        """Tangent of the value."""
         edb_object = self._pedb.edb_value(f"tan({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def atan(self):
-        """Inverse hyperbolic tan."""
+        """Arctangent of the value."""
         edb_object = self._pedb.edb_value(f"atan({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
