@@ -1,0 +1,82 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+import numpy as np
+
+
+class Value(float):
+    """Class defining Edb Value properties."""
+
+    def __new__(cls, pedb, edb_obj):
+        temp = super().__new__(cls, float(round(edb_obj.ToDouble(), 9)))
+        temp._pedb = pedb
+        temp._edb_obj = edb_obj
+        return temp
+
+    def __str__(self):
+        """Returns the string of the variable.
+
+        Returns
+        -------
+        str
+        """
+        return self._edb_obj.ToString()
+
+    def sqrt(self):
+        """Square root of the value."""
+        edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})**0.5")
+        return self.__class__(self._pedb, edb_object)
+
+    def log10(self):
+        """Square root of the value."""
+        edb_object = self._pedb.edb_value(f"log10({self._edb_obj.ToString()})")
+        return self.__class__(self._pedb, edb_object)
+
+    def sin(self):
+        """Square root of the value."""
+        edb_object = self._pedb.edb_value(f"sin({self._edb_obj.ToString()})")
+        return self.__class__(self._pedb, edb_object)
+
+    def cos(self):
+        """Square root of the value."""
+        edb_object = self._pedb.edb_value(f"cos({self._edb_obj.ToString()})")
+        return self.__class__(self._pedb, edb_object)
+
+    def asin(self):
+        """Square root of the value."""
+        edb_object = self._pedb.edb_value(f"asin({self._edb_obj.ToString()})")
+        return self.__class__(self._pedb, edb_object)
+
+    def acos(self):
+        """Square root of the value."""
+        edb_object = self._pedb.edb_value(f"acos({self._edb_obj.ToString()})")
+        return self.__class__(self._pedb, edb_object)
+
+    def tan(self):
+        """Tangent."""
+        edb_object = self._pedb.edb_value(f"tan({self._edb_obj.ToString()})")
+        return self.__class__(self._pedb, edb_object)
+
+    def atan(self):
+        """Inverse hyperbolic tan."""
+        edb_object = self._pedb.edb_value(f"atan({self._edb_obj.ToString()})")
+        return self.__class__(self._pedb, edb_object)

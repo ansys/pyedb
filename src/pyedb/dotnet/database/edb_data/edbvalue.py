@@ -66,20 +66,3 @@ class EdbValue:
         str
         """
         return self._edb_obj.ToString()
-
-
-class Value(float):
-    """Class defining Edb Value properties."""
-
-    def __new__(cls, edb_obj):
-        cls._edb_obj = edb_obj
-        return super().__new__(cls, float(edb_obj.ToDouble()))
-
-    def __str__(self):
-        """Returns the string of the variable.
-
-        Returns
-        -------
-        str
-        """
-        return self._edb_obj.ToString()
