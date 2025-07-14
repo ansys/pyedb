@@ -2657,12 +2657,12 @@ class Edb(EdbInit):
             Variable value if exists, else False.
         """
         if self.variable_exists(variable_name):
-            if "$" in variable_name:
-                if variable_name.index("$") == 0:
-                    variable = next(var for var in self.active_db.get_all_variable_names())
-                else:
-                    variable = next(var for var in self.active_cell.get_all_variable_names())
+            if variable_name.startswith("$"):
+                variable = next(var for var in self.active_db.get_all_variable_names())
                 return self.db.get_variable_value(variable)
+            else:
+                variable = next(var for var in self.active_cell.get_all_variable_names())
+                return self.active_cell.get_variable_value(variable)
         self.logger.info(f"Variable {variable_name} doesn't exists.")
         return False
 
