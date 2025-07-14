@@ -36,7 +36,7 @@ class TestClass:
         edbapp = edb_examples.create_empty_edb()
 
         edb_value = edbapp.edb_api.utility.value("4000mm")
-        value = Value(edbapp, edb_value)
+        value = edbapp.value(edb_value)
         assert value == 4
         assert str(value) == "4000mm"
         assert value + 1 == 5
@@ -45,50 +45,50 @@ class TestClass:
         assert str(value2) == "(4000mm)**0.5"
 
         edb_value = edbapp.edb_api.utility.value("10mm")
-        value = Value(edbapp, edb_value)
+        value = edbapp.value(edb_value)
         value2 = value.log10()
         assert value2 == -2
         assert str(value2) == "log10(10mm)"
 
         edb_value = edbapp.edb_api.utility.value("pi/6")
-        value = Value(edbapp, edb_value)
+        value = edbapp.value(edb_value)
         value2 = value.sin()
         assert value2 == 0.5
         assert str(value2) == "sin(pi/6)"
 
         edb_value = edbapp.edb_api.utility.value("pi/3")
-        value = Value(edbapp, edb_value)
+        value = edbapp.value(edb_value)
         value2 = value.cos()
         assert value2 == 0.5
         assert str(value2) == "cos(pi/3)"
 
         edb_value = edbapp.edb_api.utility.value(1)
-        value = Value(edbapp, edb_value)
+        value = edbapp.value(edb_value)
         value2 = value.asin()
         assert value2 == 1.570796327
         assert str(value2) == "asin(1)"
 
         edb_value = edbapp.edb_api.utility.value(0)
-        value = Value(edbapp, edb_value)
+        value = edbapp.value(edb_value)
         value2 = value.acos()
         assert value2 == 1.570796327
         assert str(value2) == "acos(0)"
 
         edb_value = edbapp.edb_api.utility.value("pi/4")
-        value = Value(edbapp, edb_value)
+        value = edbapp.value(edb_value)
         value2 = value.tan()
         assert value2 == 1
         assert str(value2) == "tan(pi/4)"
 
         edb_value = edbapp.edb_api.utility.value(1)
-        value = Value(edbapp, edb_value)
+        value = edbapp.value(edb_value)
         value2 = value.atan()
         assert value2 == 0.785398163
         assert str(value2) == "atan(1)"
 
         edbapp.add_design_variable("var1", "1mm")
         edb_value = edbapp.edb_api.utility.value("var1")
-        value = Value(edbapp, edb_value)
+        value = edbapp.value(edb_value)
         value2 = value.sqrt()
         assert str(value2) == '(var1)**0.5'
 

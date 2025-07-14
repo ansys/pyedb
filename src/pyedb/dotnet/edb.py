@@ -106,6 +106,7 @@ from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflow import Workflow
+from pyedb.dotnet.database.utilities.value import Value
 
 
 class Edb(Database):
@@ -399,6 +400,9 @@ class Edb(Database):
     @property
     def pedb_class(self):
         return pyedb.dotnet
+
+    def value(self, edb_object):
+        return pyedb.dotnet.database.utilities.value.Value(self, edb_object)
 
     @property
     def grpc(self):

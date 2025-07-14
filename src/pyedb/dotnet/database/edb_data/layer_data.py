@@ -432,8 +432,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         """
         if not self.is_stackup_layer:  # pragma: no cover
             return
-        thickness = self._edb_layer.GetThicknessValue()
-        self._thickness = self._pedb.pedb_class.database.edb_data.edbvalue.Value(thickness)
+        self._thickness = self._edb_layer.GetThicknessValue().ToDouble()
         return self._thickness
 
     @thickness.setter
