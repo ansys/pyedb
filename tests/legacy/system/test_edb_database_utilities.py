@@ -33,6 +33,7 @@ class TestClass:
 
     def test_value(self, edb_examples):
         from pyedb.dotnet.database.utilities.value import Value
+
         edbapp = edb_examples.create_empty_edb()
 
         edb_value = edbapp.edb_api.utility.value("4000mm")
@@ -90,6 +91,6 @@ class TestClass:
         edb_value = edbapp.edb_api.utility.value("var1")
         value = edbapp.value(edb_value)
         value2 = value.sqrt()
-        assert str(value2) == '(var1)**0.5'
+        assert str(value2) == "(var1)**0.5"
 
         edbapp.close()
