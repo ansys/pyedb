@@ -2657,7 +2657,7 @@ class Edb(EdbInit):
             Variable value if exists, else False.
         """
         if self.variable_exists(variable_name):
-            if "$" in variable_name[0]:
+            if variable_name.startswith("$"):
                 variable = next(var for var in self.active_db.get_all_variable_names())
                 return self.db.get_variable_value(variable)
             else:
