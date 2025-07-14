@@ -32,7 +32,6 @@ class TestClass:
         pass
 
     def test_value(self, edb_examples):
-        from pyedb.dotnet.database.utilities.value import Value
 
         edbapp = edb_examples.create_empty_edb()
 
