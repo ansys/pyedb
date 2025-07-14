@@ -402,7 +402,7 @@ class Edb(Database):
         return pyedb.dotnet
 
     def value(self, edb_object):
-        return pyedb.dotnet.database.utilities.value.Value(self, edb_object)
+        return Value(self, edb_object)
 
     @property
     def grpc(self):
