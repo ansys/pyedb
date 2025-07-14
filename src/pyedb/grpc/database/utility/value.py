@@ -28,5 +28,6 @@ class Value(float, GrpcValue):
     """Class defining Edb Value properties."""
 
     def __new__(cls, edb_obj) -> float:
-        cls._edb_obj = edb_obj
-        return super().__new__(cls, float(GrpcValue(edb_obj).double))
+        inst = super().__new__(cls, float(GrpcValue(edb_obj).double))
+        inst._edb_obj = edb_obj
+        return inst
