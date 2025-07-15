@@ -25,7 +25,8 @@ from __future__ import absolute_import
 from ansys.edb.core.layer.layer import LayerType as GrpcLayerType
 from ansys.edb.core.layer.stackup_layer import RoughnessRegion as GrpcRoughnessRegion
 from ansys.edb.core.layer.stackup_layer import StackupLayer as GrpcStackupLayer
-from ansys.edb.core.utility.value import Value as GrpcValue
+
+from pyedb.grpc.database.utility.value import Value
 
 
 class StackupLayer(GrpcStackupLayer):
@@ -133,8 +134,8 @@ class StackupLayer(GrpcStackupLayer):
             self._edb_object = GrpcStackupLayer.create(
                 self._name,
                 layer_type,
-                GrpcValue(0),
-                GrpcValue(0),
+                Value(0),
+                Value(0),
                 "copper",
             )
 
@@ -147,12 +148,12 @@ class StackupLayer(GrpcStackupLayer):
         float
             Lower elevation.
         """
-        return round(super().lower_elevation.value, 9)
+        return Value(super().lower_elevation, self._pedb.active_cell)
 
     @lower_elevation.setter
     def lower_elevation(self, value):
         if self._pedb.stackup.mode == "overlapping":
-            super(StackupLayer, self.__class__).lower_elevation.__set__(self, GrpcValue(value))
+            super(StackupLayer, self.__class__).lower_elevation.__set__(self, Value(value))
 
     @property
     def fill_material(self) -> str:
@@ -180,7 +181,7 @@ class StackupLayer(GrpcStackupLayer):
         float
             Upper elevation.
         """
-        return round(super().upper_elevation.value, 9)
+        return Value(super().upper_elevation, self._pedb.active_cell)
 
     @property
     def is_negative(self) -> bool:
@@ -303,11 +304,11 @@ class StackupLayer(GrpcStackupLayer):
         float
             Layer thickness.
         """
-        return round(super().thickness.value, 9)
+        return Value(super().thickness, self._pedb.active_cell)
 
     @thickness.setter
     def thickness(self, value):
-        super(StackupLayer, self.__class__).thickness.__set__(self, GrpcValue(value))
+        super(StackupLayer, self.__class__).thickness.__set__(self, Value(value))
 
     @property
     def etch_factor(self) -> float:
@@ -318,7 +319,7 @@ class StackupLayer(GrpcStackupLayer):
         float
             Etching factor value.
         """
-        return super().etch_factor.value
+        return Value(super().etch_factor, self._pedb.active_cell)
 
     @etch_factor.setter
     def etch_factor(self, value):
@@ -326,7 +327,7 @@ class StackupLayer(GrpcStackupLayer):
             self.etch_factor_enabled = False
         else:
             self.etch_factor_enabled = True
-            super(StackupLayer, self.__class__).etch_factor.__set__(self, GrpcValue(value))
+            super(StackupLayer, self.__class__).etch_factor.__set__(self, Value(value))
 
     @property
     def top_hallhuray_nodule_radius(self) -> float:
@@ -340,7 +341,7 @@ class StackupLayer(GrpcStackupLayer):
         try:
             top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
             if len(top_roughness_model) == 2:
-                return top_roughness_model[0].value
+                return Value(top_roughness_model[0], self._pedb.active_cell)
             else:
                 return 0.0
         except:
@@ -351,7 +352,7 @@ class StackupLayer(GrpcStackupLayer):
         try:
             top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
             if len(top_roughness_model) == 2:
-                top_roughness_model[0] = GrpcValue(value)
+                top_roughness_model[0] = Value(value)
                 self.set_roughness_model(top_roughness_model, GrpcRoughnessRegion.TOP)
         except:
             pass
@@ -368,7 +369,7 @@ class StackupLayer(GrpcStackupLayer):
         try:
             top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
             if len(top_roughness_model) == 2:
-                return top_roughness_model[1].value
+                return Value(top_roughness_model[1], self._pedb.active_cell)
             else:
                 return 0.0
         except:
@@ -379,7 +380,7 @@ class StackupLayer(GrpcStackupLayer):
         try:
             top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
             if len(top_roughness_model) == 2:
-                top_roughness_model[1] = GrpcValue(value)
+                top_roughness_model[1] = Value(value)
                 self.set_roughness_model(top_roughness_model, GrpcRoughnessRegion.TOP)
         except:
             pass
@@ -396,7 +397,7 @@ class StackupLayer(GrpcStackupLayer):
         try:
             bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
             if len(bottom_roughness_model) == 2:
-                return round(bottom_roughness_model[0].value, 9)
+                return Value(bottom_roughness_model[0], self._pedb.active_cell)
             else:
                 return 0.0
         except:
@@ -407,7 +408,7 @@ class StackupLayer(GrpcStackupLayer):
         try:
             bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
             if len(bottom_roughness_model) == 2:
-                bottom_roughness_model[0] = GrpcValue(value)
+                bottom_roughness_model[0] = Value(value)
                 self.set_roughness_model(bottom_roughness_model, GrpcRoughnessRegion.BOTTOM)
         except:
             pass
@@ -424,7 +425,7 @@ class StackupLayer(GrpcStackupLayer):
         try:
             bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
             if len(bottom_roughness_model) == 2:
-                return bottom_roughness_model[1].value
+                return Value(bottom_roughness_model[1], self._pedb.active_cell)
             else:
                 return 0.0
         except:
@@ -435,7 +436,7 @@ class StackupLayer(GrpcStackupLayer):
         try:
             bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
             if len(bottom_roughness_model) == 2:
-                bottom_roughness_model[1] = GrpcValue(value)
+                bottom_roughness_model[1] = Value(value)
                 self.set_roughness_model(bottom_roughness_model, GrpcRoughnessRegion.BOTTOM)
         except:
             pass
@@ -453,17 +454,17 @@ class StackupLayer(GrpcStackupLayer):
         try:
             side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
             if len(side_roughness_model) == 2:
-                return round(side_roughness_model[0].value, 9)
-            return 0.0
+                return Value((side_roughness_model[0], self._pedb.active_cell))
+            return Value(0.0)
         except:
-            return 0.0
+            return Value(0.0)
 
     @side_hallhuray_nodule_radius.setter
     def side_hallhuray_nodule_radius(self, value):
         try:
             side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
             if len(side_roughness_model) == 2:
-                side_roughness_model[0] = GrpcValue(value)
+                side_roughness_model[0] = Value(value)
                 self.set_roughness_model(side_roughness_model, GrpcRoughnessRegion.SIDE)
         except:
             pass
@@ -480,7 +481,7 @@ class StackupLayer(GrpcStackupLayer):
         try:
             side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
             if len(side_roughness_model) == 2:
-                return side_roughness_model[1].value
+                return Value(side_roughness_model[1], self._pedb.active_cell)
             return 0.0
         except:
             return 0.0
@@ -490,7 +491,7 @@ class StackupLayer(GrpcStackupLayer):
         try:
             side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
             if len(side_roughness_model) == 2:
-                side_roughness_model[1] = GrpcValue(value)
+                side_roughness_model[1] = Value(value)
                 self.set_roughness_model(side_roughness_model, GrpcRoughnessRegion.SIDE)
         except:
             pass
@@ -506,19 +507,19 @@ class StackupLayer(GrpcStackupLayer):
         """
         try:
             top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
-            if isinstance(top_roughness_model, GrpcValue):
-                return top_roughness_model.value
+            if isinstance(top_roughness_model, Value):
+                return Value(top_roughness_model, self._pedb.active_cell)
             else:
-                return 0.0
+                return Value(0.0)
         except:
-            return 0.0
+            return Value(0.0)
 
     @top_groisse_roughness.setter
     def top_groisse_roughness(self, value):
         try:
             top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
-            if isinstance(top_roughness_model, GrpcValue):
-                top_roughness_model = GrpcValue(value)
+            if isinstance(top_roughness_model, Value):
+                top_roughness_model = Value(value)
                 self.set_roughness_model(top_roughness_model, GrpcRoughnessRegion.TOP)
         except:
             pass
@@ -534,19 +535,19 @@ class StackupLayer(GrpcStackupLayer):
         """
         try:
             bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
-            if isinstance(bottom_roughness_model, GrpcValue):
-                return bottom_roughness_model.value
+            if isinstance(bottom_roughness_model, Value):
+                return Value(bottom_roughness_model, self._pedb.active_cell)
             else:
-                return 0.0
+                return Value(0.0)
         except:
-            return 0.0
+            return Value(0.0)
 
     @bottom_groisse_roughness.setter
     def bottom_groisse_roughness(self, value):
         try:
             bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
-            if isinstance(bottom_roughness_model, GrpcValue):
-                bottom_roughness_model = GrpcValue(value)
+            if isinstance(bottom_roughness_model, Value):
+                bottom_roughness_model = Value(value)
                 self.set_roughness_model(bottom_roughness_model, GrpcRoughnessRegion.BOTTOM)
         except:
             pass
@@ -562,19 +563,19 @@ class StackupLayer(GrpcStackupLayer):
         """
         try:
             side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
-            if isinstance(side_roughness_model, GrpcValue):
-                return side_roughness_model.value
+            if isinstance(side_roughness_model, Value):
+                return Value(side_roughness_model, self._pedb.active_cell)
             else:
-                return 0.0
+                return Value(0.0)
         except:
-            return 0.0
+            return Value(0.0)
 
     @side_groisse_roughness.setter
     def side_groisse_roughness(self, value):
         try:
             side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
-            if isinstance(side_roughness_model, GrpcValue):
-                side_roughness_model = GrpcValue(value)
+            if isinstance(side_roughness_model, Value):
+                side_roughness_model = Value(value)
                 self.set_roughness_model(side_roughness_model, GrpcRoughnessRegion.BOTTOM)
         except Exception as e:
             self._pedb.logger.error(e)
@@ -619,9 +620,9 @@ class StackupLayer(GrpcStackupLayer):
         self.roughness_enabled = True
         for r in regions:
             if model_type == "huray":
-                model = (GrpcValue(huray_radius), GrpcValue(huray_surface_ratio))
+                model = (Value(huray_radius), Value(huray_surface_ratio))
             else:
-                model = GrpcValue(groisse_roughness)
+                model = Value(groisse_roughness)
             self.set_roughness_model(model, r)
         if [
             self.get_roughness_model(GrpcRoughnessRegion.TOP),
