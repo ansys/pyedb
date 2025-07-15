@@ -92,6 +92,7 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
     SiwaveSimulationSetup,
 )
+from pyedb.dotnet.database.utilities.value import Value
 from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import (
@@ -399,6 +400,13 @@ class Edb(Database):
     @property
     def pedb_class(self):
         return pyedb.dotnet
+
+    def value(self, val):
+        """Convert a value into a pyedb value."""
+        if isinstance(val, self._edb.Utility.Value):
+            return Value(self, val)
+        else:
+            return Value(self, self.edb_api.utility.value(val))
 
     @property
     def grpc(self):
