@@ -25,13 +25,13 @@ from ansys.edb.core.terminal.terminal import (
     SourceTermToGroundType as GrpcSourceTermToGroundType,
 )
 from ansys.edb.core.terminal.terminal import HfssPIType as GrpcHfssPIType
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.rlc import Rlc
+from pyedb.grpc.database.utility.value import Value
 
 
 class BundleTerminal(GrpcBundleTerminal):
@@ -78,11 +78,11 @@ class BundleTerminal(GrpcBundleTerminal):
         float
             Impedance value.
         """
-        return self.impedance.value
+        return Value(self.impedance)
 
     @impedance.setter
     def impedance(self, value):
-        self.impedance = GrpcValue(value)
+        self.impedance = Value(value)
 
     @property
     def net(self) -> Net:
@@ -167,11 +167,11 @@ class BundleTerminal(GrpcBundleTerminal):
         -------
         float
         """
-        return self.source_amplitude.value
+        return Value(self.source_amplitude)
 
     @source_amplitude.setter
     def source_amplitude(self, value):
-        self.source_amplitude = GrpcValue(value)
+        self.source_amplitude = Value(value)
 
     @property
     def source_phase(self) -> float:
@@ -181,11 +181,11 @@ class BundleTerminal(GrpcBundleTerminal):
         -------
         float
         """
-        return self.source_phase.value
+        return Value(self.source_phase)
 
     @source_phase.setter
     def source_phase(self, value):
-        self.source_phase = GrpcValue(value)
+        self.source_phase = Value(value)
 
     @property
     def term_to_ground(self) -> str:
