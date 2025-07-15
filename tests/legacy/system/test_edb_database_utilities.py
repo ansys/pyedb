@@ -26,7 +26,7 @@ import pytest
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
-class TestClass:
+class TestDatabaseUtilities:
     @pytest.fixture(autouse=True)
     def init(self, local_scratch):
         pass
