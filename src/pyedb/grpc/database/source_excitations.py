@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import List, Set, Union
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
@@ -39,11 +39,13 @@ from pyedb.grpc.database.ports.ports import BundleWavePort, WavePort
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
+from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
 from pyedb.grpc.database.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.grpc.database.terminal.point_terminal import PointTerminal
+from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.sources import Source, SourceType
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -206,25 +208,25 @@ class SourceExcitation:
         self._pedb = pedb
 
     @property
-    def _logger(self):
+    def _logger(self) -> Any:
         return self._pedb.logger
 
     @property
-    def excitations(self):
+    def excitations(self) -> Dict[str, Any]:
         """Get all excitations."""
         return self._pedb.excitations
 
     @property
-    def sources(self):
+    def sources(self) -> Dict[str, Any]:
         """Get all sources."""
         return self._pedb.sources
 
     @property
-    def probes(self):
+    def probes(self) -> Dict[str, Any]:
         """Get all probes."""
         return self._pedb.probes
 
-    def create_source_on_component(self, sources=None):
+    def create_source_on_component(self, sources: Optional[Union[Source, List[Source]]] = None) -> bool:
         """Create voltage, current source, or resistor on component.
 
         Parameters
@@ -314,7 +316,13 @@ class SourceExcitation:
                 )
         return True
 
-    def create_port(self, terminal, ref_terminal=None, is_circuit_port=False, name=None):
+    def create_port(
+        self,
+        terminal: Terminal,
+        ref_terminal: Optional[Terminal] = None,
+        is_circuit_port: bool = False,
+        name: Optional[str] = None,
+    ) -> Any:
         """Create a port.
 
         Parameters
@@ -363,14 +371,13 @@ class SourceExcitation:
 
     def create_port_on_pins(
         self,
-        refdes,
-        pins,
-        reference_pins,
-        impedance=50.0,
-        port_name=None,
-        pec_boundary=False,
-        pingroup_on_single_pin=False,
-    ):
+        refdes: str,
+        pins: Union[str, List[str]],
+        reference_pins: Optional[List[str]] = None,
+        port_name: Optional[str] = None,
+        port_type: Optional[str] = None,
+        impedance: Union[int, float] = 50,
+    ) -> Optional[str]:
         """Create circuit port between pins and reference ones.
 
         Parameters
@@ -499,17 +506,14 @@ class SourceExcitation:
 
     def create_port_on_component(
         self,
-        component,
-        net_list,
-        port_type=SourceType.CoaxPort,
-        do_pingroup=True,
-        reference_net="gnd",
-        port_name=None,
-        solder_balls_height=None,
-        solder_balls_size=None,
-        solder_balls_mid_size=None,
-        extend_reference_pins_outside_component=False,
-    ):
+        component: Union[str, List[str]],
+        net_list: Union[str, List[str]],
+        port_type: SourceType,
+        reference_net: Optional[str] = None,
+        port_names: Optional[List[str]] = None,
+        impedance: Union[int, float] = 50,
+        delete_existing_terminal: bool = False,
+    ) -> List[str]:
         """Create ports on a component.
 
         Parameters
@@ -721,7 +725,7 @@ class SourceExcitation:
         return True
 
     @staticmethod
-    def _normalize_net_list(net_list) -> Set[str]:
+    def _normalize_net_list(net_list: Union[str, List[str]]) -> Set[str]:
         if not isinstance(net_list, list):
             net_list = [net_list]
         nets = set()
@@ -734,7 +738,9 @@ class SourceExcitation:
                 nets.add(net)
         return nets
 
-    def _create_terminal(self, pin, term_name=None):
+    def _create_terminal(
+        self, pin: PadstackInstance, term_name: Optional[str] = None
+    ) -> Optional[PadstackInstanceTerminal]:
         """Create terminal on component pin.
 
         Parameters
@@ -759,7 +765,9 @@ class SourceExcitation:
             layout=self._pedb.layout, name=term_name, padstack_instance=pin, layer=from_layer, net=pin.net, is_ref=False
         )
 
-    def add_port_on_rlc_component(self, component=None, circuit_ports=True, pec_boundary=False):
+    def add_port_on_rlc_component(
+        self, component: Optional[Union[str, Component]] = None, circuit_ports: bool = True, pec_boundary: bool = False
+    ) -> bool:
         """Deactivate RLC component and replace it with a circuit port.
         The circuit port supports only two-pin components.
 
@@ -840,7 +848,7 @@ class SourceExcitation:
             return True
         return False
 
-    def add_rlc_boundary(self, component=None, circuit_type=True):
+    def add_rlc_boundary(self, component: Optional[Union[str, Component]] = None, circuit_type: bool = True) -> bool:
         """Add RLC gap boundary on component and replace it with a circuit port.
         The circuit port supports only 2-pin components.
 
@@ -915,7 +923,13 @@ class SourceExcitation:
             self._logger.info("Component {} has been replaced by port".format(component.refdes))
             return True
 
-    def _create_pin_group_terminal(self, pingroup, isref=False, term_name=None, term_type="circuit"):
+    def _create_pin_group_terminal(
+        self,
+        pingroup: Union[str, "PinGroup"],
+        isref: bool = False,
+        term_name: Optional[str] = None,
+        term_type: str = "circuit",
+    ) -> Optional["PinGroupTerminal"]:
         """Creates an EDB pin group terminal from a given EDB pin group.
 
         Parameters
@@ -963,7 +977,13 @@ class SourceExcitation:
             pingroup_term.is_circuit_port = True
         return pingroup_term
 
-    def create_coax_port(self, padstackinstance, use_dot_separator=True, name=None, create_on_top=True):
+    def create_coax_port(
+        self,
+        padstackinstance: Union[PadstackInstance, int],
+        use_dot_separator: bool = True,
+        name: Optional[str] = None,
+        create_on_top: bool = True,
+    ) -> Optional[str]:
         """Create HFSS 3Dlayout coaxial lumped port on a pastack
         Requires to have solder ball defined before calling this method.
 
@@ -1030,10 +1050,16 @@ class SourceExcitation:
         )
         return port_name
 
-    def _port_exist(self, port_name):
+    def _port_exist(self, port_name: str) -> bool:
         return any(port for port in list(self._pedb.excitations.keys()) if port == port_name)
 
-    def _create_edge_terminal(self, prim_id, point_on_edge, terminal_name=None, is_ref=False):
+    def _create_edge_terminal(
+        self,
+        prim_id: Union[int, Primitive],
+        point_on_edge: List[float],
+        terminal_name: Optional[str] = None,
+        is_ref: bool = False,
+    ) -> Optional[GrpcEdgeTerminal]:
         """Create an edge terminal.
 
         Parameters
@@ -1068,7 +1094,13 @@ class SourceExcitation:
             layout=prim.layout, name=terminal_name, edges=pos_edge, net=prim.net, is_ref=is_ref
         )
 
-    def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
+    def create_circuit_port_on_pin(
+        self,
+        pos_pin: Union[str, PadstackInstance],
+        neg_pin: Union[str, PadstackInstance],
+        impedance: Union[int, float] = 50,
+        name: Optional[str] = None,
+    ) -> Optional[str]:
         """Create a circuit port on a pin.
 
         Parameters
@@ -1103,18 +1135,18 @@ class SourceExcitation:
 
     def _create_terminal_on_pins(
         self,
-        positive_pin,
-        negative_pin,
-        name=None,
-        use_pin_top_layer=True,
-        source_type="circuit_port",
-        impedance=50,
-        magnitude=0,
-        phase=0,
-        r=0,
-        l=0,
-        c=0,
-    ):
+        positive_pin: PadstackInstance,
+        negative_pin: PadstackInstance,
+        name: Optional[str] = None,
+        use_pin_top_layer: bool = True,
+        source_type: str = "circuit_port",
+        impedance: Union[int, float, str] = 50,
+        magnitude: Union[int, float, str] = 0,
+        phase: Union[int, float, str] = 0,
+        r: Union[int, float] = 0,
+        l: Union[int, float] = 0,
+        c: Union[int, float] = 0,
+    ) -> Optional[str]:
         """Create a terminal on pins.
 
         Parameters
@@ -1220,7 +1252,14 @@ class SourceExcitation:
             return False
         return pos_terminal.name
 
-    def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=0, phase_value=0, source_name=None):
+    def create_voltage_source_on_pin(
+        self,
+        pos_pin: Union[str, PadstackInstance],
+        neg_pin: Union[str, PadstackInstance],
+        voltage_value: Union[int, float] = 0,
+        phase_value: Union[int, float] = 0,
+        source_name: Optional[str] = None,
+    ) -> Optional[str]:
         """Create a voltage source.
 
         Parameters
@@ -1263,7 +1302,14 @@ class SourceExcitation:
             source_type="voltage_source",
         )
 
-    def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0, phase_value=0, source_name=None):
+    def create_current_source_on_pin(
+        self,
+        pos_pin: Union[str, PadstackInstance],
+        neg_pin: Union[str, PadstackInstance],
+        current_value: Union[int, float] = 0,
+        phase_value: Union[int, float] = 0,
+        source_name: Optional[str] = None,
+    ) -> Optional[str]:
         """Create a voltage source.
 
         Parameters
@@ -1306,7 +1352,13 @@ class SourceExcitation:
             source_type="current_source",
         )
 
-    def create_resistor_on_pin(self, pos_pin, neg_pin, rvalue=1, resistor_name=""):
+    def create_resistor_on_pin(
+        self,
+        pos_pin: Union[str, PadstackInstance],
+        neg_pin: Union[str, PadstackInstance],
+        rvalue: Union[int, float] = 1,
+        resistor_name: Optional[str] = "",
+    ) -> Optional[str]:
         """Create a Resistor boundary between two given pins..
 
         Parameters
@@ -1343,13 +1395,13 @@ class SourceExcitation:
 
     def create_circuit_port_on_net(
         self,
-        positive_component_name,
-        positive_net_name,
-        negative_component_name=None,
-        negative_net_name=None,
-        impedance=50,
-        port_name="",
-    ):
+        component_name: str,
+        net_name: str,
+        reference_component_name: str,
+        reference_net_name: str,
+        impedance: Union[int, float] = 50,
+        port_name: Optional[str] = None,
+    ) -> Optional[str]:
         """Create a circuit port on a NET.
 
         It groups all pins belonging to the specified net and then applies the port on PinGroups.
@@ -1420,17 +1472,17 @@ class SourceExcitation:
 
     def create_pin_group_terminal(
         self,
-        positive_pins,
-        negatives_pins,
-        name=None,
-        impedance=50,
-        source_type="circuit_port",
-        magnitude=1.0,
-        phase=0,
-        r=0.0,
-        l=0.0,
-        c=0.0,
-    ):
+        positive_pins: Union[PadstackInstance, List[PadstackInstance]],
+        negatives_pins: Optional[Union[PadstackInstance, List[PadstackInstance]]] = None,
+        name: Optional[str] = None,
+        impedance: Union[int, float, str] = 50,
+        source_type: str = "circuit_port",
+        magnitude: Union[float, str] = 1.0,
+        phase: Union[float, str] = 0,
+        r: float = 0.0,
+        l: float = 0.0,
+        c: float = 0.0,
+    ) -> Optional[str]:
         """Create a pin group terminal.
 
         Parameters
@@ -1538,7 +1590,7 @@ class SourceExcitation:
             pass
         return pos_pingroup_terminal.name
 
-    def _check_gnd(self, component_name):
+    def _check_gnd(self, component_name: str) -> Optional[str]:
         negative_net_name = None
         if self._pedb.nets.is_net_in_component(component_name, "GND"):
             negative_net_name = "GND"
@@ -1554,14 +1606,14 @@ class SourceExcitation:
 
     def create_voltage_source_on_net(
         self,
-        positive_component_name,
-        positive_net_name,
-        negative_component_name=None,
-        negative_net_name=None,
-        voltage_value=3.3,
-        phase_value=0,
-        source_name=None,
-    ):
+        component_name: str,
+        net_name: str,
+        reference_component_name: str,
+        reference_net_name: str,
+        voltage_value: Union[int, float] = 0,
+        phase_value: Union[int, float] = 0,
+        source_name: Optional[str] = None,
+    ) -> Optional[str]:
         """Create a voltage source.
 
         Parameters
@@ -1617,14 +1669,14 @@ class SourceExcitation:
 
     def create_current_source_on_net(
         self,
-        positive_component_name,
-        positive_net_name,
-        negative_component_name=None,
-        negative_net_name=None,
-        current_value=3.3,
-        phase_value=0,
-        source_name=None,
-    ):
+        component_name: str,
+        net_name: str,
+        reference_component_name: str,
+        reference_net_name: str,
+        current_value: Union[int, float] = 0,
+        phase_value: Union[int, float] = 0,
+        source_name: Optional[str] = None,
+    ) -> Optional[str]:
         """Create a voltage source.
 
         Parameters
@@ -1679,7 +1731,12 @@ class SourceExcitation:
             source_type="current_source",
         )
 
-    def create_coax_port_on_component(self, ref_des_list, net_list, delete_existing_terminal=False):
+    def create_coax_port_on_component(
+        self,
+        ref_des_list: Union[str, List[str]],
+        net_list: Union[str, List[str]],
+        delete_existing_terminal: bool = False,
+    ) -> List[str]:
         """Create a coaxial port on a component or component list on a net or net list.
            The name of the new coaxial port is automatically assigned.
 
@@ -1741,7 +1798,7 @@ class SourceExcitation:
                     self._logger.error(error)
         return coax
 
-    def check_before_terminal_assignement(self, connectable, delete_existing_terminal=False):
+    def check_before_terminal_assignement(self, connectable: Any, delete_existing_terminal: bool = False) -> bool:
         if not connectable:
             return False
         existing_terminals = [term for term in self._pedb.active_layout.terminals if term.id == connectable.id]
@@ -1763,15 +1820,15 @@ class SourceExcitation:
 
     def create_differential_wave_port(
         self,
-        positive_primitive_id,
-        positive_points_on_edge,
-        negative_primitive_id,
-        negative_points_on_edge,
-        port_name=None,
-        horizontal_extent_factor=5,
-        vertical_extent_factor=3,
-        pec_launch_width="0.01mm",
-    ):
+        positive_primitive_id: Union[int, Primitive],
+        positive_points_on_edge: List[float],
+        negative_primitive_id: Union[int, Primitive],
+        negative_points_on_edge: List[float],
+        port_name: Optional[str] = None,
+        horizontal_extent_factor: Union[int, float] = 5,
+        vertical_extent_factor: Union[int, float] = 3,
+        pec_launch_width: str = "0.01mm",
+    ) -> Tuple[str, BundleTerminal]:
         """Create a differential wave port.
 
         Parameters
@@ -1842,14 +1899,14 @@ class SourceExcitation:
 
     def create_wave_port(
         self,
-        prim_id,
-        point_on_edge,
-        port_name=None,
-        impedance=50,
-        horizontal_extent_factor=5,
-        vertical_extent_factor=3,
-        pec_launch_width="0.01mm",
-    ):
+        prim_id: Union[int, Primitive],
+        point_on_edge: List[float],
+        port_name: Optional[str] = None,
+        impedance: Union[int, float] = 50,
+        horizontal_extent_factor: Union[int, float] = 5,
+        vertical_extent_factor: Union[int, float] = 3,
+        pec_launch_width: str = "0.01mm",
+    ) -> Tuple[str, WavePort]:
         """Create a wave port.
 
         Parameters
@@ -1902,16 +1959,16 @@ class SourceExcitation:
 
     def create_edge_port_vertical(
         self,
-        prim_id,
-        point_on_edge,
-        port_name=None,
-        impedance=50,
-        reference_layer=None,
-        hfss_type="Gap",
-        horizontal_extent_factor=5,
-        vertical_extent_factor=3,
-        pec_launch_width="0.01mm",
-    ):
+        prim_id: int,
+        point_on_edge: List[float],
+        port_name: Optional[str] = None,
+        impedance: Union[int, float] = 50,
+        reference_layer: Optional[str] = None,
+        hfss_type: str = "Gap",
+        horizontal_extent_factor: Union[int, float] = 5,
+        vertical_extent_factor: Union[int, float] = 3,
+        pec_launch_width: str = "0.01mm",
+    ) -> str:
         """Create a vertical edge port.
 
         Parameters
@@ -1980,14 +2037,14 @@ class SourceExcitation:
 
     def create_edge_port_horizontal(
         self,
-        prim_id,
-        point_on_edge,
-        ref_prim_id=None,
-        point_on_ref_edge=None,
-        port_name=None,
-        impedance=50,
-        layer_alignment="Upper",
-    ):
+        prim_id: Union[int, Primitive],
+        point_on_edge: List[float],
+        ref_prim_id: Optional[Union[int, Primitive]] = None,
+        point_on_ref_edge: Optional[List[float]] = None,
+        port_name: Optional[str] = None,
+        impedance: Union[int, float] = 50,
+        layer_alignment: str = "Upper",
+    ) -> Optional[EdgeTerminal]:
         """Create a horizontal edge port.
 
         Parameters
@@ -2040,7 +2097,12 @@ class SourceExcitation:
             return False
 
     def create_lumped_port_on_net(
-        self, nets=None, reference_layer=None, return_points_only=False, digit_resolution=6, at_bounding_box=True
+        self,
+        nets: Optional[Union[str, List[str]]] = None,
+        reference_layer: Optional[Union[str, StackupLayer]] = None,
+        return_points_only: bool = False,
+        digit_resolution: int = 6,
+        at_bounding_box: bool = True,
     ) -> bool:
         """Create an edge port on nets. This command looks for traces and polygons on the
         nets and tries to assign vertical lumped port.
@@ -2152,8 +2214,11 @@ class SourceExcitation:
         return port_created
 
     def create_vertical_circuit_port_on_clipped_traces(
-        self, nets=None, reference_net=None, user_defined_extent=None
-    ) -> list[list[str]]:
+        self,
+        nets: Optional[Union[str, List[str], Net, List[Net]]] = None,
+        reference_net: Optional[Union[str, Net]] = None,
+        user_defined_extent: Optional[Union[List[float], GrpcPolygonData]] = None,
+    ) -> Union[List[List[str]], bool]:
         """Create an edge port on clipped signal traces.
 
         Parameters
@@ -2248,13 +2313,13 @@ class SourceExcitation:
 
     def create_bundle_wave_port(
         self,
-        primitives_id,
-        points_on_edge,
-        port_name=None,
-        horizontal_extent_factor=5,
-        vertical_extent_factor=3,
-        pec_launch_width="0.01mm",
-    ):
+        primitives_id: List[Union[int, Primitive]],
+        points_on_edge: List[List[float]],
+        port_name: Optional[str] = None,
+        horizontal_extent_factor: Union[int, float] = 5,
+        vertical_extent_factor: Union[int, float] = 3,
+        pec_launch_width: str = "0.01mm",
+    ) -> Tuple[str, BundleWavePort]:
         """Create a bundle wave port.
 
         Parameters
@@ -2308,7 +2373,7 @@ class SourceExcitation:
         _edb_bundle_terminal = BundleTerminal.create(terminals)
         return port_name, BundleWavePort(self._pedb, _edb_bundle_terminal)
 
-    def create_hfss_ports_on_padstack(self, pinpos, portname=None):
+    def create_hfss_ports_on_padstack(self, pinpos: PadstackInstance, portname: Optional[str] = None) -> bool:
         """Create an HFSS port on a padstack.
 
         Parameters
@@ -2343,7 +2408,7 @@ class SourceExcitation:
         else:
             return False
 
-    def get_ports_number(self):
+    def get_ports_number(self) -> int:
         """Return the total number of excitation ports in a layout.
 
         Parameters
@@ -2364,7 +2429,7 @@ class SourceExcitation:
         terms = [term for term in self._pedb.layout.terminals]
         return len([i for i in terms if not i.is_reference_terminal])
 
-    def get_point_terminal(self, name, net_name, location, layer) -> PointTerminal:
+    def get_point_terminal(self, name: str, net_name: str, location: List[float], layer: str) -> PointTerminal:
         """Place terminal between two points.
 
         Parameters
@@ -2394,7 +2459,14 @@ class SourceExcitation:
             layout=self._pedb.active_layout, name=name, net=net_name, layer=layer, point=location
         )
 
-    def create_rlc_boundary_on_pins(self, positive_pin=None, negative_pin=None, rvalue=0.0, lvalue=0.0, cvalue=0.0):
+    def create_rlc_boundary_on_pins(
+        self,
+        positive_pin: Optional[PadstackInstance] = None,
+        negative_pin: Optional[PadstackInstance] = None,
+        rvalue: float = 0.0,
+        lvalue: float = 0.0,
+        cvalue: float = 0.0,
+    ) -> Union[Terminal, bool]:
         """Create hfss rlc boundary on pins.
 
         Parameters
@@ -2448,15 +2520,15 @@ class SourceExcitation:
 
     def create_edge_port_on_polygon(
         self,
-        polygon=None,
-        reference_polygon=None,
-        terminal_point=None,
-        reference_point=None,
-        reference_layer=None,
-        port_name=None,
-        port_impedance=50.0,
-        force_circuit_port=False,
-    ):
+        polygon: Optional[Primitive] = None,
+        reference_polygon: Optional[Primitive] = None,
+        terminal_point: Optional[List[float]] = None,
+        reference_point: Optional[List[float]] = None,
+        reference_layer: Optional[Union[str, StackupLayer]] = None,
+        port_name: Optional[str] = None,
+        port_impedance: Union[int, float] = 50.0,
+        force_circuit_port: bool = False,
+    ) -> Optional[str]:
         """Create lumped port between two edges from two different polygons. Can also create a vertical port when
         the reference layer name is only provided. When a port is created between two edge from two polygons which don't
         belong to the same layer, a circuit port will be automatically created instead of lumped. To enforce the circuit
@@ -2550,8 +2622,13 @@ class SourceExcitation:
         return True
 
     def create_port_between_pin_and_layer(
-        self, component_name=None, pins_name=None, layer_name=None, reference_net=None, impedance=50.0
-    ):
+        self,
+        component_name: Optional[str] = None,
+        pins_name: Optional[Union[str, List[str]]] = None,
+        layer_name: Optional[str] = None,
+        reference_net: Optional[str] = None,
+        impedance: Union[int, float] = 50.0,
+    ) -> bool:
         """Create circuit port between pin and a reference layer.
 
         Parameters
@@ -2630,7 +2707,11 @@ class SourceExcitation:
                     return terms
             return False
 
-    def create_current_source(self, terminal, ref_terminal):
+    def create_current_source(
+        self,
+        terminal: Union[PadstackInstanceTerminal, EdgeTerminal],
+        ref_terminal: Union[PadstackInstanceTerminal, EdgeTerminal],
+    ) -> bool:
         """Create a current source.
 
         Parameters
@@ -2668,8 +2749,13 @@ class SourceExcitation:
         return term
 
     def create_current_source_on_pin_group(
-        self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None
-    ):
+        self,
+        pos_pin_group_name: str,
+        neg_pin_group_name: str,
+        magnitude: Union[int, float] = 1,
+        phase: Union[int, float] = 0,
+        name: Optional[str] = None,
+    ) -> bool:
         """Create current source between two pin groups.
 
         Parameters
@@ -2707,7 +2793,11 @@ class SourceExcitation:
         pos_terminal.reference_terminal = neg_terminal
         return True
 
-    def create_voltage_source(self, terminal, ref_terminal):
+    def create_voltage_source(
+        self,
+        terminal: Union[PadstackInstanceTerminal, EdgeTerminal],
+        ref_terminal: Union[PadstackInstanceTerminal, EdgeTerminal],
+    ) -> bool:
         """Create a voltage source.
 
         Parameters
@@ -2745,8 +2835,14 @@ class SourceExcitation:
         return term
 
     def create_voltage_source_on_pin_group(
-        self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None, impedance=0.001
-    ):
+        self,
+        pos_pin_group_name: str,
+        neg_pin_group_name: str,
+        magnitude: Union[int, float] = 1,
+        phase: Union[int, float] = 0,
+        name: Optional[str] = None,
+        impedance: Union[int, float] = 0.001,
+    ) -> bool:
         """Create voltage source between two pin groups.
 
         Parameters
@@ -2789,7 +2885,7 @@ class SourceExcitation:
         pos_terminal.reference_terminal = neg_terminal
         return True
 
-    def create_voltage_probe(self, terminal, ref_terminal):
+    def create_voltage_probe(self, terminal: Terminal, ref_terminal: Terminal) -> Terminal:
         """Create a voltage probe.
 
         Parameters
@@ -2820,7 +2916,9 @@ class SourceExcitation:
         term.ref_terminal = ref_terminal
         return term
 
-    def create_voltage_probe_on_pin_group(self, probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1000000):
+    def create_voltage_probe_on_pin_group(
+        self, probe_name: str, pos_pin_group_name: str, neg_pin_group_name: str, impedance: Union[int, float] = 1000000
+    ) -> bool:
         """Create voltage probe between two pin groups.
 
         Parameters
@@ -2859,11 +2957,8 @@ class SourceExcitation:
         return not pos_terminal.is_null
 
     def create_dc_terminal(
-        self,
-        component_name,
-        net_name,
-        source_name=None,
-    ):
+        self, component_name: str, net_name: str, terminal_name: Optional[str] = None
+    ) -> Optional[str]:
         """Create a dc terminal.
 
         Parameters
@@ -2897,7 +2992,13 @@ class SourceExcitation:
             positive_pins=node_pin, name=source_name, source_type="dc_terminal", negatives_pins=None
         )
 
-    def create_circuit_port_on_pin_group(self, pos_pin_group_name, neg_pin_group_name, impedance=50, name=None):
+    def create_circuit_port_on_pin_group(
+        self,
+        pos_pin_group_name: str,
+        neg_pin_group_name: str,
+        impedance: Union[int, float] = 50,
+        name: Optional[str] = None,
+    ) -> bool:
         """Create a port between two pin groups.
 
         Parameters
@@ -2939,14 +3040,14 @@ class SourceExcitation:
 
     def place_voltage_probe(
         self,
-        name,
-        positive_net_name,
-        positive_location,
-        positive_layer,
-        negative_net_name,
-        negative_location,
-        negative_layer,
-    ):
+        name: str,
+        positive_net_name: str,
+        positive_location: List[float],
+        positive_layer: str,
+        negative_net_name: str,
+        negative_location: List[float],
+        negative_layer: str,
+    ) -> Terminal:
         """Place a voltage probe between two points.
 
         Parameters

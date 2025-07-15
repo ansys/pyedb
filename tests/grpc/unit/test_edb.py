@@ -269,3 +269,14 @@ class TestClass:
                     f"the EDB in HFSS 3D Layout."
                     # noqa: E501
                 )
+
+    def test_pyedb_value(self):
+        from pyedb.grpc.database.utility.value import Value
+
+        edb = Edb(edbversion=desktop_version)
+
+        var1 = Value("1.1mm")
+        assert var1 == 0.0011
+        assert str(var1) == "1.1mm"
+
+        edb.close()
