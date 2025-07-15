@@ -1887,7 +1887,7 @@ class EdbPadstacks(object):
             padstack id: [x, y]
 
         max_distance: float
-            maximum distance between two points be included in one cluster
+            maximum distance between two points to be included in one cluster
 
         min_samples: int
             minimum number of points that a cluster must have

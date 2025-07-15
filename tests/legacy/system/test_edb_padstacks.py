@@ -560,12 +560,12 @@ def test_dbscan():
     # "NET_1" one cluster with 20 vias
     net_vias = [_x.GetId() for _x in edbapp.padstacks.get_via_instance_from_net("NET_1")]
     all_vias = {via_id: edbapp.padstacks.instances[via_id].position for via_id in net_vias}
-    clusters1 = edbapp.padstacks.dbscan(all_vias, eps=2e-3, min_samples=3)
+    clusters1 = edbapp.padstacks.dbscan(all_vias, max_distance=2e-3, min_samples=3)
 
     # all nets two clusters with 21 vias each
     net_vias = [_x.GetId() for _x in edbapp.padstacks.get_via_instance_from_net()]
     all_vias = {via_id: edbapp.padstacks.instances[via_id].position for via_id in net_vias}
-    clusters2 = edbapp.padstacks.dbscan(all_vias, eps=2e-3, min_samples=3)
+    clusters2 = edbapp.padstacks.dbscan(all_vias, max_distance=2e-3, min_samples=3)
 
     assert len(clusters1) == 1
     assert len(clusters1[0]) == 20
