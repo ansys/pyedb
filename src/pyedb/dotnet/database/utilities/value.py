@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import numpy as np
+
 
 class Value(float):
     """Class defining Edb Value properties."""
@@ -38,6 +40,38 @@ class Value(float):
         str
         """
         return self._edb_obj.ToString()
+
+    def __add__(self, other):
+        """Adds two Edb Values."""
+        if isinstance(other, Value):
+            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})+({str(other)})")
+        else:
+            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})+{other}")
+        return self.__class__(self._pedb, edb_object)
+
+    def __sub__(self, other):
+        """Subtracts two Edb Values."""
+        if isinstance(other, Value):
+            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})-({str(other)})")
+        else:
+            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})-{other}")
+        return self.__class__(self._pedb, edb_object)
+
+    def __mul__(self, other):
+        """Multiplies two Edb Values."""
+        if isinstance(other, Value):
+            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})*({str(other)})")
+        else:
+            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})*{other}")
+        return self.__class__(self._pedb, edb_object)
+
+    def __truediv__(self, other):
+        """Divides two Edb Values."""
+        if isinstance(other, Value):
+            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})/({str(other)})")
+        else:
+            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})/{other}")
+        return self.__class__(self._pedb, edb_object)
 
     def sqrt(self):
         """Square root of the value."""

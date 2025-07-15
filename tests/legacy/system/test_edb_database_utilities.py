@@ -33,6 +33,18 @@ class TestClass:
 
     def test_value(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
+        edb_value = edbapp.edb_api.utility.value
+
+        value = edbapp.value(edb_value("1mm"))
+        value2 = edbapp.value(edb_value("100um"))
+        assert value + value2 == pytest.approx(0.0011)
+        assert str(value + value2) == '(1mm)+(100um)'
+        assert value - value2 == pytest.approx(0.0009)
+        assert str(value - value2) == '(1mm)-(100um)'
+        assert value * value2 == pytest.approx(1E-7)
+        assert str(value * value2) == '(1mm)*(100um)'
+        assert value / value2 == pytest.approx(10)
+        assert str(value / value2) == '(1mm)/(100um)'
 
         edb_value = edbapp.edb_api.utility.value("4000mm")
         value = edbapp.value(edb_value)
