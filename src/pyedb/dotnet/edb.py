@@ -402,7 +402,7 @@ class Edb(Database):
         return pyedb.dotnet
 
     def value(self, val):
-        """Convert a value into an pyedb value."""
+        """Convert a value into a pyedb value."""
         if isinstance(val, self._edb.Utility.Value):
             return Value(self, val)
         else:
