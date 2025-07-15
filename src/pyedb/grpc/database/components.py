@@ -39,7 +39,6 @@ from ansys.edb.core.definition.solder_ball_property import (
 from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
 from ansys.edb.core.hierarchy.spice_model import SPICEModel as GrpcSPICEModel
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.component_libraries.ansys_components import (
     ComponentLib,
@@ -57,6 +56,7 @@ from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.utility.sources import SourceType
+from pyedb.grpc.database.utility.value import Value
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -1098,17 +1098,17 @@ class Components(object):
                 rlc.r_enabled = False
             else:
                 rlc.r_enabled = True
-                rlc.r = GrpcValue(r_value)
+                rlc.r = Value(r_value)
             if l_value is None:
                 rlc.l_enabled = False
             else:
                 rlc.l_enabled = True
-                rlc.l = GrpcValue(l_value)
+                rlc.l = Value(l_value)
             if c_value is None:
                 rlc.c_enabled = False
             else:
                 rlc.c_enabled = True
-                rlc.C = GrpcValue(c_value)
+                rlc.C = Value(c_value)
             if rlc.r_enabled and not rlc.c_enabled and not rlc.l_enabled:
                 new_cmp.component_type = GrpcComponentType.RESISTOR
             elif rlc.c_enabled and not rlc.r_enabled and not rlc.l_enabled:
@@ -1434,12 +1434,12 @@ class Components(object):
             pin1 = list(cmp.pins.values())[0]
             pin_layers = pin1.padstack_def.data.layer_names
             pad_params = self._pedb.padstacks.get_pad_parameters(pin=pin1, layername=pin_layers[0], pad_type=0)
-            _sb_diam = min([abs(GrpcValue(val).value) for val in pad_params[1]])
+            _sb_diam = min([abs(Value(val)) for val in pad_params[1]])
             sball_diam = 0.8 * _sb_diam
         if sball_height:
-            sball_height = round(GrpcValue(sball_height).value, 9)
+            sball_height = round(Value(sball_height), 9)
         else:
-            sball_height = round(GrpcValue(sball_diam).value, 9) / 2
+            sball_height = round(Value(sball_diam), 9) / 2
 
         if not sball_mid_diam:
             sball_mid_diam = sball_diam
@@ -1460,17 +1460,17 @@ class Components(object):
             cmp_property.die_property = ic_die_prop
 
         solder_ball_prop = cmp_property.solder_ball_property
-        solder_ball_prop.set_diameter(GrpcValue(sball_diam), GrpcValue(sball_mid_diam))
-        solder_ball_prop.height = GrpcValue(sball_height)
+        solder_ball_prop.set_diameter(Value(sball_diam), Value(sball_mid_diam))
+        solder_ball_prop.height = Value(sball_height)
 
         solder_ball_prop.shape = sball_shape
         cmp_property.solder_ball_property = solder_ball_prop
 
         port_prop = cmp_property.port_property
-        port_prop.reference_height = GrpcValue(reference_height)
+        port_prop.reference_height = Value(reference_height)
         port_prop.reference_size_auto = auto_reference_size
         if not auto_reference_size:
-            port_prop.set_reference_size(GrpcValue(reference_size_x), GrpcValue(reference_size_y))
+            port_prop.set_reference_size(Value(reference_size_x), Value(reference_size_y))
         cmp_property.port_property = port_prop
         cmp.component_property = cmp_property
         return True
@@ -1520,17 +1520,17 @@ class Components(object):
             rlc.is_parallel = isparallel
             if res_value is not None:
                 rlc.r_enabled = True
-                rlc.r = GrpcValue(res_value)
+                rlc.r = Value(res_value)
             else:
                 rlc.r_enabled = False
             if ind_value is not None:
                 rlc.l_enabled = True
-                rlc.l = GrpcValue(ind_value)
+                rlc.l = Value(ind_value)
             else:
                 rlc.l_enabled = False
             if cap_value is not None:
                 rlc.c_enabled = True
-                rlc.c = GrpcValue(cap_value)
+                rlc.c = Value(cap_value)
             else:
                 rlc.CEnabled = False
             pin_pair = (from_pin.name, to_pin.name)
@@ -1838,7 +1838,7 @@ class Components(object):
             transformed_pt_pos = pt_pos
         else:
             transformed_pt_pos = pin.component.transform.transform_point(pt_pos)
-        return [transformed_pt_pos[0].value, transformed_pt_pos[1].value]
+        return [Value(transformed_pt_pos[0]), Value(transformed_pt_pos[1])]
 
     def get_pins_name_from_net(self, net_name: str, pin_list: Optional[List[Any]] = None) -> List[str]:
         """Get pin names from net.
@@ -2021,8 +2021,8 @@ class Components(object):
                 w = min(pars[0], w)
             elif pad.polygon_data:  # pragma: no cover
                 bbox = pad.polygon_data.bbox()
-                lower = [bbox[0].x.value, bbox[0].y.value]
-                upper = [bbox[1].x.value, bbox[1].y.value]
+                lower = [Value(bbox[0].x), Value(bbox[0].y)]
+                upper = [Value(bbox[1].x), Value(bbox[1].y)]
                 pars = [abs(lower[0] - upper[0]), abs(lower[1] - upper[1])]
                 delta_pins.append(max(pars) + min(pars) / 2)
                 w = min(min(pars), w)
