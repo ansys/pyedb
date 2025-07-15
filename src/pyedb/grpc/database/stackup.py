@@ -527,13 +527,12 @@ class Stackup(LayerCollection):
     def create_symmetric_stackup(
         self,
         layer_count: int,
-        diel_material: str = "FR4_epoxy",
-        cond_material: str = "copper",
-        diel_thickness: Union[str, float] = "0.2mm",
-        cond_thickness: Union[str, float] = "0.035mm",
+        inner_layer_thickness: str = "17um",
+        outer_layer_thickness: str = "50um",
+        dielectric_thickness: str = "100um",
+        dielectric_material: str = "FR4_epoxy",
         soldermask: bool = True,
-        sm_material: str = "SolderMask",
-        sm_thickness: Union[str, float] = "0.05mm",
+        soldermask_thickness: str = "20um",
     ) -> bool:
         """Create a symmetric stackup.
 
