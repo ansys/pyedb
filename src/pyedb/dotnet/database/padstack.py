@@ -1875,16 +1875,18 @@ class EdbPadstacks(object):
                 return True
 
     @staticmethod
-    def dbscan(padstack_dict, eps, min_samples) -> Dict[str, List[str]]:
+    def dbscan(
+        padstack: Dict[int, List[float]], max_distance: float = 1e-3, min_samples: int = 5
+    ) -> Dict[int, List[str]]:
         """
         density based spatial clustering for padstack instances
 
         Parameters
         ----------
-        padstack_dict : dict.
-            "padstack_id": [x1, y1]
+        padstack : dict.
+            padstack id: [x, y]
 
-        eps: float
+        max_distance: float
             maximum distance between two points be included in one cluster
 
         min_samples: int
@@ -1893,12 +1895,12 @@ class EdbPadstacks(object):
         Returns
         -------
         dict
-            clusters {"cluster id": [padstack ids]} <
+            clusters {cluster label: [padstack ids]} <
         """
 
-        ids = list(padstack_dict.keys())
-        xy_array = np.array([padstack_dict[pid] for pid in ids])
-        n = len(ids)
+        padstack_ids = list(padstack.keys())
+        xy_array = np.array([padstack[pid] for pid in padstack_ids])
+        n = len(padstack_ids)
 
         labels = -1 * np.ones(n, dtype=int)
         visited = np.zeros(n, dtype=bool)
@@ -1906,7 +1908,7 @@ class EdbPadstacks(object):
 
         def region_query(point_idx):
             distances = np.linalg.norm(xy_array - xy_array[point_idx], axis=1)
-            return np.where(distances <= eps)[0]
+            return np.where(distances <= max_distance)[0]
 
         def expand_cluster(point_idx, neighbors):
             nonlocal cluster_id
@@ -1937,6 +1939,6 @@ class EdbPadstacks(object):
         # group point IDs by label
         clusters = defaultdict(list)
         for i, label in enumerate(labels):
-            clusters[int(label)].append(ids[i])
+            clusters[int(label)].append(padstack_ids[i])
 
         return dict(clusters)
