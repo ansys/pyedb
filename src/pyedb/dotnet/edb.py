@@ -403,7 +403,7 @@ class Edb(Database):
 
     def value(self, val):
         """Convert a value into an pyedb value."""
-        if isinstance(val,self._edb.Utility.Value):
+        if isinstance(val, self._edb.Utility.Value):
             return Value(self, val)
         else:
             return Value(self, self.edb_api.utility.value(val))
