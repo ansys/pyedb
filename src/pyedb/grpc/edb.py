@@ -65,7 +65,7 @@ import sys
 import tempfile
 import time
 import traceback
-from typing import Union
+from typing import List, Union
 import warnings
 from zipfile import ZipFile as zpf
 
@@ -417,7 +417,7 @@ class Edb(EdbInit):
         dict[str, float]
             Variable names and values.
         """
-        return {i: self.active_cell.get_variable_value(i).value for i in self.active_cell.get_all_variable_names()}
+        return {i: Value(self.active_cell.get_variable_value(i)) for i in self.active_cell.get_all_variable_names()}
 
     @property
     def project_variables(self) -> dict[str, float]:
@@ -428,7 +428,7 @@ class Edb(EdbInit):
         dict[str, float]
             Variable names and values.
         """
-        return {i: self.active_db.get_variable_value(i).value for i in self.active_db.get_all_variable_names()}
+        return {i: Value(self.active_db.get_variable_value(i)) for i in self.active_db.get_all_variable_names()}
 
     @property
     def layout_validation(self) -> LayoutValidation:
@@ -1559,7 +1559,7 @@ class Edb(EdbInit):
         for term in terms:
             if term.type == "PointTerminal" and term.net.name in reference_list:
                 pd = term.get_parameters()[1]
-                locations.append([pd.x.value, pd.y.value])
+                locations.append([Value(pd.x), Value(pd.y)])
         for point in locations:
             pointA = GrpcPointData([point[0] - expansion_size, point[1] - expansion_size])
             pointB = GrpcPointData([point[0] + expansion_size, point[1] + expansion_size])
@@ -1910,7 +1910,7 @@ class Edb(EdbInit):
                 self.components.delete_single_pin_rlc()
                 self.logger.info_timer("Single Pins components deleted")
                 self.components.refresh_components()
-        return [[pt.x.value, pt.y.value] for pt in _poly.without_arcs().points]
+        return [[Value(pt.x), Value(pt.y)] for pt in _poly.without_arcs().points]
 
     def _create_cutout_multithread(
         self,
@@ -2156,7 +2156,7 @@ class Edb(EdbInit):
             self.save_edb()
         self.logger.info_timer("Cutout completed.", timer_start)
         self.logger.reset_timer()
-        return [[pt.x.value, pt.y.value] for pt in _poly.without_arcs().points]
+        return [[Value(pt.x), Value(pt.y)] for pt in _poly.without_arcs().points]
 
     def get_conformal_polygon_from_netlist(self, netlist=None) -> Union[bool, Polygon]:
         """Returns conformal polygon data based on a netlist.
@@ -2374,7 +2374,7 @@ class Edb(EdbInit):
                         self.logger.warning("aedb def file manually created.")
                     except:
                         pass
-        return [[pt.x.value, pt.y.value] for pt in polygon_data.without_arcs().points]
+        return [[Value(pt.x), Value(pt.y)] for pt in polygon_data.without_arcs().points]
 
     @staticmethod
     def write_export3d_option_config_file(path_to_output, config_dictionaries=None):
@@ -2740,7 +2740,7 @@ class Edb(EdbInit):
             elif variable_name in self.active_cell.get_all_variable_names():
                 self.active_cell.set_variable_value(variable_name, Value(variable_value))
 
-    def get_bounding_box(self) -> list[list[float, float], list[float, float]]:
+    def get_bounding_box(self) -> List[List[Value, Value], List[Value, Value]]:
         """Get layout bounding box.
 
         Returns
@@ -2750,7 +2750,7 @@ class Edb(EdbInit):
         """
         lay_inst_polygon_data = [obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()]
         layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
-        return [[layout_bbox[0].x.value, layout_bbox[0].y.value], [layout_bbox[1].x.value, layout_bbox[1].y.value]]
+        return [[Value(layout_bbox[0].x), Value(layout_bbox[0].y)], [Value(layout_bbox[1].x), Value(layout_bbox[1].y)]]
 
     def get_statistics(self, compute_area=False):
         """Get layout statistics.
