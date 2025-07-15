@@ -38,13 +38,13 @@ class TestClass:
         value = edbapp.value(edb_value("1mm"))
         value2 = edbapp.value(edb_value("100um"))
         assert value + value2 == pytest.approx(0.0011)
-        assert str(value + value2) == '(1mm)+(100um)'
+        assert str(value + value2) == "(1mm)+(100um)"
         assert value - value2 == pytest.approx(0.0009)
-        assert str(value - value2) == '(1mm)-(100um)'
-        assert value * value2 == pytest.approx(1E-7)
-        assert str(value * value2) == '(1mm)*(100um)'
+        assert str(value - value2) == "(1mm)-(100um)"
+        assert value * value2 == pytest.approx(1e-7)
+        assert str(value * value2) == "(1mm)*(100um)"
         assert value / value2 == pytest.approx(10)
-        assert str(value / value2) == '(1mm)/(100um)'
+        assert str(value / value2) == "(1mm)/(100um)"
 
         edb_value = edbapp.edb_api.utility.value("4000mm")
         value = edbapp.value(edb_value)

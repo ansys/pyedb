@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import re
+from typing import Any, List, Optional, Union
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 
@@ -33,11 +34,11 @@ from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 class LayoutValidation:
     """Manages all layout validation capabilities"""
 
-    def __init__(self, pedb):
+    def __init__(self, pedb: Any) -> None:
         self._pedb = pedb
         self._layout_instance = self._pedb.layout_instance
 
-    def dc_shorts(self, net_list=None, fix=False) -> list[list[str, str]]:
+    def dc_shorts(self, net_list: Optional[Union[str, List[str]]] = None, fix: bool = False) -> List[List[str]]:
         """Find DC shorts on layout.
 
         Parameters
@@ -127,12 +128,12 @@ class LayoutValidation:
 
     def disjoint_nets(
         self,
-        net_list=None,
-        keep_only_main_net=False,
-        clean_disjoints_less_than=0.0,
-        order_by_area=False,
-        keep_disjoint_pins=False,
-    ) -> list[str]:
+        net_list: Optional[Union[str, List[str]]] = None,
+        keep_only_main_net: bool = False,
+        clean_disjoints_less_than: float = 0.0,
+        order_by_area: bool = False,
+        keep_disjoint_pins: bool = False,
+    ) -> List[str]:
         """Find and fix disjoint nets from a given netlist.
 
         Parameters
@@ -274,7 +275,7 @@ class LayoutValidation:
 
         return new_nets
 
-    def fix_self_intersections(self, net_list=None) -> bool:
+    def fix_self_intersections(self, net_list: Optional[Union[str, List[str]]] = None) -> bool:
         """Find and fix self intersections from a given netlist.
 
         Parameters
@@ -309,7 +310,7 @@ class LayoutValidation:
             self._pedb.logger.info("Self-intersection not found.")
         return True
 
-    def illegal_net_names(self, fix=False):
+    def illegal_net_names(self, fix: bool = False) -> None:
         """Find and fix illegal net names.
 
         Examples
@@ -336,7 +337,7 @@ class LayoutValidation:
         self._pedb._logger.info("Found {} illegal net names.".format(len(renamed_nets)))
         return
 
-    def illegal_rlc_values(self, fix=False) -> list[str]:
+    def illegal_rlc_values(self, fix: bool = False) -> List[str]:
         """Find and fix RLC illegal values.
 
         Examples
@@ -360,7 +361,7 @@ class LayoutValidation:
         self._pedb._logger.info(f"Found {len(temp)} inductors have no value.")
         return temp
 
-    def padstacks_no_name(self, fix=False):
+    def padstacks_no_name(self, fix: bool = False) -> None:
         """Identify and fix padstacks without names.
 
         Examples
