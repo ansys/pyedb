@@ -77,7 +77,6 @@ import ansys.edb.core.layout.cell
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
 )
-from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
 from pyedb.configuration.configuration import Configuration
@@ -131,6 +130,7 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
 )
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.constants import get_terminal_supported_boundary_types
+from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
@@ -1827,7 +1827,7 @@ class Edb(EdbInit):
         include_pingroups=True,
         inlcude_voids_in_extents=False,
     ):
-        expansion_size = GrpcValue(expansion_size).value
+        expansion_size = Value(expansion_size)
 
         # validate nets in layout
         net_signals = [net for net in self.layout.nets if net.name in signal_list]
@@ -1939,7 +1939,7 @@ class Edb(EdbInit):
         if output_aedb_path:
             self.save_edb_as(output_aedb_path)
         self.logger.info("Cutout Multithread started.")
-        expansion_size = GrpcValue(expansion_size).value
+        expansion_size = Value(expansion_size)
 
         timer_start = self.logger.reset_timer()
         if custom_extent:
@@ -2282,7 +2282,7 @@ class Edb(EdbInit):
             for p in p_missing:
                 position = GrpcPointData(p.position)
                 net = self.nets.find_or_create_net(p.net_name)
-                rotation = GrpcValue(p.rotation)
+                rotation = Value(p.rotation)
                 sign_layers = list(self.stackup.signal_layers.keys())
                 if not p.start_layer:  # pragma: no cover
                     fromlayer = self.stackup.signal_layers[sign_layers[0]]
@@ -2736,9 +2736,9 @@ class Edb(EdbInit):
         """
         if self.variable_exists(variable_name):
             if variable_name in self.db.get_all_variable_names():
-                self.db.set_variable_value(variable_name, GrpcValue(variable_value))
+                self.db.set_variable_value(variable_name, Value(variable_value))
             elif variable_name in self.active_cell.get_all_variable_names():
-                self.active_cell.set_variable_value(variable_name, GrpcValue(variable_value))
+                self.active_cell.set_variable_value(variable_name, Value(variable_value))
 
     def get_bounding_box(self) -> list[list[float, float], list[float, float]]:
         """Get layout bounding box.
@@ -3437,7 +3437,7 @@ class Edb(EdbInit):
                 _layers = {k: v for k, v in self.stackup.layers.items() if k in layer_filter}
             for layer_name, layer in _layers.items():
                 var, val = _apply_variable(f"${layer_name}", layer.thickness)
-                layer.thickness = GrpcValue(var, self.active_db)
+                layer.thickness = Value(var, self.active_db)
                 parameters.append(val)
         if materials:
             if not material_filter:
@@ -3447,14 +3447,14 @@ class Edb(EdbInit):
             for mat_name, material in _materials.items():
                 if not material.conductivity or material.conductivity < 1e4:
                     var, val = _apply_variable(f"$epsr_{mat_name}", material.permittivity)
-                    material.permittivity = GrpcValue(var, self.active_db)
+                    material.permittivity = Value(var, self.active_db)
                     parameters.append(val)
                     var, val = _apply_variable(f"$loss_tangent_{mat_name}", material.dielectric_loss_tangent)
-                    material.dielectric_loss_tangent = GrpcValue(var, self.active_db)
+                    material.dielectric_loss_tangent = Value(var, self.active_db)
                     parameters.append(val)
                 else:
                     var, val = _apply_variable(f"$sigma_{mat_name}", material.conductivity)
-                    material.conductivity = GrpcValue(var, self.active_db)
+                    material.conductivity = Value(var, self.active_db)
                     parameters.append(val)
         if traces:
             if not trace_net_filter:
@@ -3470,7 +3470,7 @@ class Edb(EdbInit):
                 else:
                     trace_width_variable = f"{path.aedt_name}"
                 var, val = _apply_variable(trace_width_variable, path.width)
-                path.width = GrpcValue(var, self.active_cell)
+                path.width = Value(var, self.active_cell)
                 parameters.append(val)
         if not padstack_definition_filter:
             if trace_net_filter:
@@ -3497,7 +3497,7 @@ class Edb(EdbInit):
                         hole_variable = f"${def_name}_hole_diameter"
                     if padstack_def.hole_diameter:
                         var, val = _apply_variable(hole_variable, padstack_def.hole_diameter)
-                        padstack_def.hole_properties = GrpcValue(var, self.active_db)
+                        padstack_def.hole_properties = Value(var, self.active_db)
                         parameters.append(val)
             if pads:
                 for layer, pad in padstack_def.pad_by_layer.items():
@@ -3712,7 +3712,7 @@ class Edb(EdbInit):
             material="pec",
         )
         if launching_box_thickness:
-            launching_box_thickness = str(GrpcValue(launching_box_thickness))
+            launching_box_thickness = str(Value(launching_box_thickness))
         cloned_edb.stackup.add_layer(
             layer_name="ref",
             layer_type="signal",
@@ -3747,7 +3747,7 @@ class Edb(EdbInit):
                         .parameters_values
                     )
                 else:
-                    pad_diameter = GrpcValue(terminal_diameter).value
+                    pad_diameter = Value(terminal_diameter)
                 _temp_circle = cloned_edb.modeler.create_circle(
                     layer_name="ports",
                     x=inst.position[0],
