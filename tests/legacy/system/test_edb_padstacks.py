@@ -570,4 +570,3 @@ def _assert_inside(rect, pad):
     assert math.isclose(
         round(result[0].Area(), 4), round(rect.Area(), 4)
     ), f"{BASE_MESSAGE} area of intersection is not equal to rectangle area"
-
