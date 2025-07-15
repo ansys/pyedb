@@ -41,34 +41,38 @@ class Value(float):
 
     def __add__(self, other):
         """Adds two Edb Values."""
-        if isinstance(other, Value):
-            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})+({str(other)})")
-        else:
-            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})+{other}")
+        edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})+({str(other)})")
+        return self.__class__(self._pedb, edb_object)
+
+    def __radd__(self, other):
+        edb_object = self._pedb.edb_value(f"({str(other)})+({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def __sub__(self, other):
         """Subtracts two Edb Values."""
-        if isinstance(other, Value):
-            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})-({str(other)})")
-        else:
-            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})-{other}")
+        edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})-({str(other)})")
+        return self.__class__(self._pedb, edb_object)
+
+    def __rsub__(self, other):
+        edb_object = self._pedb.edb_value(f"({str(other)})-({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def __mul__(self, other):
         """Multiplies two Edb Values."""
-        if isinstance(other, Value):
-            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})*({str(other)})")
-        else:
-            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})*{other}")
+        edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})*({str(other)})")
+        return self.__class__(self._pedb, edb_object)
+
+    def __rmul__(self, other):
+        edb_object = self._pedb.edb_value(f"({str(other)})*({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def __truediv__(self, other):
         """Divides two Edb Values."""
-        if isinstance(other, Value):
-            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})/({str(other)})")
-        else:
-            edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})/{other}")
+        edb_object = self._pedb.edb_value(f"({self._edb_obj.ToString()})/({str(other)})")
+        return self.__class__(self._pedb, edb_object)
+
+    def __rtruediv__(self, other):
+        edb_object = self._pedb.edb_value(f"({str(other)})/({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def sqrt(self):

@@ -42,13 +42,21 @@ class TestDatabaseUtilities:
         value = edbapp.value("1mm")
         value2 = edbapp.value("100um")
         assert value + value2 == pytest.approx(0.0011)
+        assert value2 + value == pytest.approx(0.0011)
         assert str(value + value2) == "(1mm)+(100um)"
+        assert str(value2 + value) == "(100um)+(1mm)"
         assert value - value2 == pytest.approx(0.0009)
+        assert value2 - value == pytest.approx(-0.0009)
         assert str(value - value2) == "(1mm)-(100um)"
+        assert str(value2 - value) == "(100um)-(1mm)"
         assert value * value2 == pytest.approx(1e-7)
+        assert value2 * value == pytest.approx(1e-7)
         assert str(value * value2) == "(1mm)*(100um)"
+        assert str(value2 * value) == "(100um)*(1mm)"
         assert value / value2 == pytest.approx(10)
+        assert value2 / value == pytest.approx(0.1)
         assert str(value / value2) == "(1mm)/(100um)"
+        assert str(value2 / value) == "(100um)/(1mm)"
 
         value = edbapp.value("4000mm")
         assert value == pytest.approx(4)
