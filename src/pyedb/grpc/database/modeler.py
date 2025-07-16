@@ -1194,6 +1194,8 @@ class Modeler(object):
             layer_name = [layer_name]
         if not layer_name:
             layer_name = list(self._pedb.stackup.signal_layers.keys())
+        if net_names_list is None:
+            net_names_list = []
 
         for lay in layer_name:
             self._logger.info(f"Uniting Objects on layer {lay}.")
