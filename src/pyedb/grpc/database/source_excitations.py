@@ -371,13 +371,14 @@ class SourceExcitation:
 
     def create_port_on_pins(
         self,
-        refdes: str,
-        pins: Union[str, List[str]],
-        reference_pins: Optional[List[str]] = None,
+        refdes: Union[str, Component],
+        pins: Union[int, str, PadstackInstance, List[Union[int, str, PadstackInstance]]],
+        reference_pins: Union[int, str, PadstackInstance, List[Union[int, str, PadstackInstance]]] = None,
+        impedance: Union[str, float] = "50ohm",
         port_name: Optional[str] = None,
-        port_type: Optional[str] = None,
-        impedance: Union[int, float] = 50,
-    ) -> Optional[str]:
+        pec_boundary: bool = False,
+        pingroup_on_single_pin: bool = False,
+    ) -> PadstackInstanceTerminal:
         """Create circuit port between pins and reference ones.
 
         Parameters
@@ -506,14 +507,17 @@ class SourceExcitation:
 
     def create_port_on_component(
         self,
-        component: Union[str, List[str]],
+        component: Union[str, Component],
         net_list: Union[str, List[str]],
-        port_type: SourceType,
-        reference_net: Optional[str] = None,
-        port_names: Optional[List[str]] = None,
-        impedance: Union[int, float] = 50,
-        delete_existing_terminal: bool = False,
-    ) -> List[str]:
+        port_type: str = "coax_port",
+        do_pingroup: bool = False,
+        reference_net: Union[str, List[str], Net] = "GND",
+        port_name: Optional[str] = None,
+        solder_balls_height: Optional[float] = None,
+        solder_balls_size: Optional[float] = None,
+        solder_balls_mid_size: Optional[float] = None,
+        extend_reference_pins_outside_component: bool = False,
+    ):
         """Create ports on a component.
 
         Parameters

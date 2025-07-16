@@ -182,7 +182,7 @@ class TestClass:
         """Retrieve the trace width for traces with ports."""
         # Done
         edbapp = edb_examples.get_si_verse()
-        edbapp.components.create_port_on_component(
+        edbapp.source_excitation.create_port_on_component(
             "U1",
             ["VDD_DDR"],
             reference_net="GND",
