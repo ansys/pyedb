@@ -27,7 +27,6 @@ import os
 
 import pytest
 
-
 from tests.conftest import desktop_version, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -46,7 +45,7 @@ class TestClass:
         """Export of a loaded aedb file to an XML IPC2581 file"""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
         edbapp = edb_examples.load_edb(source_path, source_path)
-        xml_file =  edb_examples.get_local_file_folder("test_ipc.xml")
+        xml_file = edb_examples.get_local_file_folder("test_ipc.xml")
         edbapp.export_to_ipc2581(xml_file)
         assert os.path.exists(xml_file)
 
