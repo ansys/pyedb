@@ -202,13 +202,11 @@ class Edb(EdbInit):
         edbversion: str = None,
         isaedtowned: bool = False,
         oproject=None,
-        student_version: bool = False,
         use_ppe: bool = False,
         control_file: str = None,
         map_file: str = None,
         technology_file: str = None,
         layer_filter: str = None,
-        remove_existing_aedt: bool = False,
         restart_rpc_server=False,
     ):
         edbversion = get_string_version(edbversion)
