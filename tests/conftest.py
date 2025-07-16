@@ -152,12 +152,12 @@ class EdbExamples:
         aedb = self._copy_file_folder_into_local_folder("TEDB/component_no_ref_pins.aedb")
         return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
 
-    def load_edb(self, edb_path, copy_to_temp=True):
+    def load_edb(self, edb_path, copy_to_temp=True, **kwargs):
         if copy_to_temp:
             aedb = self._copy_file_folder_into_local_folder(edb_path)
         else:
             aedb = edb_path
-        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
+        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc, **kwargs)
 
 
 @pytest.fixture(scope="module")

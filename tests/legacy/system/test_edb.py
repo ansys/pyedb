@@ -1416,8 +1416,7 @@ class TestClass:
     def test_move_and_edit_polygons(self,edb_examples):
         """Move a polygon."""
         # Done
-        target_path = os.path.join(self.local_scratch.path, "test_move_edit_polygons", "test.aedb")
-        edbapp = edb_examples.load_edb(target_path)
+        edbapp = edb_examples.create_empty_edb()
 
         edbapp.stackup.add_layer("GND")
         edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
