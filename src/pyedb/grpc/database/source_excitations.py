@@ -1669,10 +1669,10 @@ class SourceExcitation:
 
     def create_current_source_on_net(
         self,
-        component_name: str,
-        net_name: str,
-        reference_component_name: str,
-        reference_net_name: str,
+        positive_component_name: str,
+        positive_net_name: str,
+        negative_component_name: Optional[str] = None,
+        negative_net_name: Optional[str] = None,
         current_value: Union[int, float] = 0,
         phase_value: Union[int, float] = 0,
         source_name: Optional[str] = None,
