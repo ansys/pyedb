@@ -30,7 +30,6 @@ import pytest
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.dotnet.database.padstack import EDBPadstackInstance
-from pyedb.generic.design_types import Edb
 from tests.conftest import desktop_version, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -219,12 +218,10 @@ class TestClass:
         )
         assert self.edbapp.padstacks.definitions["c180h127"].pad_by_layer["new"]
 
-    def test_microvias(self):
+    def test_microvias(self, edb_examples):
         """Convert padstack to microvias 3D objects."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_128_microvias.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(source_path)
         assert edbapp.padstacks.definitions["Padstack_Circle"].convert_to_3d_microvias(False)
         assert edbapp.padstacks.definitions["Padstack_Rectangle"].convert_to_3d_microvias(False, hole_wall_angle=10)
         assert edbapp.padstacks.definitions["Padstack_Polygon_p12"].convert_to_3d_microvias(False)
