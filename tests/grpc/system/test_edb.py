@@ -1362,21 +1362,12 @@ class TestClass:
         )
         assert extent
         assert len(extent) == 55
-        if edbapp.grpc:
-            # grpc and dotnet have rounding differences
-            assert extent[0] == [0.011025799607142596, 0.04451508809926884]
-            assert extent[10] == [0.02214231174553801, 0.02851039223066996]
-            assert extent[20] == [0.06722930402216426, 0.02605468368384399]
-            assert extent[30] == [0.06793706871543964, 0.02961898967909681]
-            assert extent[40] == [0.0655032742298304, 0.03147893183305721]
-            assert extent[50] == [0.01143465157862367, 0.046365530038092975]
-        else:
-            assert extent[0] == [0.011025799702099603, 0.04451508810211455]
-            assert extent[10] == [0.022142311790681247, 0.02851039231475559]
-            assert extent[20] == [0.06722930398844625, 0.026054683772800503]
-            assert extent[30] == [0.06793706863503707, 0.02961898962849831]
-            assert extent[40] == [0.06550327418370948, 0.031478931749766806]
-            assert extent[50] == [0.01143465165463851, 0.04636552997976474]
+        assert extent[0] == [0.0110258, 0.044515088]
+        assert extent[10] == [0.022142312, 0.028510392]
+        assert extent[20] == [0.067229304, 0.026054684]
+        assert extent[30] == [0.067937069, 0.02961899]
+        assert extent[40] == [0.065503274, 0.031478932]
+        assert extent[50] == [0.011434652, 0.04636553]
         edbapp.close_edb()
 
     def test_move_and_edit_polygons(self):
