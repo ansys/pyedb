@@ -24,7 +24,6 @@
 """
 
 import os
-from os.path import dirname
 import random
 import shutil
 import string
@@ -42,6 +41,8 @@ example_models_path = Path(__file__).parent / "example_models"
 
 # Initialize default desktop configuration
 desktop_version = "2025.1"
+GRPC = False
+
 if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_installed_ansysem():
     desktop_version = list_installed_ansysem()[0][12:].replace(".", "")
     desktop_version = "20{}.{}".format(desktop_version[:2], desktop_version[-1])
@@ -88,7 +89,8 @@ def local_scratch(init_scratch):
 
 
 class EdbExamples:
-    def __init__(self, local_scratch):
+    def __init__(self, local_scratch, gprc=False):
+        self.grpc = gprc
         self.local_scratch = local_scratch
         self.example_models_path = example_models_path
         self.test_folder = ""
@@ -126,7 +128,7 @@ class EdbExamples:
                     self.local_scratch.copyfolder(src, file_folder_name)
         if edbapp:
             version = desktop_version if version is None else version
-            return Edb(aedb, edbversion=version)
+            return Edb(aedb, edbversion=version, grpc=self.grpc)
         else:
             return aedb
 
@@ -139,19 +141,19 @@ class EdbExamples:
     def create_empty_edb(self):
         local_folder = self._create_test_folder()
         aedb = os.path.join(local_folder, "new_layout.aedb")
-        return Edb(aedb, edbversion=desktop_version)
+        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
 
     def get_multizone_pcb(self):
         aedb = self._copy_file_folder_into_local_folder("multi_zone_project.aedb")
-        return Edb(aedb, edbversion=desktop_version)
+        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
 
     def get_no_ref_pins_component(self):
         aedb = self._copy_file_folder_into_local_folder("TEDB/component_no_ref_pins.aedb")
-        return Edb(aedb, edbversion=desktop_version)
+        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
 
     def load_edb(self, edb_path):
         aedb = self._copy_file_folder_into_local_folder(edb_path)
-        return Edb(aedb, edbversion=desktop_version)
+        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
 
 
 @pytest.fixture(scope="module")
@@ -220,4 +222,4 @@ def target_path4(local_scratch):
 
 @pytest.fixture(scope="class", autouse=True)
 def edb_examples(local_scratch):
-    return EdbExamples(local_scratch)
+    return EdbExamples(local_scratch, GRPC)
