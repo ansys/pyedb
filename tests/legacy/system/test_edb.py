@@ -1126,7 +1126,7 @@ class TestClass:
     def test_create_padstack_instance(self, edb_examples):
         """Create padstack instances."""
         # Done
-        edb = edb_examples.create_empty_edb(edbversion=desktop_version)
+        edb = edb_examples.create_empty_edb()
         edb.stackup.add_layer(layer_name="1_Top", fillMaterial="air", thickness="30um")
         edb.stackup.add_layer(layer_name="contact", fillMaterial="air", thickness="100um", base_layer="1_Top")
 
@@ -1181,7 +1181,7 @@ class TestClass:
     def test_stackup_properties(self, edb_examples):
         """Evaluate stackup properties."""
         # Done
-        edb = edb_examples.create_empty_edb(edbversion=desktop_version)
+        edb = edb_examples.create_empty_edb()
         edb.stackup.add_layer(layer_name="gnd", fillMaterial="air", thickness="10um")
         edb.stackup.add_layer(layer_name="diel1", fillMaterial="air", thickness="200um", base_layer="gnd")
         edb.stackup.add_layer(layer_name="sig1", fillMaterial="air", thickness="10um", base_layer="diel1")
@@ -1272,7 +1272,7 @@ class TestClass:
     def test_backdrill_via_with_offset(self, edb_examples):
         """Set backdrill from top."""
 
-        edb = edb_examples.create_empty_edb(edbversion=desktop_version)
+        edb = edb_examples.create_empty_edb()
         edb.stackup.add_layer(layer_name="bot")
         edb.stackup.add_layer(layer_name="diel1", base_layer="bot", layer_type="dielectric", thickness="127um")
         edb.stackup.add_layer(layer_name="signal1", base_layer="diel1")
@@ -1935,7 +1935,7 @@ class TestClass:
             local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
         )
         map_file = os.path.join(local_path, "example_models", "cad", "GDS", "dummy_layermap.map")
-        edb = edb_examples.create_empty_edb(edbversion=desktop_version)
+        edb = edb_examples.create_empty_edb()
         assert edb.import_layout_file(input_file=input_file, control_file=control_file, map_file=map_file)
 
     @pytest.mark.parametrize("positive_pin_names", (["R20", "R21", "T20"], ["R20"]))
