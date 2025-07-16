@@ -24,7 +24,6 @@ from pathlib import Path
 
 import pytest
 
-from pyedb.dotnet.edb import Edb as EdbType
 from pyedb.generic.general_methods import is_linux
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -1212,7 +1211,7 @@ class TestClass:
         edbapp.close()
 
     def test_17_ic_die_properties(self, edb_examples):
-        db: EdbType = edb_examples.get_si_verse()
+        db = edb_examples.get_si_verse()
 
         comps_edb = db.configuration.get_data_from_db(components=True)["components"]
         component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
