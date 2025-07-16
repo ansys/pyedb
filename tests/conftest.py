@@ -41,8 +41,8 @@ local_path = os.path.dirname(os.path.realpath(__file__))
 example_models_path = Path(__file__).parent / "example_models"
 
 # Initialize default desktop configuration
-desktop_version = "2025.1"
-GRPC = False
+desktop_version = "2025.2"
+GRPC = True
 
 if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_installed_ansysem():
     desktop_version = list_installed_ansysem()[0][12:].replace(".", "")
