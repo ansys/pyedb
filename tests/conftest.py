@@ -90,8 +90,8 @@ def local_scratch(init_scratch):
 
 
 class EdbExamples:
-    def __init__(self, local_scratch, gprc=False):
-        self.grpc = gprc
+    def __init__(self, local_scratch, grpc=False):
+        self.grpc = grpc
         self.local_scratch = local_scratch
         self.example_models_path = example_models_path
         self.test_folder = ""
