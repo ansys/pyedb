@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
 
 
 class Variable:
@@ -57,7 +58,8 @@ class Variable:
         str
 
         """
-        return self._var_server.GetVariableValue(self.name)[1].ToString()
+        warnings.warn("`value_string` is deprecated. Use `str(value)` method instead.", DeprecationWarning)
+        return self.value.__str__()
 
     @property
     def value_object(self):
@@ -77,11 +79,11 @@ class Variable:
         -------
         float
         """
-        return self._var_server.GetVariableValue(self.name)[1].ToDouble()
+        return self._pedb.value(self._var_server.GetVariableValue(self.name)[1])
 
     @value.setter
     def value(self, value):
-        self._var_server.SetVariableValue(self.name, self._pedb.edb_value(value))
+        self._var_server.SetVariableValue(self.name, self._pedb.value(value)._edb_obj)
 
     @property
     def description(self):
