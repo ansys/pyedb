@@ -31,8 +31,7 @@ from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.dotnet.database.padstack import EDBPadstackInstance
 from pyedb.generic.design_types import Edb
-from tests.conftest import desktop_version, local_path
-from tests.conftest import test_subfolder
+from tests.conftest import desktop_version, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 

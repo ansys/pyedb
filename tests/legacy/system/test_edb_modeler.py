@@ -29,8 +29,7 @@ import pytest
 
 from pyedb.generic.design_types import Edb
 from pyedb.generic.settings import settings
-from tests.conftest import desktop_version, local_path
-from tests.conftest import test_subfolder
+from tests.conftest import desktop_version, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 

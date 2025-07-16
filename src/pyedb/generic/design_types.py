@@ -25,7 +25,6 @@ import warnings
 from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
 from pyedb.misc.misc import list_installed_ansysem
 
-
 if TYPE_CHECKING:
     from pyedb.dotnet.edb import Edb as EdbDotnet
     from pyedb.grpc.edb import Edb as EdbGrpc

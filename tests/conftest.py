@@ -24,17 +24,18 @@
 """
 
 import os
+from pathlib import Path
 import random
 import shutil
 import string
 import tempfile
-from pathlib import Path
 
 import pytest
+
+from pyedb.generic.design_types import Edb
 from pyedb.generic.filesystem import Scratch
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.misc import list_installed_ansysem
-from pyedb.generic.design_types import Edb
 
 local_path = os.path.dirname(os.path.realpath(__file__))
 example_models_path = Path(__file__).parent / "example_models"
@@ -111,7 +112,7 @@ class EdbExamples:
         return dst
 
     def get_si_verse(
-            self, edbapp=True, additional_files_folders="", version=None, source_file_path="TEDB/ANSYS-HSD_V1.aedb"
+        self, edbapp=True, additional_files_folders="", version=None, source_file_path="TEDB/ANSYS-HSD_V1.aedb"
     ):
         """Copy si_verse board file into local folder. A new temporary folder will be created."""
         aedb = self._copy_file_folder_into_local_folder(source_file_path)
