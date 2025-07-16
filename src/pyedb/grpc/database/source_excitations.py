@@ -1099,7 +1099,7 @@ class SourceExcitation:
         pos_pin: Union[str, PadstackInstance],
         neg_pin: Union[str, PadstackInstance],
         impedance: Union[int, float] = 50,
-        name: Optional[str] = None,
+        port_name: Optional[str] = None,
     ) -> Optional[str]:
         """Create a circuit port on a pin.
 
@@ -1395,11 +1395,11 @@ class SourceExcitation:
 
     def create_circuit_port_on_net(
         self,
-        component_name: str,
-        net_name: str,
-        reference_component_name: str,
-        reference_net_name: str,
-        impedance: Union[int, float] = 50,
+        positive_component_name: str,
+        positive_net_name: str,
+        negative_component_name: str,
+        negative_net_name: Optional[str] = None,
+        impedance_value: Union[int, float] = 50,
         port_name: Optional[str] = None,
     ) -> Optional[str]:
         """Create a circuit port on a NET.
@@ -1466,7 +1466,7 @@ class SourceExcitation:
             positive_pins=positive_pins,
             negatives_pins=negative_pins,
             name=port_name,
-            impedance=impedance,
+            impedance=impedance_value,
             source_type="circuit_port",
         )
 
@@ -1606,10 +1606,10 @@ class SourceExcitation:
 
     def create_voltage_source_on_net(
         self,
-        component_name: str,
-        net_name: str,
-        reference_component_name: str,
-        reference_net_name: str,
+        positive_component_name: str,
+        positive_net_name: str,
+        negative_component_name: Optional[str] = None,
+        negative_net_name: Optional[str] = None,
         voltage_value: Union[int, float] = 0,
         phase_value: Union[int, float] = 0,
         source_name: Optional[str] = None,

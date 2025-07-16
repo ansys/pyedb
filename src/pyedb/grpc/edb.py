@@ -65,7 +65,7 @@ import sys
 import tempfile
 import time
 import traceback
-from typing import List, Union
+from typing import Union
 import warnings
 from zipfile import ZipFile as zpf
 
@@ -2740,7 +2740,7 @@ class Edb(EdbInit):
             elif variable_name in self.active_cell.get_all_variable_names():
                 self.active_cell.set_variable_value(variable_name, Value(variable_value))
 
-    def get_bounding_box(self) -> List[List[Value, Value], List[Value, Value]]:
+    def get_bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         """Get layout bounding box.
 
         Returns
@@ -2750,7 +2750,7 @@ class Edb(EdbInit):
         """
         lay_inst_polygon_data = [obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()]
         layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
-        return [[Value(layout_bbox[0].x), Value(layout_bbox[0].y)], [Value(layout_bbox[1].x), Value(layout_bbox[1].y)]]
+        return ((Value(layout_bbox[0].x), Value(layout_bbox[0].y)), (Value(layout_bbox[1].x), Value(layout_bbox[1].y)))
 
     def get_statistics(self, compute_area=False):
         """Get layout statistics.

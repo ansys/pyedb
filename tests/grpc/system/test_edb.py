@@ -57,7 +57,7 @@ class TestClass:
         """Evaluate layout bounding box"""
         edbapp = edb_examples.get_si_verse()
         assert len(edbapp.get_bounding_box()) == 2
-        assert edbapp.get_bounding_box() == [[-0.01426004895, -0.00455000106], [0.15010507444, 0.08000000002]]
+        assert edbapp.get_bounding_box() == ((-0.014260049, -0.004550001), (0.150105074, 0.08))
         edbapp.close()
 
     def test_siwave_create_circuit_port_on_net(self, edb_examples):
