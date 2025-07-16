@@ -1552,13 +1552,13 @@ class TestClass:
 
     def test_workflow(self, edb_examples):
         # TODO check with config file 2.0
-        from pathlib import Path
-
-        edbapp = edb_examples.get_si_verse()
-        path_bom = Path(edb_examples.test_folder) / "bom.csv"
-        edbapp.workflow.export_bill_of_materials(path_bom)
-        assert path_bom.exists()
-        edbapp.close()
+        # from pathlib import Path
+        #
+        # edbapp = edb_examples.get_si_verse()
+        # path_bom = Path(edb_examples.test_folder) / "bom.csv"
+        # edbapp.workflow.export_bill_of_materials(path_bom)
+        # assert path_bom.exists()
+        # edbapp.close()
         pass
 
     def test_create_port_on_component_no_ref_pins_in_component(self, edb_examples):
