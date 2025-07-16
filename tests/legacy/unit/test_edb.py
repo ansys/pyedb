@@ -26,7 +26,7 @@ import os
 from mock import MagicMock, PropertyMock, patch
 import pytest
 
-from pyedb.dotnet.edb import Edb
+from pyedb.generic.design_types import Edb
 from tests.conftest import desktop_version
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -205,6 +205,8 @@ class TestClass:
         new_callable=PropertyMock,
     )
     def test_conflict_files_removal_success(self, mock_logger, mock_unlink, mock_isfile):
+        from pyedb.dotnet.edb import Edb as DotNetEdb
+
         logger_mock = MagicMock()
         mock_logger.return_value = logger_mock
         mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
@@ -212,7 +214,7 @@ class TestClass:
         edbpath = "file.edb"
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         files = [aedt_file, aedt_file + ".lock"]
-        edb = Edb(edbpath=edbpath, edbversion=desktop_version, remove_existing_aedt=True)
+        edb = DotNetEdb(edbpath=edbpath, edbversion=desktop_version, remove_existing_aedt=True)
         if edb.grpc:
             pass
         else:
@@ -227,6 +229,8 @@ class TestClass:
         new_callable=PropertyMock,
     )
     def test_conflict_files_removal_failure(self, mock_logger, mock_unlink, mock_isfile):
+        from pyedb.dotnet.edb import Edb as DotNetEdb
+
         logger_mock = MagicMock()
         mock_logger.return_value = logger_mock
         mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
@@ -235,7 +239,7 @@ class TestClass:
         edbpath = "file.edb"
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         files = [aedt_file, aedt_file + ".lock"]
-        edb = Edb(edbpath=edbpath, edbversion=desktop_version, remove_existing_aedt=True)
+        edb = DotNetEdb(edbpath=edbpath, edbversion=desktop_version, remove_existing_aedt=True)
         if edb.grpc:
             pass
         else:

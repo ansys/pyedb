@@ -27,10 +27,8 @@ import os
 
 import pytest
 
-from pyedb.dotnet.edb import Edb
 from pyedb.generic.settings import settings
-from tests.conftest import desktop_version, local_path
-from tests.legacy.system.conftest import test_subfolder
+from tests.conftest import local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
@@ -364,10 +362,10 @@ class TestClass:
         assert edbapp.modeler.defeature_polygon(edbapp.modeler.primitives_by_net["GND"][-1], 0.0001)
         edbapp.close()
 
-    def test_modeler_primitives_boolean_operation(self):
+    def test_modeler_primitives_boolean_operation(self, edb_examples):
         """Evaluate modeler primitives boolean operations."""
         # TODO check bug #464.
-        edb = Edb(edbversion=desktop_version)
+        edb = edb_examples.create_empty_edb()
         edb.stackup.add_layer(layer_name="test")
         x = edb.modeler.create_polygon(layer_name="test", points=[[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]])
         assert not x.is_null
@@ -394,22 +392,20 @@ class TestClass:
         assert y_clone.voids
         edb.close()
 
-    def test_modeler_path_convert_to_polygon(self):
+    def test_modeler_path_convert_to_polygon(self, edb_examples):
         # Done
         target_path = os.path.join(local_path, "example_models", "convert_and_merge_path.aedb")
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(target_path)
         for path in edbapp.modeler.paths:
             assert path.convert_to_polygon()
         # cannot merge one net only - see test: test_unite_polygon for reference
         edbapp.close()
 
-    def test_156_check_path_length(self):
+    def test_156_check_path_length(self, edb_examples):
         """"""
         # Done
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_path_length.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_path_length", "test.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(edbpath=target_path, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(edb_path=source_path)
         net1 = [path for path in edbapp.modeler.paths if path.net_name == "loop1"]
         net1_length = 0
         for path in net1:
@@ -437,9 +433,9 @@ class TestClass:
         assert round(net5_length, 5) == 0.02629
         edbapp.close()
 
-    def test_duplicate(self):
+    def test_duplicate(self, edb_examples):
         # Done
-        edbapp = Edb(edbversion=desktop_version)
+        edbapp = edb_examples.create_empty_edb()
         edbapp["$H"] = "0.65mil"
         assert edbapp["$H"] == 1.651e-5
         edbapp["$S_D"] = "10.65mil"
@@ -479,9 +475,9 @@ class TestClass:
         assert edbapp.modeler.primitives_by_layer["bot_gnd"]
         edbapp.close()
 
-    def test_unite_polygon(self):
+    def test_unite_polygon(self, edb_examples):
         # Done
-        edbapp = Edb(edbversion=desktop_version)
+        edbapp = edb_examples.create_empty_edb()
         edbapp["$H"] = "0.65mil"
         edbapp["$Via_S"] = "40mil"
         edbapp["$MS_W"] = "4.75mil"
@@ -552,7 +548,7 @@ class TestClass:
         assert len(primitives) == 3
         edbapp.close()
 
-    def test_arbitrary_wave_ports(self):
+    def test_arbitrary_wave_ports(self, edb_examples):
         # Done
         example_folder = os.path.join(local_path, "example_models", test_subfolder)
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
@@ -561,22 +557,22 @@ class TestClass:
         work_dir = os.path.join(temp_directory, "_work")
         output_edb = os.path.join(temp_directory, "wave_ports.aedb")
         self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = Edb(edbpath=target_path_edb, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(edb_path=target_path_edb, copy_to_temp=False)
         assert edbapp.create_model_for_arbitrary_wave_ports(
             temp_directory=work_dir,
             output_edb=output_edb,
             mounting_side="top",
         )
         edbapp.close()
-        test_edb = Edb(edbpath=output_edb, edbversion=desktop_version)
+        test_edb = edb_examples.load_edb(edb_path=output_edb, copy_to_temp=False)
         assert len(list(test_edb.nets.signal.keys())) == 13
         assert len(list(test_edb.stackup.layers.keys())) == 3
         assert "ref" in test_edb.stackup.layers
         assert len(test_edb.modeler.polygons) == 12
         test_edb.close()
 
-    def test_path_center_line(self):
-        edb = Edb(edbversion=desktop_version)
+    def test_path_center_line(self, edb_examples):
+        edb = edb_examples.create_empty_edb()
         edb.stackup.add_layer("GND", "Gap")
         edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.2mm", material="Duroid (tm)")
         edb.stackup.add_layer("TOP", "Substrat")

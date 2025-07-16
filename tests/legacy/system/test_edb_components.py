@@ -27,10 +27,7 @@ import os
 
 import pytest
 
-# from pyedb import Edb
-from pyedb.dotnet.edb import Edb
-from tests.conftest import desktop_version, local_path
-from tests.legacy.system.conftest import test_subfolder
+from tests.conftest import local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
@@ -447,7 +444,7 @@ class TestClass:
     def test_components_get_component_placement_vector(self, edb_examples):
         """Get the placement vector between 2 components."""
         edbapp = edb_examples.get_si_verse()
-        edb2 = Edb(self.target_path4, edbversion=desktop_version)
+        edb2 = edb_examples.load_edb(self.target_path4, copy_to_temp=False)
         for _, cmp in edb2.components.instances.items():
             assert isinstance(cmp.solder_ball_placement, int)
         mounted_cmp = edb2.components.get_component_by_name("BGA")
@@ -608,9 +605,9 @@ class TestClass:
         assert edbapp.components._create_pin_group_terminal(edbapp.padstacks.pingroups[0], term_type="circuit")
         edbapp.close()
 
-    def test_component_lib(self):
+    def test_component_lib(self, edb_examples):
         # Done
-        edbapp = Edb(edbversion=desktop_version)
+        edbapp = edb_examples.create_empty_edb()
         comp_lib = edbapp.components.get_vendor_libraries()
         assert len(comp_lib.capacitors) == 13
         assert len(comp_lib.inductors) == 7
