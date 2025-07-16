@@ -230,6 +230,7 @@ class TestClass:
     )
     def test_conflict_files_removal_failure(self, mock_logger, mock_unlink, mock_isfile):
         from pyedb.dotnet.edb import Edb as DotNetEdb
+
         logger_mock = MagicMock()
         mock_logger.return_value = logger_mock
         mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
