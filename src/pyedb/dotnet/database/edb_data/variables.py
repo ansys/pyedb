@@ -59,7 +59,7 @@ class Variable:
 
         """
         warnings.warn("`value_string` is deprecated. Use `str(value)` method instead.", DeprecationWarning, stacklevel=2)
-        return self.value.__str__()
+        return str(self.value)
 
     @property
     def value_object(self):
