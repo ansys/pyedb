@@ -2957,7 +2957,7 @@ class SourceExcitation:
         return not pos_terminal.is_null
 
     def create_dc_terminal(
-        self, component_name: str, net_name: str, terminal_name: Optional[str] = None
+        self, component_name: str, net_name: str, source_name: Optional[str] = None
     ) -> Optional[str]:
         """Create a dc terminal.
 
@@ -2967,7 +2967,6 @@ class SourceExcitation:
             Name of the positive component.
         net_name : str
             Name of the positive net.
-
         source_name : str, optional
             Name of the source. The default is ``""``.
 
