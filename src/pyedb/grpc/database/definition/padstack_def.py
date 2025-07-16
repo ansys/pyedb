@@ -92,7 +92,7 @@ class PadProperties:
         int
             Type of the geometry.
         """
-        return Value(self._pad_parameter_value[0])
+        return self._pad_parameter_value[0].value
 
     @property
     def _edb_geometry_type(self):

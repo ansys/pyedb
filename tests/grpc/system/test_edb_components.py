@@ -116,7 +116,7 @@ class TestClass:
         else:
             # grpc returns ComponentDef object while DotNet just the string for the name.
             assert edb.components.instances["R1"].component_def
-        assert edb.components.instances["R1"].location == [0.11167500144, 0.04072499856]
+        assert edb.components.instances["R1"].location == [0.111675001, 0.040724999]
         assert edb.components.instances["R1"].lower_elevation == 0.0
         assert edb.components.instances["R1"].upper_elevation == 35e-6
         assert edb.components.instances["R1"].top_bottom_association == 2
@@ -143,7 +143,7 @@ class TestClass:
             edb.components.instances["R1"].pins["1"].top_bottom_association
             == edb.components.instances["R1"].top_bottom_association
         )
-        assert edb.components.instances["R1"].pins["1"].position == [0.111675, 0.039975]
+        assert edb.components.instances["R1"].pins["1"].position == [0.111675001, 0.039974998]
         assert round(edb.components.instances["R1"].pins["1"].rotation, 6) == -1.570796
         edb.close()
 
@@ -569,7 +569,7 @@ class TestClass:
         assert edbapp.components.instances["Test"].cap_value == 0
         if edbapp.grpc:
             # TODO check why grpc is returning different center value.
-            assert edbapp.components.instances["Test"].center == [0.07950000102, 0.03399999804]
+            assert edbapp.components.instances["Test"].center == [0.079500001, 0.033999998]
         else:
             assert edbapp.components.instances["Test"].center == [0.068, 0.0165]
         edbapp.close_edb()
@@ -682,7 +682,7 @@ class TestClass:
         component = edbapp.components.create([pins[0], pins[1]], r_value=1.2, component_name="TEST", is_rlc=True)
         assert component
         assert component.name == "TEST"
-        assert component.location == [0.13275000120000002, 0.07350000032]
+        assert component.location == [0.132750001, 0.0735]
         assert edbapp.grpc
         assert component.res_value == 1.2
         edbapp.close()

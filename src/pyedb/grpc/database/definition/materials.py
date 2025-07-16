@@ -227,14 +227,14 @@ class Material(GrpcMaterialDef):
 
         """
         try:
-            return self.dielectric_material_model.dc_relative_permittivity
+            return self.dielectric_material_model.dc_relative_permitivity
         except:
             return None
 
     @dc_permittivity.setter
     def dc_permittivity(self, value):
         if self.dielectric_material_model:
-            self.dielectric_material_model.dc_relative_permittivity = float(value)
+            self.dielectric_material_model.dc_relative_permitivity = float(value)
 
     @property
     def loss_tangent_at_frequency(self) -> float:
@@ -288,14 +288,14 @@ class Material(GrpcMaterialDef):
 
         """
         try:
-            return self.dielectric_material_model.relative_permittivity_at_frequency
+            return self.dielectric_material_model.relative_permitivity_at_frequency
         except:
             return None
 
     @permittivity_at_frequency.setter
     def permittivity_at_frequency(self, value):
         if self.dielectric_material_model:
-            self.dielectric_material_model.relative_permittivity_at_frequency = float(value)
+            self.dielectric_material_model.relative_permitivity_at_frequency = float(value)
 
     @property
     def permittivity(self) -> float:
