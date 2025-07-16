@@ -30,8 +30,7 @@ import pytest
 
 from pyedb.generic.general_methods import is_linux
 from pyedb.grpc.edb import Edb as Edb
-from tests.conftest import desktop_version, local_path
-from tests.legacy.system.conftest import test_subfolder
+from tests.conftest import desktop_version, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 ON_CI = os.environ.get("CI", "false").lower() == "true"
