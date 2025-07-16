@@ -163,7 +163,7 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = Edb(edbpath=target_path, edbversion=desktop_version)
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
-        edbapp.close_edb()
+        edbapp.close()
 
     def test_layout_auto_parametrization_0(self, edb_examples):
         # Done
