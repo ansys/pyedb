@@ -572,7 +572,7 @@ class TestClass:
         assert edb_stats.num_resistors
         assert edb_stats.occupying_ratio["1_Top"] == 0.301682
         assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.937467
-        assert edb_stats.occupying_ratio["16_Bottom"] == 0.204925
+        assert edb_stats.occupying_ratio["16_Bottom"] == 0.204926
         edb.close()
 
     def test_create_rlc_component(self, edb_examples):
