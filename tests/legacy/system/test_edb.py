@@ -440,7 +440,6 @@ class TestClass:
         # Done
         edb = edb_examples.load_edb(
             edb_path=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
-
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
         out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
@@ -460,7 +459,6 @@ class TestClass:
 
         edb = edb_examples.load_edb(
             edb_path=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
-
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_MAXWELL": 0}
         out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
@@ -473,7 +471,6 @@ class TestClass:
         """Create lumped and vertical port."""
         edb = edb_examples.load_edb(
             edb_path=os.path.join(local_path, "example_models", test_subfolder, "edge_ports.aedb"),
-
         )
         if edb.grpc:
             # grpc PrimitiveType enum changed.
@@ -657,7 +654,6 @@ class TestClass:
         """Create various ports."""
         edb = edb_examples.load_edb(
             edb_path=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
-
         )
         if edb.grpc:
             prim_1_id = [i.edb_uid for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
@@ -759,7 +755,6 @@ class TestClass:
         """Create various ports."""
         edb = edb_examples.load_edb(
             edb_path=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
-
         )
         kwargs = {
             "layer_name": "TOP",
@@ -1241,10 +1236,7 @@ class TestClass:
         c.import_options.import_dummy_nets = True
 
         edb = edb_examples.load_edb(
-            gds_out,
-
-            control_file=os.path.join(self.local_scratch.path, "test_138.xml"),
-            copy_to_temp=False
+            gds_out, control_file=os.path.join(self.local_scratch.path, "test_138.xml"), copy_to_temp=False
         )
 
         assert edb
@@ -1363,7 +1355,7 @@ class TestClass:
         """Create EDB from dxf file."""
         src = os.path.join(local_path, "example_models", test_subfolder, "edb_test_82.dxf")
         dxf_path = self.local_scratch.copyfile(src)
-        edb3 = edb_examples.load_edb(dxf_path,  copy_to_temp=False)
+        edb3 = edb_examples.load_edb(dxf_path, copy_to_temp=False)
         assert len(edb3.modeler.polygons) == 1
         assert edb3.modeler.polygons[0].polygon_data.points == [
             (0.0, 0.0),
@@ -1379,7 +1371,7 @@ class TestClass:
         target_path = os.path.join(local_path, "example_models", "T40", "ANSYS-HSD_V1_DCIR.aedb")
         out_edb = os.path.join(self.local_scratch.path, "to_be_solved.aedb")
         self.local_scratch.copyfolder(target_path, out_edb)
-        edbapp = edb_examples.load_edb(out_edb,  copy_to_temp=False)
+        edbapp = edb_examples.load_edb(out_edb, copy_to_temp=False)
         edbapp.siwave.create_exec_file(add_dc=True)
         out = edbapp.solve_siwave()
         res = edbapp.export_siwave_dc_results(out, "SIwaveDCIR1")
@@ -1413,7 +1405,7 @@ class TestClass:
             assert extent[50] == [0.01143465165463851, 0.04636552997976474]
         edbapp.close_edb()
 
-    def test_move_and_edit_polygons(self,edb_examples):
+    def test_move_and_edit_polygons(self, edb_examples):
         """Move a polygon."""
         # Done
         edbapp = edb_examples.create_empty_edb()
@@ -1518,7 +1510,7 @@ class TestClass:
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
         target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
         self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = edb_examples.load_edb(target_path_edb,  copy_to_temp=False)
+        edbapp = edb_examples.load_edb(target_path_edb, copy_to_temp=False)
         assert edbapp.create_model_for_arbitrary_wave_ports(
             temp_directory=self.local_scratch.path,
             output_edb=os.path.join(self.local_scratch.path, "wave_ports.aedb"),
@@ -1655,7 +1647,7 @@ class TestClass:
         # Done
         src = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1_0.zip")
         zip_path = self.local_scratch.copyfile(src)
-        edb = edb_examples.load_edb(zip_path,  copy_to_temp=False)
+        edb = edb_examples.load_edb(zip_path, copy_to_temp=False)
         assert edb.nets
         assert edb.components
         edb.close()
