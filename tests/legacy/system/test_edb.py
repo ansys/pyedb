@@ -28,7 +28,7 @@ from typing import Sequence
 import pytest
 
 from pyedb.generic.general_methods import is_linux
-from tests.conftest import desktop_version, local_path, test_subfolder
+from tests.conftest import local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
