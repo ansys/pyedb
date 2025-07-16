@@ -58,7 +58,9 @@ class Variable:
         str
 
         """
-        warnings.warn("`value_string` is deprecated. Use `str(value)` method instead.", DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "`value_string` is deprecated. Use `str(value)` method instead.", DeprecationWarning, stacklevel=2
+        )
         return str(self.value)
 
     @property
