@@ -27,7 +27,7 @@ import os
 
 import pytest
 
-from pyedb.generic.design_types import Edb
+
 from tests.conftest import desktop_version, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -42,13 +42,11 @@ class TestClass:
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
-    def test_export_to_ipc2581_0(self):
+    def test_export_to_ipc2581_0(self, edb_examples):
         """Export of a loaded aedb file to an XML IPC2581 file"""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
-        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_ipc.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
-        xml_file = os.path.join(self.local_scratch.path, "test.xml")
+        edbapp = edb_examples.load_edb(source_path, source_path)
+        xml_file =  edb_examples.get_local_file_folder("test_ipc.xml")
         edbapp.export_to_ipc2581(xml_file)
         assert os.path.exists(xml_file)
 
@@ -58,28 +56,25 @@ class TestClass:
         edbapp.close()
 
     @pytest.mark.skip(reason="This test is expected to crash (sometimes) at `ipc_edb.close()`")
-    def test_export_to_ipc2581_1(self):
+    def test_export_to_ipc2581_1(self, edb_examples):
         """Export of a loaded aedb file to an XML IPC2581 file"""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_ipc", "ANSYS-HSD_V1_boundaries.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
-        xml_file = os.path.join(target_path, "test.xml")
+        edbapp = edb_examples.get_si_verse()
+        xml_file = edb_examples.get_local_file_folder("test_ipc.xml")
         edbapp.export_to_ipc2581(xml_file)
         edbapp.close()
         assert os.path.isfile(xml_file)
-        ipc_edb = Edb(xml_file, edbversion=desktop_version)
+        ipc_edb = edb_examples.load_edb(xml_file, copy_to_temp=False)
         ipc_stats = ipc_edb.get_statistics()
-        assert ipc_stats.layout_size == (0.15, 0.0845)
+        assert ipc_stats.layout_size == (0.1492, 0.0837)
         assert ipc_stats.num_capacitors == 380
         assert ipc_stats.num_discrete_components == 31
         assert ipc_stats.num_inductors == 10
         assert ipc_stats.num_layers == 15
         assert ipc_stats.num_nets == 348
-        assert ipc_stats.num_polygons == 139
+        assert ipc_stats.num_polygons == 138
         assert ipc_stats.num_resistors == 82
         assert ipc_stats.num_traces == 1565
         assert ipc_stats.num_traces == 1565
-        assert ipc_stats.num_vias == 4730
+        assert ipc_stats.num_vias == 4669
         assert ipc_stats.stackup_thickness == 0.001748
         ipc_edb.close()
