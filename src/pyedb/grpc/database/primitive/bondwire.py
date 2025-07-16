@@ -47,7 +47,7 @@ class Bondwire(GrpcBondWire):
             Material name.
 
         """
-        return Value(self.get_material())
+        return self.get_material().value
 
     @material.setter
     def material(self, value):

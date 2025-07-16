@@ -1387,13 +1387,13 @@ class TestClass:
         assert round(polygon.center[1], 6) == -0.0045
 
         assert polygon.rotate(angle=45)
-        assert polygon.bbox == [0.012463, -0.043037, 0.089537, 0.034037]
+        assert polygon.bbox == [0.012462681, -0.04303732, 0.089537319, 0.03403732]
         assert polygon.rotate(angle=34, center=[0, 0])
-        assert polygon.bbox == [0.03084, -0.025152, 0.058755, 0.074728]
+        assert polygon.bbox == [0.030839513, -0.025151832, 0.058755057, 0.074728168]
         assert polygon.scale(factor=1.5)
-        assert polygon.bbox == [0.023861, -0.050122, 0.065734, 0.099698]
+        assert polygon.bbox == [0.023860627, -0.050121832, 0.065733943, 0.099698167]
         assert polygon.scale(factor=-0.5, center=[0, 0])
-        assert polygon.bbox == [-0.032867, -0.049849, -0.01193, 0.025061]
+        assert polygon.bbox == [-0.032866972, -0.049849084, -0.011930313, 0.025060916]
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
