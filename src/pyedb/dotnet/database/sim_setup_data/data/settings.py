@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
 
 from pyedb.dotnet.database.sim_setup_data.data.adaptive_frequency_data import (
     AdaptiveFrequencyData,
@@ -901,18 +902,36 @@ class HfssSolverSettings(object):
     def enhanced_low_freq_accuracy(self):
         """Whether to enable legacy low-frequency sampling.
 
+        .. deprecated:: pyedb 0.54.0
+            Use :func:`enhanced_low_frequency_accuracy` instead.
+
+        Returns
+        -------
+        bool
+            ``True`` if low frequency accuracy is used, ``False`` otherwise.
+        """
+        warnings.warn("`enhanced_low_freq_accuracy` is deprecated, use `enhanced_low_frequency_accuracy` instead.", DeprecationWarning)
+        return self._hfss_solver_settings.EnhancedLowFreqAccuracy
+
+    @property
+    def enhanced_low_frequency_accuracy(self):
+        """Whether to enable legacy low-frequency sampling.
+
         Returns
         -------
         bool
             ``True`` if low frequency accuracy is used, ``False`` otherwise.
         """
         return self._hfss_solver_settings.EnhancedLowFreqAccuracy
-
     @enhanced_low_freq_accuracy.setter
     def enhanced_low_freq_accuracy(self, value):
         self._hfss_solver_settings.EnhancedLowFreqAccuracy = value
         self._parent._update_setup()
 
+    @enhanced_low_frequency_accuracy.setter
+    def enhanced_low_frequency_accuracy(self, value):
+        self._hfss_solver_settings.EnhancedLowFreqAccuracy = value
+        self._parent._update_setup()
     @property
     def order_basis(self):
         """Order of the basic functions for HFSS.
