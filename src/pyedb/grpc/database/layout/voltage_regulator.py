@@ -142,7 +142,7 @@ class VoltageRegulator(GrpcVoltageRegulator):
         float
             Voltage value.
         """
-        return Value(elf.voltage)
+        return Value(self.voltage)
 
     @voltage.setter
     def voltage(self, value):
