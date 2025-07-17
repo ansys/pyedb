@@ -454,7 +454,7 @@ class StackupLayer(GrpcStackupLayer):
         try:
             side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
             if len(side_roughness_model) == 2:
-                return Value((side_roughness_model[0], self._pedb.active_cell))
+                return Value(side_roughness_model[0], self._pedb.active_cell)
             return Value(0.0)
         except:
             return Value(0.0)
