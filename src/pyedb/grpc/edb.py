@@ -137,6 +137,7 @@ from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
 
+
 class Edb(EdbInit):
     """Main class for interacting with Ansys Electronics Desktop Database (EDB).
 
