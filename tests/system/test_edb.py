@@ -807,7 +807,7 @@ class TestClass:
         assert not edbapp.hfss.add_setup("setup1")
         assert setup1.set_solution_single_frequency()
         if "adaptive_solution_type" in dir(setup1.adaptive_settings):
-            assert setup1.adaptive_settings.adaptive_solution_type.value ==0
+            assert setup1.adaptive_settings.adaptive_solution_type.value == 0
         else:
             assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 1
         assert setup1.set_solution_multi_frequencies(frequencies=("5GHz", "10GHz", "100GHz"))
