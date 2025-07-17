@@ -27,12 +27,12 @@ import os
 
 import pytest
 
+from tests import conftest
 from tests.conftest import local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 bom_example = "bom_example.csv"
-
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -41,6 +41,7 @@ class TestClass:
         self.target_path = target_path
         self.target_path2 = target_path2
         self.target_path4 = target_path4
+
 
     def test_components_get_pin_from_component(self, edb_examples):
         """Evaluate access to a pin from a component."""
@@ -53,7 +54,7 @@ class TestClass:
             assert pin[0].name == "1"
         else:
             assert pin[0].name == "J1-1"
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_create_coax_port_on_component(self, edb_examples):
         """Create a coaxial port on a component from its pin."""
@@ -72,7 +73,7 @@ class TestClass:
             assert len(edb.components["U6"].pins["R3"].get_connected_objects()) == 1
         else:
             assert len(edb.components["U6"].pins["R3"].get_connected_objects()) == 17
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_properties(self, edb_examples):
         """Access components properties."""
@@ -85,7 +86,7 @@ class TestClass:
         assert len(edb.components.ICs) > 0
         assert len(edb.components.IOs) > 0
         assert len(edb.components.Others) > 0
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_rlc_components_values(self, edb_examples):
         """Update values of an RLC component."""
@@ -97,7 +98,7 @@ class TestClass:
         assert edb.components.set_component_rlc("L10", res_value=1e-3, ind_value="10e-6", isparallel=True)
         component = edb.components.instances["L10"]
         assert component.rlc_values == [1e-3, 10e-6, 0.0]
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_r1_queries(self, edb_examples):
         """Evaluate queries over component R1."""
@@ -138,7 +139,7 @@ class TestClass:
         )
         assert edb.components.instances["R1"].pins["1"].position == [0.111675, 0.039975]
         assert round(edb.components.instances["R1"].pins["1"].rotation, 6) == -1.570796
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_create_clearance_on_component(self, edb_examples):
         """Evaluate the creation of a clearance on soldermask."""
@@ -146,14 +147,14 @@ class TestClass:
         edb = edb_examples.get_si_verse()
         comp = edb.components.instances["U1"]
         assert comp.create_clearance_on_component()
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_get_components_from_nets(self, edb_examples):
         """Access to components from nets."""
         # Done
         edb = edb_examples.get_si_verse()
         assert edb.components.get_components_from_nets("DDR4_DQS0_P")
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_resistors(self, edb_examples):
         """Evaluate component resistors."""
@@ -177,7 +178,7 @@ class TestClass:
         edb.components.get_through_resistor_list(10)
         assert len(edb.components.get_rats()) > 0
         assert len(edb.components.get_component_net_connection_info("U1")) > 0
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_get_pin_name_and_position(self, edb_examples):
         """Retrieve component name and position."""
@@ -189,7 +190,7 @@ class TestClass:
         assert len(pin_name) > 0
         assert len(cmp_pinlist[0].position) == 2
         assert len(edb.components.get_pin_position(cmp_pinlist[0])) == 2
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_get_pins_name_from_net(self, edb_examples):
         """Retrieve pins belonging to a net."""
@@ -198,14 +199,14 @@ class TestClass:
         cmp_pinlist = edb.components.get_pin_from_component("U6")
         assert len(edb.components.get_pins_name_from_net("GND", cmp_pinlist)) > 0
         assert len(edb.components.get_pins_name_from_net("5V", cmp_pinlist)) == 0
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_delete_single_pin_rlc(self, edb_examples):
         """Delete all RLC components with a single pin."""
         # Done
         edb = edb_examples.get_si_verse()
         assert len(edb.components.delete_single_pin_rlc()) == 0
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_set_component_rlc(self, edb_examples):
         """Update values for an RLC component."""
@@ -214,7 +215,7 @@ class TestClass:
         assert edb.components.set_component_rlc("R1", 30, 1e-9, 1e-12)
         assert edb.components.disable_rlc_component("R1")
         assert edb.components.delete("R1")
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_set_model(self, edb_examples):
         """Assign component model."""
@@ -239,7 +240,7 @@ class TestClass:
             ),
             modelname="GRM32ER72A225KA35_25C_0V",
         )
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_modeler_parametrize_layout(self, edb_examples):
         """Parametrize a polygon"""
@@ -263,7 +264,7 @@ class TestClass:
                 if el.id == 5954:
                     selection_poly = el
         assert edb.modeler.parametrize_polygon(poly, selection_poly)
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_update_from_bom(self, edb_examples):
         """Update components with values coming from a BOM file."""
@@ -279,7 +280,7 @@ class TestClass:
         assert not edb.components.instances["R2"].enabled
         edb.components.instances["R2"].enabled = True
         assert edb.components.instances["R2"].enabled
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_export_bom(self, edb_examples):
         """Export Bom file from layout."""
@@ -290,7 +291,7 @@ class TestClass:
 
         export_bom_path = os.path.join(self.local_scratch.path, "export_bom.csv")
         assert edb.components.export_bom(export_bom_path)
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_create_component_from_pins(self, edb_examples):
         """Create a component from a pin."""
@@ -300,7 +301,7 @@ class TestClass:
         assert component
         assert component.part_name == "newcomp"
         assert len(component.pins) == 2
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_convert_resistor_value(self):
         """Convert a resistor value."""
@@ -317,7 +318,7 @@ class TestClass:
         assert edb.components.set_solder_ball(
             "U6", sball_height="100um", auto_reference_size=False, chip_orientation="chip_up"
         )
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_short_component(self, edb_examples):
         """Short pins of component with a trace."""
@@ -325,7 +326,7 @@ class TestClass:
         edb = edb_examples.get_si_verse()
         assert edb.components.short_component_pins("U12", width=0.2e-3)
         assert edb.components.short_component_pins("U10", ["2", "5"])
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_components_type(self, edb_examples):
         """Retrieve components type."""
@@ -344,7 +345,7 @@ class TestClass:
         assert comp.type.lower() == "ic"
         comp.type = "other"
         assert comp.type.lower() == "other"
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_componenets_deactivate_rlc(self, edb_examples):
         """Deactivate RLC component and convert to a circuit port."""
@@ -390,7 +391,7 @@ class TestClass:
         # assert ref_file
         # spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
         # assert edbapp.components.definitions["CAPMP7343X31N"].assign_spice_model(spice_path)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_rlc_component_values_getter_setter(self, edb_examples):
         """Evaluate component values getter and setter."""
@@ -412,7 +413,7 @@ class TestClass:
             assert res.res_value == 12.5 and res.ind_value == 5e-9 and res.cap_value == 1e-12
             res.cap_value = 8e-12
             assert res.res_value == 12.5 and res.ind_value == 5e-9 and res.cap_value == 8e-12
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_port_on_pin(self, edb_examples):
         """Create port on pins."""
@@ -426,7 +427,7 @@ class TestClass:
         assert edbapp.components.create_port_on_pins(refdes="U1", pins=["A24"], reference_pins=["A11", "A16"])
         assert edbapp.components.create_port_on_pins(refdes="U1", pins=["A26"], reference_pins=["A11", "A16", "A17"])
         assert edbapp.components.create_port_on_pins(refdes="U1", pins=["A28"], reference_pins=["A11", "A16"])
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_replace_rlc_by_gap_boundaries(self, edb_examples):
         """Replace RLC component by RLC gap boundaries."""
@@ -439,7 +440,7 @@ class TestClass:
         else:
             rlc_list = [term for term in list(edbapp.terminals.values()) if term.boundary_type == "RlcBoundary"]
         assert len(rlc_list) == 944
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_components_get_component_placement_vector(self, edb_examples):
         """Get the placement vector between 2 components."""
@@ -474,7 +475,7 @@ class TestClass:
             # grpc default behavior is to terminate rpc session when closing edb.
             edbapp.close(terminate_rpc_session=False)
         else:
-            edbapp.close()
+            edbapp.close(terminate_rpc_session=False)
         edb2.close()
 
     def test_components_assign(self, edb_examples):
@@ -504,7 +505,7 @@ class TestClass:
         edbapp.components["C164"].assign_spice_model(
             spice_path, sub_circuit_name="GRM32ER60J227ME05_DC0V_25degC", terminal_pairs=[["port1", 2], ["port2", 1]]
         )
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_components_bounding_box(self, edb_examples):
         """Get component's bounding box."""
@@ -513,7 +514,7 @@ class TestClass:
         component = edbapp.components.instances["U1"]
         assert component.bounding_box
         assert isinstance(component.rotation, float)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_pec_boundary_ports(self, edb_examples):
         """Check pec boundary ports."""
@@ -534,7 +535,7 @@ class TestClass:
         else:
             assert edbapp.terminals["C5"].boundary_type == "PecBoundary"
             assert edbapp.terminals["C65"].boundary_type == "PecBoundary"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_is_top_mounted(self, edb_examples):
         """Check is_top_mounted property."""
@@ -572,7 +573,7 @@ class TestClass:
         assert edb.components["C200"].create_package_def(component_part_name="SMTC-MECT-110-01-M-D-RA1_V")
         assert not edb.components["C200"].create_package_def()
         assert edb.components["C200"].package_def.name == "C200_CAPC3216X180X55ML20T25"
-        edb.close_edb()
+        edb.close(terminate_rpc_session=False)
 
     def test_solder_ball_getter_setter(self, edb_examples):
         # Done
@@ -603,7 +604,7 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.components.create_pingroup_from_pins([*edbapp.components.instances["Q1"].pins.values()])
         assert edbapp.components._create_pin_group_terminal(edbapp.padstacks.pingroups[0], term_type="circuit")
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_component_lib(self, edb_examples):
         # Done
@@ -641,7 +642,7 @@ class TestClass:
         }
         edbapp.components["C378"].model_properties = pp
         assert edbapp.components["C378"].model_properties == pp
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_ic_die_properties(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
@@ -663,7 +664,7 @@ class TestClass:
             assert ic_die_properties.height == 0.0
             ic_die_properties.height = 1e-3
             assert ic_die_properties.height == 1e-3
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_rlc_component_302(self, edb_examples):
         # Done
@@ -674,11 +675,11 @@ class TestClass:
         assert component.name == "TEST"
         assert component.location == [0.13275000120000002, 0.07350000032]
         assert component.res_value == 1.2
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_export_gds_comp_xml(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         xml_output = os.path.join(self.local_scratch.path, "test.xml")
         assert edbapp.export_gds_comp_xml(["U1", "U2", "C2", "R1"], control_path=xml_output)
         assert os.path.isfile(xml_output)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)

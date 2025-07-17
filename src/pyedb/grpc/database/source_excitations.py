@@ -375,8 +375,9 @@ class SourceExcitation:
         pins: Union[str, List[str]],
         reference_pins: Optional[List[str]] = None,
         port_name: Optional[str] = None,
-        port_type: Optional[str] = None,
         impedance: Union[int, float] = 50,
+        pec_boundary: Optional[bool] = False,
+        pingroup_on_single_pin: Optional[bool] = False,
     ) -> Optional[str]:
         """Create circuit port between pins and reference ones.
 

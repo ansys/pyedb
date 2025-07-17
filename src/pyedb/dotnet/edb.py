@@ -1476,7 +1476,7 @@ class Edb(Database):
         warnings.warn("Use new property :func:`close` instead.", DeprecationWarning)
         return self.close()
 
-    def close(self):
+    def close(self, **kwargs):
         """Close EDB and cleanup variables.
 
         Returns

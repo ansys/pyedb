@@ -2228,6 +2228,42 @@ class Components(object):
             component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
         )
 
+    def add_port_on_rlc_component(
+        self, component: Optional[Union[str, Component]] = None, circuit_ports: bool = True, pec_boundary: bool = False
+    ) -> bool:
+        """Deactivate RLC component and replace it with a circuit port.
+        The circuit port supports only two-pin components.
+
+        Parameters
+        ----------
+        component : str
+            Reference designator of the RLC component.
+
+        circuit_ports : bool
+            ``True`` will replace RLC component by circuit ports, ``False`` gap ports compatible with HFSS 3D modeler
+            export.
+
+        pec_boundary : bool, optional
+            Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
+            a perfect short is created between the pin and impedance is ignored. This
+            parameter is only supported on a port created between two pins, such as
+            when there is no pin group.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.source_excitation.add_port_on_rlc_component("R1")
+        """
+        return self._pedb.source_excitation.add_port_on_rlc_component(
+            component=component, circuit_ports=circuit_ports, pec_boundary=pec_boundary
+        )
+
     def replace_rlc_by_gap_boundaries(self, component: Optional[Union[str, Component]] = None) -> bool:
         """Replace RLC component by RLC gap boundaries. These boundary types are compatible with 3D modeler export.
         Only 2 pins RLC components are supported in this command.
