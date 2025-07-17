@@ -516,7 +516,7 @@ class TestClass:
         assert len(edbapp.modeler.polygons) == 3
         edbapp.nets.merge_nets_polygons(net_names_list=net_list)
         assert len(edbapp.modeler.polygons) == 2
-        edbapp.modeler.unite_polygons_on_layer("trace1")
+        edbapp.modeler.unite_polygons_on_layer(layer_name="trace1")
         assert len(edbapp.modeler.polygons) == 1
         edbapp.close(terminate_rpc_session=False)
 

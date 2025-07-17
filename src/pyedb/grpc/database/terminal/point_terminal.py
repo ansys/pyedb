@@ -22,7 +22,8 @@
 
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.terminal.point_terminal import PointTerminal as GrpcPointTerminal
-from ansys.edb.core.utility.value import Value as GrpcValue
+
+from pyedb.grpc.database.utility.value import Value
 
 
 class PointTerminal(GrpcPointTerminal):
@@ -41,13 +42,13 @@ class PointTerminal(GrpcPointTerminal):
         [float, float] : [x,y]
 
         """
-        return [self.point.x.value, self.point.y.value]
+        return [Value(self.point.x), Value(self.point.y)]
 
     @location.setter
     def location(self, value):
         if not isinstance(value, list):
             return
-        value = [GrpcValue(i) for i in value]
+        value = [Value(i) for i in value]
         self.point = GrpcPointData(value)
 
     @property

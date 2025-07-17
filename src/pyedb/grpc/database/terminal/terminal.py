@@ -26,10 +26,10 @@ from ansys.edb.core.terminal.edge_terminal import EdgeType as GrpcEdgeType
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.terminal.terminal import Terminal as GrpcTerminal
 from ansys.edb.core.terminal.terminal import TerminalType as GrpcTerminalType
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.primitive import Primitive
+from pyedb.grpc.database.utility.value import Value
 
 
 class Terminal(GrpcTerminal):
@@ -239,11 +239,11 @@ class Terminal(GrpcTerminal):
         float : impedance value.
 
         """
-        return self.impedance.value
+        return Value(self.impedance)
 
     @impedance.setter
     def impedance(self, value):
-        self.impedance = GrpcValue(value)
+        self.impedance = Value(value)
 
     @property
     def reference_object(self) -> any:
@@ -448,11 +448,11 @@ class Terminal(GrpcTerminal):
         -------
         float : source magnitude.
         """
-        return self.source_amplitude.value
+        return Value(self.source_amplitude)
 
     @magnitude.setter
     def magnitude(self, value):
-        self.source_amplitude = GrpcValue(value)
+        self.source_amplitude = Value(value)
 
     @property
     def phase(self) -> float:
@@ -463,8 +463,8 @@ class Terminal(GrpcTerminal):
         float : source phase.
 
         """
-        return self.source_phase.value
+        return Value(self.source_phase)
 
     @phase.setter
     def phase(self, value):
-        self.source_phase = GrpcValue(value)
+        self.source_phase = Value(value)

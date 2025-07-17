@@ -26,9 +26,9 @@ import math
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.primitive.polygon import Polygon as GrpcPolygon
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.primitive.primitive import Primitive
+from pyedb.grpc.database.utility.value import Value
 
 
 class Polygon(GrpcPolygon, Primitive):
@@ -147,7 +147,7 @@ class Polygon(GrpcPolygon, Primitive):
         >>>     polygon.move(vector=["2mm", "100um"])
         """
         if vector and isinstance(vector, list) and len(vector) == 2:
-            _vector = [GrpcValue(pt).value for pt in vector]
+            _vector = [Value(pt) for pt in vector]
             self.polygon_data = self.polygon_data.move(_vector)
             return True
         return False
@@ -177,7 +177,7 @@ class Polygon(GrpcPolygon, Primitive):
                 else:
                     self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
             elif isinstance(center, list) and len(center) == 2:
-                center = GrpcPointData([GrpcValue(center[0]), GrpcValue(center[1])])
+                center = GrpcPointData([Value(center[0]), Value(center[1])])
                 self.polygon_data = self.polygon_data.scale(factor, center)
                 return True
         return False
