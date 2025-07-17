@@ -117,7 +117,7 @@ class TestClass:
         assert not advanced_settings.use_relaxed_z_axis
         advanced_settings.use_relaxed_z_axis = True
         assert advanced_settings.use_relaxed_z_axis
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_hfss_pi_setup(self, edb_examples):
         edbapp = edb_examples.get_si_verse(version=VERSION)

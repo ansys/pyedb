@@ -354,7 +354,7 @@ class TestClass:
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 1
         edbapp.materials.update_materials_from_sys_library()
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_material_thermal_modifier(self):
         THERMAL_MODIFIER = {

@@ -113,4 +113,4 @@ class TestDatabaseUtilities:
         value2 = value.sqrt()
         assert str(value2) == "(var1)**0.5"
 
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)

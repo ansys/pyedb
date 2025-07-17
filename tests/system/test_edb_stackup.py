@@ -45,13 +45,13 @@ class TestClass:
         """Report residual copper area per layer."""
         edbapp = edb_examples.get_si_verse()
         assert edbapp.stackup.residual_copper_area_per_layer()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_limits(self, edb_examples):
         """Retrieve stackup limits."""
         edbapp = edb_examples.get_si_verse()
         assert edbapp.stackup.limits()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_add_outline(self, edb_examples):
         """Add an outline layer named ``"Outline1"`` if it is not present."""
@@ -62,18 +62,18 @@ class TestClass:
         assert edbapp.stackup.layers["1_Top"].thickness == 3.5e-05
         edbapp.stackup.layers["1_Top"].thickness = 4e-5
         assert edbapp.stackup.layers["1_Top"].thickness == 4e-05
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_create_symmetric_stackup(self, edb_examples):
         """Create a symmetric stackup."""
         app_edb = edb_examples.create_empty_edb()
         assert not app_edb.stackup.create_symmetric_stackup(9)
         assert app_edb.stackup.create_symmetric_stackup(8)
-        app_edb.close()
+        app_edb.close(terminate_rpc_session=False)
 
         app_edb = edb_examples.create_empty_edb()
         assert app_edb.stackup.create_symmetric_stackup(8, soldermask=False)
-        app_edb.close()
+        app_edb.close(terminate_rpc_session=False)
 
     def test_stackup_place_a3dcomp_3d_placement(self, edb_examples):
         """Place a 3D Component into current layout."""

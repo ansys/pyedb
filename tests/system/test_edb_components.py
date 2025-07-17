@@ -476,7 +476,7 @@ class TestClass:
             edbapp.close(terminate_rpc_session=False)
         else:
             edbapp.close(terminate_rpc_session=False)
-        edb2.close()
+        edb2.close(terminate_rpc_session=False)
 
     def test_components_assign(self, edb_examples):
         """Assign RLC model, S-parameter model and spice model."""

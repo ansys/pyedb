@@ -195,7 +195,7 @@ class TestClass:
                 if p == "thermal_modifier":
                     continue
                 assert value == target_mat[p]
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_01_setups(self, edb_examples):
         data = {
@@ -239,8 +239,6 @@ class TestClass:
                         for mop_p_name, mop_value in mop.items():
                             assert mop_value == target_mop[mop_p_name]
                 else:
-                    assert value == target[p]
-        edbapp.close()
                     assert value == target[p]
         edbapp.close(terminate_rpc_session=False)
 
@@ -297,7 +295,7 @@ class TestClass:
             ]
             sweep2 = setup["freq_sweep"][1]
             assert sweep2["type"] == "discrete"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_02_pin_groups(self, edb_examples):
@@ -1465,7 +1463,7 @@ class TestClass:
         edbapp2 = edb_examples.load_edb(edbapp.edbpath)
         edbapp2.configuration.get_variables()
         assert edbapp2.configuration.cfg_data.variables.model_dump() == data
-        edbapp2.close()
+        edbapp2.close(terminate_rpc_session=False)
 
     def test_probes(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
