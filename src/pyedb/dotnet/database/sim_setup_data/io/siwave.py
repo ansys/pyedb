@@ -513,7 +513,7 @@ class AdvancedSettings(SettingsBase):
 
     @automatic_mesh.setter
     def automatic_mesh(self, value):
-        return self.mesh_automatic(value)
+        self.mesh_automatic = value
 
     @mesh_automatic.setter
     def mesh_automatic(self, value):
