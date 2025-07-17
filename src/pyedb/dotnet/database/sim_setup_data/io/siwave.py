@@ -349,8 +349,7 @@ class AdvancedSettings(SettingsBase):
             ``True`` if automatic mesh is used, ``False`` otherwise.
         """
         warnings.warn(
-            "`automatic_mesh` is deprecated."
-            "Use `mesh_automatic` instead.",
+            "`automatic_mesh` is deprecated." "Use `mesh_automatic` instead.",
             DeprecationWarning,
         )
         return self.sim_setup_info.simulation_settings.AdvancedSettings.MeshAutoMatic
@@ -523,6 +522,7 @@ class AdvancedSettings(SettingsBase):
         edb_setup_info.simulation_settings.AdvancedSettings.MeshAutoMatic = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
+
     @perform_erc.setter
     def perform_erc(self, value):
         edb_setup_info = self.sim_setup_info
