@@ -131,11 +131,11 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
 )
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.constants import get_terminal_supported_boundary_types
+from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
-
 
 class Edb(EdbInit):
     """Main class for interacting with Ansys Electronics Desktop Database (EDB).
@@ -396,6 +396,13 @@ class Edb(EdbInit):
         self._differential_pairs = DifferentialPairs(self)
         self._extended_nets = ExtendedNets(self)
 
+    def value(self, val):
+        """Convert a value into a pyedb value."""
+        if isinstance(val, GrpcValue):
+            return Value(val)
+        else:
+            return Value(GrpcValue(val))
+
     @property
     def cell_names(self) -> [str]:
         """List of all cell names in the database.
@@ -564,7 +571,7 @@ class Edb(EdbInit):
         dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Probe names and objects.
         """
-        terms = [term for term in self.layout.terminals if term.boundary_type.value == 8]
+        terms = [term for term in self.layout.terminals if term.boundary_type == "voltage_probe"]
         return {ter.name: ter for ter in terms}
 
     def open(self, restart_rpc_server=False) -> bool:
