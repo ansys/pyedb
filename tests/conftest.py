@@ -22,7 +22,7 @@
 
 """
 """
-
+import json
 import os
 from pathlib import Path
 import random
@@ -41,8 +41,25 @@ local_path = os.path.dirname(os.path.realpath(__file__))
 example_models_path = Path(__file__).parent / "example_models"
 
 # Initialize default desktop configuration
-desktop_version = "2025.1"
-GRPC = False
+
+
+config = {
+    "desktopVersion": "2025.1",
+    "use_grpc": False,
+}
+
+# Check for the local config file, override defaults if found
+local_config_file = os.path.join(local_path, "local_config.json")
+if os.path.exists(local_config_file):
+    try:
+        with open(local_config_file) as f:
+            local_config = json.load(f)
+    except Exception:  # pragma: no cover
+        local_config = {}
+    config.update(local_config)
+
+desktop_version = config["desktopVersion"]
+GRPC = config["use_grpc"]
 
 if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_installed_ansysem():
     desktop_version = list_installed_ansysem()[0][12:].replace(".", "")
