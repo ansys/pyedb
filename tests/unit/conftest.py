@@ -29,7 +29,7 @@ from os.path import dirname
 
 import pytest
 
-example_models_path = os.path.join(dirname(dirname(dirname(os.path.realpath(__file__)))), "example_models")
+example_models_path = os.path.join(dirname(dirname(os.path.realpath(__file__))), "example_models")
 
 test_subfolder = "misc"
 
