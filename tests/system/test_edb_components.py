@@ -27,12 +27,9 @@ import os
 
 import pytest
 
-from pyedb.grpc.database.hierarchy.component import Component
-from pyedb.grpc.edb import Edb as Edb
-from tests.conftest import desktop_version, local_path
-from tests.legacy.system.conftest import test_subfolder
+from tests.conftest import local_path, test_subfolder
 
-pytestmark = [pytest.mark.system, pytest.mark.grpc]
+pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 bom_example = "bom_example.csv"
 
@@ -108,7 +105,6 @@ class TestClass:
         edb = edb_examples.get_si_verse()
         assert "R1" in list(edb.components.instances.keys())
         assert not edb.components.instances["R1"].is_null
-        assert edb.grpc
         assert edb.components.instances["R1"].res_value == 6200
         assert edb.components.instances["R1"].placement_layer == "16_Bottom"
         if edb.grpc:
@@ -116,7 +112,7 @@ class TestClass:
         else:
             # grpc returns ComponentDef object while DotNet just the string for the name.
             assert edb.components.instances["R1"].component_def
-        assert edb.components.instances["R1"].location == [0.111675001, 0.040724999]
+        assert edb.components.instances["R1"].location == [0.11167500144, 0.04072499856]
         assert edb.components.instances["R1"].lower_elevation == 0.0
         assert edb.components.instances["R1"].upper_elevation == 35e-6
         assert edb.components.instances["R1"].top_bottom_association == 2
@@ -130,20 +126,17 @@ class TestClass:
         assert edb.components.instances["R1"].pins["1"].component_pin == "1"
 
         assert not edb.components.instances["R1"].pins["1"].component.is_null
-        # TODO add property placement_layer in grpc to be compatible with dotnet.
         assert (
             edb.components.instances["R1"].pins["1"].placement_layer == edb.components.instances["R1"].placement_layer
         )
-        # TODO add property upper_elevation and lower_elevation properties in grpc to be compatible.
         assert (
             edb.components.instances["R1"].pins["1"].upper_elevation == edb.components.instances["R1"].upper_elevation
         )
-        # TODO return top_bottom_association properties in grpc to be compatible.
         assert (
             edb.components.instances["R1"].pins["1"].top_bottom_association
             == edb.components.instances["R1"].top_bottom_association
         )
-        assert edb.components.instances["R1"].pins["1"].position == [0.111675001, 0.039974998]
+        assert edb.components.instances["R1"].pins["1"].position == [0.111675, 0.039975]
         assert round(edb.components.instances["R1"].pins["1"].rotation, 6) == -1.570796
         edb.close()
 
@@ -311,8 +304,7 @@ class TestClass:
 
     def test_convert_resistor_value(self):
         """Convert a resistor value."""
-        # Done
-        from pyedb.grpc.database.components import resistor_value_parser
+        from pyedb.dotnet.database.components import resistor_value_parser
 
         assert resistor_value_parser("100meg")
 
@@ -452,7 +444,7 @@ class TestClass:
     def test_components_get_component_placement_vector(self, edb_examples):
         """Get the placement vector between 2 components."""
         edbapp = edb_examples.get_si_verse()
-        edb2 = Edb(self.target_path4, edbversion=desktop_version)
+        edb2 = edb_examples.load_edb(self.target_path4, copy_to_temp=False)
         for _, cmp in edb2.components.instances.items():
             assert isinstance(cmp.solder_ball_placement, int)
         mounted_cmp = edb2.components.get_component_by_name("BGA")
@@ -535,7 +527,7 @@ class TestClass:
             assert edbapp.terminals["Port_GND_U1_AU38"].boundary_type == "PecBoundary"
             assert edbapp.terminals["Port_GND_U1_AU38_ref"].boundary_type == "PecBoundary"
         edbapp.components.deactivate_rlc_component(component="C5", create_circuit_port=True, pec_boundary=True)
-        edbapp.source_excitation.add_port_on_rlc_component(component="C65", circuit_ports=False, pec_boundary=True)
+        edbapp.components.add_port_on_rlc_component(component="C65", circuit_ports=False, pec_boundary=True)
         if edbapp.grpc:
             assert edbapp.terminals["C5"].boundary_type == "pec"
             assert edbapp.terminals["C65"].boundary_type == "pec"
@@ -563,13 +555,12 @@ class TestClass:
             component_part_name="Test_part", component_name="Test", is_rlc=True, r_value=12.2, pins=pins
         )
         assert edbapp.components.instances["Test"]
-        # TODO check if dotnet can return component value as float instead of string. grpc is returning float.
         assert edbapp.components.instances["Test"].res_value == 12.2
         assert edbapp.components.instances["Test"].ind_value == 0
         assert edbapp.components.instances["Test"].cap_value == 0
         if edbapp.grpc:
             # TODO check why grpc is returning different center value.
-            assert edbapp.components.instances["Test"].center == [0.079500001, 0.033999998]
+            assert edbapp.components.instances["Test"].center == [0.07950000102, 0.03399999804]
         else:
             assert edbapp.components.instances["Test"].center == [0.068, 0.0165]
         edbapp.close_edb()
@@ -578,15 +569,14 @@ class TestClass:
         """Check the creation of package definition."""
         # Done
         edb = edb_examples.get_si_verse()
-        assert edb.components["C200"].create_package_def(name="SMTC-MECT-110-01-M-D-RA1_V")
-        assert edb.components["C200"].create_package_def()
+        assert edb.components["C200"].create_package_def(component_part_name="SMTC-MECT-110-01-M-D-RA1_V")
+        assert not edb.components["C200"].create_package_def()
         assert edb.components["C200"].package_def.name == "C200_CAPC3216X180X55ML20T25"
         edb.close_edb()
 
     def test_solder_ball_getter_setter(self, edb_examples):
         # Done
         edb = edb_examples.get_si_verse()
-        assert edb.grpc
         cmp = edb.components.instances["X1"]
         cmp.solder_ball_height = 0.0
         assert cmp.solder_ball_height == 0.0
@@ -615,9 +605,9 @@ class TestClass:
         assert edbapp.components._create_pin_group_terminal(edbapp.padstacks.pingroups[0], term_type="circuit")
         edbapp.close()
 
-    def test_component_lib(self):
+    def test_component_lib(self, edb_examples):
         # Done
-        edbapp = Edb(edbversion=desktop_version)
+        edbapp = edb_examples.create_empty_edb()
         comp_lib = edbapp.components.get_vendor_libraries()
         assert len(comp_lib.capacitors) == 13
         assert len(comp_lib.inductors) == 7
@@ -682,8 +672,7 @@ class TestClass:
         component = edbapp.components.create([pins[0], pins[1]], r_value=1.2, component_name="TEST", is_rlc=True)
         assert component
         assert component.name == "TEST"
-        assert component.location == [0.132750001, 0.0735]
-        assert edbapp.grpc
+        assert component.location == [0.13275000120000002, 0.07350000032]
         assert component.res_value == 1.2
         edbapp.close()
 

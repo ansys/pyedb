@@ -36,7 +36,6 @@ from pyedb.generic.general_methods import (
     settings,
 )
 from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
-from pyedb.misc.misc import list_installed_ansysem
 
 
 class HierarchyDotNet:
@@ -705,12 +704,7 @@ class EdbDotNet(object):
     """Edb Dot Net Class."""
 
     def __init__(self, edbversion, student_version=False):
-        if not edbversion:  # pragma: no cover
-            try:
-                edbversion = "20{}.{}".format(list_installed_ansysem()[0][-3:-1], list_installed_ansysem()[0][-1:])
-                self._logger.info("Edb version " + edbversion)
-            except IndexError:
-                raise Exception("No ANSYSEM_ROOTxxx is found.")
+        self._logger.info(f"Edb version {edbversion}")
         self.edbversion = edbversion
         if float(self.edbversion) >= 2025.2:
             warnings.warn(GRPC_GENERAL_WARNING, UserWarning)

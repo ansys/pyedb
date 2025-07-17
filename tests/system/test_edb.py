@@ -27,10 +27,8 @@ from typing import Sequence
 
 import pytest
 
-from pyedb.dotnet.edb import Edb as Edb
 from pyedb.generic.general_methods import is_linux
-from tests.conftest import desktop_version, local_path
-from tests.legacy.system.conftest import test_subfolder
+from tests.conftest import local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
@@ -381,7 +379,7 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "MicrostripSpliGnd.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
 
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(target_path, copy_to_temp=False)
 
         assert edbapp.cutout(
             signal_list=["trace_n"],
@@ -397,7 +395,7 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "Multizone_GroundVoids.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
 
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(target_path, copy_to_temp=False)
 
         assert edbapp.cutout(
             signal_list=["DIFF_N", "DIFF_P"],
@@ -420,12 +418,11 @@ class TestClass:
         is_linux and ON_CI,
         reason="Test is slow due to software rendering fallback and lack of GPU acceleration.",
     )
-    def test_export_to_hfss(self):
+    def test_export_to_hfss(self, edb_examples):
         """Export EDB to HFSS."""
         # Done
-        edb = Edb(
-            edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
-            edbversion=desktop_version,
+        edb = edb_examples.load_edb(
+            edb_path=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
         out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
@@ -438,12 +435,11 @@ class TestClass:
         is_linux and ON_CI,
         reason="Test is slow due to software rendering fallback and lack of GPU acceleration.",
     )
-    def test_export_to_q3d(self):
+    def test_export_to_q3d(self, edb_examples):
         """Export EDB to Q3D."""
         # Done
-        edb = Edb(
-            edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
-            edbversion=desktop_version,
+        edb = edb_examples.load_edb(
+            edb_path=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
         out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
@@ -456,14 +452,13 @@ class TestClass:
         is_linux and ON_CI,
         reason="Test is slow due to software rendering fallback and lack of GPU acceleration.",
     )
-    def test_074_export_to_maxwell(self):
+    def test_074_export_to_maxwell(self, edb_examples):
         """Export EDB to Maxwell 3D."""
 
         # Done
 
-        edb = Edb(
-            edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
-            edbversion=desktop_version,
+        edb = edb_examples.load_edb(
+            edb_path=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_MAXWELL": 0}
         out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
@@ -472,11 +467,10 @@ class TestClass:
         assert os.path.exists(out)
         edb.close()
 
-    def test_create_edge_port_on_polygon(self):
+    def test_create_edge_port_on_polygon(self, edb_examples):
         """Create lumped and vertical port."""
-        edb = Edb(
-            edbpath=os.path.join(local_path, "example_models", test_subfolder, "edge_ports.aedb"),
-            edbversion=desktop_version,
+        edb = edb_examples.load_edb(
+            edb_path=os.path.join(local_path, "example_models", test_subfolder, "edge_ports.aedb"),
         )
         if edb.grpc:
             # grpc PrimitiveType enum changed.
@@ -656,11 +650,10 @@ class TestClass:
             assert setup.sweep_data[0].enforce_causality
         edb.close()
 
-    def test_create_various_ports_0(self):
+    def test_create_various_ports_0(self, edb_examples):
         """Create various ports."""
-        edb = Edb(
-            edbpath=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
-            edbversion=desktop_version,
+        edb = edb_examples.load_edb(
+            edb_path=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
         )
         if edb.grpc:
             prim_1_id = [i.edb_uid for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
@@ -757,12 +750,11 @@ class TestClass:
         # assert df_port.deembed_length == 1e-3
         edb.close()
 
-    def test_create_various_ports_1(self):
+    def test_create_various_ports_1(self, edb_examples):
         """Create various ports."""
         """Create various ports."""
-        edb = Edb(
-            edbpath=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
-            edbversion=desktop_version,
+        edb = edb_examples.load_edb(
+            edb_path=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
         )
         kwargs = {
             "layer_name": "TOP",
@@ -1099,13 +1091,13 @@ class TestClass:
         assert edbapp.ports["test1"].is_circuit_port
         edbapp.close()
 
-    def test_siwave_source_setter(self):
+    def test_siwave_source_setter(self, edb_examples):
         """Evaluate siwave sources property."""
         # Done
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_sources.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_134_source_setter.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(target_path)
         sources = list(edbapp.siwave.sources.values())
         sources[0].magnitude = 1.45
         sources[1].magnitude = 1.45
@@ -1114,13 +1106,13 @@ class TestClass:
         assert sources[1].magnitude == 1.45
         edbapp.close()
 
-    def test_delete_pingroup(self):
+    def test_delete_pingroup(self, edb_examples):
         """Delete siwave pin groups."""
         # Done
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_pin_group.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_135_pin_group.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(target_path)
         for _, pingroup in edbapp.siwave.pin_groups.items():
             pingroup.delete()
         assert not edbapp.siwave.pin_groups
@@ -1129,7 +1121,7 @@ class TestClass:
     def test_create_padstack_instance(self, edb_examples):
         """Create padstack instances."""
         # Done
-        edb = Edb(edbversion=desktop_version)
+        edb = edb_examples.create_empty_edb()
         edb.stackup.add_layer(layer_name="1_Top", fillMaterial="air", thickness="30um")
         edb.stackup.add_layer(layer_name="contact", fillMaterial="air", thickness="100um", base_layer="1_Top")
 
@@ -1181,10 +1173,10 @@ class TestClass:
         trace.create_via_fence("1mm", "1mm", "via_0")
         edb.close()
 
-    def test_stackup_properties(self):
+    def test_stackup_properties(self, edb_examples):
         """Evaluate stackup properties."""
         # Done
-        edb = Edb(edbversion=desktop_version)
+        edb = edb_examples.create_empty_edb()
         edb.stackup.add_layer(layer_name="gnd", fillMaterial="air", thickness="10um")
         edb.stackup.add_layer(layer_name="diel1", fillMaterial="air", thickness="200um", base_layer="gnd")
         edb.stackup.add_layer(layer_name="sig1", fillMaterial="air", thickness="10um", base_layer="diel1")
@@ -1202,7 +1194,7 @@ class TestClass:
         # Obsolete addressed in config 2.0 section.
         pass
 
-    def test_import_gds_from_tech(self):
+    def test_import_gds_from_tech(self, edb_examples):
         """Use techfile."""
         from pyedb.dotnet.database.edb_data.control_file import ControlFile
 
@@ -1243,10 +1235,8 @@ class TestClass:
         c.write_xml(os.path.join(self.local_scratch.path, "test_138.xml"))
         c.import_options.import_dummy_nets = True
 
-        edb = Edb(
-            gds_out,
-            edbversion=desktop_version,
-            control_file=os.path.join(self.local_scratch.path, "test_138.xml"),
+        edb = edb_examples.load_edb(
+            gds_out, control_file=os.path.join(self.local_scratch.path, "test_138.xml"), copy_to_temp=False
         )
 
         assert edb
@@ -1271,10 +1261,10 @@ class TestClass:
         assert isinstance(edb.footprint_cells, list)
         edb.close()
 
-    def test_backdrill_via_with_offset(self):
+    def test_backdrill_via_with_offset(self, edb_examples):
         """Set backdrill from top."""
 
-        edb = Edb(edbversion=desktop_version)
+        edb = edb_examples.create_empty_edb()
         edb.stackup.add_layer(layer_name="bot")
         edb.stackup.add_layer(layer_name="diel1", base_layer="bot", layer_type="dielectric", thickness="127um")
         edb.stackup.add_layer(layer_name="signal1", base_layer="diel1")
@@ -1361,11 +1351,11 @@ class TestClass:
         assert setup.sweeps
 
     @pytest.mark.skipif(is_linux, reason="Failing download files")
-    def test_create_edb_with_dxf(self):
+    def test_create_edb_with_dxf(self, edb_examples):
         """Create EDB from dxf file."""
         src = os.path.join(local_path, "example_models", test_subfolder, "edb_test_82.dxf")
         dxf_path = self.local_scratch.copyfile(src)
-        edb3 = Edb(dxf_path, edbversion=desktop_version)
+        edb3 = edb_examples.load_edb(dxf_path, copy_to_temp=False)
         assert len(edb3.modeler.polygons) == 1
         assert edb3.modeler.polygons[0].polygon_data.points == [
             (0.0, 0.0),
@@ -1376,12 +1366,12 @@ class TestClass:
         edb3.close()
 
     @pytest.mark.skipif(is_linux, reason="Not supported in IPY")
-    def test_solve_siwave(self):
+    def test_solve_siwave(self, edb_examples):
         """Solve EDB with Siwave."""
         target_path = os.path.join(local_path, "example_models", "T40", "ANSYS-HSD_V1_DCIR.aedb")
         out_edb = os.path.join(self.local_scratch.path, "to_be_solved.aedb")
         self.local_scratch.copyfolder(target_path, out_edb)
-        edbapp = Edb(out_edb, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(out_edb, copy_to_temp=False)
         edbapp.siwave.create_exec_file(add_dc=True)
         out = edbapp.solve_siwave()
         res = edbapp.export_siwave_dc_results(out, "SIwaveDCIR1")
@@ -1398,28 +1388,18 @@ class TestClass:
         )
         assert extent
         assert len(extent) == 55
-        if edbapp.grpc:
-            # grpc and dotnet have rounding differences
-            assert extent[0] == [0.011025799607142596, 0.04451508809926884]
-            assert extent[10] == [0.02214231174553801, 0.02851039223066996]
-            assert extent[20] == [0.06722930402216426, 0.02605468368384399]
-            assert extent[30] == [0.06793706871543964, 0.02961898967909681]
-            assert extent[40] == [0.0655032742298304, 0.03147893183305721]
-            assert extent[50] == [0.01143465157862367, 0.046365530038092975]
-        else:
-            assert extent[0] == [0.011025799702099603, 0.04451508810211455]
-            assert extent[10] == [0.022142311790681247, 0.02851039231475559]
-            assert extent[20] == [0.06722930398844625, 0.026054683772800503]
-            assert extent[30] == [0.06793706863503707, 0.02961898962849831]
-            assert extent[40] == [0.06550327418370948, 0.031478931749766806]
-            assert extent[50] == [0.01143465165463851, 0.04636552997976474]
+        assert extent[0] == [0.0110258, 0.044515088]
+        assert extent[10] == [0.022142312, 0.028510392]
+        assert extent[20] == [0.067229304, 0.026054684]
+        assert extent[30] == [0.067937069, 0.02961899]
+        assert extent[40] == [0.065503274, 0.031478932]
+        assert extent[50] == [0.011434652, 0.04636553]
         edbapp.close_edb()
 
-    def test_move_and_edit_polygons(self):
+    def test_move_and_edit_polygons(self, edb_examples):
         """Move a polygon."""
         # Done
-        target_path = os.path.join(self.local_scratch.path, "test_move_edit_polygons", "test.aedb")
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.create_empty_edb()
 
         edbapp.stackup.add_layer("GND")
         edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
@@ -1432,13 +1412,13 @@ class TestClass:
         assert round(polygon.center[1], 6) == -0.0045
 
         assert polygon.rotate(angle=45)
-        assert polygon.bbox == [0.012463, -0.043037, 0.089537, 0.034037]
+        assert polygon.bbox == [0.012462681, -0.04303732, 0.089537319, 0.03403732]
         assert polygon.rotate(angle=34, center=[0, 0])
-        assert polygon.bbox == [0.03084, -0.025152, 0.058755, 0.074728]
+        assert polygon.bbox == [0.030839513, -0.025151832, 0.058755057, 0.074728168]
         assert polygon.scale(factor=1.5)
-        assert polygon.bbox == [0.023861, -0.050122, 0.065734, 0.099698]
+        assert polygon.bbox == [0.023860627, -0.050121832, 0.065733943, 0.099698167]
         assert polygon.scale(factor=-0.5, center=[0, 0])
-        assert polygon.bbox == [-0.032867, -0.049849, -0.01193, 0.025061]
+        assert polygon.bbox == [-0.032866972, -0.049849084, -0.011930313, 0.025060916]
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
@@ -2139,3 +2119,13 @@ class TestClass:
         assert edbapp.compare(edb_base)
         folder = edbapp.edbpath[:-5] + "_compare_results"
         assert os.path.exists(folder)
+
+    def test_create_layout_component(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        out_file = os.path.join(self.local_scratch.path, "test.aedbcomp")
+        edbapp.export_layout_component(component_path=out_file)
+        assert os.path.isfile(out_file)
+        edbapp.close()
+        edbapp = Edb(edbversion=desktop_version)
+        layout_comp = edbapp.import_layout_component(out_file)
+        assert not layout_comp.cell_instance.is_null

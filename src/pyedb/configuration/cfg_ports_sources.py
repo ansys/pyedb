@@ -58,7 +58,7 @@ class CfgTerminalInfo(CfgBase):
         self.contact_type = kwargs.get("contact_type", "default")  # options are full, center, quad, inline
         contact_radius = "0.1mm" if kwargs.get("contact_radius") is None else kwargs.get("contact_radius")
 
-        self.contact_radius = self._pedb.edb_value(contact_radius).ToDouble()
+        self.contact_radius = self._pedb.value(contact_radius)
         self.num_of_contact = kwargs.get("num_of_contact", 4)
         self.contact_expansion = kwargs.get("contact_expansion", 1)
 

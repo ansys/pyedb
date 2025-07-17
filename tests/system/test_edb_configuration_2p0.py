@@ -24,9 +24,9 @@ from pathlib import Path
 
 import pytest
 
-from pyedb.grpc.edb import Edb as EdbType
+from pyedb.generic.general_methods import is_linux
 
-pytestmark = [pytest.mark.unit, pytest.mark.grpc]
+pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 U8_IC_DIE_PROPERTIES = {
     "components": [
@@ -60,10 +60,9 @@ def _assert_final_ic_die_properties(component: dict):
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, local_scratch):
+    def init(self, local_scratch, edb_examples):
         self.local_scratch = local_scratch
-        local_path = Path(__file__).parent.parent.parent
-        example_folder = local_path / "example_models" / "TEDB"
+        example_folder = edb_examples.example_models_path / "TEDB"
         src_edb = example_folder / "ANSYS-HSD_V1.aedb"
         src_input_folder = example_folder / "edb_config_json"
 
@@ -80,7 +79,61 @@ class TestClass:
             str(self.local_input_folder / "GRM32ER72A225KA35_25C_0V.sp"),
         )
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
+    def test_13b_stackup_materials(self, edb_examples):
+        data = {
+            "stackup": {
+                "materials": [
+                    {
+                        "name": "copper",
+                        "conductivity": 570000000,
+                        "thermal_modifier": [
+                            {
+                                "property_name": "conductivity",
+                                "basic_quadratic_c1": 0,
+                                "basic_quadratic_c2": 0,
+                                "basic_quadratic_temperature_reference": 22,
+                                "advanced_quadratic_lower_limit": -273.15,
+                                "advanced_quadratic_upper_limit": 1000,
+                                "advanced_quadratic_auto_calculate": True,
+                                "advanced_quadratic_lower_constant": 1,
+                                "advanced_quadratic_upper_constant": 1,
+                            },
+                        ],
+                    },
+                    {
+                        "name": "Megtron4",
+                        "permittivity": 3.77,
+                        "dielectric_loss_tangent": 0.005,
+                        "thermal_modifier": [
+                            {
+                                "property_name": "dielectric_loss_tangent",
+                                "basic_quadratic_c1": 0,
+                                "basic_quadratic_c2": 0,
+                                "basic_quadratic_temperature_reference": 22,
+                                "advanced_quadratic_lower_limit": -273.15,
+                                "advanced_quadratic_upper_limit": 1000,
+                                "advanced_quadratic_auto_calculate": True,
+                                "advanced_quadratic_lower_constant": 1,
+                                "advanced_quadratic_upper_constant": 1,
+                            }
+                        ],
+                    },
+                    {"name": "Megtron4_2", "permittivity": 3.77, "dielectric_loss_tangent": 0.005},
+                    {"name": "Solder Resist", "permittivity": 4, "dielectric_loss_tangent": 0.035},
+                ]
+            }
+        }
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(stackup=True)
+        for mat in data["stackup"]["materials"]:
+            target_mat = [i for i in data_from_db["stackup"]["materials"] if i["name"] == mat["name"]][0]
+            for p, value in mat.items():
+                if p == "thermal_modifier":
+                    continue
+                assert value == target_mat[p]
+        edbapp.close()
+
     def test_01_setups(self, edb_examples):
         data = {
             "setups": [
@@ -95,6 +148,7 @@ class TestClass:
                             "name": "mop_1",
                             "type": "length",
                             "max_length": "3mm",
+                            "max_elements": 100,
                             "restrict_length": True,
                             "refine_inside": False,
                             "nets_layers_list": {"GND": ["1_Top", "16_Bottom"]},
@@ -120,18 +174,11 @@ class TestClass:
                     for mop in value:
                         target_mop = [i for i in target["mesh_operations"] if i["name"] == mop["name"]][0]
                         for mop_p_name, mop_value in mop.items():
-                            print(mop_p_name)
-                            if not mop_p_name == "nets_layers_list":
-                                # grpc API changed the layer assignment format.
-                                assert mop_value == target_mop[mop_p_name]
+                            assert mop_value == target_mop[mop_p_name]
                 else:
-                    if p == "type":
-                        assert value == target[p].name.lower()
-                    else:
-                        assert value == target[p]
+                    assert value == target[p]
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_01a_setups_frequency_sweeps(self, edb_examples):
         data = {
             "setups": [
@@ -169,25 +216,17 @@ class TestClass:
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
         setup = data_from_db["setups"][0]
         assert setup["name"] == "hfss_setup_1"
-        if edbapp.grpc:
-            # grpc sweep data has been refactored, ending up with same values but organized differently.
-            sweep1 = setup["freq_sweep"][1]
-            assert sweep1["frequencies"] == ["LIN 10MHz 20MHz 11", "LIN 1KHz 100kHz 10", "LIN 50MHz 200MHz 10MHz"]
-            sweep2 = setup["freq_sweep"][0]
-            assert sweep2["type"] == "discrete"
-        else:
-            sweep1 = setup["freq_sweep"][0]
-            assert sweep1["name"] == "sweep1"
-            assert sweep1["frequencies"] == [
-                "LIN 0.05GHz 0.2GHz 0.01GHz",
-                "DEC 1e-06GHz 0.0001GHz 10",
-                "LINC 0.01GHz 0.02GHz 11",
-            ]
-            sweep2 = setup["freq_sweep"][1]
-            assert sweep2["type"] == "discrete"
+        sweep1 = setup["freq_sweep"][0]
+        assert sweep1["name"] == "sweep1"
+        assert sweep1["frequencies"] == [
+            "LIN 0.05GHz 0.2GHz 0.01GHz",
+            "DEC 1e-06GHz 0.0001GHz 10",
+            "LINC 0.01GHz 0.02GHz 11",
+        ]
+        sweep2 = setup["freq_sweep"][1]
+        assert sweep2["type"] == "discrete"
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_02_pin_groups(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         pin_groups = [
@@ -205,7 +244,6 @@ class TestClass:
         assert data_from_db[0]["pins"] == ["32", "33"]
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_03_spice_models(self, edb_examples):
         edbapp = edb_examples.get_si_verse(
             additional_files_folders=["TEDB/GRM32_DC0V_25degC.mod", "TEDB/GRM32ER72A225KA35_25C_0V.sp"]
@@ -245,7 +283,6 @@ class TestClass:
         assert edbapp.components["C142"].model.spice_file_path
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_04_nets(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "nets.json"), apply_file=True)
@@ -253,7 +290,6 @@ class TestClass:
         assert not edbapp.nets["SFPA_VCCR"].is_power_ground
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_05_ports(self, edb_examples):
         data = {
             "ports": [
@@ -303,7 +339,6 @@ class TestClass:
         assert data_from_db["ports"]
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_05b_ports_coax(self, edb_examples):
         ports = [
             {
@@ -318,15 +353,25 @@ class TestClass:
                 "type": "coax",
                 "positive_terminal": {"net": "PCIe_Gen4_TX2_CAP_N"},
             },
+            {
+                "name": "coax",
+                "reference_designator": "X1",
+                "type": "coax",
+                "positive_terminal": {"net": "5V"},
+            },
         ]
         data = {"ports": ports}
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.ports["COAX_U1_AM17"]
         assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"]
+        assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"].location
+        assert edbapp.ports["coax_X1_5V_B18"]
+        assert edbapp.ports["coax_X1_5V_B17"]
+        assert edbapp.ports["coax_X1_5V_A18"]
+        assert edbapp.ports["coax_X1_5V_A17"]
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_05c_ports_circuit_pin_net(self, edb_examples):
         data = {
             "ports": [
@@ -345,7 +390,6 @@ class TestClass:
         assert edbapp.ports["CIRCUIT_X1_B8_GND"].is_circuit_port
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_05c_ports_circuit_net_net_distributed(self, edb_examples):
         ports = [
             {
@@ -363,7 +407,6 @@ class TestClass:
         assert len(edbapp.ports) > 1
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_05d_ports_pin_group(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         pin_groups = [
@@ -387,7 +430,6 @@ class TestClass:
         assert "U9_pin_group_port" in edbapp.ports
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_05e_ports_circuit_net_net_distributed_nearest_ref(self, edb_examples):
         ports = [
             {
@@ -405,7 +447,6 @@ class TestClass:
         assert len(edbapp.ports) > 1
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_05f_ports_between_two_points(self, edb_examples):
         data = {
             "ports": [
@@ -428,9 +469,7 @@ class TestClass:
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
-    def test_05g_wave_port(self, edb_examples):
-        # TODO check bug #545 status.
+    def test_05g_edge_port(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.modeler.create_rectangle(
@@ -455,17 +494,22 @@ class TestClass:
                     "horizontal_extent_factor": 6,
                     "vertical_extent_factor": 4,
                     "pec_launch_width": "0.2mm",
-                }
+                },
+                {
+                    "name": "gap_port_1",
+                    "type": "gap_port",
+                    "primitive_name": prim_1.aedt_name,
+                    "point_on_edge": [0, 0],
+                },
             ]
         }
         edbapp.configuration.load(data, apply_file=True)
         assert edbapp.ports["wport_1"].horizontal_extent_factor == 6
+        assert edbapp.ports["gap_port_1"].hfss_type == "Gap"
         edbapp.configuration.get_data_from_db(ports=True)
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_05h_diff_wave_port(self, edb_examples):
-        # TODO check bug #545 status.
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.modeler.create_rectangle(
@@ -498,7 +542,7 @@ class TestClass:
                     "negative_terminal": {"primitive_name": prim_2.aedt_name, "point_on_edge": ["1mm", "1mm"]},
                     "horizontal_extent_factor": 6,
                     "vertical_extent_factor": 4,
-                    "pec_launch_width": "0,2mm",
+                    "pec_launch_width": "0.2mm",
                 }
             ]
         }
@@ -506,9 +550,7 @@ class TestClass:
         assert edbapp.ports["diff_wave_1"].horizontal_extent_factor == 6
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_06_s_parameters(self, edb_examples):
-        # TODO check bug #542 status. Seems some API's are missing.
         data = {
             "general": {"s_parameter_library": self.local_input_folder},
             "s_parameters": [
@@ -541,7 +583,6 @@ class TestClass:
         edbapp.configuration.get_data_from_db(s_parameters=True)
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_07_boundaries(self, edb_examples):
         data = {
             "boundaries": {
@@ -549,11 +590,13 @@ class TestClass:
                 "open_region_type": "radiation",
                 "pml_visible": False,
                 "pml_operation_frequency": "5GHz",
-                "pml_radiation_factor": 10,
+                "pml_radiation_factor": "10",
                 "dielectric_extent_type": "bounding_box",
+                # "dielectric_base_polygon": "",
                 "horizontal_padding": 0.0,
                 "honor_primitives_on_dielectric_layers": True,
                 "air_box_extent_type": "bounding_box",
+                # "air_box_base_polygon": "",
                 "air_box_truncate_model_ground_layers": False,
                 "air_box_horizontal_padding": 0.15,
                 "air_box_positive_vertical_padding": 1.0,
@@ -563,51 +606,37 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(boundaries=True)
-        if edbapp.grpc:
-            # grpc pml_operation_frequency is float (str with .NET)
-            data["boundaries"]["pml_operation_frequency"] = 5e9
-            assert data == data_from_db
-        else:
-            assert data == data_from_db
+        assert data == data_from_db
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
-    def test_08a_operations_cutout(self, edb_examples):
+    def test_operations_cutout_auto_identify_nets(self, edb_examples):
         data = {
+            "ports": [
+                {
+                    "name": "COAX_U1",
+                    "reference_designator": "U1",
+                    "type": "coax",
+                    "positive_terminal": {"pin": "AP18"},
+                }
+            ],
             "operations": {
                 "cutout": {
-                    "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
+                    "auto_identify_nets": {
+                        "enabled": True,
+                        "resistor_below": 100,
+                        "inductor_below": 1,
+                        "capacitor_above": "10nF",
+                    },
                     "reference_list": ["GND"],
                     "extent_type": "ConvexHull",
-                    "expansion_size": 0.002,
-                    "use_round_corner": False,
-                    "output_aedb_path": "",
-                    "open_cutout_at_end": True,
-                    "use_pyaedt_cutout": True,
-                    "number_of_threads": 4,
-                    "use_pyaedt_extent_computing": True,
-                    "extent_defeature": 0,
-                    "remove_single_pin_components": False,
-                    "custom_extent": "",
-                    "custom_extent_units": "mm",
-                    "include_partial_instances": False,
-                    "keep_voids": True,
-                    "check_terminals": False,
-                    "include_pingroups": False,
-                    "expansion_factor": 0,
-                    "maximum_iterations": 10,
-                    "preserve_components_with_model": False,
-                    "simple_pad_check": True,
-                    "keep_lines_as_path": False,
                 }
-            }
+            },
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND", "pyedb_cutout"])
+        assert {"PCIe_Gen4_TX3_CAP_P", "PCIe_Gen4_TX3_P"}.issubset(edbapp.nets.nets.keys())
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_09_padstack_definition(self, edb_examples):
         solder_ball_parameters = {
             "shape": "spheroid",
@@ -664,28 +693,15 @@ class TestClass:
         pdef = [i for i in data_from_layout["padstacks"]["definitions"] if i["name"] == "v35h15"][0]
 
         pad_params = pdef["pad_parameters"]
-        if edbapp.grpc:
-            assert pad_params["regular_pad"][0]["diameter"] == "0.0005"
-            assert pad_params["regular_pad"][0]["offset_x"] == "0.0001"
-            assert pad_params["anti_pad"][0]["diameter"] == "0.001"
-            assert pad_params["thermal_pad"][0]["inner"] == "0.001"
-            assert pad_params["thermal_pad"][0]["channel_width"] == "0.0002"
-        else:
-            assert pad_params["regular_pad"][0]["diameter"] == "0.5mm"
-            assert pad_params["regular_pad"][0]["offset_x"] == "0.1mm"
-            assert pad_params["anti_pad"][0]["diameter"] == "1mm"
-            assert pad_params["thermal_pad"][0]["inner"] == "1mm"
-            assert pad_params["thermal_pad"][0]["channel_width"] == "0.2mm"
+        assert pad_params["regular_pad"][0]["diameter"] == "0.5mm"
+        assert pad_params["regular_pad"][0]["offset_x"] == "0.1mm"
+        assert pad_params["anti_pad"][0]["diameter"] == "1mm"
+        assert pad_params["thermal_pad"][0]["inner"] == "1mm"
+        assert pad_params["thermal_pad"][0]["channel_width"] == "0.2mm"
 
         hole_params = pdef["hole_parameters"]
         assert hole_params["shape"] == "circle"
-        if edbapp.grpc:
-            assert hole_params["diameter"] == "0.0002"
-        else:
-            assert hole_params["diameter"] == "0.2mm"
-        if edbapp.grpc:
-            solder_ball_parameters["diameter"] = "0.0004"
-            solder_ball_parameters["mid_diameter"] = "0.0005"
+        assert hole_params["diameter"] == "0.2mm"
         assert pdef["solder_ball_parameters"] == solder_ball_parameters
 
         instance = [i for i in data_from_layout["padstacks"]["instances"] if i["name"] == "Via998"][0]
@@ -693,7 +709,6 @@ class TestClass:
             assert v == instance[k]
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_09_padstack_instance(self, edb_examples):
         data = {
             "padstacks": {
@@ -726,13 +741,11 @@ class TestClass:
         assert data_from_db["padstacks"]["instances"]
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_10_general(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "general.toml"), apply_file=True)
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_11_package_definitions(self, edb_examples):
         data = {
             "package_definitions": [
@@ -794,30 +807,38 @@ class TestClass:
                     target_heatsink = target_pdef["heatsink"]
                     for hs_p, hs_value in target_heatsink.items():
                         if hs_p in ["fin_base_height", "fin_height", "fin_spacing", "fin_thickness"]:
-                            if not edbapp.grpc:
-                                hs_value = edbapp.edb_value(hs_value).ToDouble()
+                            hs_value = edbapp.edb_value(hs_value).ToDouble()
                         assert hs_value == target_heatsink[hs_p]
                 else:
                     assert value == target_pdef[p]
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_12_setup_siwave_dc(self, edb_examples):
         data = {
             "setups": [
                 {
                     "name": "siwave_1",
                     "type": "siwave_dc",
-                    "dc_slider_position": 1,
+                    "dc_slider_position": 2,
                     "dc_ir_settings": {"export_dc_thermal_data": True},
                 }
             ]
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
+
+        siwave_dc = edbapp.setups["siwave_1"]
+        if not is_linux:
+            # test
+            assert siwave_dc.dc_settings.dc_slider_position == 2
+        assert siwave_dc.dc_ir_settings.export_dc_thermal_data is True
+
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        src_siwave_dc = data_from_db["setups"][0]
+        target_siwave_dc = data["setups"][0]
+        assert src_siwave_dc == target_siwave_dc
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_13_stackup_layers(self, edb_examples):
         data = {
             "stackup": {
@@ -912,45 +933,9 @@ class TestClass:
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
-                if p == "thickness" and edbapp.grpc:
-                    from ansys.edb.core.utility.value import Value as GrpcValue
-
-                    value = round(GrpcValue(value).value, 9)
-                if edbapp.grpc and p == "roughness":
-                    value["top"]["nodule_radius"] = 1e-7
-                    value["top"]["surface_ratio"] = 1.0
-                    value["bottom"]["roughness"] = 2e-6
-                    value["side"]["nodule_radius"] = 5e-7
-                    value["side"]["surface_ratio"] = 2.9
-                if edbapp.grpc and p == "etching":
-                    # TODO check bug #536 status. For now etching on NetClass is not supported with grpc.
-                    target_mat[p]["etch_power_ground_nets"] = value["etch_power_ground_nets"]
-                    value["factor"] = float(value["factor"])
                 assert value == target_mat[p]
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
-    def test_13b_stackup_materials(self, edb_examples):
-        data = {
-            "stackup": {
-                "materials": [
-                    {"name": "copper", "conductivity": 570000000},
-                    {"name": "Megtron4", "permittivity": 3.77, "dielectric_loss_tangent": 0.005},
-                    {"name": "Megtron4_2", "permittivity": 3.77, "dielectric_loss_tangent": 0.005},
-                    {"name": "Solder Resist", "permittivity": 4, "dielectric_loss_tangent": 0},
-                ]
-            }
-        }
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        data_from_db = edbapp.configuration.get_data_from_db(stackup=True)
-        for mat in data["stackup"]["materials"]:
-            target_mat = [i for i in data_from_db["stackup"]["materials"] if i["name"] == mat["name"]][0]
-            for p, value in mat.items():
-                assert value == target_mat[p]
-        edbapp.close()
-
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_13c_stackup_create_stackup(self, edb_examples):
         data = {
             "stackup": {
@@ -994,26 +979,25 @@ class TestClass:
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
-                if edbapp.grpc and p == "thickness":
-                    target_mat[p] = str(target_mat[p] * 1000) + "mm"
                 assert value == target_mat[p]
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_14_setup_siwave_syz(self, edb_examples):
         data = {
             "setups": [
                 {
                     "name": "siwave_1",
                     "type": "siwave_ac",
+                    "use_si_settings": True,
                     "si_slider_position": 1,
                     "freq_sweep": [
                         {
                             "name": "Sweep1",
-                            "type": "Interpolation",
+                            "type": "discrete",
                             "frequencies": [
-                                {"distribution": "log_scale", "start": 1e3, "stop": 1e9, "samples": 10},
-                                {"distribution": "linear_count", "start": 1e9, "stop": 10e9, "points": 11},
+                                "LIN 0.05GHz 0.2GHz 0.01GHz",
+                                "DEC 1e-06GHz 0.0001GHz 10",
+                                "LINC 0.01GHz 0.02GHz 11",
                             ],
                         }
                     ],
@@ -1022,9 +1006,16 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
+        siwave_ac = edbapp.setups["siwave_1"]
+        assert siwave_ac.use_si_settings is True
+        assert siwave_ac.si_slider_position == 1
+
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        src_siwave_dc = data_from_db["setups"][0]
+        assert src_siwave_dc["si_slider_position"] == 1
+        assert src_siwave_dc["use_si_settings"] is True
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_15b_sources_net_net(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         sources_v = [
@@ -1055,7 +1046,6 @@ class TestClass:
         assert pg_from_db[1]["name"] == "pg_VSOURCE_U2_1V0_GND_U2_ref"
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_15c_sources_net_net_distributed(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         sources_i = [
@@ -1081,7 +1071,6 @@ class TestClass:
             assert s1["type"] == "current"
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_15c_sources_nearest_ref(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         sources_i = [
@@ -1099,7 +1088,6 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_15d_sources_equipotential(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         sources_i = [
@@ -1151,7 +1139,6 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_16_components_rlc(self, edb_examples):
         components = [
             {
@@ -1177,17 +1164,9 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(components=True)
         c375 = [i for i in data_from_db["components"] if i["reference_designator"] == "C375"][0]
-        if edbapp.grpc:
-            # grpc is returning component value as float not string
-            components[0]["pin_pair_model"][0]["resistance"] = 10.0
-            components[0]["pin_pair_model"][0]["inductance"] = 1e-9
-            components[0]["pin_pair_model"][0]["capacitance"] = 10e-9
-            assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
-        else:
-            assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
+        assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_16_export_to_external_file(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         data_file_path = Path(edb_examples.test_folder) / "test.json"
@@ -1208,7 +1187,6 @@ class TestClass:
             assert len(data["nets"]["power_ground_nets"]) == 6
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_16b_export_cutout(self, edb_examples):
         data = {
             "operations": {
@@ -1231,9 +1209,8 @@ class TestClass:
         edbapp.configuration.load(data_from_db, apply_file=True)
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_17_ic_die_properties(self, edb_examples):
-        db: EdbType = edb_examples.get_si_verse()
+        db = edb_examples.get_si_verse()
 
         comps_edb = db.configuration.get_data_from_db(components=True)["components"]
         component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
@@ -1244,7 +1221,6 @@ class TestClass:
         component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
         _assert_final_ic_die_properties(component)
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_18_modeler(self, edb_examples):
         data = {
             "modeler": {
@@ -1259,7 +1235,12 @@ class TestClass:
                         "end_cap_style": "flat",
                         "corner_style": "round",
                     },
-                    {"name": "trace_1_void", "layer": "TOP", "width": "0.3mm", "path": [[0, 0], [0, "10mm"]]},
+                    {
+                        "name": "trace_1_void",
+                        "layer": "TOP",
+                        "width": "0.3mm",
+                        "incremental_path": [[0, 0], [0, "10mm"]],
+                    },
                 ],
                 "padstack_definitions": [
                     {
@@ -1380,20 +1361,31 @@ class TestClass:
         assert edbapp.components["U1"].component_property.GetSolderBallProperty().Clone().GetMaterialName() == "air"
         edbapp.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
+    def test_modeler_delete(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.layout.find_primitive(name="line_163")
+        data = {"modeler": {"primitives_to_delete": {"name": ["line_163"]}}}
+        edbapp.configuration.load(data, apply_file=True)
+        assert len(edbapp.layout.find_primitive(name="line_163")) == 0
+        edbapp.close()
+
     def test_19_variables(self, edb_examples):
         data = {
             "variables": [
-                {"name": "var_1", "value": "1mm", "description": "No description"},
+                {"name": "var_1", "value": "1mm", "description": "des1"},
                 {"name": "$var_2", "value": "1mm", "description": "No description"},
             ]
         }
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.configuration.load(data, apply_file=True)
+        edbapp.save()
         edbapp.close()
+        edbapp2 = edb_examples.load_edb(edbapp.edbpath)
+        edbapp2.configuration.get_variables()
+        assert edbapp2.configuration.cfg_data.variables.model_dump() == data
+        edbapp2.close()
 
-    @pytest.mark.skip(reason="Not yet imlplemted with grpc")
     def test_probes(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         probe = [
@@ -1407,4 +1399,39 @@ class TestClass:
         data = {"probes": probe}
         assert edbapp.configuration.load(data, apply_file=True)
         assert "probe1" in edbapp.probes
+        edbapp.close()
+
+    def test_08a_operations_cutout(self, edb_examples):
+        data = {
+            "operations": {
+                "cutout": {
+                    "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
+                    "reference_list": ["GND"],
+                    "extent_type": "ConvexHull",
+                    "expansion_size": 0.002,
+                    "use_round_corner": False,
+                    "output_aedb_path": "",
+                    "open_cutout_at_end": True,
+                    "use_pyaedt_cutout": True,
+                    "number_of_threads": 4,
+                    "use_pyaedt_extent_computing": True,
+                    "extent_defeature": 0,
+                    "remove_single_pin_components": False,
+                    "custom_extent": "",
+                    "custom_extent_units": "mm",
+                    "include_partial_instances": False,
+                    "keep_voids": True,
+                    "check_terminals": False,
+                    "include_pingroups": False,
+                    "expansion_factor": 0,
+                    "maximum_iterations": 10,
+                    "preserve_components_with_model": False,
+                    "simple_pad_check": False,
+                    "keep_lines_as_path": False,
+                }
+            }
+        }
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND", "pyedb_cutout"])
         edbapp.close()

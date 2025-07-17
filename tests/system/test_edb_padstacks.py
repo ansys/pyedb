@@ -23,16 +23,13 @@
 """Tests related to Edb padstacks"""
 import math
 import os
-from pathlib import Path
 
 import pytest
 
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.dotnet.database.padstack import EDBPadstackInstance
-from pyedb.dotnet.edb import Edb
-from tests.conftest import desktop_version, local_path
-from tests.legacy.system.conftest import test_subfolder
+from tests.conftest import local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
@@ -220,12 +217,10 @@ class TestClass:
         )
         assert self.edbapp.padstacks.definitions["c180h127"].pad_by_layer["new"]
 
-    def test_microvias(self):
+    def test_microvias(self, edb_examples):
         """Convert padstack to microvias 3D objects."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_128_microvias.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(source_path)
         assert edbapp.padstacks.definitions["Padstack_Circle"].convert_to_3d_microvias(False)
         assert edbapp.padstacks.definitions["Padstack_Rectangle"].convert_to_3d_microvias(False, hole_wall_angle=10)
         assert edbapp.padstacks.definitions["Padstack_Polygon_p12"].convert_to_3d_microvias(False)
@@ -243,9 +238,9 @@ class TestClass:
         )
         edbapp.close()
 
-    def test_split_microvias(self):
+    def test_split_microvias(self, edb_examples):
         """Convert padstack definition to multiple microvias definitions."""
-        edbapp = Edb(self.target_path4, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(self.target_path4, copy_to_temp=False)
         assert len(edbapp.padstacks.instances_by_name["via219"].split()) > 1
         assert "via219_2" in [i.name for i in edbapp.padstacks.definitions["BALL_VIA_1"].instances]
         edbapp.padstacks.instances_by_name["via218"].convert_hole_to_conical_shape()
@@ -256,12 +251,10 @@ class TestClass:
         """Fix hole plating ratio."""
         assert self.edbapp.padstacks.check_and_fix_via_plating()
 
-    def test_padstack_search_reference_pins(self):
+    def test_padstack_search_reference_pins(self, edb_examples):
         """Search for reference pins using given criteria."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_boundaries.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(source_path)
         pin = edbapp.components.instances["J5"].pins["19"]
         assert pin
         ref_pins = pin.get_reference_pins(reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True)
@@ -287,16 +280,11 @@ class TestClass:
         assert vias[1].metal_volume
 
     @pytest.mark.parametrize("return_points", [True, False])
-    def test_padstacks_create_rectangle_in_pad(self, return_points: bool):
+    def test_padstacks_create_rectangle_in_pad(self, return_points: bool, edb_examples):
         """Create a rectangle inscribed inside a padstack instance pad."""
         example_model = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
-        self.local_scratch.copyfolder(
-            example_model,
-            os.path.join(self.local_scratch.path, "padstacks2.aedb"),
-        )
-        edb = Edb(
-            edbpath=os.path.join(self.local_scratch.path, "padstacks2.aedb"),
-            edbversion=desktop_version,
+        edb = edb_examples.load_edb(
+            edb_path=example_model,
             isreadonly=True,
         )
         for test_prop in (edb.padstacks.instances, edb.padstacks.instances):
@@ -328,9 +316,9 @@ class TestClass:
                 assert confirmed_pads == 19
         edb.close()
 
-    def test_padstaks_plot_on_matplotlib(self):
+    def test_padstaks_plot_on_matplotlib(self, edb_examples):
         """Plot a Net to Matplotlib 2D Chart."""
-        edb_plot = Edb(self.target_path3, edbversion=desktop_version)
+        edb_plot = edb_examples.load_edb(self.target_path3, copy_to_temp=False)
 
         local_png1 = os.path.join(self.local_scratch.path, "test1.png")
         edb_plot.nets.plot(
@@ -383,12 +371,10 @@ class TestClass:
         assert os.path.exists(local_png4)
         edb_plot.close()
 
-    def test_update_padstacks_after_layer_name_changed(self):
+    def test_update_padstacks_after_layer_name_changed(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_padstack_def_update", "ANSYS-HSD_V1.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
 
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(source_path)
         signal_layer_list = [layer for layer in list(edbapp.stackup.layers.values()) if layer.type == "signal"]
         old_layers = []
         for n_layer, layer in enumerate(signal_layer_list):
@@ -401,20 +387,15 @@ class TestClass:
             assert not [lay for lay in padstack_inst.layer_range_names if lay in old_layers]
         edbapp.close_edb()
 
-    def test_hole(self):
+    def test_hole(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_padstack_def_update", "ANSYS-HSD_V1.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(source_path)
         edbapp.padstacks.definitions["v35h15"].hole_diameter = "0.16mm"
         assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
 
-    def test_padstack_instances_rtree_index(self):
+    def test_padstack_instances_rtree_index(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_padstack_rtree_index", "ANSYS-HSD_V1.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(source_path)
         index = edbapp.padstacks.get_padstack_instances_rtree_index()
         assert index.bounds == [-0.013785, -0.00225, 0.148, 0.078]
         stats = edbapp.get_statistics()
@@ -430,11 +411,9 @@ class TestClass:
         assert len(test) == 194
         edbapp.close()
 
-    def test_polygon_based_padsatck(self):
+    def test_polygon_based_padsatck(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_padstack_rtree_index", "ANSYS-HSD_V1.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(source_path)
         polygon_data = edbapp.modeler.paths[0].polygon_data
         edbapp.padstacks.create(
             padstackname="test",
@@ -466,13 +445,13 @@ class TestClass:
         assert edbapp.padstacks.definitions["test2"]
         edbapp.close()
 
-    def test_via_fence(self):
+    def test_via_fence(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "via_fence_generic_project.aedb")
         target_path1 = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence1.aedb")
         target_path2 = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence2.aedb")
         self.local_scratch.copyfolder(source_path, target_path1)
         self.local_scratch.copyfolder(source_path, target_path2)
-        edbapp = Edb(target_path1, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(target_path1, copy_to_temp=False)
         assert edbapp.padstacks.merge_via_along_lines(net_name="GND", distance_threshold=2e-3, minimum_via_number=6)
         assert not edbapp.padstacks.merge_via_along_lines(
             net_name="test_dummy", distance_threshold=2e-3, minimum_via_number=6
@@ -480,15 +459,15 @@ class TestClass:
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions
         edbapp.close()
-        edbapp = Edb(target_path2, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(target_path2, copy_to_temp=False)
         assert edbapp.padstacks.merge_via_along_lines(net_name="GND", distance_threshold=2e-3, minimum_via_number=6)
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions
         edbapp.close()
 
-    def test_reduce_via_in_bounding_box(self):
-        source_path = Path(__file__).parent.parent.parent / "example_models" / "TEDB" / "vias_300.aedb"
-        edbapp = Edb(edbpath=source_path)
+    def test_reduce_via_in_bounding_box(self, edb_examples):
+        source_path = edb_examples.example_models_path / "TEDB" / "vias_300.aedb"
+        edbapp = edb_examples.load_edb(edb_path=source_path)
         assert len(edbapp.padstacks.instances) == 301
         # empty bounding box
         assert edbapp.padstacks.reduce_via_in_bounding_box([-16e-3, -7e-3, -13e-3, -6e-3], 10, 10) is False
@@ -513,9 +492,9 @@ class TestClass:
         assert len(result) == 1
         edbapp.close()
 
-    def test_via_merge3(self):
-        source_path = Path(__file__).parent.parent.parent / "example_models" / "TEDB" / "merge_via_4layers.aedb"
-        edbapp = Edb(edbpath=source_path)
+    def test_via_merge3(self, edb_examples):
+        source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
+        edbapp = edb_examples.load_edb(edb_path=source_path)
 
         merged_via = edbapp.padstacks.merge_via(
             contour_boxes=[[[11e-3, -5e-3], [17e-3, -5e-3], [17e-3, 1e-3], [11e-3, 1e-3], [11e-3, -5e-3]]],
@@ -529,8 +508,27 @@ class TestClass:
         assert edbapp.padstacks.instances[merged_via[0]].stop_layer == "layer2"
         edbapp.close()
 
+    def test_dbscan(self, edb_examples):
+        source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
+        edbapp = edb_examples.load_edb(source_path)
 
-def _get_padstack_polygon_data(edb: Edb, padstack_instance: EDBPadstackInstance, layer_name: str) -> PolygonData:
+        # "NET_1" one cluster with 20 vias
+        net_vias = [i for i in edbapp.nets["NET_1"].padstack_instances]
+        all_vias = {i.id: i.position for i in net_vias}
+        clusters1 = edbapp.padstacks.dbscan(all_vias, max_distance=2e-3, min_samples=3)
+
+        # all nets two clusters with 21 vias each
+        inst = edbapp.padstacks.instances
+        all_vias = {id_: i.position for id_, i in inst.items()}
+        clusters2 = edbapp.padstacks.dbscan(all_vias, max_distance=2e-3, min_samples=3)
+
+        assert len(clusters1) == 1
+        assert len(clusters1[0]) == 20
+        assert len(clusters2) == 2
+        assert len(clusters2[1]) == 21
+
+
+def _get_padstack_polygon_data(edb, padstack_instance: EDBPadstackInstance, layer_name: str) -> PolygonData:
     edb.layout_instance.Refresh()
     loi = edb.layout_instance.GetLayoutObjInstance(padstack_instance._edb_object, None)
     geometries = loi.GetGeometries(edb.modeler.layers[layer_name]._edb_object)

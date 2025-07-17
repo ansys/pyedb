@@ -202,14 +202,13 @@ class Edb(EdbInit):
         edbversion: str = None,
         isaedtowned: bool = False,
         oproject=None,
-        student_version: bool = False,
         use_ppe: bool = False,
         control_file: str = None,
         map_file: str = None,
         technology_file: str = None,
         layer_filter: str = None,
-        remove_existing_aedt: bool = False,
         restart_rpc_server=False,
+        **kwargs,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
@@ -397,6 +396,13 @@ class Edb(EdbInit):
         self._differential_pairs = DifferentialPairs(self)
         self._extended_nets = ExtendedNets(self)
 
+    def value(self, val):
+        """Convert a value into a pyedb value."""
+        if isinstance(val, GrpcValue):
+            return Value(val)
+        else:
+            return Value(GrpcValue(val))
+
     @property
     def cell_names(self) -> [str]:
         """List of all cell names in the database.
@@ -565,7 +571,7 @@ class Edb(EdbInit):
         dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Probe names and objects.
         """
-        terms = [term for term in self.layout.terminals if term.boundary_type.value == 8]
+        terms = [term for term in self.layout.terminals if term.boundary_type == "voltage_probe"]
         return {ter.name: ter for ter in terms}
 
     def open(self, restart_rpc_server=False) -> bool:

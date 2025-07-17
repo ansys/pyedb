@@ -27,9 +27,7 @@ import os
 
 import pytest
 
-from pyedb.dotnet.edb import Edb
-from tests.conftest import desktop_version, local_path
-from tests.legacy.system.conftest import test_subfolder
+from tests.conftest import local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
@@ -155,13 +153,11 @@ class TestClass:
         assert "GND" in [i.name for i in edbapp.nets.eligible_power_nets()]
         edbapp.close()
 
-    def test_nets_merge_polygon(self):
+    def test_nets_merge_polygon(self, edb_examples):
         """Convert paths from net into polygons."""
         # Done
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_merge_polygon.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_merge_polygon", "test.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(edbpath=target_path, edbversion=desktop_version)
+        edbapp = edb_examples.load_edb(edb_path=source_path)
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
         edbapp.close()
 
