@@ -1437,9 +1437,9 @@ class Components(object):
             _sb_diam = min([abs(Value(val)) for val in pad_params[1]])
             sball_diam = 0.8 * _sb_diam
         if sball_height:
-            sball_height = round(Value(sball_height), 9)
+            sball_height = Value(sball_height)
         else:
-            sball_height = round(Value(sball_diam), 9) / 2
+            sball_height = Value(sball_diam)
 
         if not sball_mid_diam:
             sball_mid_diam = sball_diam
