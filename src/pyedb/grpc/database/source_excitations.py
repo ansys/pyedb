@@ -49,6 +49,7 @@ from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.sources import Source, SourceType
 from pyedb.modeler.geometry_operators import GeometryOperators
 
+
 class SourceExcitation:
     """Manage sources and excitations.
 
@@ -512,10 +513,10 @@ class SourceExcitation:
         do_pingroup: Optional[bool] = True,
         reference_net: Optional[str] = None,
         port_name: Optional[List[str]] = None,
-        solder_balls_height: Optional[float]=None,
-        solder_balls_size: Optional[float]=None,
-        solder_balls_mid_size: Optional[float]=None,
-        extend_reference_pins_outside_component: Optional[bool]=False,
+        solder_balls_height: Optional[float] = None,
+        solder_balls_size: Optional[float] = None,
+        solder_balls_mid_size: Optional[float] = None,
+        extend_reference_pins_outside_component: Optional[bool] = False,
     ) -> List[str]:
         """Create ports on a component.
 
@@ -1132,9 +1133,7 @@ class SourceExcitation:
         """
         if not name:
             name = f"Port_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
-        return self._create_terminal_on_pins(
-            positive_pin=pos_pin, negative_pin=neg_pin, impedance=impedance, name=name
-        )
+        return self._create_terminal_on_pins(positive_pin=pos_pin, negative_pin=neg_pin, impedance=impedance, name=name)
 
     def _create_terminal_on_pins(
         self,
@@ -1441,18 +1440,14 @@ class SourceExcitation:
         if not reference_net_name:
             reference_net_name = self._check_gnd(reference_component_name)
         if not port_name:
-            port_name = (
-                f"Port_{component_name}_{net_name}_{reference_component_name}_{reference_net_name}"
-            )
+            port_name = f"Port_{component_name}_{net_name}_{reference_component_name}_{reference_net_name}"
         positive_pins = []
         for pin in list(self._pedb.components.instances[component_name].pins.values()):
             if pin and not pin.net.is_null:
                 if pin.net_name == net_name:
                     positive_pins.append(pin)
         if not positive_pins:
-            self._pedb.logger.error(
-                f"No positive pins found component {component_name} net {net_name}"
-            )
+            self._pedb.logger.error(f"No positive pins found component {component_name} net {net_name}")
             return False
         negative_pins = []
         for pin in list(self._pedb.components.instances[reference_component_name].pins.values()):
@@ -1656,10 +1651,7 @@ class SourceExcitation:
         neg_node_pins = self._pedb.components.get_pin_from_component(reference_component_name, reference_net_name)
 
         if not source_name:
-            source_name = (
-                f"Vsource_{component_name}_{net_name}_"
-                f"{reference_component_name}_{reference_net_name}"
-            )
+            source_name = f"Vsource_{component_name}_{net_name}_" f"{reference_component_name}_{reference_net_name}"
         return self.create_pin_group_terminal(
             positive_pins=pos_node_pins,
             negatives_pins=neg_node_pins,
@@ -1720,10 +1712,7 @@ class SourceExcitation:
         neg_node_pins = self._pedb.components.get_pin_from_component(reference_component_name, reference_net_name)
 
         if not source_name:
-            source_name = (
-                f"Vsource_{component_name}_{net_name}_"
-                f"{reference_component_name}_{reference_net_name}"
-            )
+            source_name = f"Vsource_{component_name}_{net_name}_" f"{reference_component_name}_{reference_net_name}"
         return self.create_pin_group_terminal(
             positive_pins=pos_node_pins,
             negatives_pins=neg_node_pins,
