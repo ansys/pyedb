@@ -467,7 +467,7 @@ class TestClass:
         edbapp.close()
 
     def test_reduce_via_in_bounding_box(self, edb_examples):
-        source_path = Path(__file__).parent.parent.parent / "example_models" / "TEDB" / "vias_300.aedb"
+        source_path = edb_examples.example_models_path / "TEDB" / "vias_300.aedb"
         edbapp = edb_examples.load_edb(edb_path=source_path)
         assert len(edbapp.padstacks.instances) == 301
         # empty bounding box
@@ -494,7 +494,7 @@ class TestClass:
         edbapp.close()
 
     def test_via_merge3(self, edb_examples):
-        source_path = Path(__file__).parent.parent.parent / "example_models" / "TEDB" / "merge_via_4layers.aedb"
+        source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
         edbapp = edb_examples.load_edb(edb_path=source_path)
 
         merged_via = edbapp.padstacks.merge_via(
@@ -510,7 +510,7 @@ class TestClass:
         edbapp.close()
 
     def test_dbscan(self, edb_examples):
-        source_path = Path(__file__).parent.parent.parent / "example_models" / "TEDB" / "merge_via_4layers.aedb"
+        source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
         edbapp = edb_examples.load_edb(source_path)
 
         # "NET_1" one cluster with 20 vias

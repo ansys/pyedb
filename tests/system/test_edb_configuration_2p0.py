@@ -60,10 +60,9 @@ def _assert_final_ic_die_properties(component: dict):
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, local_scratch):
+    def init(self, local_scratch, edb_examples):
         self.local_scratch = local_scratch
-        local_path = Path(__file__).parent.parent.parent
-        example_folder = local_path / "example_models" / "TEDB"
+        example_folder = edb_examples.example_models_path / "TEDB"
         src_edb = example_folder / "ANSYS-HSD_V1.aedb"
         src_input_folder = example_folder / "edb_config_json"
 
