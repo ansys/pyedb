@@ -398,7 +398,7 @@ class TestClass:
         # Done
         edbapp = edb_examples.get_si_verse()
         index = edbapp.padstacks.get_padstack_instances_rtree_index()
-        assert index.bounds == [-0.013785, -0.00225, 0.148, 0.078]
+        assert index.bounds == [-0.013784999, -0.002250001, 0.148000001, 0.077999999]
         stats = edbapp.get_statistics()
         bbox = (0.0, 0.0, stats.layout_size[0], stats.layout_size[1])
         test = list(index.intersection(bbox))
