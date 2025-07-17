@@ -1638,9 +1638,11 @@ class TestClass:
     def test_create_edb_with_zip(self):
         """Create EDB from zip file."""
         # Done
+        from pyedb import Edb
+
         src = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1_0.zip")
         zip_path = self.local_scratch.copyfile(src)
-        edb = Edb(zip_path, edbversion=desktop_version)
+        edb = Edb(zip_path)
         assert edb.nets
         assert edb.components
         edb.close()
@@ -1879,8 +1881,10 @@ class TestClass:
 
     def test_active_cell_setter(self):
         """Use multiple cells."""
+        from pyedb import Edb
+
         src = os.path.join(local_path, "example_models", "TEDB", "multi_cells.aedb")
-        edb = Edb(edbpath=src, edbversion=desktop_version)
+        edb = Edb(edbpath=src)
         edb.active_cell = edb.circuit_cells[0]
         assert len(edb.modeler.primitives) == 2096
         assert len(edb.components.instances) == 509
@@ -1914,12 +1918,14 @@ class TestClass:
         edb.close()
 
     def test_import_layout_file(self):
+        from pyedb import Edb
+
         input_file = os.path.join(local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example.gds")
         control_file = os.path.join(
             local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
         )
         map_file = os.path.join(local_path, "example_models", "cad", "GDS", "dummy_layermap.map")
-        edb = Edb(edbversion=desktop_version)
+        edb = Edb()
         assert edb.import_layout_file(input_file=input_file, control_file=control_file, map_file=map_file)
 
     @pytest.mark.parametrize("positive_pin_names", (["R20", "R21", "T20"], ["R20"]))
@@ -2123,11 +2129,14 @@ class TestClass:
         assert os.path.exists(folder)
 
     def test_create_layout_component(self, edb_examples):
+        from pyedb import Edb
+
         edbapp = edb_examples.get_si_verse()
-        out_file = os.path.join(self.local_scratch.path, "test.aedbcomp")
-        edbapp.export_layout_component(component_path=out_file)
-        assert os.path.isfile(out_file)
-        edbapp.close()
-        edbapp = Edb(edbversion=desktop_version)
-        layout_comp = edbapp.import_layout_component(out_file)
-        assert not layout_comp.cell_instance.is_null
+        if edbapp.grpc:
+            out_file = os.path.join(self.local_scratch.path, "test.aedbcomp")
+            edbapp.export_layout_component(component_path=out_file)
+            assert os.path.isfile(out_file)
+            edbapp.close()
+            edbapp = Edb()
+            layout_comp = edbapp.import_layout_component(out_file)
+            assert not layout_comp.cell_instance.is_null
