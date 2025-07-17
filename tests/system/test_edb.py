@@ -276,7 +276,7 @@ class TestClass:
             use_pyaedt_cutout=False,
         )
         assert os.path.exists(os.path.join(output, "edb.def"))
-        # edbapp.close(terminate_rpc_session=False)
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_custom_cutout_1(self, edb_examples):
         """Create custom cutout 1."""
@@ -583,11 +583,7 @@ class TestClass:
         assert edb_stats.num_inductors
         assert edb_stats.num_capacitors
         assert edb_stats.num_resistors
-        if edb.grpc:
-            # TODO check why grpc give different result.
-            assert edb_stats.occupying_ratio["1_Top"] == 0.282666
-        else:
-            assert edb_stats.occupying_ratio["1_Top"] == 0.301682
+        assert edb_stats.occupying_ratio["1_Top"] == 0.301682
         assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.937467
         if edb.grpc:
             # TODO check why grpc give different result.
@@ -810,30 +806,39 @@ class TestClass:
         setup1 = edbapp.hfss.add_setup("setup1")
         assert not edbapp.hfss.add_setup("setup1")
         assert setup1.set_solution_single_frequency()
-        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 1
-        assert setup1.set_solution_multi_frequencies(frequencies=("5GHz", "10GHz", "100GHz"))
-        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 3
-        assert setup1.set_solution_broadband()
-        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 2
-        if edbapp.grpc:
-            setup1.settings.options.enhanced_low_frequency_accuracy = True
-            assert setup1.settings.options.enhanced_low_frequency_accuracy
-            setup1.settings.options.order_basis = setup1.settings.options.order_basis.FIRST_ORDER
-            assert setup1.settings.options.order_basis.name == "FIRST_ORDER"
-            setup1.settings.options.relative_residual = 0.0002
-            assert setup1.settings.options.relative_residual == 0.0002
-            setup1.settings.options.use_shell_elements = True
-            assert setup1.settings.options.use_shell_elements
+        if "adaptive_solution_type" in dir(setup1.adaptive_settings):
+            assert setup1.adaptive_settings.adaptive_solution_type.value ==0
         else:
-            # grpc simulation setup is too different.
-            setup1.hfss_solver_settings.enhanced_low_freq_accuracy = True
-            assert setup1.hfss_solver_settings.enhanced_low_freq_accuracy
-            # Currently EDB api has a bug for this feature.
-            # setup1.hfss_solver_settings.order_basis
-            setup1.hfss_solver_settings.relative_residual = 0.0002
-            assert setup1.hfss_solver_settings.relative_residual == 0.0002
-            setup1.hfss_solver_settings.use_shell_elements = True
-            assert setup1.hfss_solver_settings.use_shell_elements
+            assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 1
+        assert setup1.set_solution_multi_frequencies(frequencies=("5GHz", "10GHz", "100GHz"))
+        if "adaptive_solution_type" in dir(setup1.adaptive_settings):
+            assert setup1.adaptive_settings.adaptive_solution_type.value == 1
+        else:
+            assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 3
+        assert setup1.set_solution_broadband()
+        if "adaptive_solution_type" in dir(setup1.adaptive_settings):
+            assert setup1.adaptive_settings.adaptive_solution_type.value == 2
+        else:
+            assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 2
+        # if edbapp.grpc:
+        #     setup1.settings.options.enhanced_low_frequency_accuracy = True
+        #     assert setup1.settings.options.enhanced_low_frequency_accuracy
+        #     setup1.settings.options.order_basis = setup1.settings.options.order_basis.FIRST_ORDER
+        #     assert setup1.settings.options.order_basis.name == "FIRST_ORDER"
+        #     setup1.settings.options.relative_residual = 0.0002
+        #     assert setup1.settings.options.relative_residual == 0.0002
+        #     setup1.settings.options.use_shell_elements = True
+        #     assert setup1.settings.options.use_shell_elements
+        # else:
+        # grpc simulation setup is too different.
+        setup1.hfss_solver_settings.enhanced_low_frequency_accuracy = True
+        assert setup1.hfss_solver_settings.enhanced_low_frequency_accuracy
+        # Currently EDB api has a bug for this feature.
+        # setup1.hfss_solver_settings.order_basis
+        setup1.hfss_solver_settings.relative_residual = 0.0002
+        assert setup1.hfss_solver_settings.relative_residual == 0.0002
+        setup1.hfss_solver_settings.use_shell_elements = True
+        assert setup1.hfss_solver_settings.use_shell_elements
 
         setup1b = edbapp.setups["setup1"]
         assert not setup1.is_null
