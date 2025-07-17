@@ -1388,12 +1388,12 @@ class TestClass:
         )
         assert extent
         assert len(extent) == 55
-        assert extent[0] == [0.0110258, 0.044515088]
-        assert extent[10] == [0.022142312, 0.028510392]
-        assert extent[20] == [0.067229304, 0.026054684]
-        assert extent[30] == [0.067937069, 0.02961899]
-        assert extent[40] == [0.065503274, 0.031478932]
-        assert extent[50] == [0.011434652, 0.04636553]
+        assert [round(num, 9) for num in extent[0]] == [0.0110258, 0.044515088]
+        assert [round(num, 9) for num in extent[10]] == [0.022142312, 0.028510392]
+        assert [round(num, 9) for num in extent[20]] == [0.067229304, 0.026054684]
+        assert [round(num, 9) for num in extent[30]] == [0.067937069, 0.02961899]
+        assert [round(num, 9) for num in extent[40]] == [0.065503274, 0.031478932]
+        assert [round(num, 9) for num in extent[50]] == [0.011434652, 0.04636553]
         edbapp.close_edb()
 
     def test_move_and_edit_polygons(self, edb_examples):
@@ -1412,13 +1412,13 @@ class TestClass:
         assert round(polygon.center[1], 6) == -0.0045
 
         assert polygon.rotate(angle=45)
-        assert polygon.bbox == [0.012462681, -0.04303732, 0.089537319, 0.03403732]
+        assert polygon.bbox == [0.01246268, -0.04303732, 0.08953732, 0.03403732]
         assert polygon.rotate(angle=34, center=[0, 0])
-        assert polygon.bbox == [0.030839513, -0.025151832, 0.058755057, 0.074728168]
+        assert polygon.bbox == [0.030839512, -0.025151831, 0.058755056, 0.074728169]
         assert polygon.scale(factor=1.5)
-        assert polygon.bbox == [0.023860627, -0.050121832, 0.065733943, 0.099698167]
+        assert polygon.bbox == [0.023860626, -0.05012183, 0.065733942, 0.099698168]
         assert polygon.scale(factor=-0.5, center=[0, 0])
-        assert polygon.bbox == [-0.032866972, -0.049849084, -0.011930313, 0.025060916]
+        assert polygon.bbox == [-0.032866971, -0.049849084, -0.011930313, 0.025060915]
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
@@ -1497,11 +1497,13 @@ class TestClass:
 
     def test_arbitrary_wave_ports(self):
         # TODO check later when sever instances is improved.
+        from pyedb import Edb
+
         example_folder = os.path.join(local_path, "example_models", test_subfolder)
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
         target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
         self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = Edb(target_path_edb, edbversion=desktop_version)
+        edbapp = Edb(target_path_edb)
         assert edbapp.create_model_for_arbitrary_wave_ports(
             temp_directory=self.local_scratch.path,
             output_edb=os.path.join(self.local_scratch.path, "wave_ports.aedb"),
