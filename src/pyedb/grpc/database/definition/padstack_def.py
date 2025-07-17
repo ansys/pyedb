@@ -416,7 +416,7 @@ class PadstackDef(GrpcPadstackDef):
     @hole_offset_y.setter
     def hole_offset_y(self, value):
         hole_parameter = list(self.data.get_hole_parameters())
-        hole_parameter[3] = (value, self._pedb.db)
+        hole_parameter[3] = Value(value, self._pedb.db)
         self.data.set_hole_parameters(
             offset_x=hole_parameter[2],
             offset_y=hole_parameter[3],
@@ -442,7 +442,7 @@ class PadstackDef(GrpcPadstackDef):
     @hole_rotation.setter
     def hole_rotation(self, value):
         hole_parameter = list(self.data.get_hole_parameters())
-        hole_parameter[4] = (value, self._pedb.db)
+        hole_parameter[4] = Value(value, self._pedb.db)
         self.data.set_hole_parameters(
             offset_x=hole_parameter[2],
             offset_y=hole_parameter[3],
