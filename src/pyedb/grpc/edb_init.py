@@ -202,7 +202,7 @@ class EdbInit(object):
         return True
 
     def _clean_variables(self):
-        """Initialize internal variables and perform garbage collection."""
+        """Initialize internal variables and perform garbage collection"""
         self.grpc = True
         self._materials = None
         self._components = None

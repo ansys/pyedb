@@ -27,12 +27,12 @@ import os
 
 import pytest
 
-from tests import conftest
 from tests.conftest import local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 bom_example = "bom_example.csv"
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -41,7 +41,6 @@ class TestClass:
         self.target_path = target_path
         self.target_path2 = target_path2
         self.target_path4 = target_path4
-
 
     def test_components_get_pin_from_component(self, edb_examples):
         """Evaluate access to a pin from a component."""
