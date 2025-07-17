@@ -22,7 +22,7 @@
 
 import logging
 import re
-from typing import Optional, Union
+from typing import List, Optional, Union
 import warnings
 
 from ansys.edb.core.definition.component_model import (
@@ -49,7 +49,6 @@ from ansys.edb.core.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
 )
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.database.hierarchy.s_parameter_model import SparamModel
@@ -59,6 +58,7 @@ from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
+from pyedb.grpc.database.utility.value import Value
 
 try:
     import numpy as np
@@ -274,7 +274,7 @@ class Component(GrpcComponentGroup):
     @is_mcad.setter
     def is_mcad(self, value):
         if isinstance(value, bool):
-            super(Component, self.__class__).is_mcad.__set__(self, GrpcValue(value))
+            super(Component, self.__class__).is_mcad.__set__(self, Value(value))
 
     @property
     def is_mcad_3d_comp(self) -> bool:
@@ -290,7 +290,7 @@ class Component(GrpcComponentGroup):
     @is_mcad_3d_comp.setter
     def is_mcad_3d_comp(self, value):
         if isinstance(value, bool):
-            super(Component, self.__class__).is_mcad_3d_comp.__set__(self, GrpcValue(value))
+            super(Component, self.__class__).is_mcad_3d_comp.__set__(self, Value(value))
 
     @property
     def is_mcad_hfss(self) -> bool:
@@ -306,7 +306,7 @@ class Component(GrpcComponentGroup):
     @is_mcad_hfss.setter
     def is_mcad_hfss(self, value):
         if isinstance(value, bool):
-            super(Component, self.__class__).is_mcad_hfss.__set__(self, GrpcValue(value))
+            super(Component, self.__class__).is_mcad_hfss.__set__(self, Value(value))
 
     @property
     def is_mcad_stride(self) -> bool:
@@ -322,7 +322,7 @@ class Component(GrpcComponentGroup):
     @is_mcad_stride.setter
     def is_mcad_stride(self, value):
         if isinstance(value, bool):
-            super(Component, self.__class__).is_mcad_stride.__set__(self, GrpcValue(value))
+            super(Component, self.__class__).is_mcad_stride.__set__(self, Value(value))
 
     def create_package_def(self, name=None) -> bool:
         """Create a package definition and assign it to the component.
@@ -415,16 +415,16 @@ class Component(GrpcComponentGroup):
             Balls height value.
         """
         try:
-            return self.component_property.solder_ball_property.height.value
+            return Value(self.component_property.solder_ball_property.height)
         except:
-            return 0.0
+            return Value(0.0)
 
     @solder_ball_height.setter
     def solder_ball_height(self, value):
         if not self.component_property.solder_ball_property.is_null:
             cmp_property = self.component_property
             solder_ball_prop = cmp_property.solder_ball_property
-            solder_ball_prop.height = round(GrpcValue(value).value, 9)
+            solder_ball_prop.height = Value(value)
             cmp_property.solder_ball_property = solder_ball_prop
             self.component_property = cmp_property
 
@@ -465,7 +465,7 @@ class Component(GrpcComponentGroup):
                 self.component_property = cmp_property
 
     @property
-    def solder_ball_diameter(self) -> float:
+    def solder_ball_diameter(self) -> Union[tuple[float, float], None]:
         """Solder ball diameter.
 
         Returns
@@ -475,7 +475,7 @@ class Component(GrpcComponentGroup):
         """
         if not self.component_property.solder_ball_property.is_null:
             diameter, mid_diameter = self.component_property.solder_ball_property.get_diameter()
-            return diameter.value, mid_diameter.value
+            return Value(diameter), Value(mid_diameter)
 
     @solder_ball_diameter.setter
     def solder_ball_diameter(self, value):
@@ -484,14 +484,14 @@ class Component(GrpcComponentGroup):
             mid_diameter = diameter
             if isinstance(value, tuple) or isinstance(value, list):
                 if len(value) == 2:
-                    diameter = GrpcValue(value[0])
-                    mid_diameter = GrpcValue(value[1])
+                    diameter = Value(value[0])
+                    mid_diameter = Value(value[1])
                 elif len(value) == 1:
-                    diameter = GrpcValue(value[0])
-                    mid_diameter = GrpcValue(value[0])
+                    diameter = Value(value[0])
+                    mid_diameter = Value(value[0])
             if isinstance(value, str) or isinstance(value, float):
-                diameter = GrpcValue(value)
-                mid_diameter = GrpcValue(value)
+                diameter = Value(value)
+                mid_diameter = Value(value)
             cmp_property = self.component_property
             solder_ball_prop = cmp_property.solder_ball_property
             solder_ball_prop.set_diameter(diameter, mid_diameter)
@@ -540,7 +540,7 @@ class Component(GrpcComponentGroup):
             return _model_type
 
     @property
-    def rlc_values(self) -> list[list[float]]:
+    def rlc_values(self) -> Union[List[list[float]], List[float]]:
         """Get component rlc values.
 
         Returns
@@ -548,11 +548,11 @@ class Component(GrpcComponentGroup):
         list[list[Rvalue(float), Lvalue(float), Cvalue(float)]].
         """
         if not len(self._rlc):
-            return [None, None, None]
+            return [0.0, 0.0, 0.0]
         elif len(self._rlc) == 1:
-            return [self._rlc[0].r.value, self._rlc[0].l.value, self._rlc[0].c.value]
+            return [Value(self._rlc[0].r), Value(self._rlc[0].l), Value(self._rlc[0].c)]
         else:
-            return [[rlc.r.value, rlc.l.value, rlc.c.value] for rlc in self._rlc]
+            return [[Value(rlc.r), Value(rlc.l), Value(rlc.c)] for rlc in self._rlc]
 
     @rlc_values.setter
     def rlc_values(self, value):
@@ -566,17 +566,17 @@ class Component(GrpcComponentGroup):
         _rlc = []
         for rlc in self._rlc:
             if value[0]:
-                rlc.r = GrpcValue(value[0])
+                rlc.r = Value(value[0])
                 rlc.r_enabled = True
             else:
                 rlc.r_enabled = False
             if value[1]:
-                rlc.l = GrpcValue(value[1])
+                rlc.l = Value(value[1])
                 rlc.l_enabled = True
             else:
                 rlc.l_enabled = False
             if value[2]:
-                rlc.c = GrpcValue(value[2])
+                rlc.c = Value(value[2])
                 rlc.c_enabled = True
             else:
                 rlc.c_enabled = False
@@ -621,7 +621,7 @@ class Component(GrpcComponentGroup):
         """
         cmp_type = self.component_type
         if 0 < cmp_type.value < 4:
-            result = [rlc.r.value for rlc in self._rlc]
+            result = [Value(rlc.r) for rlc in self._rlc]
             if len(result) == 1:
                 return result[0]
             else:
@@ -634,7 +634,7 @@ class Component(GrpcComponentGroup):
         model = PinPairModel(self._pedb, GrpcPinPairModel.create())
         for rlc in self._rlc:
             rlc.r_enabled = True
-            rlc.r = GrpcValue(value)
+            rlc.r = Value(value)
             _rlc.append(rlc)
         for ind in range(len(self._pin_pairs)):
             model.set_rlc(self._pin_pairs[ind], _rlc[ind])
@@ -653,7 +653,7 @@ class Component(GrpcComponentGroup):
         """
         cmp_type = self.component_type
         if 0 < cmp_type.value < 4:
-            result = [rlc.c.value for rlc in self._rlc]
+            result = [Value(rlc.c) for rlc in self._rlc]
             if len(result) == 1:
                 return result[0]
             else:
@@ -667,7 +667,7 @@ class Component(GrpcComponentGroup):
             model = PinPairModel(self._pedb, GrpcPinPairModel.create())
             for rlc in self._rlc:
                 rlc.c_enabled = True
-                rlc.c = GrpcValue(value)
+                rlc.c = Value(value)
                 _rlc.append(rlc)
             for ind in range(len(self._pin_pairs)):
                 model.set_rlc(self._pin_pairs[ind], _rlc[ind])
@@ -686,7 +686,7 @@ class Component(GrpcComponentGroup):
         """
         cmp_type = self.component_type
         if 0 < cmp_type.value < 4:
-            result = [rlc.l.value for rlc in self._rlc]
+            result = [Value(rlc.l) for rlc in self._rlc]
             if len(result) == 1:
                 return result[0]
             else:
@@ -700,7 +700,7 @@ class Component(GrpcComponentGroup):
             model = PinPairModel(self._pedb, GrpcPinPairModel.create())
             for rlc in self._rlc:
                 rlc.l_enabled = True
-                rlc.l = GrpcValue(value)
+                rlc.l = Value(value)
                 _rlc.append(rlc)
             for ind in range(len(self._pin_pairs)):
                 model.set_rlc(self._pin_pairs[ind], _rlc[ind])
@@ -757,12 +757,12 @@ class Component(GrpcComponentGroup):
             [x, y].
 
         """
-        return [pt.value for pt in super().location]
+        return [Value(pt) for pt in super().location]
 
     @location.setter
     def location(self, value):
         if isinstance(value, list):
-            _location = [GrpcValue(val) for val in value]
+            _location = [Value(val) for val in value]
             super(Component, self.__class__).location.__set__(self, _location)
 
     @property
@@ -779,7 +779,7 @@ class Component(GrpcComponentGroup):
         bbox = self.component_instance.get_bbox().points
         pt1 = bbox[0]
         pt2 = bbox[2]
-        return [pt1.x.value, pt1.y.value, pt2.x.value, pt2.y.value]
+        return [Value(pt1.x), Value(pt1.y), Value(pt2.x), Value(pt2.y)]
 
     @property
     def rotation(self) -> float:
@@ -790,7 +790,7 @@ class Component(GrpcComponentGroup):
         float
             Rotation value.
         """
-        return self.transform.rotation.value
+        return Value(self.transform.rotation)
 
     @property
     def pinlist(self) -> list[PadstackInstance]:
@@ -1172,7 +1172,7 @@ class Component(GrpcComponentGroup):
         res = 0 if res is None else res
         ind = 0 if ind is None else ind
         cap = 0 if cap is None else cap
-        res, ind, cap = GrpcValue(res), GrpcValue(ind), GrpcValue(cap)
+        res, ind, cap = Value(res), Value(ind), Value(cap)
         model = PinPairModel(self._pedb, self._edb_model)
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
@@ -1299,13 +1299,13 @@ class ICDieProperty:
             Die height.
 
         """
-        return self._die_property.height.value
+        return Value(self._die_property.height)
 
     @height.setter
     def height(self, value):
         component_property = self._component.component_property
         die_property = component_property.die_property
-        die_property.height = GrpcValue(value)
+        die_property.height = Value(value)
         component_property.die_property = die_property
         self._component.component_property = component_property
 
