@@ -49,7 +49,6 @@ from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.sources import Source, SourceType
 from pyedb.modeler.geometry_operators import GeometryOperators
 
-
 class SourceExcitation:
     """Manage sources and excitations.
 

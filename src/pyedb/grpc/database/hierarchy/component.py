@@ -555,7 +555,8 @@ class Component(GrpcComponentGroup):
         if not len(self._rlc):
             return [None, None, None]
         elif len(self._rlc) == 1:
-            return [self._rlc[0].r.value, self._rlc[0].l.value, self._rlc[0].c.value]
+            rlc = self._rlc[0]
+            return [rlc.r.value, rlc.l.value, rlc.c.value]
         else:
             return [[rlc.r.value, rlc.l.value, rlc.c.value] for rlc in self._rlc]
 
