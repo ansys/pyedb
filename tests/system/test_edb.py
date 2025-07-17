@@ -2066,6 +2066,7 @@ class TestClass:
             Vrm,
         )
 
+        #
         cpa_cfg = SIwaveCpaSetup()
         cpa_cfg.name = "test_cpa"
         cpa_cfg.mode = "channel"

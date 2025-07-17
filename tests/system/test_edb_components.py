@@ -27,7 +27,6 @@ import os
 
 import pytest
 
-from tests import conftest
 from tests.conftest import local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
