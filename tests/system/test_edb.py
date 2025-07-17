@@ -171,8 +171,8 @@ class TestClass:
         assert not syz_setup.use_custom_settings
         syz_setup.advanced_settings.min_void_area = "4mm2"
         assert syz_setup.advanced_settings.min_void_area == "4mm2"
-        syz_setup.advanced_settings.automatic_mesh = True
-        assert syz_setup.advanced_settings.automatic_mesh
+        syz_setup.advanced_settings.mesh_automatic = True
+        assert syz_setup.advanced_settings.mesh_automatic
         syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh = "0.5mm2"
         assert syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh == "0.5mm2"
         syz_setup.dc_settings.use_dc_custom_settings = False

@@ -509,10 +509,13 @@ class SourceExcitation:
         component: Union[str, List[str]],
         net_list: Union[str, List[str]],
         port_type: SourceType,
+        do_pingroup: Optional[bool] = True,
         reference_net: Optional[str] = None,
-        port_names: Optional[List[str]] = None,
-        impedance: Union[int, float] = 50,
-        delete_existing_terminal: bool = False,
+        port_name: Optional[List[str]] = None,
+        solder_balls_height: Optional[float]=None,
+        solder_balls_size: Optional[float]=None,
+        solder_balls_mid_size: Optional[float]=None,
+        extend_reference_pins_outside_component: Optional[bool]=False,
     ) -> List[str]:
         """Create ports on a component.
 
@@ -529,7 +532,7 @@ class SourceExcitation:
         do_pingroup : bool
             True activate pingroup during port creation (only used with combination of CircPort),
             False will take the closest reference pin and generate one port per signal pin.
-        refnet : string or list of string.
+        reference_net : string or list of string.
             list of the reference net.
         port_name : str
             Port name for overwriting the default port-naming convention,
@@ -560,7 +563,7 @@ class SourceExcitation:
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> net_list = ["M_DQ<1>", "M_DQ<2>", "M_DQ<3>", "M_DQ<4>", "M_DQ<5>"]
-        >>> edbapp.components.create_port_on_component(cmp="U2A5", net_list=net_list,
+        >>> edbapp.excitations.create_port_on_component(cmp="U2A5", net_list=net_list,
         >>> port_type=SourceType.CoaxPort, do_pingroup=False, refnet="GND")
 
         """
@@ -1111,7 +1114,7 @@ class SourceExcitation:
             Edb Pin
         impedance : float
             Port Impedance
-        port_name : str, optional
+        name : str, optional
             Port Name
 
         Returns
@@ -1127,10 +1130,10 @@ class SourceExcitation:
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.siwave.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
         """
-        if not port_name:
-            port_name = f"Port_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
+        if not name:
+            name = f"Port_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
         return self._create_terminal_on_pins(
-            positive_pin=pos_pin, negative_pin=neg_pin, impedance=impedance, name=port_name
+            positive_pin=pos_pin, negative_pin=neg_pin, impedance=impedance, name=name
         )
 
     def _create_terminal_on_pins(
@@ -1408,16 +1411,16 @@ class SourceExcitation:
 
         Parameters
         ----------
-        positive_component_name : str
+        component_name : str
             Name of the positive component.
-        positive_net_name : str
+        net_name : str
             Name of the positive net.
-        negative_component_name : str, optional
+        reference_component_name : str, optional
             Name of the negative component. The default is ``None``, in which case the name of
             the positive net is assigned.
-        negative_net_name : str, optional
+        reference_net_name : str, optional
             Name of the negative net name. The default is ``None`` which will look for GND Nets.
-        impedance_value : float, optional
+        impedance : float, optional
             Port impedance value. The default is ``50``.
         port_name : str, optional
             Name of the port. The default is ``""``.
@@ -1433,32 +1436,32 @@ class SourceExcitation:
         >>> edb = Edb()
         >>> edb.source_excitation.create_circuit_port_on_net("U1", "VCC", "U1", "GND", 50, "PowerPort")
         """
-        if not negative_component_name:
-            negative_component_name = positive_component_name
-        if not negative_net_name:
-            negative_net_name = self._check_gnd(negative_component_name)
+        if not reference_component_name:
+            reference_component_name = component_name
+        if not reference_net_name:
+            reference_net_name = self._check_gnd(reference_component_name)
         if not port_name:
             port_name = (
-                f"Port_{positive_component_name}_{positive_net_name}_{negative_component_name}_{negative_net_name}"
+                f"Port_{component_name}_{net_name}_{reference_component_name}_{reference_net_name}"
             )
         positive_pins = []
-        for pin in list(self._pedb.components.instances[positive_component_name].pins.values()):
+        for pin in list(self._pedb.components.instances[component_name].pins.values()):
             if pin and not pin.net.is_null:
-                if pin.net_name == positive_net_name:
+                if pin.net_name == net_name:
                     positive_pins.append(pin)
         if not positive_pins:
             self._pedb.logger.error(
-                f"No positive pins found component {positive_component_name} net {positive_net_name}"
+                f"No positive pins found component {component_name} net {net_name}"
             )
             return False
         negative_pins = []
-        for pin in list(self._pedb.components.instances[negative_component_name].pins.values()):
+        for pin in list(self._pedb.components.instances[reference_component_name].pins.values()):
             if pin and not pin.net.is_null:
-                if pin.net_name == negative_net_name:
+                if pin.net_name == reference_net_name:
                     negative_pins.append(pin)
         if not negative_pins:
             self._pedb.logger.error(
-                f"No negative pins found component {negative_component_name} net {negative_net_name}"
+                f"No negative pins found component {reference_component_name} net {reference_net_name}"
             )
             return False
 
@@ -1591,18 +1594,18 @@ class SourceExcitation:
         return pos_pingroup_terminal.name
 
     def _check_gnd(self, component_name: str) -> Optional[str]:
-        negative_net_name = None
+        reference_net_name = None
         if self._pedb.nets.is_net_in_component(component_name, "GND"):
-            negative_net_name = "GND"
+            reference_net_name = "GND"
         elif self._pedb.nets.is_net_in_component(component_name, "PGND"):
-            negative_net_name = "PGND"
+            reference_net_name = "PGND"
         elif self._pedb.nets.is_net_in_component(component_name, "AGND"):
-            negative_net_name = "AGND"
+            reference_net_name = "AGND"
         elif self._pedb.nets.is_net_in_component(component_name, "DGND"):
-            negative_net_name = "DGND"
-        if not negative_net_name:
+            reference_net_name = "DGND"
+        if not reference_net_name:
             raise ValueError("No GND, PGND, AGND, DGND found. Please setup the negative net name manually.")
-        return negative_net_name
+        return reference_net_name
 
     def create_voltage_source_on_net(
         self,
@@ -1618,14 +1621,14 @@ class SourceExcitation:
 
         Parameters
         ----------
-        positive_component_name : str
+        component_name : str
             Name of the positive component.
-        positive_net_name : str
+        net_name : str
             Name of the positive net.
-        negative_component_name : str, optional
+        reference_component_name : str, optional
             Name of the negative component. The default is ``None``, in which case the name of
             the positive net is assigned.
-        negative_net_name : str, optional
+        reference_net_name : str, optional
             Name of the negative net name. The default is ``None`` which will look for GND Nets.
         voltage_value : float, optional
             Value for the voltage. The default is ``3.3``.
@@ -1645,17 +1648,17 @@ class SourceExcitation:
         >>> edb = Edb()
         >>> edb.source_excitation.create_voltage_source_on_net("U1", "VCC", "U1", "GND", 3.3, name="VCC_Source")
         """
-        if not negative_component_name:
-            negative_component_name = positive_component_name
-        if not negative_net_name:
-            negative_net_name = self._check_gnd(negative_component_name)
-        pos_node_pins = self._pedb.components.get_pin_from_component(positive_component_name, positive_net_name)
-        neg_node_pins = self._pedb.components.get_pin_from_component(negative_component_name, negative_net_name)
+        if not reference_component_name:
+            reference_component_name = component_name
+        if not reference_net_name:
+            reference_net_name = self._check_gnd(reference_component_name)
+        pos_node_pins = self._pedb.components.get_pin_from_component(component_name, net_name)
+        neg_node_pins = self._pedb.components.get_pin_from_component(reference_component_name, reference_net_name)
 
         if not source_name:
             source_name = (
-                f"Vsource_{positive_component_name}_{positive_net_name}_"
-                f"{negative_component_name}_{negative_net_name}"
+                f"Vsource_{component_name}_{net_name}_"
+                f"{reference_component_name}_{reference_net_name}"
             )
         return self.create_pin_group_terminal(
             positive_pins=pos_node_pins,
@@ -1681,14 +1684,14 @@ class SourceExcitation:
 
         Parameters
         ----------
-        positive_component_name : str
+        component_name : str
             Name of the positive component.
-        positive_net_name : str
+        net_name : str
             Name of the positive net.
-        negative_component_name : str, optional
+        reference_component_name : str, optional
             Name of the negative component. The default is ``None``, in which case the name of
             the positive net is assigned.
-        negative_net_name : str, optional
+        reference_net_name : str, optional
             Name of the negative net name. The default is ``None`` which will look for GND Nets.
         voltage_value : float, optional
             Value for the voltage. The default is ``3.3``.
@@ -1709,17 +1712,17 @@ class SourceExcitation:
         >>> edb.source_excitation.create_current_source_on_net("U1", "INPUT", "U1", "GND", 0.1, name="InputCurrent")
         "InputCurrent"
         """
-        if not negative_component_name:
-            negative_component_name = positive_component_name
-        if not negative_net_name:
-            negative_net_name = self._check_gnd(negative_component_name)
-        pos_node_pins = self._pedb.components.get_pin_from_component(positive_component_name, positive_net_name)
-        neg_node_pins = self._pedb.components.get_pin_from_component(negative_component_name, negative_net_name)
+        if not reference_component_name:
+            reference_component_name = component_name
+        if not reference_net_name:
+            reference_net_name = self._check_gnd(reference_component_name)
+        pos_node_pins = self._pedb.components.get_pin_from_component(component_name, net_name)
+        neg_node_pins = self._pedb.components.get_pin_from_component(reference_component_name, reference_net_name)
 
         if not source_name:
             source_name = (
-                f"Vsource_{positive_component_name}_{positive_net_name}_"
-                f"{negative_component_name}_{negative_net_name}"
+                f"Vsource_{component_name}_{net_name}_"
+                f"{reference_component_name}_{reference_net_name}"
             )
         return self.create_pin_group_terminal(
             positive_pins=pos_node_pins,
@@ -2968,7 +2971,7 @@ class SourceExcitation:
         net_name : str
             Name of the positive net.
 
-        source_name : str, optional
+        terminal_name : str, optional
             Name of the source. The default is ``""``.
 
         Returns
@@ -2986,10 +2989,10 @@ class SourceExcitation:
         node_pin = self._pedb.components.get_pin_from_component(component_name, net_name)
         if node_pin:
             node_pin = node_pin[0]
-        if not source_name:
-            source_name = f"DC_{component_name}_{net_name}"
+        if not terminal_name:
+            terminal_name = f"DC_{component_name}_{net_name}"
         return self.create_pin_group_terminal(
-            positive_pins=node_pin, name=source_name, source_type="dc_terminal", negatives_pins=None
+            positive_pins=node_pin, name=terminal_name, source_type="dc_terminal", negatives_pins=None
         )
 
     def create_circuit_port_on_pin_group(
@@ -3041,10 +3044,10 @@ class SourceExcitation:
     def place_voltage_probe(
         self,
         name: str,
-        positive_net_name: str,
+        net_name: str,
         positive_location: List[float],
         positive_layer: str,
-        negative_net_name: str,
+        reference_net_name: str,
         negative_location: List[float],
         negative_layer: str,
     ) -> Terminal:
@@ -3054,13 +3057,13 @@ class SourceExcitation:
         ----------
         name : str,
             Name of the probe.
-        positive_net_name : str
+        net_name : str
             Name of the positive net.
         positive_location : list
             Location of the positive terminal.
         positive_layer : str,
             Layer of the positive terminal.
-        negative_net_name : str,
+        reference_net_name : str,
             Name of the negative net.
         negative_location : list
             Location of the negative terminal.
@@ -3076,14 +3079,14 @@ class SourceExcitation:
         """
         p_terminal = PointTerminal.create(
             layout=self._pedb.active_layout,
-            net=positive_net_name,
+            net=net_name,
             layer=positive_layer,
             name=name,
             point=GrpcPointData(positive_location),
         )
         n_terminal = PointTerminal.create(
             layout=self._pedb.active_layout,
-            net=negative_net_name,
+            net=reference_net_name,
             layer=negative_layer,
             name=f"{name}_ref",
             point=GrpcPointData(negative_location),
