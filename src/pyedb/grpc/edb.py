@@ -114,6 +114,9 @@ from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import (
 from pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup import (
     RaptorXSimulationSetup,
 )
+from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
+    SIWaveCPASimulationSetup,
+)
 from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup,
 )
@@ -128,6 +131,7 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
 )
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.constants import get_terminal_supported_boundary_types
+from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
@@ -199,14 +203,13 @@ class Edb(EdbInit):
         edbversion: str = None,
         isaedtowned: bool = False,
         oproject=None,
-        student_version: bool = False,
         use_ppe: bool = False,
         control_file: str = None,
         map_file: str = None,
         technology_file: str = None,
         layer_filter: str = None,
-        remove_existing_aedt: bool = False,
         restart_rpc_server=False,
+        **kwargs,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
@@ -394,6 +397,13 @@ class Edb(EdbInit):
         self._differential_pairs = DifferentialPairs(self)
         self._extended_nets = ExtendedNets(self)
 
+    def value(self, val):
+        """Convert a value into a pyedb value."""
+        if isinstance(val, GrpcValue):
+            return Value(val)
+        else:
+            return Value(GrpcValue(val))
+
     @property
     def cell_names(self) -> [str]:
         """List of all cell names in the database.
@@ -562,7 +572,7 @@ class Edb(EdbInit):
         dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Probe names and objects.
         """
-        terms = [term for term in self.layout.terminals if term.boundary_type.value == 8]
+        terms = [term for term in self.layout.terminals if term.boundary_type == "voltage_probe"]
         return {ter.name: ter for ter in terms}
 
     def open(self, restart_rpc_server=False) -> bool:
@@ -2654,12 +2664,12 @@ class Edb(EdbInit):
             Variable value if exists, else False.
         """
         if self.variable_exists(variable_name):
-            if "$" in variable_name:
-                if variable_name.index("$") == 0:
-                    variable = next(var for var in self.active_db.get_all_variable_names())
-                else:
-                    variable = next(var for var in self.active_cell.get_all_variable_names())
+            if variable_name.startswith("$"):
+                variable = next(var for var in self.active_db.get_all_variable_names())
                 return self.db.get_variable_value(variable)
+            else:
+                variable = next(var for var in self.active_cell.get_all_variable_names())
+                return self.active_cell.get_variable_value(variable)
         self.logger.info(f"Variable {variable_name} doesn't exists.")
         return False
 
@@ -2841,7 +2851,16 @@ class Edb(EdbInit):
     @property
     def setups(
         self,
-    ) -> Union[HfssSimulationSetup, SiwaveSimulationSetup, SIWaveDCIRSimulationSetup, RaptorXSimulationSetup]:
+    ) -> dict[
+        str,
+        Union[
+            HfssSimulationSetup,
+            SiwaveSimulationSetup,
+            SIWaveDCIRSimulationSetup,
+            RaptorXSimulationSetup,
+            SIWaveCPASimulationSetup,
+        ],
+    ]:
         """Get the dictionary of all EDB HFSS and SIwave setups.
 
         Returns
@@ -2850,21 +2869,34 @@ class Edb(EdbInit):
         Dict[str,:class:`SiwaveSimulationSetup`] or
         Dict[str,:class:`SIWaveDCIRSimulationSetup`] or
         Dict[str,:class:`RaptorXSimulationSetup`]
+        Dict[str,:class:`SIWaveCPASimulationSetup`]
 
         """
-        self._setups = {}
+        from ansys.edb.core.database import ProductIdType as GrpcProductIdType
+
+        from pyedb.siwave_core.product_properties import SIwaveProperties
+
+        setups = {}
         for setup in self.active_cell.simulation_setups:
             setup = setup.cast()
             setup_type = setup.type.name
             if setup_type == "HFSS":
-                self._setups[setup.name] = HfssSimulationSetup(self, setup)
+                setups[setup.name] = HfssSimulationSetup(self, setup)
             elif setup_type == "SI_WAVE":
-                self._setups[setup.name] = SiwaveSimulationSetup(self, setup)
+                setups[setup.name] = SiwaveSimulationSetup(self, setup)
             elif setup_type == "SI_WAVE_DCIR":
-                self._setups[setup.name] = SIWaveDCIRSimulationSetup(self, setup)
+                setups[setup.name] = SIWaveDCIRSimulationSetup(self, setup)
             elif setup_type == "RAPTOR_X":
-                self._setups[setup.name] = RaptorXSimulationSetup(self, setup)
-        return self._setups
+                setups[setup.name] = RaptorXSimulationSetup(self, setup)
+        try:
+            cpa_setup_name = self.active_cell.get_product_property(
+                GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME
+            ).value
+        except:
+            cpa_setup_name = ""
+        if cpa_setup_name:
+            setups[cpa_setup_name] = SIWaveCPASimulationSetup(self, cpa_setup_name)
+        return setups
 
     @property
     def hfss_setups(self) -> dict[str, HfssSimulationSetup]:

@@ -92,6 +92,7 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
     SiwaveSimulationSetup,
 )
+from pyedb.dotnet.database.utilities.value import Value
 from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import (
@@ -104,6 +105,7 @@ from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflow import Workflow
 
 
@@ -398,6 +400,13 @@ class Edb(Database):
     @property
     def pedb_class(self):
         return pyedb.dotnet
+
+    def value(self, val):
+        """Convert a value into a pyedb value."""
+        if isinstance(val, self._edb.Utility.Value):
+            return Value(self, val)
+        else:
+            return Value(self, self.edb_api.utility.value(val))
 
     @property
     def grpc(self):
@@ -3695,6 +3704,7 @@ class Edb(Database):
         Dict[str, :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
 
         """
+
         setups = {}
         for i in list(self.active_cell.SimulationSetups):
             if i.GetType().ToString().endswith("kHFSS"):
@@ -3707,6 +3717,18 @@ class Edb(Database):
                 setups[i.GetName()] = RaptorXSimulationSetup(self, i)
             elif i.GetType().ToString().endswith("kHFSSPI"):
                 setups[i.GetName()] = HFSSPISimulationSetup(self, i)
+        try:
+            cpa_setup_name = self.active_cell.GetProductProperty(
+                self._edb.ProductId.SIWave, SIwaveProperties.CPA_SIM_NAME
+            )[-1]
+        except:
+            cpa_setup_name = ""
+        if cpa_setup_name:
+            from pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup import (
+                SIWaveCPASimulationSetup,
+            )
+
+            setups[cpa_setup_name] = SIWaveCPASimulationSetup(self, cpa_setup_name)
         return setups
 
     @property
