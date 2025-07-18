@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from collections import Counter
 import json
 from pathlib import Path
 
@@ -1461,8 +1462,7 @@ class TestClass:
         edbapp.save()
         edbapp.close(terminate_rpc_session=False)
         edbapp2 = edb_examples.load_edb(edbapp.edbpath)
-        edbapp2.configuration.get_variables()
-        assert edbapp2.configuration.cfg_data.variables.model_dump() == data
+        assert Counter(edbapp2.configuration.get_data_from_db(variables=True)) == Counter(data)
         edbapp2.close(terminate_rpc_session=False)
 
     def test_probes(self, edb_examples):

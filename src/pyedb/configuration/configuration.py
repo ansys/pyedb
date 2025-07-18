@@ -261,6 +261,7 @@ class Configuration:
 
     def get_variables(self):
         """Retrieve variables from database."""
+        self.cfg_data.variables.variables = []
         for name, obj in self._pedb.design_variables.items():
             self.cfg_data.variables.add_variable(name, obj.value_string, obj.description)
         for name, obj in self._pedb.project_variables.items():
@@ -422,7 +423,7 @@ class Configuration:
         if kwargs.get("general", False):
             data["general"] = self.cfg_data.general.get_data_from_db()
         if kwargs.get("variables", False):
-            data["variables"] = self.cfg_data.variables.model_dump(exclude_none=True)
+            data.update(self.cfg_data.variables.model_dump(exclude_none=True))
         if kwargs.get("stackup", False):
             data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True)
         if kwargs.get("package_definitions", False):
