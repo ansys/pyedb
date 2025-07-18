@@ -820,9 +820,7 @@ class TestClass:
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
                 assert angle.IsEqual(zeroValue)
-                assert loc.IsEqual(
-                    chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(190e-6))
-                )
+                assert loc.IsEqual(chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(190e-6)))
         finally:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
@@ -911,9 +909,7 @@ class TestClass:
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
                 assert angle.IsEqual(chipEdb.edb_value(math.pi))
-                assert loc.IsEqual(
-                    chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(-20e-6))
-                )
+                assert loc.IsEqual(chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(-20e-6)))
         finally:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
@@ -1089,9 +1085,7 @@ class TestClass:
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
                 assert angle.IsEqual(chipEdb.edb_value(math.pi))
-                assert loc.IsEqual(
-                    chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(10e-6))
-                )
+                assert loc.IsEqual(chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(10e-6)))
         finally:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
@@ -1267,9 +1261,7 @@ class TestClass:
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
                 assert angle.IsEqual(chipEdb.edb_value(math.pi))
-                assert loc.IsEqual(
-                    chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(20e-6))
-                )
+                assert loc.IsEqual(chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(20e-6)))
         finally:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)

@@ -262,8 +262,7 @@ class TestClass:
         points = [[bounding[0][0], bounding[0][1]]]
         points.append([cutout_line_x, bounding[0][1]])
         points.append([cutout_line_x, cutout_line_y])
-        points.append([bounding[0][0], cutout_line_y]
-                      )
+        points.append([bounding[0][0], cutout_line_y])
         points.append([bounding[0][0], bounding[0][1]])
 
         output = os.path.join(self.local_scratch.path, "cutout2.aedb")

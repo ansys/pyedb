@@ -366,9 +366,8 @@ class Edb(EdbInit):
             self.__getitem__(variable_name).description = description
 
     @property
-    def core(self)->ansys.edb.core:
-        """Ansys Edb Core module.
-        """
+    def core(self) -> ansys.edb.core:
+        """Ansys Edb Core module."""
         return ansys.edb.core
 
     def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:

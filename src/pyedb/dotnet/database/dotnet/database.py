@@ -161,9 +161,7 @@ class PolygonDataDotNet:  # pragma: no cover
         from pyedb.dotnet.clr_module import Tuple
 
         if isinstance(points, (tuple, list)):
-            points = Tuple[self._pedb.core.Geometry.PointData, self._pedb.core.Geometry.PointData](
-                points[0], points[1]
-            )
+            points = Tuple[self._pedb.core.Geometry.PointData, self._pedb.core.Geometry.PointData](points[0], points[1])
         return self.dotnetobj.CreateFromBBox(points)
 
     def create_from_arcs(self, arcs, flag):
@@ -799,7 +797,7 @@ class EdbDotNet(object):
         """
         warnings.warn("`edb_api` is deprecated, use `core` instead.", DeprecationWarning)
         return CellDotNet(self)
-    
+
     @property
     def core(self):
         """Edb Dotnet Api class.

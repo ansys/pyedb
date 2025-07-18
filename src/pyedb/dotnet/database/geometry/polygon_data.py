@@ -91,9 +91,7 @@ class PolygonData:
         list_of_point_data = []
         for pt in points:
             list_of_point_data.append(PointData(self._pedb, x=pt[0], y=pt[1])._edb_object)
-        return self._pedb.core.geometry.api_class.PolygonData(
-            convert_py_list_to_net_list(list_of_point_data), closed
-        )
+        return self._pedb.core.geometry.api_class.PolygonData(convert_py_list_to_net_list(list_of_point_data), closed)
 
     def create_from_bounding_box(self, points):
         bbox = BBox(self._pedb, point_1=points[0], point_2=points[1])

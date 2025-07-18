@@ -309,9 +309,7 @@ class Terminal(Connectable):
             pingroup = refTerm.GetPinGroup()
             refPinList = pingroup.GetPins()
             return self._get_closest_pin(padStackInstance, refPinList, gnd_net_name_preference)
-        elif (
-            self._edb_object.GetTerminalType() == self._pedb.core.cell.terminal.TerminalType.PadstackInstanceTerminal
-        ):
+        elif self._edb_object.GetTerminalType() == self._pedb.core.cell.terminal.TerminalType.PadstackInstanceTerminal:
             _, padStackInstance, _ = self._edb_object.GetParameters()
             if refTerm.GetTerminalType() == self._pedb.core.cell.terminal.TerminalType.PinGroupTerminal:
                 pingroup = refTerm.GetPinGroup()

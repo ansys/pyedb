@@ -628,9 +628,7 @@ class Edb(Database):
             return None
         if not self.cellname:
             self.cellname = generate_unique_name("Cell")
-        self._active_cell = self.core.cell.create(
-            self.active_db, self.core.cell.CellType.CircuitCell, self.cellname
-        )
+        self._active_cell = self.core.cell.create(self.active_db, self.core.cell.CellType.CircuitCell, self.cellname)
         if self._active_cell:
             self._init_objects()
             return True
@@ -2689,14 +2687,10 @@ class Edb(Database):
             via.pin.Delete()
         if netlist:
             nets = [net.net_obj for net in temp_edb.layout.nets if net.name in netlist]
-            _poly = temp_edb.layout.expanded_extent(
-                nets, self.core.geometry.extent_type.Conforming, 0.0, True, True, 1
-            )
+            _poly = temp_edb.layout.expanded_extent(nets, self.core.geometry.extent_type.Conforming, 0.0, True, True, 1)
         else:
             nets = [net.api_object for net in temp_edb.layout.nets if "gnd" in net.name.lower()]
-            _poly = temp_edb.layout.expanded_extent(
-                nets, self.core.geometry.extent_type.Conforming, 0.0, True, True, 1
-            )
+            _poly = temp_edb.layout.expanded_extent(nets, self.core.geometry.extent_type.Conforming, 0.0, True, True, 1)
             temp_edb.close_edb()
         if _poly:
             return _poly
@@ -2797,9 +2791,7 @@ class Edb(Database):
             p_missing = [i for i in pinstance_to_add if i.id not in ids]
             self.logger.info("Added {} padstack instances after cutout".format(len(p_missing)))
             for p in p_missing:
-                position = self.core.geometry.point_data(
-                    self.edb_value(p.position[0]), self.edb_value(p.position[1])
-                )
+                position = self.core.geometry.point_data(self.edb_value(p.position[0]), self.edb_value(p.position[1]))
                 net = self.nets.find_or_create_net(p.net_name)
                 rotation = self.edb_value(p.rotation)
                 sign_layers = list(self.stackup.signal_layers.keys())

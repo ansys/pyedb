@@ -684,8 +684,7 @@ class Stackup(LayerCollection):
         if operation in ["change_position", "change_attribute", "change_name"]:
             lc_readonly = self._pedb.layout.layer_collection
             layers = [
-                i.Clone()
-                for i in list(list(lc_readonly.Layers(self._pedb.core.cell.layer_type_set.StackupLayerSet)))
+                i.Clone() for i in list(list(lc_readonly.Layers(self._pedb.core.cell.layer_type_set.StackupLayerSet)))
             ]
             non_stackup = [
                 i.Clone()
@@ -1171,9 +1170,7 @@ class Stackup(LayerCollection):
                         cloned_layer.GetTopBottomAssociation()
                         == self._pedb.core.Cell.TopBottomAssociation.TopAssociated
                     ):
-                        cloned_layer.SetTopBottomAssociation(
-                            self._pedb.core.Cell.TopBottomAssociation.BottomAssociated
-                        )
+                        cloned_layer.SetTopBottomAssociation(self._pedb.core.Cell.TopBottomAssociation.BottomAssociated)
                     else:
                         cloned_layer.SetTopBottomAssociation(self._pedb.core.Cell.TopBottomAssociation.TopAssociated)
                     new_lc.AddStackupLayerAtElevation(cloned_layer)
