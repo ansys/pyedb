@@ -546,6 +546,8 @@ class TestClass:
         assert primitives[0].type.lower() == "polygon"
         primitives = edbapp.modeler.get_primitive_by_layer_and_point(point=[20e-3, 30e-3])
         assert len(primitives) == 3
+        primitives = edbapp.modeler.get_primitive_by_layer_and_point(point=[20e-3, 30e-3], nets=["GND"])
+        assert len(primitives) == 2
         edbapp.close()
 
     def test_arbitrary_wave_ports(self, edb_examples):
