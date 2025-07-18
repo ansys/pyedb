@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import json
+from collections import Counter
+
 from pathlib import Path
 
 import pytest
@@ -1382,8 +1384,7 @@ class TestClass:
         edbapp.save()
         edbapp.close()
         edbapp2 = edb_examples.load_edb(edbapp.edbpath)
-        edbapp2.configuration.get_variables()
-        assert edbapp2.configuration.cfg_data.variables.model_dump() == data
+        assert Counter(edbapp2.configuration.get_data_from_db(variables=True)) == Counter(data)
         edbapp2.close()
 
     def test_probes(self, edb_examples):
