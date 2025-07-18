@@ -135,6 +135,7 @@ from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
+from ansys.edb.core.utility.value import Value as GrpcValue
 
 
 class Edb(EdbInit):
