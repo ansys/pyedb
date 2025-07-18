@@ -1,0 +1,6 @@
+find\_by\_id
+============
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. automethod:: Component.find_by_id

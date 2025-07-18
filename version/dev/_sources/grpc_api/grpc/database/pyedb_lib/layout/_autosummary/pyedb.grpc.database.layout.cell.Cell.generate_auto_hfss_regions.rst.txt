@@ -1,0 +1,6 @@
+generate\_auto\_hfss\_regions
+=============================
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. automethod:: Cell.generate_auto_hfss_regions

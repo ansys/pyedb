@@ -1,0 +1,6 @@
+sqrt
+====
+
+.. currentmodule:: pyedb.grpc.database.utility.value
+
+.. autoproperty:: Value.sqrt

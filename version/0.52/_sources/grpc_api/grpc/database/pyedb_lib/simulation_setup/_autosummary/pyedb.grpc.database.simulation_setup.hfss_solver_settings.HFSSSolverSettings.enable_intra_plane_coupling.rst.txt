@@ -1,0 +1,6 @@
+enable\_intra\_plane\_coupling
+==============================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_solver_settings
+
+.. autoproperty:: HFSSSolverSettings.enable_intra_plane_coupling

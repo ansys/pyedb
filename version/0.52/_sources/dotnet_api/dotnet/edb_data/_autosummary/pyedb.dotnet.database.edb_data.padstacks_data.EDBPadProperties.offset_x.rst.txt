@@ -1,0 +1,6 @@
+offset\_x
+=========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadProperties.offset_x

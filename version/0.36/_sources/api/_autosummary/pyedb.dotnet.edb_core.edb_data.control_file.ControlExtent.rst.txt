@@ -1,0 +1,15 @@
+﻿ControlExtent
+=============
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.control_file
+
+.. autoclass:: ControlExtent
+
+   
+
+   
+   
+
+   
+   
+   

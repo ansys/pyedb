@@ -1,0 +1,6 @@
+has\_self\_intersections
+========================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.primitives_data
+
+.. autoproperty:: EdbPolygon.has_self_intersections

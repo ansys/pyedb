@@ -1,0 +1,6 @@
+upper\_elevation
+================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoproperty:: Component.upper_elevation

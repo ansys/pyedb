@@ -1,0 +1,6 @@
+boundary\_type
+==============
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoproperty:: PinGroupTerminal.boundary_type

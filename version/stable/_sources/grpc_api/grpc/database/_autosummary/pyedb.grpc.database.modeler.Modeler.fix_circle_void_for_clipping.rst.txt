@@ -1,0 +1,6 @@
+fix\_circle\_void\_for\_clipping
+================================
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. automethod:: Modeler.fix_circle_void_for_clipping

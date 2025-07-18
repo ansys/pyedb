@@ -1,0 +1,6 @@
+set\_product\_solver\_option
+============================
+
+.. currentmodule:: pyedb.grpc.database.terminal.padstack_instance_terminal
+
+.. automethod:: PadstackInstanceTerminal.set_product_solver_option

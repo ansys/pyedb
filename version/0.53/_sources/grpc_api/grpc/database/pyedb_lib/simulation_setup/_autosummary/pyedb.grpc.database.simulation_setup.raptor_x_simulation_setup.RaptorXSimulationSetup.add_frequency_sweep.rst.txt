@@ -1,0 +1,6 @@
+add\_frequency\_sweep
+=====================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup
+
+.. automethod:: RaptorXSimulationSetup.add_frequency_sweep

@@ -1,0 +1,6 @@
+start\_azimuth
+==============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationAc.start_azimuth

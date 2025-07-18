@@ -1,0 +1,6 @@
+model\_dump
+===========
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: MaterialProperties.model_dump

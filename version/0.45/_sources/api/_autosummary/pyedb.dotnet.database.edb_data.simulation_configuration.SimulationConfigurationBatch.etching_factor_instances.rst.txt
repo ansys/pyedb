@@ -1,0 +1,6 @@
+etching\_factor\_instances
+==========================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationBatch.etching_factor_instances

@@ -1,0 +1,6 @@
+num\_via\_sides
+===============
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoproperty:: DCAdvancedSettings.num_via_sides

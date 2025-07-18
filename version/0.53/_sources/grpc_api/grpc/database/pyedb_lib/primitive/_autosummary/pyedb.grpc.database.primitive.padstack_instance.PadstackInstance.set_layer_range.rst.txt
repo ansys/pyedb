@@ -1,0 +1,6 @@
+set\_layer\_range
+=================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. automethod:: PadstackInstance.set_layer_range

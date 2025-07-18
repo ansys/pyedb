@@ -1,0 +1,6 @@
+primitives\_by\_layer
+=====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.modeler
+
+.. autoproperty:: Modeler.primitives_by_layer
