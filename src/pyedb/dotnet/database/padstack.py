@@ -1964,14 +1964,13 @@ class EdbPadstacks(object):
         delete: bool
             If True, delete vias that are not kept (default is False).
 
-
         Returns
         -------
         List[int]
             IDs of vias kept after reduction.
 
         List[List[float]]
-            X-coordinates for grid lines (for plotting).
+            coordinates for grid lines (for plotting).
 
         """
         to_keep = set()
