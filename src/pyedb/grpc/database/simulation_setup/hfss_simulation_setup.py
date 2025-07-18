@@ -50,7 +50,7 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
 
     @property
     def adaptive_settings(self):
-        """Legacy compatibilty to general settings."""
+        """Legacy compatibility to general settings."""
         return self.settings.general
 
     def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02) -> bool:
