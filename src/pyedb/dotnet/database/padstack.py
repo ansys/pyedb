@@ -1944,43 +1944,48 @@ class EdbPadstacks(object):
         return dict(clusters)
 
     def reduce_via_by_density(
-        self, padstacks: List[int], cell_size_x: float = 1e-3, cell_size_y: float = 1e-3
-    ) -> tuple[List[int], list[float], list[float]]:
+        self, padstacks: List[int], cell_size_x: float = 1e-3, cell_size_y: float = 1e-3, delete: bool = False
+    ) -> tuple[List[int], list[list]]:
         """
         Reduce the number of vias by density. Keep only one via which is closest to the center of the cell. The cells
         are automatically populated based on the input vias.
 
         Parameters
         ----------
-        padstacks :
-
-        padstacks:
-            List of padstack id.
+        padstacks: List[int]
+            List of padstack ids to be reduced.
 
         cell_size_x : float
+            Width of each grid cell (default is 1e-3).
 
         cell_size_y : float
+            Height of each grid cell (default is 1e-3).
+
+        delete: bool
+            If True, delete vias that are not kept (default is False).
 
 
         Returns
         -------
-        dict
-            clusters {cluster label: [padstack ids]} <
+        List[int]
+            IDs of vias kept after reduction.
+
+        List[List[float]]
+            X-coordinates for grid lines (for plotting).
+
         """
         to_keep = set()
 
         all_instances = self.instances
         positions = np.array([all_instances[_id].position for _id in padstacks])
-        x_coords, y_coords = positions[:, 0], positions[:, 1]
 
+        x_coords, y_coords = positions[:, 0], positions[:, 1]
         x_min, x_max = np.min(x_coords), np.max(x_coords)
         y_min, y_max = np.min(y_coords), np.max(y_coords)
 
-        grid_plot_x, grid_plot_y = [], []
         padstacks_array = np.array(padstacks)
-
-        # {(cell_x, cell_y): [(id1, [x1, y1]), (id2, [x2, y2), ...]}
-        cell_map = {}
+        cell_map = {}  # {(cell_x, cell_y): [(id1, [x1, y1]), (id2, [x2, y2), ...]}
+        grid = []
 
         for idx, pos in enumerate(positions):
             i = int((pos[0] - x_min) // cell_size_x)
@@ -1995,16 +2000,33 @@ class EdbPadstacks(object):
             cell_x_mid = cell_x_min + 0.5 * cell_size_x
             cell_y_mid = cell_y_min + 0.5 * cell_size_y
 
-            grid_plot_x.extend([cell_x_min, cell_x_min + cell_size_x, cell_x_min + cell_size_x])
-            grid_plot_y.extend([cell_y_min, cell_y_min, cell_y_min + cell_size_y])
+            grid.append(
+                [
+                    [
+                        cell_x_min,
+                        cell_x_min + cell_size_x,
+                        cell_x_min + cell_size_x,
+                        cell_x_min,
+                        cell_x_min,
+                    ],
+                    [
+                        cell_y_min,
+                        cell_y_min,
+                        cell_y_min + cell_size_y,
+                        cell_y_min + cell_size_y,
+                        cell_y_min,
+                    ],
+                ]
+            )
 
             # Find closest via to cell center
             distances = [np.linalg.norm(pos - [cell_x_mid, cell_y_mid]) for _, pos in items]
             closest_idx = np.argmin(distances)
             to_keep.add(items[closest_idx][0])
 
-        to_delete = set(padstacks) - to_keep
-        for _id in to_delete:
-            all_instances[_id].delete()
+        if delete:
+            to_delete = set(padstacks) - to_keep
+            for _id in to_delete:
+                all_instances[_id].delete()
 
-        return list(to_keep), grid_plot_x, grid_plot_y
+        return list(to_keep), grid
