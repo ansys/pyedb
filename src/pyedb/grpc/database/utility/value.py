@@ -27,7 +27,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 class Value(float, GrpcValue):
     """Class defining Edb Value properties."""
 
-    def __new__(cls, edb_obj) -> float:
-        inst = super().__new__(cls, float(GrpcValue(edb_obj).double))
+    def __new__(cls, edb_obj, owner=None) -> float:
+        inst = super().__new__(cls, round(float(GrpcValue(edb_obj, owner).double), 9))
         inst._edb_obj = edb_obj
         return inst

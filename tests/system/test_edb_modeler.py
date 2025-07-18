@@ -516,7 +516,7 @@ class TestClass:
         assert len(edbapp.modeler.polygons) == 3
         edbapp.nets.merge_nets_polygons(net_names_list=net_list)
         assert len(edbapp.modeler.polygons) == 2
-        edbapp.modeler.unite_polygons_on_layer("trace1")
+        edbapp.modeler.unite_polygons_on_layer(layer_name="trace1")
         assert len(edbapp.modeler.polygons) == 1
         edbapp.close()
 
@@ -546,6 +546,8 @@ class TestClass:
         assert primitives[0].type.lower() == "polygon"
         primitives = edbapp.modeler.get_primitive_by_layer_and_point(point=[20e-3, 30e-3])
         assert len(primitives) == 3
+        primitives = edbapp.modeler.get_primitive_by_layer_and_point(point=[20e-3, 30e-3], nets=["GND"])
+        assert len(primitives) == 2
         edbapp.close()
 
     def test_arbitrary_wave_ports(self, edb_examples):
