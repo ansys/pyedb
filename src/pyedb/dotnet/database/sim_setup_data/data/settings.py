@@ -910,7 +910,10 @@ class HfssSolverSettings(object):
         bool
             ``True`` if low frequency accuracy is used, ``False`` otherwise.
         """
-        warnings.warn("`enhanced_low_freq_accuracy` is deprecated, use `enhanced_low_frequency_accuracy` instead.", DeprecationWarning)
+        warnings.warn(
+            "`enhanced_low_freq_accuracy` is deprecated, use `enhanced_low_frequency_accuracy` instead.",
+            DeprecationWarning,
+        )
         return self._hfss_solver_settings.EnhancedLowFreqAccuracy
 
     @property
@@ -923,6 +926,7 @@ class HfssSolverSettings(object):
             ``True`` if low frequency accuracy is used, ``False`` otherwise.
         """
         return self._hfss_solver_settings.EnhancedLowFreqAccuracy
+
     @enhanced_low_freq_accuracy.setter
     def enhanced_low_freq_accuracy(self, value):
         self._hfss_solver_settings.EnhancedLowFreqAccuracy = value
@@ -932,6 +936,7 @@ class HfssSolverSettings(object):
     def enhanced_low_frequency_accuracy(self, value):
         self._hfss_solver_settings.EnhancedLowFreqAccuracy = value
         self._parent._update_setup()
+
     @property
     def order_basis(self):
         """Order of the basic functions for HFSS.

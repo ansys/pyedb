@@ -26,12 +26,12 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 class Value(float, GrpcValue):
     """Class defining Edb Value properties."""
 
-    def __new__(cls, edb_obj, context=None) -> float:
-        inst = super().__new__(cls, float(GrpcValue(edb_obj).double))
+    def __new__(cls, edb_obj, owner=None) -> float:
+        inst = super().__new__(cls, float(GrpcValue(edb_obj, owner).double))
         inst._edb_obj = edb_obj
-        inst._context = context
-        
+        inst._context = owner
         return inst
+
     def __add__(self, other):
         """Adds two Edb Values."""
         edb_object = ansys.edb.core.utility.value.Value(f"({str(self._edb_obj)})+({str(other)})", self._context)

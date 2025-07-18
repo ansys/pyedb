@@ -1986,8 +1986,8 @@ class Edb(Database):
         >>> edb.logger.info("Total legacy cutout time in min %s", end_time)
         >>> edb.nets.plot(signal_list, None, color_by_net=True)
         >>> edb.nets.plot(power_list, None, color_by_net=True)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
+        >>> edb.save()
+        >>> edb.close()
 
 
         """
@@ -2059,12 +2059,12 @@ class Edb(Database):
                     )
                     if self.are_port_reference_terminals_connected():
                         if output_aedb_path:
-                            self.save_edb_as(output_aedb_path)
+                            self.save_as(output_aedb_path)
                         else:
-                            self.save_edb_as(legacy_path)
+                            self.save_as(legacy_path)
                         working_cutout = True
                         break
-                    self.close_edb()
+                    self.close()
                     self.edbpath = legacy_path
                     self.open_edb()
                     i += 1
@@ -2099,8 +2099,8 @@ class Edb(Database):
                     inlcude_voids_in_extents=include_voids_in_extents,
                 )
             if result and not open_cutout_at_end and self.edbpath != legacy_path:
-                self.save_edb()
-                self.close_edb()
+                self.save()
+                self.close()
                 self.edbpath = legacy_path
                 self.open_edb()
             return result

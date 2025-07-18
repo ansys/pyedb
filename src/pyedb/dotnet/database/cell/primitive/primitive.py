@@ -264,10 +264,10 @@ class Primitive(Connectable):
         """
         bbox = self.polygon_data._edb_object.GetBBox()
         return [
-            round(bbox.Item1.X.ToDouble(), 6),
-            round(bbox.Item1.Y.ToDouble(), 6),
-            round(bbox.Item2.X.ToDouble(), 6),
-            round(bbox.Item2.Y.ToDouble(), 6),
+            round(bbox.Item1.X.ToDouble(), 9),
+            round(bbox.Item1.Y.ToDouble(), 9),
+            round(bbox.Item2.X.ToDouble(), 9),
+            round(bbox.Item2.Y.ToDouble(), 9),
         ]
 
     def convert_to_polygon(self):

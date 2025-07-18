@@ -24,9 +24,9 @@ import math
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.primitive.path import Path as GrpcPath
 from ansys.edb.core.primitive.path import PathCornerType as GrpcPatCornerType
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.primitive.primitive import Primitive
+from pyedb.grpc.database.utility.value import Value
 
 
 class Path(GrpcPath, Primitive):
@@ -45,11 +45,11 @@ class Path(GrpcPath, Primitive):
         float
             Path width or None.
         """
-        return round(super().width.value, 9)
+        return Value(super().width)
 
     @width.setter
     def width(self, value):
-        super(Path, self.__class__).width.__set__(self, GrpcValue(value))
+        super(Path, self.__class__).width.__set__(self, Value(value))
 
     @property
     def length(self) -> float:
@@ -119,7 +119,7 @@ class Path(GrpcPath, Primitive):
             layout=self._pedb.active_layout,
             layer=self.layer,
             net=self.net,
-            width=GrpcValue(self.width),
+            width=Value(self.width),
             end_cap1=self.get_end_cap_style()[0],
             end_cap2=self.get_end_cap_style()[1],
             corner_style=mapping[self.corner_style],
@@ -289,8 +289,8 @@ class Path(GrpcPath, Primitive):
             rightline.append(rightPt)
             return leftline, rightline
 
-        distance = GrpcValue(distance).value
-        gap = GrpcValue(gap).value
+        distance = Value(distance)
+        gap = Value(gap)
         center_line = self.center_line
         leftline, rightline = get_parallet_lines(center_line, distance)
         for x, y in get_locations(rightline, gap) + get_locations(leftline, gap):
@@ -315,7 +315,7 @@ class Path(GrpcPath, Primitive):
         List[List[float, float]].
 
         """
-        return [[pt.x.value, pt.y.value] for pt in super().center_line.points]
+        return [[Value(pt.x), Value(pt.y)] for pt in super().center_line.points]
 
     # def set_center_line(self, value):
     #     if isinstance(value, list):

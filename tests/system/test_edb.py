@@ -804,7 +804,7 @@ class TestClass:
         assert not edbapp.hfss.add_setup("setup1")
         assert setup1.set_solution_single_frequency()
         if "adaptive_solution_type" in dir(setup1.adaptive_settings):
-            assert setup1.adaptive_settings.adaptive_solution_type.value ==0
+            assert setup1.adaptive_settings.adaptive_solution_type.value == 0
         else:
             assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 1
         assert setup1.set_solution_multi_frequencies(frequencies=("5GHz", "10GHz", "100GHz"))
@@ -1390,21 +1390,12 @@ class TestClass:
         )
         assert extent
         assert len(extent) == 55
-        if edbapp.grpc:
-            # grpc and dotnet have rounding differences
-            assert extent[0] == [0.011025799607142596, 0.04451508809926884]
-            assert extent[10] == [0.02214231174553801, 0.02851039223066996]
-            assert extent[20] == [0.06722930402216426, 0.02605468368384399]
-            assert extent[30] == [0.06793706871543964, 0.02961898967909681]
-            assert extent[40] == [0.0655032742298304, 0.03147893183305721]
-            assert extent[50] == [0.01143465157862367, 0.046365530038092975]
-        else:
-            assert extent[0] == [0.011025799702099603, 0.04451508810211455]
-            assert extent[10] == [0.022142311790681247, 0.02851039231475559]
-            assert extent[20] == [0.06722930398844625, 0.026054683772800503]
-            assert extent[30] == [0.06793706863503707, 0.02961898962849831]
-            assert extent[40] == [0.06550327418370948, 0.031478931749766806]
-            assert extent[50] == [0.01143465165463851, 0.04636552997976474]
+        assert [round(num, 9) for num in extent[0]] == [0.0110258, 0.044515088]
+        assert [round(num, 9) for num in extent[10]] == [0.022142312, 0.028510392]
+        assert [round(num, 9) for num in extent[20]] == [0.067229304, 0.026054684]
+        assert [round(num, 9) for num in extent[30]] == [0.067937069, 0.02961899]
+        assert [round(num, 9) for num in extent[40]] == [0.065503274, 0.031478932]
+        assert [round(num, 9) for num in extent[50]] == [0.011434652, 0.04636553]
         edbapp.close_edb()
 
     def test_move_and_edit_polygons(self, edb_examples):
@@ -1423,13 +1414,13 @@ class TestClass:
         assert round(polygon.center[1], 6) == -0.0045
 
         assert polygon.rotate(angle=45)
-        assert polygon.bbox == [0.012463, -0.043037, 0.089537, 0.034037]
+        assert polygon.bbox == [0.01246268, -0.04303732, 0.08953732, 0.03403732]
         assert polygon.rotate(angle=34, center=[0, 0])
-        assert polygon.bbox == [0.03084, -0.025152, 0.058755, 0.074728]
+        assert polygon.bbox == [0.030839512, -0.025151831, 0.058755056, 0.074728169]
         assert polygon.scale(factor=1.5)
-        assert polygon.bbox == [0.023861, -0.050122, 0.065734, 0.099698]
+        assert polygon.bbox == [0.023860626, -0.05012183, 0.065733942, 0.099698168]
         assert polygon.scale(factor=-0.5, center=[0, 0])
-        assert polygon.bbox == [-0.032867, -0.049849, -0.01193, 0.025061]
+        assert polygon.bbox == [-0.032866971, -0.049849084, -0.011930313, 0.025060915]
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
@@ -1506,13 +1497,15 @@ class TestClass:
             assert setup.dc_ir_settings.source_terms_to_ground
         edbapp.close()
 
-    def test_arbitrary_wave_ports(self, edb_examples):
+    def test_arbitrary_wave_ports(self):
         # TODO check later when sever instances is improved.
+        from pyedb import Edb
+
         example_folder = os.path.join(local_path, "example_models", test_subfolder)
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
         target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
         self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = edb_examples.load_edb(target_path_edb, copy_to_temp=False)
+        edbapp = Edb(target_path_edb)
         assert edbapp.create_model_for_arbitrary_wave_ports(
             temp_directory=self.local_scratch.path,
             output_edb=os.path.join(self.local_scratch.path, "wave_ports.aedb"),
@@ -1644,12 +1637,14 @@ class TestClass:
         )
         edbapp.close()
 
-    def test_create_edb_with_zip(self, edb_examples):
+    def test_create_edb_with_zip(self):
         """Create EDB from zip file."""
         # Done
+        from pyedb import Edb
+
         src = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1_0.zip")
         zip_path = self.local_scratch.copyfile(src)
-        edb = edb_examples.load_edb(zip_path, copy_to_temp=False)
+        edb = Edb(zip_path)
         assert edb.nets
         assert edb.components
         edb.close()
@@ -1886,10 +1881,12 @@ class TestClass:
             )
         assert len(edbapp.excitations) == 0
 
-    def test_active_cell_setter(self, edb_examples):
+    def test_active_cell_setter(self):
         """Use multiple cells."""
+        from pyedb import Edb
+
         src = os.path.join(local_path, "example_models", "TEDB", "multi_cells.aedb")
-        edb = edb_examples.load_edb(edb_path=src)
+        edb = Edb(edbpath=src)
         edb.active_cell = edb.circuit_cells[0]
         assert len(edb.modeler.primitives) == 2096
         assert len(edb.components.instances) == 509
@@ -1922,13 +1919,15 @@ class TestClass:
 
         edb.close()
 
-    def test_import_layout_file(self, edb_examples):
+    def test_import_layout_file(self):
+        from pyedb import Edb
+
         input_file = os.path.join(local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example.gds")
         control_file = os.path.join(
             local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
         )
         map_file = os.path.join(local_path, "example_models", "cad", "GDS", "dummy_layermap.map")
-        edb = edb_examples.create_empty_edb()
+        edb = Edb()
         assert edb.import_layout_file(input_file=input_file, control_file=control_file, map_file=map_file)
 
     @pytest.mark.parametrize("positive_pin_names", (["R20", "R21", "T20"], ["R20"]))
@@ -2130,3 +2129,16 @@ class TestClass:
         assert edbapp.compare(edb_base)
         folder = edbapp.edbpath[:-5] + "_compare_results"
         assert os.path.exists(folder)
+
+    def test_create_layout_component(self, edb_examples):
+        from pyedb import Edb
+
+        edbapp = edb_examples.get_si_verse()
+        if edbapp.grpc:
+            out_file = os.path.join(self.local_scratch.path, "test.aedbcomp")
+            edbapp.export_layout_component(component_path=out_file)
+            assert os.path.isfile(out_file)
+            edbapp.close()
+            edbapp = Edb()
+            layout_comp = edbapp.import_layout_component(out_file)
+            assert not layout_comp.cell_instance.is_null

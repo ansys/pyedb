@@ -40,7 +40,6 @@ from ansys.edb.core.primitive.path import PathEndCapType as GrpcPathEndCapType
 from ansys.edb.core.primitive.rectangle import (
     RectangleRepresentationType as GrpcRectangleRepresentationType,
 )
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.circle import Circle
@@ -49,6 +48,7 @@ from pyedb.grpc.database.primitive.polygon import Polygon
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
+from pyedb.grpc.database.utility.value import Value
 
 
 class Modeler(object):
@@ -425,12 +425,7 @@ class Modeler(object):
             Bounding box coordinates [min_x, min_y, max_x, max_y].
         """
         bounding_box = polygon.polygon_data.bbox()
-        return [
-            bounding_box[0].x.value,
-            bounding_box[0].y.value,
-            bounding_box[1].x.value,
-            bounding_box[1].y.value,
-        ]
+        return [Value(bounding_box[0].x), Value(bounding_box[0].y), Value(bounding_box[1].x), Value(bounding_box[1].y)]
 
     @staticmethod
     def get_polygon_points(polygon) -> List[List[float]]:
@@ -455,9 +450,9 @@ class Modeler(object):
                 point = polygon.polygon_data.points[i]
                 if prev_point != point:
                     if point.is_arc:
-                        points.append([point.x.value])
+                        points.append([Value(point.x)])
                     else:
-                        points.append([point.x.value, point.y.value])
+                        points.append([Value(point.x), Value(point.y)])
                     prev_point = point
                     i += 1
                 else:
@@ -513,8 +508,8 @@ class Modeler(object):
         polygon_data = polygon.polygon_data
         bound_center = polygon_data.bounding_circle()[0]
         bound_center2 = selection_polygon_data.bounding_circle()[0]
-        center = [bound_center.x.value, bound_center.y.value]
-        center2 = [bound_center2.x.value, bound_center2.y.value]
+        center = [Value(bound_center.x), Value(bound_center.y)]
+        center2 = [Value(bound_center2.x), Value(bound_center2.y)]
         x1, y1 = calc_slope(center2, center)
 
         if not origin:
@@ -529,12 +524,12 @@ class Modeler(object):
                 if prev_point != point:
                     check_inside = selection_polygon_data.is_inside(point)
                     if check_inside:
-                        xcoeff, ycoeff = calc_slope([point.x.value, point.x.value], origin)
+                        xcoeff, ycoeff = calc_slope([Value(point.x), Value(point.x)], origin)
 
                         new_points = GrpcPointData(
                             [
-                                GrpcValue(str(point.x.value) + f"{xcoeff}*{offset_name}"),
-                                GrpcValue(str(point.y.value) + f"{ycoeff}*{offset_name}"),
+                                Value(str(Value(point.x) + f"{xcoeff}*{offset_name}")),
+                                Value(str(Value(point.y)) + f"{ycoeff}*{offset_name}"),
                             ]
                         )
                         polygon_data.points[i] = new_points
@@ -610,12 +605,12 @@ class Modeler(object):
         for pt in points:
             _pt = []
             for coord in pt:
-                coord = GrpcValue(coord, self._pedb.active_cell)
+                coord = Value(coord, self._pedb.active_cell)
                 _pt.append(coord)
             _points.append(_pt)
         points = _points
 
-        width = GrpcValue(width, self._pedb.active_cell)
+        width = Value(width, self._pedb.active_cell)
 
         polygon_data = GrpcPolygonData(points=[GrpcPointData(i) for i in points])
         path = Path.create(
@@ -710,7 +705,7 @@ class Modeler(object):
             new_points = []
             for idx, i in enumerate(points):
                 new_points.append(
-                    GrpcPointData([GrpcValue(i[0], self._pedb.active_cell), GrpcValue(i[1], self._pedb.active_cell)])
+                    GrpcPointData([Value(i[0], self._pedb.active_cell), Value(i[1], self._pedb.active_cell)])
                 )
             polygon_data = GrpcPolygonData(points=new_points)
 
@@ -787,40 +782,40 @@ class Modeler(object):
                 layer=layer_name,
                 net=edb_net,
                 rep_type=rep_type,
-                param1=GrpcValue(lower_left_point[0]),
-                param2=GrpcValue(lower_left_point[1]),
-                param3=GrpcValue(upper_right_point[0]),
-                param4=GrpcValue(upper_right_point[1]),
-                corner_rad=GrpcValue(corner_radius),
-                rotation=GrpcValue(rotation),
+                param1=Value(lower_left_point[0]),
+                param2=Value(lower_left_point[1]),
+                param3=Value(upper_right_point[0]),
+                param4=Value(upper_right_point[1]),
+                corner_rad=Value(corner_radius),
+                rotation=Value(rotation),
             )
         else:
             rep_type = GrpcRectangleRepresentationType.CENTER_WIDTH_HEIGHT
             if isinstance(width, str):
                 if width in self._pedb.variables:
-                    width = GrpcValue(width, self._pedb.active_cell)
+                    width = Value(width, self._pedb.active_cell)
                 else:
-                    width = GrpcValue(width)
+                    width = Value(width)
             else:
-                width = GrpcValue(width)
+                width = Value(width)
             if isinstance(height, str):
                 if height in self._pedb.variables:
-                    height = GrpcValue(height, self._pedb.active_cell)
+                    height = Value(height, self._pedb.active_cell)
                 else:
-                    height = GrpcValue(width)
+                    height = Value(width)
             else:
-                height = GrpcValue(width)
+                height = Value(width)
             rect = Rectangle.create(
                 layout=self._active_layout,
                 layer=layer_name,
                 net=edb_net,
                 rep_type=rep_type,
-                param1=GrpcValue(center_point[0]),
-                param2=GrpcValue(center_point[1]),
-                param3=GrpcValue(width),
-                param4=GrpcValue(height),
-                corner_rad=GrpcValue(corner_radius),
-                rotation=GrpcValue(rotation),
+                param1=Value(center_point[0]),
+                param2=Value(center_point[1]),
+                param3=Value(width),
+                param4=Value(height),
+                corner_rad=Value(corner_radius),
+                rotation=Value(rotation),
             )
         if not rect.is_null:
             return Rectangle(self._pedb, rect)
@@ -855,9 +850,9 @@ class Modeler(object):
             layout=self._active_layout,
             layer=layer_name,
             net=edb_net,
-            center_x=GrpcValue(x),
-            center_y=GrpcValue(y),
-            radius=GrpcValue(radius),
+            center_x=Value(x),
+            center_y=Value(y),
+            radius=Value(radius),
         )
         if not circle.is_null:
             return Circle(self._pedb, circle)
@@ -944,9 +939,9 @@ class Modeler(object):
                 layout=self._active_layout,
                 layer=void_circle.layer_name,
                 net=void_circle.net,
-                center_x=GrpcValue(circ_params[0]),
-                center_y=GrpcValue(circ_params[1]),
-                radius=GrpcValue(circ_params[2]),
+                center_x=Value(circ_params[0]),
+                center_y=Value(circ_params[1]),
+                radius=Value(circ_params[2]),
             )
             if not cloned_circle.is_null:
                 cloned_circle.is_negative = True
@@ -1000,8 +995,8 @@ class Modeler(object):
 
             if not self._validatePoint(endPoint):
                 return None
-            startPoint = [GrpcValue(i) for i in startPoint]
-            endPoint = [GrpcValue(i) for i in endPoint]
+            startPoint = [Value(i) for i in startPoint]
+            endPoint = [Value(i) for i in endPoint]
             if len(endPoint) == 2:
                 is_parametric = (
                     is_parametric
@@ -1059,7 +1054,7 @@ class Modeler(object):
         else:
             k = 0
             for pt in points:
-                point = [GrpcValue(i) for i in pt]
+                point = [Value(i) for i in pt]
                 new_points = GrpcPointData(point)
                 if len(point) > 2:
                     k += 1
@@ -1163,14 +1158,14 @@ class Modeler(object):
                             if not variable_value:
                                 variable_value = p.width
                             self._pedb.active_cell.add_variable(
-                                name=_parameter_name, value=GrpcValue(variable_value), is_param=True
+                                name=_parameter_name, value=Value(variable_value), is_param=True
                             )
-                            p.width = GrpcValue(_parameter_name, self._pedb.active_cell)
+                            p.width = Value(_parameter_name, self._pedb.active_cell)
                         elif p.layer.name in layers_name:
                             if not variable_value:
                                 variable_value = p.width
                             self._pedb.add_design_variable(parameter_name, variable_value, True)
-                            p.width = GrpcValue(_parameter_name, self._pedb.active_cell)
+                            p.width = Value(_parameter_name, self._pedb.active_cell)
         return True
 
     def unite_polygons_on_layer(
@@ -1199,6 +1194,8 @@ class Modeler(object):
             layer_name = [layer_name]
         if not layer_name:
             layer_name = list(self._pedb.stackup.signal_layers.keys())
+        if net_names_list is None:
+            net_names_list = []
 
         for lay in layer_name:
             self._logger.info(f"Uniting Objects on layer {lay}.")
@@ -1319,7 +1316,7 @@ class Modeler(object):
                     primitives = self.primitives_by_layer[layer]
                     for prim in primitives:
                         if prim.primitive_type.name == "PATH":
-                            surface += Path(self._pedb, prim).length * prim.cast().width.value
+                            surface += Path(self._pedb, prim).length * Value(prim.cast().width)
                         if prim.primitive_type.name == "POLYGON":
                             surface += prim.polygon_data.area()
                             stat_model.occupying_surface[layer] = round(surface, 6)
@@ -1418,14 +1415,14 @@ class Modeler(object):
             bondwire_type=bondwire_type,
             definition_name=definition_name,
             placement_layer=placement_layer,
-            width=GrpcValue(width),
+            width=Value(width),
             material=material,
             start_layer_name=start_layer_name,
-            start_x=GrpcValue(start_x),
-            start_y=GrpcValue(start_y),
+            start_x=Value(start_x),
+            start_y=Value(start_y),
             end_layer_name=end_layer_name,
-            end_x=GrpcValue(end_x),
-            end_y=GrpcValue(end_y),
+            end_x=Value(end_x),
+            end_y=Value(end_y),
             net=net,
             end_context=end_cell_inst,
             start_context=start_cell_inst,

@@ -77,7 +77,6 @@ import ansys.edb.core.layout.cell
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
 )
-from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
 from pyedb.configuration.configuration import Configuration
@@ -431,7 +430,7 @@ class Edb(EdbInit):
         dict[str, float]
             Variable names and values.
         """
-        return {i: self.active_cell.get_variable_value(i).value for i in self.active_cell.get_all_variable_names()}
+        return {i: Value(self.active_cell.get_variable_value(i)) for i in self.active_cell.get_all_variable_names()}
 
     @property
     def project_variables(self) -> dict[str, float]:
@@ -442,7 +441,7 @@ class Edb(EdbInit):
         dict[str, float]
             Variable names and values.
         """
-        return {i: self.active_db.get_variable_value(i).value for i in self.active_db.get_all_variable_names()}
+        return {i: Value(self.active_db.get_variable_value(i)) for i in self.active_db.get_all_variable_names()}
 
     @property
     def layout_validation(self) -> LayoutValidation:
@@ -1573,7 +1572,7 @@ class Edb(EdbInit):
         for term in terms:
             if term.type == "PointTerminal" and term.net.name in reference_list:
                 pd = term.get_parameters()[1]
-                locations.append([pd.x.value, pd.y.value])
+                locations.append([Value(pd.x), Value(pd.y)])
         for point in locations:
             pointA = GrpcPointData([point[0] - expansion_size, point[1] - expansion_size])
             pointB = GrpcPointData([point[0] + expansion_size, point[1] + expansion_size])
@@ -1841,7 +1840,7 @@ class Edb(EdbInit):
         include_pingroups=True,
         inlcude_voids_in_extents=False,
     ):
-        expansion_size = GrpcValue(expansion_size).value
+        expansion_size = Value(expansion_size)
 
         # validate nets in layout
         net_signals = [net for net in self.layout.nets if net.name in signal_list]
@@ -1924,7 +1923,7 @@ class Edb(EdbInit):
                 self.components.delete_single_pin_rlc()
                 self.logger.info_timer("Single Pins components deleted")
                 self.components.refresh_components()
-        return [[pt.x.value, pt.y.value] for pt in _poly.without_arcs().points]
+        return [[Value(pt.x), Value(pt.y)] for pt in _poly.without_arcs().points]
 
     def _create_cutout_multithread(
         self,
@@ -1953,7 +1952,7 @@ class Edb(EdbInit):
         if output_aedb_path:
             self.save_edb_as(output_aedb_path)
         self.logger.info("Cutout Multithread started.")
-        expansion_size = GrpcValue(expansion_size).value
+        expansion_size = Value(expansion_size)
 
         timer_start = self.logger.reset_timer()
         if custom_extent:
@@ -2170,7 +2169,7 @@ class Edb(EdbInit):
             self.save_edb()
         self.logger.info_timer("Cutout completed.", timer_start)
         self.logger.reset_timer()
-        return [[pt.x.value, pt.y.value] for pt in _poly.without_arcs().points]
+        return [[Value(pt.x), Value(pt.y)] for pt in _poly.without_arcs().points]
 
     def get_conformal_polygon_from_netlist(self, netlist=None) -> Union[bool, Polygon]:
         """Returns conformal polygon data based on a netlist.
@@ -2296,7 +2295,7 @@ class Edb(EdbInit):
             for p in p_missing:
                 position = GrpcPointData(p.position)
                 net = self.nets.find_or_create_net(p.net_name)
-                rotation = GrpcValue(p.rotation)
+                rotation = Value(p.rotation)
                 sign_layers = list(self.stackup.signal_layers.keys())
                 if not p.start_layer:  # pragma: no cover
                     fromlayer = self.stackup.signal_layers[sign_layers[0]]
@@ -2388,7 +2387,7 @@ class Edb(EdbInit):
                         self.logger.warning("aedb def file manually created.")
                     except:
                         pass
-        return [[pt.x.value, pt.y.value] for pt in polygon_data.without_arcs().points]
+        return [[Value(pt.x), Value(pt.y)] for pt in polygon_data.without_arcs().points]
 
     @staticmethod
     def write_export3d_option_config_file(path_to_output, config_dictionaries=None):
@@ -2750,11 +2749,11 @@ class Edb(EdbInit):
         """
         if self.variable_exists(variable_name):
             if variable_name in self.db.get_all_variable_names():
-                self.db.set_variable_value(variable_name, GrpcValue(variable_value))
+                self.db.set_variable_value(variable_name, Value(variable_value))
             elif variable_name in self.active_cell.get_all_variable_names():
-                self.active_cell.set_variable_value(variable_name, GrpcValue(variable_value))
+                self.active_cell.set_variable_value(variable_name, Value(variable_value))
 
-    def get_bounding_box(self) -> list[list[float, float], list[float, float]]:
+    def get_bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         """Get layout bounding box.
 
         Returns
@@ -2764,7 +2763,7 @@ class Edb(EdbInit):
         """
         lay_inst_polygon_data = [obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()]
         layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
-        return [[layout_bbox[0].x.value, layout_bbox[0].y.value], [layout_bbox[1].x.value, layout_bbox[1].y.value]]
+        return ((Value(layout_bbox[0].x), Value(layout_bbox[0].y)), (Value(layout_bbox[1].x), Value(layout_bbox[1].y)))
 
     def get_statistics(self, compute_area=False):
         """Get layout statistics.
@@ -3451,7 +3450,7 @@ class Edb(EdbInit):
                 _layers = {k: v for k, v in self.stackup.layers.items() if k in layer_filter}
             for layer_name, layer in _layers.items():
                 var, val = _apply_variable(f"${layer_name}", layer.thickness)
-                layer.thickness = GrpcValue(var, self.active_db)
+                layer.thickness = Value(var, self.active_db)
                 parameters.append(val)
         if materials:
             if not material_filter:
@@ -3461,14 +3460,14 @@ class Edb(EdbInit):
             for mat_name, material in _materials.items():
                 if not material.conductivity or material.conductivity < 1e4:
                     var, val = _apply_variable(f"$epsr_{mat_name}", material.permittivity)
-                    material.permittivity = GrpcValue(var, self.active_db)
+                    material.permittivity = Value(var, self.active_db)
                     parameters.append(val)
                     var, val = _apply_variable(f"$loss_tangent_{mat_name}", material.dielectric_loss_tangent)
-                    material.dielectric_loss_tangent = GrpcValue(var, self.active_db)
+                    material.dielectric_loss_tangent = Value(var, self.active_db)
                     parameters.append(val)
                 else:
                     var, val = _apply_variable(f"$sigma_{mat_name}", material.conductivity)
-                    material.conductivity = GrpcValue(var, self.active_db)
+                    material.conductivity = Value(var, self.active_db)
                     parameters.append(val)
         if traces:
             if not trace_net_filter:
@@ -3484,7 +3483,7 @@ class Edb(EdbInit):
                 else:
                     trace_width_variable = f"{path.aedt_name}"
                 var, val = _apply_variable(trace_width_variable, path.width)
-                path.width = GrpcValue(var, self.active_cell)
+                path.width = Value(var, self.active_cell)
                 parameters.append(val)
         if not padstack_definition_filter:
             if trace_net_filter:
@@ -3511,7 +3510,7 @@ class Edb(EdbInit):
                         hole_variable = f"${def_name}_hole_diameter"
                     if padstack_def.hole_diameter:
                         var, val = _apply_variable(hole_variable, padstack_def.hole_diameter)
-                        padstack_def.hole_properties = GrpcValue(var, self.active_db)
+                        padstack_def.hole_properties = Value(var, self.active_db)
                         parameters.append(val)
             if pads:
                 for layer, pad in padstack_def.pad_by_layer.items():
@@ -3726,7 +3725,7 @@ class Edb(EdbInit):
             material="pec",
         )
         if launching_box_thickness:
-            launching_box_thickness = str(GrpcValue(launching_box_thickness))
+            launching_box_thickness = str(Value(launching_box_thickness))
         cloned_edb.stackup.add_layer(
             layer_name="ref",
             layer_type="signal",
@@ -3761,7 +3760,7 @@ class Edb(EdbInit):
                         .parameters_values
                     )
                 else:
-                    pad_diameter = GrpcValue(terminal_diameter).value
+                    pad_diameter = Value(terminal_diameter)
                 _temp_circle = cloned_edb.modeler.create_circle(
                     layer_name="ports",
                     x=inst.position[0],
