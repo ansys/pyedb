@@ -369,28 +369,28 @@ class PinGroup(object):
 
     def create_current_source_terminal(self, magnitude=1, phase=0):
         terminal = self.create_terminal()._edb_object
-        terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kCurrentSource)
+        terminal.SetBoundaryType(self._pedb.core.cell.terminal.BoundaryType.kCurrentSource)
         terminal.SetSourceAmplitude(self._pedb.edb_value(magnitude))
-        terminal.SetSourcePhase(self._pedb.edb_api.utility.value(phase))
+        terminal.SetSourcePhase(self._pedb.core.utility.value(phase))
         return terminal
 
     def create_voltage_source_terminal(self, magnitude=1, phase=0, impedance=0.001):
         terminal = self.create_terminal()._edb_object
-        terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageSource)
+        terminal.SetBoundaryType(self._pedb.core.cell.terminal.BoundaryType.kVoltageSource)
         terminal.SetSourceAmplitude(self._pedb.edb_value(magnitude))
-        terminal.SetSourcePhase(self._pedb.edb_api.utility.value(phase))
+        terminal.SetSourcePhase(self._pedb.core.utility.value(phase))
         terminal.SetImpedance(self._pedb.edb_value(impedance))
         return terminal
 
     def create_voltage_probe_terminal(self, impedance=1000000):
         terminal = self.create_terminal()._edb_object
-        terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageProbe)
+        terminal.SetBoundaryType(self._pedb.core.cell.terminal.BoundaryType.kVoltageProbe)
         terminal.SetImpedance(self._pedb.edb_value(impedance))
         return terminal
 
     def create_port_terminal(self, impedance=50):
         terminal = self.create_terminal()._edb_object
-        terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PortBoundary)
+        terminal.SetBoundaryType(self._pedb.core.cell.terminal.BoundaryType.PortBoundary)
         terminal.SetImpedance(self._pedb.edb_value(impedance))
         terminal.SetIsCircuitPort(True)
         return terminal

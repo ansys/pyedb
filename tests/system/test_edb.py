@@ -262,7 +262,8 @@ class TestClass:
         points = [[bounding[0][0], bounding[0][1]]]
         points.append([cutout_line_x, bounding[0][1]])
         points.append([cutout_line_x, cutout_line_y])
-        points.append([bounding[0][0], cutout_line_y])
+        points.append([bounding[0][0], cutout_line_y]
+                      )
         points.append([bounding[0][0], bounding[0][1]])
 
         output = os.path.join(self.local_scratch.path, "cutout2.aedb")
@@ -585,11 +586,7 @@ class TestClass:
         assert edb_stats.num_resistors
         assert edb_stats.occupying_ratio["1_Top"] == 0.301682
         assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.937467
-        if edb.grpc:
-            # TODO check why grpc give different result.
-            assert edb_stats.occupying_ratio["16_Bottom"] == 0.179471
-        else:
-            assert edb_stats.occupying_ratio["16_Bottom"] == 0.204925
+        assert edb_stats.occupying_ratio["16_Bottom"] == 0.204925
         edb.close()
 
     def test_hfss_set_bounding_box_extent(self, edb_examples):

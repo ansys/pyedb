@@ -70,7 +70,7 @@ class EdbHfss(object):
         -------
         Ansys.Ansoft.Edb
         """
-        return self._pedb.edb_api
+        return self._pedb.core
 
     @property
     def _active_layout(self):
@@ -884,7 +884,7 @@ class EdbHfss(object):
             ]
         )
         pos_edge_term.SetProductSolverOption(
-            self._pedb.edb_api.ProductId.Designer,
+            self._pedb.core.ProductId.Designer,
             "HFSS",
             prop,
         )
@@ -939,7 +939,7 @@ class EdbHfss(object):
         if not layer_alignment == "Upper":
             layer_alignment = "Lower"
         pos_edge_term.SetProductSolverOption(
-            self._pedb.edb_api.ProductId.Designer,
+            self._pedb.core.ProductId.Designer,
             "HFSS",
             "HFSS('HFSS Type'='Gap(coax)', Orientation='Horizontal', 'Layer Alignment'='{}')".format(layer_alignment),
         )
@@ -1144,7 +1144,7 @@ class EdbHfss(object):
                                         ref_prim = [
                                             prim
                                             for prim in reference_net.primitives
-                                            if prim.polygon_data.edb_api.PointInPolygon(mid_pt_data)
+                                            if prim.polygon_data.core.PointInPolygon(mid_pt_data)
                                         ]
                                         if ref_prim:
                                             self._logger.info("Reference primitive found")
@@ -1401,7 +1401,7 @@ class EdbHfss(object):
         l_inst = layout.GetLayoutInstance()
 
         for inst in simulation_setup.components:  # pragma: no cover
-            comp = self._pedb.edb_api.cell.hierarchy.component.FindByName(layout, inst)
+            comp = self._pedb.core.cell.hierarchy.component.FindByName(layout, inst)
             if comp.IsNull():
                 continue
 
@@ -1473,7 +1473,7 @@ class EdbHfss(object):
             cmp_names = []
         ii = 0
         for cc in cmp_names:
-            cmp = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, cc)
+            cmp = self._pedb.core.cell.hierarchy.component.FindByName(self._active_layout, cc)
             if cmp.IsNull():
                 self._logger.warning("RenamePorts: could not find component {0}".format(cc))
                 continue
@@ -1512,7 +1512,7 @@ class EdbHfss(object):
                             "'PEC Launch Width'='0mm')"
                         )
                         for tt in terms:
-                            tt.SetProductSolverOption(self._edb.edb_api.ProductId.Designer, "HFSS", option)
+                            tt.SetProductSolverOption(self._edb.core.ProductId.Designer, "HFSS", option)
         return True
 
     def _get_terminals_bbox(self, comp, l_inst, terminals_only):

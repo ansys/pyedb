@@ -62,6 +62,7 @@ class Layout(GrpcLayout):
     def __init__(self, pedb):
         super().__init__(pedb.active_cell._Cell__stub.GetLayout(pedb.active_cell.msg))
         self._pedb = pedb
+        self.__primitives = []
 
     @property
     def cell(self):
@@ -73,21 +74,21 @@ class Layout(GrpcLayout):
 
     @property
     def primitives(self) -> list[any]:
-        prims = []
+        self.__primitives = []
         for prim in super().primitives:
             if isinstance(prim, ansys.edb.core.primitive.path.Path):
-                prims.append(Path(self._pedb, prim))
+                self.__primitives.append(Path(self._pedb, prim))
             elif isinstance(prim, ansys.edb.core.primitive.polygon.Polygon):
-                prims.append(Polygon(self._pedb, prim))
+                self.__primitives.append(Polygon(self._pedb, prim))
             elif isinstance(prim, ansys.edb.core.primitive.padstack_instance.PadstackInstance):
-                prims.append(PadstackInstance(self._pedb, prim))
+                self.__primitives.append(PadstackInstance(self._pedb, prim))
             elif isinstance(prim, ansys.edb.core.primitive.rectangle.Rectangle):
-                prims.append(Rectangle(self._pedb, prim))
+                self.__primitives.append(Rectangle(self._pedb, prim))
             elif isinstance(prim, ansys.edb.core.primitive.circle.Circle):
-                prims.append(Circle(self._pedb, prim))
+                self.__primitives.append(Circle(self._pedb, prim))
             elif isinstance(prim, ansys.edb.core.primitive.bondwire.Bondwire):
-                prims.append(Bondwire(self._pedb, prim))
-        return prims
+                self.__primitives.append(Bondwire(self._pedb, prim))
+        return self.__primitives
 
     @property
     def terminals(self) -> list[any]:

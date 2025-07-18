@@ -291,13 +291,13 @@ class Edb(EdbInit):
                 return False
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
-            self.open_edb(restart_rpc_server=restart_rpc_server)
+            self.open(restart_rpc_server=restart_rpc_server)
         elif not os.path.exists(os.path.join(self.edbpath, "edb.def")):
-            self.create_edb(restart_rpc_server=restart_rpc_server)
+            self.create(restart_rpc_server=restart_rpc_server)
             self.logger.info("EDB %s created correctly.", self.edbpath)
         elif ".aedb" in edbpath:
             self.edbpath = edbpath
-            self.open_edb(restart_rpc_server=restart_rpc_server)
+            self.open(restart_rpc_server=restart_rpc_server)
         if self.active_cell:
             self.logger.info("EDB initialized.")
         else:
@@ -366,6 +366,12 @@ class Edb(EdbInit):
         if description:  # Add the variable description if a two-item list is passed for variable_value.
             self.__getitem__(variable_name).description = description
 
+    @property
+    def core(self)->ansys.edb.core:
+        """Ansys Edb Core module.
+        """
+        return ansys.edb.core
+
     def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         files = [aedt_file, aedt_file + ".lock"]
@@ -402,7 +408,8 @@ class Edb(EdbInit):
         if isinstance(val, GrpcValue):
             return Value(val)
         else:
-            return Value(GrpcValue(val))
+            context = self.active_cell if not str(val).startswith("$") else self.active_db
+            return Value(GrpcValue(val, context), context)
 
     @property
     def cell_names(self) -> [str]:
@@ -1292,7 +1299,7 @@ class Edb(EdbInit):
         func : str
             Command to execute.
         """
-        # return self.edb_api.utility.utility.Command.Execute(func)
+        # return self.core.utility.utility.Command.Execute(func)
         pass
 
     def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False) -> bool:

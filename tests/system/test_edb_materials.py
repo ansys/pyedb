@@ -68,7 +68,7 @@ class TestClass:
     @pytest.fixture(autouse=True)
     def init(self, legacy_edb_app_without_material):
         self.edbapp = legacy_edb_app_without_material
-        self.definition = self.edbapp.edb_api.definition
+        self.definition = self.edbapp.core.definition
 
         # Remove dummy material if it exist
         material_def = self.definition.MaterialDef.FindByName(self.edbapp.active_db, MATERIAL_NAME)
@@ -279,8 +279,8 @@ class TestClass:
     def test_materials_material_property_to_id(self):
         """Evaluate materials map between material property and id."""
         materials = Materials(self.edbapp)
-        permittivity_id = self.edbapp.edb_api.definition.MaterialPropertyId.Permittivity
-        invalid_id = self.edbapp.edb_api.definition.MaterialPropertyId.InvalidProperty
+        permittivity_id = self.edbapp.core.definition.MaterialPropertyId.Permittivity
+        invalid_id = self.edbapp.core.definition.MaterialPropertyId.InvalidProperty
 
         assert permittivity_id == materials.material_property_to_id("permittivity")
         assert invalid_id == materials.material_property_to_id("azertyuiop")

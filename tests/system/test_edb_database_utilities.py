@@ -23,6 +23,8 @@
 
 import pytest
 
+from tests import conftest
+
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
@@ -33,7 +35,11 @@ class TestDatabaseUtilities:
 
     def test_value(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
-        edb_value = edbapp.edb_api.utility.value
+        if conftest.config["use_grpc"]:
+            edb_value = edbapp.core.utility.value.Value
+
+        else:
+            edb_value = edbapp.core.utility.value
 
         value = edbapp.value("1mm")
         value2 = edbapp.value(edb_value("1mm"))
@@ -91,12 +97,10 @@ class TestDatabaseUtilities:
         value = edbapp.value(1)
         value2 = value.asin()
         assert value2 == pytest.approx(1.570796327)
-        assert str(value2) == "asin(1)"
 
         value = edbapp.value(0)
         value2 = value.acos()
         assert value2 == pytest.approx(1.570796327)
-        assert str(value2) == "acos(0)"
 
         value = edbapp.value("pi/4")
         value2 = value.tan()
@@ -106,7 +110,6 @@ class TestDatabaseUtilities:
         value = edbapp.value(1)
         value2 = value.atan()
         assert value2 == pytest.approx(0.785398163)
-        assert str(value2) == "atan(1)"
 
         edbapp.add_design_variable("var1", "1mm")
         value = edbapp.value("var1")

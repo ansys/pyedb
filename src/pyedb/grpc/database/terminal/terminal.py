@@ -356,7 +356,7 @@ class Terminal(GrpcTerminal):
         ref_layer = self.reference_layer
         edges = self.edges
         _, _, point_data = edges[0].get_parameters()
-        # shape_pd = self._pedb.edb_api.geometry.point_data(X, Y)
+        # shape_pd = self._pedb.core.geometry.point_data(X, Y)
         layer_name = ref_layer.name
         for primitive in self._pedb.layout.primitives:
             if primitive.layer.name == layer_name:
@@ -375,7 +375,7 @@ class Terminal(GrpcTerminal):
 
         ref_term = self.reference_terminal  # return value is type terminal
         _, point_data, layer = ref_term.get_parameters()
-        # shape_pd = self._pedb.edb_api.geometry.point_data(X, Y)
+        # shape_pd = self._pedb.core.geometry.point_data(X, Y)
         layer_name = layer.name
         for primitive in self._pedb.layout.primitives:
             if primitive.layer.name == layer_name:
