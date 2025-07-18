@@ -1945,7 +1945,7 @@ class EdbPadstacks(object):
 
     def reduce_via_by_density(
         self, padstacks: List[int], cell_size_x: float = 1e-3, cell_size_y: float = 1e-3, delete: bool = False
-    ) -> tuple[List[int], list[list]]:
+    ) -> tuple[List[int], List[List[List[float]]]]:
         """
         Reduce the number of vias by density. Keep only one via which is closest to the center of the cell. The cells
         are automatically populated based on the input vias.
