@@ -62,7 +62,7 @@ class PackageDef(ObjBase):
         edb_object: object
             EDB PackageDef Object
         """
-        edb_object = self._pedb.edb_api.definition.PackageDef.Create(self._pedb.active_db, name)
+        edb_object = self._pedb.core.definition.PackageDef.Create(self._pedb.active_db, name)
         if component_part_name:
             x_pt1, y_pt1, x_pt2, y_pt2 = list(
                 self._pedb.components.definitions[component_part_name].components.values()

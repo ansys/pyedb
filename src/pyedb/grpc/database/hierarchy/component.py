@@ -324,13 +324,15 @@ class Component(GrpcComponentGroup):
         if isinstance(value, bool):
             super(Component, self.__class__).is_mcad_stride.__set__(self, Value(value))
 
-    def create_package_def(self, name=None) -> bool:
+    def create_package_def(self, name=None, component_part_name=None) -> bool:
         """Create a package definition and assign it to the component.
 
         Parameters
         ----------
         name: str, optional
             Name of the package definition
+        component_part_name : str, optional
+            Part name of the component.
 
         Returns
         -------
@@ -340,7 +342,10 @@ class Component(GrpcComponentGroup):
         if not name:
             name = f"{self.refdes}_{self.part_name}"
         if name not in [package.name for package in self._pedb.package_defs]:
+            self._pedb.definitions.add_package_def(name, component_part_name=component_part_name)
+
             self.package_def = name
+
             return True
         else:
             logging.error(f"Package definition {name} already exists")

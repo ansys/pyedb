@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
 
 
 def _parse_value(v):
@@ -92,7 +93,7 @@ class AdvancedSettings(SettingsBase):
     def __init__(self, parent):
         super().__init__(parent)
         self.defaults = {
-            "automatic_mesh": True,
+            "mesh_automatic": True,
             "ignore_non_functional_pads": True,
             "include_coplane_coupling": True,
             "include_fringe_coupling": True,
@@ -339,6 +340,26 @@ class AdvancedSettings(SettingsBase):
         depending on drawing size, number of modes, and/or maximum sweep
         frequency.
 
+        .. deprecated:: 0.54.0
+           Use :func:`automatic_mesh` instead.
+
+        Returns
+        -------
+        bool
+            ``True`` if automatic mesh is used, ``False`` otherwise.
+        """
+        warnings.warn(
+            "`automatic_mesh` is deprecated." "Use `mesh_automatic` instead.",
+            DeprecationWarning,
+        )
+        return self.sim_setup_info.simulation_settings.AdvancedSettings.MeshAutoMatic
+
+    @property
+    def mesh_automatic(self):
+        """Whether to automatically pick a suitable mesh refinement frequency,
+        depending on drawing size, number of modes, and/or maximum sweep
+        frequency.
+
         Returns
         -------
         bool
@@ -492,6 +513,10 @@ class AdvancedSettings(SettingsBase):
 
     @automatic_mesh.setter
     def automatic_mesh(self, value):
+        self.mesh_automatic = value
+
+    @mesh_automatic.setter
+    def mesh_automatic(self, value):
         edb_setup_info = self.sim_setup_info
 
         edb_setup_info.simulation_settings.AdvancedSettings.MeshAutoMatic = value

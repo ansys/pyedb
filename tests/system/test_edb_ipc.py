@@ -52,7 +52,7 @@ class TestClass:
         # Export should be made with units set to default -millimeter-.
         edbapp.export_to_ipc2581(xml_file, "mm")
         assert os.path.exists(xml_file)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skip(reason="This test is expected to crash (sometimes) at `ipc_edb.close()`")
     def test_export_to_ipc2581_1(self, edb_examples):
@@ -60,7 +60,7 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         xml_file = edb_examples.get_local_file_folder("test_ipc.xml")
         edbapp.export_to_ipc2581(xml_file)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
         assert os.path.isfile(xml_file)
         ipc_edb = edb_examples.load_edb(xml_file, copy_to_temp=False)
         ipc_stats = ipc_edb.get_statistics()
@@ -76,4 +76,4 @@ class TestClass:
         assert ipc_stats.num_traces == 1565
         assert ipc_stats.num_vias == 4669
         assert ipc_stats.stackup_thickness == 0.001748
-        ipc_edb.close()
+        ipc_edb.close(terminate_rpc_session=False)

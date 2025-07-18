@@ -70,7 +70,7 @@ class Modeler(object):
 
     @property
     def _edb(self):
-        return self._pedb.edb_api
+        return self._pedb.core
 
     def _get_edb_value(self, value):
         return self._pedb.edb_value(value)

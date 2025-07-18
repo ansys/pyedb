@@ -49,14 +49,14 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.hfss.create_coax_port_on_component("U1", "DDR4_DQS0_P")
         assert edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"], True)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_bounding_box(self, edb_examples):
         """Evaluate layout bounding box"""
         edbapp = edb_examples.get_si_verse()
         assert len(edbapp.get_bounding_box()) == 2
         assert edbapp.get_bounding_box() == [[-0.01426004895, -0.00455000106], [0.15010507444, 0.08000000002]]
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_create_circuit_port_on_net(self, edb_examples):
         """Create a circuit port on a net."""
@@ -80,7 +80,7 @@ class TestClass:
         assert edbapp.siwave.create_circuit_port_on_pin_group("PG_V1P0_S0", "U1_GND", impedance=50, name="test_port")
         edbapp.excitations["test_port"].name = "test_rename"
         assert any(port for port in list(edbapp.excitations) if port == "test_rename")
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_create_voltage_source(self, edb_examples):
         """Create a voltage source."""
@@ -103,7 +103,7 @@ class TestClass:
             u6.pins["F2"].get_terminal(create_new_terminal=True), u6.pins["F1"].get_terminal(create_new_terminal=True)
         )
         assert not voltage_source.is_null
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_create_current_source(self, edb_examples):
         """Create a current source."""
@@ -145,14 +145,14 @@ class TestClass:
         assert edbapp.create_current_source(
             u6.pins["H8"].get_terminal(create_new_terminal=True), u6.pins["G9"].get_terminal(create_new_terminal=True)
         )
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_create_dc_terminal(self, edb_examples):
         """Create a DC terminal."""
         # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.siwave.create_dc_terminal("U1", "DDR4_DQ40", "dc_terminal1") == "dc_terminal1"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_create_resistors_on_pin(self, edb_examples):
         """Create a resistor on pin."""
@@ -160,7 +160,7 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         pins = edbapp.components.get_pin_from_component("U1")
         assert "RST4000" == edbapp.siwave.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_add_syz_analsyis(self, edb_examples):
         """Add a sywave AC analysis."""
@@ -171,8 +171,8 @@ class TestClass:
         assert not syz_setup.use_custom_settings
         syz_setup.advanced_settings.min_void_area = "4mm2"
         assert syz_setup.advanced_settings.min_void_area == "4mm2"
-        syz_setup.advanced_settings.automatic_mesh = True
-        assert syz_setup.advanced_settings.automatic_mesh
+        syz_setup.advanced_settings.mesh_automatic = True
+        assert syz_setup.advanced_settings.mesh_automatic
         syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh = "0.5mm2"
         assert syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh == "0.5mm2"
         syz_setup.dc_settings.use_dc_custom_settings = False
@@ -180,14 +180,14 @@ class TestClass:
         syz_sweep = syz_setup.add_sweep()
         syz_sweep.enforce_causality = False
         assert not syz_sweep.enforce_causality
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_add_dc_analysis(self, edb_examples):
         """Add a sywave DC analysis."""
         # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.siwave.add_siwave_dc_analysis(name="Test_dc")
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_hfss_mesh_operations(self, edb_examples):
         """Retrieve the trace width for traces with ports."""
@@ -201,7 +201,7 @@ class TestClass:
         )
         mesh_ops = edbapp.hfss.get_trace_width_for_traces_with_ports()
         assert len(mesh_ops) > 0
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_add_variables(self, edb_examples):
         """Add design and project variables."""
@@ -230,7 +230,7 @@ class TestClass:
         else:
             # grpc and DotNet variable implementation server are too different.
             assert not edbapp.add_project_variable("$my_project_variable", "3mm")[0]
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_save_edb_as(self, edb_examples):
         """Save edb as some file."""
@@ -238,7 +238,7 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.save_edb_as(os.path.join(self.local_scratch.path, "si_verse_new.aedb"))
         assert os.path.exists(os.path.join(self.local_scratch.path, "si_verse_new.aedb", "edb.def"))
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_custom_cutout_0(self, edb_examples):
         """Create custom cutout 0."""
@@ -276,7 +276,7 @@ class TestClass:
             use_pyaedt_cutout=False,
         )
         assert os.path.exists(os.path.join(output, "edb.def"))
-        # edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_custom_cutout_1(self, edb_examples):
         """Create custom cutout 1."""
@@ -307,7 +307,7 @@ class TestClass:
         # assert isinstance(edbapp.layout_validation.disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
         assert edbapp.layout_validation.fix_self_intersections("PGND")
         assert edbapp.layout_validation.fix_self_intersections()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_custom_cutout_2(self, edb_examples):
         """Create custom cutout 2."""
@@ -330,7 +330,7 @@ class TestClass:
             custom_extent=points,
             simple_pad_check=False,
         )
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_custom_cutout_3(self, edb_examples):
         """Create custom cutout 3."""
@@ -355,7 +355,7 @@ class TestClass:
         assert edbapp.edbpath == legacy_name
         # assert edbapp.are_port_reference_terminals_connected(common_reference="GND")
 
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_custom_cutout_4(self, edb_examples):
         """Create custom cutout 4."""
@@ -374,7 +374,7 @@ class TestClass:
             check_terminals=True,
             expansion_factor=4,
         )
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
         source_path = os.path.join(local_path, "example_models", test_subfolder, "MicrostripSpliGnd.aedb")
         target_path = os.path.join(self.local_scratch.path, "MicrostripSpliGnd.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
@@ -390,7 +390,7 @@ class TestClass:
             expansion_factor=2,
             include_voids_in_extents=True,
         )
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
         source_path = os.path.join(local_path, "example_models", test_subfolder, "Multizone_GroundVoids.aedb")
         target_path = os.path.join(self.local_scratch.path, "Multizone_GroundVoids.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
@@ -405,7 +405,7 @@ class TestClass:
             check_terminals=True,
             expansion_factor=3,
         )
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     # def test_create_EdbLegacy(self):
     #     """Create EDB."""
@@ -583,17 +583,9 @@ class TestClass:
         assert edb_stats.num_inductors
         assert edb_stats.num_capacitors
         assert edb_stats.num_resistors
-        if edb.grpc:
-            # TODO check why grpc give different result.
-            assert edb_stats.occupying_ratio["1_Top"] == 0.282666
-        else:
-            assert edb_stats.occupying_ratio["1_Top"] == 0.301682
+        assert edb_stats.occupying_ratio["1_Top"] == 0.301682
         assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.937467
-        if edb.grpc:
-            # TODO check why grpc give different result.
-            assert edb_stats.occupying_ratio["16_Bottom"] == 0.179471
-        else:
-            assert edb_stats.occupying_ratio["16_Bottom"] == 0.204925
+        assert edb_stats.occupying_ratio["16_Bottom"] == 0.204925
         edb.close()
 
     def test_hfss_set_bounding_box_extent(self, edb_examples):
@@ -810,30 +802,39 @@ class TestClass:
         setup1 = edbapp.hfss.add_setup("setup1")
         assert not edbapp.hfss.add_setup("setup1")
         assert setup1.set_solution_single_frequency()
-        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 1
-        assert setup1.set_solution_multi_frequencies(frequencies=("5GHz", "10GHz", "100GHz"))
-        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 3
-        assert setup1.set_solution_broadband()
-        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 2
-        if edbapp.grpc:
-            setup1.settings.options.enhanced_low_frequency_accuracy = True
-            assert setup1.settings.options.enhanced_low_frequency_accuracy
-            setup1.settings.options.order_basis = setup1.settings.options.order_basis.FIRST_ORDER
-            assert setup1.settings.options.order_basis.name == "FIRST_ORDER"
-            setup1.settings.options.relative_residual = 0.0002
-            assert setup1.settings.options.relative_residual == 0.0002
-            setup1.settings.options.use_shell_elements = True
-            assert setup1.settings.options.use_shell_elements
+        if "adaptive_solution_type" in dir(setup1.adaptive_settings):
+            assert setup1.adaptive_settings.adaptive_solution_type.value == 0
         else:
-            # grpc simulation setup is too different.
-            setup1.hfss_solver_settings.enhanced_low_freq_accuracy = True
-            assert setup1.hfss_solver_settings.enhanced_low_freq_accuracy
-            # Currently EDB api has a bug for this feature.
-            # setup1.hfss_solver_settings.order_basis
-            setup1.hfss_solver_settings.relative_residual = 0.0002
-            assert setup1.hfss_solver_settings.relative_residual == 0.0002
-            setup1.hfss_solver_settings.use_shell_elements = True
-            assert setup1.hfss_solver_settings.use_shell_elements
+            assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 1
+        assert setup1.set_solution_multi_frequencies(frequencies=("5GHz", "10GHz", "100GHz"))
+        if "adaptive_solution_type" in dir(setup1.adaptive_settings):
+            assert setup1.adaptive_settings.adaptive_solution_type.value == 1
+        else:
+            assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 3
+        assert setup1.set_solution_broadband()
+        if "adaptive_solution_type" in dir(setup1.adaptive_settings):
+            assert setup1.adaptive_settings.adaptive_solution_type.value == 2
+        else:
+            assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 2
+        # if edbapp.grpc:
+        #     setup1.settings.options.enhanced_low_frequency_accuracy = True
+        #     assert setup1.settings.options.enhanced_low_frequency_accuracy
+        #     setup1.settings.options.order_basis = setup1.settings.options.order_basis.FIRST_ORDER
+        #     assert setup1.settings.options.order_basis.name == "FIRST_ORDER"
+        #     setup1.settings.options.relative_residual = 0.0002
+        #     assert setup1.settings.options.relative_residual == 0.0002
+        #     setup1.settings.options.use_shell_elements = True
+        #     assert setup1.settings.options.use_shell_elements
+        # else:
+        # grpc simulation setup is too different.
+        setup1.hfss_solver_settings.enhanced_low_frequency_accuracy = True
+        assert setup1.hfss_solver_settings.enhanced_low_frequency_accuracy
+        # Currently EDB api has a bug for this feature.
+        # setup1.hfss_solver_settings.order_basis
+        setup1.hfss_solver_settings.relative_residual = 0.0002
+        assert setup1.hfss_solver_settings.relative_residual == 0.0002
+        setup1.hfss_solver_settings.use_shell_elements = True
+        assert setup1.hfss_solver_settings.use_shell_elements
 
         setup1b = edbapp.setups["setup1"]
         assert not setup1.is_null

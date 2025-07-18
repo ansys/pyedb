@@ -219,7 +219,7 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` objects.
         """
-        return [self.__mapping_primitive_type(prim) for prim in self._pedb.layout.primitives]
+        return self._pedb.layout.primitives
 
     @property
     def polygons_by_layer(self) -> Dict[str, List[Primitive]]:

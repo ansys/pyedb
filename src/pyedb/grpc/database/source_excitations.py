@@ -507,17 +507,17 @@ class SourceExcitation:
 
     def create_port_on_component(
         self,
-        component: Union[str, Component],
+        component: Union[str, List[str]],
         net_list: Union[str, List[str]],
-        port_type: str = "coax_port",
-        do_pingroup: bool = False,
-        reference_net: Union[str, List[str], Net] = "GND",
-        port_name: Optional[str] = None,
+        port_type: SourceType,
+        do_pingroup: Optional[bool] = True,
+        reference_net: Optional[str] = None,
+        port_name: Optional[List[str]] = None,
         solder_balls_height: Optional[float] = None,
         solder_balls_size: Optional[float] = None,
         solder_balls_mid_size: Optional[float] = None,
-        extend_reference_pins_outside_component: bool = False,
-    ):
+        extend_reference_pins_outside_component: Optional[bool] = False,
+    ) -> List[str]:
         """Create ports on a component.
 
         Parameters
@@ -533,7 +533,7 @@ class SourceExcitation:
         do_pingroup : bool
             True activate pingroup during port creation (only used with combination of CircPort),
             False will take the closest reference pin and generate one port per signal pin.
-        refnet : string or list of string.
+        reference_net : string or list of string.
             list of the reference net.
         port_name : str
             Port name for overwriting the default port-naming convention,
@@ -564,7 +564,7 @@ class SourceExcitation:
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> net_list = ["M_DQ<1>", "M_DQ<2>", "M_DQ<3>", "M_DQ<4>", "M_DQ<5>"]
-        >>> edbapp.components.create_port_on_component(cmp="U2A5", net_list=net_list,
+        >>> edbapp.excitations.create_port_on_component(cmp="U2A5", net_list=net_list,
         >>> port_type=SourceType.CoaxPort, do_pingroup=False, refnet="GND")
 
         """

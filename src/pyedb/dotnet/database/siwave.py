@@ -70,7 +70,7 @@ class EdbSiwave(object):
     @property
     def _edb(self):
         """EDB."""
-        return self._pedb.edb_api
+        return self._pedb.core
 
     def _get_edb_value(self, value):
         """Get the Edb value."""
@@ -1492,7 +1492,7 @@ class EdbSiwave(object):
         """Icepak default setting. If "True", only resistor are active in Icepak simulation.
         The power dissipation of the resistors are calculated from DC results.
         """
-        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        siwave_id = self._pedb.core.ProductId.SIWave
         cell = self._pedb.active_cell._active_cell
         _, value = cell.GetProductProperty(siwave_id, 422, "")
         return bool(value)
@@ -1524,20 +1524,20 @@ class EdbSiwave(object):
     @icepak_use_minimal_comp_defaults.setter
     def icepak_use_minimal_comp_defaults(self, value):
         value = "True" if bool(value) else ""
-        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        siwave_id = self._pedb.core.ProductId.SIWave
         cell = self._pedb.active_cell._active_cell
         cell.SetProductProperty(siwave_id, 422, value)
 
     @property
     def icepak_component_file(self):
         """Icepak component file path."""
-        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        siwave_id = self._pedb.core.ProductId.SIWave
         cell = self._pedb.active_cell._active_cell
         _, value = cell.GetProductProperty(siwave_id, 420, "")
         return value
 
     @icepak_component_file.setter
     def icepak_component_file(self, value):
-        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        siwave_id = self._pedb.core.ProductId.SIWave
         cell = self._pedb.active_cell._active_cell
         cell.SetProductProperty(siwave_id, 420, value)

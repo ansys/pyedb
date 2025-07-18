@@ -56,7 +56,7 @@ class PrimitiveDotNet:
     def __init__(self, api, prim_object=None):
         self._app = api
         self.api = api._edb.Cell.Primitive
-        self.edb_api = api._edb
+        self.core = api._edb
         self.prim_obj = prim_object
         self._edb_object = prim_object
 
@@ -133,7 +133,7 @@ class PrimitiveDotNet:
             if _poly is None or _poly.IsNull() or _poly is False:
                 self._logger.error("Failed to create void polygon data")
                 return False
-            point_list = self._app.edb_api.cell.primitive.polygon.create(
+            point_list = self._app.core.cell.primitive.polygon.create(
                 self._app.active_layout, self.layer_name, self.prim_obj.GetNet(), _poly
             ).prim_obj
         elif "prim_obj" in dir(point_list):
@@ -340,7 +340,7 @@ class PrimitiveDotNet:
         maximum_corner_extension : float, optional
             The maximum corner extension (when round corners are not used) at which point the corner is clipped.
         """
-        new_poly = self.polygon_data.edb_api.Expand(offset, tolerance, round_corners, maximum_corner_extension)
+        new_poly = self.polygon_data.core.Expand(offset, tolerance, round_corners, maximum_corner_extension)
         self.polygon_data = new_poly[0]
         return True
 
@@ -361,9 +361,9 @@ class PrimitiveDotNet:
         """
         if not isinstance(factor, str):
             factor = float(factor)
-            polygon_data = self.polygon_data.create_from_arcs(self.polygon_data.edb_api.GetArcData(), True)
+            polygon_data = self.polygon_data.create_from_arcs(self.polygon_data.core.GetArcData(), True)
             if not center:
-                center = self.polygon_data.edb_api.GetBoundingCircleCenter()
+                center = self.polygon_data.core.GetBoundingCircleCenter()
                 if center:
                     polygon_data.Scale(factor, center)
                     self.polygon_data = polygon_data
@@ -422,15 +422,15 @@ class RectangleDotNet(PrimitiveDotNet):
             net = net.api_object
         if isinstance(rep_type, int):
             if rep_type == 1:
-                rep_type = self.edb_api.cell.primitive.RectangleRepresentationType.CenterWidthHeight
+                rep_type = self.core.cell.primitive.RectangleRepresentationType.CenterWidthHeight
             else:
-                rep_type = self.edb_api.cell.primitive.RectangleRepresentationType.LowerLeftUpperRight
-        param1 = self._app.edb_api.utility.value(param1)
-        param2 = self._app.edb_api.utility.value(param2)
-        param3 = self._app.edb_api.utility.value(param3)
-        param4 = self._app.edb_api.utility.value(param4)
-        corner_rad = self._app.edb_api.utility.value(corner_rad)
-        rotation = self._app.edb_api.utility.value(rotation)
+                rep_type = self.core.cell.primitive.RectangleRepresentationType.LowerLeftUpperRight
+        param1 = self._app.core.utility.value(param1)
+        param2 = self._app.core.utility.value(param2)
+        param3 = self._app.core.utility.value(param3)
+        param4 = self._app.core.utility.value(param4)
+        corner_rad = self._app.core.utility.value(corner_rad)
+        rotation = self._app.core.utility.value(rotation)
         return RectangleDotNet(
             self._app,
             self.api.Rectangle.Create(
@@ -742,10 +742,10 @@ class PathDotNet(PrimitiveDotNet):
         """
         if isinstance(net, NetDotNet):
             net = net.api_object
-        width = self._app.edb_api.utility.value(width)
+        width = self._app.core.utility.value(width)
         if isinstance(points, list):
             points = convert_py_list_to_net_list([self._app.point_data(i[0], i[1]) for i in points])
-            points = self._app.edb_api.geometry.polygon_data.dotnetobj(points)
+            points = self._app.core.geometry.polygon_data.dotnetobj(points)
         return PathDotNet(
             self._app, self.api.Path.Create(layout, layer, net, width, end_cap1, end_cap2, corner_style, points)
         )
@@ -1501,7 +1501,7 @@ class BoardBendDef(PrimitiveDotNet):
 
         Read-Only.
         """
-        return cast(self.edb_api, self.prim_obj.GetBoundaryPrim())
+        return cast(self.core, self.prim_obj.GetBoundaryPrim())
 
     @property
     def bend_middle(self):

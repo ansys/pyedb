@@ -155,7 +155,7 @@ class Path(Primitive):
         width = self.width
         corner_style = self.corner_style
         end_cap_style = self.get_end_cap_style()
-        cloned_path = self._app.edb_api.cell.primitive.path.create(
+        cloned_path = self._app.core.cell.primitive.path.create(
             self._app.active_layout,
             self.layer_name,
             self.net,

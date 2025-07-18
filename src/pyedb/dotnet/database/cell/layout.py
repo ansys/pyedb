@@ -102,7 +102,7 @@ class Layout(ObjBase):
 
     @property
     def _edb(self):
-        return self._pedb.edb_api
+        return self._pedb.core
 
     def expanded_extent(self, nets, extent, expansion_factor, expansion_unitless, use_round_corner, num_increments):
         """Get an expanded polygon for the Nets collection.

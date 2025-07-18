@@ -43,7 +43,7 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert isinstance(edbapp.definitions.component, dict)
         assert isinstance(edbapp.definitions.package, dict)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_component_s_parameter(self, edb_examples):
         # Done
@@ -60,7 +60,7 @@ class TestClass:
         # pp = {"pin_order": ["1", "2"]}
         # edbapp.definitions.component["CAPC3216X180X55ML20T25"].set_properties(**pp)
         # assert edbapp.definitions.component["CAPC3216X180X55ML20T25"].get_properties()["pin_order"] == ["1", "2"]
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_add_package_def(self, edb_examples):
         # Done
@@ -89,4 +89,4 @@ class TestClass:
         assert edbapp.definitions.add_package_def("package_2", boundary_points=[["-1mm", "-1mm"], ["1mm", "1mm"]])
         edbapp.components["J5"].package_def = "package_2"
         assert edbapp.components["J5"].package_def.name == "package_2"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)

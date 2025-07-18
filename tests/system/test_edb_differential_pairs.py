@@ -45,4 +45,4 @@ class TestClass:
         assert diff_pair.positive_net.name == "PCIe_Gen4_RX1_P"
         assert diff_pair.negative_net.name == "PCIe_Gen4_RX1_N"
         assert edbapp.differential_pairs.items["new_pair1"]
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)

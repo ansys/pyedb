@@ -45,7 +45,7 @@ class TestClass:
         )
         assert edb
         assert edb.active_layout
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_create_edb_without_path(self):
         """Create EDB without path."""
@@ -53,7 +53,7 @@ class TestClass:
 
         edbapp_without_path = Edb(edbversion=desktop_version, isreadonly=False)
         time.sleep(2)
-        edbapp_without_path.close()
+        edbapp_without_path.close(terminate_rpc_session=False)
 
     def test_variables_value(self):
         """Evaluate variables value."""
@@ -196,7 +196,7 @@ class TestClass:
             stop_layer="1_Top",
         )
         pad_name == "test2"
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     @patch("os.path.isfile")
     @patch("os.unlink")

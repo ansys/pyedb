@@ -406,7 +406,7 @@ class Edb(Database):
         if isinstance(val, self._edb.Utility.Value):
             return Value(self, val)
         else:
-            return Value(self, self.edb_api.utility.value(val))
+            return Value(self, self.core.utility.value(val))
 
     @property
     def grpc(self):
@@ -628,9 +628,7 @@ class Edb(Database):
             return None
         if not self.cellname:
             self.cellname = generate_unique_name("Cell")
-        self._active_cell = self.edb_api.cell.create(
-            self.active_db, self.edb_api.cell.CellType.CircuitCell, self.cellname
-        )
+        self._active_cell = self.core.cell.create(self.active_db, self.core.cell.CellType.CircuitCell, self.cellname)
         if self._active_cell:
             self._init_objects()
             return True
@@ -1374,7 +1372,7 @@ class Edb(Database):
         Instance of `Edb.Utility.Value`
 
         """
-        return self.edb_api.utility.value(val)
+        return self.core.utility.value(val)
 
     def point_3d(self, x, y, z=0.0):
         """Compute the Edb 3d Point Data.
@@ -1392,7 +1390,7 @@ class Edb(Database):
         -------
         ``Geometry.Point3DData``.
         """
-        return self.edb_api.geometry.point3d_data(x, y, z)
+        return self.core.geometry.point3d_data(x, y, z)
 
     def point_data(self, x, y=None):
         """Compute the Edb Point Data.
@@ -1410,9 +1408,9 @@ class Edb(Database):
         ``Geometry.PointData``.
         """
         if y is None:
-            return self.edb_api.geometry.point_data(x)
+            return self.core.geometry.point_data(x)
         else:
-            return self.edb_api.geometry.point_data(x, y)
+            return self.core.geometry.point_data(x, y)
 
     def _is_file_existing_and_released(self, filename):
         if os.path.exists(filename):
@@ -1476,7 +1474,7 @@ class Edb(Database):
         warnings.warn("Use new property :func:`close` instead.", DeprecationWarning)
         return self.close()
 
-    def close(self):
+    def close(self, **kwargs):
         """Close EDB and cleanup variables.
 
         Returns
@@ -1597,7 +1595,7 @@ class Edb(Database):
             ``True`` when successful, ``False`` when failed.
 
         """
-        return self.edb_api.utility.utility.Command.Execute(func)
+        return self.core.utility.utility.Command.Execute(func)
 
     def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False):
         """Import a board file and generate an ``edb.def`` file in the working directory.
@@ -1646,7 +1644,7 @@ class Edb(Database):
     ):
         if extent_type in [
             "Conforming",
-            self.edb_api.geometry.extent_type.Conforming,
+            self.core.geometry.extent_type.Conforming,
             1,
         ]:
             if use_pyaedt_extent:
@@ -1664,7 +1662,7 @@ class Edb(Database):
             else:
                 _poly = self.layout.expanded_extent(
                     net_signals,
-                    self.edb_api.geometry.extent_type.Conforming,
+                    self.core.geometry.extent_type.Conforming,
                     expansion_size,
                     False,
                     use_round_corner,
@@ -1672,12 +1670,12 @@ class Edb(Database):
                 )
         elif extent_type in [
             "Bounding",
-            self.edb_api.geometry.extent_type.BoundingBox,
+            self.core.geometry.extent_type.BoundingBox,
             0,
         ]:
             _poly = self.layout.expanded_extent(
                 net_signals,
-                self.edb_api.geometry.extent_type.BoundingBox,
+                self.core.geometry.extent_type.BoundingBox,
                 expansion_size,
                 False,
                 use_round_corner,
@@ -1698,14 +1696,14 @@ class Edb(Database):
             else:
                 _poly = self.layout.expanded_extent(
                     net_signals,
-                    self.edb_api.geometry.extent_type.Conforming,
+                    self.core.geometry.extent_type.Conforming,
                     expansion_size,
                     False,
                     use_round_corner,
                     1,
                 )
                 _poly_list = convert_py_list_to_net_list([_poly])
-                _poly = self.edb_api.geometry.polygon_data.get_convex_hull_of_polygons(_poly_list)
+                _poly = self.core.geometry.polygon_data.get_convex_hull_of_polygons(_poly_list)
         return _poly
 
     def _create_conformal(
@@ -1780,7 +1778,7 @@ class Edb(Database):
                             pass
                         finally:
                             unite_polys.extend(list(obj_data))
-            _poly_unite = self.edb_api.geometry.polygon_data.unite(unite_polys)
+            _poly_unite = self.core.geometry.polygon_data.unite(unite_polys)
             if len(_poly_unite) == 1:
                 self.logger.info("Correctly computed Extension at first iteration.")
                 return _poly_unite[0]
@@ -1805,20 +1803,20 @@ class Edb(Database):
                 pd = term._edb_object.GetParameters()[1]
                 locations.append([pd.X.ToDouble(), pd.Y.ToDouble()])
         for point in locations:
-            pointA = self.edb_api.geometry.point_data(
+            pointA = self.core.geometry.point_data(
                 self.edb_value(point[0] - expansion_size),
                 self.edb_value(point[1] - expansion_size),
             )
-            pointB = self.edb_api.geometry.point_data(
+            pointB = self.core.geometry.point_data(
                 self.edb_value(point[0] + expansion_size),
                 self.edb_value(point[1] + expansion_size),
             )
 
             points = Tuple[
-                self.edb_api.geometry.geometry.PointData,
-                self.edb_api.geometry.geometry.PointData,
+                self.core.geometry.geometry.PointData,
+                self.core.geometry.geometry.PointData,
             ](pointA, pointB)
-            _polys.append(self.edb_api.geometry.polygon_data.create_from_bbox(points))
+            _polys.append(self.core.geometry.polygon_data.create_from_bbox(points))
         return _polys
 
     def _create_convex_hull(
@@ -1851,7 +1849,7 @@ class Edb(Database):
         if smart_cut:
             objs_data = self._smart_cut(reference_list, expansion_size)
             _polys.extend(objs_data)
-        _poly = self.edb_api.geometry.polygon_data.get_convex_hull_of_polygons(convert_py_list_to_net_list(_polys))
+        _poly = self.core.geometry.polygon_data.get_convex_hull_of_polygons(convert_py_list_to_net_list(_polys))
         _poly = _poly.Expand(expansion_size, tolerance, round_corner, round_extension)[0]
         return _poly
 
@@ -2424,7 +2422,7 @@ class Edb(Database):
                 pins_to_preserve=pins_to_preserve,
                 inlcude_voids_in_extents=inlcude_voids_in_extents,
             )
-            if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1]:
+            if extent_type in ["Conforming", self.core.geometry.extent_type.Conforming, 1]:
                 if extent_defeature > 0:
                     _poly = _poly.Defeature(extent_defeature)
                 _poly1 = _poly.CreateFromArcs(_poly.GetArcData(), True)
@@ -2689,14 +2687,10 @@ class Edb(Database):
             via.pin.Delete()
         if netlist:
             nets = [net.net_obj for net in temp_edb.layout.nets if net.name in netlist]
-            _poly = temp_edb.layout.expanded_extent(
-                nets, self.edb_api.geometry.extent_type.Conforming, 0.0, True, True, 1
-            )
+            _poly = temp_edb.layout.expanded_extent(nets, self.core.geometry.extent_type.Conforming, 0.0, True, True, 1)
         else:
             nets = [net.api_object for net in temp_edb.layout.nets if "gnd" in net.name.lower()]
-            _poly = temp_edb.layout.expanded_extent(
-                nets, self.edb_api.geometry.extent_type.Conforming, 0.0, True, True, 1
-            )
+            _poly = temp_edb.layout.expanded_extent(nets, self.core.geometry.extent_type.Conforming, 0.0, True, True, 1)
             temp_edb.close_edb()
         if _poly:
             return _poly
@@ -2797,9 +2791,7 @@ class Edb(Database):
             p_missing = [i for i in pinstance_to_add if i.id not in ids]
             self.logger.info("Added {} padstack instances after cutout".format(len(p_missing)))
             for p in p_missing:
-                position = self.edb_api.geometry.point_data(
-                    self.edb_value(p.position[0]), self.edb_value(p.position[1])
-                )
+                position = self.core.geometry.point_data(self.edb_value(p.position[0]), self.edb_value(p.position[1]))
                 net = self.nets.find_or_create_net(p.net_name)
                 rotation = self.edb_value(p.rotation)
                 sign_layers = list(self.stackup.signal_layers.keys())
@@ -2816,7 +2808,7 @@ class Edb(Database):
                 for pad in list(self.padstacks.definitions.keys()):
                     if pad == p.padstack_definition:
                         padstack = self.padstacks.definitions[pad].edb_padstack
-                        padstack_instance = self.edb_api.cell.primitive.padstack_instance.create(
+                        padstack_instance = self.core.cell.primitive.padstack_instance.create(
                             _cutout.GetLayout(),
                             net,
                             p.name,
@@ -2839,7 +2831,7 @@ class Edb(Database):
                     center_y,
                     radius,
                 ) = void_circle.primitive_object.GetParameters(0.0, 0.0, 0.0)
-                cloned_circle = self.edb_api.cell.primitive.circle.create(
+                cloned_circle = self.core.cell.primitive.circle.create(
                     layout,
                     void_circle.layer_name,
                     void_circle.net,
@@ -2849,7 +2841,7 @@ class Edb(Database):
                 )
                 cloned_circle.SetIsNegative(True)
             elif void_circle.type == "Polygon":
-                cloned_polygon = self.edb_api.cell.primitive.polygon.create(
+                cloned_polygon = self.core.cell.primitive.polygon.create(
                     layout,
                     void_circle.layer_name,
                     void_circle.net,
@@ -3466,7 +3458,7 @@ class Edb(Database):
                     self.logger.info("Cutout processed.")
                     old_cell = self.active_cell.FindByName(
                         self.db,
-                        self.edb_api.cell.CellType.CircuitCell,
+                        self.core.cell.CellType.CircuitCell,
                         old_cell_name,
                     )
                     if old_cell:

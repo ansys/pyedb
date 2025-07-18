@@ -45,13 +45,13 @@ class TestClass:
         """Report residual copper area per layer."""
         edbapp = edb_examples.get_si_verse()
         assert edbapp.stackup.residual_copper_area_per_layer()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_limits(self, edb_examples):
         """Retrieve stackup limits."""
         edbapp = edb_examples.get_si_verse()
         assert edbapp.stackup.limits()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_add_outline(self, edb_examples):
         """Add an outline layer named ``"Outline1"`` if it is not present."""
@@ -62,18 +62,18 @@ class TestClass:
         assert edbapp.stackup.layers["1_Top"].thickness == 3.5e-05
         edbapp.stackup.layers["1_Top"].thickness = 4e-5
         assert edbapp.stackup.layers["1_Top"].thickness == 4e-05
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_create_symmetric_stackup(self, edb_examples):
         """Create a symmetric stackup."""
         app_edb = edb_examples.create_empty_edb()
         assert not app_edb.stackup.create_symmetric_stackup(9)
         assert app_edb.stackup.create_symmetric_stackup(8)
-        app_edb.close()
+        app_edb.close(terminate_rpc_session=False)
 
         app_edb = edb_examples.create_empty_edb()
         assert app_edb.stackup.create_symmetric_stackup(8, soldermask=False)
-        app_edb.close()
+        app_edb.close(terminate_rpc_session=False)
 
     def test_stackup_place_a3dcomp_3d_placement(self, edb_examples):
         """Place a 3D Component into current layout."""
@@ -139,14 +139,14 @@ class TestClass:
                 assert res
                 zero_value = laminate_edb.edb_value(0)
                 one_value = laminate_edb.edb_value(1)
-                origin_point = laminate_edb.edb_api.geometry.point3d_data(zero_value, zero_value, zero_value)
-                x_axis_point = laminate_edb.edb_api.geometry.point3d_data(one_value, zero_value, zero_value)
+                origin_point = laminate_edb.core.geometry.point3d_data(zero_value, zero_value, zero_value)
+                x_axis_point = laminate_edb.core.geometry.point3d_data(one_value, zero_value, zero_value)
                 assert local_origin.IsEqual(origin_point)
                 assert rotation_axis_from.IsEqual(x_axis_point)
                 assert rotation_axis_to.IsEqual(x_axis_point)
                 assert angle.IsEqual(zero_value)
                 assert loc.IsEqual(
-                    laminate_edb.edb_api.geometry.point3d_data(zero_value, zero_value, laminate_edb.edb_value(170e-6))
+                    laminate_edb.core.geometry.point3d_data(zero_value, zero_value, laminate_edb.edb_value(170e-6))
                 )
             assert laminate_edb.save_edb()
         finally:
@@ -213,16 +213,16 @@ class TestClass:
                 zero_value = laminate_edb.edb_value(0)
                 one_value = laminate_edb.edb_value(1)
                 flip_angle_value = laminate_edb.edb_value("180deg")
-                origin_point = laminate_edb.edb_api.geometry.point3d_data(zero_value, zero_value, zero_value)
-                x_axis_point = laminate_edb.edb_api.geometry.point3d_data(one_value, zero_value, zero_value)
+                origin_point = laminate_edb.core.geometry.point3d_data(zero_value, zero_value, zero_value)
+                x_axis_point = laminate_edb.core.geometry.point3d_data(one_value, zero_value, zero_value)
                 assert local_origin.IsEqual(origin_point)
                 assert rotation_axis_from.IsEqual(x_axis_point)
                 assert rotation_axis_to.IsEqual(
-                    laminate_edb.edb_api.geometry.point3d_data(zero_value, laminate_edb.edb_value(-1.0), zero_value)
+                    laminate_edb.core.geometry.point3d_data(zero_value, laminate_edb.edb_value(-1.0), zero_value)
                 )
                 assert angle.IsEqual(flip_angle_value)
                 assert loc.IsEqual(
-                    laminate_edb.edb_api.geometry.point3d_data(
+                    laminate_edb.core.geometry.point3d_data(
                         laminate_edb.edb_value(0.5e-3),
                         laminate_edb.edb_value(-0.5e-3),
                         zero_value,
@@ -595,8 +595,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -683,8 +683,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -769,8 +769,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -814,15 +814,13 @@ class TestClass:
                 assert res
                 zeroValue = chipEdb.edb_value(0)
                 oneValue = chipEdb.edb_value(1)
-                originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
-                xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+                originPoint = chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+                xAxisPoint = chipEdb.core.geometry.point3d_data(oneValue, zeroValue, zeroValue)
                 assert localOrigin.IsEqual(originPoint)
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
                 assert angle.IsEqual(zeroValue)
-                assert loc.IsEqual(
-                    chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(190e-6))
-                )
+                assert loc.IsEqual(chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(190e-6)))
         finally:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
@@ -860,8 +858,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -905,15 +903,13 @@ class TestClass:
                 assert res
                 zeroValue = chipEdb.edb_value(0)
                 oneValue = chipEdb.edb_value(1)
-                originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
-                xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+                originPoint = chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+                xAxisPoint = chipEdb.core.geometry.point3d_data(oneValue, zeroValue, zeroValue)
                 assert localOrigin.IsEqual(originPoint)
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
                 assert angle.IsEqual(chipEdb.edb_value(math.pi))
-                assert loc.IsEqual(
-                    chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(-20e-6))
-                )
+                assert loc.IsEqual(chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(-20e-6)))
         finally:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
@@ -950,8 +946,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -995,8 +991,8 @@ class TestClass:
                 assert res
                 zeroValue = chipEdb.edb_value(0)
                 oneValue = chipEdb.edb_value(1)
-                originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
-                xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+                originPoint = chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+                xAxisPoint = chipEdb.core.geometry.point3d_data(oneValue, zeroValue, zeroValue)
                 assert localOrigin.IsEqual(originPoint)
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
@@ -1038,8 +1034,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -1083,15 +1079,13 @@ class TestClass:
                 assert res
                 zeroValue = chipEdb.edb_value(0)
                 oneValue = chipEdb.edb_value(1)
-                originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
-                xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+                originPoint = chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+                xAxisPoint = chipEdb.core.geometry.point3d_data(oneValue, zeroValue, zeroValue)
                 assert localOrigin.IsEqual(originPoint)
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
                 assert angle.IsEqual(chipEdb.edb_value(math.pi))
-                assert loc.IsEqual(
-                    chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(10e-6))
-                )
+                assert loc.IsEqual(chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(10e-6)))
         finally:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
@@ -1128,8 +1122,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -1173,8 +1167,8 @@ class TestClass:
                 assert res
                 zeroValue = chipEdb.edb_value(0)
                 oneValue = chipEdb.edb_value(1)
-                originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
-                xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+                originPoint = chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+                xAxisPoint = chipEdb.core.geometry.point3d_data(oneValue, zeroValue, zeroValue)
                 assert localOrigin.IsEqual(originPoint)
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
@@ -1216,8 +1210,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -1261,15 +1255,13 @@ class TestClass:
                 assert res
                 zeroValue = chipEdb.edb_value(0)
                 oneValue = chipEdb.edb_value(1)
-                originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
-                xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+                originPoint = chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+                xAxisPoint = chipEdb.core.geometry.point3d_data(oneValue, zeroValue, zeroValue)
                 assert localOrigin.IsEqual(originPoint)
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
                 assert angle.IsEqual(chipEdb.edb_value(math.pi))
-                assert loc.IsEqual(
-                    chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(20e-6))
-                )
+                assert loc.IsEqual(chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(20e-6)))
         finally:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
