@@ -154,7 +154,7 @@ class TestClass:
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=tests.conftest.GRPC, reason="Not implemented with grpc")
-    def test_13b_stackup_materials(self, edb_examples):
+    def test_13c_stackup_materials(self, edb_examples):
         data = {
             "stackup": {
                 "materials": [
