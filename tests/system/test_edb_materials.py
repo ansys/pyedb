@@ -68,12 +68,20 @@ class TestClass:
     @pytest.fixture(autouse=True)
     def init(self, legacy_edb_app_without_material):
         self.edbapp = legacy_edb_app_without_material
-        self.definition = self.edbapp.edb_api.definition
+        self.definition = self.edbapp.core.definition
 
         # Remove dummy material if it exist
         material_def = self.definition.MaterialDef.FindByName(self.edbapp.active_db, MATERIAL_NAME)
         if not material_def.IsNull():
             material_def.Delete()
+
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
 
     def test_material_name(self):
         """Evaluate material properties."""
@@ -279,8 +287,8 @@ class TestClass:
     def test_materials_material_property_to_id(self):
         """Evaluate materials map between material property and id."""
         materials = Materials(self.edbapp)
-        permittivity_id = self.edbapp.edb_api.definition.MaterialPropertyId.Permittivity
-        invalid_id = self.edbapp.edb_api.definition.MaterialPropertyId.InvalidProperty
+        permittivity_id = self.edbapp.core.definition.MaterialPropertyId.Permittivity
+        invalid_id = self.edbapp.core.definition.MaterialPropertyId.InvalidProperty
 
         assert permittivity_id == materials.material_property_to_id("permittivity")
         assert invalid_id == materials.material_property_to_id("azertyuiop")
@@ -354,7 +362,7 @@ class TestClass:
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 1
         edbapp.materials.update_materials_from_sys_library()
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_material_thermal_modifier(self):
         THERMAL_MODIFIER = {

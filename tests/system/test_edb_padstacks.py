@@ -43,6 +43,14 @@ class TestClass:
         self.target_path3 = target_path3
         self.target_path4 = target_path4
 
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
+
     def test_get_pad_parameters(self):
         """Access to pad parameters."""
         pin = self.edbapp.components.get_pin_from_component("J1", pinName="1")
@@ -197,7 +205,7 @@ class TestClass:
                 v.name = "TestInst"
                 assert v.name == "TestInst"
                 break
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_padstack_duplicate_padstack(self):
         """Duplicate a padstack."""
@@ -236,7 +244,7 @@ class TestClass:
         assert not edbapp.padstacks.definitions["MyVia_poly"].convert_to_3d_microvias(
             convert_only_signal_vias=False, delete_padstack_def=False
         )
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_split_microvias(self, edb_examples):
         """Convert padstack definition to multiple microvias definitions."""
@@ -245,7 +253,7 @@ class TestClass:
         assert "via219_2" in [i.name for i in edbapp.padstacks.definitions["BALL_VIA_1"].instances]
         edbapp.padstacks.instances_by_name["via218"].convert_hole_to_conical_shape()
         assert len(edbapp.padstacks.definitions["C4_POWER_1"].split_to_microvias()) > 0
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_padstack_plating_ratio_fixing(self):
         """Fix hole plating ratio."""
@@ -271,7 +279,7 @@ class TestClass:
             positive_pin=pin, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=False
         )
         assert len(reference_pins) == 11
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_vias_metal_volume(self):
         """Metal volume of the via hole instance."""
@@ -314,7 +322,7 @@ class TestClass:
                     assert not result
             if return_points:
                 assert confirmed_pads == 19
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_padstaks_plot_on_matplotlib(self, edb_examples):
         """Plot a Net to Matplotlib 2D Chart."""
@@ -369,7 +377,7 @@ class TestClass:
             plot_definitions=list(edb_plot.padstacks.definitions.keys())[0],
         )
         assert os.path.exists(local_png4)
-        edb_plot.close()
+        edb_plot.close(terminate_rpc_session=False)
 
     def test_update_padstacks_after_layer_name_changed(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
@@ -409,7 +417,7 @@ class TestClass:
             bounding_box=[0, 0, 0.05, 0.08], nets="GND"
         )
         assert len(test) == 194
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_polygon_based_padsatck(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
@@ -443,7 +451,7 @@ class TestClass:
         )
         assert edbapp.padstacks.definitions["test"]
         assert edbapp.padstacks.definitions["test2"]
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_via_fence(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "via_fence_generic_project.aedb")
@@ -458,12 +466,12 @@ class TestClass:
         )
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
         edbapp = edb_examples.load_edb(target_path2, copy_to_temp=False)
         assert edbapp.padstacks.merge_via_along_lines(net_name="GND", distance_threshold=2e-3, minimum_via_number=6)
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_reduce_via_in_bounding_box(self, edb_examples):
         source_path = edb_examples.example_models_path / "TEDB" / "vias_300.aedb"
@@ -483,14 +491,14 @@ class TestClass:
         polygon = [[[118e-3, 60e-3], [125e-3, 60e-3], [124e-3, 56e-3], [118e-3, 56e-3]]]
         result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
         assert len(result) == 1
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_via_merge2(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         polygon = [[[123.37e-3, 69.5e-3], [124.83e-3, 69.25e-3], [124.573e-3, 60.23e-3], [123e-3, 60.5e-3]]]
         result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
         assert len(result) == 1
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_via_merge3(self, edb_examples):
         source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
@@ -506,7 +514,7 @@ class TestClass:
         assert edbapp.padstacks.instances[merged_via[0]].net_name == "NET_1"
         assert edbapp.padstacks.instances[merged_via[0]].start_layer == "layer1"
         assert edbapp.padstacks.instances[merged_via[0]].stop_layer == "layer2"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_dbscan(self, edb_examples):
         source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"

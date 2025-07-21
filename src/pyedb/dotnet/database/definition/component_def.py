@@ -88,7 +88,7 @@ class EDBComponentDef(ObjBase):
 
         comp_list = [
             EDBComponent(self._pedb, l)
-            for l in self._pedb.edb_api.cell.hierarchy.component.FindByComponentDef(
+            for l in self._pedb.core.cell.hierarchy.component.FindByComponentDef(
                 self._pedb.active_layout, self.part_name
             )
         ]
@@ -194,9 +194,9 @@ class EDBComponentDef(ObjBase):
         self._add_component_model(n_port_comp_model)
 
     def create(self, name):
-        cell_type = self._pedb.edb_api.cell.CellType.FootprintCell
+        cell_type = self._pedb.core.cell.CellType.FootprintCell
         footprint_cell = self._pedb._active_cell.cell.Create(self._pedb.active_db, cell_type, name)
-        edb_object = self._pedb.edb_api.definition.ComponentDef.Create(self._pedb.active_db, name, footprint_cell)
+        edb_object = self._pedb.core.definition.ComponentDef.Create(self._pedb.active_db, name, footprint_cell)
         return EDBComponentDef(self._pedb, edb_object)
 
     def get_properties(self):

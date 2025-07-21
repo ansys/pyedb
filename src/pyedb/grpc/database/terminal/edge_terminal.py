@@ -34,6 +34,16 @@ class EdgeTerminal(GrpcEdgeTerminal):
         self._hfss_type = "Gap"
 
     @property
+    def boundary_type(self) -> str:
+        """Boundary type.
+
+        Returns
+        -------
+        str : boundary type.
+        """
+        return super().boundary_type.name.lower()
+
+    @property
     def _edb_properties(self):
         from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 

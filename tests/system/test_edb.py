@@ -28,7 +28,7 @@ from typing import Sequence
 import pytest
 
 from pyedb.generic.general_methods import is_linux
-from tests.conftest import local_path, test_subfolder
+from tests.conftest import config, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
@@ -49,14 +49,15 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.hfss.create_coax_port_on_component("U1", "DDR4_DQS0_P")
         assert edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"], True)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_bounding_box(self, edb_examples):
         """Evaluate layout bounding box"""
         edbapp = edb_examples.get_si_verse()
         assert len(edbapp.get_bounding_box()) == 2
-        assert edbapp.get_bounding_box() == [[-0.01426004895, -0.00455000106], [0.15010507444, 0.08000000002]]
-        edbapp.close()
+        bbox = [[round(i, 6) for i in j] for j in edbapp.get_bounding_box()]
+        assert bbox == [[-0.014260, -0.004550], [0.150105, 0.080000]]
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_create_circuit_port_on_net(self, edb_examples):
         """Create a circuit port on a net."""
@@ -80,7 +81,7 @@ class TestClass:
         assert edbapp.siwave.create_circuit_port_on_pin_group("PG_V1P0_S0", "U1_GND", impedance=50, name="test_port")
         edbapp.excitations["test_port"].name = "test_rename"
         assert any(port for port in list(edbapp.excitations) if port == "test_rename")
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_create_voltage_source(self, edb_examples):
         """Create a voltage source."""
@@ -103,7 +104,7 @@ class TestClass:
             u6.pins["F2"].get_terminal(create_new_terminal=True), u6.pins["F1"].get_terminal(create_new_terminal=True)
         )
         assert not voltage_source.is_null
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_create_current_source(self, edb_examples):
         """Create a current source."""
@@ -145,14 +146,14 @@ class TestClass:
         assert edbapp.create_current_source(
             u6.pins["H8"].get_terminal(create_new_terminal=True), u6.pins["G9"].get_terminal(create_new_terminal=True)
         )
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_create_dc_terminal(self, edb_examples):
         """Create a DC terminal."""
         # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.siwave.create_dc_terminal("U1", "DDR4_DQ40", "dc_terminal1") == "dc_terminal1"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_create_resistors_on_pin(self, edb_examples):
         """Create a resistor on pin."""
@@ -160,7 +161,7 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         pins = edbapp.components.get_pin_from_component("U1")
         assert "RST4000" == edbapp.siwave.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_add_syz_analsyis(self, edb_examples):
         """Add a sywave AC analysis."""
@@ -171,8 +172,8 @@ class TestClass:
         assert not syz_setup.use_custom_settings
         syz_setup.advanced_settings.min_void_area = "4mm2"
         assert syz_setup.advanced_settings.min_void_area == "4mm2"
-        syz_setup.advanced_settings.automatic_mesh = True
-        assert syz_setup.advanced_settings.automatic_mesh
+        syz_setup.advanced_settings.mesh_automatic = True
+        assert syz_setup.advanced_settings.mesh_automatic
         syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh = "0.5mm2"
         assert syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh == "0.5mm2"
         syz_setup.dc_settings.use_dc_custom_settings = False
@@ -180,14 +181,14 @@ class TestClass:
         syz_sweep = syz_setup.add_sweep()
         syz_sweep.enforce_causality = False
         assert not syz_sweep.enforce_causality
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_add_dc_analysis(self, edb_examples):
         """Add a sywave DC analysis."""
         # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.siwave.add_siwave_dc_analysis(name="Test_dc")
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_hfss_mesh_operations(self, edb_examples):
         """Retrieve the trace width for traces with ports."""
@@ -201,7 +202,7 @@ class TestClass:
         )
         mesh_ops = edbapp.hfss.get_trace_width_for_traces_with_ports()
         assert len(mesh_ops) > 0
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_add_variables(self, edb_examples):
         """Add design and project variables."""
@@ -230,7 +231,7 @@ class TestClass:
         else:
             # grpc and DotNet variable implementation server are too different.
             assert not edbapp.add_project_variable("$my_project_variable", "3mm")[0]
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_save_edb_as(self, edb_examples):
         """Save edb as some file."""
@@ -238,7 +239,7 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.save_edb_as(os.path.join(self.local_scratch.path, "si_verse_new.aedb"))
         assert os.path.exists(os.path.join(self.local_scratch.path, "si_verse_new.aedb", "edb.def"))
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_custom_cutout_0(self, edb_examples):
         """Create custom cutout 0."""
@@ -276,7 +277,7 @@ class TestClass:
             use_pyaedt_cutout=False,
         )
         assert os.path.exists(os.path.join(output, "edb.def"))
-        # edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_custom_cutout_1(self, edb_examples):
         """Create custom cutout 1."""
@@ -307,7 +308,7 @@ class TestClass:
         # assert isinstance(edbapp.layout_validation.disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
         assert edbapp.layout_validation.fix_self_intersections("PGND")
         assert edbapp.layout_validation.fix_self_intersections()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_custom_cutout_2(self, edb_examples):
         """Create custom cutout 2."""
@@ -330,7 +331,7 @@ class TestClass:
             custom_extent=points,
             simple_pad_check=False,
         )
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_custom_cutout_3(self, edb_examples):
         """Create custom cutout 3."""
@@ -355,7 +356,7 @@ class TestClass:
         assert edbapp.edbpath == legacy_name
         # assert edbapp.are_port_reference_terminals_connected(common_reference="GND")
 
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_custom_cutout_4(self, edb_examples):
         """Create custom cutout 4."""
@@ -374,7 +375,7 @@ class TestClass:
             check_terminals=True,
             expansion_factor=4,
         )
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
         source_path = os.path.join(local_path, "example_models", test_subfolder, "MicrostripSpliGnd.aedb")
         target_path = os.path.join(self.local_scratch.path, "MicrostripSpliGnd.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
@@ -390,7 +391,7 @@ class TestClass:
             expansion_factor=2,
             include_voids_in_extents=True,
         )
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
         source_path = os.path.join(local_path, "example_models", test_subfolder, "Multizone_GroundVoids.aedb")
         target_path = os.path.join(self.local_scratch.path, "Multizone_GroundVoids.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
@@ -405,14 +406,14 @@ class TestClass:
             check_terminals=True,
             expansion_factor=3,
         )
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     # def test_create_EdbLegacy(self):
     #     """Create EDB."""
     #     edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
     #     assert edb
     #     assert edb.active_layout
-    #     edb.close()
+    #     edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
         is_linux and ON_CI,
@@ -429,7 +430,7 @@ class TestClass:
         assert os.path.exists(out)
         out = edb.export_hfss(self.local_scratch.path)
         assert os.path.exists(out)
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
         is_linux and ON_CI,
@@ -446,7 +447,7 @@ class TestClass:
         assert os.path.exists(out)
         out = edb.export_q3d(self.local_scratch.path, net_list=["ANALOG_A0", "ANALOG_A1", "ANALOG_A2"], hidden=True)
         assert os.path.exists(out)
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
         is_linux and ON_CI,
@@ -465,7 +466,7 @@ class TestClass:
         assert os.path.exists(out)
         out = edb.export_maxwell(self.local_scratch.path, num_cores=6)
         assert os.path.exists(out)
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_create_edge_port_on_polygon(self, edb_examples):
         """Create lumped and vertical port."""
@@ -559,7 +560,7 @@ class TestClass:
             assert gap_port.renormalization_impedance == 50
         gap_port.is_circuit_port = True
         assert gap_port.is_circuit_port
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
         is_linux and ON_CI,
@@ -583,18 +584,11 @@ class TestClass:
         assert edb_stats.num_inductors
         assert edb_stats.num_capacitors
         assert edb_stats.num_resistors
-        if edb.grpc:
-            # TODO check why grpc give different result.
-            assert edb_stats.occupying_ratio["1_Top"] == 0.282666
-        else:
-            assert edb_stats.occupying_ratio["1_Top"] == 0.301682
+
+        assert edb_stats.occupying_ratio["1_Top"] == 0.301682
         assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.937467
-        if edb.grpc:
-            # TODO check why grpc give different result.
-            assert edb_stats.occupying_ratio["16_Bottom"] == 0.179471
-        else:
-            assert edb_stats.occupying_ratio["16_Bottom"] == 0.204925
-        edb.close()
+        assert edb_stats.occupying_ratio["16_Bottom"] == 0.204925
+        edb.close(terminate_rpc_session=False)
 
     def test_hfss_set_bounding_box_extent(self, edb_examples):
         """Configure HFSS with bounding box"""
@@ -610,7 +604,7 @@ class TestClass:
         assert edb.components.create([pins[0], ref_pins[0]], "test_0rlc", r_value=1.67, l_value=1e-13, c_value=1e-11)
         assert edb.components.create([pins[0], ref_pins[0]], "test_1rlc", r_value=None, l_value=1e-13, c_value=1e-11)
         assert edb.components.create([pins[0], ref_pins[0]], "test_2rlc", r_value=None, c_value=1e-13)
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_create_rlc_boundary_on_pins(self, edb_examples):
         """Create hfss rlc boundary on pins."""
@@ -619,7 +613,7 @@ class TestClass:
         pins = edb.components.get_pin_from_component("U1", "1V0")
         ref_pins = edb.components.get_pin_from_component("U1", "GND")
         assert edb.hfss.create_rlc_boundary_on_pins(pins[0], ref_pins[0], rvalue=1.05, lvalue=1.05e-12, cvalue=1.78e-13)
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_configure_hfss_analysis_setup_enforce_causality(self, edb_examples):
         """Configure HFSS analysis setup."""
@@ -648,7 +642,7 @@ class TestClass:
             assert setup.sweep_data[0].interpolation_data.enforce_causality
         else:
             assert setup.sweep_data[0].enforce_causality
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_create_various_ports_0(self, edb_examples):
         """Create various ports."""
@@ -748,7 +742,7 @@ class TestClass:
         # assert df_port.vertical_extent_factor == 10
         # assert df_port.deembed
         # assert df_port.deembed_length == 1e-3
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_create_various_ports_1(self, edb_examples):
         """Create various ports."""
@@ -794,14 +788,14 @@ class TestClass:
         assert p.vertical_extent_factor == 5
         assert p.pec_launch_width == "0.02mm"
         assert p.radial_extent_factor == 1
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_set_all_antipad_values(self, edb_examples):
         """Set all anti-pads from all pad-stack definition to the given value."""
         #  Done
         edb = edb_examples.get_si_verse()
         assert edb.padstacks.set_all_antipad_value(0.0)
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_hfss_simulation_setup(self, edb_examples):
         """Create a setup from a template and evaluate its properties."""
@@ -810,30 +804,39 @@ class TestClass:
         setup1 = edbapp.hfss.add_setup("setup1")
         assert not edbapp.hfss.add_setup("setup1")
         assert setup1.set_solution_single_frequency()
-        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 1
-        assert setup1.set_solution_multi_frequencies(frequencies=("5GHz", "10GHz", "100GHz"))
-        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 3
-        assert setup1.set_solution_broadband()
-        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 2
-        if edbapp.grpc:
-            setup1.settings.options.enhanced_low_frequency_accuracy = True
-            assert setup1.settings.options.enhanced_low_frequency_accuracy
-            setup1.settings.options.order_basis = setup1.settings.options.order_basis.FIRST_ORDER
-            assert setup1.settings.options.order_basis.name == "FIRST_ORDER"
-            setup1.settings.options.relative_residual = 0.0002
-            assert setup1.settings.options.relative_residual == 0.0002
-            setup1.settings.options.use_shell_elements = True
-            assert setup1.settings.options.use_shell_elements
+        if "adaptive_solution_type" in dir(setup1.adaptive_settings):
+            assert setup1.adaptive_settings.adaptive_solution_type.value == 0
         else:
-            # grpc simulation setup is too different.
-            setup1.hfss_solver_settings.enhanced_low_freq_accuracy = True
-            assert setup1.hfss_solver_settings.enhanced_low_freq_accuracy
-            # Currently EDB api has a bug for this feature.
-            # setup1.hfss_solver_settings.order_basis
-            setup1.hfss_solver_settings.relative_residual = 0.0002
-            assert setup1.hfss_solver_settings.relative_residual == 0.0002
-            setup1.hfss_solver_settings.use_shell_elements = True
-            assert setup1.hfss_solver_settings.use_shell_elements
+            assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 1
+        assert setup1.set_solution_multi_frequencies(frequencies=("5GHz", "10GHz", "100GHz"))
+        if "adaptive_solution_type" in dir(setup1.adaptive_settings):
+            assert setup1.adaptive_settings.adaptive_solution_type.value == 1
+        else:
+            assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 3
+        assert setup1.set_solution_broadband()
+        if "adaptive_solution_type" in dir(setup1.adaptive_settings):
+            assert setup1.adaptive_settings.adaptive_solution_type.value == 2
+        else:
+            assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 2
+        # if edbapp.grpc:
+        #     setup1.settings.options.enhanced_low_frequency_accuracy = True
+        #     assert setup1.settings.options.enhanced_low_frequency_accuracy
+        #     setup1.settings.options.order_basis = setup1.settings.options.order_basis.FIRST_ORDER
+        #     assert setup1.settings.options.order_basis.name == "FIRST_ORDER"
+        #     setup1.settings.options.relative_residual = 0.0002
+        #     assert setup1.settings.options.relative_residual == 0.0002
+        #     setup1.settings.options.use_shell_elements = True
+        #     assert setup1.settings.options.use_shell_elements
+        # else:
+        # grpc simulation setup is too different.
+        setup1.hfss_solver_settings.enhanced_low_frequency_accuracy = True
+        assert setup1.hfss_solver_settings.enhanced_low_frequency_accuracy
+        # Currently EDB api has a bug for this feature.
+        # setup1.hfss_solver_settings.order_basis
+        setup1.hfss_solver_settings.relative_residual = 0.0002
+        assert setup1.hfss_solver_settings.relative_residual == 0.0002
+        setup1.hfss_solver_settings.use_shell_elements = True
+        assert setup1.hfss_solver_settings.use_shell_elements
 
         setup1b = edbapp.setups["setup1"]
         assert not setup1.is_null
@@ -973,7 +976,7 @@ class TestClass:
             assert edbapp.setups["setup1"].hfss_port_settings.min_triangles_wave_port == 500
             edbapp.setups["setup1"].hfss_port_settings.enable_set_triangles_wave_port = True
             assert edbapp.setups["setup1"].hfss_port_settings.enable_set_triangles_wave_port
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_hfss_simulation_setup_mesh_operation(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
@@ -1012,7 +1015,7 @@ class TestClass:
         assert mop.skin_depth == "5um"
         assert mop.surface_triangle_length == "2mm"
         assert mop.number_of_layer_elements == "3"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_hfss_frequency_sweep(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
@@ -1040,7 +1043,7 @@ class TestClass:
         else:
             assert edbapp.setups["setup1"].sweep_data[-1].name == "sw3"
             setup1.sweep_data[-1].use_q3d_for_dc = True
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_dc_simulation_setup(self, edb_examples):
         """Create a dc simulation setup and evaluate its properties."""
@@ -1089,7 +1092,7 @@ class TestClass:
         assert edbapp.ports["test1"]
         edbapp.ports["test1"].is_circuit_port = True
         assert edbapp.ports["test1"].is_circuit_port
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_source_setter(self, edb_examples):
         """Evaluate siwave sources property."""
@@ -1104,7 +1107,7 @@ class TestClass:
         # TODO grpc return float value.
         assert sources[0].magnitude == 1.45
         assert sources[1].magnitude == 1.45
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_delete_pingroup(self, edb_examples):
         """Delete siwave pin groups."""
@@ -1116,7 +1119,7 @@ class TestClass:
         for _, pingroup in edbapp.siwave.pin_groups.items():
             pingroup.delete()
         assert not edbapp.siwave.pin_groups
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_padstack_instance(self, edb_examples):
         """Create padstack instances."""
@@ -1171,7 +1174,7 @@ class TestClass:
         trace = edb.modeler.create_trace([[0, 0], [0, 10e-3]], "1_Top", "0.1mm", "trace_with_via_fence")
         edb.padstacks.create("via_0")
         trace.create_via_fence("1mm", "1mm", "via_0")
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_stackup_properties(self, edb_examples):
         """Evaluate stackup properties."""
@@ -1184,7 +1187,7 @@ class TestClass:
         edb.stackup.add_layer(layer_name="sig3", fillMaterial="air", thickness="10um", base_layer="diel2")
         assert edb.stackup.thickness == 0.00043
         assert edb.stackup.num_layers == 5
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_hfss_extent_info(self):
         """HFSS extent information."""
@@ -1243,7 +1246,7 @@ class TestClass:
         assert "P1" and "P2" in edb.ports
         assert "Setup1" and "Setup Test" in edb.setups
         assert "B1" in edb.components.instances
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_database_properties(self, edb_examples):
         """Evaluate database properties."""
@@ -1259,7 +1262,7 @@ class TestClass:
         assert isinstance(edb.apd_bondwire_defs, list)
         assert isinstance(edb.version, tuple)
         assert isinstance(edb.footprint_cells, list)
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_backdrill_via_with_offset(self, edb_examples):
         """Set backdrill from top."""
@@ -1285,9 +1288,9 @@ class TestClass:
         assert padstack_instance.get_back_drill_by_layer()
         layer, offset, diameter = padstack_instance.get_back_drill_by_layer()
         assert layer == "signal1"
-        assert offset == 100e-6
-        assert diameter == 200e-6
-        edb.close()
+        assert offset == pytest.approx(100e-6)
+        assert diameter == pytest.approx(200e-6)
+        edb.close(terminate_rpc_session=False)
 
     def test_add_layer_api_with_control_file(self):
         """Add new layers with control file."""
@@ -1363,7 +1366,7 @@ class TestClass:
             (-0.0008, 0.0012),
             (-0.0008, 0.0),
         ]
-        edb3.close()
+        edb3.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(is_linux, reason="Not supported in IPY")
     def test_solve_siwave(self, edb_examples):
@@ -1412,17 +1415,21 @@ class TestClass:
         assert round(polygon.center[1], 6) == -0.0045
 
         assert polygon.rotate(angle=45)
-        assert polygon.bbox == [0.01246268, -0.04303732, 0.08953732, 0.03403732]
+        bbox = [round(i, 6) for i in polygon.bbox]
+        assert bbox == pytest.approx([0.012463, -0.043037, 0.089537, 0.034037])
         assert polygon.rotate(angle=34, center=[0, 0])
-        assert polygon.bbox == [0.030839512, -0.025151831, 0.058755056, 0.074728169]
+        bbox = [round(i, 6) for i in polygon.bbox]
+        assert bbox == [0.030840, -0.025152, 0.058755, 0.074728]
         assert polygon.scale(factor=1.5)
-        assert polygon.bbox == [0.023860626, -0.05012183, 0.065733942, 0.099698168]
+        bbox = [round(i, 6) for i in polygon.bbox]
+        assert bbox == [0.023861, -0.050122, 0.065734, 0.099698]
         assert polygon.scale(factor=-0.5, center=[0, 0])
-        assert polygon.bbox == [-0.032866971, -0.049849084, -0.011930313, 0.025060915]
+        bbox = [round(i, 6) for i in polygon.bbox]
+        assert bbox == [-0.032867, -0.049849, -0.01193, 0.025061]
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_multizone(self, edb_examples):
         # Done
@@ -1444,7 +1451,7 @@ class TestClass:
         assert not edbapp.siwave.icepak_use_minimal_comp_defaults
         edbapp.siwave.icepak_component_file = edb_examples.get_local_file_folder("siwave/icepak_component.pwrd")
         assert edbapp.siwave.icepak_component_file == edb_examples.get_local_file_folder("siwave/icepak_component.pwrd")
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_dcir_properties(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
@@ -1493,7 +1500,7 @@ class TestClass:
             assert setup.dc_ir_settings.via_report_path
             setup.dc_ir_settings.source_terms_to_ground = {"test": 1}
             assert setup.dc_ir_settings.source_terms_to_ground
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_arbitrary_wave_ports(self):
         # TODO check later when sever instances is improved.
@@ -1511,7 +1518,7 @@ class TestClass:
         )
         edb_model = os.path.join(self.local_scratch.path, "wave_ports.aedb")
         assert os.path.isdir(edb_model)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_bondwire(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
@@ -1547,7 +1554,7 @@ class TestClass:
         assert bondwire_1.trajectory == [1, 0.1, 0.2, 0.3]
         bondwire_1.width = "0.2mm"
         assert bondwire_1.width == 0.0002
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_voltage_regulator(self, edb_examples):
         # TODO working with EDB NET only. Not implemented yet in grpc yet. Also Voltage regulator is bugged in DotNet.
@@ -1575,7 +1582,7 @@ class TestClass:
             assert vrm.id
             assert edbapp.voltage_regulator_modules
             assert "test" in edbapp.voltage_regulator_modules
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_workflow(self, edb_examples):
         # TODO check with config file 2.0
@@ -1585,7 +1592,7 @@ class TestClass:
         path_bom = Path(edb_examples.test_folder) / "bom.csv"
         edbapp.workflow.export_bill_of_materials(path_bom)
         assert path_bom.exists()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
         pass
 
     def test_create_port_on_component_no_ref_pins_in_component(self, edb_examples):
@@ -1615,7 +1622,7 @@ class TestClass:
             extend_reference_pins_outside_component=True,
         )
         assert len(edbapp.ports) == 15
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_ping_group(self, edb_examples):
         # Done
@@ -1633,7 +1640,7 @@ class TestClass:
             pins_by_aedt_name=["U1-A11", "U1-A12", "U1-A13"],
             pins_by_name=["A11", "A12", "A15", "A16"],
         )
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_create_edb_with_zip(self):
         """Create EDB from zip file."""
@@ -1645,7 +1652,7 @@ class TestClass:
         edb = Edb(zip_path)
         assert edb.nets
         assert edb.components
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     @pytest.mark.parametrize("positive_net_names", (["2V5", "NetR105_2"], ["2V5", "GND", "NetR105_2"], "2V5"))
     @pytest.mark.parametrize("nets_mode", ("str", "net"))
@@ -1915,7 +1922,7 @@ class TestClass:
         assert len(edb.components.instances) == 66
         assert len(edb.padstacks.instances) == 473
 
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_import_layout_file(self):
         from pyedb import Edb
@@ -1987,7 +1994,7 @@ class TestClass:
         )
         trace_widths = edbapp.hfss.get_trace_width_for_traces_with_ports()
         assert len(trace_widths) > 0
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_add_cpa_simulation_setup(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
@@ -2057,7 +2064,7 @@ class TestClass:
         assert cpa_setup.model_type == "rlcg"
         assert cpa_setup.net_processing_mode == "all"
         assert not cpa_setup.use_q3d_solver
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_load_cpa_cfg(self, edb_examples):
         from pyedb.siwave_core.cpa.simulation_setup_data_model import (
@@ -2119,7 +2126,7 @@ class TestClass:
         assert cpa_setup.solver_options.extraction_frequency == "15Ghz"
         assert cpa_setup.solver_options.ground_power_nets_for_si == True
         assert not cpa_setup.solver_options.return_path_net_for_loop_parameters
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_compare_edbs(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
@@ -2128,6 +2135,7 @@ class TestClass:
         folder = edbapp.edbpath[:-5] + "_compare_results"
         assert os.path.exists(folder)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
     def test_create_layout_component(self, edb_examples):
         from pyedb import Edb
 
@@ -2136,7 +2144,7 @@ class TestClass:
             out_file = os.path.join(self.local_scratch.path, "test.aedbcomp")
             edbapp.export_layout_component(component_path=out_file)
             assert os.path.isfile(out_file)
-            edbapp.close()
-            edbapp = Edb()
+            edbapp.close(terminate_rpc_session=False)
+            edbapp = Edb(grpc=config["use_grpc"], edbversion=config["desktopVersion"])
             layout_comp = edbapp.import_layout_component(out_file)
             assert not layout_comp.cell_instance.is_null

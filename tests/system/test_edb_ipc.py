@@ -41,6 +41,14 @@ class TestClass:
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
+
     def test_export_to_ipc2581_0(self, edb_examples):
         """Export of a loaded aedb file to an XML IPC2581 file"""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
@@ -52,15 +60,17 @@ class TestClass:
         # Export should be made with units set to default -millimeter-.
         edbapp.export_to_ipc2581(xml_file, "mm")
         assert os.path.exists(xml_file)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="This test is expected to crash (sometimes) at `ipc_edb.close()`")
+    @pytest.mark.skip(
+        reason="This test is expected to crash (sometimes) at `ipc_edb.close(terminate_rpc_session=False)`"
+    )
     def test_export_to_ipc2581_1(self, edb_examples):
         """Export of a loaded aedb file to an XML IPC2581 file"""
         edbapp = edb_examples.get_si_verse()
         xml_file = edb_examples.get_local_file_folder("test_ipc.xml")
         edbapp.export_to_ipc2581(xml_file)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
         assert os.path.isfile(xml_file)
         ipc_edb = edb_examples.load_edb(xml_file, copy_to_temp=False)
         ipc_stats = ipc_edb.get_statistics()
@@ -76,4 +86,4 @@ class TestClass:
         assert ipc_stats.num_traces == 1565
         assert ipc_stats.num_vias == 4669
         assert ipc_stats.stackup_thickness == 0.001748
-        ipc_edb.close()
+        ipc_edb.close(terminate_rpc_session=False)

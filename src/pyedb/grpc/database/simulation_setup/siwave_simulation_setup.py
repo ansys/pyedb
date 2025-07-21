@@ -38,6 +38,21 @@ class SiwaveSimulationSetup(GrpcSIWaveSimulationSetup):
         self._pedb = pedb
 
     @property
+    def advanced_settings(self):
+        """Setup advanced settings."""
+        return self.settings.advanced
+
+    @property
+    def dc_settings(self):
+        """Setup dc settings."""
+        return self.settings.dc
+
+    @property
+    def dc_advanced_settings(self):
+        """Setup dc settings."""
+        return self.settings.dc_advanced
+
+    @property
     def type(self) -> str:
         """Simulation setup type.
 
@@ -127,6 +142,7 @@ class SiwaveSimulationSetup(GrpcSIWaveSimulationSetup):
                 for sweep in self.sweep_data:
                     sweep_data.append(sweep)
                 self.sweep_data = sweep_data
+                return sweep_data[0]
         else:
             start_freq = self._pedb.number_with_units(start_freq, "Hz")
             stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
@@ -156,7 +172,7 @@ class SiwaveSimulationSetup(GrpcSIWaveSimulationSetup):
                 sweep_data.append(sweep)
             self.sweep_data = sweep_data
             if len(self.sweep_data) == init_sweep_count + 1:
-                return True
+                return sweep_data[0]
             else:
                 self._pedb.logger.error("Failed to add frequency sweep data")
                 return False

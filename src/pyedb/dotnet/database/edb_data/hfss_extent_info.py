@@ -38,14 +38,14 @@ class HfssExtentInfo:
         self._pedb = pedb
 
         self._hfss_extent_info_type = {
-            "bounding_box": self._pedb.edb_api.utility.utility.HFSSExtentInfoType.BoundingBox,
-            "conforming": self._pedb.edb_api.utility.utility.HFSSExtentInfoType.Conforming,
-            "convexHull": self._pedb.edb_api.utility.utility.HFSSExtentInfoType.ConvexHull,
-            "polygon": self._pedb.edb_api.utility.utility.HFSSExtentInfoType.Polygon,
+            "bounding_box": self._pedb.core.utility.utility.HFSSExtentInfoType.BoundingBox,
+            "conforming": self._pedb.core.utility.utility.HFSSExtentInfoType.Conforming,
+            "convexHull": self._pedb.core.utility.utility.HFSSExtentInfoType.ConvexHull,
+            "polygon": self._pedb.core.utility.utility.HFSSExtentInfoType.Polygon,
         }
         self._open_region_type = {
-            "radiation": self._pedb.edb_api.utility.utility.OpenRegionType.Radiation,
-            "pml": self._pedb.edb_api.utility.utility.OpenRegionType.PML,
+            "radiation": self._pedb.core.utility.utility.OpenRegionType.Radiation,
+            "pml": self._pedb.core.utility.utility.OpenRegionType.PML,
         }
 
     def _get_edb_value(self, value):
