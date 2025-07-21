@@ -235,9 +235,7 @@ class Padstacks(object):
         ...     print(f"Instance {id}: {instance.name}")
         """
         pad_stack_inst = self._pedb.layout.padstack_instances
-        if len(self.__instances) == len(pad_stack_inst):
-            return self.__instances
-        else:
+        if not len(self.__instances) == len(pad_stack_inst):
             self.__instances = {i.edb_uid: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
         return self.__instances
 

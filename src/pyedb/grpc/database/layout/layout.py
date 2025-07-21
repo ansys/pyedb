@@ -74,20 +74,21 @@ class Layout(GrpcLayout):
 
     @property
     def primitives(self) -> list[any]:
-        self.__primitives = []
-        for prim in super().primitives:
-            if isinstance(prim, ansys.edb.core.primitive.path.Path):
-                self.__primitives.append(Path(self._pedb, prim))
-            elif isinstance(prim, ansys.edb.core.primitive.polygon.Polygon):
-                self.__primitives.append(Polygon(self._pedb, prim))
-            elif isinstance(prim, ansys.edb.core.primitive.padstack_instance.PadstackInstance):
-                self.__primitives.append(PadstackInstance(self._pedb, prim))
-            elif isinstance(prim, ansys.edb.core.primitive.rectangle.Rectangle):
-                self.__primitives.append(Rectangle(self._pedb, prim))
-            elif isinstance(prim, ansys.edb.core.primitive.circle.Circle):
-                self.__primitives.append(Circle(self._pedb, prim))
-            elif isinstance(prim, ansys.edb.core.primitive.bondwire.Bondwire):
-                self.__primitives.append(Bondwire(self._pedb, prim))
+        primitives = super().primitives
+        if not len(self.__primitives) == len(primitives):
+            for prim in primitives:
+                if isinstance(prim, ansys.edb.core.primitive.path.Path):
+                    self.__primitives.append(Path(self._pedb, prim))
+                elif isinstance(prim, ansys.edb.core.primitive.polygon.Polygon):
+                    self.__primitives.append(Polygon(self._pedb, prim))
+                elif isinstance(prim, ansys.edb.core.primitive.padstack_instance.PadstackInstance):
+                    self.__primitives.append(PadstackInstance(self._pedb, prim))
+                elif isinstance(prim, ansys.edb.core.primitive.rectangle.Rectangle):
+                    self.__primitives.append(Rectangle(self._pedb, prim))
+                elif isinstance(prim, ansys.edb.core.primitive.circle.Circle):
+                    self.__primitives.append(Circle(self._pedb, prim))
+                elif isinstance(prim, ansys.edb.core.primitive.bondwire.Bondwire):
+                    self.__primitives.append(Bondwire(self._pedb, prim))
         return self.__primitives
 
     @property
