@@ -93,8 +93,8 @@ class Padstacks(object):
 
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
-        self._instances: Dict[int, PadstackInstance] = {}
-        self._definitions: Dict[str, Any] = {}
+        self.__instances: Dict[int, PadstackInstance] = {}
+        self.__definitions: Dict[str, Any] = {}
 
     @property
     def _active_layout(self) -> Any:
@@ -230,15 +230,16 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> all_instances = edb_padstacks.instances
+        >>> all_instances = edb.padstacks.instances
         >>> for id, instance in all_instances.items():
         ...     print(f"Instance {id}: {instance.name}")
         """
         pad_stack_inst = self._pedb.layout.padstack_instances
-        if len(self._instances) == len(pad_stack_inst):
-            return self._instances
-        self._instances = {i.edb_uid: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
-        return self._instances
+        if len(self.__instances) == len(pad_stack_inst):
+            return self.__instances
+        else:
+            self.__instances = {i.edb_uid: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
+        return self.__instances
 
     @property
     def instances_by_name(self) -> Dict[str, PadstackInstance]:

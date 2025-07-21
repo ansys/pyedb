@@ -198,7 +198,7 @@ class Layout(GrpcLayout):
     @property
     def padstack_instances(self) -> list[PadstackInstance]:
         """Get all padstack instances in a list."""
-        return [PadstackInstance(self._pedb, i) for i in self._pedb.active_cell.layout.padstack_instances]
+        return self._pedb.padstacks.instances
 
     #
     @property
