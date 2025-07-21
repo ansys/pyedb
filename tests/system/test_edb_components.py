@@ -122,7 +122,7 @@ class TestClass:
             assert edb.components.instances["R1"].component_def
         assert edb.components.instances["R1"].location == [0.11167500144, 0.04072499856]
         assert edb.components.instances["R1"].lower_elevation == 0.0
-        assert edb.components.instances["R1"].upper_elevation == 35e-6
+        assert edb.components.instances["R1"].upper_elevation == pytest.approx(35e-6)
         assert edb.components.instances["R1"].top_bottom_association == 2
         assert len(edb.components.instances["R1"].pinlist) == 2
         assert edb.components.instances["R1"].pins
@@ -144,7 +144,7 @@ class TestClass:
             edb.components.instances["R1"].pins["1"].top_bottom_association
             == edb.components.instances["R1"].top_bottom_association
         )
-        assert edb.components.instances["R1"].pins["1"].position == [0.111675, 0.039975]
+        assert [round(i,6) for i in edb.components.instances["R1"].pins["1"].position] == [0.111675, 0.039975]
         assert round(edb.components.instances["R1"].pins["1"].rotation, 6) == -1.570796
         edb.close(terminate_rpc_session=False)
 
@@ -440,7 +440,8 @@ class TestClass:
         """Replace RLC component by RLC gap boundaries."""
         # TODO check how we can return same boundary_type between grpc and dotnet.
         edbapp = edb_examples.get_si_verse()
-        for refdes, cmp in edbapp.components.instances.items():
+        names = [i for i in edbapp.components.instances.keys()][::]
+        for refdes in names:
             edbapp.components.replace_rlc_by_gap_boundaries(refdes)
         if edbapp.grpc:
             rlc_list = [term for term in list(edbapp.terminals.values()) if term.boundary_type == "rlc"]
