@@ -28,7 +28,7 @@ from typing import Sequence
 import pytest
 
 from pyedb.generic.general_methods import is_linux
-from tests.conftest import local_path, test_subfolder, config
+from tests.conftest import config, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
@@ -55,7 +55,7 @@ class TestClass:
         """Evaluate layout bounding box"""
         edbapp = edb_examples.get_si_verse()
         assert len(edbapp.get_bounding_box()) == 2
-        bbox = [[round(i,6) for  i in j] for j in edbapp.get_bounding_box()]
+        bbox = [[round(i, 6) for i in j] for j in edbapp.get_bounding_box()]
         assert bbox == [[-0.014260, -0.004550], [0.150105, 0.080000]]
         edbapp.close(terminate_rpc_session=False)
 

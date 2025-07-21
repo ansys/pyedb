@@ -42,6 +42,7 @@ class TestClass:
         self.target_path = target_path
         self.target_path3 = target_path3
         self.target_path4 = target_path4
+
     @classmethod
     @pytest.fixture(scope="class", autouse=True)
     def teardown_class(cls, request, edb_examples):
@@ -49,6 +50,7 @@ class TestClass:
         # not elegant way to ensure the EDB grpc is closed after all tests
         edb = edb_examples.create_empty_edb()
         edb.close_edb()
+
     def test_get_pad_parameters(self):
         """Access to pad parameters."""
         pin = self.edbapp.components.get_pin_from_component("J1", pinName="1")

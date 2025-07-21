@@ -552,7 +552,11 @@ class Edb(EdbInit):
         dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Source names and objects.
         """
-        return {k: i for  k,i in self.terminals.items() if  "source" in i.boundary_type or "terminal" in i.boundary_type or i.is_reference_terminal}
+        return {
+            k: i
+            for k, i in self.terminals.items()
+            if "source" in i.boundary_type or "terminal" in i.boundary_type or i.is_reference_terminal
+        }
 
     @property
     def voltage_regulator_modules(self):
@@ -2002,13 +2006,13 @@ class Edb(EdbInit):
             id = i.id
             if net_name not in all_list and id not in pins_to_preserve:
                 delete_list.append(i)
-                #i.delete()
+                # i.delete()
             elif net_name in reference_list and id not in pins_to_preserve:
                 reference_pinsts.append(i)
         for i in self.modeler.primitives:
             if not i.is_null and not i.net.is_null:
                 if i.net.name not in all_list:
-                    #i.delete()
+                    # i.delete()
                     delete_list.append(i)
                 elif i.net.name in reference_list and not i.is_void:
                     if keep_lines_as_path and isinstance(i, Path):

@@ -30,6 +30,7 @@ class TestClass:
     @pytest.fixture(autouse=True)
     def init(self, local_scratch):
         pass
+
     @classmethod
     @pytest.fixture(scope="class", autouse=True)
     def teardown_class(cls, request, edb_examples):
@@ -37,6 +38,7 @@ class TestClass:
         # not elegant way to ensure the EDB grpc is closed after all tests
         edb = edb_examples.create_empty_edb()
         edb.close_edb()
+
     def test_find(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128", net_name=["2V5"])

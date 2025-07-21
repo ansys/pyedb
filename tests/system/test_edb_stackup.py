@@ -40,6 +40,7 @@ class TestClass:
         self.target_path = target_path
         self.target_path2 = target_path2
         self.target_path4 = target_path4
+
     @classmethod
     @pytest.fixture(scope="class", autouse=True)
     def teardown_class(cls, request, edb_examples):
