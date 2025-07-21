@@ -40,6 +40,13 @@ class TestClass:
         self.target_path = target_path
         self.target_path2 = target_path2
         self.target_path4 = target_path4
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
 
     def test_stackup_get_signal_layers(self, edb_examples):
         """Report residual copper area per layer."""
@@ -150,7 +157,7 @@ class TestClass:
                 )
             assert laminate_edb.save_edb()
         finally:
-            laminate_edb.close()
+            laminate_edb.close(terminate_rpc_session=False)
 
     def test_stackup_place_a3dcomp_3d_placement_on_bottom(self, edb_examples):
         """Place a 3D Component into current layout."""
@@ -230,7 +237,7 @@ class TestClass:
                 )
             assert laminate_edb.save_edb()
         finally:
-            laminate_edb.close()
+            laminate_edb.close(terminate_rpc_session=False)
 
     def test_stackup_properties_0(self, edb_examples):
         """Evaluate various stackup properties."""
@@ -287,7 +294,7 @@ class TestClass:
         # edbapp.stackup.mode = "Overlapping"
         # assert edbapp.stackup.mode.lower() == "overlapping"
         assert edbapp.stackup.add_layer("new_bottom", "1_Top", "add_at_elevation", "dielectric", elevation=0.0003)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_properties_1(self, edb_examples):
         """Evaluate various stackup properties."""
@@ -302,7 +309,7 @@ class TestClass:
         assert export_method(export_stackup_path)
         assert os.path.exists(export_stackup_path)
 
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_properties_2(self, edb_examples):
         """Evaluate various stackup properties."""
@@ -316,7 +323,7 @@ class TestClass:
         export_stackup_path = os.path.join(self.local_scratch.path, "export_stackup.csv")
         assert export_method(export_stackup_path)
         assert os.path.exists(export_stackup_path)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_layer_properties(self, edb_examples):
         """Evaluate various layer properties."""
@@ -343,7 +350,7 @@ class TestClass:
         # assert layer.is_negative
         # assert not layer.is_via_layer
         # assert layer.material == "copper"
-        # edbapp.close()
+        # edbapp.close(terminate_rpc_session=False)
         pass
 
     def test_stackup_load_json(self, edb_examples):
@@ -352,7 +359,7 @@ class TestClass:
         fpath = os.path.join(local_path, "example_models", test_subfolder, "stackup.json")
         edbapp = edb_examples.load_edb(source_path)
         edbapp.stackup.load(fpath)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_export_json(self, edb_examples):
         """Export stackup into a JSON file."""
@@ -412,7 +419,7 @@ class TestClass:
                     assert data["layers"]["DE2"][parameter] == 0.0
                 else:
                     assert data["layers"]["DE2"][parameter] == value
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_load_xml(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
@@ -432,7 +439,7 @@ class TestClass:
         assert "1_Top_renamed" in edbapp.stackup.layers
         assert "DE1_renamed" in edbapp.stackup.layers
         assert "16_Bottom_renamed" in edbapp.stackup.layers
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_place_in_3d_with_flipped_stackup(self, edb_examples):
         """Place into another cell using 3d placement method with and
@@ -454,7 +461,7 @@ class TestClass:
         if edb2.grpc:
             edb2.close(terminate_rpc_session=False)
         else:
-            edb2.close()
+            edb2.close(terminate_rpc_session=False)
         edb2 = edb_examples.load_edb(self.target_path, copy_to_temp=False)
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
@@ -468,7 +475,7 @@ class TestClass:
         if edb2.grpc:
             edb2.close(terminate_rpc_session=False)
         else:
-            edb2.close()
+            edb2.close(terminate_rpc_session=False)
         edb2 = edb_examples.load_edb(self.target_path, copy_to_temp=False)
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
@@ -482,7 +489,7 @@ class TestClass:
         if edb2.grpc:
             edb2.close(terminate_rpc_session=False)
         else:
-            edb2.close()
+            edb2.close(terminate_rpc_session=False)
         edb2 = edb_examples.load_edb(self.target_path, copy_to_temp=False)
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
@@ -496,8 +503,8 @@ class TestClass:
         if edb2.grpc:
             edb2.close(terminate_rpc_session=False)
         else:
-            edb2.close()
-        edb1.close()
+            edb2.close(terminate_rpc_session=False)
+        edb1.close(terminate_rpc_session=False)
 
     def test_stackup_place_instance_with_flipped_stackup(self, edb_examples):
         """Place into another cell using 3d placement method with and
@@ -546,8 +553,8 @@ class TestClass:
         if edb2.grpc:
             edb2.close(terminate_rpc_session=False)
         else:
-            edb2.close()
-        edb1.close()
+            edb2.close(terminate_rpc_session=False)
+        edb1.close(terminate_rpc_session=False)
 
     def test_stackup_place_in_layout_with_flipped_stackup(self, edb_examples):
         """Place into another cell using layer placement method with and
@@ -563,7 +570,7 @@ class TestClass:
         #     flipped_stackup=True,
         #     place_on_top=True,
         # )
-        # edb2.close()
+        # edb2.close(terminate_rpc_session=False)
         pass
 
     def test_stackup_place_on_top_of_lam_with_mold(self, edb_examples):
@@ -650,8 +657,8 @@ class TestClass:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_stackup_place_on_bottom_of_lam_with_mold(self, edb_examples):
         """Place on lam with mold using 3d placement method"""
@@ -737,8 +744,8 @@ class TestClass:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_stackup_place_on_top_of_lam_with_mold_solder(self, edb_examples):
         """Place on top of lam with mold solder using 3d placement method."""
@@ -825,8 +832,8 @@ class TestClass:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_stackup_place_on_bottom_of_lam_with_mold_solder(self, edb_examples):
         """Place on bottom of lam with mold solder using 3d placement method."""
@@ -914,8 +921,8 @@ class TestClass:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_stackup_place_on_top_with_zoffset_chip(self, edb_examples):
         """Place on top of lam with mold chip zoffset using 3d placement method."""
@@ -1001,8 +1008,8 @@ class TestClass:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_stackup_place_on_bottom_with_zoffset_chip(self, edb_examples):
         """Place on bottom of lam with mold chip zoffset using 3d placement method."""
@@ -1090,8 +1097,8 @@ class TestClass:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_stackup_place_on_top_with_zoffset_solder_chip(self, edb_examples):
         """Place on top of lam with mold chip zoffset using 3d placement method."""
@@ -1177,8 +1184,8 @@ class TestClass:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_stackup_place_on_bottom_with_zoffset_solder_chip(self, edb_examples):
         """Place on bottom of lam with mold chip zoffset using 3d placement method."""
@@ -1266,8 +1273,8 @@ class TestClass:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_18_stackup(self, edb_examples):
         # TODO
@@ -1349,7 +1356,7 @@ class TestClass:
         #                 ) < delta
         #                 assert (pedb_lay.side_hallhuray_nodule_radius - layer["side_hallhuray_nodule_radius"]) < delta
         #                 assert (pedb_lay.side_hallhuray_surface_ratio - layer["side_hallhuray_surface_ratio"]) < delta
-        # edbapp.close()
+        # edbapp.close(terminate_rpc_session=False)
         pass
 
     def test_19(self, edb_examples):
@@ -1366,4 +1373,4 @@ class TestClass:
         base_layer = edbapp.stackup.layers["1_Top"]
         l_id = edbapp.stackup.layers_by_id.index([base_layer.id, base_layer.name])
         assert edbapp.stackup.layers_by_id[l_id - 1][1] == "add_layer_above"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)

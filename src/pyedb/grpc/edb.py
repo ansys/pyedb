@@ -552,7 +552,7 @@ class Edb(EdbInit):
         dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Source names and objects.
         """
-        return self.terminals
+        return {k: i for  k,i in self.terminals.items() if  "source" in i.boundary_type or "terminal" in i.boundary_type or i.is_reference_terminal}
 
     @property
     def voltage_regulator_modules(self):
@@ -1996,17 +1996,20 @@ class Edb(EdbInit):
         reference_pinsts = []
         reference_prims = []
         reference_paths = []
+        delete_list = []
         for i in self.padstacks.instances.values():
             net_name = i.net_name
             id = i.id
             if net_name not in all_list and id not in pins_to_preserve:
-                i.delete()
+                delete_list.append(i)
+                #i.delete()
             elif net_name in reference_list and id not in pins_to_preserve:
                 reference_pinsts.append(i)
         for i in self.modeler.primitives:
             if not i.is_null and not i.net.is_null:
                 if i.net.name not in all_list:
-                    i.delete()
+                    #i.delete()
+                    delete_list.append(i)
                 elif i.net.name in reference_list and not i.is_void:
                     if keep_lines_as_path and isinstance(i, Path):
                         reference_paths.append(i)
@@ -2014,7 +2017,8 @@ class Edb(EdbInit):
                         reference_prims.append(i)
         self.logger.info_timer("Net clean up")
         self.logger.reset_timer()
-
+        for i in delete_list:
+            i.delete()
         if custom_extent and isinstance(custom_extent, list):
             if custom_extent[0] != custom_extent[-1]:
                 custom_extent.append(custom_extent[0])
@@ -2046,7 +2050,7 @@ class Edb(EdbInit):
                 ExtentType as GrpcExtentType,
             )
 
-            if extent_type in ["Conforming", GrpcExtentType.CONFORMING, 1]:
+            if extent_type in ["Conformal", "Conforming", GrpcExtentType.CONFORMING, 1]:
                 if extent_defeature > 0:
                     _poly = _poly.defeature(extent_defeature)
                 _poly1 = GrpcPolygonData(arcs=_poly.arc_data, closed=True)

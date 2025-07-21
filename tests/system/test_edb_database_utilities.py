@@ -32,7 +32,13 @@ class TestDatabaseUtilities:
     @pytest.fixture(autouse=True)
     def init(self, local_scratch):
         pass
-
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
     def test_value(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
         if conftest.config["use_grpc"]:

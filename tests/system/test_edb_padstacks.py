@@ -42,7 +42,13 @@ class TestClass:
         self.target_path = target_path
         self.target_path3 = target_path3
         self.target_path4 = target_path4
-
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
     def test_get_pad_parameters(self):
         """Access to pad parameters."""
         pin = self.edbapp.components.get_pin_from_component("J1", pinName="1")
@@ -490,7 +496,7 @@ class TestClass:
         polygon = [[[123.37e-3, 69.5e-3], [124.83e-3, 69.25e-3], [124.573e-3, 60.23e-3], [123e-3, 60.5e-3]]]
         result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
         assert len(result) == 1
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_via_merge3(self, edb_examples):
         source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
@@ -506,7 +512,7 @@ class TestClass:
         assert edbapp.padstacks.instances[merged_via[0]].net_name == "NET_1"
         assert edbapp.padstacks.instances[merged_via[0]].start_layer == "layer1"
         assert edbapp.padstacks.instances[merged_via[0]].stop_layer == "layer2"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_dbscan(self, edb_examples):
         source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"

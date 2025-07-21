@@ -40,7 +40,13 @@ class TestClass:
         self.target_path = target_path
         self.target_path2 = target_path2
         self.target_path4 = target_path4
-
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
     def test_modeler_polygons(self, edb_examples):
         """Evaluate modeler polygons"""
         # Done
@@ -563,13 +569,13 @@ class TestClass:
             output_edb=output_edb,
             mounting_side="top",
         )
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
         test_edb = edb_examples.load_edb(edb_path=output_edb, copy_to_temp=False)
         assert len(list(test_edb.nets.signal.keys())) == 13
         assert len(list(test_edb.stackup.layers.keys())) == 3
         assert "ref" in test_edb.stackup.layers
         assert len(test_edb.modeler.polygons) == 12
-        test_edb.close()
+        test_edb.close(terminate_rpc_session=False)
 
     def test_path_center_line(self, edb_examples):
         edb = edb_examples.create_empty_edb()
@@ -601,7 +607,7 @@ class TestClass:
         for poly in poly_with_voids:
             for void in poly.voids:
                 assert void.bbox
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_aedt_name(self, edb_examples):
         edbapp = edb_examples.get_si_verse()

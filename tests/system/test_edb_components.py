@@ -42,6 +42,14 @@ class TestClass:
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
+
     def test_components_get_pin_from_component(self, edb_examples):
         """Evaluate access to a pin from a component."""
         edb = edb_examples.get_si_verse()

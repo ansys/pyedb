@@ -34,7 +34,13 @@ class TestClass:
     @pytest.fixture(autouse=True)
     def init(self):
         pass
-
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
     def test_add_raptorx_setup(self, edb_examples):
         edbapp = edb_examples.get_si_verse(version=VERSION)
         setup = edbapp.create_raptorx_setup("test")

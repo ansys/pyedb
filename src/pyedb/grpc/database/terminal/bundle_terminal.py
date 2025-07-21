@@ -50,6 +50,16 @@ class BundleTerminal(GrpcBundleTerminal):
         self._pedb = pedb
         self._edb_object = edb_object
 
+    @property
+    def boundary_type(self) -> str:
+        """Boundary type.
+
+        Returns
+        -------
+        str : boundary type.
+        """
+        return super().boundary_type.name.lower()
+
     def decouple(self) -> bool:
         """Ungroup a bundle of terminals.
 
