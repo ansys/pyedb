@@ -25,7 +25,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import math
 import os
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -40,8 +40,8 @@ from pyedb import Edb
 class Substrate:
     """Small helper to keep substrate parameters together."""
 
-    h: float  # height (m)
-    er: float  # relative permittivity
+    h: float = 100e-6  # height (m)
+    er: float = 4.4  # relative permittivity
     tand: float = 0  # loss tangent
     name: str = "SUB"
 
@@ -334,20 +334,21 @@ class MIMCapacitor:
 
     def __init__(
         self,
-        *,
+        edb_cell: Optional[Edb] = None,
         area: float = 0.1e-6,
         gap: float = 1e-6,
         er: float = 7,
-        layer_top: str = "M3",
+        layer_top: str = "M1",
         layer_bottom: str = "M2",
         net: str = "RF",
     ):
+        self._pedb = edb_cell
         self.area = area
         self.gap = gap
-        self.er = er
         self.layer_top = layer_top
         self.layer_bottom = layer_bottom
         self.net = net
+        self.substrate = Substrate()
 
     @property
     def capacitance_f(self) -> float:
@@ -360,58 +361,56 @@ class MIMCapacitor:
             Capacitance in Farads
         """
         eps0 = 8.854e-12
-        return eps0 * self.er * self.area / self.gap
+        return eps0 * self.substrate.er * self.area / self.gap
 
-    def create(self, edb_path: str) -> Edb:
-        if os.path.exists(edb_path):
-            edb = Edb(edb_path)
-        else:
-            edb = Edb()
-            edb.save_as(edb_path)
-
-        edb["area"] = self.area
-        edb["gap"] = self.gap
+    def create(self) -> bool:
+        self._pedb["area"] = self.area
+        self._pedb["gap"] = self.gap
         side = math.sqrt(self.area)
-        edb["side"] = side
+        self._pedb["side"] = side
 
-        edb.modeler.create_rectangle(self.layer_top, self.net, [0, -side / 2, side, side])
-        edb.modeler.create_rectangle(self.layer_bottom, self.net, [0, -side / 2, side, side])
-        return edb
+        self._pedb.modeler.create_rectangle(self.layer_top, self.net, [0, -side / 2, side, side])
+        self._pedb.modeler.create_rectangle(self.layer_bottom, self.net, [0, -side / 2, side, side])
+        return True
 
 
 class SpiralInductor:
     """
     Square spiral inductor with underpass.
-
-    Parameters
-    ----------
-    turns : int
-    width : float
-    spacing : float
-    outer_diam : float
-    layer : str
-    underpass_layer : str
-    net : str
     """
 
     def __init__(
         self,
-        *,
-        turns: int = 3,
-        width: float = 20e-6,
-        spacing: float = 20e-6,
-        outer_diam: float = 0.5e-3,
-        layer: str = "TOP",
-        underpass_layer: str = "M2",
+        edb_cell: Optional[Edb] = None,
+        turns: Union[int, float] = 4.5,
+        trace_width: float = 20e-6,
+        spacing: float = 12e-6,
+        inner_diameter: float = 60e-6,
+        top_layer: str = "M1",
+        bottom_layer: str = "M2",
+        via_layer: str = "M3",
         net: str = "IN",
+        inductor_center: Tuple[float, float] = (0, 0),  # centre of spiral
+        via_size: float = 25e-6,  # via metal pad
+        bridge_width: float = 12e-6,  # under-pass trace width
+        bridge_clearance: float = 6e-6,  # dielectric gap under bridge
+        bridge_length: float = 200e-6,  # how far the bridge extends
     ):
-        self.turns = turns
-        self.width = width
+        self._pedb = edb_cell
+        self.turns = turns  # half-turns → 4.5 = 4 full + 1 half
+        self.trace_width = trace_width
         self.spacing = spacing
-        self.outer_diam = outer_diam
-        self.layer = layer
-        self.underpass_layer = underpass_layer
-        self.net = net
+        self.inner_diameter = inner_diameter  # first inner square side
+        self.via_size = via_size  # centre via finished hole
+        self.inductor_center = inductor_center  # via centre position
+        self.bridge_width = bridge_width  # under-pass trace width
+        self.bridge_clearance = bridge_clearance  # dielectric gap under bridge
+        self.bridge_length = bridge_length  # how far the bridge extends
+        self.top_layer = top_layer
+        self.bottom_layer = bottom_layer
+        self.via_layer = via_layer  # layer for the centre via
+        self.substrate = Substrate()  # default substrate
+        self.net_name = net
 
     @property
     def inductance_nh(self) -> float:
@@ -427,26 +426,65 @@ class SpiralInductor:
         l0 = 2.34e-6  # µ0/2pi
         return l0 * self.turns**2 * a / (2 * a + 2 * self.width)
 
-    def create(self, edb_path: str) -> Edb:
-        edb = Edb()
-        edb.save_as(edb_path)
-        edb["n"] = self.turns
-        edb["w"] = self.width
-        edb["s"] = self.spacing
-        edb["d_out"] = self.outer_diam
+    def create(self) -> "Path":
+        cx = self.inductor_center[0]
+        cy = self.inductor_center[1]
+        pts = []
+        x, y = cx, cy
+        side = self.inner_diameter
+        direction = 0  # 0=+y, 1=-x, 2=-y, 3=+x (vertical first)
 
-        # Simple square spiral generation
-        x, y = 0.0, 0.0
-        step = self.outer_diam
-        for i in range(self.turns):
-            for dx, dy in [(step, 0), (0, step), (-step, 0), (0, -step)]:
-                _rect_path(edb, self.layer, self.net, x, y, x + dx, y + dy, self.width)
-                x += dx
-                y += dy
-            step -= 2 * (self.width + self.spacing)
-        # underpass (stub)
-        edb.padstacks.create([x, y], 10e-6, 20e-6, self.layer, self.underpass_layer, net=self.net)
-        return edb
+        for i in range(int(math.ceil(2 * self.turns))):
+            # choose direction and length
+            if direction == 0:
+                dx, dy = 0, side / 2
+            elif direction == 1:
+                dx, dy = -side / 2, 0
+            elif direction == 2:
+                dx, dy = 0, -side / 2
+            else:
+                dx, dy = side / 2, 0
+
+            x += dx
+            y += dy
+            pts.append((x, y))
+
+            direction = (direction + 1) % 4
+            if i % 2 == 1:  # every two sides increase pitch
+                side += 2 * (self.trace_width + self.spacing)
+
+        via_pos = pts[0]
+        bridge_dir = -1  # -1 = down, +1 = up
+        bridge_end = (via_pos[0] + bridge_dir * self.bridge_length, via_pos[1])
+
+        self._pedb.modeler.create_trace(
+            path_list=pts,
+            layer_name=self.top_layer,
+            width=self.trace_width,
+            net_name=self.net_name,
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+
+        # Centre via (spiral inner end → bottom metal)
+        self._pedb.modeler.create_rectangle(
+            layer_name=self.via_layer,
+            center_point=pts[0],
+            width=self.via_size,
+            height=self.via_size,
+            representation_type="CenterWidthHeight",
+            net_name=self.net_name,
+        )
+
+        # Under-pass bridge trace on bottom metal
+        self._pedb.modeler.create_trace(
+            path_list=[via_pos, bridge_end],
+            layer_name=self.bottom_layer,
+            width=self.bridge_width,
+            net_name=self.net_name,
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
 
 
 class RectangleInductor:
