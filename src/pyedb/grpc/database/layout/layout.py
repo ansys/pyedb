@@ -72,13 +72,11 @@ class Layout(GrpcLayout):
         """
         return self._pedb._active_cell
 
+
     @property
     def primitives(self) -> list[any]:
-        pp = super().primitives[::]
-        if len(pp) == len(self.__primitives):
-            return self.__primitives
         self.__primitives = []
-        for prim in pp:
+        for prim in super().primitives:
             if isinstance(prim, ansys.edb.core.primitive.path.Path):
                 self.__primitives.append(Path(self._pedb, prim))
             elif isinstance(prim, ansys.edb.core.primitive.polygon.Polygon):
@@ -91,8 +89,6 @@ class Layout(GrpcLayout):
                 self.__primitives.append(Circle(self._pedb, prim))
             elif isinstance(prim, ansys.edb.core.primitive.bondwire.Bondwire):
                 self.__primitives.append(Bondwire(self._pedb, prim))
-            else:
-                self.__primitives.append(prim)
         return self.__primitives
 
     @property

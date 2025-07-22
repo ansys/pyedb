@@ -552,7 +552,11 @@ class Edb(EdbInit):
         dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Source names and objects.
         """
-        return {k: i for  k,i in self.terminals.items() if  "source" in i.boundary_type or "terminal" in i.boundary_type or i.is_reference_terminal}
+        return {
+            k: i
+            for k, i in self.terminals.items()
+            if "source" in i.boundary_type or "terminal" in i.boundary_type or i.is_reference_terminal
+        }
 
     @property
     def voltage_regulator_modules(self):

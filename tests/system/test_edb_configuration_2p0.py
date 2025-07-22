@@ -95,6 +95,22 @@ class TestClass:
         edb = edb_examples.create_empty_edb()
         edb.close_edb()
 
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
+
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
+
     def test_13b_stackup_materials(self, edb_examples):
         data = {
             "stackup": {
