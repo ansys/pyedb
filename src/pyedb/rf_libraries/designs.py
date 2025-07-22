@@ -24,8 +24,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import math
-import os
-from typing import List, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 
 import numpy as np
 
@@ -42,8 +41,9 @@ class Substrate:
 
     h: float = 100e-6  # height (m)
     er: float = 4.4  # relative permittivity
-    tand: float = 0  # loss tangent
+    tan_d: float = 0  # loss tangent
     name: str = "SUB"
+    size: Tuple[float, float] = (0.001, 0.001)  # width, length in metres
 
 
 def _rect_path(edb: Edb, layer: str, net: str, x0: float, y0: float, x1: float, y1: float, w: float) -> EDBPrimitives:
@@ -296,9 +296,6 @@ class Meander:
             else:  # odd → right
                 pts.extend([(" a/2", f"{i}*p"), (" a/2", y), (0, y)])  # step right  # vertical  # back to axis
 
-        # ------------------------------------------------------------------
-        # 4. Create the trace on layer "TOP"
-        # ------------------------------------------------------------------
         self._pedb.modeler.create_trace(
             path_list=pts, layer_name=self.layer, width=self.trace_width, net_name=self.net, corner_style="Round"
         )
@@ -386,8 +383,8 @@ class SpiralInductor:
         trace_width: float = 20e-6,
         spacing: float = 12e-6,
         inner_diameter: float = 60e-6,
-        top_layer: str = "M1",
-        bottom_layer: str = "M2",
+        layer: str = "M1",
+        bridge_layer: str = "M2",
         via_layer: str = "M3",
         net: str = "IN",
         inductor_center: Tuple[float, float] = (0, 0),  # centre of spiral
@@ -395,6 +392,7 @@ class SpiralInductor:
         bridge_width: float = 12e-6,  # under-pass trace width
         bridge_clearance: float = 6e-6,  # dielectric gap under bridge
         bridge_length: float = 200e-6,  # how far the bridge extends
+        ground_layer: str = "GND",
     ):
         self._pedb = edb_cell
         self.turns = turns  # half-turns → 4.5 = 4 full + 1 half
@@ -406,27 +404,45 @@ class SpiralInductor:
         self.bridge_width = bridge_width  # under-pass trace width
         self.bridge_clearance = bridge_clearance  # dielectric gap under bridge
         self.bridge_length = bridge_length  # how far the bridge extends
-        self.top_layer = top_layer
-        self.bottom_layer = bottom_layer
+        self.layer = layer
+        self.bridge_layer = bridge_layer
         self.via_layer = via_layer  # layer for the centre via
         self.substrate = Substrate()  # default substrate
         self.net_name = net
+        self.ground_layer = ground_layer
 
     @property
     def inductance_nh(self) -> float:
         """
-        Wheeler’s formula for square spiral.
+        Accurate inductance for the **square** spiral actually drawn by create().
+        Uses the improved Wheeler formula with square-layout coefficients.
 
         Returns
         -------
         float
             Inductance in nH
         """
-        a = self.outer_diam / 2
-        l0 = 2.34e-6  # µ0/2pi
-        return l0 * self.turns**2 * a / (2 * a + 2 * self.width)
+        # 1. Geometry exactly as it is built in create()
 
-    def create(self) -> "Path":
+        w = self.trace_width
+        s = self.spacing
+        N = self.turns
+        d_in = self.inner_diameter
+        d_out = d_in + 4 * N * (w + s)  # outer side length
+
+        # 2. Parameters for the improved Wheeler formula (square)
+        d_avg = (d_out + d_in) / 2.0
+        rho = (d_out - d_in) / (d_out + d_in)
+
+        C1, C2, C3, C4 = 1.27, 2.07, 0.18, 0.13  # square coefficients
+        mu0 = 4e-7 * math.pi  # H·m⁻¹
+
+        # 3. Wheeler formula in SI
+        L_h = (mu0 * N**2 * d_avg * C1 / 2.0) * (math.log(C2 / rho) + C3 * rho**2 + C4 * rho**3)
+
+        return L_h * 1e9  # → nH
+
+    def create(self) -> bool:
         cx = self.inductor_center[0]
         cy = self.inductor_center[1]
         pts = []
@@ -459,7 +475,7 @@ class SpiralInductor:
 
         self._pedb.modeler.create_trace(
             path_list=pts,
-            layer_name=self.top_layer,
+            layer_name=self.layer,
             width=self.trace_width,
             net_name=self.net_name,
             start_cap_style="Flat",
@@ -476,250 +492,26 @@ class SpiralInductor:
             net_name=self.net_name,
         )
 
-        # Under-pass bridge trace on bottom metal
+        # bridge trace on bottom metal
         self._pedb.modeler.create_trace(
             path_list=[via_pos, bridge_end],
-            layer_name=self.bottom_layer,
+            layer_name=self.bridge_layer,
             width=self.bridge_width,
             net_name=self.net_name,
             start_cap_style="Flat",
             end_cap_style="Flat",
         )
 
-
-class RectangleInductor:
-    """
-    Single-layer **rectangular** spiral inductor.
-
-    Parameters
-    ----------
-    turns : int
-        Number of complete turns (>=1).  Default 3.
-    width : float
-        Trace width in metres.  Default 20 µm.
-    spacing : float
-        Trace-to-trace spacing in metres.  Default 20 µm.
-    outer_length : float
-        Outer rectangle side length (metres).  Default 0.5 mm.
-    layer : str
-        EDB conductor layer name.  Default "TOP".
-    underpass_layer : str
-        EDB layer used for the underpass bridge.  Default "M2".
-    net : str
-        Net name.  Default "L".
-
-    Examples
-    --------
-    >>> from pyedb_libraries import RectangleInductor
-    >>> ind = RectangleInductor(turns=4, width=25e-6, spacing=15e-6,
-    ...                         outer_length=0.6e-3, layer="TOP")
-    >>> edb = ind.create("rect_ind.aedb")
-    >>> print(f"{ind.inductance_nh:.1f} nH")   # analytical estimate
-    6.0 nH
-    >>> edb.close_edb()
-    """
-
-    def __init__(
-        self,
-        *,
-        turns: int = 3,
-        width: float = 20e-6,
-        spacing: float = 20e-6,
-        outer_length: float = 0.5e-3,
-        layer: str = "TOP",
-        underpass_layer: str = "M2",
-        net: str = "L",
-    ):
-        self.turns = turns
-        self.width = width
-        self.spacing = spacing
-        self.outer_length = outer_length
-        self.layer = layer
-        self.underpass_layer = underpass_layer
-        self.net = net
-
-    # ------------------------------------------------------------------ #
-    # Analytical model (modified Wheeler for rectangular spirals)
-    # ------------------------------------------------------------------ #
-    @property
-    def inductance_nh(self) -> float:
-        """
-        Wheeler-based closed-form rectangular spiral inductance.
-
-        Returns
-        -------
-        float
-            Inductance in nano-Henries.
-        """
-        n = self.turns
-        a = self.outer_length / 2  # avg side length / 2
-        l0 = 4e-7 * math.pi  # µ0/2π
-        return l0 * n**2 * a / 1.27  # simplified Wheeler
-
-    # ------------------------------------------------------------------ #
-    # EDB creation
-    # ------------------------------------------------------------------ #
-    def create(self, edb_path: str) -> Edb:
-        if os.path.exists(edb_path):
-            edb = Edb(edb_path)
-        else:
-            edb = Edb()
-            edb.save_as(edb_path)
-
-        # --- expose parameters ------------------------------------------
-        edb["n"] = self.turns
-        edb["w"] = self.width
-        edb["s"] = self.spacing
-        edb["L_out"] = self.outer_length
-
-        # --- geometry helpers -------------------------------------------
-        x0 = y0 = 0.0
-        half_w = self.width / 2
-        step = self.outer_length
-
-        for turn in range(self.turns):
-            # four sides of current rectangle
-            for dx, dy in [(step, 0), (0, step), (-step, 0), (0, -step)]:
-                x1 = x0 + dx
-                y1 = y0 + dy
-                _rect_path(edb, self.layer, self.net, x0, y0, x1, y1, self.width)
-                x0, y0 = x1, y1
-            step -= 2 * (self.width + self.spacing)
-
-        # --- underpass via ------------------------------------------------
-        edb.padstacks.create(
-            [x0, y0],
-            drill=0.8 * self.width,
-            pad=1.2 * self.width,
-            start_layer=self.layer,
-            stop_layer=self.underpass_layer,
-            net=self.net,
+        # ground plane
+        self._pedb.modeler.create_rectangle(
+            layer_name=self.ground_layer,
+            center_point=self.inductor_center,
+            width=self.substrate.size[0],
+            height=self.substrate.size[1],
+            representation_type="CenterWidthHeight",
+            net_name="ref",
         )
-
-        return edb
-
-
-class HexagonalInductor:
-    """
-    Single-layer **hexagonal** spiral inductor.
-
-    Parameters
-    ----------
-    turns : int
-        Number of complete turns (>=1).  Default 3.
-    width : float
-        Trace width in metres.  Default 20 µm.
-    spacing : float
-        Trace-to-trace spacing in metres.  Default 20 µm.
-    outer_radius : float
-        Distance from centre to outermost hexagon vertex (metres).  Default 0.3 mm.
-    layer : str
-        EDB conductor layer name.  Default "TOP".
-    underpass_layer : str
-        EDB layer used for the underpass bridge.  Default "M2".
-    net : str
-        Net name.  Default "L".
-
-    Examples
-    --------
-    >>> from pyedb_libraries import HexagonalInductor
-    >>> ind = HexagonalInductor(turns=3, width=30e-6, spacing=20e-6,
-    ...                         outer_radius=0.4e-3, layer="TOP")
-    >>> edb = ind.create("hex_ind.aedb")
-    >>> print(f"{ind.inductance_nh:.1f} nH")   # analytical estimate
-    4.9 nH
-    >>> edb.close_edb()
-    """
-
-    def __init__(
-        self,
-        *,
-        turns: int = 3,
-        width: float = 20e-6,
-        spacing: float = 20e-6,
-        outer_radius: float = 0.3e-3,
-        layer: str = "TOP",
-        underpass_layer: str = "M2",
-        net: str = "L",
-    ):
-        self.turns = turns
-        self.width = width
-        self.spacing = spacing
-        self.outer_radius = outer_radius
-        self.layer = layer
-        self.underpass_layer = underpass_layer
-        self.net = net
-
-    # ------------------------------------------------------------------ #
-    # Analytical model (hexagonal spiral)
-    # ------------------------------------------------------------------ #
-    @property
-    def inductance_nh(self) -> float:
-        """
-        Modified Wheeler for hexagonal spirals.
-
-        Returns
-        -------
-        float
-            Inductance in nano-Henries.
-        """
-        n = self.turns
-        d_avg = 2 * self.outer_radius - n * (self.width + self.spacing)
-        rho = (2 * self.outer_radius - d_avg) / (2 * self.outer_radius + d_avg)
-        k1, k2 = 2.33, 2.75
-        return k1 * 1e-7 * n**2 * d_avg / (1 + k2 * rho)
-
-    # ------------------------------------------------------------------ #
-    # EDB creation
-    # ------------------------------------------------------------------ #
-    def _hexagon_vertices(self, radius: float) -> List[List[float]]:
-        """Return 6 vertices of a hexagon centred at (0,0)."""
-        vertices = []
-        for k in range(6):
-            theta = math.pi / 3 * k
-            vertices.append([radius * math.cos(theta), radius * math.sin(theta)])
-        # close polygon
-        vertices.append(vertices[0])
-        return vertices
-
-    def create(self, edb_path: str) -> Edb:
-        if os.path.exists(edb_path):
-            edb = Edb(edb_path)
-        else:
-            edb = Edb()
-            edb.save_as(edb_path)
-
-        # --- expose parameters ------------------------------------------
-        edb["n"] = self.turns
-        edb["w"] = self.width
-        edb["s"] = self.spacing
-        edb["R_out"] = self.outer_radius
-
-        # --- draw each hexagonal ring ------------------------------------
-        r = self.outer_radius
-        for _ in range(self.turns):
-            pts = self._hexagon_vertices(r)
-            edb.modeler.create_polygon(pts, self.layer, self.net)
-            r -= self.width + self.spacing
-
-        # --- underpass via ------------------------------------------------
-        # place it at the centre of the innermost hexagon
-        edb.padstacks.create(
-            [0, 0],
-            drill=0.8 * self.width,
-            pad=1.2 * self.width,
-            start_layer=self.layer,
-            stop_layer=self.underpass_layer,
-            net=self.net,
-        )
-
-        return edb
-
-
-class SquareInductor(SpiralInductor):
-    """Alias of SpiralInductor with square=octagon etc. kept for API completeness."""
-
-    pass
+        return True
 
 
 class CPW:
@@ -734,24 +526,32 @@ class CPW:
     layer : str
     ground_layer : str
     net : str
+    substrate : Substrate
     """
 
     def __init__(
         self,
-        *,
-        length: float = 10e-3,
+        edb_cell: Optional[Edb] = None,
+        length: float = 1e-3,
         width: float = 0.3e-3,
         gap: float = 0.1e-3,
         layer: str = "TOP",
+        ground_net: str = "GND",
+        ground_width: float = 0.1e-3,
         ground_layer: str = "GND",
         net: str = "SIG",
+        substrate: Substrate = Substrate(100e-6, 4.4, 0.02, "SUB", (0.001, 0.001)),
     ):
+        self._pedb = edb_cell
         self.length = length
         self.width = width
         self.gap = gap
         self.layer = layer
-        self.ground_layer = ground_layer
+        self.ground_net = ground_net
+        self.ground_width = ground_width  # width of ground plane
+        self.ground_layer = ground_layer  # layer for the ground plane
         self.net = net
+        self.substrate = substrate
 
     @property
     def analytical_z0(self) -> float:
@@ -771,21 +571,37 @@ class CPW:
         k_ratio = math.pi / (2 * math.log(2 * (1 + math.sqrt(kpr)) / (1 - math.sqrt(kpr))))
         return 30 * math.pi / math.sqrt(4.4) * k_ratio
 
-    def create(self, edb_path: str) -> Edb:
-        edb = Edb()
-        edb.save_as(edb_path)
-        edb["l"] = self.length
-        edb["w"] = self.width
-        edb["g"] = self.gap
+    def create(self) -> bool:
+        self._pedb["l"] = self.length
+        self._pedb["w"] = self.width
+        self._pedb["g"] = self.gap
 
         # signal
-        edb.modeler.create_rectangle(self.layer, self.net, [0, -self.width / 2, self.length, self.width])
-        # grounds
-        edb.modeler.create_rectangle(
-            self.layer, self.ground_layer, [0, -self.width / 2 - self.gap - 5e-3, self.length, 5e-3]
+        self._pedb.modeler.create_rectangle(
+            self.layer,
+            net_name=self.net,
+            lower_left_point=[-self.width / 2, 0],
+            upper_right_point=[self.width / 2, self.length],
         )
-        edb.modeler.create_rectangle(self.layer, self.ground_layer, [0, self.width / 2 + self.gap, self.length, 5e-3])
-        return edb
+        # grounds
+        self._pedb.modeler.create_rectangle(
+            self.layer,
+            net_name=self.ground_net,
+            lower_left_point=[-self.width / 2 - self.gap - self.ground_width, 0],
+            upper_right_point=[-self.width / 2 - self.gap, self.length],
+        )
+        self._pedb.modeler.create_rectangle(
+            self.layer,
+            net_name=self.ground_net,
+            lower_left_point=[self.width / 2 + self.gap, 0],
+            upper_right_point=[self.width / 2 + self.gap + self.ground_width, self.length],
+        )
+        self._pedb.modeler.create_rectangle(
+            self.ground_layer,
+            lower_left_point=[-self.width / 2 - self.gap - self.ground_width, 0],
+            upper_right_point=[self.width / 2 + self.gap + self.ground_width, self.length],
+        )
+        return True
 
 
 class RadialStub:
