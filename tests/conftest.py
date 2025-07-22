@@ -174,7 +174,7 @@ class EdbExamples:
             aedb = self._copy_file_folder_into_local_folder(edb_path)
         else:
             aedb = edb_path
-        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc, **kwargs)
+        return Edb(edbpath=aedb, edbversion=desktop_version, grpc=self.grpc, **kwargs)
 
 
 @pytest.fixture(scope="module")
@@ -189,10 +189,7 @@ def add_legacy_edb(local_scratch):
                 target_folder = os.path.join(local_scratch.path, project_name + ".aedb")
         else:
             target_folder = os.path.join(local_scratch.path, generate_unique_name("TestEdb") + ".aedb")
-        return Edb(
-            target_folder,
-            edbversion=desktop_version,
-        )
+        return Edb(edbpath=target_folder, edbversion=desktop_version)
 
     return _method
 
