@@ -55,7 +55,6 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
 from pyedb.grpc.database.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 
-
 class Layout(GrpcLayout):
     """Manage Layout class."""
 

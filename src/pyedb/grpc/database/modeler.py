@@ -92,7 +92,7 @@ class Modeler(object):
     def __init__(self, p_edb) -> None:
         """Initialize Modeler instance."""
         self._pedb = p_edb
-        self._primitives = []
+        self.__primitives = []
         self.__primitives_by_layer = {}
 
     @property
