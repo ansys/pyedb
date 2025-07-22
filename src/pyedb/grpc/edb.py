@@ -136,7 +136,10 @@ from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
-os.environ["no_proxy"] ="localhost,127.0.0.1"
+
+os.environ["no_proxy"] = "localhost,127.0.0.1"
+
+
 class Edb(EdbInit):
     """Main class for interacting with Ansys Electronics Desktop Database (EDB).
 
@@ -2009,13 +2012,13 @@ class Edb(EdbInit):
             id = i.id
             if net_name not in all_list and id not in pins_to_preserve:
                 delete_list.append(i)
-                #i.delete()
+                # i.delete()
             elif net_name in reference_list and id not in pins_to_preserve:
                 reference_pinsts.append(i)
         for i in self.modeler.primitives:
             if not i.is_null and not i.net.is_null:
                 if i.net.name not in all_list:
-                    #i.delete()
+                    # i.delete()
                     delete_list.append(i)
                 elif i.net.name in reference_list and not i.is_void:
                     if keep_lines_as_path and isinstance(i, Path):

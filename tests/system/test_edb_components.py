@@ -144,7 +144,7 @@ class TestClass:
             edb.components.instances["R1"].pins["1"].top_bottom_association
             == edb.components.instances["R1"].top_bottom_association
         )
-        assert [round(i,6) for i in edb.components.instances["R1"].pins["1"].position] == [0.111675, 0.039975]
+        assert [round(i, 6) for i in edb.components.instances["R1"].pins["1"].position] == [0.111675, 0.039975]
         assert round(edb.components.instances["R1"].pins["1"].rotation, 6) == -1.570796
         edb.close(terminate_rpc_session=False)
 

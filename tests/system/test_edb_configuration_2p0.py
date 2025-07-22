@@ -79,6 +79,7 @@ class TestClass:
             str(example_folder / "GRM32ER72A225KA35_25C_0V.sp"),
             str(self.local_input_folder / "GRM32ER72A225KA35_25C_0V.sp"),
         )
+
     @classmethod
     @pytest.fixture(scope="class", autouse=True)
     def teardown_class(cls, request, edb_examples):

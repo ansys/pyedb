@@ -40,6 +40,7 @@ class TestClass:
         self.target_path = target_path
         self.target_path2 = target_path2
         self.target_path4 = target_path4
+
     @classmethod
     @pytest.fixture(scope="class", autouse=True)
     def teardown_class(cls, request, edb_examples):
@@ -47,6 +48,7 @@ class TestClass:
         # not elegant way to ensure the EDB grpc is closed after all tests
         edb = edb_examples.create_empty_edb()
         edb.close_edb()
+
     def test_export_to_ipc2581_0(self, edb_examples):
         """Export of a loaded aedb file to an XML IPC2581 file"""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
@@ -60,7 +62,9 @@ class TestClass:
         assert os.path.exists(xml_file)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="This test is expected to crash (sometimes) at `ipc_edb.close(terminate_rpc_session=False)`")
+    @pytest.mark.skip(
+        reason="This test is expected to crash (sometimes) at `ipc_edb.close(terminate_rpc_session=False)`"
+    )
     def test_export_to_ipc2581_1(self, edb_examples):
         """Export of a loaded aedb file to an XML IPC2581 file"""
         edbapp = edb_examples.get_si_verse()

@@ -74,6 +74,7 @@ class TestClass:
         material_def = self.definition.MaterialDef.FindByName(self.edbapp.active_db, MATERIAL_NAME)
         if not material_def.IsNull():
             material_def.Delete()
+
     @classmethod
     @pytest.fixture(scope="class", autouse=True)
     def teardown_class(cls, request, edb_examples):
@@ -81,6 +82,7 @@ class TestClass:
         # not elegant way to ensure the EDB grpc is closed after all tests
         edb = edb_examples.create_empty_edb()
         edb.close_edb()
+
     def test_material_name(self):
         """Evaluate material properties."""
         material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
