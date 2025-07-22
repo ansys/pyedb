@@ -787,42 +787,154 @@ class BalunMarchand:
 
 class RatRace:
     """
-    180° rat-race coupler.
+    180° rat-race coupler realised with discretised arcs.
 
     Parameters
     ----------
     z0 : float
+        Characteristic impedance of the ring (ohm).
     freq : float
+        Centre frequency (Hz).
     layer : str
+        Metal layer name.
     net : str
+        Net name.
+    width : float
+        Micro-strip width (m).
+    nr_segments : int
+        Number of straight segments used to approximate 90 ° of arc.
     """
 
-    def __init__(self, *, z0: float = 50, freq: float = 2e9, layer: str = "TOP", net: str = "RR"):
+    def __init__(
+        self,
+        *,
+        z0: float = 50,
+        freq: float = 2e9,
+        layer: str = "TOP",
+        net: str = "RR",
+        width: float = 0.3e-3,
+        nr_segments: int = 32,
+    ):
         self.z0 = z0
         self.freq = freq
         self.layer = layer
         self.net = net
+        self.width = width
+        self.nr_segments = nr_segments
 
+    # ------------------------------------------------------------------
+    # Helper properties
+    # ------------------------------------------------------------------
     @property
     def circumference(self) -> float:
-        """
-        1.5 λg.
-
-        Returns
-        -------
-        float
-        """
+        """Electrical length = 1.5 λg."""
         c = 299_792_458
         er_eff = 4.4
         v = c / math.sqrt(er_eff)
         return 1.5 * v / self.freq
 
+    @property
+    def radius(self) -> float:
+        """Mean radius of the ring."""
+        return self.circumference / (2 * math.pi)
+
+    # ------------------------------------------------------------------
+    # Geometry builders
+    # ------------------------------------------------------------------
+    def _arc_points(
+        self,
+        centre: Tuple[float, float],
+        radius: float,
+        start_angle: float,  # rad
+        delta_angle: float,  # rad
+    ) -> List[Tuple[float, float]]:
+        """Return a list of (x,y) for a discretised arc."""
+        points = []
+        step = delta_angle / self.nr_segments
+        for i in range(self.nr_segments + 1):
+            ang = start_angle + i * step
+            x = centre[0] + radius * math.cos(ang)
+            y = centre[1] + radius * math.sin(ang)
+            points.append((x, y))
+        return points
+
+    def _port_stub(self, start: Tuple[float, float], length: float, angle: float):
+        """Return a two-point list for a straight stub."""
+        dx = length * math.cos(angle)
+        dy = length * math.sin(angle)
+        return [start, (start[0] + dx, start[1] + dy)]
+
+    # ------------------------------------------------------------------
+    # Main creation routine
+    # ------------------------------------------------------------------
     def create(self, edb_path: str) -> Edb:
         edb = Edb()
         edb.save_as(edb_path)
+
         edb["c"] = self.circumference
-        radius = self.circumference / (2 * math.pi)
-        edb.modeler.create_circle(self.layer, self.net, [0, 0], radius, width=0.3e-3)
+        edb["r"] = self.radius
+        edb["w"] = self.width
+
+        # ----------------------------------------------------------------------
+        # 1. Geometry parameters
+        # ----------------------------------------------------------------------
+        r = self.radius
+        w = self.width
+        stub_len = 1e-3  # 1 mm straight sections at the four ports
+
+        # ----------------------------------------------------------------------
+        # 2. Build the ring as four connected arcs
+        # ----------------------------------------------------------------------
+        # We go counter-clockwise starting at the right-hand port (0°, port 1).
+        #
+        # port 1 (0°) -------- arc A (90°) ------- port 2 (90°)
+        #      |                                      |
+        #      |                                      |
+        #      |             270° arc D               |
+        #      |                                      |
+        # port 4 (270°) ----- arc C (90°) ------ port 3 (180°)
+
+        # Arc A: 0° -> 90°
+        pts_a = self._arc_points((0, 0), r, math.radians(0), math.radians(90))
+
+        # Arc B: 90° -> 180°
+        pts_b = self._arc_points((0, 0), r, math.radians(90), math.radians(90))
+
+        # Arc C: 180° -> 270°
+        pts_c = self._arc_points((0, 0), r, math.radians(180), math.radians(90))
+
+        # Arc D: 270° -> 360° (=0°)  (the long 270° section)
+        pts_d = self._arc_points((0, 0), r, math.radians(270), math.radians(90))
+
+        # Stitch them together into a single closed path
+        ring_points = pts_a + pts_b[1:] + pts_c[1:] + pts_d[1:]
+        edb.modeler.create_trace(
+            path_list=ring_points,
+            layer_name=self.layer,
+            net_name=self.net,
+            width=w,
+        )
+
+        # ----------------------------------------------------------------------
+        # 3. Add the four 50 Ω port stubs
+        # ----------------------------------------------------------------------
+        # Angles of the ports on the ring
+        port_angles = [0, 90, 180, 270]  # degrees
+
+        for idx, ang_deg in enumerate(port_angles, start=1):
+            ang = math.radians(ang_deg)
+            x_ring = r * math.cos(ang)
+            y_ring = r * math.sin(ang)
+
+            # Direction vector pointing outwards
+            stub_pts = self._port_stub((x_ring, y_ring), stub_len, ang)
+            edb.modeler.create_trace(
+                path_list=stub_pts,
+                layer_name=self.layer,
+                net_name=f"{self.net}_P{idx}",
+                width=w,
+            )
+
         return edb
 
 
