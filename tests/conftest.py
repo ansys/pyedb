@@ -174,7 +174,7 @@ class EdbExamples:
             aedb = self._copy_file_folder_into_local_folder(edb_path)
         else:
             aedb = edb_path
-        return Edb(edb_path=aedb, edbversion=desktop_version, grpc=self.grpc, **kwargs)
+        return Edb(edbpath=aedb, edbversion=desktop_version, grpc=self.grpc, **kwargs)
 
 
 @pytest.fixture(scope="module")
