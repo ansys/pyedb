@@ -618,13 +618,21 @@ class RadialStub:
     """
 
     def __init__(
-        self, *, radius: float = 2e-3, angle_deg: float = 60, width: float = 0.2e-3, layer: str = "TOP", net: str = "RF"
+        self,
+        edb_cell,
+        radius: float = 500e-6,
+        angle_deg: float = 60,
+        width: float = 0.2e-3,
+        layer: str = "TOP",
+        net: str = "RF",
     ):
+        self._pedb = edb_cell
         self.radius = radius
         self.angle_deg = angle_deg
         self.width = width
         self.layer = layer
         self.net = net
+        self.substrate: Substrate = Substrate(100e-6, 4.4, 0.02, "SUB", (0.001, 0.001))
 
     @property
     def electrical_length_deg(self, freq: float = 2e9) -> float:
@@ -640,17 +648,14 @@ class RadialStub:
         float
         """
         c = 299_792_458
-        er_eff = 4.4
-        v = c / math.sqrt(er_eff)
+        v = c / math.sqrt(self.substrate.er)
         beta = 2 * math.pi * freq / v
         return math.degrees(beta * self.radius)
 
-    def create(self, edb_path: str) -> Edb:
-        edb = Edb()
-        edb.save_as(edb_path)
-        edb["r"] = self.radius
-        edb["ang"] = self.angle_deg
-        edb["w"] = self.width
+    def create(self) -> bool:
+        self._pedb["r"] = self.radius
+        self._pedb["ang"] = self.angle_deg
+        self._pedb["w"] = self.width
 
         # Create wedge polygon
         theta = math.radians(self.angle_deg)
@@ -659,10 +664,15 @@ class RadialStub:
             [self.radius * math.cos(-theta / 2), self.radius * math.sin(-theta / 2)],
             [self.radius * math.cos(theta / 2), self.radius * math.sin(theta / 2)],
         ]
-        edb.modeler.create_polygon(pts, self.layer, self.net)
+        self._pedb.modeler.create_polygon(main_shape=pts, layer_name=self.layer, net_name=self.net)
         # feed
-        edb.modeler.create_rectangle(self.layer, self.net, [-self.width / 2, 0, self.width, self.width])
-        return edb
+        self._pedb.modeler.create_rectangle(
+            layer_name=self.layer,
+            net_name=self.net,
+            lower_left_point=[0, -self.width / 2],
+            upper_right_point=[self.width, self.width / 2],
+        )
+        return True
 
 
 class ViaArray:
