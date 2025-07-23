@@ -28,6 +28,7 @@ from typing import Sequence
 import pytest
 
 from pyedb.generic.general_methods import is_linux
+import tests.conftest
 from tests.conftest import config, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
@@ -642,7 +643,7 @@ class TestClass:
             assert setup.sweep_data[0].interpolation_data.enforce_causality
         else:
             assert setup.sweep_data[0].enforce_causality
-        edb.close(terminate_rpc_session=False)
+        edb.close()
 
     def test_create_various_ports_0(self, edb_examples):
         """Create various ports."""
@@ -1584,6 +1585,7 @@ class TestClass:
             assert "test" in edbapp.voltage_regulator_modules
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=tests.conftest.GRPC, reason="Not implemented with grpc")
     def test_workflow(self, edb_examples):
         # TODO check with config file 2.0
         from pathlib import Path

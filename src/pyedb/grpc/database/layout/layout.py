@@ -76,20 +76,20 @@ class Layout(GrpcLayout):
     @property
     def primitives(self) -> list[any]:
         primitives = super().primitives
-        if not len(self.__primitives) == len(primitives):
-            for prim in primitives:
-                if isinstance(prim, ansys.edb.core.primitive.path.Path):
-                    self.__primitives.append(Path(self._pedb, prim))
-                elif isinstance(prim, ansys.edb.core.primitive.polygon.Polygon):
-                    self.__primitives.append(Polygon(self._pedb, prim))
-                elif isinstance(prim, ansys.edb.core.primitive.padstack_instance.PadstackInstance):
-                    self.__primitives.append(PadstackInstance(self._pedb, prim))
-                elif isinstance(prim, ansys.edb.core.primitive.rectangle.Rectangle):
-                    self.__primitives.append(Rectangle(self._pedb, prim))
-                elif isinstance(prim, ansys.edb.core.primitive.circle.Circle):
-                    self.__primitives.append(Circle(self._pedb, prim))
-                elif isinstance(prim, ansys.edb.core.primitive.bondwire.Bondwire):
-                    self.__primitives.append(Bondwire(self._pedb, prim))
+        self.__primitives = []
+        for prim in primitives:
+            if isinstance(prim, ansys.edb.core.primitive.path.Path):
+                self.__primitives.append(Path(self._pedb, prim))
+            elif isinstance(prim, ansys.edb.core.primitive.polygon.Polygon):
+                self.__primitives.append(Polygon(self._pedb, prim))
+            elif isinstance(prim, ansys.edb.core.primitive.padstack_instance.PadstackInstance):
+                self.__primitives.append(PadstackInstance(self._pedb, prim))
+            elif isinstance(prim, ansys.edb.core.primitive.rectangle.Rectangle):
+                self.__primitives.append(Rectangle(self._pedb, prim))
+            elif isinstance(prim, ansys.edb.core.primitive.circle.Circle):
+                self.__primitives.append(Circle(self._pedb, prim))
+            elif isinstance(prim, ansys.edb.core.primitive.bondwire.Bondwire):
+                self.__primitives.append(Bondwire(self._pedb, prim))
         return self.__primitives
 
     @property
@@ -201,8 +201,7 @@ class Layout(GrpcLayout):
     def padstack_instances(self) -> Dict[int, PadstackInstance]:
         """Get all padstack instances in a list."""
         pad_stack_inst = super().padstack_instances
-        if not len(self.__padstack_instances) == len(pad_stack_inst):
-            self.__padstack_instances = {i.edb_uid: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
+        self.__padstack_instances = {i.edb_uid: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
         return self.__padstack_instances
 
     @property

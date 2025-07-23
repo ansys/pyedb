@@ -210,13 +210,12 @@ class Padstacks(object):
         >>> for name, definition in all_definitions.items():
         ...     print(f"Padstack: {name}")
         """
-        if len(self._definitions) == len(self.db.padstack_defs):
-            return self._definitions
-        self._definitions = {}
-        for padstack_def in self._pedb.db.padstack_defs:
+        padstack_defs = self._pedb.db.padstack_defs
+        self.__definitions = {}
+        for padstack_def in padstack_defs:
             if len(padstack_def.data.layer_names) >= 1:
-                self._definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
-        return self._definitions
+                self.__definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
+        return self.__definitions
 
     @property
     def instances(self) -> Dict[int, PadstackInstance]:
