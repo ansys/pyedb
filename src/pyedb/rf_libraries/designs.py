@@ -883,113 +883,132 @@ class RatRace:
         return True
 
 
-class Wilkinson:
-    """
-    Simple Wilkinson divider.
-
-    Parameters
-    ----------
-    z0 : float
-    freq : float
-    layer : str
-    net : str
-    """
-
-    def __init__(self, *, z0: float = 50, freq: float = 2e9, layer: str = "TOP", net: str = "DIV"):
-        self.z0 = z0
-        self.freq = freq
-        self.layer = layer
-        self.net = net
-
-    @property
-    def lambda_quarter(self) -> float:
-        """
-        Quarter-wavelength.
-
-        Returns
-        -------
-        float
-        """
-        c = 299_792_458
-        er_eff = 4.4
-        v = c / math.sqrt(er_eff)
-        return v / (4 * self.freq)
-
-    def create(self, edb_path: str) -> Edb:
-        edb = Edb()
-        edb.save_as(edb_path)
-        edb["l"] = self.lambda_quarter
-        edb["z0"] = self.z0
-        # 70.7 Ohm line
-        _rect_path(edb, self.layer, self.net, 0, 0, self.lambda_quarter, 0, 0.2e-3)
-        # 50 Ohm outputs
-        _rect_path(
-            edb, self.layer, self.net, self.lambda_quarter, 0, self.lambda_quarter + self.lambda_quarter, 0, 0.3e-3
-        )
-        _rect_path(edb, self.layer, self.net, self.lambda_quarter, 0, self.lambda_quarter, 0.5e-3, 0.3e-3)
-        # resistor
-        edb.components.create_resistor([self.lambda_quarter, 0.25e-3], 100, "R1")
-        return edb
-
-
 class InterdigitalCapacitor:
     """
-    Interdigital capacitor.
-
-    Parameters
-    ----------
-    fingers : int
-    finger_length : float
-    finger_width : float
-    gap : float
-    layer : str
-    net : str
+    Inter-digital capacitor with **comb-up / comb-down** fingers.
+    All dimensions are stored as EDB design variables so they can be
+    edited after import.
     """
+
+    # fmt: off
+    VAR_PREFIX = "IDC"  # prefix for every EDB variable
+
+    # fmt: on
 
     def __init__(
         self,
-        *,
-        fingers: int = 5,
-        finger_length: float = 1e-3,
-        finger_width: float = 0.1e-3,
-        gap: float = 0.05e-3,
+        edb_cell: Optional[Edb] = None,
+        fingers: int = 8,
+        finger_length: str = "0.9mm",
+        finger_width: str = "0.08mm",
+        gap: str = "0.04mm",
+        comb_gap: str = "0.06mm",
+        bus_width: str = "0.25mm",
         layer: str = "TOP",
-        net: str = "CAP",
+        net_a: str = "PORT1",
+        net_b: str = "PORT2",
     ):
-        self.fingers = fingers
-        self.finger_length = finger_length
-        self.finger_width = finger_width
-        self.gap = gap
+        self._pedb = edb_cell
         self.layer = layer
-        self.net = net
+        self.net_a = net_a
+        self.net_b = net_b
+        self.substrate = Substrate()
+
+        # ------------------------------------------------------
+        # 1.  Register every dimension as an EDB variable
+        # ------------------------------------------------------
+        pfx = self.VAR_PREFIX
+        self._vars = {
+            "fingers": int(fingers),  # integer is fine
+            "finger_length": finger_length,
+            "finger_width": finger_width,
+            "gap": gap,
+            "comb_gap": comb_gap,
+            "bus_width": bus_width,
+        }
+        for k, v in self._vars.items():
+            var_name = f"{pfx}_{k}"
+            # Use design variable (no $ prefix) -> stored in cell
+            self._pedb[var_name] = v
+
+        # ------------------------------------------------------------------
+        #  Live capacitance (pF) – tracks any variable change
+        # ------------------------------------------------------------------
 
     @property
     def capacitance_pf(self) -> float:
         """
-        Simplified formula.
-
-        Returns
-        -------
-        float
-            Capacitance in pF
+        Rough lumped parallel-plate estimate:
+        C = ε₀ εᵣ  N  L  W  /  g
+        where
+            N = total finger pairs  = fingers
+            L = finger_length
+            W = finger_width
+            g = gap
         """
+        pfx = self.VAR_PREFIX
         eps0 = 8.854e-12
-        er = 4.4
-        return (eps0 * er * self.fingers * self.finger_length * self.finger_width / self.gap) * 1e12
+        er = self.substrate.er
+        N = self._pedb[f"{pfx}_fingers"]
+        L = self._pedb[f"{pfx}_finger_length"]
+        W = self._pedb[f"{pfx}_finger_width"]
+        g = self._pedb[f"{pfx}_gap"]
+        return (eps0 * er * N * L * W / g) * 1e12
 
-    def create(self, edb_path: str) -> Edb:
-        edb = Edb()
-        edb.save_as(edb_path)
-        pitch = self.finger_width + self.gap
-        offset = 0
-        for i in range(self.fingers):
-            y = i * pitch
-            edb.modeler.create_rectangle(self.layer, self.net, [0, y, self.finger_length, self.finger_width])
-            if i % 2:
-                offset = self.finger_width + self.gap
-            else:
-                offset = 0
-        return edb
+    # ----------------------------------------------------------
+    # 2.  Draw the geometry using the EDB variables
+    # ----------------------------------------------------------
+    def create(self) -> bool:
+        if self._pedb is None:
+            raise ValueError("No EDB cell provided.")
+
+        pfx = self.VAR_PREFIX
+        pitch = f"({pfx}_finger_width + {pfx}_gap)"
+        total_width = f"(2*{pfx}_bus_width + (2*{pfx}_fingers-1)*{pitch} + {pfx}_finger_width)"
+        total_height = f"(2*{pfx}_bus_width + 2*{pfx}_finger_length + {pfx}_comb_gap)"
+
+        # --- helper lambda to build expressions with units
+        expr = lambda s: f"{s}[mm]" if "[" not in s else s
+
+        # 1. Bottom bus bar (NET_A)
+        self._pedb.modeler.create_rectangle(
+            layer_name=self.layer,
+            net_name=self.net_a,
+            lower_left_point=["0", "0"],
+            upper_right_point=[total_width, f"{pfx}_bus_width"],
+        )
+
+        # 2. Top bus bar (NET_B)
+        right_bar_y = f"({total_height} - {pfx}_bus_width)"
+        self._pedb.modeler.create_rectangle(
+            layer_name=self.layer,
+            net_name=self.net_b,
+            lower_left_point=["0", right_bar_y],
+            upper_right_point=[total_width, total_height],
+        )
+
+        # 3. Fingers (interleaved)
+        y_a = f"{pfx}_bus_width"  # base of up fingers
+        y_b = f"({total_height} - {pfx}_bus_width - {pfx}_finger_length)"  # base of down fingers
+
+        for i in range(self._vars["fingers"] * 2):
+            x = f"({pfx}_bus_width + {i}*{pitch})"
+            if i % 2 == 0:  # NET_A finger (points up)
+                self._pedb.modeler.create_rectangle(
+                    layer_name=self.layer,
+                    net_name=self.net_a,
+                    lower_left_point=[x, y_a],
+                    upper_right_point=[f"{x} + {pfx}_finger_width", f"{y_a} + {pfx}_finger_length"],
+                )
+            else:  # NET_B finger (points down)
+                self._pedb.modeler.create_rectangle(
+                    layer_name=self.layer,
+                    net_name=self.net_b,
+                    lower_left_point=[x, y_b],
+                    upper_right_point=[f"{x} + {pfx}_finger_width", f"{y_b} + {pfx}_finger_length"],
+                )
+
+        return True
 
 
 class EBG:
@@ -1056,12 +1075,6 @@ class EBG:
                     net=self.net,
                 )
         return edb
-
-
-class PowerSplitter(Wilkinson):
-    """Alias for Wilkinson with different default width."""
-
-    pass
 
 
 class DifferentialTLine:
