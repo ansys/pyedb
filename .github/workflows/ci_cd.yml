@@ -368,6 +368,7 @@ jobs:
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/general/test_01_3dlayout_edb.py
             pytest -v external/pyaedt/tests/system/general/test_01_configuration_files.py
+            pytest -v external/pyaedt/tests/system/general/test_21_Circuit.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@v3
@@ -382,6 +383,21 @@ jobs:
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
             pytest -v external/pyaedt/tests/system/solvers/test_00_analyze.py
+
+      - name: Run PyAEDT extensions tests
+        uses: nick-fields/retry@v3
+        env:
+          PYTHONMALLOC: malloc
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 50
+          command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            . .venv/bin/activate
+            pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
+            pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
+            pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
 
   docs-build:
     name: Build documentation
