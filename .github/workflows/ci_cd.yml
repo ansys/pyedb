@@ -72,7 +72,7 @@ jobs:
 # =================================================================================================
 
   system-tests-windows:
-    name: Test dotnet (windows)
+    name: System test dotnet (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: "Install Git and clone project"
@@ -135,7 +135,7 @@ jobs:
 # =================================================================================================
 
   unit-tests-windows:
-    name: Test dotnet (windows)
+    name: Unit test dotnet (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: "Install Git and clone project"
@@ -198,7 +198,7 @@ jobs:
 # =================================================================================================
 
   system-tests-linux:
-    name: Test dotnet (linux)
+    name: System test dotnet (linux)
     runs-on: [ Linux, self-hosted, toolkits ]
     env:
       ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
@@ -269,7 +269,7 @@ jobs:
 # =================================================================================================
 
   unit-tests-linux:
-    name: Test dotnet (linux)
+    name: Unit test dotnet (linux)
     runs-on: [ Linux, self-hosted, toolkits ]
     env:
       ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
