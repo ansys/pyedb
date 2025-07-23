@@ -26,7 +26,6 @@ from pathlib import Path
 import pytest
 
 from pyedb.generic.general_methods import is_linux
-import tests.conftest
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
