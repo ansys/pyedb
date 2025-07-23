@@ -26,7 +26,6 @@ from pathlib import Path
 import pytest
 
 from pyedb.generic.general_methods import is_linux
-import tests
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
@@ -80,14 +79,6 @@ class TestClass:
             str(example_folder / "GRM32ER72A225KA35_25C_0V.sp"),
             str(self.local_input_folder / "GRM32ER72A225KA35_25C_0V.sp"),
         )
-
-    @classmethod
-    @pytest.fixture(scope="class", autouse=True)
-    def teardown_class(cls, request, edb_examples):
-        yield
-        # not elegant way to ensure the EDB grpc is closed after all tests
-        edb = edb_examples.create_empty_edb()
-        edb.close_edb()
 
     @classmethod
     @pytest.fixture(scope="class", autouse=True)
