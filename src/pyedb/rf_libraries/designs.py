@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import math
-from typing import Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -722,69 +722,6 @@ class ViaArray:
         return edb
 
 
-class BalunMarchand:
-    """
-    Marchand balun (coupled-line type).
-
-    Parameters
-    ----------
-    z_even : float
-    z_odd : float
-    length : float
-    width : float
-    spacing : float
-    layer : str
-    net : str
-    """
-
-    def __init__(
-        self,
-        *,
-        z_even: float = 70,
-        z_odd: float = 30,
-        length: float = 10e-3,
-        width: float = 0.2e-3,
-        spacing: float = 0.1e-3,
-        layer: str = "TOP",
-        net: str = "BAL",
-    ):
-        self.z_even = z_even
-        self.z_odd = z_odd
-        self.length = length
-        self.width = width
-        self.spacing = spacing
-        self.layer = layer
-        self.net = net
-
-    @property
-    def center_frequency(self) -> float:
-        """
-        Quarter-wave frequency.
-
-        Returns
-        -------
-        float
-        """
-        c = 299_792_458
-        er_eff = 4.4
-        v = c / math.sqrt(er_eff)
-        return v / (4 * self.length)
-
-    def create(self, edb_path: str) -> Edb:
-        edb = Edb()
-        edb.save_as(edb_path)
-        edb["l"] = self.length
-        edb["w"] = self.width
-        edb["s"] = self.spacing
-
-        # two coupled lines
-        y0 = -self.width / 2 - self.spacing / 2
-        y1 = self.width / 2 + self.spacing / 2
-        edb.modeler.create_rectangle(self.layer, self.net, [0, y0, self.length, self.width])
-        edb.modeler.create_rectangle(self.layer, self.net, [0, y1, self.length, self.width])
-        return edb
-
-
 class RatRace:
     """
     180° rat-race coupler realised with discretised arcs.
@@ -821,6 +758,7 @@ class RatRace:
         self.net = net
         self.width = width
         self.nr_segments = nr_segments
+        self.substrate = Substrate()
 
     # ------------------------------------------------------------------
     # Helper properties
@@ -829,8 +767,7 @@ class RatRace:
     def circumference(self) -> float:
         """Electrical length = 1.5 λg."""
         c = 299_792_458
-        er_eff = 4.4
-        v = c / math.sqrt(er_eff)
+        v = c / math.sqrt(self.substrate.er)
         return 1.5 * v / self.freq
 
     @property
