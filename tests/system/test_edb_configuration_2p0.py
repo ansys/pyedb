@@ -143,61 +143,6 @@ class TestClass:
                 assert value == target_mat[p]
         edbapp.close(terminate_rpc_session=False)
 
-    def test_13b_stackup_materials(self, edb_examples):
-        data = {
-            "stackup": {
-                "materials": [
-                    {
-                        "name": "copper",
-                        "conductivity": 570000000,
-                        "thermal_modifier": [
-                            {
-                                "property_name": "conductivity",
-                                "basic_quadratic_c1": 0,
-                                "basic_quadratic_c2": 0,
-                                "basic_quadratic_temperature_reference": 22,
-                                "advanced_quadratic_lower_limit": -273.15,
-                                "advanced_quadratic_upper_limit": 1000,
-                                "advanced_quadratic_auto_calculate": True,
-                                "advanced_quadratic_lower_constant": 1,
-                                "advanced_quadratic_upper_constant": 1,
-                            },
-                        ],
-                    },
-                    {
-                        "name": "Megtron4",
-                        "permittivity": 3.77,
-                        "dielectric_loss_tangent": 0.005,
-                        "thermal_modifier": [
-                            {
-                                "property_name": "dielectric_loss_tangent",
-                                "basic_quadratic_c1": 0,
-                                "basic_quadratic_c2": 0,
-                                "basic_quadratic_temperature_reference": 22,
-                                "advanced_quadratic_lower_limit": -273.15,
-                                "advanced_quadratic_upper_limit": 1000,
-                                "advanced_quadratic_auto_calculate": True,
-                                "advanced_quadratic_lower_constant": 1,
-                                "advanced_quadratic_upper_constant": 1,
-                            }
-                        ],
-                    },
-                    {"name": "Megtron4_2", "permittivity": 3.77, "dielectric_loss_tangent": 0.005},
-                    {"name": "Solder Resist", "permittivity": 4, "dielectric_loss_tangent": 0.035},
-                ]
-            }
-        }
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        data_from_db = edbapp.configuration.get_data_from_db(stackup=True)
-        for mat in data["stackup"]["materials"]:
-            target_mat = [i for i in data_from_db["stackup"]["materials"] if i["name"] == mat["name"]][0]
-            for p, value in mat.items():
-                if p == "thermal_modifier":
-                    continue
-                assert value == target_mat[p]
-        edbapp.close(terminate_rpc_session=False)
-
     def test_01_setups(self, edb_examples):
         data = {
             "setups": [
