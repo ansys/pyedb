@@ -145,6 +145,7 @@ class TestClass:
                 assert value == target_mat[p]
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=tests.conftest.GRPC, reason="Not implemented with grpc")
     def test_01_setups(self, edb_examples):
         data = {
             "setups": [
@@ -1421,6 +1422,7 @@ class TestClass:
         assert len(edbapp.layout.find_primitive(name="line_163")) == 0
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=tests.conftest.GRPC, reason="Not implemented with grpc")
     def test_19_variables(self, edb_examples):
         data = {
             "variables": [
