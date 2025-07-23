@@ -54,9 +54,7 @@ class TestClass:
         """Access to pad parameters."""
         edbapp = edb_examples.get_si_verse()
         pin = edbapp.components.get_pin_from_component("J1", pinName="1")
-        parameters = edbapp.padstacks.get_pad_parameters(
-            pin[0], "1_Top", edbapp.padstacks.pad_type.RegularPad
-        )
+        parameters = edbapp.padstacks.get_pad_parameters(pin[0], "1_Top", edbapp.padstacks.pad_type.RegularPad)
         assert isinstance(parameters[1], list)
         assert isinstance(parameters[0], int)
         edbapp.close(terminate_rpc_session=False)
