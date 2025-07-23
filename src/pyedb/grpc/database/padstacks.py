@@ -93,8 +93,7 @@ class Padstacks(object):
 
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
-        self._instances: Dict[int, PadstackInstance] = {}
-        self._definitions: Dict[str, Any] = {}
+        self.__definitions: Dict[str, Any] = {}
 
     @property
     def _active_layout(self) -> Any:
@@ -211,13 +210,12 @@ class Padstacks(object):
         >>> for name, definition in all_definitions.items():
         ...     print(f"Padstack: {name}")
         """
-        if len(self._definitions) == len(self.db.padstack_defs):
-            return self._definitions
-        self._definitions = {}
-        for padstack_def in self._pedb.db.padstack_defs:
+        padstack_defs = self._pedb.db.padstack_defs
+        self.__definitions = {}
+        for padstack_def in padstack_defs:
             if len(padstack_def.data.layer_names) >= 1:
-                self._definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
-        return self._definitions
+                self.__definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
+        return self.__definitions
 
     @property
     def instances(self) -> Dict[int, PadstackInstance]:
@@ -230,15 +228,11 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> all_instances = edb_padstacks.instances
+        >>> all_instances = edb.padstacks.instances
         >>> for id, instance in all_instances.items():
         ...     print(f"Instance {id}: {instance.name}")
         """
-        pad_stack_inst = self._pedb.layout.padstack_instances
-        if len(self._instances) == len(pad_stack_inst):
-            return self._instances
-        self._instances = {i.edb_uid: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
-        return self._instances
+        return self._pedb.layout.padstack_instances
 
     @property
     def instances_by_name(self) -> Dict[str, PadstackInstance]:

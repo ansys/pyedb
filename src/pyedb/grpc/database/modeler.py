@@ -1476,7 +1476,11 @@ class Modeler(object):
             if isinstance(pins_by_name, str):
                 pins_by_name = [pins_by_name]
             p_inst = self._pedb.layout.padstack_instances
-            _pins = {pin.id: pin for pin in p_inst if pin.aedt_name in pins_by_aedt_name or pin.name in pins_by_name}
+            _pins = {
+                pin_id: pin
+                for pin_id, pin in p_inst.items()
+                if pin.aedt_name in pins_by_aedt_name or pin.name in pins_by_name
+            }
             if not pins:
                 pins = _pins
             else:

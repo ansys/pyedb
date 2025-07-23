@@ -146,7 +146,7 @@ class EdbExamples:
                     self.local_scratch.copyfolder(src, file_folder_name)
         if edbapp:
             version = desktop_version if version is None else version
-            return Edb(aedb, edbversion=version, grpc=self.grpc)
+            return Edb(edbpath=aedb, edbversion=version, grpc=self.grpc)
         else:
             return aedb
 
@@ -159,15 +159,15 @@ class EdbExamples:
     def create_empty_edb(self):
         local_folder = self._create_test_folder()
         aedb = os.path.join(local_folder, "new_layout.aedb")
-        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
+        return Edb(edbpath=aedb, edbversion=desktop_version, grpc=self.grpc)
 
     def get_multizone_pcb(self):
         aedb = self._copy_file_folder_into_local_folder("multi_zone_project.aedb")
-        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
+        return Edb(edbpath=aedb, edbversion=desktop_version, grpc=self.grpc)
 
     def get_no_ref_pins_component(self):
         aedb = self._copy_file_folder_into_local_folder("TEDB/component_no_ref_pins.aedb")
-        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
+        return Edb(edbpath=aedb, edbversion=desktop_version, grpc=self.grpc)
 
     def load_edb(self, edb_path, copy_to_temp=True, **kwargs):
         if copy_to_temp:

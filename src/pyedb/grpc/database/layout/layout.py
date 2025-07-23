@@ -23,7 +23,7 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
-from typing import Union
+from typing import Dict, Union
 
 from ansys.edb.core.layout.layout import Layout as GrpcLayout
 import ansys.edb.core.primitive.bondwire
@@ -63,6 +63,7 @@ class Layout(GrpcLayout):
         super().__init__(pedb.active_cell._Cell__stub.GetLayout(pedb.active_cell.msg))
         self._pedb = pedb
         self.__primitives = []
+        self.__padstack_instances = {}
 
     @property
     def cell(self):
@@ -74,8 +75,9 @@ class Layout(GrpcLayout):
 
     @property
     def primitives(self) -> list[any]:
+        primitives = super().primitives
         self.__primitives = []
-        for prim in super().primitives:
+        for prim in primitives:
             if isinstance(prim, ansys.edb.core.primitive.path.Path):
                 self.__primitives.append(Path(self._pedb, prim))
             elif isinstance(prim, ansys.edb.core.primitive.polygon.Polygon):
@@ -196,11 +198,12 @@ class Layout(GrpcLayout):
         return [DifferentialPair(self._pedb, i) for i in self._pedb.active_cell.layout.differential_pairs]
 
     @property
-    def padstack_instances(self) -> list[PadstackInstance]:
+    def padstack_instances(self) -> Dict[int, PadstackInstance]:
         """Get all padstack instances in a list."""
-        return [PadstackInstance(self._pedb, i) for i in self._pedb.active_cell.layout.padstack_instances]
+        pad_stack_inst = super().padstack_instances
+        self.__padstack_instances = {i.edb_uid: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
+        return self.__padstack_instances
 
-    #
     @property
     def voltage_regulators(self) -> list[VoltageRegulator]:
         """Voltage regulators.
