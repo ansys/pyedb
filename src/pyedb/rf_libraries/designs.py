@@ -744,17 +744,20 @@ class RatRace:
 
     def __init__(
         self,
-        *,
+        edb_cell: Optional[Edb] = None,
         z0: float = 50,
-        freq: float = 2e9,
+        freq: float = 10e9,
         layer: str = "TOP",
+        bottom_layer: Optional[str] = None,
         net: str = "RR",
-        width: float = 0.3e-3,
+        width: float = 0.2e-3,
         nr_segments: int = 32,
     ):
+        self._pedb = edb_cell
         self.z0 = z0
         self.freq = freq
         self.layer = layer
+        self.bottom_layer = bottom_layer
         self.net = net
         self.width = width
         self.nr_segments = nr_segments
@@ -804,13 +807,10 @@ class RatRace:
     # ------------------------------------------------------------------
     # Main creation routine
     # ------------------------------------------------------------------
-    def create(self, edb_path: str) -> Edb:
-        edb = Edb()
-        edb.save_as(edb_path)
-
-        edb["c"] = self.circumference
-        edb["r"] = self.radius
-        edb["w"] = self.width
+    def create(self) -> bool:
+        self._pedb["c"] = self.circumference
+        self._pedb["r"] = self.radius
+        self._pedb["w"] = self.width
 
         # ----------------------------------------------------------------------
         # 1. Geometry parameters
@@ -845,7 +845,7 @@ class RatRace:
 
         # Stitch them together into a single closed path
         ring_points = pts_a + pts_b[1:] + pts_c[1:] + pts_d[1:]
-        edb.modeler.create_trace(
+        self._pedb.modeler.create_trace(
             path_list=ring_points,
             layer_name=self.layer,
             net_name=self.net,
@@ -865,14 +865,22 @@ class RatRace:
 
             # Direction vector pointing outwards
             stub_pts = self._port_stub((x_ring, y_ring), stub_len, ang)
-            edb.modeler.create_trace(
+            self._pedb.modeler.create_trace(
                 path_list=stub_pts,
                 layer_name=self.layer,
                 net_name=f"{self.net}_P{idx}",
                 width=w,
+                start_cap_style="flast",
+                end_cap_style="flat",
             )
 
-        return edb
+        self._pedb.modeler.create_rectangle(
+            lower_left_point=[-self.circumference / 4, -self.circumference / 4],
+            upper_right_point=[self.circumference / 4, self.circumference / 4],
+            layer_name=self.bottom_layer,
+            net_name=self.net,
+        )
+        return True
 
 
 class Wilkinson:
