@@ -137,6 +137,8 @@ from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
 
+os.environ["no_proxy"] = "localhost,127.0.0.1"
+
 
 class Edb(EdbInit):
     """Main class for interacting with Ansys Electronics Desktop Database (EDB).
@@ -941,6 +943,7 @@ class Edb(EdbInit):
         ValueError
             If cell not found in database.
         """
+        self._layout = None
         if isinstance(value, str):
             _cell = [cell for cell in self.circuit_cells if cell.name == value]
             if _cell:
@@ -1119,7 +1122,10 @@ class Edb(EdbInit):
         :class:`Layout <pyedb.grpc.database.layout.layout.Layout>`
             Layout manipulation tools.
         """
-        return Layout(self)
+        if self._layout:
+            return self._layout
+        self._layout = Layout(self)
+        return self._layout
 
     @property
     def active_layout(self) -> Layout:

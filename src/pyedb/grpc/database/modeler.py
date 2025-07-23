@@ -92,7 +92,8 @@ class Modeler(object):
     def __init__(self, p_edb) -> None:
         """Initialize Modeler instance."""
         self._pedb = p_edb
-        self._primitives = []
+        self.__primitives = []
+        self.__primitives_by_layer = {}
 
     @property
     def _edb(self) -> Any:
@@ -267,7 +268,7 @@ class Modeler(object):
             try:
                 lay = i.layer.name
                 if lay in _primitives_by_layer:
-                    _primitives_by_layer[lay].append(Primitive(self._pedb, i))
+                    _primitives_by_layer[lay].append(i)
             except (InvalidArgumentException, AttributeError):
                 pass
         return _primitives_by_layer

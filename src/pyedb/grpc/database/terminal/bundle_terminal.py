@@ -152,7 +152,7 @@ class BundleTerminal(GrpcBundleTerminal):
         -------
         :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`
         """
-        return Terminal(self._pedb, self.reference_terminal)
+        return Terminal(self._pedb, super().reference_terminal)
 
     @reference_terminal.setter
     def reference_terminal(self, value):
