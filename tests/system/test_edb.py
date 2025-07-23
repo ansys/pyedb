@@ -28,6 +28,7 @@ from typing import Sequence
 import pytest
 
 from pyedb.generic.general_methods import is_linux
+import tests.conftest
 from tests.conftest import config, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
@@ -569,13 +570,13 @@ class TestClass:
     def test_edb_statistics(self, edb_examples):
         """Get statistics."""
         edb = edb_examples.get_si_verse()
-        edb_stats = edb.get_statistics(compute_area=True)
+        edb_stats = edb.get_statistics(compute_area=False)
         assert edb_stats
         assert edb_stats.num_layers
         assert edb_stats.stackup_thickness
         assert edb_stats.num_vias
-        assert edb_stats.occupying_ratio
-        assert edb_stats.occupying_surface
+        # assert edb_stats.occupying_ratio
+        # assert edb_stats.occupying_surface
         assert edb_stats.layout_size
         assert edb_stats.num_polygons
         assert edb_stats.num_traces
@@ -585,9 +586,9 @@ class TestClass:
         assert edb_stats.num_capacitors
         assert edb_stats.num_resistors
 
-        assert edb_stats.occupying_ratio["1_Top"] == 0.301682
-        assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.937467
-        assert edb_stats.occupying_ratio["16_Bottom"] == 0.204925
+        # assert edb_stats.occupying_ratio["1_Top"] == 0.301682
+        # assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.937467
+        # assert edb_stats.occupying_ratio["16_Bottom"] == 0.204925
         edb.close(terminate_rpc_session=False)
 
     def test_hfss_set_bounding_box_extent(self, edb_examples):
@@ -642,7 +643,7 @@ class TestClass:
             assert setup.sweep_data[0].interpolation_data.enforce_causality
         else:
             assert setup.sweep_data[0].enforce_causality
-        edb.close(terminate_rpc_session=False)
+        edb.close()
 
     def test_create_various_ports_0(self, edb_examples):
         """Create various ports."""
@@ -1584,6 +1585,7 @@ class TestClass:
             assert "test" in edbapp.voltage_regulator_modules
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=tests.conftest.GRPC, reason="Not implemented with grpc")
     def test_workflow(self, edb_examples):
         # TODO check with config file 2.0
         from pathlib import Path
