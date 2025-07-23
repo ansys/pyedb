@@ -701,7 +701,9 @@ class CellDotNet:
 class EdbDotNet(object):
     """Edb Dot Net Class."""
 
-    def __init__(self, edbversion, student_version=False):
+    def __init__(self, edbversion=None, student_version=False):
+        if edbversion is None:
+            raise AttributeError("No ANSYS release version provided. Ex: '2025.2'")
         self._logger.info(f"Edb version {edbversion}")
         self.edbversion = edbversion
         if float(self.edbversion) >= 2025.2:
