@@ -137,6 +137,8 @@ from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
 
+os.environ["no_proxy"] = "localhost,127.0.0.1"
+
 
 class Edb(EdbInit):
     """Main class for interacting with Ansys Electronics Desktop Database (EDB).
@@ -941,6 +943,7 @@ class Edb(EdbInit):
         ValueError
             If cell not found in database.
         """
+        self._layout = None
         if isinstance(value, str):
             _cell = [cell for cell in self.circuit_cells if cell.name == value]
             if _cell:
@@ -1119,7 +1122,10 @@ class Edb(EdbInit):
         :class:`Layout <pyedb.grpc.database.layout.layout.Layout>`
             Layout manipulation tools.
         """
-        return Layout(self)
+        if self._layout:
+            return self._layout
+        self._layout = Layout(self)
+        return self._layout
 
     @property
     def active_layout(self) -> Layout:
@@ -1420,6 +1426,7 @@ class Edb(EdbInit):
 
         if extent_type in [
             "Conforming",
+            "Conformal",
             GrpcExtentType.CONFORMING,
             1,
         ]:
@@ -1521,13 +1528,26 @@ class Edb(EdbInit):
             unite_polys = []
             for i in _polys:
                 if "PolygonData" not in str(i):
-                    obj_data = i.polygon_data.expand(expansion_size, tolerance, round_corner, round_extension)
+                    obj_data = i.polygon_data.expand(
+                        expansion_size,
+                        round_corner,
+                        round_extension,
+                        tolerance,
+                    )
                 else:
-                    obj_data = i.expand(expansion_size, tolerance, round_corner, round_extension)
+                    obj_data = i.expand(
+                        expansion_size,
+                        round_corner,
+                        round_extension,
+                        tolerance,
+                    )
                 if inlcude_voids_in_extents and "PolygonData" not in str(i) and i.has_voids and obj_data:
                     for void in i.voids:
                         void_data = void.polygon_data.expand(
-                            -1 * expansion_size, tolerance, round_corner, round_extension
+                            -1 * expansion_size,
+                            round_corner,
+                            round_extension,
+                            tolerance,
                         )
                         if void_data:
                             for v in list(void_data):
@@ -1992,11 +2012,15 @@ class Edb(EdbInit):
                 if isinstance(term, PadstackInstanceTerminal):
                     if term.net.name in reference_list:
                         pins_to_preserve.append(term.edb_uid)
+        delete_list = []
 
         for i in self.nets.nets.values():
             name = i.name
             if name not in all_list and name not in nets_to_preserve:
-                i.delete()
+                delete_list.append(i)
+                # i.delete()
+        for i in delete_list:
+            i.delete()
         reference_pinsts = []
         reference_prims = []
         reference_paths = []
