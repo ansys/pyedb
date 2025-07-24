@@ -26,8 +26,6 @@ from dataclasses import dataclass
 import math
 from typing import List, Optional, Tuple, Union
 
-import numpy as np
-
 from pyedb import Edb
 
 # ---------------------------------------------------------------------------
@@ -46,143 +44,92 @@ class Substrate:
     size: Tuple[float, float] = (0.001, 0.001)  # width, length in metres
 
 
-def _rect_path(edb: Edb, layer: str, net: str, x0: float, y0: float, x1: float, y1: float, w: float) -> EDBPrimitives:
-    """Create a rectangular (Manhattan) trace primitive."""
-    points = [[x0, y0], [x1, y1]]
-    return edb.modeler.create_trace(points, layer, w, net, "Line")
-
-
-def _via_fence(
-    edb: Edb,
-    x0: float,
-    y0: float,
-    x1: float,
-    y1: float,
-    pitch: float,
-    drill: float,
-    pad: float,
-    top_layer: str,
-    bottom_layer: str,
-    net: str,
-):
-    """Create a via fence along a rectangle."""
-    xvec = np.arange(x0, x1 + pitch, pitch) if x1 > x0 else [x0]
-    yvec = np.arange(y0, y1 + pitch, pitch) if y1 > y0 else [y0]
-    for x in xvec:
-        for y in yvec:
-            edb.padstacks.create([x, y], drill, pad, top_layer, bottom_layer, net=net)
-
-
-# ---------------------------------------------------------------------------
-# 1. Lumped / transmission line components
-# ---------------------------------------------------------------------------
-
-
-class HashedGroundPlane:
+class HatchGround:
     """
-    Perforated (hashed) ground plane with rectangular slots.
+    Create a board with a hatched copper ground plane.
 
     Parameters
     ----------
-    length : float
-        Plane size along x (m).  Default 10 mm.
+    pitch : float
+        Center-to-center distance of hatch bars [m].
     width : float
-        Plane size along y (m).  Default 10 mm.
-    slot_width : float
-        Width of each slot (m).  Default 0.2 mm.
-    slot_pitch : float
-        Centre-to-centre distance between slots (m).  Default 1 mm.
-    layer : str
-        EDB layer name.  Default "GND".
-    net : str
-        Net name.  Default "GND".
-
-    Properties
-    ----------
-    porosity : float
-        Fraction of metal removed (area of slots / total area).
-    effective_conductivity : float
-        Estimated conductivity reduction factor = 1 – porosity.
-
-    Examples
-    --------
-    >>> from pyedb_libraries import HashedGroundPlane
-    >>> gnd = HashedGroundPlane(length=5e-3, width=5e-3,
-    ...                         slot_width=0.1e-3, slot_pitch=0.5e-3)
-    >>> edb = gnd.create("gnd.aedb")
-    >>> print(f"Porosity = {gnd.porosity:.2%}")
-    Porosity = 19.00%
-    >>> edb.close_edb()
+        Width of each copper bar [m].
+    fill_target : float
+        Desired copper area in percent (10 … 90).
+    board_size : float
+        Edge length of square demo board [m].
+    edb_path : str | None
+        Optional explicit EDB path.  If None, a unique temp folder is used.
+    edb_version : str
+        EDB/Siwave version string, e.g. "2024.1".
     """
 
     def __init__(
         self,
         edb_cell: Optional[Edb] = None,
-        length: float = 1e-3,
-        width: float = 1e-3,
-        slot_width: float = 50e-6,
-        slot_pitch: float = 150e-6,
-        layer: str = "GND",
-        net: str = "GND",
+        pitch: float = 17.07e-3,
+        width: float = 5.0e-3,
+        fill_target: float = 50.0,
+        board_size: float = 100e-3,
+        layer_gnd: str = "GND",
     ):
-        self._pedb = edb_cell
-        self.length = length
-        self.width = width
-        self.slot_width = slot_width
-        self.slot_pitch = slot_pitch
-        self.layer = layer
-        self.net = net
-
-    # ----------------------------------------------------------
-    # Analytical properties
-    # ----------------------------------------------------------
-    @property
-    def porosity(self) -> float:
-        """Fraction of metal removed."""
-        return (self.slot_width * self.width) / (self.slot_pitch * self.width)
+        """Initialize the hatch ground object."""
+        self._edb = edb_cell
+        self.pitch = float(pitch)
+        self.width = float(width)
+        self.fill_target = float(fill_target)
+        self.board_size = float(board_size)
+        self.layer_gnd = layer_gnd
+        self._outline = None
 
     @property
-    def effective_conductivity(self) -> float:
-        """Effective conductivity reduction factor."""
-        return 1.0 - self.porosity
+    def copper_fill_ratio(self) -> float:
+        """Return actual copper fill ratio in percent."""
+        cu_area = self._edb.modeler.get_polygon_area(layer_name=self.layer_gnd)
+        return 100.0 * cu_area / (self.board_size**2)
 
-    # ----------------------------------------------------------
-    # EDB creation
-    # ----------------------------------------------------------
-    def create(self) -> Edb:
-        if not self._pedb:
-            raise Exception
-
-        # Parameters
-        self._pedb["L"] = self.length
-        self._pedb["W"] = self.width
-        self._pedb["sw"] = self.slot_width
-        self._pedb["sp"] = self.slot_pitch
-
-        # Full metal rectangle first
-        self._pedb.modeler.create_rectangle(
-            layer_name=self.layer,
-            net_name=self.net,
-            lower_left_point=[0, 0],
-            upper_right_point=[self.length, self.width],
-        )
-
-        # Cut slots along x
-        x = 0.0
+    def _generate_hatch(self) -> None:
+        """Draw orthogonal stripes, then punch gaps for the requested fill."""
+        # ---------- horizontal bars ----------
         y = 0.0
-        # TODO check pattern is wrong
-        while y < self.length:
-            while x < self.width:
-                prim = self._pedb.modeler.create_rectangle(
-                    layer_name=self.layer,
-                    net_name="VOID",
-                    lower_left_point=[x, x + self.slot_width],
-                    upper_right_point=[y, y + self.slot_width],
+        while y < self.board_size:
+            self._add_stripe(0.0, y, self.board_size, y + self.width)
+            y += self.pitch
+
+        # ---------- vertical bars ------------
+        x = 0.0
+        while x < self.board_size:
+            self._add_stripe(x, 0.0, x + self.width, self.board_size)
+            x += self.pitch
+
+        # ---------- punch square gaps --------
+        gaps: List[List[Tuple[float, float]]] = []
+        x = 0.0
+        while x < self.board_size:
+            y = 0.0
+            while y < self.board_size:
+                gaps.append(
+                    [
+                        (x, y),
+                        (x + self.width, y),
+                        (x + self.width, y + self.width),
+                        (x, y + self.width),
+                        (x, y),
+                    ]
                 )
-                prim.is_negative = True
-                x += self.slot_pitch + self.slot_width
-            x = 0.0
-            y += self.slot_pitch + self.slot_width
+                y += self.pitch
+            x += self.pitch
+        polygons = self._edb.modeler.polygons
+        polygons[0].unite(polygons[1:])
+
+    def _add_stripe(self, x0: float, y0: float, x1: float, y1: float) -> None:
+        """Create one rectangular copper bar on the GND layer."""
+        points = [(x0, y0), (x1, y0), (x1, y1), (x0, y1), (x0, y0)]
+        self._edb.modeler.create_polygon(points, layer_name=self.layer_gnd, net_name="GND")
+
+    def create(self) -> bool:
+        """Create the stack-up, outline and hatch pattern."""
+        self._generate_hatch()
         return True
 
 
@@ -675,53 +622,6 @@ class RadialStub:
         return True
 
 
-class ViaArray:
-    """
-    Via fence / array.
-
-    Parameters
-    ----------
-    pitch : float
-    drill : float
-    pad : float
-    extent : Tuple[float,float]
-    top_layer : str
-    bottom_layer : str
-    net : str
-    """
-
-    def __init__(
-        self,
-        *,
-        pitch: float = 0.5e-3,
-        drill: float = 0.1e-3,
-        pad: float = 0.2e-3,
-        extent: Tuple[float, float] = (5e-3, 1e-3),
-        top_layer: str = "TOP",
-        bottom_layer: str = "GND",
-        net: str = "VSS",
-    ):
-        self.pitch = pitch
-        self.drill = drill
-        self.pad = pad
-        self.extent = extent
-        self.top_layer = top_layer
-        self.bottom_layer = bottom_layer
-        self.net = net
-
-    def create(self, edb_path: str) -> Edb:
-        edb = Edb()
-        edb.save_as(edb_path)
-        edb["p"] = self.pitch
-        edb["d"] = self.drill
-        edb["pad"] = self.pad
-
-        _via_fence(
-            edb, 0, 0, *self.extent, self.pitch, self.drill, self.pad, self.top_layer, self.bottom_layer, self.net
-        )
-        return edb
-
-
 class RatRace:
     """
     180° rat-race coupler realised with discretised arcs.
@@ -1013,62 +913,82 @@ class InterdigitalCapacitor:
 
 class DifferentialTLine:
     """
-    Edge-coupled differential pair.
-
-    Parameters
-    ----------
-    length : float
-    width : float
-    spacing : float
-    layer : str
-    net_p : str
-    net_n : str
+    Fully-parametric edge-coupled differential pair.
+    All dimensions are native EDB parameters so they stay editable
+    after the EDB is imported into AEDT.
     """
 
     def __init__(
         self,
-        *,
+        edb: Edb,
         length: float = 10e-3,
-        width: float = 0.2e-3,
-        spacing: float = 0.2e-3,
+        width: float = 0.20e-3,
+        spacing: float = 0.20e-3,
+        x0: float = 0.0,
+        y0: float = 0.0,
+        angle: float = 0.0,
         layer: str = "TOP",
         net_p: str = "P",
         net_n: str = "N",
     ):
-        self.length = length
+        self._edb = edb
+        self.length = length  # total length
         self.width = width
         self.spacing = spacing
+        self.x0 = x0
+        self.y0 = y0
         self.layer = layer
         self.net_p = net_p
         self.net_n = net_n
 
+        # ----------------------------------------------------------
+        # Declare every numeric value as an EDB variable
+        # ----------------------------------------------------------
+        self._edb["diff_len"] = self.length  # total length
+        self._edb["diff_w"] = self.width  # single trace width
+        self._edb["diff_s"] = self.spacing  # edge-to-edge spacing
+        self._edb["diff_x0"] = self.x0  # start-x
+        self._edb["diff_y0"] = self.y0  # start-y
+        self._edb["diff_angle"] = math.degrees(angle)  # rotation in degrees
+
+    # ----------------------------------------------------------
+    # Read-only impedance helper (uses live parameter values)
+    # ----------------------------------------------------------
     @property
     def diff_impedance(self) -> float:
-        """
-        Approximate differential impedance.
+        w = self._edb["diff_w"]
+        s = self._edb["diff_s"]
+        z0_single = 60.0
+        return 2 * z0_single * (1 - 0.48 * math.exp(-0.96 * s / w))
 
-        Returns
-        -------
-        float
-        """
-        z0_single = 60  # assume
-        return 2 * z0_single * (1 - 0.48 * math.exp(-0.96 * self.spacing / self.width))
-
-    def create(self, edb_path: str) -> Edb:
-        edb = Edb()
-        edb.save_as(edb_path)
-        edb["l"] = self.length
-        edb["w"] = self.width
-        edb["s"] = self.spacing
-        _rect_path(edb, self.layer, self.net_p, 0, 0, self.length, 0, self.width)
-        _rect_path(
-            edb,
-            self.layer,
-            self.net_n,
-            0,
-            -self.width - self.spacing,
-            self.length,
-            -self.width - self.spacing,
-            self.width,
+    # ----------------------------------------------------------
+    # Geometry creation – returns the two EDB path objects
+    # ----------------------------------------------------------
+    def create(self) -> List[float]:
+        # Build the two traces using ONLY parameter strings
+        # so AEDT keeps them live.
+        pos_trace = self._edb.modeler.create_trace(
+            path_list=[
+                ["diff_x0", "diff_y0"],
+                ["diff_x0 + diff_len*cos(diff_angle*1deg)", "diff_y0 + diff_len*sin(diff_angle*1deg)"],
+            ],
+            layer_name=self.layer,
+            width="diff_w",
+            net_name=self.net_p,
+            start_cap_style="Flat",
+            end_cap_style="Flat",
         )
-        return edb
+
+        neg_y_expr = "diff_y0 - diff_w - diff_s"
+        neg_trace = self._edb.modeler.create_trace(
+            path_list=[
+                ["diff_x0", neg_y_expr],
+                ["diff_x0 + diff_len*cos(diff_angle*1deg)", f"{neg_y_expr} + diff_len*sin(diff_angle*1deg)"],
+            ],
+            layer_name=self.layer,
+            width="diff_w",
+            net_name=self.net_n,
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        return [pos_trace, neg_trace]
