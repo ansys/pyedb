@@ -38,6 +38,16 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         self._pedb = pedb
 
     @property
+    def boundary_type(self) -> str:
+        """Boundary type.
+
+        Returns
+        -------
+        str : boundary type.
+        """
+        return super().boundary_type.name.lower()
+
+    @property
     def position(self) -> list[float]:
         """Terminal position.
 

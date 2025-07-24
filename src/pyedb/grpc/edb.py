@@ -77,6 +77,7 @@ import ansys.edb.core.layout.cell
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
 )
+from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
 from pyedb.configuration.configuration import Configuration
@@ -135,6 +136,8 @@ from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
+
+os.environ["no_proxy"] = "localhost,127.0.0.1"
 
 
 class Edb(EdbInit):
@@ -290,13 +293,13 @@ class Edb(EdbInit):
                 return False
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
-            self.open_edb(restart_rpc_server=restart_rpc_server)
+            self.open(restart_rpc_server=restart_rpc_server)
         elif not os.path.exists(os.path.join(self.edbpath, "edb.def")):
-            self.create_edb(restart_rpc_server=restart_rpc_server)
+            self.create(restart_rpc_server=restart_rpc_server)
             self.logger.info("EDB %s created correctly.", self.edbpath)
         elif ".aedb" in edbpath:
             self.edbpath = edbpath
-            self.open_edb(restart_rpc_server=restart_rpc_server)
+            self.open(restart_rpc_server=restart_rpc_server)
         if self.active_cell:
             self.logger.info("EDB initialized.")
         else:
@@ -365,6 +368,11 @@ class Edb(EdbInit):
         if description:  # Add the variable description if a two-item list is passed for variable_value.
             self.__getitem__(variable_name).description = description
 
+    @property
+    def core(self) -> ansys.edb.core:
+        """Ansys Edb Core module."""
+        return ansys.edb.core
+
     def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         files = [aedt_file, aedt_file + ".lock"]
@@ -401,7 +409,8 @@ class Edb(EdbInit):
         if isinstance(val, GrpcValue):
             return Value(val)
         else:
-            return Value(GrpcValue(val))
+            context = self.active_cell if not str(val).startswith("$") else self.active_db
+            return Value(GrpcValue(val, context), context)
 
     @property
     def cell_names(self) -> [str]:
@@ -545,7 +554,11 @@ class Edb(EdbInit):
         dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Source names and objects.
         """
-        return self.terminals
+        return {
+            k: i
+            for k, i in self.terminals.items()
+            if "source" in i.boundary_type or "terminal" in i.boundary_type or i.is_reference_terminal
+        }
 
     @property
     def voltage_regulator_modules(self):
@@ -930,6 +943,7 @@ class Edb(EdbInit):
         ValueError
             If cell not found in database.
         """
+        self._layout = None
         if isinstance(value, str):
             _cell = [cell for cell in self.circuit_cells if cell.name == value]
             if _cell:
@@ -1108,7 +1122,10 @@ class Edb(EdbInit):
         :class:`Layout <pyedb.grpc.database.layout.layout.Layout>`
             Layout manipulation tools.
         """
-        return Layout(self)
+        if self._layout:
+            return self._layout
+        self._layout = Layout(self)
+        return self._layout
 
     @property
     def active_layout(self) -> Layout:
@@ -1291,7 +1308,7 @@ class Edb(EdbInit):
         func : str
             Command to execute.
         """
-        # return self.edb_api.utility.utility.Command.Execute(func)
+        # return self.core.utility.utility.Command.Execute(func)
         pass
 
     def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False) -> bool:
@@ -1409,6 +1426,7 @@ class Edb(EdbInit):
 
         if extent_type in [
             "Conforming",
+            "Conformal",
             GrpcExtentType.CONFORMING,
             1,
         ]:
@@ -1510,13 +1528,26 @@ class Edb(EdbInit):
             unite_polys = []
             for i in _polys:
                 if "PolygonData" not in str(i):
-                    obj_data = i.polygon_data.expand(expansion_size, tolerance, round_corner, round_extension)
+                    obj_data = i.polygon_data.expand(
+                        expansion_size,
+                        round_corner,
+                        round_extension,
+                        tolerance,
+                    )
                 else:
-                    obj_data = i.expand(expansion_size, tolerance, round_corner, round_extension)
+                    obj_data = i.expand(
+                        expansion_size,
+                        round_corner,
+                        round_extension,
+                        tolerance,
+                    )
                 if inlcude_voids_in_extents and "PolygonData" not in str(i) and i.has_voids and obj_data:
                     for void in i.voids:
                         void_data = void.polygon_data.expand(
-                            -1 * expansion_size, tolerance, round_corner, round_extension
+                            -1 * expansion_size,
+                            round_corner,
+                            round_extension,
+                            tolerance,
                         )
                         if void_data:
                             for v in list(void_data):
@@ -1981,25 +2012,32 @@ class Edb(EdbInit):
                 if isinstance(term, PadstackInstanceTerminal):
                     if term.net.name in reference_list:
                         pins_to_preserve.append(term.edb_uid)
+        delete_list = []
 
         for i in self.nets.nets.values():
             name = i.name
             if name not in all_list and name not in nets_to_preserve:
-                i.delete()
+                delete_list.append(i)
+                # i.delete()
+        for i in delete_list:
+            i.delete()
         reference_pinsts = []
         reference_prims = []
         reference_paths = []
+        delete_list = []
         for i in self.padstacks.instances.values():
             net_name = i.net_name
             id = i.id
             if net_name not in all_list and id not in pins_to_preserve:
-                i.delete()
+                delete_list.append(i)
+                # i.delete()
             elif net_name in reference_list and id not in pins_to_preserve:
                 reference_pinsts.append(i)
         for i in self.modeler.primitives:
             if not i.is_null and not i.net.is_null:
                 if i.net.name not in all_list:
-                    i.delete()
+                    # i.delete()
+                    delete_list.append(i)
                 elif i.net.name in reference_list and not i.is_void:
                     if keep_lines_as_path and isinstance(i, Path):
                         reference_paths.append(i)
@@ -2007,7 +2045,8 @@ class Edb(EdbInit):
                         reference_prims.append(i)
         self.logger.info_timer("Net clean up")
         self.logger.reset_timer()
-
+        for i in delete_list:
+            i.delete()
         if custom_extent and isinstance(custom_extent, list):
             if custom_extent[0] != custom_extent[-1]:
                 custom_extent.append(custom_extent[0])
@@ -2039,7 +2078,7 @@ class Edb(EdbInit):
                 ExtentType as GrpcExtentType,
             )
 
-            if extent_type in ["Conforming", GrpcExtentType.CONFORMING, 1]:
+            if extent_type in ["Conformal", "Conforming", GrpcExtentType.CONFORMING, 1]:
                 if extent_defeature > 0:
                     _poly = _poly.defeature(extent_defeature)
                 _poly1 = GrpcPolygonData(arcs=_poly.arc_data, closed=True)

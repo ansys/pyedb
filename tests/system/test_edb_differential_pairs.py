@@ -36,6 +36,14 @@ class TestClass:
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
+
     def test_differential_pairs_queries(self, edb_examples):
         """Evaluate differential pairs queries"""
         # Done
@@ -45,4 +53,4 @@ class TestClass:
         assert diff_pair.positive_net.name == "PCIe_Gen4_RX1_P"
         assert diff_pair.negative_net.name == "PCIe_Gen4_RX1_N"
         assert edbapp.differential_pairs.items["new_pair1"]
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)

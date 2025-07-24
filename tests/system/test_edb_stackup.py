@@ -41,17 +41,25 @@ class TestClass:
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
+
     def test_stackup_get_signal_layers(self, edb_examples):
         """Report residual copper area per layer."""
         edbapp = edb_examples.get_si_verse()
         assert edbapp.stackup.residual_copper_area_per_layer()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_limits(self, edb_examples):
         """Retrieve stackup limits."""
         edbapp = edb_examples.get_si_verse()
         assert edbapp.stackup.limits()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_add_outline(self, edb_examples):
         """Add an outline layer named ``"Outline1"`` if it is not present."""
@@ -62,18 +70,18 @@ class TestClass:
         assert edbapp.stackup.layers["1_Top"].thickness == 3.5e-05
         edbapp.stackup.layers["1_Top"].thickness = 4e-5
         assert edbapp.stackup.layers["1_Top"].thickness == 4e-05
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_create_symmetric_stackup(self, edb_examples):
         """Create a symmetric stackup."""
         app_edb = edb_examples.create_empty_edb()
         assert not app_edb.stackup.create_symmetric_stackup(9)
         assert app_edb.stackup.create_symmetric_stackup(8)
-        app_edb.close()
+        app_edb.close(terminate_rpc_session=False)
 
         app_edb = edb_examples.create_empty_edb()
         assert app_edb.stackup.create_symmetric_stackup(8, soldermask=False)
-        app_edb.close()
+        app_edb.close(terminate_rpc_session=False)
 
     def test_stackup_place_a3dcomp_3d_placement(self, edb_examples):
         """Place a 3D Component into current layout."""
@@ -139,18 +147,18 @@ class TestClass:
                 assert res
                 zero_value = laminate_edb.edb_value(0)
                 one_value = laminate_edb.edb_value(1)
-                origin_point = laminate_edb.edb_api.geometry.point3d_data(zero_value, zero_value, zero_value)
-                x_axis_point = laminate_edb.edb_api.geometry.point3d_data(one_value, zero_value, zero_value)
+                origin_point = laminate_edb.core.geometry.point3d_data(zero_value, zero_value, zero_value)
+                x_axis_point = laminate_edb.core.geometry.point3d_data(one_value, zero_value, zero_value)
                 assert local_origin.IsEqual(origin_point)
                 assert rotation_axis_from.IsEqual(x_axis_point)
                 assert rotation_axis_to.IsEqual(x_axis_point)
                 assert angle.IsEqual(zero_value)
                 assert loc.IsEqual(
-                    laminate_edb.edb_api.geometry.point3d_data(zero_value, zero_value, laminate_edb.edb_value(170e-6))
+                    laminate_edb.core.geometry.point3d_data(zero_value, zero_value, laminate_edb.edb_value(170e-6))
                 )
             assert laminate_edb.save_edb()
         finally:
-            laminate_edb.close()
+            laminate_edb.close(terminate_rpc_session=False)
 
     def test_stackup_place_a3dcomp_3d_placement_on_bottom(self, edb_examples):
         """Place a 3D Component into current layout."""
@@ -213,16 +221,16 @@ class TestClass:
                 zero_value = laminate_edb.edb_value(0)
                 one_value = laminate_edb.edb_value(1)
                 flip_angle_value = laminate_edb.edb_value("180deg")
-                origin_point = laminate_edb.edb_api.geometry.point3d_data(zero_value, zero_value, zero_value)
-                x_axis_point = laminate_edb.edb_api.geometry.point3d_data(one_value, zero_value, zero_value)
+                origin_point = laminate_edb.core.geometry.point3d_data(zero_value, zero_value, zero_value)
+                x_axis_point = laminate_edb.core.geometry.point3d_data(one_value, zero_value, zero_value)
                 assert local_origin.IsEqual(origin_point)
                 assert rotation_axis_from.IsEqual(x_axis_point)
                 assert rotation_axis_to.IsEqual(
-                    laminate_edb.edb_api.geometry.point3d_data(zero_value, laminate_edb.edb_value(-1.0), zero_value)
+                    laminate_edb.core.geometry.point3d_data(zero_value, laminate_edb.edb_value(-1.0), zero_value)
                 )
                 assert angle.IsEqual(flip_angle_value)
                 assert loc.IsEqual(
-                    laminate_edb.edb_api.geometry.point3d_data(
+                    laminate_edb.core.geometry.point3d_data(
                         laminate_edb.edb_value(0.5e-3),
                         laminate_edb.edb_value(-0.5e-3),
                         zero_value,
@@ -230,7 +238,7 @@ class TestClass:
                 )
             assert laminate_edb.save_edb()
         finally:
-            laminate_edb.close()
+            laminate_edb.close(terminate_rpc_session=False)
 
     def test_stackup_properties_0(self, edb_examples):
         """Evaluate various stackup properties."""
@@ -287,7 +295,7 @@ class TestClass:
         # edbapp.stackup.mode = "Overlapping"
         # assert edbapp.stackup.mode.lower() == "overlapping"
         assert edbapp.stackup.add_layer("new_bottom", "1_Top", "add_at_elevation", "dielectric", elevation=0.0003)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_properties_1(self, edb_examples):
         """Evaluate various stackup properties."""
@@ -302,7 +310,7 @@ class TestClass:
         assert export_method(export_stackup_path)
         assert os.path.exists(export_stackup_path)
 
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_properties_2(self, edb_examples):
         """Evaluate various stackup properties."""
@@ -316,7 +324,7 @@ class TestClass:
         export_stackup_path = os.path.join(self.local_scratch.path, "export_stackup.csv")
         assert export_method(export_stackup_path)
         assert os.path.exists(export_stackup_path)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_layer_properties(self, edb_examples):
         """Evaluate various layer properties."""
@@ -343,7 +351,7 @@ class TestClass:
         # assert layer.is_negative
         # assert not layer.is_via_layer
         # assert layer.material == "copper"
-        # edbapp.close()
+        # edbapp.close(terminate_rpc_session=False)
         pass
 
     def test_stackup_load_json(self, edb_examples):
@@ -352,7 +360,7 @@ class TestClass:
         fpath = os.path.join(local_path, "example_models", test_subfolder, "stackup.json")
         edbapp = edb_examples.load_edb(source_path)
         edbapp.stackup.load(fpath)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_export_json(self, edb_examples):
         """Export stackup into a JSON file."""
@@ -412,7 +420,7 @@ class TestClass:
                     assert data["layers"]["DE2"][parameter] == 0.0
                 else:
                     assert data["layers"]["DE2"][parameter] == value
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_load_xml(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
@@ -432,7 +440,7 @@ class TestClass:
         assert "1_Top_renamed" in edbapp.stackup.layers
         assert "DE1_renamed" in edbapp.stackup.layers
         assert "16_Bottom_renamed" in edbapp.stackup.layers
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_place_in_3d_with_flipped_stackup(self, edb_examples):
         """Place into another cell using 3d placement method with and
@@ -454,7 +462,7 @@ class TestClass:
         if edb2.grpc:
             edb2.close(terminate_rpc_session=False)
         else:
-            edb2.close()
+            edb2.close(terminate_rpc_session=False)
         edb2 = edb_examples.load_edb(self.target_path, copy_to_temp=False)
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
@@ -468,7 +476,7 @@ class TestClass:
         if edb2.grpc:
             edb2.close(terminate_rpc_session=False)
         else:
-            edb2.close()
+            edb2.close(terminate_rpc_session=False)
         edb2 = edb_examples.load_edb(self.target_path, copy_to_temp=False)
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
@@ -482,7 +490,7 @@ class TestClass:
         if edb2.grpc:
             edb2.close(terminate_rpc_session=False)
         else:
-            edb2.close()
+            edb2.close(terminate_rpc_session=False)
         edb2 = edb_examples.load_edb(self.target_path, copy_to_temp=False)
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
@@ -496,8 +504,8 @@ class TestClass:
         if edb2.grpc:
             edb2.close(terminate_rpc_session=False)
         else:
-            edb2.close()
-        edb1.close()
+            edb2.close(terminate_rpc_session=False)
+        edb1.close(terminate_rpc_session=False)
 
     def test_stackup_place_instance_with_flipped_stackup(self, edb_examples):
         """Place into another cell using 3d placement method with and
@@ -546,8 +554,8 @@ class TestClass:
         if edb2.grpc:
             edb2.close(terminate_rpc_session=False)
         else:
-            edb2.close()
-        edb1.close()
+            edb2.close(terminate_rpc_session=False)
+        edb1.close(terminate_rpc_session=False)
 
     def test_stackup_place_in_layout_with_flipped_stackup(self, edb_examples):
         """Place into another cell using layer placement method with and
@@ -563,7 +571,7 @@ class TestClass:
         #     flipped_stackup=True,
         #     place_on_top=True,
         # )
-        # edb2.close()
+        # edb2.close(terminate_rpc_session=False)
         pass
 
     def test_stackup_place_on_top_of_lam_with_mold(self, edb_examples):
@@ -595,8 +603,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -650,8 +658,8 @@ class TestClass:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_stackup_place_on_bottom_of_lam_with_mold(self, edb_examples):
         """Place on lam with mold using 3d placement method"""
@@ -683,8 +691,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -737,8 +745,8 @@ class TestClass:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_stackup_place_on_top_of_lam_with_mold_solder(self, edb_examples):
         """Place on top of lam with mold solder using 3d placement method."""
@@ -769,8 +777,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -814,21 +822,19 @@ class TestClass:
                 assert res
                 zeroValue = chipEdb.edb_value(0)
                 oneValue = chipEdb.edb_value(1)
-                originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
-                xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+                originPoint = chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+                xAxisPoint = chipEdb.core.geometry.point3d_data(oneValue, zeroValue, zeroValue)
                 assert localOrigin.IsEqual(originPoint)
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
                 assert angle.IsEqual(zeroValue)
-                assert loc.IsEqual(
-                    chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(190e-6))
-                )
+                assert loc.IsEqual(chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(190e-6)))
         finally:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_stackup_place_on_bottom_of_lam_with_mold_solder(self, edb_examples):
         """Place on bottom of lam with mold solder using 3d placement method."""
@@ -860,8 +866,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -905,21 +911,19 @@ class TestClass:
                 assert res
                 zeroValue = chipEdb.edb_value(0)
                 oneValue = chipEdb.edb_value(1)
-                originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
-                xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+                originPoint = chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+                xAxisPoint = chipEdb.core.geometry.point3d_data(oneValue, zeroValue, zeroValue)
                 assert localOrigin.IsEqual(originPoint)
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
                 assert angle.IsEqual(chipEdb.edb_value(math.pi))
-                assert loc.IsEqual(
-                    chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(-20e-6))
-                )
+                assert loc.IsEqual(chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(-20e-6)))
         finally:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_stackup_place_on_top_with_zoffset_chip(self, edb_examples):
         """Place on top of lam with mold chip zoffset using 3d placement method."""
@@ -950,8 +954,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -995,8 +999,8 @@ class TestClass:
                 assert res
                 zeroValue = chipEdb.edb_value(0)
                 oneValue = chipEdb.edb_value(1)
-                originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
-                xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+                originPoint = chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+                xAxisPoint = chipEdb.core.geometry.point3d_data(oneValue, zeroValue, zeroValue)
                 assert localOrigin.IsEqual(originPoint)
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
@@ -1005,8 +1009,8 @@ class TestClass:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_stackup_place_on_bottom_with_zoffset_chip(self, edb_examples):
         """Place on bottom of lam with mold chip zoffset using 3d placement method."""
@@ -1038,8 +1042,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -1083,21 +1087,19 @@ class TestClass:
                 assert res
                 zeroValue = chipEdb.edb_value(0)
                 oneValue = chipEdb.edb_value(1)
-                originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
-                xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+                originPoint = chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+                xAxisPoint = chipEdb.core.geometry.point3d_data(oneValue, zeroValue, zeroValue)
                 assert localOrigin.IsEqual(originPoint)
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
                 assert angle.IsEqual(chipEdb.edb_value(math.pi))
-                assert loc.IsEqual(
-                    chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(10e-6))
-                )
+                assert loc.IsEqual(chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(10e-6)))
         finally:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_stackup_place_on_top_with_zoffset_solder_chip(self, edb_examples):
         """Place on top of lam with mold chip zoffset using 3d placement method."""
@@ -1128,8 +1130,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -1173,8 +1175,8 @@ class TestClass:
                 assert res
                 zeroValue = chipEdb.edb_value(0)
                 oneValue = chipEdb.edb_value(1)
-                originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
-                xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+                originPoint = chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+                xAxisPoint = chipEdb.core.geometry.point3d_data(oneValue, zeroValue, zeroValue)
                 assert localOrigin.IsEqual(originPoint)
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
@@ -1183,8 +1185,8 @@ class TestClass:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_stackup_place_on_bottom_with_zoffset_solder_chip(self, edb_examples):
         """Place on bottom of lam with mold chip zoffset using 3d placement method."""
@@ -1216,8 +1218,8 @@ class TestClass:
                 merged_cell = [cell for cell in chipEdb.circuit_cells if cell.name == "lam_with_mold"][0]
                 assert not merged_cell.is_null
             else:
-                merged_cell = chipEdb.edb_api.cell.cell.FindByName(
-                    chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+                merged_cell = chipEdb.core.cell.cell.FindByName(
+                    chipEdb.active_db, chipEdb.core.cell.CellType.CircuitCell, "lam_with_mold"
                 )
                 assert not merged_cell.IsNull()
             if chipEdb.grpc:
@@ -1261,21 +1263,19 @@ class TestClass:
                 assert res
                 zeroValue = chipEdb.edb_value(0)
                 oneValue = chipEdb.edb_value(1)
-                originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
-                xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+                originPoint = chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+                xAxisPoint = chipEdb.core.geometry.point3d_data(oneValue, zeroValue, zeroValue)
                 assert localOrigin.IsEqual(originPoint)
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
                 assert angle.IsEqual(chipEdb.edb_value(math.pi))
-                assert loc.IsEqual(
-                    chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(20e-6))
-                )
+                assert loc.IsEqual(chipEdb.core.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(20e-6)))
         finally:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
             else:
-                chipEdb.close()
-            laminateEdb.close()
+                chipEdb.close(terminate_rpc_session=False)
+            laminateEdb.close(terminate_rpc_session=False)
 
     def test_18_stackup(self, edb_examples):
         # TODO
@@ -1357,7 +1357,7 @@ class TestClass:
         #                 ) < delta
         #                 assert (pedb_lay.side_hallhuray_nodule_radius - layer["side_hallhuray_nodule_radius"]) < delta
         #                 assert (pedb_lay.side_hallhuray_surface_ratio - layer["side_hallhuray_surface_ratio"]) < delta
-        # edbapp.close()
+        # edbapp.close(terminate_rpc_session=False)
         pass
 
     def test_19(self, edb_examples):
@@ -1374,4 +1374,4 @@ class TestClass:
         base_layer = edbapp.stackup.layers["1_Top"]
         l_id = edbapp.stackup.layers_by_id.index([base_layer.id, base_layer.name])
         assert edbapp.stackup.layers_by_id[l_id - 1][1] == "add_layer_above"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
