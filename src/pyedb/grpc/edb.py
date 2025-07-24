@@ -1998,11 +1998,15 @@ class Edb(EdbInit):
                 if isinstance(term, PadstackInstanceTerminal):
                     if term.net.name in reference_list:
                         pins_to_preserve.append(term.edb_uid)
+        delete_list = []
 
         for i in self.nets.nets.values():
             name = i.name
             if name not in all_list and name not in nets_to_preserve:
-                i.delete()
+                delete_list.append(i)
+                #i.delete()
+        for i in delete_list:
+            i.delete()
         reference_pinsts = []
         reference_prims = []
         reference_paths = []
