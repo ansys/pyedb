@@ -1,5 +1,5 @@
 # pyedb_libraries.py
-# Author : you
+# Author : [Your Name or Organization]
 # Date   : 2025-07-19
 #
 # 100 % parametric EDB library + analytical RF models
