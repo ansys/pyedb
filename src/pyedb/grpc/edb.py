@@ -876,10 +876,9 @@ class Edb(EdbInit):
         self,
         vlctech_file,
         working_dir="",
-        make_edb_path="",
         export_xml=None,
     ):
-        """Import a vlc.tech file and generate an ``edb.def`` file in the working directory containing the stackup.
+        """Import a vlc.tech file and generate an ``edb.def`` file in the working directory containing only the stackup.
 
         Parameters
         ----------
@@ -888,8 +887,6 @@ class Edb(EdbInit):
         working_dir : str, optional
             Directory in which to create the ``aedb`` folder. The name given to the AEDB file
             is the same as the name of the board file.
-        make_edb_path: str, optional
-            Full path to the Ansys translator. The default is ``""``.
         export_xml : str, optional
             Export technology file in XML control file format.
         tech_file : str, optional
@@ -902,12 +899,9 @@ class Edb(EdbInit):
         """
         if not working_dir:
             working_dir = os.path.dirname(vlctech_file)
-        if make_edb_path and os.path.exists(make_edb_path):
-            command = make_edb_path
-        else:
-            command = os.path.join(self.base_path, r"helic\tools\raptorh\bin\make-edb")
-            if is_windows:
-                command += ".exe"
+        command = os.path.join(self.base_path, r"helic\tools\raptorh\bin\make-edb")
+        if is_windows:
+            command += ".exe"
         cmd_make_edb = [
             command,
             "-t",
@@ -924,7 +918,8 @@ class Edb(EdbInit):
         else:
             self.logger.info("edb successfully created.")
         self.edbpath = os.path.join(working_dir, "vlctech.aedb")
-        return self.open_edb()
+        self.open()
+        return self.edbpath
 
     def export_to_ipc2581(self, ipc_path=None, units="MILLIMETER") -> str:
         """Export design to IPC2581 format.
