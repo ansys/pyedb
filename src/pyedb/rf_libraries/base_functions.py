@@ -81,7 +81,7 @@ class HatchGround:
     @property
     def copper_fill_ratio(self) -> float:
         """Return actual copper fill ratio in percent."""
-        cu_area = self._edb.modeler.get_polygon_area(layer_name=self.layer_gnd)
+        cu_area = self._edb.modeler.polygons[0].area()
         return 100.0 * cu_area / (self.board_size**2)
 
     def _generate_hatch(self) -> None:
