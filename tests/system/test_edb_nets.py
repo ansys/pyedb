@@ -40,6 +40,14 @@ class TestClass:
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
+
     def test_nets_queries(self, edb_examples):
         """Evaluate nets queries"""
         # Done
@@ -69,7 +77,7 @@ class TestClass:
         assert not edbapp.nets.nets["AVCC_1V3"].extended_net
         edbapp.extended_nets.auto_identify_power()
         assert edbapp.nets.nets["AVCC_1V3"].extended_net
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_nets_get_power_tree(self, edb_examples):
         """Evaluate nets get powertree."""
@@ -85,7 +93,7 @@ class TestClass:
         assert component_list
         assert component_list_columns
         assert net_group
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_nets_delete(self, edb_examples):
         """Delete a net."""
@@ -94,7 +102,7 @@ class TestClass:
         assert "JTAG_TCK" in edbapp.nets.nets
         edbapp.nets.nets["JTAG_TCK"].delete()
         assert "JTAG_TCK" not in edbapp.nets.nets
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_nets_classify_nets(self, edb_examples):
         """Reassign power based on list of nets."""
@@ -116,7 +124,7 @@ class TestClass:
         assert "SFPA_SDA" in edbapp.nets.signal
         assert "SFPA_SCL" in edbapp.nets.signal
         assert "SFPA_VCCR" in edbapp.nets.power
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_nets_arc_data(self, edb_examples):
         """Evaluate primitive arc data."""
@@ -126,7 +134,7 @@ class TestClass:
         assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].start
         assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].end
         assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.slow
     def test_nets_dc_shorts(self, edb_examples):
@@ -144,14 +152,14 @@ class TestClass:
         # assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) > 0
         # edbapp.nets["DDR4_DM3"].find_dc_short(True)
         # assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) == 0
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_nets_eligible_power_nets(self, edb_examples):
         """Evaluate eligible power nets."""
         # Done
         edbapp = edb_examples.get_si_verse()
         assert "GND" in [i.name for i in edbapp.nets.eligible_power_nets()]
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_nets_merge_polygon(self, edb_examples):
         """Convert paths from net into polygons."""
@@ -159,7 +167,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_merge_polygon.aedb")
         edbapp = edb_examples.load_edb(edb_path=source_path)
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_0(self, edb_examples):
         # Done
@@ -185,7 +193,7 @@ class TestClass:
             layers=True, materials=False, via_holes=False, pads=False, antipads=False, traces=False, via_offset=False
         )
         assert len(list(edbapp.variables.keys())) == len(list(edbapp.stackup.layers.keys()))
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_2(self, edb_examples):
         # Done
@@ -204,7 +212,7 @@ class TestClass:
         )
         assert "via_offset_x" in edbapp.variables
         assert "$sigma_copper_delta" in edbapp.variables
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_3(self, edb_examples):
         # Done
@@ -222,7 +230,7 @@ class TestClass:
             layers=False, materials=False, via_holes=True, pads=False, antipads=False, traces=False
         )
         assert len(list(edbapp.variables.values())) == 3
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_5(self, edb_examples):
         # Done

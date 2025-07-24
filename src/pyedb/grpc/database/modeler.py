@@ -92,7 +92,8 @@ class Modeler(object):
     def __init__(self, p_edb) -> None:
         """Initialize Modeler instance."""
         self._pedb = p_edb
-        self._primitives = []
+        self.__primitives = []
+        self.__primitives_by_layer = {}
 
     @property
     def _edb(self) -> Any:
@@ -219,7 +220,7 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` objects.
         """
-        return [self.__mapping_primitive_type(prim) for prim in self._pedb.layout.primitives]
+        return self._pedb.layout.primitives
 
     @property
     def polygons_by_layer(self) -> Dict[str, List[Primitive]]:
@@ -267,7 +268,7 @@ class Modeler(object):
             try:
                 lay = i.layer.name
                 if lay in _primitives_by_layer:
-                    _primitives_by_layer[lay].append(Primitive(self._pedb, i))
+                    _primitives_by_layer[lay].append(i)
             except (InvalidArgumentException, AttributeError):
                 pass
         return _primitives_by_layer
@@ -1475,7 +1476,11 @@ class Modeler(object):
             if isinstance(pins_by_name, str):
                 pins_by_name = [pins_by_name]
             p_inst = self._pedb.layout.padstack_instances
-            _pins = {pin.id: pin for pin in p_inst if pin.aedt_name in pins_by_aedt_name or pin.name in pins_by_name}
+            _pins = {
+                pin_id: pin
+                for pin_id, pin in p_inst.items()
+                if pin.aedt_name in pins_by_aedt_name or pin.name in pins_by_name
+            }
             if not pins:
                 pins = _pins
             else:

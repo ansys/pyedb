@@ -72,7 +72,7 @@ class EdbInit(object):
 
     @staticmethod
     def _signal_handler(signum=None, frame=None):
-        RpcSession.kill()
+        RpcSession.kill_all_instances()
 
     @property
     def db(self):

@@ -66,14 +66,22 @@ MATERIAL_NAME = "DummyMaterial"
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, legacy_edb_app_without_material):
-        self.edbapp = legacy_edb_app_without_material
-        self.definition = self.edbapp.edb_api.definition
+    def init(self, edb_examples):
+        self.edbapp = edb_examples.create_empty_edb()
+        self.definition = self.edbapp.core.definition
 
         # Remove dummy material if it exist
         material_def = self.definition.MaterialDef.FindByName(self.edbapp.active_db, MATERIAL_NAME)
         if not material_def.IsNull():
             material_def.Delete()
+
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
 
     def test_material_name(self):
         """Evaluate material properties."""
@@ -279,8 +287,8 @@ class TestClass:
     def test_materials_material_property_to_id(self):
         """Evaluate materials map between material property and id."""
         materials = Materials(self.edbapp)
-        permittivity_id = self.edbapp.edb_api.definition.MaterialPropertyId.Permittivity
-        invalid_id = self.edbapp.edb_api.definition.MaterialPropertyId.InvalidProperty
+        permittivity_id = self.edbapp.core.definition.MaterialPropertyId.Permittivity
+        invalid_id = self.edbapp.core.definition.MaterialPropertyId.InvalidProperty
 
         assert permittivity_id == materials.material_property_to_id("permittivity")
         assert invalid_id == materials.material_property_to_id("azertyuiop")
@@ -354,9 +362,9 @@ class TestClass:
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 1
         edbapp.materials.update_materials_from_sys_library()
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
-    def test_material_thermal_modifier(self):
+    def test_material_thermal_modifier(self, edb_examples):
         THERMAL_MODIFIER = {
             "basic_quadratic_temperature_reference": 21,
             "basic_quadratic_c1": 0.1,
@@ -367,7 +375,8 @@ class TestClass:
             "advanced_quadratic_lower_constant": 1.1,
             "advanced_quadratic_upper_constant": 1.1,
         }
-        material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, "new_matttt")
+        edbapp = edb_examples.get_si_verse()
+        material_def = self.definition.MaterialDef.Create(edbapp.active_db, "new_matttt")
         material = Material(self.edbapp, material_def)
         material.conductivity = 5.7e8
         assert material.set_thermal_modifier("conductivity", **THERMAL_MODIFIER)

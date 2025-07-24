@@ -36,12 +36,19 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, legacy_edb_app, local_scratch, target_path, target_path2, target_path4):
-        self.edbapp = legacy_edb_app
+    def init(self, local_scratch, target_path, target_path2, target_path4):
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path2 = target_path2
         self.target_path4 = target_path4
+
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def teardown_class(cls, request, edb_examples):
+        yield
+        # not elegant way to ensure the EDB grpc is closed after all tests
+        edb = edb_examples.create_empty_edb()
+        edb.close_edb()
 
     def test_create_dc_simulation(self):
         """Create Siwave DC simulation"""
@@ -80,7 +87,7 @@ class TestClass:
         assert sim_setup.build_simulation_project()
         assert edb.edbpath == os.path.join(self.local_scratch.path, "build.aedb")
 
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_build_hfss_project_from_config_file(self):
         """Build a simulation project from config file."""
@@ -96,7 +103,7 @@ class TestClass:
 
         sim_config = SimulationConfiguration(cfg_file)
         assert edbapp.build_simulation_project(sim_config)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_edb_configuration_siwave_build_ac_project(self):
         """Build ac simulation project."""
@@ -109,7 +116,7 @@ class TestClass:
         simconfig.mesh_freq = "40.25GHz"
         edbapp.build_simulation_project(simconfig)
         assert edbapp.siwave_ac_setups[simconfig.setup_name].advanced_settings.mesh_frequency == simconfig.mesh_freq
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_assign_hfss_extent_non_multiple_with_simconfig(self):
         """Build simulation project without multiple."""
@@ -154,7 +161,7 @@ class TestClass:
         assert not hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
         assert hfss_ext_info.DielectricExtentSize.Item1 == 0.0005
         assert not hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_assign_hfss_extent_multiple_with_simconfig(self):
         """Build simulation project with multiple."""
@@ -193,7 +200,7 @@ class TestClass:
         assert hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
         assert hfss_ext_info.DielectricExtentSize.Item1 == 0.0005
         assert hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_build_simulation_project(self):
         """Build a ready-to-solve simulation project."""
@@ -219,7 +226,7 @@ class TestClass:
         sim_setup.stop_freq = 20e9
         sim_setup.step_freq = 10e6
         assert edbapp.build_simulation_project(sim_setup)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_build_simulation_project_with_multiple_batch_solve_settings(self):
         """Build a ready-to-solve simulation project."""
@@ -257,7 +264,7 @@ class TestClass:
         assert port1.renormalize_z0 == (50.0, 0.0)
         assert not port1.get_pin_group_terminal_reference_pin()
         assert not port1.get_pad_edge_terminal_reference_pin()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_simconfig_built_custom_sballs_height(self):
         """Build simulation project from custom sballs JSON file."""
@@ -296,4 +303,4 @@ class TestClass:
         sim_config.import_json(cfg_file)
         assert edbapp.build_simulation_project(sim_config)
         assert edbapp.setups["Pyaedt_setup"].adaptive_settings.adapt_type == "kBroadband"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)

@@ -34,7 +34,6 @@ import pytest
 
 from pyedb.generic.design_types import Edb
 from pyedb.generic.filesystem import Scratch
-from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.misc import list_installed_ansysem
 
 local_path = os.path.dirname(os.path.realpath(__file__))
@@ -174,39 +173,7 @@ class EdbExamples:
             aedb = self._copy_file_folder_into_local_folder(edb_path)
         else:
             aedb = edb_path
-        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc, **kwargs)
-
-
-@pytest.fixture(scope="module")
-def add_legacy_edb(local_scratch):
-    def _method(project_name=None, subfolder=""):
-        if project_name:
-            example_folder = os.path.join(example_models_path, subfolder, project_name + ".aedb")
-            if os.path.exists(example_folder):
-                target_folder = os.path.join(local_scratch.path, project_name + ".aedb")
-                local_scratch.copyfolder(example_folder, target_folder)
-            else:
-                target_folder = os.path.join(local_scratch.path, project_name + ".aedb")
-        else:
-            target_folder = os.path.join(local_scratch.path, generate_unique_name("TestEdb") + ".aedb")
-        return Edb(
-            target_folder,
-            edbversion=desktop_version,
-        )
-
-    return _method
-
-
-@pytest.fixture(scope="class")
-def legacy_edb_app(add_legacy_edb):
-    app = add_legacy_edb(test_project_name, subfolder=test_subfolder)
-    return app
-
-
-@pytest.fixture(scope="class")
-def legacy_edb_app_without_material(add_legacy_edb):
-    app = add_legacy_edb()
-    return app
+        return Edb(edbpath=aedb, edbversion=desktop_version, grpc=self.grpc, **kwargs)
 
 
 @pytest.fixture(scope="class", autouse=True)

@@ -77,7 +77,7 @@ class EdbNets(CommonNets):
     @property
     def _edb(self):
         """ """
-        return self._pedb.edb_api
+        return self._pedb.core
 
     @property
     def _active_layout(self):

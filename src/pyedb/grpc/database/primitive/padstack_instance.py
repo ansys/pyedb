@@ -266,7 +266,7 @@ class PadstackInstance(GrpcPadstackInstance):
     @_em_properties.setter
     def _em_properties(self, em_prop):
         """Set EM properties"""
-        pid = self._pedb.edb_api.ProductId.Designer
+        pid = self._pedb.core.ProductId.Designer
         self.set_product_property(pid, 18, em_prop)
 
     @property
