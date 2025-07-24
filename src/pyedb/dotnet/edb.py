@@ -835,6 +835,60 @@ class Edb:
         self.edbpath = os.path.join(working_dir, aedb_name)
         return self.open_edb()
 
+    def import_vlctech_stackup(
+        self,
+        vlctech_file,
+        working_dir="",
+        make_edb_path="",
+        control_file=None,
+    ):
+        """Import a vlc.tech file and generate an ``edb.def`` file in the working directory containing the stackup.
+
+        Parameters
+        ----------
+        vlctech_file : str
+            Full path to the vlc.tech stackup file.
+        working_dir : str, optional
+            Directory in which to create the ``aedb`` folder. The name given to the AEDB file
+            is the same as the name of the board file.
+        make_edb_path: str, optional
+            Full path to the Ansys translator. The default is ``""``.
+        control_file : str, optional
+            Path to the XML control file.
+        tech_file : str, optional
+            Technology file. The file can be *.ircx, *.vlc.tech, or *.itf
+
+        Returns
+        -------
+        Full path to the AEDB file : str
+
+        """
+        if not working_dir:
+            working_dir = os.path.dirname(vlctech_file)
+        if make_edb_path and os.path.exists(make_edb_path):
+            command = make_edb_path
+        else:
+            command = os.path.join(self.base_path, r"helic\tools\raptorh\bin\make-edb")
+            if is_windows:
+                command += ".exe"
+        cmd_make_edb = [
+            command,
+            "-t",
+            "{}".format(vlctech_file),
+            "-o",
+            "{}".format(os.path.join(working_dir, "vlctech")),
+        ]
+        if control_file:
+            cmd_make_edb.append("-x", "{}".format(control_file))
+        subprocess.run(cmd_make_edb)
+        if not os.path.exists(os.path.join(working_dir, "vlctech.aedb")):
+            self.logger.error("Failed to create edb.")
+            return False
+        else:
+            self.logger.info("edb successfully created.")
+        self.edbpath = os.path.join(working_dir, "vlctech.aedb")
+        return self.open_edb()
+
     def export_to_ipc2581(self, ipc_path=None, units="MILLIMETER"):
         """Create an XML IPC2581 file from the active EDB.
 
