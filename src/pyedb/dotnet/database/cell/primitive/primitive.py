@@ -264,10 +264,10 @@ class Primitive(Connectable):
         """
         bbox = self.polygon_data._edb_object.GetBBox()
         return [
-            round(bbox.Item1.X.ToDouble(), 6),
-            round(bbox.Item1.Y.ToDouble(), 6),
-            round(bbox.Item2.X.ToDouble(), 6),
-            round(bbox.Item2.Y.ToDouble(), 6),
+            round(bbox.Item1.X.ToDouble(), 9),
+            round(bbox.Item1.Y.ToDouble(), 9),
+            round(bbox.Item2.X.ToDouble(), 9),
+            round(bbox.Item2.Y.ToDouble(), 9),
         ]
 
     def convert_to_polygon(self):
@@ -336,7 +336,7 @@ class Primitive(Connectable):
         list of float
         """
         if isinstance(point, (list, tuple)):
-            point = self._app.edb_api.geometry.point_data(self._app.edb_value(point[0]), self._app.edb_value(point[1]))
+            point = self._app.core.geometry.point_data(self._app.edb_value(point[0]), self._app.edb_value(point[1]))
 
         p0 = self.polygon_data._edb_object.GetClosestPoint(point)
         return [p0.X.ToDouble(), p0.Y.ToDouble()]
@@ -540,7 +540,7 @@ class Primitive(Connectable):
         -------
         list of float
         """
-        if isinstance(point, self._app.edb_api.geometry.geometry.PointData):
+        if isinstance(point, self._app.core.geometry.geometry.PointData):
             point = [point.X.ToDouble(), point.Y.ToDouble()]
         dist = 1e12
         out = None
@@ -821,7 +821,7 @@ class Primitive(Connectable):
             r"$end 'EM properties'\n"
         )
 
-        pid = self._pedb.edb_api.ProductId.Designer
+        pid = self._pedb.core.ProductId.Designer
         _, p = self._edb_object.GetProductProperty(pid, 18, "")
         if p:
             return p
@@ -831,7 +831,7 @@ class Primitive(Connectable):
     @_em_properties.setter
     def _em_properties(self, em_prop):
         """Set EM properties"""
-        pid = self._pedb.edb_api.ProductId.Designer
+        pid = self._pedb.core.ProductId.Designer
         self._edb_object.SetProductProperty(pid, 18, em_prop)
 
     @property

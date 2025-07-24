@@ -23,7 +23,7 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
-from typing import Union
+from typing import Dict, Union
 
 from ansys.edb.core.layout.layout import Layout as GrpcLayout
 import ansys.edb.core.primitive.bondwire
@@ -62,6 +62,8 @@ class Layout(GrpcLayout):
     def __init__(self, pedb):
         super().__init__(pedb.active_cell._Cell__stub.GetLayout(pedb.active_cell.msg))
         self._pedb = pedb
+        self.__primitives = []
+        self.__padstack_instances = {}
 
     @property
     def cell(self):
@@ -73,21 +75,22 @@ class Layout(GrpcLayout):
 
     @property
     def primitives(self) -> list[any]:
-        prims = []
-        for prim in super().primitives:
+        primitives = super().primitives
+        self.__primitives = []
+        for prim in primitives:
             if isinstance(prim, ansys.edb.core.primitive.path.Path):
-                prims.append(Path(self._pedb, prim))
+                self.__primitives.append(Path(self._pedb, prim))
             elif isinstance(prim, ansys.edb.core.primitive.polygon.Polygon):
-                prims.append(Polygon(self._pedb, prim))
+                self.__primitives.append(Polygon(self._pedb, prim))
             elif isinstance(prim, ansys.edb.core.primitive.padstack_instance.PadstackInstance):
-                prims.append(PadstackInstance(self._pedb, prim))
+                self.__primitives.append(PadstackInstance(self._pedb, prim))
             elif isinstance(prim, ansys.edb.core.primitive.rectangle.Rectangle):
-                prims.append(Rectangle(self._pedb, prim))
+                self.__primitives.append(Rectangle(self._pedb, prim))
             elif isinstance(prim, ansys.edb.core.primitive.circle.Circle):
-                prims.append(Circle(self._pedb, prim))
+                self.__primitives.append(Circle(self._pedb, prim))
             elif isinstance(prim, ansys.edb.core.primitive.bondwire.Bondwire):
-                prims.append(Bondwire(self._pedb, prim))
-        return prims
+                self.__primitives.append(Bondwire(self._pedb, prim))
+        return self.__primitives
 
     @property
     def terminals(self) -> list[any]:
@@ -195,11 +198,12 @@ class Layout(GrpcLayout):
         return [DifferentialPair(self._pedb, i) for i in self._pedb.active_cell.layout.differential_pairs]
 
     @property
-    def padstack_instances(self) -> list[PadstackInstance]:
+    def padstack_instances(self) -> Dict[int, PadstackInstance]:
         """Get all padstack instances in a list."""
-        return [PadstackInstance(self._pedb, i) for i in self._pedb.active_cell.layout.padstack_instances]
+        pad_stack_inst = super().padstack_instances
+        self.__padstack_instances = {i.edb_uid: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
+        return self.__padstack_instances
 
-    #
     @property
     def voltage_regulators(self) -> list[VoltageRegulator]:
         """Voltage regulators.

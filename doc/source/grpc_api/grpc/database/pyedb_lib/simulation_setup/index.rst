@@ -23,4 +23,5 @@ This section describes EDB simulation setup classes.
    raptor_x_simulation_setup
    siwave_dcir_simulation_setup
    siwave_simulation_setup
+   siwave_cpa_simulation_setup
    sweep_data

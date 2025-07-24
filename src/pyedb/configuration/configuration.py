@@ -27,14 +27,14 @@ import warnings
 
 import toml
 
+from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
-from pyedb.dotnet.database.definition.package_def import PackageDef
 
 
 class Configuration:
     """Enables export and import of a JSON configuration file that can be applied to a new or existing design."""
 
-    def __init__(self, pedb):
+    def __init__(self, pedb: Edb):
         self._pedb = pedb
 
         self._components = self._pedb.components.instances
@@ -42,6 +42,11 @@ class Configuration:
         self._s_parameter_library = ""
         self._spice_model_library = ""
         self.cfg_data = CfgData(self._pedb)
+
+    def __apply_with_logging(self, label: str, func):
+        start = datetime.now()
+        func()
+        self._pedb.logger.info(f"{label} finished. Time lapse {datetime.now() - start}")
 
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
         """Import configuration settings from a configure file.
@@ -116,79 +121,33 @@ class Configuration:
             self.cfg_data.general.apply()
 
         # Configure boundary settings
-        now = datetime.now()
         if self.cfg_data.boundaries:
-            self.cfg_data.boundaries.apply()
-        self._pedb.logger.info(f"Updating boundaries finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+            self.__apply_with_logging("Updating boundaries", self.cfg_data.boundaries.apply)
 
-        # Configure nets
         if self.cfg_data.nets:
-            self.cfg_data.nets.apply()
-        self._pedb.logger.info(f"Updating nets finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+            self.__apply_with_logging("Updating nets", self.cfg_data.nets.apply)
 
-        # Configure components
-        self.cfg_data.components.apply()
-        self._pedb.logger.info(f"Updating components finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+        self.__apply_with_logging("Updating components", self.cfg_data.components.apply)
+        self.__apply_with_logging("Creating pin groups", self.cfg_data.pin_groups.apply)
+        self.__apply_with_logging("Placing sources", self.cfg_data.sources.apply)
+        self.__apply_with_logging("Creating setups", self.cfg_data.setups.apply)
 
-        # Configure pin groups
-        self.cfg_data.pin_groups.apply()
-        self._pedb.logger.info(f"Creating pin groups finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+        self.__apply_with_logging("Applying materials", self.apply_materials)
+        self.__apply_with_logging("Updating stackup", self.apply_stackup)
 
-        # Configure sources
-        self.cfg_data.sources.apply()
-        self._pedb.logger.info(f"Placing sources finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Configure setup
-        self.cfg_data.setups.apply()
-        self._pedb.logger.info(f"Creating setups finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Configure stackup
-        self.configuration_stackup()
-        self._pedb.logger.info(f"Updating stackup finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Configure padstacks
         if self.cfg_data.padstacks:
-            self.cfg_data.padstacks.apply()
-        self._pedb.logger.info(f"Applying padstacks finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+            self.__apply_with_logging("Applying padstacks", self.cfg_data.padstacks.apply)
 
-        # Configure S-parameter
-        self.cfg_data.s_parameters.apply()
-        self._pedb.logger.info(f"Applying S-parameters finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+        self.__apply_with_logging("Applying S-parameters", self.cfg_data.s_parameters.apply)
 
-        # Configure SPICE models
         for spice_model in self.cfg_data.spice_models:
-            spice_model.apply()
-        self._pedb.logger.info(f"Assigning Spice models finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+            self.__apply_with_logging(f"Assigning Spice model {spice_model}", spice_model.apply)
 
-        # Configure package definitions
-        self.cfg_data.package_definitions.apply()
-        self._pedb.logger.info(f"Applying package definitions finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Modeler
-        self.apply_modeler()
-
-        # Configure ports
-        self.cfg_data.ports.apply()
-        self._pedb.logger.info(f"Placing ports finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Configure probes
-        self.cfg_data.probes.apply()
-        self._pedb.logger.info(f"Placing probes finished. Time lapse {datetime.now() - now}")
-
-        # Configure operations
-        self.cfg_data.operations.apply()
+        self.__apply_with_logging("Applying package definitions", self.cfg_data.package_definitions.apply)
+        self.__apply_with_logging("Applying modeler", self.apply_modeler)
+        self.__apply_with_logging("Placing ports", self.cfg_data.ports.apply)
+        self.__apply_with_logging("Placing probes", self.cfg_data.probes.apply)
+        self.__apply_with_logging("Applying operations", self.cfg_data.operations.apply)
 
         return True
 
@@ -292,130 +251,157 @@ class Configuration:
             i.delete()
 
     def apply_variables(self):
+        """Set variables into database."""
         inst = self.cfg_data.variables
         for i in inst.variables:
             if i.name.startswith("$"):
-                self._pedb.add_project_variable(i.name, i.value)
+                self._pedb.add_project_variable(i.name, i.value, i.description)
             else:
-                self._pedb.add_design_variable(i.name, i.value)
+                self._pedb.add_design_variable(i.name, i.value, description=i.description)
 
-    def configuration_stackup(self):
+    def get_variables(self):
+        """Retrieve variables from database."""
+        self.cfg_data.variables.variables = []
+        for name, obj in self._pedb.design_variables.items():
+            self.cfg_data.variables.add_variable(name, obj.value_string, obj.description)
+        for name, obj in self._pedb.project_variables.items():
+            self.cfg_data.variables.add_variable(name, obj.value_string, obj.description)
+
+    def apply_materials(self):
+        """Apply material settings to the current design"""
+        cfg_stackup = self.cfg_data.stackup
+        if len(cfg_stackup.materials):
+            materials_in_db = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
+            for mat_in_cfg in cfg_stackup.materials:
+                if mat_in_cfg.name.lower() in materials_in_db:
+                    self._pedb.materials.delete_material(materials_in_db[mat_in_cfg.name.lower()])
+
+                attrs = mat_in_cfg.model_dump(exclude_none=True)
+                mat = self._pedb.materials.add_material(**attrs)
+
+                for i in attrs.get("thermal_modifiers", []):
+                    mat.set_thermal_modifier(**i.to_dict())
+
+    def get_materials(self):
+        """Retrieve materials from the current design.
+
+        Parameters
+        ----------
+        append: bool, optional
+            If `True`, append materials to the current material list.
+        """
+
+        self.cfg_data.stackup.materials = []
+        for name, mat in self._pedb.materials.materials.items():
+            self.cfg_data.stackup.add_material(**mat.to_dict())
+
+    def apply_stackup(self):
+        layers = self.cfg_data.stackup.layers
+        input_signal_layers = [i for i in layers if i.type.lower() == "signal"]
+        if len(input_signal_layers) == 0:
+            return
+        else:  # Create materials with default properties used in stackup but not defined
+            materials = [m.name for m in self.cfg_data.stackup.materials]
+            for i in self.cfg_data.stackup.layers:
+                if i.type == "signal":
+                    if i.material not in materials:
+                        self.cfg_data.stackup.add_material(
+                            name=i.material, **self._pedb.materials.default_conductor_property_values
+                        )
+
+                    if i.fill_material not in materials:
+                        self.cfg_data.stackup.add_material(
+                            name=i.material, **self._pedb.materials.default_dielectric_property_values
+                        )
+
+                elif i.type == "dielectric":
+                    if i.material not in materials:
+                        self.cfg_data.stackup.add_material(
+                            name=i.material, **self._pedb.materials.default_dielectric_property_values
+                        )
+
+        if len(self._pedb.stackup.signal_layers) == 0:
+            self.__create_stackup()
+        elif not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
+            raise Exception(f"Input signal layer count do not match.")
+        else:
+            self.__update_stackup()
+
+    def __create_stackup(self):
+        layers_ = list()
+        layers_.extend(self.cfg_data.stackup.layers)
+        for l_attrs in layers_:
+            attrs = l_attrs.model_dump(exclude_none=True)
+            self._pedb.stackup.add_layer_bottom(**attrs)
+
+    def __update_stackup(self):
+        """Apply layer settings to the current design"""
+
+        # After import stackup, padstacks lose their definitions. They need to be fixed after loading stackup
+        # step 1, archive padstack definitions
         temp_pdef_data = {}
         for pdef_name, pdef in self._pedb.padstacks.definitions.items():
             pdef_edb_object = pdef._padstack_def_data
             temp_pdef_data[pdef_name] = pdef_edb_object
-
+        # step 2, archive padstack instance layer map
         temp_p_inst_layer_map = {}
         for p_inst in self._pedb.layout.padstack_instances:
             temp_p_inst_layer_map[p_inst.id] = p_inst._edb_object.GetLayerMap()
 
-        self.cfg_data.stackup.apply()
+        # ----------------------------------------------------------------------
+        # Apply stackup
+        layers = list()
+        layers.extend(self.cfg_data.stackup.layers)
 
+        removal_list = []
+        lc_signal_layers = []
+        for name, obj in self._pedb.stackup.all_layers.items():
+            if obj.type == "dielectric":
+                removal_list.append(name)
+            elif obj.type == "signal":
+                lc_signal_layers.append(obj.id)
+        for l in removal_list:
+            self._pedb.stackup.remove_layer(l)
+
+        # update all signal layers
+        id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
+        signal_idx = 0
+        for l in layers:
+            if l.type == "signal":
+                layer_id = lc_signal_layers[signal_idx]
+                layer_name = id_name[layer_id]
+                attrs = l.model_dump(exclude_none=True)
+                self._pedb.stackup.layers[layer_name].update(**attrs)
+                signal_idx = signal_idx + 1
+
+        # add all dielectric layers. Dielectric layers must be added last. Otherwise,
+        # dielectric layer will occupy signal and document layer id.
+        l = layers.pop(0)
+        if l.type == "signal":
+            prev_layer_clone = self._pedb.stackup.layers[l.name]
+        else:
+            attrs = l.model_dump(exclude_none=True)
+            prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
+        for idx, l in enumerate(layers):
+            if l.type == "dielectric":
+                attrs = l.model_dump(exclude_none=True)
+                prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **attrs)
+            elif l.type == "signal":
+                prev_layer_clone = self._pedb.stackup.layers[l.name]
+
+        # ----------------------------------------------------------------------
+        # restore padstack definitions
         for pdef_name, pdef_data in temp_pdef_data.items():
             pdef = self._pedb.padstacks.definitions[pdef_name]
             pdef._padstack_def_data = pdef_data
-
+        # restore padstack instance layer map
         for p_inst in self._pedb.layout.padstack_instances:
             p_inst._edb_object.SetLayerMap(temp_p_inst_layer_map[p_inst.id])
 
-    def _load_stackup(self):
-        """Imports stackup information from json."""
-        data = self.data["stackup"]
-        materials = data.get("materials")
-
-        if materials:
-            edb_materials = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
-            for mat in materials:
-                name = mat["name"].lower()
-                if name in edb_materials:
-                    self._pedb.materials.delete_material(edb_materials[name])
-            for mat in materials:
-                self._pedb.materials.add_material(**mat)
-
-        layers = data.get("layers")
-
-        if layers:
-            input_signal_layers = [i for i in layers if i["type"].lower() == "signal"]
-            if not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
-                self._pedb.logger.error("Input signal layer count do not match.")
-                return False
-
-            removal_list = []
-            lc_signal_layers = []
-            for name, obj in self._pedb.stackup.all_layers.items():
-                if obj.type == "dielectric":
-                    removal_list.append(name)
-                elif obj.type == "signal":
-                    lc_signal_layers.append(obj.id)
-            for l in removal_list:
-                self._pedb.stackup.remove_layer(l)
-
-            # update all signal layers
-            id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
-            signal_idx = 0
-            for l in layers:
-                if l["type"] == "signal":
-                    layer_id = lc_signal_layers[signal_idx]
-                    layer_name = id_name[layer_id]
-                    self._pedb.stackup.layers[layer_name].update(**l)
-                    signal_idx = signal_idx + 1
-
-            # add all dielectric layers. Dielectric layers must be added last. Otherwise,
-            # dielectric layer will occupy signal and document layer id.
-            prev_layer_clone = None
-            l = layers.pop(0)
-            if l["type"] == "signal":
-                prev_layer_clone = self._pedb.stackup.layers[l["name"]]
-            else:
-                prev_layer_clone = self._pedb.stackup.add_layer_top(**l)
-            for idx, l in enumerate(layers):
-                if l["type"] == "dielectric":
-                    prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **l)
-                elif l["type"] == "signal":
-                    prev_layer_clone = self._pedb.stackup.layers[l["name"]]
-
-    def _load_package_def(self):
-        """Imports package definition information from JSON."""
-        comps = self._pedb.components.instances
-        for pkgd in self.data["package_definitions"]:
-            name = pkgd["name"]
-            if name in self._pedb.definitions.package:
-                self._pedb.definitions.package[name].delete()
-            extent_bounding_box = pkgd.get("extent_bounding_box", None)
-            if extent_bounding_box:
-                package_def = PackageDef(self._pedb, name=name, extent_bounding_box=extent_bounding_box)
-            else:
-                package_def = PackageDef(self._pedb, name=name, component_part_name=pkgd["component_definition"])
-            package_def.maximum_power = pkgd["maximum_power"]
-            package_def.therm_cond = pkgd["therm_cond"]
-            package_def.theta_jb = pkgd["theta_jb"]
-            package_def.theta_jc = pkgd["theta_jc"]
-            package_def.height = pkgd["height"]
-
-            heatsink = pkgd.get("heatsink", None)
-            if heatsink:
-                package_def.set_heatsink(
-                    heatsink["fin_base_height"],
-                    heatsink["fin_height"],
-                    heatsink["fin_orientation"],
-                    heatsink["fin_spacing"],
-                    heatsink["fin_thickness"],
-                )
-
-            comp_def_name = pkgd["component_definition"]
-            comp_def = self._pedb.definitions.component[comp_def_name]
-
-            comp_list = dict()
-            if pkgd["apply_to_all"]:
-                comp_list.update(
-                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in pkgd["components"]}
-                )
-            else:
-                comp_list.update(
-                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes in pkgd["components"]}
-                )
-            for _, i in comp_list.items():
-                i.package_def = name
+    def get_stackup(self):
+        self.cfg_data.stackup.layers = []
+        for name, obj in self._pedb.stackup.all_layers.items():
+            self.cfg_data.stackup.add_layer_at_bottom(**obj.properties)
 
     def get_data_from_db(self, **kwargs):
         """Get configuration data from layout.
@@ -429,11 +415,17 @@ class Configuration:
 
         """
         self._pedb.logger.info("Getting data from layout database.")
+        self.get_variables()
+        self.get_materials()
+        self.get_stackup()
+
         data = {}
         if kwargs.get("general", False):
             data["general"] = self.cfg_data.general.get_data_from_db()
+        if kwargs.get("variables", False):
+            data.update(self.cfg_data.variables.model_dump(exclude_none=True))
         if kwargs.get("stackup", False):
-            data["stackup"] = self.cfg_data.stackup.get_data_from_db()
+            data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True)
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):
@@ -495,6 +487,7 @@ class Configuration:
         s_parameters=True,
         padstacks=True,
         general=True,
+        variables=True,
     ):
         """Export the configuration data from layout to a file.
 
@@ -528,6 +521,8 @@ class Configuration:
             Whether to export padstacks.
         general : bool
             Whether to export general information.
+        variables : bool
+            Whether to export variable.
         Returns
         -------
         bool
@@ -546,6 +541,7 @@ class Configuration:
             s_parameters=s_parameters,
             padstacks=padstacks,
             general=general,
+            variables=variables,
         )
 
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)

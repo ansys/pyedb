@@ -23,6 +23,8 @@
 
 from ansys.edb.core.geometry.arc_data import ArcData as GrpcArcData
 
+from pyedb.grpc.database.utility.value import Value
+
 
 class ArcData(GrpcArcData):
     """Class managing ArcData."""
@@ -42,7 +44,7 @@ class ArcData(GrpcArcData):
             [x value, y value]
 
         """
-        return [self.center.x.value, self.center.y.value]
+        return [Value(super().center.x), Value(super().center.y)]
 
     @property
     def start(self) -> list[float]:
@@ -54,7 +56,7 @@ class ArcData(GrpcArcData):
             [x value, y value]
 
         """
-        return [self.start.x.value, self.start.y.value]
+        return [Value(super().start.x), Value(super().start.y)]
 
     @property
     def end(self) -> list[float]:
@@ -66,7 +68,7 @@ class ArcData(GrpcArcData):
             [x value, y value]
 
         """
-        return [self.end.x.value, self.end.y.value]
+        return [Value(self.end.x), Value(self.end.y)]
 
     @property
     def mid_point(self) -> list[float]:
@@ -78,7 +80,7 @@ class ArcData(GrpcArcData):
             [x value, y value]
 
         """
-        return [self.midpoint.x.value, self.midpoint.y.value]
+        return [Value(self.midpoint.x), Value(self.midpoint.y)]
 
     @property
     def points(self) -> list[list[float]]:
@@ -90,4 +92,4 @@ class ArcData(GrpcArcData):
             [[x value, y value]]
 
         """
-        return [[pt.x.value, pt.y.value] for pt in self.points]
+        return [[Value(pt.x), Value(pt.y)] for pt in self.points]

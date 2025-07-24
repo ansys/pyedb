@@ -25,6 +25,7 @@ from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 
 from pyedb.grpc.database.geometry.arc_data import ArcData
+from pyedb.grpc.database.utility.value import Value
 
 
 class PolygonData(GrpcPolygonData):
@@ -65,7 +66,7 @@ class PolygonData(GrpcPolygonData):
             X upper right corner, Y upper right corner].
         """
         bbox = self.bbox()
-        return [bbox[0].x.value, bbox[0].xyvalue, bbox[1].x.value, bbox[1].y.value]
+        return [Value(bbox[0].x), Value(bbox[0].y), Value(bbox[1].x), Value(bbox[1].y)]
 
     @property
     def arcs(self) -> list[ArcData]:
@@ -86,7 +87,7 @@ class PolygonData(GrpcPolygonData):
         -------
         list[list[float]]
         """
-        return [[i.x.value, i.y.value] for i in list(self.points)]
+        return [[Value(i.x), Value(i.y)] for i in list(self.points)]
 
     def create_from_points(self, points, closed=True):
         list_of_point_data = []

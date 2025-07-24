@@ -33,12 +33,12 @@ from ansys.edb.core.primitive.padstack_instance import (
 from ansys.edb.core.terminal.pin_group_terminal import (
     PinGroupTerminal as GrpcPinGroupTerminal,
 )
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
+from pyedb.grpc.database.utility.value import Value
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -266,7 +266,7 @@ class PadstackInstance(GrpcPadstackInstance):
     @_em_properties.setter
     def _em_properties(self, em_prop):
         """Set EM properties"""
-        pid = self._pedb.edb_api.ProductId.Designer
+        pid = self._pedb.core.ProductId.Designer
         self.set_product_property(pid, 18, em_prop)
 
     @property
@@ -503,9 +503,9 @@ class PadstackInstance(GrpcPadstackInstance):
         position = self.get_position_and_rotation()
         if self.component:
             out2 = self.component.transform.transform_point(GrpcPointData(position[:2]))
-            self._position = [round(out2[0].value, 6), round(out2[1].value, 6)]
+            self._position = [Value(out2[0]), Value(out2[1])]
         else:
-            self._position = [round(pt.value, 6) for pt in position[:2]]
+            self._position = [Value(pt) for pt in position[:2]]
         return self._position
 
     @position.setter
@@ -513,12 +513,12 @@ class PadstackInstance(GrpcPadstackInstance):
         pos = []
         for v in value:
             if isinstance(v, (float, int, str)):
-                pos.append(GrpcValue(v, self._pedb.active_cell))
+                pos.append(Value(v, self._pedb.active_cell))
             else:
                 pos.append(v)
         point_data = GrpcPointData(pos[0], pos[1])
         self.set_position_and_rotation(
-            x=point_data.x, y=point_data.y, rotation=GrpcValue(self.rotation, self._pedb.active_cell)
+            x=point_data.x, y=point_data.y, rotation=Value(self.rotation, self._pedb.active_cell)
         )
 
     @property
@@ -530,7 +530,7 @@ class PadstackInstance(GrpcPadstackInstance):
         float
             Rotatation value for the padstack instance.
         """
-        return self.get_position_and_rotation()[-1].value
+        return Value(self.get_position_and_rotation()[-1])
 
     @property
     def name(self) -> str:
@@ -714,8 +714,8 @@ class PadstackInstance(GrpcPadstackInstance):
         """
         back_drill = super().get_back_drill_by_layer(from_bottom)
         layer = back_drill[0].name
-        offset = round(back_drill[1].value, 9)
-        diameter = round(back_drill[2].value, 9)
+        offset = Value(back_drill[1])
+        diameter = Value(back_drill[2])
         return layer, offset, diameter
 
     def get_back_drill_by_depth(self, from_bottom=True) -> tuple[float, float]:
@@ -730,8 +730,8 @@ class PadstackInstance(GrpcPadstackInstance):
         tuple (drill_depth, drill_diameter) (float, float)
         """
         back_drill = super().get_back_drill_by_depth(from_bottom)
-        drill_depth = back_drill[0].value
-        drill_diameter = back_drill[1].value
+        drill_depth = Value(back_drill[0])
+        drill_diameter = Value(back_drill[1])
         return drill_depth, drill_diameter
 
     def set_back_drill_by_depth(self, drill_depth, diameter, from_bottom=True):
@@ -747,7 +747,7 @@ class PadstackInstance(GrpcPadstackInstance):
             Default value is `True`.
         """
         super().set_back_drill_by_depth(
-            drill_depth=GrpcValue(drill_depth), diameter=GrpcValue(diameter), from_bottom=from_bottom
+            drill_depth=Value(drill_depth), diameter=Value(diameter), from_bottom=from_bottom
         )
 
     def set_back_drill_by_layer(self, drill_to_layer, offset, diameter, from_bottom=True):
@@ -768,8 +768,8 @@ class PadstackInstance(GrpcPadstackInstance):
             drill_to_layer = self._pedb.stackup.layers[drill_to_layer]
         super().set_back_drill_by_layer(
             drill_to_layer=drill_to_layer,
-            offset=GrpcValue(offset),
-            diameter=GrpcValue(diameter),
+            offset=Value(offset),
+            diameter=Value(diameter),
             from_bottom=from_bottom,
         )
 
@@ -812,8 +812,8 @@ class PadstackInstance(GrpcPadstackInstance):
         List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             List of the voids that include this padstack instance.
         """
-        x_pos = GrpcValue(self.position[0])
-        y_pos = GrpcValue(self.position[1])
+        x_pos = Value(self.position[0])
+        y_pos = Value(self.position[1])
         point_data = GrpcPointData([x_pos, y_pos])
 
         voids = []
@@ -1068,7 +1068,7 @@ class PadstackInstance(GrpcPadstackInstance):
                 if point.is_arc:
                     continue
                 else:
-                    points.append([point.x.value, point.y.value])
+                    points.append([Value(point.x), Value(point.y)])
             xpoly, ypoly = zip(*points)
             polygon = [list(xpoly), list(ypoly)]
             rectangles = GeometryOperators.find_largest_rectangle_inside_polygon(
@@ -1086,7 +1086,7 @@ class PadstackInstance(GrpcPadstackInstance):
         for point in path.points:
             if self.component:
                 p_transf = self.component.transform.transform_point(point)
-                new_rect.append([p_transf.x.value, p_transf.y.value])
+                new_rect.append([Value(p_transf.x), Value(p_transf.y)])
         if return_points:
             return new_rect
         else:

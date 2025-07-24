@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Union
+from typing import Dict, List, Optional, Union
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 
@@ -29,11 +29,11 @@ from pyedb.grpc.database.definition.package_def import PackageDef
 
 
 class Definitions:
-    def __init__(self, pedb):
+    def __init__(self, pedb) -> None:
         self._pedb = pedb
 
     @property
-    def component(self) -> dict[str, ComponentDef]:
+    def component(self) -> Dict[str, ComponentDef]:
         """Component definitions
 
         Examples
@@ -47,7 +47,7 @@ class Definitions:
         return {l.name: ComponentDef(self._pedb, l) for l in self._pedb.active_db.component_defs}
 
     @property
-    def package(self) -> dict[str, PackageDef]:
+    def package(self) -> Dict[str, PackageDef]:
         """Package definitions.
 
         Examples
@@ -60,7 +60,9 @@ class Definitions:
         """
         return {l.name: PackageDef(self._pedb, l) for l in self._pedb.active_db.package_defs}
 
-    def add_package_def(self, name, component_part_name=None, boundary_points=None) -> Union[PackageDef, bool]:
+    def add_package_def(
+        self, name: str, component_part_name: Optional[str] = None, boundary_points: Optional[List[List[float]]] = None
+    ) -> Union[PackageDef, bool]:
         """Add a package definition.
 
         Parameters
