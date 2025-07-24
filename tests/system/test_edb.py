@@ -2150,3 +2150,11 @@ class TestClass:
             edbapp = Edb(grpc=config["use_grpc"], edbversion=config["desktopVersion"])
             layout_comp = edbapp.import_layout_component(out_file)
             assert not layout_comp.cell_instance.is_null
+
+    def test_import_vlctech(self, edb_examples):
+        from pyedb import Edb
+
+        vlctech_path = os.path.join(local_path, "example_models", "cad", "vlctech", "test.vlc.tech.typ")
+        edbapp = Edb()
+        assert edbapp.import_vlctech_stackup(vlctech_path)
+        assert os.path.exists(edbapp.edbpath) and edbapp.edbpath[-12:] == "vlctech.aedb"
