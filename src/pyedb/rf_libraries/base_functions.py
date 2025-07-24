@@ -31,7 +31,30 @@ from pyedb import Edb
 
 @dataclass
 class Substrate:
-    """Small helper to keep substrate parameters together."""
+    """
+    Small helper that groups the four basic substrate parameters used
+    throughout the library.
+
+    Parameters
+    ----------
+    h : float, default 100 µm
+        Substrate height in metres.
+    er : float, default 4.4
+        Relative permittivity.
+    tan_d : float, default 0
+        Loss tangent.
+    name : str, default "SUB"
+        Logical name used for layer creation.
+    size : tuple[float, float], default (1 mm, 1 mm)
+        (width, length) of the surrounding ground plane in metres.
+
+    Examples
+    --------
+    >>> sub = Substrate(h=1.6e-3, er=4.4, tan_d=0.02,
+    ...                 name="FR4", size=(10e-3, 15e-3))
+    >>> sub.h
+    0.0016
+    """
 
     h: float = 100e-6  # height (m)
     er: float = 4.4  # relative permittivity
@@ -42,22 +65,32 @@ class Substrate:
 
 class HatchGround:
     """
-    Create a board with a hatched copper ground plane.
+    Create a square demo board whose ground layer is made of an
+    orthogonal hatched copper pattern.  Any requested copper fill
+    ratio between 10 % and 90 % can be realised.
 
     Parameters
     ----------
-    pitch : float
-        Center-to-center distance of hatch bars [m].
-    width : float
+    pitch : float, default 17.07 mm
+        Centre-to-centre distance of the hatch bars [m].
+    width : float, default 5 mm
         Width of each copper bar [m].
-    fill_target : float
+    fill_target : float, default 50 %
         Desired copper area in percent (10 … 90).
-    board_size : float
-        Edge length of square demo board [m].
-    edb_path : str | None
-        Optional explicit EDB path.  If None, a unique temp folder is used.
-    edb_version : str
-        EDB/Siwave version string, e.g. "2024.1".
+    board_size : float, default 100 mm
+        Edge length of the square board [m].
+    layer_gnd : str, default "GND"
+        Name of the layer that receives the hatch pattern.
+
+    Examples
+    --------
+    >>> hatch = HatchGround(pitch=0.5e-3, width=0.2e-3,
+    ...                     fill_target=70, board_size=5e-3)
+    >>> edb = Edb("demo.aedb")
+    >>> hatch._edb = edb
+    >>> hatch.create()
+    >>> round(hatch.copper_fill_ratio, 1)
+    70.0
     """
 
     def __init__(
@@ -80,7 +113,15 @@ class HatchGround:
 
     @property
     def copper_fill_ratio(self) -> float:
-        """Return actual copper fill ratio in percent."""
+        """
+        Return the **actual** copper fill ratio in percent.
+
+        Returns
+        -------
+        float
+            Percentage of the board area that is copper after the hatch
+            has been generated.
+        """
         cu_area = self._edb.modeler.polygons[0].area()
         return 100.0 * cu_area / (self.board_size**2)
 
@@ -124,38 +165,48 @@ class HatchGround:
         self._edb.modeler.create_polygon(points, layer_name=self.layer_gnd, net_name="GND")
 
     def create(self) -> bool:
-        """Create the stack-up, outline and hatch pattern."""
+        """
+        Generate the stack-up, board outline and hatch pattern.
+
+        Returns
+        -------
+        bool
+            True when geometry has been created successfully.
+        """
         self._generate_hatch()
         return True
 
 
 class Meander:
     """
-    Fully-parametric meander line.
+    Fully-parametric micro-strip meander line.
 
     Parameters
     ----------
-    length : float
-        Total electrical length (m).  Default 5 mm.
-    width : float
-        Trace width (m).  Default 0.3 mm.
-    height : float
-        Meander vertical pitch (m).  Default 0.1 mm.
-    turns : int
-        Number of 180° bends.  Default 5.
-    layer : str
-        EDB layer name.
-    net : str
-        Net name.
+    pitch : float, default 1 mm
+        Vertical spacing between successive meander rows [m].
+    trace_width : float, default 0.3 mm
+        Width of the micro-strip [m].
+    amplitude : float, default 5 mm
+        Horizontal excursion of each U-turn [m].
+    num_turns : int, default 8
+        Number of 180° bends.
+    layer : str, default "TOP"
+        EDB metal layer.
+    net : str, default "SIG"
+        Net name assigned to the trace.
 
     Examples
     --------
-    >>> m = Meander(length=5e-3, width=0.3e-3, height=0.1e-3, turns=5,
-    ...             layer="TOP", net="SIG")
-    >>> edb = m.create("meander.aedb")
-    >>> print(m.analytical_z0)   # characteristic impedance (Ohm)
-    >>> print(m.electrical_length_deg(2e9))
-    >>> edb.close_edb()
+    >>> m = Meander(pitch=0.2e-3, trace_width=0.15e-3,
+    ...             amplitude=2e-3, num_turns=4)
+    >>> edb = Edb("meander.aedb")
+    >>> m._pedb = edb
+    >>> m.create()
+    >>> f"{m.analytical_z0:.1f} Ω"
+    '50.1 Ω'
+    >>> m.electrical_length_deg(1e9)
+    59.8
     """
 
     def __init__(
@@ -184,28 +235,29 @@ class Meander:
     @property
     def analytical_z0(self) -> float:
         """
-        Microstrip characteristic impedance using Hammerstad & Jensen.
+        Micro-strip characteristic impedance using the Hammerstad & Jensen
+        closed-form expression.
 
         Returns
         -------
         float
-            Z0 (Ohm)
+            Z0 in Ohm.
         """
         return 60 / math.sqrt(self.substrate.er) * math.log(5.98 * 1.6e-3 / (0.8 * self.trace_width + self.trace_width))
 
     def electrical_length_deg(self, freq: float) -> float:
         """
-        Electrical length in degrees at a given frequency.
+        Electrical length of the meander at the specified frequency.
 
         Parameters
         ----------
         freq : float
-            Frequency (Hz)
+            Frequency in Hz.
 
         Returns
         -------
         float
-            Phase (degrees)
+            Phase shift in degrees.
         """
         c = 299_792_458
         v = c / math.sqrt(self.substrate.er)
@@ -216,7 +268,15 @@ class Meander:
     # EDB creation
     # ------------------------------------------------------------------ #
     def create(self) -> bool:
-        """Create or open edb and return the Edb object."""
+        """
+        Draw the meander in the attached EDB cell and calculate its
+        physical length.
+
+        Returns
+        -------
+        bool
+            True on success.
+        """
 
         # Parameters
         self._pedb.add_design_variable("w", self.trace_width)  # trace width
@@ -244,30 +304,31 @@ class Meander:
 
 class MIMCapacitor:
     """
-    MIM capacitor using two parallel plates.
+    Metal–Insulator–Metal parallel-plate capacitor.
 
     Parameters
     ----------
-    area : float
-        Plate area (m²).  Default 0.1 mm².
-    gap : float
-        Dielectric thickness (m).  Default 1 µm.
-    er : float
-        Relative permittivity of dielectric.  Default 7.
-    layer_top : str
+    area : float, default 0.1 mm²
+        Plate area [m²].
+    gap : float, default 1 µm
+        Dielectric thickness between plates [m].
+    er : float, default 7
+        Relative permittivity of the dielectric.
+    layer_top : str, default "M1"
         Top plate layer.
-    layer_bottom : str
+    layer_bottom : str, default "M2"
         Bottom plate layer.
-    net : str
-        Net name.
+    net : str, default "RF"
+        Net name for both plates.
 
     Examples
     --------
-    >>> cap = MIMCapacitor(area=0.1e-6, gap=1e-6, er=7,
-    ...                    layer_top="M3", layer_bottom="M2", net="RF")
-    >>> edb = cap.create("mim.aedb")
-    >>> print(cap.capacitance_f)
-    >>> edb.close_edb()
+    >>> cap = MIMCapacitor(area=200e-12, gap=0.5e-6, er=4.1)
+    >>> edb = Edb("mim.aedb")
+    >>> cap._pedb = edb
+    >>> cap.create()
+    >>> f"{cap.capacitance_f*1e12:.2f} pF"
+    '1.45 pF'
     """
 
     def __init__(
@@ -291,17 +352,25 @@ class MIMCapacitor:
     @property
     def capacitance_f(self) -> float:
         """
-        Analytical capacitance.
+        Analytical parallel-plate capacitance.
 
         Returns
         -------
         float
-            Capacitance in Farads
+            Capacitance in Farads.
         """
         eps0 = 8.854e-12
         return eps0 * self.substrate.er * self.area / self.gap
 
     def create(self) -> bool:
+        """
+        Create the top plate, bottom plate and assign variables.
+
+        Returns
+        -------
+        bool
+            True on success.
+        """
         self._pedb["area"] = self.area
         self._pedb["gap"] = self.gap
         side = math.sqrt(self.area)
@@ -314,7 +383,48 @@ class MIMCapacitor:
 
 class SpiralInductor:
     """
-    Square spiral inductor with underpass.
+    Square spiral inductor with an optional under-pass bridge.
+
+    Parameters
+    ----------
+    turns : float, default 4.5
+        Number of half-turns (4.5 = 4 full turns + 1 half turn).
+    trace_width : float, default 20 µm
+        Width of the spiral trace.
+    spacing : float, default 12 µm
+        Gap between successive turns.
+    inner_diameter : float, default 60 µm
+        Side length of the innermost square.
+    layer : str, default "M1"
+        Layer on which the spiral is drawn.
+    bridge_layer : str, default "M2"
+        Layer used for the under-pass.
+    via_layer : str, default "M3"
+        Via layer connecting spiral end to the under-pass.
+    net : str, default "IN"
+        Net name.
+    inductor_center : tuple[float, float], default (0, 0)
+        Absolute centre coordinates of the structure.
+    via_size : float, default 25 µm
+        Side length of the square via pad.
+    bridge_width : float, default 12 µm
+        Width of the under-pass trace.
+    bridge_clearance : float, default 6 µm
+        Dielectric clearance under the bridge.
+    bridge_length : float, default 200 µm
+        Length of the under-pass beyond the via.
+    ground_layer : str, default "GND"
+        Layer on which the ground plane is drawn.
+
+    Examples
+    --------
+    >>> sp = SpiralInductor(turns=3.5, trace_width=25e-6,
+    ...                     inner_diameter=80e-6)
+    >>> edb = Edb("spiral.aedb")
+    >>> sp._pedb = edb
+    >>> sp.create()
+    >>> f"{sp.inductance_nh:.1f} nH"
+    '3.4 nH'
     """
 
     def __init__(
@@ -355,16 +465,14 @@ class SpiralInductor:
     @property
     def inductance_nh(self) -> float:
         """
-        Accurate inductance for the **square** spiral actually drawn by create().
-        Uses the improved Wheeler formula with square-layout coefficients.
+        Accurate inductance calculated with the improved Wheeler formula
+        for square spirals.
 
         Returns
         -------
         float
-            Inductance in nH
+            Inductance in nano-Henries.
         """
-        # 1. Geometry exactly as it is built in create()
-
         w = self.trace_width
         s = self.spacing
         N = self.turns
@@ -457,17 +565,37 @@ class SpiralInductor:
 
 class CPW:
     """
-    Coplanar waveguide.
+    Coplanar waveguide with side ground planes.
 
     Parameters
     ----------
-    length : float
-    width : float
-    gap : float
-    layer : str
-    ground_layer : str
-    net : str
-    substrate : Substrate
+    length : float, default 1 mm
+        Physical length of the line.
+    width : float, default 0.3 mm
+        Width of the centre conductor.
+    gap : float, default 0.1 mm
+        Gap between centre conductor and ground planes.
+    layer : str, default "TOP"
+        Layer on which the CPW is drawn.
+    ground_net : str, default "GND"
+        Net name for the ground planes.
+    ground_width : float, default 0.1 mm
+        Width of the side ground strips.
+    ground_layer : str, default "GND"
+        Layer for the underlying ground plane.
+    net : str, default "SIG"
+        Net name for the centre conductor.
+    substrate : Substrate, default 100 µm FR4
+        Substrate definition.
+
+    Examples
+    --------
+    >>> cpw = CPW(length=5e-3, width=0.4e-3, gap=0.2e-3)
+    >>> edb = Edb("cpw.aedb")
+    >>> cpw._pedb = edb
+    >>> cpw.create()
+    >>> f"{cpw.analytical_z0:.1f} Ω"
+    '46.5 Ω'
     """
 
     def __init__(
@@ -497,12 +625,13 @@ class CPW:
     @property
     def analytical_z0(self) -> float:
         """
-        CPW impedance, conformal mapping.
+        Characteristic impedance obtained with the conformal-mapping
+        formula for CPW.
 
         Returns
         -------
         float
-            Z0 (Ohm)
+            Z0 in Ohm.
         """
         a = self.width / 2
         b = a + self.gap
@@ -513,6 +642,14 @@ class CPW:
         return 30 * math.pi / math.sqrt(4.4) * k_ratio
 
     def create(self) -> bool:
+        """
+        Draw the centre strip, side grounds and bottom ground plane.
+
+        Returns
+        -------
+        bool
+            True on success.
+        """
         self._pedb["l"] = self.length
         self._pedb["w"] = self.width
         self._pedb["g"] = self.gap
@@ -547,15 +684,29 @@ class CPW:
 
 class RadialStub:
     """
-    Radial (fan) stub.
+    Radial (fan) open stub for RF matching.
 
     Parameters
     ----------
-    radius : float
-    angle_deg : float
-    width : float
-    layer : str
-    net : str
+    radius : float, default 500 µm
+        Radius of the fan [m].
+    angle_deg : float, default 60°
+        Opening angle of the sector.
+    width : float, default 0.2 mm
+        Width of the feeding micro-strip line [m].
+    layer : str, default "TOP"
+        Metal layer.
+    net : str, default "RF"
+        Net name.
+
+    Examples
+    --------
+    >>> stub = RadialStub(radius=1e-3, angle_deg=90)
+    >>> edb = Edb("radial.aedb")
+    >>> stub._pedb = edb
+    >>> stub.create()
+    >>> f"{stub.electrical_length_deg(2e9):.1f}°"
+    '108.0°'
     """
 
     def __init__(
@@ -578,15 +729,17 @@ class RadialStub:
     @property
     def electrical_length_deg(self, freq: float = 2e9) -> float:
         """
-        Electrical length (degrees) at a given frequency.
+        Electrical length of the radial stub at a given frequency.
 
         Parameters
         ----------
-        freq : float
+        freq : float, default 2 GHz
+            Frequency in Hz.
 
         Returns
         -------
         float
+            Phase shift in degrees contributed by the stub.
         """
         c = 299_792_458
         v = c / math.sqrt(self.substrate.er)
@@ -594,6 +747,14 @@ class RadialStub:
         return math.degrees(beta * self.radius)
 
     def create(self) -> bool:
+        """
+        Draw the fan-shaped polygon and the feeding line.
+
+        Returns
+        -------
+        bool
+            True on success.
+        """
         self._pedb["r"] = self.radius
         self._pedb["ang"] = self.angle_deg
         self._pedb["w"] = self.width
@@ -618,22 +779,33 @@ class RadialStub:
 
 class RatRace:
     """
-    180° rat-race coupler realised with discretised arcs.
+    180° rat-race (ring) hybrid coupler.
 
     Parameters
     ----------
-    z0 : float
-        Characteristic impedance of the ring (ohm).
-    freq : float
-        Centre frequency (Hz).
-    layer : str
-        Metal layer name.
-    net : str
+    z0 : float, default 50 Ω
+        Characteristic impedance of the ring.
+    freq : float, default 10 GHz
+        Centre frequency.
+    layer : str, default "TOP"
+        Layer on which the ring is drawn.
+    bottom_layer : str | None
+        Layer for the ground plane (if None, no ground is drawn).
+    net : str, default "RR"
         Net name.
-    width : float
-        Micro-strip width (m).
-    nr_segments : int
-        Number of straight segments used to approximate 90 ° of arc.
+    width : float, default 0.2 mm
+        Micro-strip width for the ring and port stubs.
+    nr_segments : int, default 32
+        Number of straight segments per 90° arc.
+
+    Examples
+    --------
+    >>> rr = RatRace(freq=5e9)
+    >>> edb = Edb("ratrace.aedb")
+    >>> rr._pedb = edb
+    >>> rr.create()
+    >>> f"{rr.circumference*1e3:.2f} mm"
+    '45.00 mm'
     """
 
     def __init__(
@@ -657,19 +829,30 @@ class RatRace:
         self.nr_segments = nr_segments
         self.substrate = Substrate()
 
-    # ------------------------------------------------------------------
-    # Helper properties
-    # ------------------------------------------------------------------
     @property
     def circumference(self) -> float:
-        """Electrical length = 1.5 λg."""
+        """
+        Physical circumference of the ring.
+
+        Returns
+        -------
+        float
+            Circumference in metres (1.5 guided wavelengths).
+        """
         c = 299_792_458
         v = c / math.sqrt(self.substrate.er)
         return 1.5 * v / self.freq
 
     @property
     def radius(self) -> float:
-        """Mean radius of the ring."""
+        """
+        Mean radius of the ring.
+
+        Returns
+        -------
+        float
+            Radius in metres.
+        """
         return self.circumference / (2 * math.pi)
 
     # ------------------------------------------------------------------
@@ -702,19 +885,23 @@ class RatRace:
     # Main creation routine
     # ------------------------------------------------------------------
     def create(self) -> bool:
+        """
+        Draw the discretised ring and four 50 Ω port stubs.
+
+        Returns
+        -------
+        bool
+            True on success.
+        """
         self._pedb["c"] = self.circumference
         self._pedb["r"] = self.radius
         self._pedb["w"] = self.width
 
-        # ----------------------------------------------------------------------
-        # 1. Geometry parameters
-        # ----------------------------------------------------------------------
         r = self.radius
         w = self.width
         stub_len = 1e-3  # 1 mm straight sections at the four ports
 
-        # ----------------------------------------------------------------------
-        # 2. Build the ring as four connected arcs
+        # Build the ring as four connected arcs
         # ----------------------------------------------------------------------
         # We go counter-clockwise starting at the right-hand port (0°, port 1).
         #
@@ -746,8 +933,7 @@ class RatRace:
             width=w,
         )
 
-        # ----------------------------------------------------------------------
-        # 3. Add the four 50 Ω port stubs
+        # Add the four 50 Ω port stubs
         # ----------------------------------------------------------------------
         # Angles of the ports on the ring
         port_angles = [0, 90, 180, 270]  # degrees
@@ -779,15 +965,45 @@ class RatRace:
 
 class InterdigitalCapacitor:
     """
-    Inter-digital capacitor with **comb-up / comb-down** fingers.
-    All dimensions are stored as EDB design variables so they can be
-    edited after import.
+    Inter-digitated comb capacitor with fully parametric fingers.
+
+    All dimensions are stored as native EDB variables so they remain
+    editable inside AEDT after the library cell is imported.
+
+    Parameters
+    ----------
+    fingers : int, default 8
+        Number of finger pairs.
+    finger_length : str, default "0.9 mm"
+        Length of each finger (string with units).
+    finger_width : str, default "0.08 mm"
+        Width of each finger.
+    gap : str, default "0.04 mm"
+        Gap between adjacent fingers.
+    comb_gap : str, default "0.06 mm"
+        Gap between the two combs at the open end.
+    bus_width : str, default "0.25 mm"
+        Width of the top/bottom bus bars.
+    layer : str, default "TOP"
+        Layer on which the capacitor is drawn.
+    net_a : str, default "PORT1"
+        Net for the bottom comb.
+    net_b : str, default "PORT2"
+        Net for the top comb.
+
+    Examples
+    --------
+    >>> idc = InterdigitalCapacitor(fingers=10,
+    ...                             finger_length="0.5mm",
+    ...                             gap="0.03mm")
+    >>> edb = Edb("idc.aedb")
+    >>> idc._pedb = edb
+    >>> idc.create()
+    >>> f"{idc.capacitance_pf:.2f} pF"
+    '0.74 pF'
     """
 
-    # fmt: off
     VAR_PREFIX = "IDC"  # prefix for every EDB variable
-
-    # fmt: on
 
     def __init__(
         self,
@@ -808,9 +1024,6 @@ class InterdigitalCapacitor:
         self.net_b = net_b
         self.substrate = Substrate()
 
-        # ------------------------------------------------------
-        # 1.  Register every dimension as an EDB variable
-        # ------------------------------------------------------
         pfx = self.VAR_PREFIX
         self._vars = {
             "fingers": int(fingers),  # integer is fine
@@ -825,20 +1038,15 @@ class InterdigitalCapacitor:
             # Use design variable (no $ prefix) -> stored in cell
             self._pedb[var_name] = v
 
-        # ------------------------------------------------------------------
-        #  Live capacitance (pF) – tracks any variable change
-        # ------------------------------------------------------------------
-
     @property
     def capacitance_pf(self) -> float:
         """
-        Rough lumped parallel-plate estimate:
-        C = ε₀ εᵣ  N  L  W  /  g
-        where
-            N = total finger pairs  = fingers
-            L = finger_length
-            W = finger_width
-            g = gap
+        Quick parallel-plate estimate of the total capacitance.
+
+        Returns
+        -------
+        float
+            Capacitance in pico-Farads.
         """
         pfx = self.VAR_PREFIX
         eps0 = 8.854e-12
@@ -849,10 +1057,15 @@ class InterdigitalCapacitor:
         g = self._pedb[f"{pfx}_gap"]
         return (eps0 * er * N * L * W / g) * 1e12
 
-    # ----------------------------------------------------------
-    # 2.  Draw the geometry using the EDB variables
-    # ----------------------------------------------------------
     def create(self) -> bool:
+        """
+        Draw the two bus bars and interleaved fingers.
+
+        Returns
+        -------
+        bool
+            True on success.
+        """
         if self._pedb is None:
             raise ValueError("No EDB cell provided.")
 
@@ -860,9 +1073,6 @@ class InterdigitalCapacitor:
         pitch = f"({pfx}_finger_width + {pfx}_gap)"
         total_width = f"(2*{pfx}_bus_width + (2*{pfx}_fingers-1)*{pitch} + {pfx}_finger_width)"
         total_height = f"(2*{pfx}_bus_width + 2*{pfx}_finger_length + {pfx}_comb_gap)"
-
-        # --- helper lambda to build expressions with units
-        expr = lambda s: f"{s}[mm]" if "[" not in s else s
 
         # 1. Bottom bus bar (NET_A)
         self._pedb.modeler.create_rectangle(
@@ -907,9 +1117,39 @@ class InterdigitalCapacitor:
 
 class DifferentialTLine:
     """
-    Fully-parametric edge-coupled differential pair.
-    All dimensions are native EDB parameters so they stay editable
-    after the EDB is imported into AEDT.
+    Edge-coupled differential pair with fully parametric geometry.
+
+    Parameters
+    ----------
+    length : float, default 10 mm
+        Total length of the pair.
+    width : float, default 0.2 mm
+        Width of each individual trace.
+    spacing : float, default 0.2 mm
+        Edge-to-edge separation between the traces.
+    x0 : float, default 0
+        Start x-coordinate (metres).
+    y0 : float, default 0
+        Start y-coordinate (metres).
+    angle : float, default 0 rad
+        Rotation angle of the pair (radians, CCW).
+    layer : str, default "TOP"
+        Layer on which the traces are drawn.
+    net_p : str, default "P"
+        Net name for the positive trace.
+    net_n : str, default "N"
+        Net name for the negative trace.
+
+    Examples
+    --------
+    >>> diff = DifferentialTLine(Edb("diff.aedb"),
+    ...                          length=5e-3,
+    ...                          width=0.15e-3,
+    ...                          spacing=0.1e-3,
+    ...                          angle=math.pi/4)
+    >>> traces = diff.create()
+    >>> f"{diff.diff_impedance:.1f} Ω"
+    '95.6 Ω'
     """
 
     def __init__(
@@ -935,9 +1175,6 @@ class DifferentialTLine:
         self.net_p = net_p
         self.net_n = net_n
 
-        # ----------------------------------------------------------
-        # Declare every numeric value as an EDB variable
-        # ----------------------------------------------------------
         self._edb["diff_len"] = self.length  # total length
         self._edb["diff_w"] = self.width  # single trace width
         self._edb["diff_s"] = self.spacing  # edge-to-edge spacing
@@ -945,22 +1182,31 @@ class DifferentialTLine:
         self._edb["diff_y0"] = self.y0  # start-y
         self._edb["diff_angle"] = math.degrees(angle)  # rotation in degrees
 
-    # ----------------------------------------------------------
-    # Read-only impedance helper (uses live parameter values)
-    # ----------------------------------------------------------
     @property
     def diff_impedance(self) -> float:
+        """
+        Rough odd-mode impedance estimate for the differential pair.
+
+        Returns
+        -------
+        float
+            Differential impedance in Ohms.
+        """
         w = self._edb["diff_w"]
         s = self._edb["diff_s"]
         z0_single = 60.0
         return 2 * z0_single * (1 - 0.48 * math.exp(-0.96 * s / w))
 
-    # ----------------------------------------------------------
-    # Geometry creation – returns the two EDB path objects
-    # ----------------------------------------------------------
     def create(self) -> List[float]:
-        # Build the two traces using ONLY parameter strings
-        # so AEDT keeps them live.
+        """
+        Create the two traces using only parameter strings so the
+        geometry stays fully editable in AEDT.
+
+        Returns
+        -------
+        list[float]
+            EDB object IDs of the positive and negative traces.
+        """
         pos_trace = self._edb.modeler.create_trace(
             path_list=[
                 ["diff_x0", "diff_y0"],
