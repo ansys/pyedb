@@ -127,7 +127,7 @@ class PolygonData(GrpcPolygonData):
         bool
 
         """
-        new_poly = self.expand(offset, tolerance, round_corners, maximum_corner_extension)
+        new_poly = super().expand(offset, tolerance, round_corners, maximum_corner_extension)
         if not new_poly[0].points:
             return False
         self._edb_object = new_poly[0]
