@@ -637,7 +637,7 @@ class CPW:
         kpr = math.sqrt(1 - k**2)
         # Complete elliptic integral ratio approx.
         k_ratio = math.pi / (2 * math.log(2 * (1 + math.sqrt(kpr)) / (1 - math.sqrt(kpr))))
-        return 30 * math.pi / math.sqrt(4.4) * k_ratio
+        return 30 * math.pi / math.sqrt(self.substrate.er) * k_ratio
 
     def create(self) -> bool:
         """
