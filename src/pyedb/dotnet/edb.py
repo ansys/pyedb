@@ -846,14 +846,12 @@ class Edb:
         Parameters
         ----------
         vlctech_file : str
-            Full path to the vlc.tech stackup file.
+            Full path to the technology stackup file. It must be vlc.tech.
         working_dir : str, optional
             Directory in which to create the ``aedb`` folder. The name given to the AEDB file
             is the same as the name of the board file.
         export_xml : str, optional
             Export technology file in XML control file format.
-        tech_file : str, optional
-            Technology file. The file must be *.vlc.tech
 
         Returns
         -------
