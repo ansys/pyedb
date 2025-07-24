@@ -672,7 +672,10 @@ class ViaDesignBackend:
             differential_signals=self.cfg["differential_signals"],
         )
         board.populate_config(cfg_json)
-        json.dump(cfg_json, open(self.output_dir / "config.json", "w"), indent=4)
+
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        with open(self.output_dir / "config.json", "w") as f:
+            json.dump(cfg_json, f, indent=4)
         self.app = Edb(
             edbpath=str((Path(self.output_dir) / self.cfg["title"]).with_suffix(".aedb")), edbversion=self.version
         )
