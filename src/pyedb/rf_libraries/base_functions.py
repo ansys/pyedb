@@ -8,16 +8,14 @@
 #
 # Usage
 # -----
-# >>> from pyedb_libraries import Meander, RectPatch
+# >>> from pyedb import Meander, HatchGround
 # >>> edb = Meander(length=5e-3, width=0.3e-3, height=0.1e-3, turns=5,
-# ...               layer="TOP", net="SIG").create(edb_path="mander.aedb")
+# ...               layer="TOP", net="SIG").create(edb_path="meander.aedb")
 # >>> edb.close_edb()
 #
-# >>> ant = RectPatch(freq=2.4e9, sub_h=1.6e-3, sub_er=4.4, sub_tand=0.02,
-# ...                 inset=0.5e-3, layer="TOP", via_layer="GND")
-# >>> edb = ant.create(edb_path="patch.aedb")
-# >>> print(ant.resonant_frequency)
-# 2.400000e+09
+# >>> ground = HatchGround(fill_ratio=0.5, layer="GND", size=(10e-3, 10e-3))
+# >>> edb = ground.create()
+# >>> print("Hatch ground created successfully.")
 # >>> edb.close_edb()
 
 from __future__ import annotations
