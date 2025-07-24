@@ -782,7 +782,7 @@ class Edb(Database):
         vlctech_file,
         working_dir="",
         make_edb_path="",
-        control_file=None,
+        export_xml=None,
     ):
         """Import a vlc.tech file and generate an ``edb.def`` file in the working directory containing the stackup.
 
@@ -795,10 +795,10 @@ class Edb(Database):
             is the same as the name of the board file.
         make_edb_path: str, optional
             Full path to the Ansys translator. The default is ``""``.
-        control_file : str, optional
-            Path to the XML control file.
+        export_xml : str, optional
+            Export technology file in XML control file format.
         tech_file : str, optional
-            Technology file. The file can be *.ircx, *.vlc.tech, or *.itf
+            Technology file. The file must be *.vlc.tech
 
         Returns
         -------
@@ -820,8 +820,8 @@ class Edb(Database):
             "-o",
             "{}".format(os.path.join(working_dir, "vlctech")),
         ]
-        if control_file:
-            cmd_make_edb.append("-x", "{}".format(control_file))
+        if export_xml:
+            cmd_make_edb.append("-x", "{}".format(export_xml))
         subprocess.run(cmd_make_edb)
         if not os.path.exists(os.path.join(working_dir, "vlctech.aedb")):
             self.logger.error("Failed to create edb.")
