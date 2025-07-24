@@ -948,7 +948,7 @@ class RatRace:
                 layer_name=self.layer,
                 net_name=f"{self.net}_P{idx}",
                 width=w,
-                start_cap_style="flast",
+                start_cap_style="flat",
                 end_cap_style="flat",
             )
 
