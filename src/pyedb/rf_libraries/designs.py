@@ -28,10 +28,6 @@ from typing import List, Optional, Tuple, Union
 
 from pyedb import Edb
 
-# ---------------------------------------------------------------------------
-# Common utilities
-# ---------------------------------------------------------------------------
-
 
 @dataclass
 class Substrate:
@@ -179,6 +175,8 @@ class Meander:
         self.num_turns = num_turns
         self.layer = layer
         self.net = net
+        self.substrate = Substrate()
+        self.length = 0.0
 
     # ------------------------------------------------------------------ #
     # Analytical models
@@ -193,10 +191,7 @@ class Meander:
         float
             Z0 (Ohm)
         """
-        # Effective dielectric constant for 50-Ohm microstrip on FR-4
-        # Here we assume er=4.4, h=1.6 mm. Adjust if substrate changes.
-        er_eff = 3.2
-        return 60 / math.sqrt(er_eff) * math.log(5.98 * 1.6e-3 / (0.8 * self.trace_width + self.trace_width))
+        return 60 / math.sqrt(self.substrate.er) * math.log(5.98 * 1.6e-3 / (0.8 * self.trace_width + self.trace_width))
 
     def electrical_length_deg(self, freq: float) -> float:
         """
@@ -213,9 +208,7 @@ class Meander:
             Phase (degrees)
         """
         c = 299_792_458
-        # effective dielectric constant same as above
-        er_eff = 3.2
-        v = c / math.sqrt(er_eff)
+        v = c / math.sqrt(self.substrate.er)
         beta = 2 * math.pi * freq / v
         return math.degrees(beta * self.length)
 
@@ -246,6 +239,7 @@ class Meander:
         self._pedb.modeler.create_trace(
             path_list=pts, layer_name=self.layer, width=self.trace_width, net_name=self.net, corner_style="Round"
         )
+        self.length = self._pedb.modeler.paths[0].length
 
 
 class MIMCapacitor:
