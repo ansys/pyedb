@@ -1425,7 +1425,8 @@ class Edb(EdbInit):
         from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType
 
         if extent_type in [
-            "Conforming", "Conformal",
+            "Conforming",
+            "Conformal",
             GrpcExtentType.CONFORMING,
             1,
         ]:
@@ -1527,13 +1528,26 @@ class Edb(EdbInit):
             unite_polys = []
             for i in _polys:
                 if "PolygonData" not in str(i):
-                    obj_data = i.polygon_data.expand(expansion_size, round_corner, round_extension, tolerance,)
+                    obj_data = i.polygon_data.expand(
+                        expansion_size,
+                        round_corner,
+                        round_extension,
+                        tolerance,
+                    )
                 else:
-                    obj_data = i.expand(expansion_size, round_corner, round_extension, tolerance,)
+                    obj_data = i.expand(
+                        expansion_size,
+                        round_corner,
+                        round_extension,
+                        tolerance,
+                    )
                 if inlcude_voids_in_extents and "PolygonData" not in str(i) and i.has_voids and obj_data:
                     for void in i.voids:
                         void_data = void.polygon_data.expand(
-                            -1 * expansion_size,  round_corner, round_extension, tolerance,
+                            -1 * expansion_size,
+                            round_corner,
+                            round_extension,
+                            tolerance,
                         )
                         if void_data:
                             for v in list(void_data):
