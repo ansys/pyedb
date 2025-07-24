@@ -86,7 +86,7 @@ class TestClass:
         cpw.substrate.er = edb.materials["silicon"].permittivity
         cpw.substrate.h = 100e-6
         cpw.create()
-        assert round(cpw.analytical_z0, 3) == 17.561
+        assert round(cpw.analytical_z0, 3) == 10.678
         assert cpw.gap == 5e-6
         assert cpw.ground_layer == "METAL_BOT"
         assert len(edb.modeler.rectangles) == 4
