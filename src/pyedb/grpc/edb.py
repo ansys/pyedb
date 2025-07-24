@@ -2018,7 +2018,7 @@ class Edb(EdbInit):
             name = i.name
             if name not in all_list and name not in nets_to_preserve:
                 delete_list.append(i)
-                #i.delete()
+                # i.delete()
         for i in delete_list:
             i.delete()
         reference_pinsts = []
