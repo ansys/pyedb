@@ -570,9 +570,7 @@ class Modeler(object):
         )
 
         if polygon.prim_obj.IsNull():  # pragma: no cover
-            print(path_list, layer_name, width, net_name, start_cap_style, end_cap_style,
-                  corner_style)
-            raise AEDTRuntimeError("Failed to create path. ")
+            raise AEDTRuntimeError("Failed to create path.")
         polygon = self._pedb.layout.find_object_by_id(polygon.prim_obj.GetId())
         return polygon
 
