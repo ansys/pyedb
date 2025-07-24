@@ -26,6 +26,8 @@ This module contains these classes: `EdbLayout` and `Shape`.
 import math
 import warnings
 
+from ansys.aedt.core.internal.errors import AEDTRuntimeError
+
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.database.dotnet.primitive import CircleDotNet, RectangleDotNet
 from pyedb.dotnet.database.edb_data.primitives_data import Primitive, cast
@@ -568,8 +570,7 @@ class Modeler(object):
         )
 
         if polygon.prim_obj.IsNull():  # pragma: no cover
-            self._logger.error("Null path created")
-            return False
+            raise AEDTRuntimeError("Failed to create path")
         polygon = self._pedb.layout.find_object_by_id(polygon.prim_obj.GetId())
         return polygon
 
