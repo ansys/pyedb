@@ -1,64 +1,32 @@
-# pyedb_libraries.py
-# Author : [Your Name or Organization]
-# Date   : 2025-07-19
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
 #
-# 100 % parametric EDB library + analytical RF models
-# ---------------------------------------------------
-# Requires: pyedb (Ansys internal) and numpy
 #
-# Usage
-# -----
-# >>> from pyedb import Meander, HatchGround
-# >>> edb = Meander(length=5e-3, width=0.3e-3, height=0.1e-3, turns=5,
-# ...               layer="TOP", net="SIG").create(edb_path="meander.aedb")
-# >>> edb.close_edb()
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
 #
-# >>> ground = HatchGround(fill_ratio=0.5, layer="GND", size=(10e-3, 10e-3))
-# >>> edb = ground.create()
-# >>> print("Hatch ground created successfully.")
-# >>> edb.close_edb()
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import math
 from typing import List, Optional, Tuple, Union
 
 from pyedb import Edb
-
-
-@dataclass
-class Substrate:
-    """
-    Small helper that groups the four basic substrate parameters used
-    throughout the library.
-
-    Parameters
-    ----------
-    h : float, default 100 µm
-        Substrate height in metres.
-    er : float, default 4.4
-        Relative permittivity.
-    tan_d : float, default 0
-        Loss tangent.
-    name : str, default "SUB"
-        Logical name used for layer creation.
-    size : tuple[float, float], default (1 mm, 1 mm)
-        (width, length) of the surrounding ground plane in metres.
-
-    Examples
-    --------
-    >>> sub = Substrate(h=1.6e-3, er=4.4, tan_d=0.02,
-    ...                 name="FR4", size=(10e-3, 15e-3))
-    >>> sub.h
-    0.0016
-    """
-
-    h: float = 100e-6  # height (m)
-    er: float = 4.4  # relative permittivity
-    tan_d: float = 0  # loss tangent
-    name: str = "SUB"
-    size: Tuple[float, float] = (0.001, 0.001)  # width, length in metres
+from pyedb.libraries.common import Substrate
 
 
 class HatchGround:
