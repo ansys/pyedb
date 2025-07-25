@@ -109,7 +109,7 @@ class CfgPadstackDefinition(CfgBase):
         shape = params["shape"]
         if shape == "no_geometry":
             return  # .net api doesn't tell how to set no_geometry shape.
-        for idx, i in enumerate(self.PAD_SHAPE_PARAMETERS[shape]):
+        for i in self.PAD_SHAPE_PARAMETERS[shape]:
             temp_param.append(params[i])
             pedb_shape = getattr(self._pedb._edb.Definition.PadGeometryType, snake_to_pascal(shape))
 
