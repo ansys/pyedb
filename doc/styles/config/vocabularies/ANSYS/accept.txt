@@ -71,3 +71,6 @@ vias
 [Rr]egulator
 [Cc]onnectable
 [Cc][Pp][Aa]
+[Rr][Ff]
+[Bb]asic
+[Ll]ibraries
