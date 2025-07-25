@@ -108,7 +108,7 @@ class CfgComponent(CfgBase):
                     i["is_parallel"],
                 )
                 m.SetPinPairRlc(p, rlc)
-                c_p.SetModel(m)
+            c_p.SetModel(m)
             self.pyedb_obj.component_property = c_p
         elif self.s_parameter_model:
             m = self._pedb._edb.Cell.Hierarchy.SParameterModel()
