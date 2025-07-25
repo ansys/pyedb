@@ -25,7 +25,6 @@ from pyedb.dotnet.database.general import pascal_to_snake, snake_to_pascal
 
 
 class CfgComponent(CfgBase):
-
     def retrieve_model_properties_from_edb(self):
         c_p = self.pyedb_obj.component_property
         model = c_p.GetModel().Clone()
@@ -53,9 +52,7 @@ class CfgComponent(CfgBase):
             self.spice_model["model_name"] = model.GetModelName()
             self.spice_model["model_path"] = model.GetModelPath()
             self.spice_model["sub_circuit"] = model.GetSubCkt()
-            self.spice_model["terminal_pairs"] = [
-                [i, j] for i, j in dict(model.GetTerminalPinPairs()).items()
-            ]
+            self.spice_model["terminal_pairs"] = [[i, j] for i, j in dict(model.GetTerminalPinPairs()).items()]
 
     def _set_ic_die_properties_to_edb(self):
         cp = self.pyedb_obj.component_property

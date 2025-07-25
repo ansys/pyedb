@@ -121,9 +121,7 @@ class CfgOperations(CfgBase):
             polygon_points = self._pedb.cutout(**cutout_params)
             if "pyedb_cutout" not in self._pedb.stackup.all_layers:
                 self._pedb.stackup.add_document_layer(name="pyedb_cutout")
-                self._pedb.modeler.create_polygon(
-                    polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout"
-                )
+                self._pedb.modeler.create_polygon(polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout")
 
     def get_parameter_from_edb(self):
         self.op_cutout = CfgCutout(self._pedb)

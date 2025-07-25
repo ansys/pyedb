@@ -25,6 +25,7 @@ from pyedb.configuration.cfg_common import CfgBase
 
 class CfgPinGroups:
     """Manage configuration pin group class."""
+
     def set_pingroup_to_edb(self):
         for pg in self.pin_groups:
             pg.create()
@@ -62,7 +63,6 @@ class CfgPinGroups:
 
 
 class CfgPinGroup(CfgBase):
-
     def create(self):
         if self.pins:
             pins = self.pins if isinstance(self.pins, list) else [self.pins]

@@ -63,7 +63,6 @@ class CfgHeatSink(CfgBase):
 
 
 class CfgPackageDefinitions:
-
     def get_parameter_from_edb(self):
         package_definitions = []
         for pkg_name, pkg_obj in self._pedb.definitions.package.items():
@@ -114,11 +113,7 @@ class CfgPackageDefinitions:
                 )
             else:
                 comp_list.update(
-                    {
-                        refdes: comp
-                        for refdes, comp in comp_def_from_db.components.items()
-                        if refdes in pkg.components
-                    }
+                    {refdes: comp for refdes, comp in comp_def_from_db.components.items() if refdes in pkg.components}
                 )
             for _, i in comp_list.items():
                 i.package_def = pkg.name

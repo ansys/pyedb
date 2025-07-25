@@ -78,6 +78,7 @@ class CfgPadstacks:
 
 class CfgPadstackDefinition(CfgBase):
     """Padstack definition data class."""
+
     PAD_SHAPE_PARAMETERS = {
         "circle": ["diameter"],
         "square": ["size"],
@@ -90,16 +91,16 @@ class CfgPadstackDefinition(CfgBase):
     }
 
     def get_solder_ball_definition(self):
-            definition = self._pedb._edb.Definition
-            self._solder_shape_type = {
-                "no_solder_ball": definition.SolderballShape.NoSolderball,
-                "cylinder": definition.SolderballShape.Cylinder,
-                "spheroid": definition.SolderballShape.Spheroid,
-            }
-            self._solder_placement = {
-                "above_padstack": definition.SolderballPlacement.AbovePadstack,
-                "below_padstack": definition.SolderballPlacement.BelowPadstack,
-    }
+        definition = self._pedb._edb.Definition
+        self._solder_shape_type = {
+            "no_solder_ball": definition.SolderballShape.NoSolderball,
+            "cylinder": definition.SolderballShape.Cylinder,
+            "spheroid": definition.SolderballShape.Spheroid,
+        }
+        self._solder_placement = {
+            "above_padstack": definition.SolderballPlacement.AbovePadstack,
+            "below_padstack": definition.SolderballPlacement.BelowPadstack,
+        }
 
     def set_hole_parameters_to_edb(self, params):
         original_params = self.hole_parameters
@@ -339,6 +340,7 @@ class CfgPadstackDefinition(CfgBase):
         self._solder_placement = None
         self.get_solder_ball_definition()
 
+
 class CfgPadstackInstance(CfgBase):
     """Instance data class."""
 
@@ -347,9 +349,7 @@ class CfgPadstackInstance(CfgBase):
             self.pyedb_obj.aedt_name = self.name
         self.pyedb_obj.is_pin = self.is_pin
         if self.net_name is not None:
-            self.pyedb_obj.net_name = self._pedb.nets.find_or_create_net(
-                self.net_name
-            ).name
+            self.pyedb_obj.net_name = self._pedb.nets.find_or_create_net(self.net_name).name
         if self.layer_range[0] is not None:
             self.pyedb_obj.start_layer = self.layer_range[0]
         if self.layer_range[1] is not None:
@@ -357,24 +357,12 @@ class CfgPadstackInstance(CfgBase):
         if self.backdrill_parameters:
             self.pyedb_obj.backdrill_parameters = self.backdrill_parameters
         if self.solder_ball_layer:
-            self.pyedb_obj._edb_object.SetSolderBallLayer(
-                self._pedb.stackup[self.solder_ball_layer]._edb_object
-            )
+            self.pyedb_obj._edb_object.SetSolderBallLayer(self._pedb.stackup[self.solder_ball_layer]._edb_object)
 
         hole_override_enabled, hole_override_diam = self.pyedb_obj._edb_object.GetHoleOverrideValue()
-        hole_override_enabled = (
-            self.hole_override_enabled
-            if self.hole_override_enabled
-            else hole_override_enabled
-        )
-        hole_override_diam = (
-            self.hole_override_diameter
-            if self.hole_override_diameter
-            else hole_override_diam
-        )
-        self.pyedb_obj._edb_object.SetHoleOverride(
-            hole_override_enabled, self._pedb.edb_value(hole_override_diam)
-        )
+        hole_override_enabled = self.hole_override_enabled if self.hole_override_enabled else hole_override_enabled
+        hole_override_diam = self.hole_override_diameter if self.hole_override_diameter else hole_override_diam
+        self.pyedb_obj._edb_object.SetHoleOverride(hole_override_enabled, self._pedb.edb_value(hole_override_diam))
 
     def retrieve_parameters_from_edb(self):
         self.name = self.pyedb_obj.aedt_name

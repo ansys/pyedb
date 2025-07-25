@@ -36,7 +36,6 @@ class CfgSParameterModel:
 
 
 class CfgSParameters:
-
     def apply(self):
         for s_param in self.s_parameters_models:
             fpath = s_param.file_path
@@ -49,11 +48,7 @@ class CfgSParameters:
             comp_list = dict()
             if s_param.apply_to_all:
                 comp_list.update(
-                    {
-                        refdes: comp
-                        for refdes, comp in comp_def.components.items()
-                        if refdes not in s_param.components
-                    }
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in s_param.components}
                 )
             else:
                 comp_list.update(
@@ -84,9 +79,7 @@ class CfgSParameters:
                         if s_param_model:
                             if s_param_model["model_name"] == model_name:
                                 temp_comp_list.append(i["reference_designator"])
-                                reference_net_per_component[i["reference_designator"]] = s_param_model[
-                                    "reference_net"
-                                ]
+                                reference_net_per_component[i["reference_designator"]] = s_param_model["reference_net"]
                         else:
                             continue
 

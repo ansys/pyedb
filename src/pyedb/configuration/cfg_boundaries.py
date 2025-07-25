@@ -24,10 +24,6 @@ from pyedb.configuration.cfg_common import CfgBase
 
 
 class CfgBoundaries(CfgBase):
-
-
-
-
     def __init__(self, pedb, boundary_data):
         self._pedb = pedb
         self.boundary_data = boundary_data
@@ -44,16 +40,10 @@ class CfgBoundaries(CfgBase):
         )
         self.air_box_extent_type = self.boundary_data.get("air_box_extent_type", None)
         self.air_box_base_polygon = self.boundary_data.get("air_box_base_polygon", None)
-        self.air_box_truncate_model_ground_layers = self.boundary_data.get(
-            "air_box_truncate_model_ground_layers", None
-        )
+        self.air_box_truncate_model_ground_layers = self.boundary_data.get("air_box_truncate_model_ground_layers", None)
         self.air_box_horizontal_padding = self.boundary_data.get("air_box_horizontal_padding", None)
-        self.air_box_positive_vertical_padding = self.boundary_data.get(
-            "air_box_positive_vertical_padding", None
-        )
-        self.air_box_negative_vertical_padding = self.boundary_data.get(
-            "air_box_negative_vertical_padding", None
-        )
+        self.air_box_positive_vertical_padding = self.boundary_data.get("air_box_positive_vertical_padding", None)
+        self.air_box_negative_vertical_padding = self.boundary_data.get("air_box_negative_vertical_padding", None)
 
     def get_parameters_from_edb(self):
         self.open_region = self._pedb.hfss.hfss_extent_info.use_open_region
@@ -65,16 +55,10 @@ class CfgBoundaries(CfgBase):
         self.horizontal_padding = self._pedb.hfss.hfss_extent_info.dielectric_extent_size
         self.honor_primitives_on_dielectric_layers = self._pedb.hfss.hfss_extent_info.honor_user_dielectric
         self.air_box_extent_type = self._pedb.hfss.hfss_extent_info.extent_type
-        self.air_box_truncate_model_ground_layers = (
-            self._pedb.hfss.hfss_extent_info.truncate_air_box_at_ground
-        )
+        self.air_box_truncate_model_ground_layers = self._pedb.hfss.hfss_extent_info.truncate_air_box_at_ground
         self.air_box_horizontal_padding = self._pedb.hfss.hfss_extent_info.air_box_horizontal_extent
-        self.air_box_positive_vertical_padding = (
-            self._pedb.hfss.hfss_extent_info.air_box_positive_vertical_extent
-        )
-        self.air_box_negative_vertical_padding = (
-            self._pedb.hfss.hfss_extent_info.air_box_negative_vertical_extent
-        )
+        self.air_box_positive_vertical_padding = self._pedb.hfss.hfss_extent_info.air_box_positive_vertical_extent
+        self.air_box_negative_vertical_padding = self._pedb.hfss.hfss_extent_info.air_box_negative_vertical_extent
         return self.get_attributes(exclude="boundary_data")
 
     def set_parameters_to_edb(self):
