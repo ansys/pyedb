@@ -3,7 +3,7 @@ RF Basic Libraries
 These class is the containers of RF basic libraries.
 
 
-.. currentmodule:: pyedb.rf_libraries
+.. currentmodule:: pyedb.libraries.rf_libraries
 
 .. autosummary::
    :toctree: _autosummary

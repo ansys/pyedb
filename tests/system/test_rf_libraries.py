@@ -26,7 +26,7 @@ import os
 
 import pytest
 
-from pyedb.rf_libraries.base_functions import (
+from pyedb.libraries.rf_libraries.base_functions import (
     CPW,
     DifferentialTLine,
     HatchGround,
