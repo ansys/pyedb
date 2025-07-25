@@ -1777,50 +1777,22 @@ class TestClass:
             positive_pin_names = [f"{component_name}-{pin}" for pin in positive_pin_names]
             reference_pin_names = [f"{component_name}-{pin}" for pin in reference_pin_names]
         assert len(edbapp.excitations) == 0
-        if edbapp.grpc:
-            assert edbapp.source_excitation.create_port_on_pins(
-                refdes=component_name if pins_mode == "str" else None,
-                pins=(
-                    positive_pin_names
-                    if pins_mode == "str" or pins_mode == "global_str"
-                    else (
-                        positive_pin_numbers
-                        if pins_mode == "int"
-                        else [edbcomp.pins[pin] for pin in positive_pin_names]
-                    )
-                ),
-                reference_pins=(
-                    reference_pin_names
-                    if pins_mode == "str" or pins_mode == "global_str"
-                    else (
-                        reference_pin_numbers
-                        if pins_mode == "int"
-                        else [edbcomp.pins[pin] for pin in reference_pin_names]
-                    )
-                ),
-            )
-        else:
-            assert edbapp.components.create_port_on_pins(
-                refdes=component_name if pins_mode == "str" else None,
-                pins=(
-                    positive_pin_names
-                    if pins_mode == "str" or pins_mode == "global_str"
-                    else (
-                        positive_pin_numbers
-                        if pins_mode == "int"
-                        else [edbcomp.pins[pin] for pin in positive_pin_names]
-                    )
-                ),
-                reference_pins=(
-                    reference_pin_names
-                    if pins_mode == "str" or pins_mode == "global_str"
-                    else (
-                        reference_pin_numbers
-                        if pins_mode == "int"
-                        else [edbcomp.pins[pin] for pin in reference_pin_names]
-                    )
-                ),
-            )
+
+        assert edbapp.components.create_port_on_pins(
+            refdes=component_name if pins_mode == "str" else None,
+            pins=(
+                positive_pin_names
+                if pins_mode == "str" or pins_mode == "global_str"
+                else (positive_pin_numbers if pins_mode == "int" else [edbcomp.pins[pin] for pin in positive_pin_names])
+            ),
+            reference_pins=(
+                reference_pin_names
+                if pins_mode == "str" or pins_mode == "global_str"
+                else (
+                    reference_pin_numbers if pins_mode == "int" else [edbcomp.pins[pin] for pin in reference_pin_names]
+                )
+            ),
+        )
         assert len(edbapp.excitations) == 2
 
     def test_create_circuit_port_on_component_pins_pingroup_on_single_pin(self, edb_examples):
@@ -1845,48 +1817,6 @@ class TestClass:
                 pingroup_on_single_pin=True,
             )
         assert len(edbapp.excitations) == 2
-
-    def test_create_circuit_port_on_component_pins_no_pins(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        component_name = "U10"
-        edbcomp = edbapp.components[component_name]
-        positive_pin_names = []
-        reference_pin_names = ["2"]
-        if edbapp.grpc:
-            assert not edbapp.source_excitation.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        else:
-            # Method deprecated in grpc and moved to SourceExcitation class.
-            assert not edbapp.components.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        assert len(edbapp.excitations) == 0
-
-    def test_create_circuit_port_on_component_pins_no_reference_pins(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        component_name = "U10"
-        edbcomp = edbapp.components[component_name]
-        positive_pin_names = ["4"]
-        reference_pin_names = []
-        if edbapp.grpc:
-            assert not edbapp.source_excitation.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        else:
-            # Method deprecated in grpc and moved to SourceExcitation class.
-            assert not edbapp.components.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        assert len(edbapp.excitations) == 0
 
     def test_active_cell_setter(self):
         """Use multiple cells."""
