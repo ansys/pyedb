@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+from copy import deepcopy as copy
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, TypedDict, Union
 
@@ -92,6 +92,7 @@ class CfgModeler:
             self.add_trace(**trace_data)
 
         for plane_data in data.get("planes", []):
+            plane_data = copy(plane_data)
             shape = plane_data.pop("type")
             if shape == "rectangle":
                 self.add_rectangular_plane(**plane_data)

@@ -568,8 +568,7 @@ class Modeler(object):
         )
 
         if polygon.prim_obj.IsNull():  # pragma: no cover
-            self._logger.error("Null path created")
-            return False
+            raise RuntimeError("Failed to create path.")
         polygon = self._pedb.layout.find_object_by_id(polygon.prim_obj.GetId())
         return polygon
 
