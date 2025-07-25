@@ -56,8 +56,12 @@ class TestClass:
         comp = edb.components.get_component_by_name("J1")
         assert comp is not None
         pin = edb.components.get_pin_from_component("J1", pin_name="1")
-        assert pin[0].name == "1"
-        edb.close()
+        # TODO check if we agree to return aedt_name when it's a layout pin.
+        if edb.grpc:
+            assert pin[0].name == "1"
+        else:
+            assert pin[0].name == "J1-1"
+        edb.close(terminate_rpc_session=False)
 
     def test_components_create_coax_port_on_component(self, edb_examples):
         """Create a coaxial port on a component from its pin."""

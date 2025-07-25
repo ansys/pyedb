@@ -1574,9 +1574,9 @@ class TestClass:
             assert vrm.component
             assert vrm.component.refdes == "U1"
             assert vrm.negative_remote_sense_pin
-            assert vrm.negative_remote_sense_pin.name == "A3"
+            assert vrm.negative_remote_sense_pin.name == "U1-A3"
             assert vrm.positive_remote_sense_pin
-            assert vrm.positive_remote_sense_pin.name == "A2"
+            assert vrm.positive_remote_sense_pin.name == "U1-A2"
             assert vrm.voltage == 1.5
             assert vrm.is_active
             assert not vrm.is_null

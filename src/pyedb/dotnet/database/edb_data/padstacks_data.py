@@ -1728,6 +1728,19 @@ class EDBPadstackInstance(Connectable):
             return round(out[2].ToDouble(), 6)
 
     @property
+    def name(self):
+        """Padstack Instance Name. If it is a pin, the syntax will be like in AEDT ComponentName-PinName."""
+        if self.is_pin:
+            return self.aedt_name
+        else:
+            return self.component_pin
+
+    @name.setter
+    def name(self, value):
+        self._edb_padstackinstance.SetName(value)
+        self._edb_padstackinstance.SetProductProperty(self._pedb.core.ProductId.Designer, 11, value)
+
+    @property
     def metal_volume(self):
         """Metal volume of the via hole instance in cubic units (m3). Metal plating ratio is accounted.
 
@@ -1763,14 +1776,13 @@ class EDBPadstackInstance(Connectable):
     @property
     def pin_number(self):
         """Get pin number."""
-        warnings.warn("`pin_number` is deprecated. Use `name` method instead.", DeprecationWarning)
+        warnings.warn("`pin_number` is deprecated. Use `component_pin` method instead.", DeprecationWarning)
         return self.component_pin
 
     @property
     def component_pin(self):
         """Get component pin."""
-        warnings.warn("Use new property :func:`name` instead.", DeprecationWarning)
-        return self.name
+        return self._edb_padstackinstance.GetName()
 
     @property
     def aedt_name(self):
