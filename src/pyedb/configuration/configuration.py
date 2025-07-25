@@ -244,7 +244,7 @@ class Configuration:
                     component_part_name=c.definition,
                 )
                 c.pyedb_obj = obj
-                c.api.set_parameters_to_edb()
+                c.set_parameters_to_edb()
 
         primitives = self._pedb.layout.find_primitive(**modeler.primitives_to_delete)
         for i in primitives:
