@@ -810,7 +810,7 @@ class Components(object):
         elif isinstance(refdes, self._pedb._edb.Cell.Hierarchy.Component):
             refdes = EDBComponent(self._pedb, refdes)
         pins = self._get_pins_for_ports(pins, refdes)
-        if not pins:
+        if not pins:  # pragma: no cover
             raise RuntimeError("No pins found during port creation. Port is not defined.")
         reference_pins = self._get_pins_for_ports(reference_pins, refdes)
         if not reference_pins:
@@ -831,7 +831,7 @@ class Components(object):
             pin_group = self.create_pingroup_from_pins(pins, group_name)
             term = self._create_pin_group_terminal(pingroup=pin_group, term_name=port_name)
         else:
-            term = self._create_terminal(pins[0].primitive_object, term_name=port_name)
+            term = self._create_terminal(pins[0]._edb_object, term_name=port_name)
         term.SetIsCircuitPort(True)
 
         if len(reference_pins) > 1 or pingroup_on_single_pin:
@@ -846,7 +846,7 @@ class Components(object):
             ref_pin_group = self.create_pingroup_from_pins(reference_pins, ref_group_name)
             ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
         else:
-            ref_term = self._create_terminal(reference_pins[0].primitive_object, term_name=port_name + "_ref")
+            ref_term = self._create_terminal(reference_pins[0]._edb_object, term_name=port_name + "_ref")
         ref_term.SetIsCircuitPort(True)
 
         term.SetImpedance(self._edb.utility.value(impedance))
