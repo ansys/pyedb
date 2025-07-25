@@ -1,0 +1,6 @@
+directory
+=========
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.directory

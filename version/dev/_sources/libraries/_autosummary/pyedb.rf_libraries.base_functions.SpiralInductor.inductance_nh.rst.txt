@@ -1,0 +1,6 @@
+inductance\_nh
+==============
+
+.. currentmodule:: pyedb.rf_libraries.base_functions
+
+.. autoproperty:: SpiralInductor.inductance_nh

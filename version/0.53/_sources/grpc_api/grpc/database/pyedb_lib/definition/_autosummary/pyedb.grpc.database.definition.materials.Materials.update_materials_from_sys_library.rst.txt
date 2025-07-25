@@ -1,0 +1,6 @@
+update\_materials\_from\_sys\_library
+=====================================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Materials.update_materials_from_sys_library

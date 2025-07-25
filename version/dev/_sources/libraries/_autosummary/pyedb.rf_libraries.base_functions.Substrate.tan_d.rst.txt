@@ -1,0 +1,6 @@
+tan\_d
+======
+
+.. currentmodule:: pyedb.rf_libraries.base_functions
+
+.. autoattribute:: Substrate.tan_d

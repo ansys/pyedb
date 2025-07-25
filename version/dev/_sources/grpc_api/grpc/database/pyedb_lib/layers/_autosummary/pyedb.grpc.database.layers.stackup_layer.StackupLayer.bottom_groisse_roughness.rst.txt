@@ -1,0 +1,6 @@
+bottom\_groisse\_roughness
+==========================
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoproperty:: StackupLayer.bottom_groisse_roughness

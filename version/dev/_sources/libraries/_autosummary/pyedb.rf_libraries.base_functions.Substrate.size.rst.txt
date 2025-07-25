@@ -1,0 +1,6 @@
+size
+====
+
+.. currentmodule:: pyedb.rf_libraries.base_functions
+
+.. autoattribute:: Substrate.size

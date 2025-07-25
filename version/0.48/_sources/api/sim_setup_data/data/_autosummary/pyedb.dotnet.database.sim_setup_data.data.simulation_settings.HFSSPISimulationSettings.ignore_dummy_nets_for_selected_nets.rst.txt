@@ -1,0 +1,6 @@
+ignore\_dummy\_nets\_for\_selected\_nets
+========================================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.ignore_dummy_nets_for_selected_nets

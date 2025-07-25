@@ -1,0 +1,26 @@
+﻿Substrate
+=========
+
+.. currentmodule:: pyedb.rf_libraries.base_functions
+
+.. autoclass:: Substrate
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Substrate.er
+      Substrate.h
+      Substrate.name
+      Substrate.size
+      Substrate.tan_d
+   
+   

@@ -1,0 +1,6 @@
+src\_dir
+========
+
+.. currentmodule:: pyedb.siwave
+
+.. autoproperty:: Siwave.src_dir

@@ -1,0 +1,6 @@
+net
+===
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoproperty:: Polygon.net

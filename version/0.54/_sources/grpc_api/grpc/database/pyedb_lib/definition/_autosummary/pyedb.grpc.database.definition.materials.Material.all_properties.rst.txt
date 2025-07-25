@@ -1,0 +1,6 @@
+all\_properties
+===============
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoproperty:: Material.all_properties

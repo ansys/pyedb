@@ -1,0 +1,6 @@
+dataset\_defs
+=============
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.dataset_defs

@@ -1,0 +1,6 @@
+name
+====
+
+.. currentmodule:: pyedb.rf_libraries.base_functions
+
+.. autoattribute:: Substrate.name
