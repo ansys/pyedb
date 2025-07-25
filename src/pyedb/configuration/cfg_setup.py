@@ -67,7 +67,6 @@ class CfgSetup:
 
 
 class CfgSIwaveACSetup(CfgSetup):
-
     def set_parameters_to_edb(self):
         if self.name in self.pedb.setups:
             raise "Setup {} already existing. Editing it.".format(self.name)
@@ -104,7 +103,6 @@ class CfgSIwaveACSetup(CfgSetup):
 
 
 class CfgSIwaveDCSetup(CfgSetup):
-
     def retrieve_parameters_from_edb(self):
         self.dc_slider_position = self.pyedb_obj.dc_settings.dc_slider_position
         dc_ir_settings = dict()
@@ -112,9 +110,7 @@ class CfgSIwaveDCSetup(CfgSetup):
         self.dc_ir_settings = dc_ir_settings
 
     def set_parameters_to_edb(self):
-        edb_setup = self.pedb.create_siwave_dc_setup(
-            name=self.name, dc_slider_position=self.dc_slider_position
-        )
+        edb_setup = self.pedb.create_siwave_dc_setup(name=self.name, dc_slider_position=self.dc_slider_position)
         edb_setup.dc_settings.dc_slider_position = self.dc_slider_position
         dc_ir_settings = self.dc_ir_settings
         edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings.get("export_dc_thermal_data", False)
@@ -132,15 +128,12 @@ class CfgSIwaveDCSetup(CfgSetup):
 
 
 class CfgHFSSSetup(CfgSetup):
-
     def set_parameters_to_edb(self):
         if self.name in self.pedb.setups:
             raise "Setup {} already existing. Editing it.".format(self.name)
 
         edb_setup = self.pedb.create_hfss_setup(self.name)
-        edb_setup.set_solution_single_frequency(
-            self.f_adapt, self.max_num_passes, self.max_mag_delta_s
-        )
+        edb_setup.set_solution_single_frequency(self.f_adapt, self.max_num_passes, self.max_mag_delta_s)
 
         self.apply_freq_sweep(edb_setup)
 
@@ -202,7 +195,6 @@ class CfgHFSSSetup(CfgSetup):
 
 
 class CfgSetups:
-
     def retrieve_parameters_from_edb(self):
         self.setups = []
         for _, setup in self._pedb.setups.items():
@@ -211,11 +203,11 @@ class CfgSetups:
                 hfss.retrieve_parameters_from_edb()
                 self.setups.append(hfss)
             elif setup.type == "siwave_dc":
-                siwave_dc = CfgSIwaveDCSetup(self._pedb, setup,name=setup.name)
+                siwave_dc = CfgSIwaveDCSetup(self._pedb, setup, name=setup.name)
                 siwave_dc.retrieve_parameters_from_edb()
                 self.setups.append(siwave_dc)
             elif setup.type == "siwave_ac":
-                siwave_ac = CfgSIwaveACSetup(self._pedb, setup,name=setup.name)
+                siwave_ac = CfgSIwaveACSetup(self._pedb, setup, name=setup.name)
                 siwave_ac.retrieve_parameters_from_edb()
                 self.setups.append(siwave_ac)
 
@@ -236,4 +228,3 @@ class CfgSetups:
 
     def to_dict(self):
         return [i.to_dict() for i in self.setups]
-
