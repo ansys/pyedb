@@ -897,7 +897,7 @@ class Edb(EdbInit):
         """
         if not working_dir:
             working_dir = os.path.dirname(vlctech_file)
-        command = os.path.join(self.base_path, r"helic\tools\raptorh\bin\make-edb")
+        command = os.path.join(self.base_path, "helic", "tools", "raptorh", "bin", "make-edb")
         if is_windows:
             command += ".exe"
         cmd_make_edb = [
