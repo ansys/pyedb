@@ -34,7 +34,6 @@ from pyedb import __version__
 from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import env_path, env_value, is_linux
 from pyedb.grpc.rpc_session import RpcSession
-from pyedb.misc.misc import list_installed_ansysem
 
 
 class EdbInit(object):
@@ -43,12 +42,6 @@ class EdbInit(object):
     def __init__(self, edbversion):
         self.logger = pyedb_logger
         self._db = None
-        if not edbversion:  # pragma: no cover
-            try:
-                edbversion = "20{}.{}".format(list_installed_ansysem()[0][-3:-1], list_installed_ansysem()[0][-1:])
-                self.logger.info("Edb version " + edbversion)
-            except IndexError:
-                raise Exception("No ANSYSEM_ROOTxxx is found.")
         self.edbversion = edbversion
         self.logger.info("Logger is initialized in EDB.")
         self.logger.info("legacy v%s", __version__)
@@ -79,7 +72,7 @@ class EdbInit(object):
 
     @staticmethod
     def _signal_handler(signum=None, frame=None):
-        RpcSession.kill()
+        RpcSession.kill_all_instances()
 
     @property
     def db(self):
@@ -193,10 +186,12 @@ class EdbInit(object):
         Parameters
         ----------
         terminate_rpc_session : bool, optional
-
+            Terminate RPC session when closing the database. The default value is `True`.
 
         . note::
-            Unsaved changes will be lost.
+            Unsaved changes will be lost. If multiple databases are open and RPC session is terminated, the connection
+            with all databases will be lost. You might be careful and set to `False` until the last open database
+            remains.
         """
         self._db.close()
         self._db = None

@@ -71,7 +71,7 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  legacy-tests-windows:
+  system-tests-windows:
     name: Test dotnet (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     steps:
@@ -99,7 +99,7 @@ jobs:
           . .venv\Scripts\Activate.ps1
           python -m pip install .[tests]
 
-      - name: "Executing legacy tests"
+      - name: "Executing system tests"
         uses: nick-fields/retry@v3
         with:
           max_attempts: 3
@@ -107,20 +107,20 @@ jobs:
           timeout_minutes: 15
           command: |
             . .venv\Scripts\Activate.ps1
-            pytest tests/legacy -n auto --dist loadfile -v --cov
+            pytest tests/system -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
           . .venv\Scripts\Activate.ps1
-          python -m coverage html -d .cov\legacy-html
-          python -m coverage xml -o .cov\legacy.xml
+          python -m coverage html -d .cov\system-html
+          python -m coverage xml -o .cov\system.xml
 
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          path: .cov\legacy-html
-          name: html-legacy-coverage
+          path: .cov\system-html
+          name: html-system-coverage
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -128,13 +128,76 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          files: .cov/legacy.xml
+          files: .cov/system.xml
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  legacy-tests-linux:
+  unit-tests-windows:
+    name: Test dotnet (windows)
+    runs-on: [ Windows, self-hosted, pyedb ]
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v4
+
+      # Revert to previous verison due too setup-python#819
+      - name: "Set up Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+          . .venv\Scripts\Activate.ps1
+
+      - name: "Update pip"
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install -U pip
+
+      - name: "Install Python library and tests dependencies"
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install .[tests]
+
+      - name: "Executing system tests"
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 15
+          command: |
+            . .venv\Scripts\Activate.ps1
+            pytest tests/unit -n auto --dist loadfile -v --cov
+
+      - name: "Create coverage files"
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m coverage html -d .cov\unit-html
+          python -m coverage xml -o .cov\unit.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          path: .cov\unit-html
+          name: html-unit-coverage
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/unit.xml
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  system-tests-linux:
     name: Test dotnet (linux)
     runs-on: [ Linux, self-hosted, toolkits ]
     env:
@@ -168,7 +231,7 @@ jobs:
           . .venv/bin/activate
           python -m pip install .[tests]
 
-      - name: "Executing legacy tests"
+      - name: "Executing system tests"
         uses: nick-fields/retry@v3
         with:
           max_attempts: 3
@@ -177,20 +240,20 @@ jobs:
           command: |
             export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            xvfb-run pytest tests/legacy -n auto --dist loadfile -v --cov
+            xvfb-run pytest tests/system -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
           . .venv/bin/activate
-          python -m coverage html -d .cov\legacy-html
-          python -m coverage xml -o .cov\legacy.xml
+          python -m coverage html -d .cov\system-html
+          python -m coverage xml -o .cov\system.xml
 
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          path: .cov\legacy-html
-          name: html-legacy-linux-coverage
+          path: .cov\system-html
+          name: html-system-linux-coverage
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -198,7 +261,78 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          files: .cov/legacy.xml
+          files: .cov/system.xml
+
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  unit-tests-linux:
+    name: Test dotnet (linux)
+    runs-on: [ Linux, self-hosted, toolkits ]
+    env:
+      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANS_NODEPCHECK: '1'
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: "Install os packages"
+        run: |
+          sudo apt update
+          sudo apt install libgl1-mesa-glx xvfb -y
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+
+      - name: "Update pip"
+        run: |
+          . .venv/bin/activate
+          python -m pip install -U pip
+
+      - name: "Install Python library and tests dependencies"
+        run: |
+          . .venv/bin/activate
+          python -m pip install .[tests]
+
+      - name: "Executing unit tests"
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            . .venv/bin/activate
+            xvfb-run pytest tests/unit -n auto --dist loadfile -v --cov
+
+      - name: "Create coverage files"
+        run: |
+          . .venv/bin/activate
+          python -m coverage html -d .cov\unit-html
+          python -m coverage xml -o .cov\unit.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          path: .cov\unit-html
+          name: html-unit-linux-coverage
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/unit.xml
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -264,6 +398,7 @@ jobs:
             .venv\Scripts\Activate.ps1
             pytest -v external/pyaedt/tests/system/general/test_01_3dlayout_edb.py
             pytest -v external/pyaedt/tests/system/general/test_01_configuration_files.py
+            pytest -v external/pyaedt/tests/system/general/test_21_Circuit.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@v3
@@ -277,6 +412,20 @@ jobs:
             .venv\Scripts\Activate.ps1
             pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
             pytest -v external/pyaedt/tests/system/solvers/test_00_analyze.py
+
+      - name: Run PyAEDT extensions tests
+        uses: nick-fields/retry@v3
+        env:
+          PYTHONMALLOC: malloc
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            .venv\Scripts\Activate.ps1
+            pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
+            pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
+            pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -353,6 +502,7 @@ jobs:
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/general/test_01_3dlayout_edb.py
             pytest -v external/pyaedt/tests/system/general/test_01_configuration_files.py
+            pytest -v external/pyaedt/tests/system/general/test_21_Circuit.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@v3
@@ -368,22 +518,37 @@ jobs:
             pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
             pytest -v external/pyaedt/tests/system/solvers/test_00_analyze.py
 
+      - name: Run PyAEDT extensions tests
+        uses: nick-fields/retry@v3
+        env:
+          PYTHONMALLOC: malloc
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 50
+          command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            . .venv/bin/activate
+            pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
+            pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
+            pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
+
   docs-build:
     name: Build documentation
     runs-on: ubuntu-latest
     steps:
       - name: Build documentation
-        uses: ansys/actions/doc-build@5dc39c7838f50142138f7ac518ff3e4dca065d97 # v9.0.12
+        uses: ansys/actions/doc-build@8d3e4946f36c2a7d447b92e34b1022a5c9dc77a7 # v10.0.12
         with:
           dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          sphinxopts: '-j auto --color -w build_errors.txt'
+          sphinxopts: '-j 1 --color -w build_errors.txt'
           check-links: false
           needs-quarto: true
 
   package:
     name: Package library
-    needs: [legacy-tests-windows, legacy-tests-linux, docs-build]
+    needs: [system-tests-windows, system-tests-linux,unit-tests-windows, unit-tests-linux, docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts

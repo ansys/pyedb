@@ -20,14 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.utility.value import Value as GrpcValue
-
 from pyedb.dotnet.database.cell.terminal.terminal import Terminal
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
+from pyedb.grpc.database.utility.value import Value
 
 
 class GapPort(EdgeTerminal):
@@ -60,7 +59,7 @@ class GapPort(EdgeTerminal):
         float
             Magnitude value.
         """
-        return self._edb_object.source_amplitude.value
+        return Value(self._edb_object.source_amplitude, self._pedb.active_cell)
 
     @property
     def phase(self) -> float:
@@ -71,7 +70,7 @@ class GapPort(EdgeTerminal):
         float
             Phase value.
         """
-        return self._edb_object.source_phase.value
+        return Value(self._edb_object.source_phase, self._pedb.active_cell)
 
     @property
     def renormalize(self) -> bool:
@@ -236,12 +235,12 @@ class WavePort(EdgeTerminal):
         float
             deembed value.
         """
-        return self._edb_object.port_post_processing_prop.deembed_length.value
+        return Value(self._edb_object.port_post_processing_prop.deembed_length, self._pedb.active_cell)
 
     @deembed_length.setter
     def deembed_length(self, value):
         p = self._edb_object.port_post_processing_prop
-        p.deembed_length = GrpcValue(value)
+        p.deembed_length = Value(value)
         self._edb_object.port_post_processing_prop = p
 
 

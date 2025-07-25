@@ -25,6 +25,7 @@ from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.primitive.circle import Circle as GrpcCircle
 from ansys.edb.core.primitive.primitive import Primitive as GrpcPrimitive
 
+from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.utilities import compute_arc_points
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -202,15 +203,15 @@ class Primitive(GrpcPrimitive):
         y = []
         for i, point in enumerate(my_net_points):
             if not point.is_arc:
-                x.append(point.x.value)
-                y.append(point.y.value)
+                x.append(Value(point.x))
+                y.append(Value(point.y))
             else:
-                arc_h = point.arc_height.value
-                p1 = [my_net_points[i - 1].x.value, my_net_points[i - 1].y.value]
+                arc_h = Value(point.arc_height)
+                p1 = [Value(my_net_points[i - 1].x), Value(my_net_points[i - 1].y)]
                 if i + 1 < len(my_net_points):
-                    p2 = [my_net_points[i + 1].x.value, my_net_points[i + 1].y.value]
+                    p2 = [Value(my_net_points[i + 1].x), Value(my_net_points[i + 1].y)]
                 else:
-                    p2 = [my_net_points[0].x.value, my_net_points[0].y.value]
+                    p2 = [Value(my_net_points[0].x), Value(my_net_points[0].y)]
                 x_arc, y_arc = compute_arc_points(p1, p2, arc_h, num)
                 x.extend(x_arc)
                 y.extend(y_arc)
@@ -228,7 +229,7 @@ class Primitive(GrpcPrimitive):
 
         """
         center = self.cast().polygon_data.bounding_circle()[0]
-        return [center.x.value, center.y.value]
+        return [Value(center.x), Value(center.y)]
 
     def get_connected_object_id_set(self) -> list[int]:
         """Produce a list of all geometries physically connected to a given layout object.
@@ -253,12 +254,7 @@ class Primitive(GrpcPrimitive):
 
         """
         bbox = self.cast().polygon_data.bbox()
-        return [
-            round(bbox[0].x.value, 6),
-            round(bbox[0].y.value, 6),
-            round(bbox[1].x.value, 6),
-            round(bbox[1].y.value, 6),
-        ]
+        return [Value(bbox[0].x), Value(bbox[0].y), Value(bbox[1].x), Value(bbox[1].y)]
 
     def convert_to_polygon(self):
         """Convert path to polygon.
@@ -329,7 +325,7 @@ class Primitive(GrpcPrimitive):
             point = GrpcPointData(point)
 
         p0 = self.cast().polygon_data.closest_point(point)
-        return [p0.x.value, p0.y.value]
+        return [Value(p0.x), Value(p0.y)]
 
     @property
     def arcs(self):
@@ -549,16 +545,16 @@ class Primitive(GrpcPrimitive):
         """
 
         if isinstance(point, GrpcPointData):
-            point = [point.x.value, point.y.value]
+            point = [Value(point.x), Value(point.y)]
         dist = 1e12
         out = None
         for arc in self.arcs:
             mid_point = arc.midpoint
-            mid_point = [mid_point.x.value, mid_point.y.value]
+            mid_point = [Value(mid_point.x), Value(mid_point.y)]
             if GeometryOperators.points_distance(mid_point, point) < dist:
                 out = arc.midpoint
                 dist = GeometryOperators.points_distance(mid_point, point)
-        return [out.x.value, out.y.value]
+        return [Value(out.x), Value(out.y)]
 
     @property
     def shortest_arc(self) -> float:

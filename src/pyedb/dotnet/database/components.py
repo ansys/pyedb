@@ -125,7 +125,7 @@ class Components(object):
 
     @property
     def _edb(self):
-        return self._pedb.edb_api
+        return self._pedb.core
 
     def _get_edb_value(self, value):
         return self._pedb.edb_value(value)
@@ -496,7 +496,7 @@ class Components(object):
         return cmp_list
 
     def _get_edb_pin_from_pin_name(self, cmp, pin):
-        if not isinstance(cmp, self._pedb.edb_api.cell.hierarchy.component):
+        if not isinstance(cmp, self._pedb.core.cell.hierarchy.component):
             return False
         if not isinstance(pin, str):
             pin = pin.GetName()
@@ -619,7 +619,7 @@ class Components(object):
 
         """
         if cmp is not None:
-            if not (isinstance(cmp, self._pedb.edb_api.cell.hierarchy.component)):
+            if not (isinstance(cmp, self._pedb.core.cell.hierarchy.component)):
                 cmp = self.get_component_by_name(cmp)
             cmp_prop = cmp.GetComponentProperty().Clone()
             return cmp_prop.GetSolderBallProperty().GetHeight()
@@ -1314,7 +1314,7 @@ class Components(object):
         pins = self.get_pin_from_component(component.refdes)
         if len(pins) == 2:  # pragma: no cover
             pin_layers = self._padstack._get_pin_layer_range(pins[0])
-            pos_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
+            pos_pin_term = self._pedb.core.cell.terminal.PadstackInstanceTerminal.Create(
                 self._active_layout,
                 pins[0].net._edb_object,
                 f"{component.refdes}_{pins[0]._edb_object.GetName()}",
@@ -1324,7 +1324,7 @@ class Components(object):
             )
             if not pos_pin_term:  # pragma: no cover
                 return False
-            neg_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
+            neg_pin_term = self._pedb.core.cell.terminal.PadstackInstanceTerminal.Create(
                 self._active_layout,
                 pins[1].net._edb_object,
                 f"{component.refdes}_{pins[1]._edb_object.GetName()}_ref",
@@ -1335,11 +1335,11 @@ class Components(object):
             if not neg_pin_term:  # pragma: no cover
                 return False
             if pec_boundary:
-                pos_pin_term.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PecBoundary)
-                neg_pin_term.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PecBoundary)
+                pos_pin_term.SetBoundaryType(self._pedb.core.cell.terminal.BoundaryType.PecBoundary)
+                neg_pin_term.SetBoundaryType(self._pedb.core.cell.terminal.BoundaryType.PecBoundary)
             else:
-                pos_pin_term.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PortBoundary)
-                neg_pin_term.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PortBoundary)
+                pos_pin_term.SetBoundaryType(self._pedb.core.cell.terminal.BoundaryType.PortBoundary)
+                neg_pin_term.SetBoundaryType(self._pedb.core.cell.terminal.BoundaryType.PortBoundary)
             pos_pin_term.SetName(component.refdes)
             pos_pin_term.SetReferenceTerminal(neg_pin_term)
             if circuit_ports and not pec_boundary:
@@ -1380,7 +1380,7 @@ class Components(object):
         pins = self.get_pin_from_component(component.refdes)
         if len(pins) == 2:  # pragma: no cover
             pin_layer = self._padstack._get_pin_layer_range(pins[0])[0]
-            pos_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
+            pos_pin_term = self._pedb.core.cell.terminal.PadstackInstanceTerminal.Create(
                 self._active_layout,
                 pins[0]._edb_object.GetNet(),
                 f"{component.refdes}_{pins[0]._edb_object.GetName()}",
@@ -1390,7 +1390,7 @@ class Components(object):
             )
             if not pos_pin_term:  # pragma: no cover
                 return False
-            neg_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
+            neg_pin_term = self._pedb.core.cell.terminal.PadstackInstanceTerminal.Create(
                 self._active_layout,
                 pins[1]._edb_object.GetNet(),
                 f"{component.refdes}_{pins[1]._edb_object.GetName()}_ref",
@@ -1400,13 +1400,13 @@ class Components(object):
             )
             if not neg_pin_term:  # pragma: no cover
                 return False
-            pos_pin_term.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.RlcBoundary)
+            pos_pin_term.SetBoundaryType(self._pedb.core.cell.terminal.BoundaryType.RlcBoundary)
             if not circuit_type:
                 pos_pin_term.SetIsCircuitPort(False)
             else:
                 pos_pin_term.SetIsCircuitPort(True)
             pos_pin_term.SetName(component.refdes)
-            neg_pin_term.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.RlcBoundary)
+            neg_pin_term.SetBoundaryType(self._pedb.core.cell.terminal.BoundaryType.RlcBoundary)
             if not circuit_type:
                 neg_pin_term.SetIsCircuitPort(False)
             else:
@@ -1486,9 +1486,9 @@ class Components(object):
             return False
 
     def _getComponentDefinition(self, name, pins):
-        componentDefinition = self._pedb.edb_api.definition.ComponentDef.FindByName(self._db, name)
+        componentDefinition = self._pedb.core.definition.ComponentDef.FindByName(self._db, name)
         if componentDefinition.IsNull():
-            componentDefinition = self._pedb.edb_api.definition.ComponentDef.Create(self._db, name, None)
+            componentDefinition = self._pedb.core.definition.ComponentDef.Create(self._db, name, None)
             if componentDefinition.IsNull():
                 self._logger.error("Failed to create component definition {}".format(name))
                 return None
@@ -1497,7 +1497,7 @@ class Components(object):
                 if not pin.GetName():
                     pin.SetName(str(ind))
                 ind += 1
-                componentDefinitionPin = self._pedb.edb_api.definition.ComponentDefPin.Create(
+                componentDefinitionPin = self._pedb.core.definition.ComponentDefPin.Create(
                     componentDefinition, pin.GetName()
                 )
                 if componentDefinitionPin.IsNull():
@@ -1595,9 +1595,15 @@ class Components(object):
         >>> edbapp.components.create(pins, "A1New")
 
         """
-        _pins = [p._edb_object for p in pins if isinstance(p, EDBPadstackInstance)]
-        if _pins:
-            pins = _pins
+        _pins = []
+        for p in pins:
+            if isinstance(p, EDBPadstackInstance):
+                _pins.append(p._edb_object)
+            elif isinstance(p, str):
+                _pins.append(self._pedb.padstacks.instances_by_name[p]._edb_object)
+            else:
+                _pins.append(p)
+        pins = _pins
         if not component_name:
             component_name = generate_unique_name("Comp_")
         if component_part_name:
@@ -1606,7 +1612,7 @@ class Components(object):
             compdef = self._getComponentDefinition(component_name, pins)
         if not compdef:
             return False
-        new_cmp = self._pedb.edb_api.cell.hierarchy.component.Create(
+        new_cmp = self._pedb.core.cell.hierarchy.component.Create(
             self._active_layout, component_name, compdef.GetName()
         )
 
@@ -2045,7 +2051,7 @@ class Components(object):
         >>> edbapp.components.set_solder_ball("A1")
 
         """
-        if not isinstance(component, self._pedb.edb_api.cell.hierarchy.component):
+        if not isinstance(component, self._pedb.core.cell.hierarchy.component):
             edb_cmp = self.get_component_by_name(component)._edb_object
             cmp = self.instances[component]
         else:  # pragma: no cover
@@ -2380,7 +2386,7 @@ class Components(object):
         reference_designator : str
             Reference designator of the component.
         """
-        obj = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, reference_designator)
+        obj = self._pedb.core.cell.hierarchy.component.FindByName(self._active_layout, reference_designator)
         return EDBComponent(self._pedb, obj)
 
     def get_pin_from_component(self, component, netName=None, pinName=None, net_name=None, pin_name=None):
@@ -2419,8 +2425,8 @@ class Components(object):
 
         """
         warnings.warn("Use new property :func:`edb.padstacks.get_instances` instead.", DeprecationWarning)
-        if not isinstance(component, self._pedb.edb_api.cell.hierarchy.component):
-            component = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, component)
+        if not isinstance(component, self._pedb.core.cell.hierarchy.component):
+            component = self._pedb.core.cell.hierarchy.component.FindByName(self._active_layout, component)
         if pinName:
             warnings.warn("Use argument `pin_name` instead of `pinName`", DeprecationWarning)
         if netName:
@@ -2482,7 +2488,7 @@ class Components(object):
         if isinstance(pin, EDBPadstackInstance):
             pin = pin._edb_padstackinstance
         val = String("")
-        _, name = pin.GetProductProperty(self._edb.edb_api.ProductId.Designer, 11, val)
+        _, name = pin.GetProductProperty(self._edb.core.ProductId.Designer, 11, val)
         name = str(name).strip("'")
         return name
 
@@ -2758,8 +2764,8 @@ class Components(object):
             elif pars:
                 delta_pins.append(1.5 * pars[0])
                 w = min(pars[0], w)
-            elif pad.polygon_data.edb_api:  # pragma: no cover
-                bbox = pad.polygon_data.edb_api.GetBBox()
+            elif pad.polygon_data.core:  # pragma: no cover
+                bbox = pad.polygon_data.core.GetBBox()
                 lower = [bbox.Item1.X.ToDouble(), bbox.Item1.Y.ToDouble()]
                 upper = [bbox.Item2.X.ToDouble(), bbox.Item2.Y.ToDouble()]
                 pars = [abs(lower[0] - upper[0]), abs(lower[1] - upper[1])]

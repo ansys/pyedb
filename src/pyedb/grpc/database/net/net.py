@@ -60,7 +60,7 @@ class Net(GrpcNet):
         self._pedb = pedb
         self._core_components = pedb.components
         self._core_primitive = pedb.modeler
-        self._edb_object = raw_net
+        self.__primitives = []
 
     @property
     def primitives(self) -> list[Union[Path, Polygon, Circle, Rectangle, Bondwire]]:
@@ -76,19 +76,20 @@ class Net(GrpcNet):
             - :class:`Rectangle <pyedb.grpc.database.primitive.rectangle.Rectangle>`
             - :class:`Bondwire <pyedb.grpc.database.primitive.bondwire.Bondwire>`
         """
-        primitives = []
-        for primitive in super().primitives:
-            if primitive.primitive_type == GrpcPrimitiveType.PATH:
-                primitives.append(Path(self._pedb, primitive))
-            elif primitive.primitive_type == GrpcPrimitiveType.POLYGON:
-                primitives.append(Polygon(self._pedb, primitive))
-            elif primitive.primitive_type == GrpcPrimitiveType.CIRCLE:
-                primitives.append(Circle(self._pedb, primitive))
-            elif primitive.primitive_type == GrpcPrimitiveType.RECTANGLE:
-                primitives.append(Rectangle(self._pedb, primitive))
-            elif primitive.primitive_type == GrpcPrimitiveType.BONDWIRE:
-                primitives.append(Bondwire(self._pedb, primitive))
-        return primitives
+        primitives = super().primitives
+        if not len(self.__primitives) == len(primitives):
+            for primitive in primitives:
+                if primitive.primitive_type == GrpcPrimitiveType.PATH:
+                    self.__primitives.append(Path(self._pedb, primitive))
+                elif primitive.primitive_type == GrpcPrimitiveType.POLYGON:
+                    self.__primitives.append(Polygon(self._pedb, primitive))
+                elif primitive.primitive_type == GrpcPrimitiveType.CIRCLE:
+                    self.__primitives.append(Circle(self._pedb, primitive))
+                elif primitive.primitive_type == GrpcPrimitiveType.RECTANGLE:
+                    self.__primitives.append(Rectangle(self._pedb, primitive))
+                elif primitive.primitive_type == GrpcPrimitiveType.BONDWIRE:
+                    self.__primitives.append(Bondwire(self._pedb, primitive))
+        return self.__primitives
 
     @property
     def padstack_instances(self) -> list[PadstackInstance]:

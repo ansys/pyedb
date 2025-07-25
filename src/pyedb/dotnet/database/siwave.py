@@ -40,6 +40,9 @@ from pyedb.dotnet.database.edb_data.sources import (
     VoltageSource,
 )
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup import (
+    SIWaveCPASimulationSetup,
+)
 from pyedb.generic.constants import SolverType, SweepType
 from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
 from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
@@ -67,7 +70,7 @@ class EdbSiwave(object):
     @property
     def _edb(self):
         """EDB."""
-        return self._pedb.edb_api
+        return self._pedb.core
 
     def _get_edb_value(self, value):
         """Get the Edb value."""
@@ -1489,7 +1492,7 @@ class EdbSiwave(object):
         """Icepak default setting. If "True", only resistor are active in Icepak simulation.
         The power dissipation of the resistors are calculated from DC results.
         """
-        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        siwave_id = self._pedb.core.ProductId.SIWave
         cell = self._pedb.active_cell._active_cell
         _, value = cell.GetProductProperty(siwave_id, 422, "")
         return bool(value)
@@ -1507,23 +1510,34 @@ class EdbSiwave(object):
         """
         return SiwaveScanConfig(self._pedb, scan_type)
 
+    def add_cpa_analysis(self, name=None, siwave_cpa_setup_class=None):
+        if not name:
+            from pyedb.generic.general_methods import generate_unique_name
+
+            if not siwave_cpa_setup_class:
+                name = generate_unique_name("cpa_setup")
+            else:
+                name = siwave_cpa_setup_class.name
+        cpa_setup = SIWaveCPASimulationSetup(self._pedb, name=name, siwave_cpa_setup_class=siwave_cpa_setup_class)
+        return cpa_setup
+
     @icepak_use_minimal_comp_defaults.setter
     def icepak_use_minimal_comp_defaults(self, value):
         value = "True" if bool(value) else ""
-        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        siwave_id = self._pedb.core.ProductId.SIWave
         cell = self._pedb.active_cell._active_cell
         cell.SetProductProperty(siwave_id, 422, value)
 
     @property
     def icepak_component_file(self):
         """Icepak component file path."""
-        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        siwave_id = self._pedb.core.ProductId.SIWave
         cell = self._pedb.active_cell._active_cell
         _, value = cell.GetProductProperty(siwave_id, 420, "")
         return value
 
     @icepak_component_file.setter
     def icepak_component_file(self, value):
-        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        siwave_id = self._pedb.core.ProductId.SIWave
         cell = self._pedb.active_cell._active_cell
         cell.SetProductProperty(siwave_id, 420, value)

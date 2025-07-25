@@ -49,7 +49,7 @@ class LayerEdbClass(object):
         layer_type = self._layer_name_mapping[layer_type]
         layer_type = self._doc_layer_mapping[layer_type]
 
-        self._edb_object = self._pedb.edb_api.cell._cell.Layer(
+        self._edb_object = self._pedb.core.cell._cell.Layer(
             self._name,
             layer_type,
         )
@@ -76,7 +76,9 @@ class LayerEdbClass(object):
 
     @fill_material.setter
     def fill_material(self, value):
-        self._edb_object.SetFillMaterial(value)
+        layer_clone = self._edb_layer
+        layer_clone.SetFillMaterial(value)
+        self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
 
     @property
     def _stackup_layer_mapping(self):
@@ -144,7 +146,7 @@ class LayerEdbClass(object):
 
     @property
     def _edb(self):
-        return self._pedb.edb_api
+        return self._pedb.core
 
     @property
     def _edb_layer(self):
@@ -287,7 +289,7 @@ class StackupLayerEdbClass(LayerEdbClass):
     def _create(self, layer_type):
         layer_type_edb_name = self._layer_name_mapping[layer_type]
         layer_type = self._layer_type_mapping[layer_type_edb_name]
-        self._edb_object = self._pedb.edb_api.cell._cell.StackupLayer(
+        self._edb_object = self._pedb.core.cell._cell.StackupLayer(
             self._name,
             layer_type,
             self._pedb.edb_value(0),
@@ -637,11 +639,11 @@ class StackupLayerEdbClass(LayerEdbClass):
         if not self.is_stackup_layer:  # pragma: no cover
             return
         if surface == "top":
-            return self._edb_layer.GetRoughnessModel(self._pedb.edb_api.Cell.RoughnessModel.Region.Top)
+            return self._edb_layer.GetRoughnessModel(self._pedb.core.Cell.RoughnessModel.Region.Top)
         elif surface == "bottom":
-            return self._edb_layer.GetRoughnessModel(self._pedb.edb_api.Cell.RoughnessModel.Region.Bottom)
+            return self._edb_layer.GetRoughnessModel(self._pedb.core.Cell.RoughnessModel.Region.Bottom)
         elif surface == "side":
-            return self._edb_layer.GetRoughnessModel(self._pedb.edb_api.Cell.RoughnessModel.Region.Side)
+            return self._edb_layer.GetRoughnessModel(self._pedb.core.Cell.RoughnessModel.Region.Side)
 
     def assign_roughness_model(
         self,
@@ -683,27 +685,27 @@ class StackupLayerEdbClass(LayerEdbClass):
         if apply_on_surface == "all":
             self._side_roughness = "all"
             regions = [
-                self._pedb.edb_api.Cell.RoughnessModel.Region.Top,
-                self._pedb.edb_api.Cell.RoughnessModel.Region.Side,
-                self._pedb.edb_api.Cell.RoughnessModel.Region.Bottom,
+                self._pedb.core.Cell.RoughnessModel.Region.Top,
+                self._pedb.core.Cell.RoughnessModel.Region.Side,
+                self._pedb.core.Cell.RoughnessModel.Region.Bottom,
             ]
         elif apply_on_surface == "top":
             self._side_roughness = "top"
-            regions = [self._pedb.edb_api.Cell.RoughnessModel.Region.Top]
+            regions = [self._pedb.core.Cell.RoughnessModel.Region.Top]
         elif apply_on_surface == "bottom":
             self._side_roughness = "bottom"
-            regions = [self._pedb.edb_api.Cell.RoughnessModel.Region.Bottom]
+            regions = [self._pedb.core.Cell.RoughnessModel.Region.Bottom]
         elif apply_on_surface == "side":
             self._side_roughness = "side"
-            regions = [self._pedb.edb_api.Cell.RoughnessModel.Region.Side]
+            regions = [self._pedb.core.Cell.RoughnessModel.Region.Side]
 
         layer_clone = self._edb_layer
         layer_clone.SetRoughnessEnabled(True)
         for r in regions:
             if model_type == "huray":
-                model = self._pedb.edb_api.Cell.HurrayRoughnessModel(radius, surface_ratio)
+                model = self._pedb.core.Cell.HurrayRoughnessModel(radius, surface_ratio)
             else:
-                model = self._pedb.edb_api.Cell.GroisseRoughnessModel(groisse_roughness)
+                model = self._pedb.core.Cell.GroisseRoughnessModel(groisse_roughness)
             layer_clone.SetRoughnessModel(r, model)
         return self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
 

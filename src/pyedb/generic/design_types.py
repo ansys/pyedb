@@ -19,6 +19,30 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from typing import TYPE_CHECKING, Literal, Union, overload
+import warnings
+
+from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
+from pyedb.misc.misc import list_installed_ansysem
+
+if TYPE_CHECKING:
+    from pyedb.dotnet.edb import Edb as EdbDotnet
+    from pyedb.grpc.edb import Edb as EdbGrpc
+
+
+@overload
+def Edb(*, grpc: Literal[True], **kwargs) -> "EdbGrpc":
+    ...
+
+
+@overload
+def Edb(*, grpc: Literal[False] = False, **kwargs) -> "EdbDotnet":
+    ...
+
+
+@overload
+def Edb(*, grpc: bool, **kwargs) -> Union["EdbGrpc", "EdbDotnet"]:
+    ...
 
 
 # lazy imports
@@ -234,7 +258,21 @@ def Edb(
 
     """
 
+    if not edbversion:  # pragma: no cover
+        try:
+            version = "20{}.{}".format(list_installed_ansysem()[0][-3:-1], list_installed_ansysem()[0][-1:])
+        except IndexError:
+            raise Exception("No ANSYSEM_ROOTxxx is found.")
+    else:
+        version = edbversion
+
     # Use EDB legacy (default choice)
+    if float(version) >= 2025.2:
+        if not grpc:
+            warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
+    else:
+        if grpc:
+            raise ValueError(f"gRPC flag was enabled however your ANSYS AEDT version {version} is not compatible")
     if grpc:
         from pyedb.grpc.edb import Edb as app
     else:
@@ -243,7 +281,7 @@ def Edb(
         edbpath=edbpath,
         cellname=cellname,
         isreadonly=isreadonly,
-        edbversion=edbversion,
+        edbversion=version,
         isaedtowned=isaedtowned,
         oproject=oproject,
         student_version=student_version,

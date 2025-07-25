@@ -954,13 +954,13 @@ class EDBPadstack(object):
                 stop = layer_names[layer_names.index(layer_name) + 1]
                 new_padstack_name = "MV_{}_{}_{}".format(self.name, start, stop)
                 included = [start, stop]
-                new_padstack_definition_data = self._ppadstack._pedb.edb_api.definition.PadstackDefData.Create()
+                new_padstack_definition_data = self._ppadstack._pedb.core.definition.PadstackDefData.Create()
                 new_padstack_definition_data.AddLayers(convert_py_list_to_net_list(included))
                 for layer in included:
                     pl = self.pad_by_layer[layer]
                     new_padstack_definition_data.SetPadParameters(
                         layer,
-                        self._ppadstack._pedb.edb_api.definition.PadType.RegularPad,
+                        self._ppadstack._pedb.core.definition.PadType.RegularPad,
                         pl.int_to_geometry_type(pl.geometry_type),
                         list(
                             pl._edb_padstack.GetData().GetPadParametersValue(
@@ -980,7 +980,7 @@ class EDBPadstack(object):
                     pl = self.antipad_by_layer[layer]
                     new_padstack_definition_data.SetPadParameters(
                         layer,
-                        self._ppadstack._pedb.edb_api.definition.PadType.AntiPad,
+                        self._ppadstack._pedb.core.definition.PadType.AntiPad,
                         pl.int_to_geometry_type(pl.geometry_type),
                         list(
                             pl._edb_padstack.GetData().GetPadParametersValue(
@@ -1000,7 +1000,7 @@ class EDBPadstack(object):
                     pl = self.thermalpad_by_layer[layer]
                     new_padstack_definition_data.SetPadParameters(
                         layer,
-                        self._ppadstack._pedb.edb_api.definition.PadType.ThermalPad,
+                        self._ppadstack._pedb.core.definition.PadType.ThermalPad,
                         pl.int_to_geometry_type(pl.geometry_type),
                         list(
                             pl._edb_padstack.GetData().GetPadParametersValue(
@@ -1422,7 +1422,7 @@ class EDBPadstackInstance(Connectable):
         tuple
             Tuple of the layer name, drill diameter, and offset if it exists.
         """
-        layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
+        layer = self._pedb.core.cell.layer("", self._pedb.core.cell.layer_type.SignalLayer)
         val = self._pedb.edb_value(0)
         offset = self._pedb.edb_value(0.0)
         (
@@ -1488,7 +1488,7 @@ class EDBPadstackInstance(Connectable):
         tuple
             Tuple of the layer name, drill diameter, and drill offset if it exists.
         """
-        layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
+        layer = self._pedb.core.cell.layer("", self._pedb.core.cell.layer_type.SignalLayer)
         val = self._pedb.edb_value(0)
         offset = self._pedb.edb_value(0.0)
         (
@@ -1509,7 +1509,7 @@ class EDBPadstackInstance(Connectable):
     def backdrill_parameters(self):
         data = {}
         flag, drill_to_layer, offset, diameter = self._edb_object.GetBackDrillParametersLayerValue(
-            self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer),
+            self._pedb.core.cell.layer("", self._pedb.core.cell.layer_type.SignalLayer),
             self._pedb.edb_value(0),
             self._pedb.edb_value(0.0),
             True,
@@ -1522,7 +1522,7 @@ class EDBPadstackInstance(Connectable):
                     "stub_length": offset.ToString(),
                 }
         flag, drill_to_layer, offset, diameter = self._edb_object.GetBackDrillParametersLayerValue(
-            self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer),
+            self._pedb.core.cell.layer("", self._pedb.core.cell.layer_type.SignalLayer),
             self._pedb.edb_value(0),
             self._pedb.edb_value(0.0),
             False,
@@ -1710,7 +1710,7 @@ class EDBPadstackInstance(Connectable):
                 pos.append(self._pedb.edb_value(v))
             else:
                 pos.append(v)
-        point_data = self._pedb.edb_api.geometry.point_data(pos[0], pos[1])
+        point_data = self._pedb.core.geometry.point_data(pos[0], pos[1])
         self._edb_padstackinstance.SetPositionAndRotation(point_data, self._pedb.edb_value(self.rotation))
 
     @property
@@ -1794,7 +1794,7 @@ class EDBPadstackInstance(Connectable):
         """
 
         val = String("")
-        _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
+        _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.core.ProductId.Designer, 11, val)
         aedt_name = str(name).strip("'")
         if aedt_name == "":
             if self.is_pin and self.component:
@@ -1806,7 +1806,7 @@ class EDBPadstackInstance(Connectable):
 
     @aedt_name.setter
     def aedt_name(self, value):
-        self._edb_object.SetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, value)
+        self._edb_object.SetProductProperty(self._pedb.core.ProductId.Designer, 11, value)
 
     def parametrize_position(self, prefix=None):
         """Parametrize the instance position.

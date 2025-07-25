@@ -25,7 +25,8 @@ from ansys.edb.core.primitive.bondwire import (
 )
 from ansys.edb.core.primitive.bondwire import Bondwire as GrpcBondWire
 from ansys.edb.core.primitive.bondwire import BondwireType as GrpcBondWireType
-from ansys.edb.core.utility.value import Value as GrpcValue
+
+from pyedb.grpc.database.utility.value import Value
 
 
 class Bondwire(GrpcBondWire):
@@ -113,11 +114,11 @@ class Bondwire(GrpcBondWire):
         float
             Cross section height.
         """
-        return super().cross_section_height.value
+        return Value(super().cross_section_height)
 
     @cross_section_height.setter
     def cross_section_height(self, cross_section_height):
-        super(Bondwire, self.__class__).cross_section_height.__set__(self, GrpcValue(cross_section_height))
+        super(Bondwire, self.__class__).cross_section_height.__set__(self, Value(cross_section_height))
 
     # @property
     # def trajectory(self):
@@ -134,11 +135,11 @@ class Bondwire(GrpcBondWire):
     #     **x1** : X value of the end point.
     #     **y1** : Y value of the end point.
     #     """
-    #     return [i.value for i in self.get_traj()]
+    #     return [Value(i) for i in self.get_traj()]
     #
     # @trajectory.setter
     # def trajectory(self, value):
-    #     values = [GrpcValue(i) for i in value]
+    #     values = [Value(i) for i in value]
     #     self.set_traj(values[0], values[1], values[2], values[3])
 
     @property
@@ -150,11 +151,11 @@ class Bondwire(GrpcBondWire):
         float
             Width value.
         """
-        return super().width.value
+        return Value(super().width)
 
     @width.setter
     def width(self, width):
-        super(Bondwire, self.__class__).width.__set__(self, GrpcValue(width))
+        super(Bondwire, self.__class__).width.__set__(self, Value(width))
 
     # @property
     # def start_elevation(self):
