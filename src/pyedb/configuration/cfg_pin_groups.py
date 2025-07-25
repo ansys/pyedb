@@ -25,65 +25,34 @@ from pyedb.configuration.cfg_common import CfgBase
 
 class CfgPinGroups:
     """Manage configuration pin group class."""
+    def set_pingroup_to_edb(self):
+        for pg in self.pin_groups:
+            pg.create()
 
-    class Grpc:
-        def __init__(self, parent):
-            self.parent = parent
-            self._pedb = parent._pedb
-
-        def set_pingroup_to_edb(self):
-            for pg in self.parent.pin_groups:
-                pg.create()
-
-        def get_data_from_edb(self):
-            self.parent.pin_groups = []
-            layout_pin_groups = self._pedb.siwave.pin_groups
-            for pg_name, pg_obj in layout_pin_groups.items():
-                if self._pedb.grpc:
-                    pins = list(pg_obj.pins.values())
-                    refdes = pins[0].component.name
-                    cfg_pg = CfgPinGroup(
-                        self._pedb,
-                        name=pg_name,
-                        reference_designator=refdes,
-                        pins=[pin.component_pin for pin in pins],
-                    )
-                    self.parent.pin_groups.append(cfg_pg)
-            return self.parent.export_properties()
-
-    class DotNet(Grpc):
-        def __init__(self, parent):
-            self.parent = parent
-            super().__init__(parent)
-
-        def get_data_from_edb(self):
-            self.parent.pin_groups = []
-            layout_pin_groups = self._pedb.siwave.pin_groups
-            for pg_name, pg_obj in layout_pin_groups.items():
-                pins = list(pg_obj.pins.keys())
-                refdes = list(pg_obj.pins.values())[0].component.name
-                cfg_pg = CfgPinGroup(
-                    self._pedb,
-                    name=pg_name,
-                    reference_designator=refdes,
-                    pins=pins,
-                )
-                self.parent.pin_groups.append(cfg_pg)
-            return self.parent.export_properties()
+    def get_data_from_edb(self):
+        self.pin_groups = []
+        layout_pin_groups = self._pedb.siwave.pin_groups
+        for pg_name, pg_obj in layout_pin_groups.items():
+            pins = list(pg_obj.pins.keys())
+            refdes = list(pg_obj.pins.values())[0].component.name
+            cfg_pg = CfgPinGroup(
+                self._pedb,
+                name=pg_name,
+                reference_designator=refdes,
+                pins=pins,
+            )
+            self.pin_groups.append(cfg_pg)
+        return self.export_properties()
 
     def __init__(self, pedb, pingroup_data):
         self._pedb = pedb
-        if self._pedb.grpc:
-            self.api = self.Grpc(self)
-        else:
-            self.api = self.DotNet(self)
         self.pin_groups = [CfgPinGroup(self._pedb, **pg) for pg in pingroup_data]
 
     def apply(self):
-        self.api.set_pingroup_to_edb()
+        self.set_pingroup_to_edb()
 
     def get_data_from_db(self):
-        return self.api.get_data_from_edb()
+        return self.get_data_from_edb()
 
     def export_properties(self):
         pin_groups = []
@@ -93,42 +62,26 @@ class CfgPinGroups:
 
 
 class CfgPinGroup(CfgBase):
-    class Grpc:
-        def __init__(self, parent):
-            self.parent = parent
-            self._pedb = parent._pedb
 
-        def create(self):
-            if self.parent.pins:
-                pins = self.parent.pins if isinstance(self.parent.pins, list) else [self.parent.pins]
-                self._pedb.siwave.create_pin_group(self.parent.reference_designator, pins, self.parent.name)
-            elif self.parent.net:
-                nets = self.parent.net if isinstance(self.parent.net, list) else [self.parent.net]
-                comp = self._pedb.components.instances[self.parent.reference_designator]
-                pins = [p for p, obj in comp.pins.items() if obj.net_name in nets]
-                if not self._pedb.siwave.create_pin_group(self.parent.reference_designator, pins, self.parent.name):
-                    raise RuntimeError(f"Failed to create pin group {self.parent.name}")
-            else:
-                raise RuntimeError(f"No net and pins defined for defining pin group {self.parent.name}")
-
-    class DotNet(Grpc):
-        def __init__(self, parent):
-            super().__init__(parent)
+    def create(self):
+        if self.pins:
+            pins = self.pins if isinstance(self.pins, list) else [self.pins]
+            self._pedb.siwave.create_pin_group(self.reference_designator, pins, self.name)
+        elif self.net:
+            nets = self.net if isinstance(self.net, list) else [self.net]
+            comp = self._pedb.components.instances[self.reference_designator]
+            pins = [p for p, obj in comp.pins.items() if obj.net_name in nets]
+            if not self._pedb.siwave.create_pin_group(self.reference_designator, pins, self.name):
+                raise RuntimeError(f"Failed to create pin group {self.name}")
+        else:
+            raise RuntimeError(f"No net and pins defined for defining pin group {self.name}")
 
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
-        if self._pedb.grpc:
-            self.api = self.Grpc(self)
-        else:
-            self.api = self.DotNet(self)
         self.name = kwargs["name"]
         self.reference_designator = kwargs.get("reference_designator")
         self.pins = kwargs.get("pins")
         self.net = kwargs.get("net")
-
-    def create(self):
-        """Apply pin group on layout."""
-        self.api.create()
 
     def export_properties(self):
         if self.pins:
