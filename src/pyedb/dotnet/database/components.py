@@ -1904,7 +1904,7 @@ class Components(object):
                     deleted_comps.append(comp)
         if not deactivate_only:
             self.refresh_components()
-        self._pedb._logger.info("Deleted {} components".format(len(deleted_comps)))
+        self._pedb.logger.info("Deleted {} components".format(len(deleted_comps)))
 
         return deleted_comps
 

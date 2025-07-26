@@ -693,11 +693,32 @@ class CellDotNet:
         return GeometryDotNet(self._app)
 
 
-class EdbDotNet(object):
-    """Edb Dot Net Class."""
+class Database:
+    """Class representing a database object."""
+
+    @property
+    def core(self):
+        """Edb Dotnet Api class.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.database.dotnet.database.CellDotNet`
+        """
+        return CellDotNet(self)
+
+    @property
+    def database(self):
+        """Edb Dotnet Api Database."""
+        return self.core.database
+
+    @property
+    def definition(self):
+        """Edb Dotnet Api Database `Edb.Definition`."""
+        return self.core.Definition
 
     def __init__(self, edbversion, student_version=False):
-        self._logger.info(f"Edb version {edbversion}")
+        """Initialize a new Database."""
+        self.logger.info(f"Edb version {edbversion}")
         self.edbversion = edbversion
         if float(self.edbversion) >= 2025.2:
             warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
@@ -707,15 +728,15 @@ class EdbDotNet(object):
 
         if not settings.use_pyaedt_log:
             if settings.enable_screen_logs:
-                self._logger.enable_stdout_log()
+                self.logger.enable_stdout_log()
             else:  # pragma: no cover
-                self._logger.disable_stdout_log()
+                self.logger.disable_stdout_log()
         if not edb_initialized:  # pragma: no cover
-            self._logger.error("Failed to initialize Dlls.")
+            self.logger.error("Failed to initialize Dlls.")
             return
-        self._logger.info("Logger is initialized in EDB.")
-        self._logger.info("legacy v%s", __version__)
-        self._logger.info("Python version %s", sys.version)
+        self.logger.info("Logger is initialized in EDB.")
+        self.logger.info("legacy v%s", __version__)
+        self.logger.info("Python version %s", sys.version)
         if is_linux:  # pragma: no cover
             if env_value(self.edbversion) in os.environ or settings.edb_dll_path:
                 if settings.edb_dll_path:
@@ -761,52 +782,6 @@ class EdbDotNet(object):
         self.simSetup = __import__("Ansys.Ansoft.SimSetupData")
         self.simsetupdata = self.simSetup.Ansoft.SimSetupData.Data
 
-    @property
-    def student_version(self):
-        """Set the student version flag."""
-        return self._student_version
-
-    @student_version.setter
-    def student_version(self, value):
-        self._student_version = value
-
-    @property
-    def logger(self):
-        """Logger for EDB.
-
-        Returns
-        -------
-        :class:`pyedb.edb_logger.EDBLogger`
-        """
-        return self._logger
-
-    @property
-    def core(self):
-        """Edb Dotnet Api class.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.dotnet.database.CellDotNet`
-        """
-        return CellDotNet(self)
-
-    @property
-    def database(self):
-        """Edb Dotnet Api Database."""
-        return self.core.database
-
-    @property
-    def definition(self):
-        """Edb Dotnet Api Database `Edb.Definition`."""
-        return self.core.Definition
-
-
-class Database(EdbDotNet):
-    """Class representing a database object."""
-
-    def __init__(self, edbversion, student_version=False):
-        """Initialize a new Database."""
-        EdbDotNet.__init__(self, edbversion=edbversion, student_version=student_version)
         self._db = None
 
     @property

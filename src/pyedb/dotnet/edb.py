@@ -183,6 +183,8 @@ class Edb(Database):
 
     """
 
+    logger = None
+
     def __init__(
         self,
         edbpath: Union[str, Path] = None,
@@ -199,7 +201,7 @@ class Edb(Database):
         layer_filter: str = None,
         remove_existing_aedt: bool = False,
     ):
-        self._logger = pyedb_logger
+        self.logger = pyedb_logger
         now = datetime.now()
         self.logger.info(f"Star initializing Edb {now.time()}")
 
@@ -263,7 +265,7 @@ class Edb(Database):
                 raise AttributeError("Translation was unsuccessful")
                 return False
             if settings.enable_local_log_file and self.log_name:
-                self._logger.add_file_logger(self.log_name, "Edb")
+                self.logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)
         elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
@@ -280,22 +282,22 @@ class Edb(Database):
                 raise AttributeError("Translation was unsuccessful")
                 return False
             if settings.enable_local_log_file and self.log_name:
-                self._logger.add_file_logger(self.log_name, "Edb")
+                self.logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath[-2:])
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
             if settings.enable_local_log_file and self.log_name:
-                self._logger.add_file_logger(self.log_name, "Edb")
+                self.logger.add_file_logger(self.log_name, "Edb")
             self.open_edb()
         elif not os.path.exists(os.path.join(self.edbpath, "edb.def")):
             self.create_edb()
             if settings.enable_local_log_file and self.log_name:
-                self._logger.add_file_logger(self.log_name, "Edb")
+                self.logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s created correctly.", self.edbpath)
         elif ".aedb" in edbpath:
             self.edbpath = edbpath
             if settings.enable_local_log_file and self.log_name:
-                self._logger.add_file_logger(self.log_name, "Edb")
+                self.logger.add_file_logger(self.log_name, "Edb")
             self.open_edb()
         if self.active_cell:
             self.logger.info(f"EDB initialized.Time lapse {datetime.now() - now}")
@@ -1486,7 +1488,7 @@ class Edb(Database):
         Database.close(self)
 
         if self.log_name and settings.enable_local_log_file:
-            self._logger.remove_all_file_loggers()
+            self.logger.remove_all_file_loggers()
         start_time = time.time()
         self._wait_for_file_release()
         elapsed_time = time.time() - start_time
@@ -1569,15 +1571,15 @@ class Edb(Database):
         self.logger.info("EDB file save time: {0:.2f}ms".format(elapsed_time * 1000.0))
         self.edbpath = self.directory
         if self.log_name:
-            self._logger.remove_file_logger(os.path.splitext(os.path.split(self.log_name)[-1])[0])
+            self.logger.remove_file_logger(os.path.splitext(os.path.split(self.log_name)[-1])[0])
 
         self.log_name = os.path.join(
             os.path.dirname(path),
             "pyedb_" + os.path.splitext(os.path.split(path)[-1])[0] + ".log",
         )
         if settings.enable_local_log_file:
-            self._logger.add_file_logger(self.log_name, "Edb")
-            self._logger.remove_file_logger(origin_name)
+            self.logger.add_file_logger(self.log_name, "Edb")
+            self.logger.remove_file_logger(origin_name)
         return True
 
     def execute(self, func):
@@ -2205,7 +2207,7 @@ class Edb(Database):
                         for _cmp in _cmps:
                             _cmp.Delete()
                     except:
-                        self._logger.error("Failed to remove single pin components.")
+                        self.logger.error("Failed to remove single pin components.")
                 db2.Close()
                 source = os.path.join(output_aedb_path, "edb.def.tmp")
                 target = os.path.join(output_aedb_path, "edb.def")
@@ -2433,7 +2435,7 @@ class Edb(Database):
                     self.logger.info(f"Number of voids included:{len(list(_poly1.Holes))}")
                 _poly = _poly1
         if not _poly or _poly.IsNull():
-            self._logger.error("Failed to create Extent.")
+            self.logger.error("Failed to create Extent.")
             return []
         self.logger.info_timer("Extent Creation")
         self.logger.reset_timer()

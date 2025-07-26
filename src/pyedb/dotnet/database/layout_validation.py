@@ -279,9 +279,9 @@ class LayoutValidation:
             if prim.net_name in net_list:
                 new_prims.extend(prim.fix_self_intersections())
         if new_prims:
-            self._pedb._logger.info("Self-intersections detected and removed.")
+            self._pedb.logger.info("Self-intersections detected and removed.")
         else:
-            self._pedb._logger.info("Self-intersection not found.")
+            self._pedb.logger.info("Self-intersection not found.")
         return True
 
     def illegal_net_names(self, fix=False):
@@ -298,7 +298,7 @@ class LayoutValidation:
                     new_name = re.sub(pattern, "_", net)
                     val.name = new_name
 
-        self._pedb._logger.info("Found {} illegal net names.".format(len(renamed_nets)))
+        self._pedb.logger.info("Found {} illegal net names.".format(len(renamed_nets)))
         return
 
     def illegal_rlc_values(self, fix=False):
