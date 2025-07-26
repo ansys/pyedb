@@ -9,7 +9,6 @@ These class is the containers of RF basic libraries.
    :toctree: _autosummary
    :nosignatures:
 
-   base_functions.Substrate
    base_functions.HatchGround
    base_functions.Meander
    base_functions.MIMCapacitor
