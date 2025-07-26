@@ -91,7 +91,7 @@ class Conductor(Material):
 
 
 class Dielectric(Material):
-    def __init__(self, pedb, name: str, permittivity: float = 4.4, loss_tg: float = 0.02):
+    def __init__(self, pedb, name: str, permittivity: float = 11.9, loss_tg: float = 0.02):
         super().__init__(pedb, name)
         self._pedb = pedb
         self.permittivity = permittivity
