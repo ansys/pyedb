@@ -654,11 +654,6 @@ class CellDotNet:
         self.core = app._edb
 
     @property
-    def api_class(self):
-        """Return Ansys.Ansoft.Edb class object."""
-        return self.core
-
-    @property
     def definition(self):
         """Edb Dotnet Api Definition."""
 
@@ -784,19 +779,6 @@ class EdbDotNet(object):
         :class:`pyedb.edb_logger.EDBLogger`
         """
         return self._logger
-
-    @property
-    def edb_api(self):
-        """Edb Dotnet Api class.
-
-        .. deprecated:: 0.54.0
-            Use :func:core` instead.
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.dotnet.database.CellDotNet`
-        """
-        warnings.warn("`edb_api` is deprecated, use `core` instead.", DeprecationWarning)
-        return CellDotNet(self)
 
     @property
     def core(self):
