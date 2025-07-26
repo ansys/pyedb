@@ -61,7 +61,7 @@ class Substrate:
 class Material:
     def __init__(self, pedb, name):
         self._pedb = pedb
-        self._name = name
+        self.name = name
 
     @property
     def name(self) -> str:
@@ -70,18 +70,15 @@ class Material:
     @name.setter
     def name(self, value: str):
         self._name = value
-        if not self.name in self._pedb.stackup.materials:
-            self._pedb.stackup.add_material(self.name)
-        else:
-            self._pedb.stackup.materials[self.name].name = value
+        if not value in self._pedb.materials:
+            self._pedb.materials.add_material(value)
 
 
 class Conductor(Material):
     def __init__(self, pedb, name: str, conductivity: float = 5.8e7):
         super().__init__(pedb, name)
         self._pedb = pedb
-        self._conductivity = conductivity
-        self._update_edb()
+        self.conductivity = conductivity
 
     @property
     def conductivity(self) -> float:
@@ -90,21 +87,15 @@ class Conductor(Material):
     @conductivity.setter
     def conductivity(self, value: float):
         self._conductivity = value
-        self._update_edb()
-
-    def _update_edb(self):
-        if not self.name in self._pedb.stackup.materials:
-            self._pedb.stackup.add_material(name=self.name, conductivity=self.conductivity)
-        self._pedb.stackup.materials[self.name].conductivity = self.conductivity
+        self._pedb.materials[self.name].conductivity = value
 
 
 class Dielectric(Material):
     def __init__(self, pedb, name: str, permittivity: float = 4.4, loss_tg: float = 0.02):
         super().__init__(pedb, name)
         self._pedb = pedb
-        self._permittivity = permittivity
-        self._loss_tg = loss_tg
-        self._update_edb()
+        self.permittivity = permittivity
+        self.loss_tg = loss_tg
 
     @property
     def permittivity(self) -> float:
@@ -113,7 +104,7 @@ class Dielectric(Material):
     @permittivity.setter
     def permittivity(self, value: float):
         self._permittivity = value
-        self._pedb.stackup.materials[self.name].permittivity = self.permittivity
+        self._pedb.materials[self.name].permittivity = value
 
     @property
     def loss_tg(self) -> float:
@@ -122,15 +113,14 @@ class Dielectric(Material):
     @loss_tg.setter
     def loss_tg(self, value: float):
         self._loss_tg = value
-        self._pedb.stackup.materials[self.name].loss_tangent = self.loss_tg
+        self._pedb.materials[self.name].loss_tangent = value
 
 
 class Layer:
     def __init__(self, pedb, name: str, material: Union[Conductor, Dielectric] = None, thickness: float = 1e-6):
         self._pedb = pedb
-        self._name: str = name
-        self._thickness: float = thickness
-        self._material = material
+        self.name: str = name
+        self.thickness: float = thickness
         self._material = material
 
     @property
@@ -140,7 +130,10 @@ class Layer:
     @name.setter
     def name(self, value: str):
         self._name = value
-        self._pedb.stackup.layers[self.name].name = self.name
+        if not value in self._pedb.stackup.layers:
+            self._pedb.stackup.add_layer(value)
+        else:
+            self._pedb.stackup.layers[self.name].name = self.name
 
     @property
     def thickness(self) -> float:
@@ -149,7 +142,7 @@ class Layer:
     @thickness.setter
     def thickness(self, value: float):
         self._thickness = value
-        self._pedb.stackup.layers[self.name].thickness = self.thickness
+        self._pedb.stackup.layers[self.name].thickness = value
 
     @property
     def material(self) -> any:
@@ -158,25 +151,20 @@ class Layer:
     @material.setter
     def material(self, material: Union[Conductor, Dielectric]):
         self._material = material
+        self._pedb.stackup.layers[self.name].material = material.name
 
 
 class MetalLayer(Layer):
     def __init__(self, pedb, name, thickness=1e-6, material: str = "Copper"):
         super().__init__(pedb, name, thickness=thickness)
-        self._material = Conductor(pedb, name=material)
-
-    def _edb_update(self):
-        if not self.name in self._pedb.stackup.layers:
-            self._pedb.stackup.add_layer(
-                self.name, layer_type="signal", material=self.material.name, thickness=self.thickness
-            )
-        self._pedb.stackup.layers[self.name].name = self.name
+        self.material = Conductor(pedb, name=material)
 
 
 class DielectricLayer(Layer):
     def __init__(self, pedb, name, thickness=1e-6, material: str = "FR4"):
         super().__init__(pedb, name, thickness=thickness)
-        self._material = Dielectric(pedb, name=material)
+        self._pedb.stackup[self.name].type = "dielectric"
+        self.material = Dielectric(pedb, name=material)
 
 
 class MicroStripTechnologyStackup:
