@@ -58,30 +58,85 @@ class Substrate:
     size: Tuple[float, float] = (0.001, 0.001)  # width, length in metres
 
 
+from typing import Union
+
+
+# ------------------------------------------------------------------
+# Material
+# ------------------------------------------------------------------
 class Material:
+    """
+    Generic material definition.
+
+    When the material name is set, the object automatically registers
+    itself in the provided PyEDB material database if the name is not
+    already present.
+
+    Parameters
+    ----------
+    pedb : ansys.edb.core.database.Database
+        Active EDB session.
+    name : str
+        Material name (e.g. ``"Copper"``).
+
+    Examples
+    --------
+    >>> m = Material(edb, "MyMaterial")
+    >>> m.name
+    'MyMaterial'
+    >>> edb.materials["MyMaterial"]   # now exists in the database
+    <Material object at ...>
+    """
+
     def __init__(self, pedb, name):
         self._pedb = pedb
         self.name = name
 
     @property
     def name(self) -> str:
+        """Material name."""
         return self._name
 
     @name.setter
     def name(self, value: str):
         self._name = value
-        if not value in self._pedb.materials:
+        if value not in self._pedb.materials:
             self._pedb.materials.add_material(value)
 
 
+# ------------------------------------------------------------------
+# Conductor
+# ------------------------------------------------------------------
 class Conductor(Material):
+    """
+    Metallic conductor material with electrical conductivity.
+
+    Parameters
+    ----------
+    pedb : ansys.edb.core.database.Database
+        Active EDB session.
+    name : str
+        Material name.
+    conductivity : float, optional
+        Electrical conductivity in S/m.  Default is 5.8e7 (Copper).
+
+    Examples
+    --------
+    >>> cu = Conductor(edb, "Copper", conductivity=5.8e7)
+    >>> cu.conductivity
+    58000000.0
+    >>> cu.conductivity = 3.5e7   # update on-the-fly
+    >>> edb.materials["Copper"].conductivity
+    35000000.0
+    """
+
     def __init__(self, pedb, name: str, conductivity: float = 5.8e7):
         super().__init__(pedb, name)
-        self._pedb = pedb
         self.conductivity = conductivity
 
     @property
     def conductivity(self) -> float:
+        """Electrical conductivity (S/m)."""
         return self._conductivity
 
     @conductivity.setter
@@ -90,15 +145,42 @@ class Conductor(Material):
         self._pedb.materials[self.name].conductivity = value
 
 
+# ------------------------------------------------------------------
+# Dielectric
+# ------------------------------------------------------------------
 class Dielectric(Material):
+    """
+    Dielectric material with relative permittivity and loss tangent.
+
+    Parameters
+    ----------
+    pedb : ansys.edb.core.database.Database
+        Active EDB session.
+    name : str
+        Material name.
+    permittivity : float, optional
+        Relative permittivity (εᵣ).  Default is 11.9 (Silicon).
+    loss_tg : float, optional
+        Loss tangent (tan δ).  Default is 0.02.
+
+    Examples
+    --------
+    >>> sub = Dielectric(edb, "Silicon", permittivity=11.9, loss_tg=0.01)
+    >>> sub.permittivity
+    11.9
+    >>> sub.loss_tg = 0.005
+    >>> edb.materials["Silicon"].loss_tangent
+    0.005
+    """
+
     def __init__(self, pedb, name: str, permittivity: float = 11.9, loss_tg: float = 0.02):
         super().__init__(pedb, name)
-        self._pedb = pedb
         self.permittivity = permittivity
         self.loss_tg = loss_tg
 
     @property
     def permittivity(self) -> float:
+        """Relative permittivity (εᵣ)."""
         return self._permittivity
 
     @permittivity.setter
@@ -108,6 +190,7 @@ class Dielectric(Material):
 
     @property
     def loss_tg(self) -> float:
+        """Loss tangent (tan δ)."""
         return self._loss_tg
 
     @loss_tg.setter
@@ -116,7 +199,33 @@ class Dielectric(Material):
         self._pedb.materials[self.name].loss_tangent = value
 
 
+# ------------------------------------------------------------------
+# Layer
+# ------------------------------------------------------------------
 class Layer:
+    """
+    Physical layer inside a stackup.
+
+    Parameters
+    ----------
+    pedb : ansys.edb.core.database.Database
+        Active EDB session.
+    name : str
+        Layer name.
+    material : Conductor or Dielectric, optional
+        Material instance assigned to the layer.
+    thickness : float, optional
+        Layer thickness in meters.  Default is 1 µm.
+
+    Examples
+    --------
+    >>> diel = Dielectric(edb, "FR4")
+    >>> lyr = Layer(edb, "Core", material=diel, thickness=100e-6)
+    >>> lyr.thickness = 50e-6
+    >>> edb.stackup.layers["Core"].thickness
+    5e-05
+    """
+
     def __init__(self, pedb, name: str, material: Union[Conductor, Dielectric] = None, thickness: float = 1e-6):
         self._pedb = pedb
         self.name: str = name
@@ -125,18 +234,20 @@ class Layer:
 
     @property
     def name(self) -> str:
+        """Layer name."""
         return self._name
 
     @name.setter
     def name(self, value: str):
         self._name = value
-        if not value in self._pedb.stackup.layers:
+        if value not in self._pedb.stackup.layers:
             self._pedb.stackup.add_layer(value)
         else:
             self._pedb.stackup.layers[self.name].name = self.name
 
     @property
     def thickness(self) -> float:
+        """Layer thickness (m)."""
         return self._thickness
 
     @thickness.setter
@@ -145,7 +256,8 @@ class Layer:
         self._pedb.stackup.layers[self.name].thickness = value
 
     @property
-    def material(self) -> any:
+    def material(self) -> Union[Conductor, Dielectric]:
+        """Material assigned to this layer."""
         return self._material
 
     @material.setter
@@ -154,20 +266,99 @@ class Layer:
         self._pedb.stackup.layers[self.name].material = material.name
 
 
+# ------------------------------------------------------------------
+# MetalLayer
+# ------------------------------------------------------------------
 class MetalLayer(Layer):
+    """
+    Convenience wrapper for metallic layers.
+
+    Automatically creates a ``Conductor`` material.
+
+    Parameters
+    ----------
+    pedb : ansys.edb.core.database.Database
+        Active EDB session.
+    name : str
+        Layer name.
+    thickness : float, optional
+        Thickness in meters.  Default is 1 µm.
+    material : str, optional
+        Name of the conductor material.  Default is ``"Copper"``.
+
+    Examples
+    --------
+    >>> top = MetalLayer(edb, "TOP", thickness=18e-6, material="Gold")
+    >>> top.material.conductivity
+    58000000.0
+    """
+
     def __init__(self, pedb, name, thickness=1e-6, material: str = "Copper"):
         super().__init__(pedb, name, thickness=thickness)
         self.material = Conductor(pedb, name=material)
 
 
+# ------------------------------------------------------------------
+# DielectricLayer
+# ------------------------------------------------------------------
 class DielectricLayer(Layer):
+    """
+    Convenience wrapper for dielectric layers.
+
+    Automatically creates a ``Dielectric`` material.
+
+    Parameters
+    ----------
+    pedb : ansys.edb.core.database.Database
+        Active EDB session.
+    name : str
+        Layer name.
+    thickness : float, optional
+        Thickness in meters.  Default is 1 µm.
+    material : str, optional
+        Name of the dielectric material.  Default is ``"FR4"``.
+
+    Examples
+    --------
+    >>> core = DielectricLayer(edb, "Core", thickness=100e-6, material="FR4")
+    >>> core.material.permittivity
+    4.4
+    """
+
     def __init__(self, pedb, name, thickness=1e-6, material: str = "FR4"):
         super().__init__(pedb, name, thickness=thickness)
-        self._pedb.stackup[self.name].type = "dielectric"
+        self._pedb.stackup[name].type = "dielectric"
         self.material = Dielectric(pedb, name=material)
 
 
+# ------------------------------------------------------------------
+# MicroStripTechnologyStackup
+# ------------------------------------------------------------------
 class MicroStripTechnologyStackup:
+    """
+    Pre-defined micro-strip stackup with bottom metal, substrate and top metal.
+
+    Parameters
+    ----------
+    pedb : ansys.edb.core.database.Database
+        Active EDB session.
+
+    Attributes
+    ----------
+    bottom_metal : MetalLayer
+        Bottom metal layer.
+    substrate : DielectricLayer
+        Substrate dielectric layer.
+    top_metal : MetalLayer
+        Top metal layer.
+
+    Examples
+    --------
+    >>> stack = MicroStripTechnologyStackup(edb)
+    >>> stack.top_metal.thickness = 5e-6
+    >>> stack.substrate.material.permittivity = 9.8
+    """
+
     def __init__(self, pedb):
         self._pedb = pedb
         self.bottom_metal = MetalLayer(pedb, name="BOT_METAL", thickness=4e-6, material="Gold")
