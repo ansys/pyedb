@@ -82,7 +82,7 @@ class RectangularPatch:
     Probe-fed 2.4 GHz patch (no inset):
 
     >>> edb = pyedb.Edb()
-    >>> RectPatch(edb, freq=2.4e9, inset=0).create()
+    >>> RectangularPatch(edb, freq=2.4e9, inset=0).create()
     >>> edb.save_as("probe_patch_2p4GHz.aedb")
     """
 
