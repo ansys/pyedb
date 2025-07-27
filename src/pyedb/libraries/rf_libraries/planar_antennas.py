@@ -562,9 +562,15 @@ class TriangularPatch:
             True when the geometry has been successfully created.
         """
         # optimize side length
-        while self.estimated_frequency < self.target_frequency:
+        max_iterations = 1000  # Maximum number of iterations to prevent infinite loops
+        tolerance = 1e-6  # Acceptable difference between estimated and target frequency
+        iteration = 0
+        while abs(self.estimated_frequency - self.target_frequency) > tolerance and iteration < max_iterations:
             self.side -= 10e-5
+            iteration += 1
 
+        if iteration == max_iterations:
+            raise RuntimeError("Optimization loop exceeded maximum iterations without convergence.")
         side = self.side
         self._edb["s"] = side
         self._edb["d"] = self.length_feeding_line
