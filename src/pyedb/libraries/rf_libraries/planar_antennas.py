@@ -46,7 +46,12 @@ class RectPatch:
     """
 
     def __init__(
-        self, edb_cell=None, freq: float = 2.4e9, inset: float = 0, layer: str = "TOP", bottom_layer: str = "GND"
+        self,
+        edb_cell=None,
+        freq: float = 2.4e9,
+        inset: float = 0,
+        layer: str = "TOP_METAL",
+        bottom_layer: str = "BOT_METAL",
     ):
         self._edb = edb_cell
         self.freq = freq
@@ -107,13 +112,22 @@ class RectPatch:
             height=self.length_patch,
             width=self.width_patch,
         )
+        # ground
+        self._edb.modeler.create_rectangle(
+            self.bottom_layer,
+            "GND",
+            representation_type="CenterWidthHeight",
+            center_point=[0, 0],
+            height=self.length_patch * 2,
+            width=self.width_patch * 2,
+        )
         # feed
         if self.inset > 0:
-            y = self.width_patch / 2 - self.inset
             self._edb.modeler.create_trace(
                 layer_name=self.layer,
                 net_name="FEED",
-                path_list=[-2e-3, y, 0, y, 0.2e-3],
+                path_list=[[0, self.length_patch / 2 + self.inset], [0, self.length_patch / 2]],
+                width=0.3e-3,
                 start_cap_style="Flat",
                 end_cap_style="Flat",
             )
@@ -121,7 +135,7 @@ class RectPatch:
             padstack_def = self._edb.padstacks.create(
                 padstackname="FEED", start_layer=self.layer, stop_layer=self.bottom_layer
             )
-            padstack_def.place([0, self.width_patch / 2])
+            self._edb.padstacks.place(position=[0, 0], definition_name=padstack_def)
         return True
 
 

@@ -62,18 +62,18 @@ class HatchGround:
     def __init__(
         self,
         edb_cell: Optional[Edb] = None,
-        pitch: float = 17.07e-3,
-        width: float = 5.0e-3,
-        fill_target: float = 50.0,
-        board_size: float = 100e-3,
+        pitch: Union[str, float] = 17.07e-3,
+        width: Union[str, float] = 5.0e-3,
+        fill_target: Union[str, float] = 50.0,
+        board_size: Union[str, float] = 100e-3,
         layer_gnd: str = "GND",
     ):
         """Initialize the hatch ground object."""
         self._edb = edb_cell
-        self.pitch = float(pitch)
-        self.width = float(width)
-        self.fill_target = float(fill_target)
-        self.board_size = float(board_size)
+        self.pitch = self._edb.value(pitch)
+        self.width = self._edb.value(width)
+        self.fill_target = self._edb.value(fill_target)
+        self.board_size = self._edb.value(board_size)
         self.layer_gnd = layer_gnd
         self._outline = None
 
@@ -177,18 +177,18 @@ class Meander:
 
     def __init__(
         self,
-        edb_cell: Optional[Edb] = None,
-        pitch: float = 1e-3,
-        trace_width: float = 0.3e-3,
-        amplitude: float = 5e-3,
+        edb_cell: Edb,
+        pitch: Union[str, float] = 1e-3,
+        trace_width: Union[str, float] = 0.3e-3,
+        amplitude: Union[str, float] = 5e-3,
         num_turns: int = 8,
         layer: str = "TOP",
         net: str = "SIG",
     ):
-        self._pedb = edb_cell
-        self.pitch = pitch
-        self.trace_width = trace_width
-        self.amplitude = amplitude
+        self._edb = edb_cell
+        self.pitch = self._edb.value(pitch)
+        self.trace_width = self._edb.value(trace_width)
+        self.amplitude = self._edb.value(amplitude)
         self.num_turns = num_turns
         self.layer = layer
         self.net = net
@@ -245,10 +245,10 @@ class Meander:
         """
 
         # Parameters
-        self._pedb.add_design_variable("w", self.trace_width)  # trace width
-        self._pedb.add_design_variable("p", self.pitch)  # pitch (centre-to-centre)
-        self._pedb.add_design_variable("a", self.amplitude)  # meander amplitude
-        self._pedb.add_design_variable("n_turns", self.num_turns)  # number of U-turns (integer)
+        self._edb.add_design_variable("w", self.trace_width)  # trace width
+        self._edb.add_design_variable("p", self.pitch)  # pitch (centre-to-centre)
+        self._edb.add_design_variable("a", self.amplitude)  # meander amplitude
+        self._edb.add_design_variable("n_turns", self.num_turns)  # number of U-turns (integer)
 
         # ----------------------------------------------------------
         # 3.  Build the point list
@@ -262,10 +262,10 @@ class Meander:
             else:  # odd → right
                 pts.extend([(" a/2", f"{i}*p"), (" a/2", y), (0, y)])  # step right  # vertical  # back to axis
 
-        self._pedb.modeler.create_trace(
+        self._edb.modeler.create_trace(
             path_list=pts, layer_name=self.layer, width=self.trace_width, net_name=self.net, corner_style="Round"
         )
-        self.length = self._pedb.modeler.paths[0].length
+        self.length = self._edb.modeler.paths[0].length
 
 
 class MIMCapacitor:
@@ -299,17 +299,16 @@ class MIMCapacitor:
 
     def __init__(
         self,
-        edb_cell: Optional[Edb] = None,
-        area: float = 0.1e-6,
-        gap: float = 1e-6,
-        er: float = 7,
+        edb_cell: Edb,
+        area: Union[str, float] = 0.1e-6,
+        gap: Union[str, float] = 1e-6,
         layer_top: str = "M1",
         layer_bottom: str = "M2",
         net: str = "RF",
     ):
-        self._pedb = edb_cell
-        self.area = area
-        self.gap = gap
+        self._edb = edb_cell
+        self.area = self._edb.value(area)
+        self.gap = self._edb.value(gap)
         self.layer_top = layer_top
         self.layer_bottom = layer_bottom
         self.net = net
@@ -337,13 +336,13 @@ class MIMCapacitor:
         bool
             True on success.
         """
-        self._pedb["area"] = self.area
-        self._pedb["gap"] = self.gap
+        self._edb["area"] = self.area
+        self._edb["gap"] = self.gap
         side = math.sqrt(self.area)
-        self._pedb["side"] = side
+        self._edb["side"] = side
 
-        self._pedb.modeler.create_rectangle(self.layer_top, self.net, [0, -side / 2, side, side])
-        self._pedb.modeler.create_rectangle(self.layer_bottom, self.net, [0, -side / 2, side, side])
+        self._edb.modeler.create_rectangle(self.layer_top, self.net, [0, -side / 2, side, side])
+        self._edb.modeler.create_rectangle(self.layer_bottom, self.net, [0, -side / 2, side, side])
         return True
 
 
@@ -397,30 +396,30 @@ class SpiralInductor:
         self,
         edb_cell: Optional[Edb] = None,
         turns: Union[int, float] = 4.5,
-        trace_width: float = 20e-6,
-        spacing: float = 12e-6,
-        inner_diameter: float = 60e-6,
+        trace_width: Union[str, float] = 20e-6,
+        spacing: Union[str, float] = 12e-6,
+        inner_diameter: Union[str, float] = 60e-6,
         layer: str = "M1",
         bridge_layer: str = "M2",
         via_layer: str = "M3",
         net: str = "IN",
-        inductor_center: Tuple[float, float] = (0, 0),  # centre of spiral
-        via_size: float = 25e-6,  # via metal pad
-        bridge_width: float = 12e-6,  # under-pass trace width
-        bridge_clearance: float = 6e-6,  # dielectric gap under bridge
-        bridge_length: float = 200e-6,  # how far the bridge extends
+        inductor_center: Tuple[Union[str, float], Union[str, float]] = (0, 0),  # centre of spiral
+        via_size: Union[str, float] = 25e-6,  # via metal pad
+        bridge_width: Union[str, float] = 12e-6,  # under-pass trace width
+        bridge_clearance: Union[str, float] = 6e-6,  # dielectric gap under bridge
+        bridge_length: Union[str, float] = 200e-6,  # how far the bridge extends
         ground_layer: str = "GND",
     ):
-        self._pedb = edb_cell
+        self._edb = edb_cell
         self.turns = turns  # half-turns → 4.5 = 4 full + 1 half
-        self.trace_width = trace_width
-        self.spacing = spacing
-        self.inner_diameter = inner_diameter  # first inner square side
-        self.via_size = via_size  # centre via finished hole
-        self.inductor_center = inductor_center  # via centre position
-        self.bridge_width = bridge_width  # under-pass trace width
-        self.bridge_clearance = bridge_clearance  # dielectric gap under bridge
-        self.bridge_length = bridge_length  # how far the bridge extends
+        self.trace_width = self._edb.value(trace_width)
+        self.spacing = self._edb.value(spacing)
+        self.inner_diameter = self._edb.value(inner_diameter)  # first inner square side
+        self.via_size = self._edb.value(via_size)  # centre via finished hole
+        self.inductor_center = self._edb.value(inductor_center)  # via centre position
+        self.bridge_width = self._edb.value(bridge_width)  # under-pass trace width
+        self.bridge_clearance = self._edb.value(bridge_clearance)  # dielectric gap under bridge
+        self.bridge_length = self._edb.value(bridge_length)  # how far the bridge extends
         self.layer = layer
         self.bridge_layer = bridge_layer
         self.via_layer = via_layer  # layer for the centre via
@@ -488,7 +487,7 @@ class SpiralInductor:
         bridge_dir = -1  # -1 = down, +1 = up
         bridge_end = (via_pos[0] + bridge_dir * self.bridge_length, via_pos[1])
 
-        self._pedb.modeler.create_trace(
+        self._edb.modeler.create_trace(
             path_list=pts,
             layer_name=self.layer,
             width=self.trace_width,
@@ -498,7 +497,7 @@ class SpiralInductor:
         )
 
         # Centre via (spiral inner end → bottom metal)
-        self._pedb.modeler.create_rectangle(
+        self._edb.modeler.create_rectangle(
             layer_name=self.via_layer,
             center_point=pts[0],
             width=self.via_size,
@@ -508,7 +507,7 @@ class SpiralInductor:
         )
 
         # bridge trace on bottom metal
-        self._pedb.modeler.create_trace(
+        self._edb.modeler.create_trace(
             path_list=[via_pos, bridge_end],
             layer_name=self.bridge_layer,
             width=self.bridge_width,
@@ -518,7 +517,7 @@ class SpiralInductor:
         )
 
         # ground plane
-        self._pedb.modeler.create_rectangle(
+        self._edb.modeler.create_rectangle(
             layer_name=self.ground_layer,
             center_point=self.inductor_center,
             width=self.substrate.size[0],
@@ -567,9 +566,9 @@ class CPW:
     def __init__(
         self,
         edb_cell: Optional[Edb] = None,
-        length: float = 1e-3,
-        width: float = 0.3e-3,
-        gap: float = 0.1e-3,
+        length: Union[str, float] = 1e-3,
+        width: Union[str, float] = 0.3e-3,
+        gap: Union[str, float] = 0.1e-3,
         layer: str = "TOP",
         ground_net: str = "GND",
         ground_width: float = 0.1e-3,
@@ -577,10 +576,10 @@ class CPW:
         net: str = "SIG",
         substrate: Substrate = Substrate(100e-6, 4.4, 0.02, "SUB", (0.001, 0.001)),
     ):
-        self._pedb = edb_cell
-        self.length = length
-        self.width = width
-        self.gap = gap
+        self._edb = edb_cell
+        self.length = self._edb.value(length)
+        self.width = self._edb.value(width)
+        self.gap = self._edb.value(gap)
         self.layer = layer
         self.ground_net = ground_net
         self.ground_width = ground_width  # width of ground plane
@@ -616,31 +615,31 @@ class CPW:
         bool
             True on success.
         """
-        self._pedb["l"] = self.length
-        self._pedb["w"] = self.width
-        self._pedb["g"] = self.gap
+        self._edb["l"] = self.length
+        self._edb["w"] = self.width
+        self._edb["g"] = self.gap
 
         # signal
-        self._pedb.modeler.create_rectangle(
+        self._edb.modeler.create_rectangle(
             self.layer,
             net_name=self.net,
             lower_left_point=[-self.width / 2, 0],
             upper_right_point=[self.width / 2, self.length],
         )
         # grounds
-        self._pedb.modeler.create_rectangle(
+        self._edb.modeler.create_rectangle(
             self.layer,
             net_name=self.ground_net,
             lower_left_point=[-self.width / 2 - self.gap - self.ground_width, 0],
             upper_right_point=[-self.width / 2 - self.gap, self.length],
         )
-        self._pedb.modeler.create_rectangle(
+        self._edb.modeler.create_rectangle(
             self.layer,
             net_name=self.ground_net,
             lower_left_point=[self.width / 2 + self.gap, 0],
             upper_right_point=[self.width / 2 + self.gap + self.ground_width, self.length],
         )
-        self._pedb.modeler.create_rectangle(
+        self._edb.modeler.create_rectangle(
             self.ground_layer,
             lower_left_point=[-self.width / 2 - self.gap - self.ground_width, 0],
             upper_right_point=[self.width / 2 + self.gap + self.ground_width, self.length],
@@ -678,16 +677,16 @@ class RadialStub:
     def __init__(
         self,
         edb_cell,
-        radius: float = 500e-6,
-        angle_deg: float = 60,
-        width: float = 0.2e-3,
+        radius: Union[str, float] = 500e-6,
+        angle_deg: Union[str, float] = 60,
+        width: Union[str, float] = 0.2e-3,
         layer: str = "TOP",
         net: str = "RF",
     ):
-        self._pedb = edb_cell
-        self.radius = radius
-        self.angle_deg = angle_deg
-        self.width = width
+        self._edb = edb_cell
+        self.radius = self._edb.value(radius)
+        self.angle_deg = self._edb.value(angle_deg)
+        self.width = self._edb.value(width)
         self.layer = layer
         self.net = net
         self.substrate: Substrate = Substrate(100e-6, 4.4, 0.02, "SUB", (0.001, 0.001))
@@ -721,9 +720,9 @@ class RadialStub:
         bool
             True on success.
         """
-        self._pedb["r"] = self.radius
-        self._pedb["ang"] = self.angle_deg
-        self._pedb["w"] = self.width
+        self._edb["r"] = self.radius
+        self._edb["ang"] = self.angle_deg
+        self._edb["w"] = self.width
 
         # Create wedge polygon
         theta = math.radians(self.angle_deg)
@@ -732,9 +731,9 @@ class RadialStub:
             [self.radius * math.cos(-theta / 2), self.radius * math.sin(-theta / 2)],
             [self.radius * math.cos(theta / 2), self.radius * math.sin(theta / 2)],
         ]
-        self._pedb.modeler.create_polygon(main_shape=pts, layer_name=self.layer, net_name=self.net)
+        self._edb.modeler.create_polygon(main_shape=pts, layer_name=self.layer, net_name=self.net)
         # feed
-        self._pedb.modeler.create_rectangle(
+        self._edb.modeler.create_rectangle(
             layer_name=self.layer,
             net_name=self.net,
             lower_left_point=[0, -self.width / 2],
@@ -777,21 +776,21 @@ class RatRace:
     def __init__(
         self,
         edb_cell: Optional[Edb] = None,
-        z0: float = 50,
-        freq: float = 10e9,
+        z0: Union[float, str] = 50,
+        freq: Union[float, str] = 10e9,
         layer: str = "TOP",
         bottom_layer: Optional[str] = None,
         net: str = "RR",
-        width: float = 0.2e-3,
+        width: Union[float, str] = 0.2e-3,
         nr_segments: int = 32,
     ):
-        self._pedb = edb_cell
-        self.z0 = z0
-        self.freq = freq
+        self._edb = edb_cell
+        self.z0 = self._edb.value(z0)
+        self.freq = self._edb.value(freq)
         self.layer = layer
         self.bottom_layer = bottom_layer
         self.net = net
-        self.width = width
+        self.width = self._edb.value(width)
         self.nr_segments = nr_segments
         self.substrate = Substrate()
 
@@ -859,9 +858,9 @@ class RatRace:
         bool
             True on success.
         """
-        self._pedb["c"] = self.circumference
-        self._pedb["r"] = self.radius
-        self._pedb["w"] = self.width
+        self._edb["c"] = self.circumference
+        self._edb["r"] = self.radius
+        self._edb["w"] = self.width
 
         r = self.radius
         w = self.width
@@ -892,7 +891,7 @@ class RatRace:
 
         # Stitch them together into a single closed path
         ring_points = pts_a + pts_b[1:] + pts_c[1:] + pts_d[1:]
-        self._pedb.modeler.create_trace(
+        self._edb.modeler.create_trace(
             path_list=ring_points,
             layer_name=self.layer,
             net_name=self.net,
@@ -911,7 +910,7 @@ class RatRace:
 
             # Direction vector pointing outwards
             stub_pts = self._port_stub((x_ring, y_ring), stub_len, ang)
-            self._pedb.modeler.create_trace(
+            self._edb.modeler.create_trace(
                 path_list=stub_pts,
                 layer_name=self.layer,
                 net_name=f"{self.net}_P{idx}",
@@ -920,7 +919,7 @@ class RatRace:
                 end_cap_style="flat",
             )
 
-        self._pedb.modeler.create_rectangle(
+        self._edb.modeler.create_rectangle(
             lower_left_point=[-self.circumference / 4, -self.circumference / 4],
             upper_right_point=[self.circumference / 4, self.circumference / 4],
             layer_name=self.bottom_layer,
@@ -975,16 +974,16 @@ class InterdigitalCapacitor:
         self,
         edb_cell: Optional[Edb] = None,
         fingers: int = 8,
-        finger_length: str = "0.9mm",
-        finger_width: str = "0.08mm",
-        gap: str = "0.04mm",
-        comb_gap: str = "0.06mm",
-        bus_width: str = "0.25mm",
+        finger_length: Union[float, str] = "0.9mm",
+        finger_width: Union[float, str] = "0.08mm",
+        gap: Union[float, str] = "0.04mm",
+        comb_gap: Union[float, str] = "0.06mm",
+        bus_width: Union[float, str] = "0.25mm",
         layer: str = "TOP",
         net_a: str = "PORT1",
         net_b: str = "PORT2",
     ):
-        self._pedb = edb_cell
+        self._edb = edb_cell
         self.layer = layer
         self.net_a = net_a
         self.net_b = net_b
@@ -992,17 +991,17 @@ class InterdigitalCapacitor:
 
         pfx = self.VAR_PREFIX
         self._vars = {
-            "fingers": int(fingers),  # integer is fine
-            "finger_length": finger_length,
-            "finger_width": finger_width,
-            "gap": gap,
-            "comb_gap": comb_gap,
-            "bus_width": bus_width,
+            "fingers": int(fingers),
+            "finger_length": self._edb.value(finger_length),
+            "finger_width": self._edb.value(finger_width),
+            "gap": self._edb.value(gap),
+            "comb_gap": self._edb.value(comb_gap),
+            "bus_width": self._edb.value(bus_width),
         }
         for k, v in self._vars.items():
             var_name = f"{pfx}_{k}"
             # Use design variable (no $ prefix) -> stored in cell
-            self._pedb[var_name] = v
+            self._edb[var_name] = v
 
     @property
     def capacitance_pf(self) -> float:
@@ -1017,10 +1016,10 @@ class InterdigitalCapacitor:
         pfx = self.VAR_PREFIX
         eps0 = 8.854e-12
         er = self.substrate.er
-        N = self._pedb[f"{pfx}_fingers"]
-        L = self._pedb[f"{pfx}_finger_length"]
-        W = self._pedb[f"{pfx}_finger_width"]
-        g = self._pedb[f"{pfx}_gap"]
+        N = self._edb[f"{pfx}_fingers"]
+        L = self._edb[f"{pfx}_finger_length"]
+        W = self._edb[f"{pfx}_finger_width"]
+        g = self._edb[f"{pfx}_gap"]
         return (eps0 * er * N * L * W / g) * 1e12
 
     def create(self) -> bool:
@@ -1032,16 +1031,13 @@ class InterdigitalCapacitor:
         bool
             True on success.
         """
-        if self._pedb is None:
-            raise ValueError("No EDB cell provided.")
-
         pfx = self.VAR_PREFIX
         pitch = f"({pfx}_finger_width + {pfx}_gap)"
         total_width = f"(2*{pfx}_bus_width + (2*{pfx}_fingers-1)*{pitch} + {pfx}_finger_width)"
         total_height = f"(2*{pfx}_bus_width + 2*{pfx}_finger_length + {pfx}_comb_gap)"
 
         # 1. Bottom bus bar (NET_A)
-        self._pedb.modeler.create_rectangle(
+        self._edb.modeler.create_rectangle(
             layer_name=self.layer,
             net_name=self.net_a,
             lower_left_point=["0", "0"],
@@ -1050,7 +1046,7 @@ class InterdigitalCapacitor:
 
         # 2. Top bus bar (NET_B)
         right_bar_y = f"({total_height} - {pfx}_bus_width)"
-        self._pedb.modeler.create_rectangle(
+        self._edb.modeler.create_rectangle(
             layer_name=self.layer,
             net_name=self.net_b,
             lower_left_point=["0", right_bar_y],
@@ -1064,14 +1060,14 @@ class InterdigitalCapacitor:
         for i in range(self._vars["fingers"] * 2):
             x = f"({pfx}_bus_width + {i}*{pitch})"
             if i % 2 == 0:  # NET_A finger (points up)
-                self._pedb.modeler.create_rectangle(
+                self._edb.modeler.create_rectangle(
                     layer_name=self.layer,
                     net_name=self.net_a,
                     lower_left_point=[x, y_a],
                     upper_right_point=[f"{x} + {pfx}_finger_width", f"{y_a} + {pfx}_finger_length"],
                 )
             else:  # NET_B finger (points down)
-                self._pedb.modeler.create_rectangle(
+                self._edb.modeler.create_rectangle(
                     layer_name=self.layer,
                     net_name=self.net_b,
                     lower_left_point=[x, y_b],
@@ -1121,22 +1117,22 @@ class DifferentialTLine:
     def __init__(
         self,
         edb: Edb,
-        length: float = 10e-3,
-        width: float = 0.20e-3,
-        spacing: float = 0.20e-3,
-        x0: float = 0.0,
-        y0: float = 0.0,
-        angle: float = 0.0,
+        length: Union[float, str] = 10e-3,
+        width: Union[float, str] = 0.20e-3,
+        spacing: Union[float, str] = 0.20e-3,
+        x0: Union[float, str] = 0.0,
+        y0: Union[float, str] = 0.0,
+        angle: Union[float, str] = 0.0,
         layer: str = "TOP",
         net_p: str = "P",
         net_n: str = "N",
     ):
         self._edb = edb
-        self.length = length  # total length
-        self.width = width
-        self.spacing = spacing
-        self.x0 = x0
-        self.y0 = y0
+        self.length = self._edb.value(length)
+        self.width = self._edb.value(width)
+        self.spacing = self._edb.value(spacing)
+        self.x0 = self._edb.value(x0)
+        self.y0 = self._edb.value(y0)
         self.layer = layer
         self.net_p = net_p
         self.net_n = net_n
@@ -1198,3 +1194,128 @@ class DifferentialTLine:
             end_cap_style="Flat",
         )
         return [pos_trace, neg_trace]
+
+    import math
+    from typing import List, Optional
+
+    class MicroStripLine:
+        """
+        Single-ended micro-strip line with fixed geometry and editable stack-up.
+
+        Parameters
+        ----------
+        edb : object
+            EDB application / API handle.
+        layer : str
+            Conductor layer on which the trace is drawn.
+        net : str
+            Net name assigned to the trace.
+        x0, y0 : float
+            Global start coordinates (mm, m, or whatever length unit is active in AEDT).
+        length : float
+            Physical length of the line (same unit as x0/y0).
+        angle : float
+            Rotation angle in degrees (0° = along +X).
+        freq : float, optional
+            Reference frequency (Hz) used to compute the electrical length.
+            If None, electrical_length will be None.
+        """
+
+        def __init__(
+            self,
+            edb,
+            layer: str,
+            net: str,
+            x0: Union[float, str],
+            y0: Union[float, str],
+            length: Union[float, str],
+            angle: Union[float, str] = 0.0,
+            freq: Optional[Union[float, str]] = None,
+        ):
+            self._edb = edb
+            self.layer = layer
+            self.net = net
+            self.x0 = self._edb.value(x0)
+            self.y0 = self._edb.value(y0)
+            self.length = self._edb.value(length)
+            self.angle = self._edb.value(angle)  # degrees
+            self.freq = self._edb.value(freq)
+            self.substrate = Substrate()
+
+        # ------------------------------------------------------------------
+        # Helper: effective permittivity
+        # ------------------------------------------------------------------
+        @property
+        def _ereff(self) -> float:
+            w = self._edb["w"]
+            er = self.substrate.er
+            h = self.substrate.h
+
+            u = w / h
+            a = (
+                1
+                + (1 / 49) * math.log((u**4 + (u / 52) ** 2) / (u**4 + 0.432))
+                + (1 / 18.7) * math.log(1 + (u / 18.1) ** 3)
+            )
+            b = 0.564 * ((er - 0.9) / (er + 3)) ** 0.053
+            return (er + 1) / 2 + (er - 1) / 2 * (1 + 10 / u) ** (-a * b)
+
+        # ------------------------------------------------------------------
+        # Electrical properties
+        # ------------------------------------------------------------------
+        @property
+        def impedance(self) -> float:
+            """Characteristic impedance (Ω)."""
+            w = self._edb["w"]
+            h = self.substrate.h
+            er = self.substrate.er
+
+            u = w / h
+            a = (
+                1
+                + (1 / 49) * math.log((u**4 + (u / 52) ** 2) / (u**4 + 0.432))
+                + (1 / 18.7) * math.log(1 + (u / 18.1) ** 3)
+            )
+            b = 0.564 * ((er - 0.9) / (er + 3)) ** 0.053
+            ereff = (er + 1) / 2 + (er - 1) / 2 * (1 + 10 / u) ** (-a * b)
+            fn = 6 + (2 * math.pi - 6) * math.exp(-((30.666 / u) ** 0.7528))
+            z0 = (
+                fn
+                / (2 * math.pi * math.sqrt(ereff + 1.41))
+                * math.log(1 + 4 * h / w * (8 * h / w + math.sqrt((8 * h / w) ** 2 + math.pi**2)))
+            )
+            return z0
+
+        @property
+        def electrical_length(self) -> Optional[float]:
+            """
+            Electrical length in degrees at self.freq.
+            Returns None if freq is None.
+            """
+            if self.freq is None:
+                return None
+            c0 = 299_792_458  # m/s
+            beta_l = 2 * math.pi * self.freq * math.sqrt(self._ereff) / c0 * self.length
+            return math.degrees(beta_l)
+
+        # ------------------------------------------------------------------
+        # Geometry creation
+        # ------------------------------------------------------------------
+        def create(self) -> List[float]:
+            """Create the trace and return its EDB object ID."""
+            angle_rad = math.radians(self.angle)
+            trace = self._edb.modeler.create_trace(
+                path_list=[
+                    [self.x0, self.y0],
+                    [
+                        self.x0 + self.length * math.cos(angle_rad),
+                        self.y0 + self.length * math.sin(angle_rad),
+                    ],
+                ],
+                layer_name=self.layer,
+                width="w",
+                net_name=self.net,
+                start_cap_style="Flat",
+                end_cap_style="Flat",
+            )
+            return [trace]
