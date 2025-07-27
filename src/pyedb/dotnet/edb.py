@@ -100,6 +100,7 @@ from pyedb.generic.general_methods import (
     get_string_version,
     is_linux,
     is_windows,
+    execution_timer
 )
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
@@ -184,7 +185,9 @@ class Edb(Database):
     """
 
     logger = None
+    edbversion = None
 
+    @execution_timer("EDB initialization")
     def __init__(
         self,
         edbpath: Union[str, Path] = None,
@@ -201,16 +204,18 @@ class Edb(Database):
         layer_filter: str = None,
         remove_existing_aedt: bool = False,
     ):
-        self.logger = pyedb_logger
+        self.logger = settings.logger
         now = datetime.now()
         self.logger.info(f"Star initializing Edb {now.time()}")
 
         if isinstance(edbpath, Path):
             edbpath = str(edbpath)
 
-        edbversion = get_string_version(edbversion)
+        self.edbversion = get_string_version(edbversion)
         self._clean_variables()
-        Database.__init__(self, edbversion=edbversion, student_version=student_version)
+        self.__initialization(self.edbversion, student_version)
+        Database.__init__(self)
+
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
@@ -263,7 +268,6 @@ class Edb(Database):
                 map_file=map_file,
             ):
                 raise AttributeError("Translation was unsuccessful")
-                return False
             if settings.enable_local_log_file and self.log_name:
                 self.logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)
@@ -280,7 +284,6 @@ class Edb(Database):
                 map_file=map_file,
             ):
                 raise AttributeError("Translation was unsuccessful")
-                return False
             if settings.enable_local_log_file and self.log_name:
                 self.logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath[-2:])
@@ -299,9 +302,7 @@ class Edb(Database):
             if settings.enable_local_log_file and self.log_name:
                 self.logger.add_file_logger(self.log_name, "Edb")
             self.open_edb()
-        if self.active_cell:
-            self.logger.info(f"EDB initialized.Time lapse {datetime.now() - now}")
-        else:
+        if not self.active_cell:
             raise AttributeError("Failed to initialize DLLs.")
 
     def __enter__(self):
@@ -352,6 +353,79 @@ class Edb(Database):
             self.add_design_variable(variable_name, val)
         if description:  # Add the variable description if a two-item list is passed for variable_value.
             self.__getitem__(variable_name).description = description
+
+    def __initialization(self, version, student_version):
+        self.logger.info(f"Edb version {version}")
+        if float(version) >= 2025.2:
+            from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
+            warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
+
+        """Initialize DLLs."""
+        from pyedb.dotnet.clr_module import _clr, edb_initialized
+        from pyedb import __version__
+        from pyedb.generic.general_methods import (
+            env_path,
+            env_path_student,
+            env_value,
+            is_linux,
+            settings,
+        )
+
+        if not settings.use_pyaedt_log:
+            if settings.enable_screen_logs:
+                self.logger.enable_stdout_log()
+            else:  # pragma: no cover
+                self.logger.disable_stdout_log()
+        if not edb_initialized:  # pragma: no cover
+            raise RuntimeWarning("Failed to initialize Dlls.")
+        self.logger.info("Logger is initialized in EDB.")
+        self.logger.info("legacy v%s", __version__)
+        self.logger.info("Python version %s", sys.version)
+
+        if is_linux:  # pragma: no cover
+            if env_value(version) in os.environ or settings.edb_dll_path:
+                if settings.edb_dll_path:
+                    self.base_path = settings.edb_dll_path
+                else:
+                    self.base_path = env_path(version)
+                sys.path.append(self.base_path)
+            else:
+                main = sys.modules["__main__"]
+                if "oDesktop" in dir(main):
+                    self.base_path = main.oDesktop.GetExeDir()
+                    sys.path.append(main.oDesktop.GetExeDir())
+                    os.environ[env_value(version)] = self.base_path
+                else:
+                    edb_path = os.getenv("PYAEDT_SERVER_AEDT_PATH")
+                    if edb_path:
+                        self.base_path = edb_path
+                        sys.path.append(edb_path)
+                        os.environ[env_value(version)] = self.base_path
+
+            _clr.AddReference("Ansys.Ansoft.Edb")
+            _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
+            _clr.AddReference("Ansys.Ansoft.SimSetupData")
+        else:
+            if settings.edb_dll_path:
+                self.base_path = settings.edb_dll_path
+            elif student_version:
+                self.base_path = env_path_student(version)
+            else:
+                self.base_path = env_path(version)
+            sys.path.append(self.base_path)
+            _clr.AddReference("Ansys.Ansoft.Edb")
+            _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
+            _clr.AddReference("Ansys.Ansoft.SimSetupData")
+        os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = self.base_path
+        oaDirectory = os.path.join(self.base_path, "common", "oa")
+        os.environ["ANSYS_OADIR"] = oaDirectory
+        os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
+        edb = __import__("Ansys.Ansoft.Edb")
+        edbbuilder = __import__("Ansys.Ansoft.EdbBuilderUtils")
+        self.simSetup = __import__("Ansys.Ansoft.SimSetupData")
+        self._edb = edb.Ansoft.Edb
+        self.edbutils = edbbuilder.Ansoft.EdbBuilderUtils
+        self.simsetupdata = self.simSetup.Ansoft.SimSetupData.Data
 
     def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
@@ -569,6 +643,7 @@ class Edb(Database):
                     temp[name] = val
         return temp
 
+    @execution_timer("open_edb")
     def open_edb(self):
         """Open EDB.
 
@@ -612,6 +687,7 @@ class Edb(Database):
 
         return True
 
+    @execution_timer("create_edb")
     def create_edb(self):
         """Create EDB.
 
@@ -692,6 +768,7 @@ class Edb(Database):
             layer_filter,
         )
 
+    @execution_timer("import_layout_file")
     def import_layout_file(
         self,
         input_file,

@@ -21,21 +21,9 @@
 # SOFTWARE.
 
 """Database."""
-import os
 import re
-import sys
-import warnings
 
-from pyedb import __version__
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import (
-    env_path,
-    env_path_student,
-    env_value,
-    is_linux,
-    settings,
-)
-from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
 
 
 class HierarchyDotNet:
@@ -716,72 +704,8 @@ class Database:
         """Edb Dotnet Api Database `Edb.Definition`."""
         return self.core.Definition
 
-    def __init__(self, edbversion, student_version=False):
+    def __init__(self):
         """Initialize a new Database."""
-        self.logger.info(f"Edb version {edbversion}")
-        self.edbversion = edbversion
-        if float(self.edbversion) >= 2025.2:
-            warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
-        self.student_version = student_version
-        """Initialize DLLs."""
-        from pyedb.dotnet.clr_module import _clr, edb_initialized
-
-        if not settings.use_pyaedt_log:
-            if settings.enable_screen_logs:
-                self.logger.enable_stdout_log()
-            else:  # pragma: no cover
-                self.logger.disable_stdout_log()
-        if not edb_initialized:  # pragma: no cover
-            self.logger.error("Failed to initialize Dlls.")
-            return
-        self.logger.info("Logger is initialized in EDB.")
-        self.logger.info("legacy v%s", __version__)
-        self.logger.info("Python version %s", sys.version)
-        if is_linux:  # pragma: no cover
-            if env_value(self.edbversion) in os.environ or settings.edb_dll_path:
-                if settings.edb_dll_path:
-                    self.base_path = settings.edb_dll_path
-                else:
-                    self.base_path = env_path(self.edbversion)
-                sys.path.append(self.base_path)
-            else:
-                main = sys.modules["__main__"]
-                if "oDesktop" in dir(main):
-                    self.base_path = main.oDesktop.GetExeDir()
-                    sys.path.append(main.oDesktop.GetExeDir())
-                    os.environ[env_value(self.edbversion)] = self.base_path
-                else:
-                    edb_path = os.getenv("PYAEDT_SERVER_AEDT_PATH")
-                    if edb_path:
-                        self.base_path = edb_path
-                        sys.path.append(edb_path)
-                        os.environ[env_value(self.edbversion)] = self.base_path
-
-            _clr.AddReference("Ansys.Ansoft.Edb")
-            _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
-            _clr.AddReference("Ansys.Ansoft.SimSetupData")
-        else:
-            if settings.edb_dll_path:
-                self.base_path = settings.edb_dll_path
-            elif self.student_version:
-                self.base_path = env_path_student(self.edbversion)
-            else:
-                self.base_path = env_path(self.edbversion)
-            sys.path.append(self.base_path)
-            _clr.AddReference("Ansys.Ansoft.Edb")
-            _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
-            _clr.AddReference("Ansys.Ansoft.SimSetupData")
-        os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = self.base_path
-        oaDirectory = os.path.join(self.base_path, "common", "oa")
-        os.environ["ANSYS_OADIR"] = oaDirectory
-        os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
-        edb = __import__("Ansys.Ansoft.Edb")
-        self._edb = edb.Ansoft.Edb
-        edbbuilder = __import__("Ansys.Ansoft.EdbBuilderUtils")
-        self.edbutils = edbbuilder.Ansoft.EdbBuilderUtils
-        self.simSetup = __import__("Ansys.Ansoft.SimSetupData")
-        self.simsetupdata = self.simSetup.Ansoft.SimSetupData.Data
-
         self._db = None
 
     @property
