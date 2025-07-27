@@ -66,7 +66,7 @@ class RectangularPatch:
     Build a 5.8 GHz patch on a 0.787 mm Rogers RO4350B substrate:
 
     >>> edb = pyedb.Edb()
-    >>> patch = RectPatch(
+    >>> patch = RectangularPatch(
     ...     edb_cell=edb,
     ...     freq="5.8GHz",
     ...     inset="4.2mm",
