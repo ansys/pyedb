@@ -663,7 +663,7 @@ class ViaDesignBackend:
         pitch = self.cfg["general"]["pitch"]
 
         board = Board(
-            stackup=self.cfg["stackup"],
+            stackup=self.cfg["stackup"] if isinstance(self.cfg["stackup"], list) else self.cfg["stackup"]["layers"],
             padstack_defs=self.cfg["padstack_defs"],
             outline_extent=outline_extent,
             pitch=pitch,
