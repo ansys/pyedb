@@ -37,7 +37,11 @@ from pyedb.libraries.rf_libraries.base_functions import (
     RatRace,
     SpiralInductor,
 )
-from pyedb.libraries.rf_libraries.planar_antennas import CircularPatch, RectPatch
+from pyedb.libraries.rf_libraries.planar_antennas import (
+    CircularPatch,
+    RectPatch,
+    TriangularPatch,
+)
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
@@ -231,6 +235,17 @@ class TestClass:
         stackup.substrate.material.permittivity = 3.5
         patch_antenna = CircularPatch(edb_cell=edb, length_feeding_line=5e-3, target_frequency="2.4Ghz")
         patch_antenna.create()
-        assert str(patch_antenna.estimated_frequency) == "2.4GHz"
+        assert str(patch_antenna.estimated_frequency) == "2.412GHz"
         assert patch_antenna.radius == 0.0174
+        edb.close()
+
+    def test_triangular_antenna(self, edb_examples):
+        edb = edb_examples.create_empty_edb()
+        stackup = MicroStripTechnologyStackup(pedb=edb)
+        stackup.substrate.thickness = 254e-6
+        stackup.substrate.material.permittivity = 3.5
+        patch_antenna = TriangularPatch(edb_cell=edb, length_feeding_line=5e-3, target_frequency="2.4Ghz")
+        patch_antenna.create()
+        assert str(patch_antenna.estimated_frequency) == "2.43GHz"
+        assert patch_antenna.side == 0.039201
         edb.close()
