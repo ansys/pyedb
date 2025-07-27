@@ -187,7 +187,7 @@ class Configuration:
                 pdef.SetData(pdata)
                 pdef = self._pedb.pedb_class.database.edb_data.padstacks_data.EDBPadstack(pdef, self._pedb.padstacks)
                 p.pyedb_obj = pdef
-                p.api.set_parameters_to_edb()
+                p.set_parameters_to_edb()
 
         if modeler.padstack_instances:
             for p in modeler.padstack_instances:
@@ -199,7 +199,7 @@ class Configuration:
                     rotation=p.rotation if p.rotation is not None else 0,
                 )
                 p.pyedb_obj = p_inst
-                p.api.set_parameters_to_edb()
+                p.set_parameters_to_edb()
 
         if modeler.planes:
             for p in modeler.planes:
@@ -244,7 +244,7 @@ class Configuration:
                     component_part_name=c.definition,
                 )
                 c.pyedb_obj = obj
-                c.api.set_parameters_to_edb()
+                c.set_parameters_to_edb()
 
         primitives = self._pedb.layout.find_primitive(**modeler.primitives_to_delete)
         for i in primitives:
