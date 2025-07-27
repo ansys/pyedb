@@ -678,9 +678,9 @@ class CfgEdgePort:
     def set_parameters_to_edb(self):
         point_on_edge = PointData(self._pedb, x=self.point_on_edge[0], y=self.point_on_edge[1])
         primitive = self._pedb.layout.primitives_by_aedt_name[self.primitive_name]
-        pos_edge = self._pedb.core.cell.terminal.PrimitiveEdge.Create(primitive._edb_object, point_on_edge._edb_object)
-        pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb.core.cell.terminal.Edge)
-        edge_term = self._pedb.core.cell.terminal.EdgeTerminal.Create(
+        pos_edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, point_on_edge._edb_object)
+        pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb.core.Cell.Terminal.Edge)
+        edge_term = self._pedb.core.Cell.Terminal.EdgeTerminal.Create(
             primitive._edb_object.GetLayout(),
             primitive._edb_object.GetNet(),
             self.name,
@@ -753,9 +753,9 @@ class CfgDiffWavePort:
         pos_term = self.positive_port.set_parameters_to_edb()
         neg_term = self.negative_port.set_parameters_to_edb()
         edb_list = convert_py_list_to_net_list(
-            [pos_term._edb_object, neg_term._edb_object], self._pedb.core.cell.terminal.Terminal
+            [pos_term._edb_object, neg_term._edb_object], self._pedb.core.Cell.Terminal.Terminal
         )
-        _edb_boundle_terminal = self._pedb.core.cell.terminal.BundleTerminal.Create(edb_list)
+        _edb_boundle_terminal = self._pedb.core.Cell.Terminal.BundleTerminal.Create(edb_list)
         _edb_boundle_terminal.SetName(self.name)
         pos, neg = list(_edb_boundle_terminal.GetTerminals())
         pos.SetName(self.name + ":T1")

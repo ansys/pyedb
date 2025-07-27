@@ -128,15 +128,15 @@ class EdbPadstacks(object):
         """
 
         if val == 0:
-            return self._edb.definition.PadType.RegularPad
+            return self._edb.Definition.PadType.RegularPad
         elif val == 1:
-            return self._edb.definition.PadType.AntiPad
+            return self._edb.Definition.PadType.AntiPad
         elif val == 2:
-            return self._edb.definition.PadType.ThermalPad
+            return self._edb.Definition.PadType.ThermalPad
         elif val == 3:
-            return self._edb.definition.PadType.Hole
+            return self._edb.Definition.PadType.Hole
         elif val == 4:
-            return self._edb.definition.PadType.UnknownGeomType
+            return self._edb.Definition.PadType.UnknownGeomType
         else:
             return val
 
@@ -153,29 +153,29 @@ class EdbPadstacks(object):
             EDB.PadGeometryType enumerator value.
         """
         if val == 0:
-            return self._edb.definition.PadGeometryType.NoGeometry
+            return self._edb.Definition.PadGeometryType.NoGeometry
         elif val == 1:
-            return self._edb.definition.PadGeometryType.Circle
+            return self._edb.Definition.PadGeometryType.Circle
         elif val == 2:
-            return self._edb.definition.PadGeometryType.Square
+            return self._edb.Definition.PadGeometryType.Square
         elif val == 3:
-            return self._edb.definition.PadGeometryType.Rectangle
+            return self._edb.Definition.PadGeometryType.Rectangle
         elif val == 4:
-            return self._edb.definition.PadGeometryType.Oval
+            return self._edb.Definition.PadGeometryType.Oval
         elif val == 5:
-            return self._edb.definition.PadGeometryType.Bullet
+            return self._edb.Definition.PadGeometryType.Bullet
         elif val == 6:
-            return self._edb.definition.PadGeometryType.NSidedPolygon
+            return self._edb.Definition.PadGeometryType.NSidedPolygon
         elif val == 7:
-            return self._edb.definition.PadGeometryType.Polygon
+            return self._edb.Definition.PadGeometryType.Polygon
         elif val == 8:
-            return self._edb.definition.PadGeometryType.Round45
+            return self._edb.Definition.PadGeometryType.Round45
         elif val == 9:
-            return self._edb.definition.PadGeometryType.Round90
+            return self._edb.Definition.PadGeometryType.Round90
         elif val == 10:
-            return self._edb.definition.PadGeometryType.Square45
+            return self._edb.Definition.PadGeometryType.Square45
         elif val == 11:
-            return self._edb.definition.PadGeometryType.Square90
+            return self._edb.Definition.PadGeometryType.Square90
         else:
             return val
 
@@ -189,10 +189,10 @@ class EdbPadstacks(object):
             List of definitions via padstack definitions.
 
         """
-        if len(self._definitions) == len(self._pedb.padstack_defs):
+        if len(self._definitions) == len(list(self._pedb._db.PadstackDefs)):
             return self._definitions
         self._definitions = {}
-        for padstackdef in self._pedb.padstack_defs:
+        for padstackdef in list(self._pedb._db.PadstackDefs):
             PadStackData = padstackdef.GetData()
             if len(PadStackData.GetLayerNames()) >= 1:
                 self._definitions[padstackdef.GetName()] = EDBPadstack(padstackdef, self)
@@ -331,11 +331,11 @@ class EdbPadstacks(object):
 
         class PadType:
             (RegularPad, AntiPad, ThermalPad, Hole, UnknownGeomType) = (
-                self._edb.definition.PadType.RegularPad,
-                self._edb.definition.PadType.AntiPad,
-                self._edb.definition.PadType.ThermalPad,
-                self._edb.definition.PadType.Hole,
-                self._edb.definition.PadType.UnknownGeomType,
+                self._edb.Definition.PadType.RegularPad,
+                self._edb.Definition.PadType.AntiPad,
+                self._edb.Definition.PadType.ThermalPad,
+                self._edb.Definition.PadType.Hole,
+                self._edb.Definition.PadType.UnknownGeomType,
             )
 
         return PadType
@@ -374,32 +374,32 @@ class EdbPadstacks(object):
             Name of the padstack if the operation is successful.
         """
 
-        PadStack = self._edb.definition.PadstackDef.Create(self._layout.cell.GetDatabase(), padstackname)
-        new_PadStackData = self._edb.definition.PadstackDefData.Create()
+        PadStack = self._edb.Definition.PadstackDef.Create(self._layout.cell.GetDatabase(), padstackname)
+        new_PadStackData = self._edb.Definition.PadstackDefData.Create()
         list_values = convert_py_list_to_net_list(
             [self._get_edb_value(holediam), self._get_edb_value(paddiam), self._get_edb_value(antipaddiam)]
         )
         value0 = self._get_edb_value(0.0)
         new_PadStackData.SetHoleParameters(
-            self._edb.definition.PadGeometryType.Circle,
+            self._edb.Definition.PadGeometryType.Circle,
             list_values,
             value0,
             value0,
             value0,
         )
-        new_PadStackData.SetHoleRange(self._edb.definition.PadstackHoleRange.UpperPadToLowerPad)
+        new_PadStackData.SetHoleRange(self._edb.Definition.PadstackHoleRange.UpperPadToLowerPad)
         layers = list(self._pedb.stackup.signal_layers.keys())
         if not startlayer:
             startlayer = layers[0]
         if not endlayer:
             endlayer = layers[len(layers) - 1]
 
-        antipad_shape = self._edb.definition.PadGeometryType.Circle
+        antipad_shape = self._edb.Definition.PadGeometryType.Circle
         started = False
         new_PadStackData.SetPadParameters(
             "Default",
-            self._edb.definition.PadType.RegularPad,
-            self._edb.definition.PadGeometryType.Circle,
+            self._edb.Definition.PadType.RegularPad,
+            self._edb.Definition.PadGeometryType.Circle,
             convert_py_list_to_net_list([self._get_edb_value(paddiam)]),
             value0,
             value0,
@@ -408,7 +408,7 @@ class EdbPadstacks(object):
 
         new_PadStackData.SetPadParameters(
             "Default",
-            self._edb.definition.PadType.AntiPad,
+            self._edb.Definition.PadType.AntiPad,
             antipad_shape,
             convert_py_list_to_net_list([self._get_edb_value(antipaddiam)]),
             value0,
@@ -423,8 +423,8 @@ class EdbPadstacks(object):
             if started:
                 new_PadStackData.SetPadParameters(
                     layer,
-                    self._edb.definition.PadType.RegularPad,
-                    self._edb.definition.PadGeometryType.Circle,
+                    self._edb.Definition.PadType.RegularPad,
+                    self._edb.Definition.PadGeometryType.Circle,
                     convert_py_list_to_net_list([self._get_edb_value(paddiam)]),
                     value0,
                     value0,
@@ -432,7 +432,7 @@ class EdbPadstacks(object):
                 )
                 new_PadStackData.SetPadParameters(
                     layer,
-                    self._edb.definition.PadType.AntiPad,
+                    self._edb.Definition.PadType.AntiPad,
                     antipad_shape,
                     convert_py_list_to_net_list([self._get_edb_value(antipaddiam)]),
                     value0,
@@ -493,13 +493,13 @@ class EdbPadstacks(object):
 
         else:
             psdef = padstackInst._edb_object.GetPadstackDef()
-        newdefdata = self._edb.definition.PadstackDefData(psdef.GetData())
-        newdefdata.SetSolderBallShape(self._edb.definition.SolderballShape.Cylinder)
+        newdefdata = self._edb.Definition.PadstackDefData(psdef.GetData())
+        newdefdata.SetSolderBallShape(self._edb.Definition.SolderballShape.Cylinder)
         newdefdata.SetSolderBallParameter(self._get_edb_value(ballDiam), self._get_edb_value(ballDiam))
         sball_placement = (
-            self._edb.definition.SolderballPlacement.AbovePadstack
+            self._edb.Definition.SolderballPlacement.AbovePadstack
             if isTopPlaced
-            else self._edb.definition.SolderballPlacement.BelowPadstack
+            else self._edb.Definition.SolderballPlacement.BelowPadstack
         )
         newdefdata.SetSolderBallPlacement(sball_placement)
         psdef.SetData(newdefdata)
@@ -560,7 +560,7 @@ class EdbPadstacks(object):
         if self._port_exist(port_name):
             port_name = generate_unique_name(port_name, n=2)
             self._logger.info("An existing port already has this same name. Renaming to {}.".format(port_name))
-        self._edb.cell.terminal.PadstackInstanceTerminal.Create(
+        self._edb.Cell.Terminal.PadstackInstanceTerminal.Create(
             self._active_layout,
             padstackinstance.GetNet(),
             port_name,
@@ -633,7 +633,7 @@ class EdbPadstacks(object):
         else:
             if not isinstance(pin, EDBPadstackInstance):
                 pin = EDBPadstackInstance(pin, self._pedb)
-            padparams = self._edb.definition.PadstackDefData(
+            padparams = self._edb.Definition.PadstackDefData(
                 pin._edb_object.GetPadstackDef().GetData()
             ).GetPadParametersValue(layername, self.int_to_pad_type(pad_type))
         if padparams[2]:
@@ -644,12 +644,12 @@ class EdbPadstacks(object):
             rotation = padparams[5].ToDouble()
             return geometry_type, parameters, offset_x, offset_y, rotation
         else:
-            if isinstance(pin, self._edb.definition.PadstackDef):
-                padparams = self._edb.definition.PadstackDefData(pin.GetData()).GetPolygonalPadParameters(
+            if isinstance(pin, self._edb.Definition.PadstackDef):
+                padparams = self._edb.Definition.PadstackDefData(pin.GetData()).GetPolygonalPadParameters(
                     layername, self.int_to_pad_type(pad_type)
                 )
             else:
-                padparams = self._edb.definition.PadstackDefData(
+                padparams = self._edb.Definition.PadstackDefData(
                     pin._edb_object.GetPadstackDef().GetData()
                 ).GetPolygonalPadParameters(layername, self.int_to_pad_type(pad_type))
 
@@ -682,7 +682,7 @@ class EdbPadstacks(object):
         """
         if self.definitions:
             for padstack in list(self.definitions.values()):
-                cloned_padstack_data = self._edb.definition.PadstackDefData(padstack.edb_padstack.GetData())
+                cloned_padstack_data = self._edb.Definition.PadstackDefData(padstack.edb_padstack.GetData())
                 layers_name = cloned_padstack_data.GetLayerNames()
                 all_succeed = True
                 for layer in layers_name:
@@ -693,11 +693,11 @@ class EdbPadstacks(object):
                         params = convert_py_list_to_net_list(
                             [self._pedb.edb_value(value)] * len(parameters)
                         )  # pragma no cover
-                        geom = self._edb.definition.PadGeometryType.Circle
+                        geom = self._edb.Definition.PadGeometryType.Circle
                         offset_x = self._pedb.edb_value(offset_x)
                         offset_y = self._pedb.edb_value(offset_y)
                         rot = self._pedb.edb_value(rot)
-                        antipad = self._edb.definition.PadType.AntiPad
+                        antipad = self._edb.Definition.PadType.AntiPad
                         if cloned_padstack_data.SetPadParameters(
                             layer, antipad, geom, params, offset_x, offset_y, rot
                         ):  # pragma no cover
@@ -945,9 +945,9 @@ class EdbPadstacks(object):
         if not padstackname:
             padstackname = generate_unique_name("VIA")
         # assert not self.isreadonly, "Write Functions are not available within AEDT"
-        padstackData = self._edb.definition.PadstackDefData.Create()
+        padstackData = self._edb.Definition.PadstackDefData.Create()
         if has_hole and not polygon_hole:
-            ptype = self._edb.definition.PadGeometryType.Circle
+            ptype = self._edb.Definition.PadGeometryType.Circle
             hole_param = Array[type(holediam)]([holediam])
             padstackData.SetHoleParameters(ptype, hole_param, value0, value0, value0)
             padstackData.SetHolePlatingPercentage(self._get_edb_value(20.0))
@@ -966,7 +966,7 @@ class EdbPadstacks(object):
             padstackData.SetPolygonalHoleParameters(hole_param, value0, value0, value0)
             padstackData.SetHolePlatingPercentage(self._get_edb_value(20.0))
         else:
-            ptype = self._edb.definition.PadGeometryType.NoGeometry
+            ptype = self._edb.Definition.PadGeometryType.NoGeometry
 
         x_size = self._get_edb_value(x_size)
         y_size = self._get_edb_value(y_size)
@@ -982,13 +982,13 @@ class EdbPadstacks(object):
         anti_pad_y_size = self._get_edb_value(anti_pad_y_size)
 
         if hole_range == "through":  # pragma no cover
-            padstackData.SetHoleRange(self._edb.definition.PadstackHoleRange.Through)
+            padstackData.SetHoleRange(self._edb.Definition.PadstackHoleRange.Through)
         elif hole_range == "begin_on_upper_pad":  # pragma no cover
-            padstackData.SetHoleRange(self._edb.definition.PadstackHoleRange.BeginOnUpperPad)
+            padstackData.SetHoleRange(self._edb.Definition.PadstackHoleRange.BeginOnUpperPad)
         elif hole_range == "end_on_lower_pad":  # pragma no cover
-            padstackData.SetHoleRange(self._edb.definition.PadstackHoleRange.EndOnLowerPad)
+            padstackData.SetHoleRange(self._edb.Definition.PadstackHoleRange.EndOnLowerPad)
         elif hole_range == "upper_pad_to_lower_pad":  # pragma no cover
-            padstackData.SetHoleRange(self._edb.definition.PadstackHoleRange.UpperPadToLowerPad)
+            padstackData.SetHoleRange(self._edb.Definition.PadstackHoleRange.UpperPadToLowerPad)
         else:  # pragma no cover
             self._logger.error("Unknown padstack hole range")
         padstackData.SetMaterial("copper")
@@ -999,10 +999,10 @@ class EdbPadstacks(object):
             layers = layers[: layers.index(stop_layer) + 1]
         pad_array = Array[type(paddiam)]([paddiam])
         if pad_shape == "Circle":  # pragma no cover
-            pad_shape = self._edb.definition.PadGeometryType.Circle
+            pad_shape = self._edb.Definition.PadGeometryType.Circle
         elif pad_shape == "Rectangle":  # pragma no cover
             pad_array = Array[type(x_size)]([x_size, y_size])
-            pad_shape = self._edb.definition.PadGeometryType.Rectangle
+            pad_shape = self._edb.Definition.PadGeometryType.Rectangle
         elif pad_shape == "Polygon":
             if isinstance(pad_polygon, list):
                 _poly = self._pedb.modeler.create_polygon(pad_polygon, layers[0], net_name="dummy")
@@ -1015,10 +1015,10 @@ class EdbPadstacks(object):
                 pad_array = pad_polygon
         if antipad_shape == "Bullet":  # pragma no cover
             antipad_array = Array[type(x_size)]([x_size, y_size, corner_radius])
-            antipad_shape = self._edb.definition.PadGeometryType.Bullet
+            antipad_shape = self._edb.Definition.PadGeometryType.Bullet
         elif antipad_shape == "Rectangle":  # pragma no cover
             antipad_array = Array[type(anti_pad_x_size)]([anti_pad_x_size, anti_pad_y_size])
-            antipad_shape = self._edb.definition.PadGeometryType.Rectangle
+            antipad_shape = self._edb.Definition.PadGeometryType.Rectangle
         elif antipad_shape == "Polygon":
             if isinstance(antipad_polygon, list):
                 _poly = self._pedb.modeler.create_polygon(antipad_polygon, layers[0], net_name="dummy")
@@ -1031,14 +1031,14 @@ class EdbPadstacks(object):
                 antipad_array = antipad_polygon
         else:  # pragma no cover
             antipad_array = Array[type(antipaddiam)]([antipaddiam])
-            antipad_shape = self._edb.definition.PadGeometryType.Circle
+            antipad_shape = self._edb.Definition.PadGeometryType.Circle
         if add_default_layer:  # pragma no cover
             layers = layers + ["Default"]
         if antipad_shape == "Polygon" and pad_shape == "Polygon":
             for layer in layers:
                 padstackData.SetPolygonalPadParameters(
                     layer,
-                    self._edb.definition.PadType.RegularPad,
+                    self._edb.Definition.PadType.RegularPad,
                     pad_array._edb_object,
                     pad_offset_x,
                     pad_offset_y,
@@ -1046,7 +1046,7 @@ class EdbPadstacks(object):
                 )
                 padstackData.SetPolygonalPadParameters(
                     layer,
-                    self._edb.definition.PadType.AntiPad,
+                    self._edb.Definition.PadType.AntiPad,
                     antipad_array._edb_object,
                     pad_offset_x,
                     pad_offset_y,
@@ -1056,7 +1056,7 @@ class EdbPadstacks(object):
             for layer in layers:
                 padstackData.SetPadParameters(
                     layer,
-                    self._edb.definition.PadType.RegularPad,
+                    self._edb.Definition.PadType.RegularPad,
                     pad_shape,
                     pad_array,
                     pad_offset_x,
@@ -1066,7 +1066,7 @@ class EdbPadstacks(object):
 
                 padstackData.SetPadParameters(
                     layer,
-                    self._edb.definition.PadType.AntiPad,
+                    self._edb.Definition.PadType.AntiPad,
                     antipad_shape,
                     antipad_array,
                     offset_x,
@@ -1074,7 +1074,7 @@ class EdbPadstacks(object):
                     rotation,
                 )
 
-        padstackDefinition = self._edb.definition.PadstackDef.Create(self.db, padstackname)
+        padstackDefinition = self._edb.Definition.PadstackDef.Create(self.db, padstackname)
         padstackDefinition.SetData(padstackData)
         self._logger.info("Padstack %s create correctly", padstackname)
         return padstackname
@@ -1123,12 +1123,12 @@ class EdbPadstacks(object):
             Name of the new padstack.
         """
         p1 = self.definitions[target_padstack_name].edb_padstack.GetData()
-        new_padstack_definition_data = self._edb.definition.PadstackDefData(p1)
+        new_padstack_definition_data = self._edb.Definition.PadstackDefData(p1)
 
         if not new_padstack_name:
             new_padstack_name = generate_unique_name(target_padstack_name)
 
-        padstack_definition = self._edb.definition.PadstackDef.Create(self.db, new_padstack_name)
+        padstack_definition = self._edb.Definition.PadstackDef.Create(self.db, new_padstack_name)
         padstack_definition.SetData(new_padstack_definition_data)
 
         return new_padstack_name
@@ -1177,7 +1177,8 @@ class EdbPadstacks(object):
         for pad in list(self.definitions.keys()):
             if pad == definition_name:
                 padstack = self.definitions[pad].edb_padstack
-        position = self._edb.geometry.point_data(position[0], position[1])
+        #position = self._edb.Geometry.PointData(position[0], position[1])
+        position = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(self._pedb, *position)
         net = self._pedb.nets.find_or_create_net(net_name)
         rotation = (
             self._get_edb_value(rotation * math.pi / 180)
@@ -1204,12 +1205,12 @@ class EdbPadstacks(object):
         if solderlayer:
             solderlayer = sign_layers_values[solderlayer]._edb_layer
         if padstack:
-            padstack_instance = self._edb.cell.primitive.padstack_instance.create(
+            padstack_instance = self._edb.Cell.Primitive.PadstackInstance.Create(
                 self._active_layout,
                 net,
                 via_name,
                 padstack,
-                position,
+                position._edb_object,
                 rotation,
                 fromlayer,
                 tolayer,
@@ -1217,7 +1218,7 @@ class EdbPadstacks(object):
                 None,
             )
             padstack_instance.is_layout_pin = is_pin
-            py_padstack_instance = EDBPadstackInstance(padstack_instance.api_object, self._pedb)
+            py_padstack_instance = EDBPadstackInstance(padstack_instance, self._pedb)
 
             return py_padstack_instance
         else:
@@ -1292,12 +1293,12 @@ class EdbPadstacks(object):
         bool
             ``True`` if successful.
         """
-        pad_type = self._edb.definition.PadType.RegularPad
-        pad_geo = self._edb.definition.PadGeometryType.Circle
+        pad_type = self._edb.Definition.PadType.RegularPad
+        pad_geo = self._edb.Definition.PadGeometryType.Circle
         vals = self._get_edb_value(0)
         params = convert_py_list_to_net_list([self._get_edb_value(0)])
         p1 = self.definitions[padstack_name].edb_padstack.GetData()
-        newPadstackDefinitionData = self._edb.definition.PadstackDefData(p1)
+        newPadstackDefinitionData = self._edb.Definition.PadstackDefData(p1)
 
         if not layer_name:
             layer_name = list(self._pedb.stackup.signal_layers.keys())
@@ -1360,11 +1361,11 @@ class EdbPadstacks(object):
             ``True`` if successful.
         """
         shape_dict = {
-            "Circle": self._edb.definition.PadGeometryType.Circle,
-            "Square": self._edb.definition.PadGeometryType.Square,
-            "Rectangle": self._edb.definition.PadGeometryType.Rectangle,
-            "Oval": self._edb.definition.PadGeometryType.Oval,
-            "Bullet": self._edb.definition.PadGeometryType.Bullet,
+            "Circle": self._edb.Definition.PadGeometryType.Circle,
+            "Square": self._edb.Definition.PadGeometryType.Square,
+            "Rectangle": self._edb.Definition.PadGeometryType.Rectangle,
+            "Oval": self._edb.Definition.PadGeometryType.Oval,
+            "Bullet": self._edb.Definition.PadGeometryType.Bullet,
         }
         pad_shape = shape_dict[pad_shape]
         if not isinstance(pad_params, list):
@@ -1383,7 +1384,7 @@ class EdbPadstacks(object):
         antipad_rotation = self._get_edb_value(antipad_rotation)
 
         p1 = self.definitions[padstack_name].edb_padstack.GetData()
-        new_padstack_def = self._edb.definition.PadstackDefData(p1)
+        new_padstack_def = self._edb.Definition.PadstackDefData(p1)
         if not layer_name:
             layer_name = list(self._pedb.stackup.signal_layers.keys())
         elif isinstance(layer_name, str):
@@ -1391,7 +1392,7 @@ class EdbPadstacks(object):
         for layer in layer_name:
             new_padstack_def.SetPadParameters(
                 layer,
-                self._edb.definition.PadType.RegularPad,
+                self._edb.Definition.PadType.RegularPad,
                 pad_shape,
                 pad_params,
                 pad_x_offset,
@@ -1400,7 +1401,7 @@ class EdbPadstacks(object):
             )
             new_padstack_def.SetPadParameters(
                 layer,
-                self._edb.definition.PadType.AntiPad,
+                self._edb.Definition.PadType.AntiPad,
                 antipad_shape,
                 antipad_params,
                 antipad_x_offset,

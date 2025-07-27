@@ -111,7 +111,7 @@ class Material(object):
 
     def __init__(self, edb: Edb, material_def):
         self.__edb: Edb = edb
-        self.__edb_definition = edb.core.definition
+        self.__edb_definition = edb.core.Definition
         self.__name: str = material_def.GetName()
         self.__material_def = material_def
         self.__dc_model = material_def.GetDielectricMaterialModel()
@@ -553,7 +553,7 @@ class Materials(object):
 
     def __init__(self, edb: Edb):
         self.__edb = edb
-        self.__edb_definition = edb.core.definition
+        self.__edb_definition = edb.core.Definition
         self.__syslib = os.path.join(self.__edb.base_path, "syslib")
 
     def __contains__(self, item):
@@ -575,7 +575,7 @@ class Materials(object):
         """Get materials."""
         materials = {
             material_def.GetName(): Material(self.__edb, material_def)
-            for material_def in list(self.__edb.active_db.MaterialDefs)
+            for material_def in list(self.__edb._db.MaterialDefs)
         }
         return materials
 

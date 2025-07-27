@@ -383,7 +383,7 @@ class EDBPadProperties(object):
             ``True`` when successful, ``False`` when failed.
         """
         originalPadstackDefinitionData = self._edb_padstack.GetData()
-        newPadstackDefinitionData = self._edb.definition.PadstackDefData(originalPadstackDefinitionData)
+        newPadstackDefinitionData = self._edb.Definition.PadstackDefData(originalPadstackDefinitionData)
         if not pad_type:
             pad_type = self.pad_type
         if not geom_type:
@@ -470,7 +470,7 @@ class EDBPadstack(object):
 
         """
         pstack_data = self._edb_object.GetData()
-        return self._edb.definition.PadstackDefData(pstack_data)
+        return self._edb.Definition.PadstackDefData(pstack_data)
 
     @_padstack_def_data.setter
     def _padstack_def_data(self, value):
@@ -591,7 +591,7 @@ class EDBPadstack(object):
             ``True`` when successful, ``False`` when failed.
         """
         originalPadstackDefinitionData = self.edb_padstack.GetData()
-        newPadstackDefinitionData = self._edb.definition.PadstackDefData(originalPadstackDefinitionData)
+        newPadstackDefinitionData = self._edb.Definition.PadstackDefData(originalPadstackDefinitionData)
         if not hole_type:
             hole_type = self.hole_type
         if not params:
@@ -705,12 +705,12 @@ class EDBPadstack(object):
         float
             Percentage for the hole plating.
         """
-        return self._edb.definition.PadstackDefData(self.edb_padstack.GetData()).GetHolePlatingPercentage()
+        return self._edb.Definition.PadstackDefData(self.edb_padstack.GetData()).GetHolePlatingPercentage()
 
     @hole_plating_ratio.setter
     def hole_plating_ratio(self, ratio):
         originalPadstackDefinitionData = self.edb_padstack.GetData()
-        newPadstackDefinitionData = self._edb.definition.PadstackDefData(originalPadstackDefinitionData)
+        newPadstackDefinitionData = self._edb.Definition.PadstackDefData(originalPadstackDefinitionData)
         newPadstackDefinitionData.SetHolePlatingPercentage(self._get_edb_value(ratio))
         self.edb_padstack.SetData(newPadstackDefinitionData)
 
@@ -797,7 +797,7 @@ class EDBPadstack(object):
     @hole_range.setter
     def hole_range(self, value):
         pdef_data = self._padstack_def_data
-        pdef_data.SetHoleRange(getattr(self._edb.definition.PadstackHoleRange, snake_to_pascal(value)))
+        pdef_data.SetHoleRange(getattr(self._edb.Definition.PadstackHoleRange, snake_to_pascal(value)))
         self._padstack_def_data = pdef_data
 
     def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=75, delete_padstack_def=True):
@@ -847,7 +847,7 @@ class EDBPadstack(object):
                         net_name=via._edb_padstackinstance.GetNet().GetName(),
                     )
                 else:
-                    self._edb.cell.primitive.circle.create(
+                    self._edb.Cell.Primitive.Circle.Create(
                         layout,
                         self.via_start_layer,
                         via._edb_padstackinstance.GetNet(),
@@ -862,7 +862,7 @@ class EDBPadstack(object):
                         net_name=via._edb_padstackinstance.GetNet().GetName(),
                     )
                 else:
-                    self._edb.cell.primitive.circle.create(
+                    self._edb.Cell.Primitive.Circle.Create(
                         layout,
                         self.via_stop_layer,
                         via._edb_padstackinstance.GetNet(),
@@ -890,7 +890,7 @@ class EDBPadstack(object):
                             rad_u = rad_small
                             rad_l = rad_large
 
-                        cloned_circle = self._edb.cell.primitive.circle.create(
+                        cloned_circle = self._edb.Cell.Primitive.Circle.Create(
                             layout,
                             start,
                             via._edb_padstackinstance.GetNet(),
@@ -898,7 +898,7 @@ class EDBPadstack(object):
                             self._get_edb_value(pos[1]),
                             self._get_edb_value(rad_u),
                         )
-                        cloned_circle2 = self._edb.cell.primitive.circle.create(
+                        cloned_circle2 = self._edb.Cell.Primitive.Circle.Create(
                             layout,
                             stop,
                             via._edb_padstackinstance.GetNet(),
@@ -906,13 +906,13 @@ class EDBPadstack(object):
                             self._get_edb_value(pos[1]),
                             self._get_edb_value(rad_l),
                         )
-                        s3d = self._edb.cell.hierarchy._hierarchy.Structure3D.Create(
+                        s3d = self._edb.Cell.Hierarchy.Structure3D.Create(
                             layout, generate_unique_name("via3d_" + via.aedt_name.replace("via_", ""), n=3)
                         )
                         s3d.AddMember(cloned_circle.prim_obj)
                         s3d.AddMember(cloned_circle2.prim_obj)
                         s3d.SetMaterial(self.material)
-                        s3d.SetMeshClosureProp(self._edb.cell.hierarchy._hierarchy.Structure3D.TClosure.EndsClosed)
+                        s3d.SetMeshClosureProp(self._edb.Cell.Hierarchy.Structure3D.TClosure.EndsClosed)
                         started = True
                         i += 1
                     if stop == via.stop_layer:
@@ -1026,7 +1026,7 @@ class EDBPadstack(object):
                 )
                 new_padstack_definition_data.SetMaterial(self.material)
                 new_padstack_definition_data.SetHolePlatingPercentage(self._get_edb_value(self.hole_plating_ratio))
-                padstack_definition = self._edb.definition.PadstackDef.Create(
+                padstack_definition = self._edb.Definition.PadstackDef.Create(
                     self._ppadstack._pedb.active_db, new_padstack_name
                 )
                 padstack_definition.SetData(new_padstack_definition_data)
@@ -1079,8 +1079,8 @@ class EDBPadstack(object):
         bool
             ``True`` when succeed ``False`` when failed.
         """
-        cloned_padstack_data = self._edb.definition.PadstackDefData(self.edb_padstack.GetData())
-        new_padstack_data = self._edb.definition.PadstackDefData.Create()
+        cloned_padstack_data = self._edb.Definition.PadstackDefData(self.edb_padstack.GetData())
+        new_padstack_data = self._edb.Definition.PadstackDefData.Create()
         layers_name = cloned_padstack_data.GetLayerNames()
         layers_to_add = []
         for layer in layers_name:
@@ -1092,7 +1092,7 @@ class EDBPadstack(object):
         for layer in layers_name:
             updated_pad = self.pad_by_layer[layer]
             if not updated_pad.geometry_type == 0:  # pragma no cover
-                pad_type = self._edb.definition.PadType.RegularPad
+                pad_type = self._edb.Definition.PadType.RegularPad
                 geom_type = self.pad_by_layer[layer]._pad_parameter_value[1]
                 parameters = self.pad_by_layer[layer]._pad_parameter_value[2]
                 offset_x = self.pad_by_layer[layer]._pad_parameter_value[3]
@@ -1107,7 +1107,7 @@ class EDBPadstack(object):
 
             updated_anti_pad = self.antipad_by_layer[layer]
             if not updated_anti_pad.geometry_type == 0:  # pragma no cover
-                pad_type = self._edb.definition.PadType.AntiPad
+                pad_type = self._edb.Definition.PadType.AntiPad
                 geom_type = self.pad_by_layer[layer]._pad_parameter_value[1]
                 parameters = self.pad_by_layer[layer]._pad_parameter_value[2]
                 offset_x = self.pad_by_layer[layer]._pad_parameter_value[3]
@@ -1124,7 +1124,7 @@ class EDBPadstack(object):
 
             updated_thermal_pad = self.thermalpad_by_layer[layer]
             if not updated_thermal_pad.geometry_type == 0:  # pragma no cover
-                pad_type = self._edb.definition.PadType.ThermalPad
+                pad_type = self._edb.Definition.PadType.ThermalPad
                 geom_type = self.pad_by_layer[layer]._pad_parameter_value[1]
                 parameters = self.pad_by_layer[layer]._pad_parameter_value[2]
                 offset_x = self.pad_by_layer[layer]._pad_parameter_value[3]
@@ -1509,7 +1509,7 @@ class EDBPadstackInstance(Primitive):
     def backdrill_parameters(self):
         data = {}
         flag, drill_to_layer, offset, diameter = self._edb_object.GetBackDrillParametersLayerValue(
-            self._pedb.core.cell.layer("", self._pedb.core.cell.layer_type.SignalLayer),
+            self._pedb.core.Cell.Layer("", self._pedb.core.cell.layer_type.SignalLayer),
             self._pedb.edb_value(0),
             self._pedb.edb_value(0.0),
             True,
@@ -1522,7 +1522,7 @@ class EDBPadstackInstance(Primitive):
                     "stub_length": offset.ToString(),
                 }
         flag, drill_to_layer, offset, diameter = self._edb_object.GetBackDrillParametersLayerValue(
-            self._pedb.core.cell.layer("", self._pedb.core.cell.layer_type.SignalLayer),
+            self._pedb.core.Cell.Layer("", self._pedb.core.cell.layer_type.SignalLayer),
             self._pedb.edb_value(0),
             self._pedb.edb_value(0.0),
             False,
@@ -2240,7 +2240,7 @@ class EDBPadstackInstance(Primitive):
             rad_l = rad_large
 
         layout = self._pedb.active_layout
-        cloned_circle = self._edb.cell.primitive.circle.create(
+        cloned_circle = self._edb.Cell.Primitive.Circle.Create(
             layout,
             self.start_layer,
             self._edb_padstackinstance.GetNet(),
@@ -2248,7 +2248,7 @@ class EDBPadstackInstance(Primitive):
             self._pedb.edb_value(pos[1]),
             self._pedb.edb_value(rad_u),
         )
-        cloned_circle2 = self._edb.cell.primitive.circle.create(
+        cloned_circle2 = self._edb.Cell.Primitive.Circle.Create(
             layout,
             self.stop_layer,
             self._edb_padstackinstance.GetNet(),

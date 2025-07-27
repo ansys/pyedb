@@ -205,9 +205,9 @@ class EdbNets(CommonNets):
             total_trace_area = 0.0
             for primitive in net.primitives:
                 primitive = primitive._edb_object
-                if primitive.GetPrimitiveType() == self._edb.cell.primitive.api_class.PrimitiveType.Bondwire:
+                if primitive.GetPrimitiveType() == self._edb.Cell.Primitive.PrimitiveType.Bondwire:
                     continue
-                if primitive.GetPrimitiveType() != self._edb.cell.primitive.api_class.PrimitiveType.Path:
+                if primitive.GetPrimitiveType() != self._edb.Cell.Primitive.PrimitiveType.Path:
                     total_plane_area += float(primitive.GetPolygonData().Area())
                 else:
                     total_trace_area += float(primitive.GetPolygonData().Area())
@@ -551,9 +551,11 @@ class EdbNets(CommonNets):
 
     def get_net_by_name(self, net_name):
         """Find a net by name."""
-        edb_net = self._edb.cell.net.find_by_name(self._active_layout, net_name)
-        if edb_net is not None:
-            return edb_net
+
+        edb_net = self._edb.Cell.Net.FindByName(self._active_layout, net_name)
+        if not edb_net.IsNull():
+            return self._pedb.pedb_class.database.edb_data.nets_data.EDBNetsData(edb_net, self._pedb)
+
 
     def delete_nets(self, netlist):
         """Delete one or more nets from EDB.
@@ -635,13 +637,13 @@ class EdbNets(CommonNets):
         """
         if not net_name and not start_with and not contain and not end_with:
             net_name = generate_unique_name("NET_")
-            net = self._edb.cell.net.create(self._active_layout, net_name)
+            net = self._edb.Cell.Net.Create(self._active_layout, net_name)
             return net
         else:
             if not start_with and not contain and not end_with:
-                net = self._edb.cell.net.find_by_name(self._active_layout, net_name)
-                if net.is_null:
-                    net = self._edb.cell.net.create(self._active_layout, net_name)
+                net = self._edb.Cell.Net.FindByName(self._active_layout, net_name)
+                if net.IsNull():
+                    net = self._edb.Cell.Net.Create(self._active_layout, net_name)
                 return net
             elif start_with:
                 nets_found = [

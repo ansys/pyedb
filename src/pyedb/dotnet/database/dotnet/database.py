@@ -685,16 +685,6 @@ class Database:
     """Class representing a database object."""
 
     @property
-    def core(self):
-        """Edb Dotnet Api class.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.dotnet.database.CellDotNet`
-        """
-        return CellDotNet(self)
-
-    @property
     def database(self):
         """Edb Dotnet Api Database."""
         return self.core.database
@@ -703,73 +693,6 @@ class Database:
     def definition(self):
         """Edb Dotnet Api Database `Edb.Definition`."""
         return self.core.Definition
-
-    def __init__(self):
-        """Initialize a new Database."""
-        self._db = None
-
-    @property
-    def api_class(self):
-        """Return Ansys.Ansoft.Edb class object."""
-        return self._edb
-
-    @property
-    def api_object(self):
-        """Return Ansys.Ansoft.Edb object."""
-        return self._db
-
-    @property
-    def db(self):
-        """Active database object."""
-        return self._db
-
-    def run_as_standalone(self, flag):
-        """Set if Edb is run as standalone or embedded in AEDT.
-
-        Parameters
-        ----------
-        flag : bool
-            Whether if Edb is run as standalone or embedded in AEDT.
-        """
-        self.core.database.SetRunAsStandAlone(flag)
-
-    def create(self, db_path):
-        """Create a Database at the specified file location.
-
-        Parameters
-        ----------
-        db_path : str
-            Path to top-level database folder
-
-        Returns
-        -------
-        Database
-        """
-        self._db = self.core.database.Create(db_path)
-        return self._db
-
-    def open(self, db_path, read_only):
-        """Open an existing Database at the specified file location.
-
-        Parameters
-        ----------
-        db_path : str
-            Path to top-level Database folder.
-        read_only : bool
-            Obtain read-only access.
-
-        Returns
-        -------
-        Database or None
-            The opened Database object, or None if not found.
-        """
-        self._db = self.core.database.Open(
-            db_path,
-            read_only,
-        )
-        if self._db.IsNull():
-            raise AttributeError(f"Failed to open edb file {db_path}")
-        return self._db
 
     def delete(self, db_path):
         """Delete a database at the specified file location.

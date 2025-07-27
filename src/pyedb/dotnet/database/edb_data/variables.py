@@ -42,7 +42,7 @@ class Variable:
         if self._is_design_varible:
             return self._pedb.active_cell.GetVariableServer()
         else:
-            return self._pedb.active_db.GetVariableServer()
+            return self._pedb._db.GetVariableServer()
 
     @property
     def name(self):

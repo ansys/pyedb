@@ -196,7 +196,7 @@ class EDBComponentDef(ObjBase):
     def create(self, name):
         cell_type = self._pedb.core.cell.CellType.FootprintCell
         footprint_cell = self._pedb._active_cell.cell.Create(self._pedb.active_db, cell_type, name)
-        edb_object = self._pedb.core.definition.ComponentDef.Create(self._pedb.active_db, name, footprint_cell)
+        edb_object = self._pedb.core.Definition.ComponentDef.Create(self._pedb.active_db, name, footprint_cell)
         return EDBComponentDef(self._pedb, edb_object)
 
     def get_properties(self):
