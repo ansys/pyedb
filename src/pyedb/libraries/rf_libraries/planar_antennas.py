@@ -89,14 +89,14 @@ class RectPatch:
     def __init__(
         self,
         edb_cell=None,
-        freq: Union[str, float] = "2.4Ghz",
+        target_frequency: Union[str, float] = "2.4Ghz",
         inset: Union[str, float] = 0,
         layer: str = "TOP_METAL",
         bottom_layer: str = "BOT_METAL",
         add_port: bool = True,
     ):
         self._edb = edb_cell
-        self.freq = self._edb.value(freq)
+        self.target_frequency = self._edb.value(target_frequency)
         self.inset = self._edb.value(inset)
         self.layer = layer
         self.bottom_layer = bottom_layer
@@ -104,9 +104,9 @@ class RectPatch:
         self.add_port = add_port
 
     @property
-    def resonant_frequency(self) -> float:
+    def estimated_frequency(self) -> float:
         """
-        Analytical resonance frequency (Hz) computed from the cavity model.
+        Analytical resonance frequency (GHz) computed from the cavity model.
 
         Returns
         -------
@@ -116,31 +116,31 @@ class RectPatch:
         # Effective length
         c = 299_792_458
         eps_eff = (self.substrate.er + 1) / 2 + (self.substrate.er - 1) / 2 * (
-            1 + 10 * self.substrate.h / self.width_patch
+            1 + 10 * self.substrate.h / self.width
         ) ** -0.5
-        return c / (2 * self.width_patch * math.sqrt(eps_eff))
+        return self._edb.value(f"{round((c / (2 * self.width * math.sqrt(eps_eff)) / 1e9), 3)}Ghz")
 
     @property
-    def width_patch(self) -> float:
+    def width(self) -> float:
         """Patch width (m) derived for the target frequency."""
         c = 299_792_458
-        return c / (2 * self.freq * math.sqrt((self.substrate.er + 1) / 2))
+        return round(c / (2 * self.target_frequency * math.sqrt((self.substrate.er + 1) / 2)), 5)
 
     @property
-    def length_patch(self) -> float:
+    def length(self) -> float:
         """Patch length (m) accounting for fringing fields."""
         eps_eff = (self.substrate.er + 1) / 2 + (self.substrate.er - 1) / 2 * (
-            1 + 12 * self.substrate.h / self.width_patch
+            1 + 12 * self.substrate.h / self.width
         ) ** -0.5
         delta_l = (
             0.412
             * self.substrate.h
             * (eps_eff + 0.3)
             / (eps_eff - 0.258)
-            * (self.width_patch / self.substrate.h + 0.264)
-            / (self.width_patch / self.substrate.h + 0.8)
+            * (self.width / self.substrate.h + 0.264)
+            / (self.width / self.substrate.h + 0.8)
         )
-        return 0.5 * 299_792_458 / (self.freq * math.sqrt(eps_eff)) - 2 * delta_l
+        return round(0.5 * 299_792_458 / (self.target_frequency * math.sqrt(eps_eff)) - 2 * delta_l, 5)
 
     def create(self) -> bool:
         """Draw the patch, ground plane and feed geometry in EDB.
@@ -150,8 +150,8 @@ class RectPatch:
         bool
             True when the geometry has been successfully created.
         """
-        self._edb["w"] = self.width_patch
-        self._edb["l"] = self.length_patch
+        self._edb["w"] = self.width
+        self._edb["l"] = self.length
         self._edb["x0"] = self.inset
 
         # patch
@@ -160,8 +160,8 @@ class RectPatch:
             "ANT",
             representation_type="CenterWidthHeight",
             center_point=[0, 0],
-            height=self.length_patch,
-            width=self.width_patch,
+            height=self.length,
+            width=self.width,
         )
         # ground
         self._edb.modeler.create_rectangle(
@@ -169,30 +169,32 @@ class RectPatch:
             "GND",
             representation_type="CenterWidthHeight",
             center_point=[0, 0],
-            height=self.length_patch * 2,
-            width=self.width_patch * 2,
+            height=self.length * 2,
+            width=self.width * 2,
         )
         # feed
         if self.inset > 0:
             from pyedb.libraries.rf_libraries.base_functions import MicroStripLine
 
             ustrip_line = MicroStripLine(
-                self._edb, layer=self.layer, net="FEED", length=self.inset, x0=self.width_patch / 2, y0=0
+                self._edb, layer=self.layer, net="FEED", length=self.inset, x0=self.width / 2, y0=0
             ).create()
             if self.add_port:
                 self._edb.hfss.create_wave_port(
                     prim_id=ustrip_line.id,
-                    point_on_edge=[self.width_patch / 2 + self.inset, 0],
+                    point_on_edge=[self.width / 2 + self.inset, 0],
                     port_name="ustrip_port",
                     horizontal_extent_factor=10,
                     vertical_extent_factor=5,
                 )
                 setup = self._edb.create_hfss_setup("Patch_antenna_lib")
-                setup.adaptive_settings.adaptive_frequency_data_list[0].adaptive_frequency = str(self.freq)
+                setup.adaptive_settings.adaptive_frequency_data_list[0].adaptive_frequency = str(
+                    self.estimated_frequency
+                )
                 setup.add_sweep(
                     distribution="linear",
-                    start_freq=str(self.freq * 0.7),
-                    stop_freq=str(self.freq * 1.3),
+                    start_freq=str(self.estimated_frequency * 0.7),
+                    stop_freq=str(self.estimated_frequency * 1.3),
                     step="0.01GHz",
                 )
 

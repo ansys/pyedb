@@ -37,6 +37,7 @@ from pyedb.libraries.rf_libraries.base_functions import (
     RatRace,
     SpiralInductor,
 )
+from pyedb.libraries.rf_libraries.planar_antennas import RectPatch
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
@@ -205,4 +206,15 @@ class TestClass:
         ustrip.width = "300um"
         assert ustrip.width == 300e-6
         assert ustrip.impedance == 37.52
-        pass
+
+    def test_path_antenna(self, edb_examples):
+        edb = edb_examples.create_empty_edb()
+        stackup = MicroStripTechnologyStackup(pedb=edb)
+        stackup.substrate.thickness = 254e-6
+        stackup.substrate.material.permittivity = 3.5
+        patch_antenna = RectPatch(edb_cell=edb, inset=5e-3, target_frequency="2.4Ghz")
+        patch_antenna.create()
+        assert str(patch_antenna.estimated_frequency) == "1.885Ghz"
+        assert patch_antenna.width == 0.03801
+        assert patch_antenna.length == 0.02977
+        edb.close()
