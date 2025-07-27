@@ -90,18 +90,21 @@ class RectPatch:
         self,
         edb_cell=None,
         target_frequency: Union[str, float] = "2.4Ghz",
-        inset: Union[str, float] = 0,
+        length_feeding_line: Union[str, float] = 0,
         layer: str = "TOP_METAL",
         bottom_layer: str = "BOT_METAL",
         add_port: bool = True,
+        permittivity: float = None,
     ):
         self._edb = edb_cell
         self.target_frequency = self._edb.value(target_frequency)
-        self.inset = self._edb.value(inset)
+        self.length_feeding_line = self._edb.value(length_feeding_line)
         self.layer = layer
         self.bottom_layer = bottom_layer
-        self.substrate = Substrate()
         self.add_port = add_port
+        self.substrate = Substrate()
+        if permittivity:
+            self.substrate.er = permittivity
 
     @property
     def estimated_frequency(self) -> float:
@@ -152,7 +155,7 @@ class RectPatch:
         """
         self._edb["w"] = self.width
         self._edb["l"] = self.length
-        self._edb["x0"] = self.inset
+        self._edb["x0"] = self.length_feeding_line
 
         # patch
         self._edb.modeler.create_rectangle(
@@ -173,16 +176,16 @@ class RectPatch:
             width=self.width * 2,
         )
         # feed
-        if self.inset > 0:
+        if self.length_feeding_line > 0:
             from pyedb.libraries.rf_libraries.base_functions import MicroStripLine
 
             ustrip_line = MicroStripLine(
-                self._edb, layer=self.layer, net="FEED", length=self.inset, x0=self.width / 2, y0=0
+                self._edb, layer=self.layer, net="FEED", length=self.length_feeding_line, x0=self.width / 2, y0=0
             ).create()
             if self.add_port:
                 self._edb.hfss.create_wave_port(
                     prim_id=ustrip_line.id,
-                    point_on_edge=[self.width / 2 + self.inset, 0],
+                    point_on_edge=[self.width / 2 + self.length_feeding_line, 0],
                     port_name="ustrip_port",
                     horizontal_extent_factor=10,
                     vertical_extent_factor=5,
@@ -208,52 +211,176 @@ class RectPatch:
 
 class CircularPatch:
     """
-    Circular microstrip patch.
+    Circular microstrip patch antenna (optionally probe-fed).
+
+    The class automatically determines the physical dimensions for a
+    desired resonance frequency, creates the patch, ground plane and
+    either an inset microstrip feed or a coaxial probe feed, and
+    optionally sets up an HFSS simulation.
 
     Parameters
     ----------
-    freq : float
-    sub_h : float
-    sub_er : float
-    layer : str
-    via_layer : str
+    edb_cell : pyedb.Edb, optional
+        EDB project/cell in which the antenna will be built.
+    freq : str or float, default "2.4GHz"
+        Target resonance frequency of the patch.  A string such as
+        ``"2.4GHz"`` or a numeric value in Hz can be given.
+    probe_offset : str or float, default 0
+        Radial offset of the 50 Ω coax probe from the patch center.
+        A value of 0 places the probe at the center (not recommended
+        for good matching).
+    layer : str, default "TOP_METAL"
+        Metallization layer on which the patch polygon is drawn.
+    bottom_layer : str, default "BOT_METAL"
+        Metallization layer on which the ground polygon is drawn.
+    add_port : bool, default True
+        If True, create a lumped port (probe feed) and add an HFSS
+        setup with a frequency sweep.
+
+    Attributes
+    ----------
+    substrate : Substrate
+        Substrate definition (``er``, ``tand``, ``h``) used for all
+        analytical calculations.
+
+    Examples
+    --------
+    Build a 5.8 GHz circular patch on a 0.787 mm Rogers RO4350B substrate:
+
+    >>> edb = pyedb.Edb()
+    >>> patch = CircularPatch(
+    ...     edb_cell=edb,
+    ...     freq="5.8GHz",
+    ...     probe_offset="6.4mm",
+    ...     layer="TOP",
+    ...     bottom_layer="GND"
+    ... )
+    >>> patch.substrate.er = 3.66
+    >>> patch.substrate.tand = 0.0037
+    >>> patch.substrate.h = 0.000787
+    >>> patch.create()
+    >>> edb.save_as("circ_patch_5p8GHz.aedb")
+
+    Probe-fed 2.4 GHz patch with default 0 offset (center feed):
+
+    >>> edb = pyedb.Edb()
+    >>> CircularPatch(edb, freq=2.4e9).create()
+    >>> edb.save_as("probe_circ_patch_2p4GHz.aedb")
     """
 
     def __init__(
         self,
-        *,
-        freq: float = 2.4e9,
-        sub_h: float = 1.6e-3,
-        sub_er: float = 4.4,
-        layer: str = "TOP",
-        via_layer: str = "GND",
+        edb_cell=None,
+        target_frequency: Union[str, float] = "2.4GHz",
+        length_feeding_line: Union[str, float] = 0,
+        layer: str = "TOP_METAL",
+        bottom_layer: str = "BOT_METAL",
+        add_port: bool = True,
     ):
-        self.freq = freq
-        self.sub_h = sub_h
-        self.sub_er = sub_er
+        self._edb = edb_cell
+        self.target_frequency = self._edb.value(target_frequency)
+        self.length_feeding_line = self._edb.value(length_feeding_line)
         self.layer = layer
-        self.via_layer = via_layer
+        self.bottom_layer = bottom_layer
+        self.substrate = Substrate()
+        self.add_port = add_port
 
     @property
-    def radius(self) -> float:
+    def estimated_frequency(self) -> float:
         """
-        Approximate patch radius.
+        Analytical resonance frequency (GHz) computed from the cavity model.
 
         Returns
         -------
         float
+            Resonant frequency in Hz.
         """
+        # TM11 mode of circular patch
         c = 299_792_458
-        k = 1.84118  # TM11
-        return k * c / (2 * math.pi * self.freq * math.sqrt(self.sub_er))
+        # Effective radius accounting for fringing
+        a_eff = (
+            self.radius
+            * (
+                1
+                + (2 * self.substrate.h)
+                / (math.pi * self.radius * self.substrate.er)
+                * (math.log(math.pi * self.radius / (2 * self.substrate.h)) + 1.7726)
+            )
+            ** 0.5
+        )
+        # First zero of derivative of Bessel J1
+        k11 = 1.84118
+        return self._edb.value(f"{round(k11 * c / (2 * math.pi * a_eff * math.sqrt(self.substrate.er)) / 1e9, 3)}GHz")
 
-    def create(self, edb_path: str) -> Edb:
-        edb = Edb()
-        edb.save_as(edb_path)
-        edb["r"] = self.radius
-        edb.modeler.create_circle(self.layer, "ANT", [0, 0], self.radius)
-        edb.padstacks.create([0, 0], 0.3e-3, 0.5e-3, self.layer, self.via_layer, net="FEED")
-        return edb
+    @property
+    def radius(self) -> float:
+        """Patch physical radius (m) derived for the target frequency."""
+        c = 299_792_458
+        # Initial guess without fringing
+        a0 = 1.84118 * c / (2 * math.pi * self.target_frequency * math.sqrt(self.substrate.er))
+        # Iteratively refine fringing correction
+        a = a0
+        for _ in range(3):
+            a_eff = (
+                a
+                * (
+                    1
+                    + (2 * self.substrate.h)
+                    / (math.pi * a * self.substrate.er)
+                    * (math.log(math.pi * a / (2 * self.substrate.h)) + 1.7726)
+                )
+                ** 0.5
+            )
+            a = a0 * (a / a_eff)
+        return round(a, 5)
+
+    def create(self) -> bool:
+        """Draw the patch, ground plane and feed geometry in EDB.
+
+        Returns
+        -------
+        bool
+            True when the geometry has been successfully created.
+        """
+        self._edb["r"] = self.radius
+        self._edb["d"] = self.length_feeding_line
+
+        # patch
+        self._edb.modeler.create_circle(self.layer, net_name="ANT", x=0, y=0, radius=self.radius)
+        # ground
+        self._edb.modeler.create_circle(self.bottom_layer, net_name="GND", x=0, y=0, radius=self.radius * 2)
+        # feed
+        if self.length_feeding_line > 0:
+            from pyedb.libraries.rf_libraries.base_functions import MicroStripLine
+
+            ustrip_line = MicroStripLine(
+                self._edb, layer=self.layer, net="FEED", length=self.length_feeding_line, x0=self.radius, y0=0
+            ).create()
+            if self.add_port:
+                self._edb.hfss.create_wave_port(
+                    prim_id=ustrip_line.id,
+                    point_on_edge=[self.radius + self.length_feeding_line, 0],
+                    port_name="ustrip_port",
+                    horizontal_extent_factor=10,
+                    vertical_extent_factor=5,
+                )
+                setup = self._edb.create_hfss_setup("Patch_antenna_lib")
+                setup.adaptive_settings.adaptive_frequency_data_list[0].adaptive_frequency = str(
+                    self.estimated_frequency
+                )
+                setup.add_sweep(
+                    distribution="linear",
+                    start_freq=str(self.estimated_frequency * 0.7),
+                    stop_freq=str(self.estimated_frequency * 1.3),
+                    step="0.01GHz",
+                )
+        else:
+            # probe at center (no good match, but allowed)
+            padstack_def = self._edb.padstacks.create(
+                padstackname="FEED", start_layer=self.layer, stop_layer=self.bottom_layer
+            )
+            self._edb.padstacks.place(position=[0, 0], definition_name=padstack_def)
+        return True
 
 
 class AnnularRingPatch:
