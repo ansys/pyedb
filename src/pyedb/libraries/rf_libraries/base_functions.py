@@ -416,7 +416,7 @@ class SpiralInductor:
         self.spacing = self._edb.value(spacing)
         self.inner_diameter = self._edb.value(inner_diameter)  # first inner square side
         self.via_size = self._edb.value(via_size)  # centre via finished hole
-        self.inductor_center = self._edb.value(inductor_center)  # via centre position
+        self.inductor_center = [self._edb.value(v) for v in inductor_center]  # via centre position
         self.bridge_width = self._edb.value(bridge_width)  # under-pass trace width
         self.bridge_clearance = self._edb.value(bridge_clearance)  # dielectric gap under bridge
         self.bridge_length = self._edb.value(bridge_length)  # how far the bridge extends
