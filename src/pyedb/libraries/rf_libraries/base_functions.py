@@ -1198,124 +1198,159 @@ class DifferentialTLine:
     import math
     from typing import List, Optional
 
-    class MicroStripLine:
+
+class MicroStripLine:
+    """
+    Single-ended micro-strip line with fixed geometry and editable stack-up.
+
+    Parameters
+    ----------
+    edb : object
+        EDB application / API handle.
+    layer : str
+        Conductor layer on which the trace is drawn.
+    net : str
+        Net name assigned to the trace.
+    x0, y0 : float
+        Global start coordinates (mm, m, or whatever length unit is active in AEDT).
+    length : float
+        Physical length of the line (same unit as x0/y0).
+    angle : float
+        Rotation angle in degrees (0° = along +X).
+    freq : float, optional
+        Reference frequency (Hz) used to compute the electrical length.
+        If None, electrical_length will be None.
+    """
+
+    def __init__(
+        self,
+        edb_cell,
+        layer: str,
+        net: str,
+        x0: Union[float, str] = 0.0,
+        y0: Union[float, str] = 0.0,
+        length: Union[float, str] = "1mm",
+        width: Union[float, str] = "0.2mm",
+        angle: Union[float, str] = 0.0,
+        freq: Optional[Union[float, str]] = None,
+    ):
+        self._edb = edb_cell
+        self.layer = layer
+        self.net = net
+        self.x0 = self._edb.value(x0)
+        self.y0 = self._edb.value(y0)
+        self._length = self._edb.value(length)
+        self._width = self._edb.value(width)  # width of the trace
+        self.angle = self._edb.value(angle)  # degrees
+        self.freq = self._edb.value(freq)
+        self.substrate = Substrate()
+
+        # Edb variable
+        self._edb["w"] = self.width
+        self._edb["l"] = self.length
+
+    @property
+    def width(self):
+        return self._width
+
+    @width.setter
+    def width(self, value: Union[float, str]):
+        """Set the trace width and update the EDB variable."""
+        self._width = self._edb.value(value)
+        self._edb["w"] = self._width
+
+    @property
+    def length(self) -> float:
+        """Physical length of the micro-strip line."""
+        return self._length
+
+    @length.setter
+    def length(self, value: Union[float, str]):
+        """Set the trace length and update the EDB variable."""
+        self._length = self._edb.value(value)
+        self._edb["l"] = self._length
+
+    @property
+    def _ereff(self) -> float:
+        w = self._edb["w"]
+        er = self.substrate.er
+        h = self.substrate.h
+
+        u = w / h
+        a = (
+            1
+            + (1 / 49) * math.log((u**4 + (u / 52) ** 2) / (u**4 + 0.432))
+            + (1 / 18.7) * math.log(1 + (u / 18.1) ** 3)
+        )
+        b = 0.564 * ((er - 0.9) / (er + 3)) ** 0.053
+        return (er + 1) / 2 + (er - 1) / 2 * (1 + 10 / u) ** (-a * b)
+
+    # ------------------------------------------------------------------
+    # Electrical properties
+    # ------------------------------------------------------------------
+    @property
+    def impedance(self) -> float:
         """
-        Single-ended micro-strip line with fixed geometry and editable stack-up.
-
-        Parameters
-        ----------
-        edb : object
-            EDB application / API handle.
-        layer : str
-            Conductor layer on which the trace is drawn.
-        net : str
-            Net name assigned to the trace.
-        x0, y0 : float
-            Global start coordinates (mm, m, or whatever length unit is active in AEDT).
-        length : float
-            Physical length of the line (same unit as x0/y0).
-        angle : float
-            Rotation angle in degrees (0° = along +X).
-        freq : float, optional
-            Reference frequency (Hz) used to compute the electrical length.
-            If None, electrical_length will be None.
+        Accurate characteristic impedance (Ω) for a micro-strip line.
+        Valid for 0.05 ≤ w/h ≤ 1000 and 1 ≤ εr ≤ 128.
+        Source: G. Wheeler, E. Hammerstad & Jensen, IEEE-MTT 1980.
         """
+        w = self._edb["w"]
+        h = self.substrate.h
+        er = self.substrate.er
 
-        def __init__(
-            self,
-            edb,
-            layer: str,
-            net: str,
-            x0: Union[float, str],
-            y0: Union[float, str],
-            length: Union[float, str],
-            angle: Union[float, str] = 0.0,
-            freq: Optional[Union[float, str]] = None,
-        ):
-            self._edb = edb
-            self.layer = layer
-            self.net = net
-            self.x0 = self._edb.value(x0)
-            self.y0 = self._edb.value(y0)
-            self.length = self._edb.value(length)
-            self.angle = self._edb.value(angle)  # degrees
-            self.freq = self._edb.value(freq)
-            self.substrate = Substrate()
+        u = w / h
 
-        # ------------------------------------------------------------------
-        # Helper: effective permittivity
-        # ------------------------------------------------------------------
-        @property
-        def _ereff(self) -> float:
-            w = self._edb["w"]
-            er = self.substrate.er
-            h = self.substrate.h
+        # Effective permittivity (εeff)
+        eta0 = 376.73  # Free-space impedance, Ω
+        a0 = (
+            1
+            + (1 / 49) * math.log((u**4 + (u / 52) ** 2) / (u**4 + 0.432))
+            + (1 / 18.7) * math.log(1 + (u / 18.1) ** 3)
+        )
+        b0 = 0.564 * ((er - 0.9) / (er + 3)) ** 0.053
+        er_eff = (er + 1) / 2 + (er - 1) / 2 * (1 + 10 / u) ** (-a0 * b0)
 
-            u = w / h
-            a = (
-                1
-                + (1 / 49) * math.log((u**4 + (u / 52) ** 2) / (u**4 + 0.432))
-                + (1 / 18.7) * math.log(1 + (u / 18.1) ** 3)
-            )
-            b = 0.564 * ((er - 0.9) / (er + 3)) ** 0.053
-            return (er + 1) / 2 + (er - 1) / 2 * (1 + 10 / u) ** (-a * b)
+        # Impedance (Z0)
+        # Two regions: u ≤ 1 and u > 1
+        if u <= 1:
+            z0 = eta0 / (2 * math.pi * math.sqrt(er_eff + 1.41)) * math.log(8 / u + u / 4)
+        else:
+            f = 6 + (2 * math.pi - 6) * math.exp(-((30.666 / u) ** 0.7528))
+            z0 = eta0 / (math.sqrt(er_eff) * (u + 1.98 * u**0.172))
 
-        # ------------------------------------------------------------------
-        # Electrical properties
-        # ------------------------------------------------------------------
-        @property
-        def impedance(self) -> float:
-            """Characteristic impedance (Ω)."""
-            w = self._edb["w"]
-            h = self.substrate.h
-            er = self.substrate.er
+        return round(z0, 2)
 
-            u = w / h
-            a = (
-                1
-                + (1 / 49) * math.log((u**4 + (u / 52) ** 2) / (u**4 + 0.432))
-                + (1 / 18.7) * math.log(1 + (u / 18.1) ** 3)
-            )
-            b = 0.564 * ((er - 0.9) / (er + 3)) ** 0.053
-            ereff = (er + 1) / 2 + (er - 1) / 2 * (1 + 10 / u) ** (-a * b)
-            fn = 6 + (2 * math.pi - 6) * math.exp(-((30.666 / u) ** 0.7528))
-            z0 = (
-                fn
-                / (2 * math.pi * math.sqrt(ereff + 1.41))
-                * math.log(1 + 4 * h / w * (8 * h / w + math.sqrt((8 * h / w) ** 2 + math.pi**2)))
-            )
-            return z0
+    @property
+    def electrical_length(self) -> Optional[float]:
+        """
+        Electrical length in degrees at self.freq.
+        Returns None if freq is None.
+        """
+        if self.freq is None:
+            return None
+        c0 = 299_792_458  # m/s
+        beta_l = 2 * math.pi * self.freq * math.sqrt(self._ereff) / c0 * self.length
+        return round(math.degrees(beta_l), 3)
 
-        @property
-        def electrical_length(self) -> Optional[float]:
-            """
-            Electrical length in degrees at self.freq.
-            Returns None if freq is None.
-            """
-            if self.freq is None:
-                return None
-            c0 = 299_792_458  # m/s
-            beta_l = 2 * math.pi * self.freq * math.sqrt(self._ereff) / c0 * self.length
-            return math.degrees(beta_l)
-
-        # ------------------------------------------------------------------
-        # Geometry creation
-        # ------------------------------------------------------------------
-        def create(self) -> List[float]:
-            """Create the trace and return its EDB object ID."""
-            angle_rad = math.radians(self.angle)
-            trace = self._edb.modeler.create_trace(
-                path_list=[
-                    [self.x0, self.y0],
-                    [
-                        self.x0 + self.length * math.cos(angle_rad),
-                        self.y0 + self.length * math.sin(angle_rad),
-                    ],
+    # ------------------------------------------------------------------
+    # Geometry creation
+    # ------------------------------------------------------------------
+    def create(self) -> List[float]:
+        """Create the trace and return its EDB object ID."""
+        angle_rad = math.radians(self.angle)
+        trace = self._edb.modeler.create_trace(
+            path_list=[
+                [self.x0, self.y0],
+                [
+                    self.x0 + self.length * math.cos(angle_rad),
+                    self.y0 + self.length * math.sin(angle_rad),
                 ],
-                layer_name=self.layer,
-                width="w",
-                net_name=self.net,
-                start_cap_style="Flat",
-                end_cap_style="Flat",
-            )
-            return [trace]
+            ],
+            layer_name=self.layer,
+            width="w",
+            net_name=self.net,
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        return [trace]

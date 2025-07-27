@@ -32,6 +32,7 @@ from pyedb.libraries.rf_libraries.base_functions import (
     DifferentialTLine,
     HatchGround,
     InterdigitalCapacitor,
+    MicroStripLine,
     RadialStub,
     RatRace,
     SpiralInductor,
@@ -194,3 +195,14 @@ class TestClass:
         assert len(edb.modeler.paths) == 2
         assert edb.modeler.paths[0].net.name == "IN"
         edb.close()
+
+    def test_ustrip(self, edb_examples):
+        edb = edb_examples.create_empty_edb()
+        MicroStripTechnologyStackup(edb)
+        ustrip = MicroStripLine(edb_cell=edb, layer="METAL_TOP", net="Rf", length="2mm", freq=10e9)
+        ustrip.create()
+        assert ustrip.impedance == 48.7
+        ustrip.width = "300um"
+        assert ustrip.width == 300e-6
+        assert ustrip.impedance == 37.52
+        pass
