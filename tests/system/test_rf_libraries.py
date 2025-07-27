@@ -39,7 +39,7 @@ from pyedb.libraries.rf_libraries.base_functions import (
 )
 from pyedb.libraries.rf_libraries.planar_antennas import (
     CircularPatch,
-    RectPatch,
+    RectangularPatch,
     TriangularPatch,
 )
 
@@ -216,7 +216,7 @@ class TestClass:
         stackup = MicroStripTechnologyStackup(pedb=edb)
         stackup.substrate.thickness = 254e-6
         stackup.substrate.material.permittivity = 3.5
-        patch_antenna = RectPatch(
+        patch_antenna = RectangularPatch(
             edb_cell=edb,
             length_feeding_line=5e-3,
             target_frequency="2.4Ghz",

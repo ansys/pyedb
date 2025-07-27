@@ -28,7 +28,7 @@ from typing import Union
 from pyedb.libraries.common import Substrate
 
 
-class RectPatch:
+class RectangularPatch:
     """
     Rectangular microstrip patch antenna (optionally inset-fed).
 
