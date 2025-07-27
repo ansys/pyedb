@@ -23,51 +23,95 @@
 from __future__ import annotations
 
 import math
+from typing import Union
 
 from pyedb.libraries.common import Substrate
 
 
 class RectPatch:
     """
-    Rectangular microstrip patch (incl. inset fed).
+    Rectangular microstrip patch antenna (optionally inset-fed).
+
+    The class automatically determines the physical dimensions for a
+    desired resonance frequency, creates the patch, ground plane and
+    either an inset microstrip feed or a coaxial probe feed, and
+    optionally sets up an HFSS simulation.
 
     Parameters
     ----------
-    freq : float
-        Target resonance (Hz)
-    sub_h : float
-        Substrate height (m)
-    sub_er : float
-    sub_tand : float
-    inset : float
-        Inset depth for 50-Ω feed (m).  0 = probe feed.
-    layer : str
-    via_layer : str
+    edb_cell : pyedb.Edb, optional
+        EDB project/cell in which the antenna will be built.
+    freq : str or float, default "2.4GHz"
+        Target resonance frequency of the patch.  A string such as
+        ``"2.4GHz"`` or a numeric value in Hz can be given.
+    inset : str or float, default 0
+        Inset depth for a 50 Ω microstrip feed.  A value of 0 selects
+        a probe (via) feed instead.
+    layer : str, default "TOP_METAL"
+        Metallization layer on which the patch polygon is drawn.
+    bottom_layer : str, default "BOT_METAL"
+        Metallization layer on which the ground polygon is drawn.
+    add_port : bool, default True
+        If True, create a wave port (inset feed) or lumped port
+        (probe feed) and add an HFSS setup with a frequency sweep.
+
+    Attributes
+    ----------
+    substrate : Substrate
+        Substrate definition (``er``, ``tand``, ``h``) used for all
+        analytical calculations.
+
+    Examples
+    --------
+    Build a 5.8 GHz patch on a 0.787 mm Rogers RO4350B substrate:
+
+    >>> edb = pyedb.Edb()
+    >>> patch = RectPatch(
+    ...     edb_cell=edb,
+    ...     freq="5.8GHz",
+    ...     inset="4.2mm",
+    ...     layer="TOP",
+    ...     bottom_layer="GND"
+    ... )
+    >>> patch.substrate.er = 3.66
+    >>> patch.substrate.tand = 0.0037
+    >>> patch.substrate.h = 0.000787
+    >>> patch.create()
+    >>> edb.save_as("patch_5p8GHz.aedb")
+
+    Probe-fed 2.4 GHz patch (no inset):
+
+    >>> edb = pyedb.Edb()
+    >>> RectPatch(edb, freq=2.4e9, inset=0).create()
+    >>> edb.save_as("probe_patch_2p4GHz.aedb")
     """
 
     def __init__(
         self,
         edb_cell=None,
-        freq: float = 2.4e9,
-        inset: float = 0,
+        freq: Union[str, float] = "2.4Ghz",
+        inset: Union[str, float] = 0,
         layer: str = "TOP_METAL",
         bottom_layer: str = "BOT_METAL",
+        add_port: bool = True,
     ):
         self._edb = edb_cell
-        self.freq = freq
-        self.inset = inset
+        self.freq = self._edb.value(freq)
+        self.inset = self._edb.value(inset)
         self.layer = layer
         self.bottom_layer = bottom_layer
         self.substrate = Substrate()
+        self.add_port = add_port
 
     @property
     def resonant_frequency(self) -> float:
         """
-        Analytical cavity model.
+        Analytical resonance frequency (Hz) computed from the cavity model.
 
         Returns
         -------
         float
+            Resonant frequency in Hz.
         """
         # Effective length
         c = 299_792_458
@@ -78,13 +122,13 @@ class RectPatch:
 
     @property
     def width_patch(self) -> float:
-        """Patch width."""
+        """Patch width (m) derived for the target frequency."""
         c = 299_792_458
         return c / (2 * self.freq * math.sqrt((self.substrate.er + 1) / 2))
 
     @property
     def length_patch(self) -> float:
-        """Patch length accounting for fringing."""
+        """Patch length (m) accounting for fringing fields."""
         eps_eff = (self.substrate.er + 1) / 2 + (self.substrate.er - 1) / 2 * (
             1 + 12 * self.substrate.h / self.width_patch
         ) ** -0.5
@@ -99,6 +143,13 @@ class RectPatch:
         return 0.5 * 299_792_458 / (self.freq * math.sqrt(eps_eff)) - 2 * delta_l
 
     def create(self) -> bool:
+        """Draw the patch, ground plane and feed geometry in EDB.
+
+        Returns
+        -------
+        bool
+            True when the geometry has been successfully created.
+        """
         self._edb["w"] = self.width_patch
         self._edb["l"] = self.length_patch
         self._edb["x0"] = self.inset
@@ -123,14 +174,28 @@ class RectPatch:
         )
         # feed
         if self.inset > 0:
-            self._edb.modeler.create_trace(
-                layer_name=self.layer,
-                net_name="FEED",
-                path_list=[[0, self.length_patch / 2 + self.inset], [0, self.length_patch / 2]],
-                width=0.3e-3,
-                start_cap_style="Flat",
-                end_cap_style="Flat",
-            )
+            from pyedb.libraries.rf_libraries.base_functions import MicroStripLine
+
+            ustrip_line = MicroStripLine(
+                self._edb, layer=self.layer, net="FEED", length=self.inset, x0=self.width_patch / 2, y0=0
+            ).create()
+            if self.add_port:
+                self._edb.hfss.create_wave_port(
+                    prim_id=ustrip_line.id,
+                    point_on_edge=[self.width_patch / 2 + self.inset, 0],
+                    port_name="ustrip_port",
+                    horizontal_extent_factor=10,
+                    vertical_extent_factor=5,
+                )
+                setup = self._edb.create_hfss_setup("Patch_antenna_lib")
+                setup.adaptive_settings.adaptive_frequency_data_list[0].adaptive_frequency = str(self.freq)
+                setup.add_sweep(
+                    distribution="linear",
+                    start_freq=str(self.freq * 0.7),
+                    stop_freq=str(self.freq * 1.3),
+                    step="0.01GHz",
+                )
+
         else:
             padstack_def = self._edb.padstacks.create(
                 padstackname="FEED", start_layer=self.layer, stop_layer=self.bottom_layer

@@ -1242,8 +1242,9 @@ class MicroStripLine:
         self._length = self._edb.value(length)
         self._width = self._edb.value(width)  # width of the trace
         self.angle = self._edb.value(angle)  # degrees
-        self.freq = self._edb.value(freq)
+        self.freq = freq
         self.substrate = Substrate()
+        self.id = None
 
         # Edb variable
         self._edb["w"] = self.width
@@ -1337,7 +1338,7 @@ class MicroStripLine:
     # Geometry creation
     # ------------------------------------------------------------------
     def create(self) -> List[float]:
-        """Create the trace and return its EDB object ID."""
+        """Create the trace and return its EDB object."""
         angle_rad = math.radians(self.angle)
         trace = self._edb.modeler.create_trace(
             path_list=[
@@ -1353,4 +1354,5 @@ class MicroStripLine:
             start_cap_style="Flat",
             end_cap_style="Flat",
         )
-        return [trace]
+        self.id = trace.id
+        return trace
