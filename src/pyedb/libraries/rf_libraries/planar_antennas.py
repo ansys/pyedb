@@ -551,7 +551,7 @@ class TriangularPatch:
                 b = s
             else:
                 a = s
-        return round(s, 6)  # 1 µm resolution
+        return round(s, 6)
 
     def create(self) -> bool:
         """Draw the patch, ground plane and feed geometry in EDB.
@@ -561,16 +561,6 @@ class TriangularPatch:
         bool
             True when the geometry has been successfully created.
         """
-        # optimize side length
-        max_iterations = 1000  # Maximum number of iterations to prevent infinite loops
-        tolerance = 1e-6  # Acceptable difference between estimated and target frequency
-        iteration = 0
-        while abs(self.estimated_frequency - self.target_frequency) > tolerance and iteration < max_iterations:
-            self.side -= 10e-5
-            iteration += 1
-
-        if iteration == max_iterations:
-            raise RuntimeError("Optimization loop exceeded maximum iterations without convergence.")
         side = self.side
         self._edb["s"] = side
         self._edb["d"] = self.length_feeding_line
