@@ -590,7 +590,7 @@ class TestClass:
         cmp.solder_ball_height = 0.0
         assert cmp.solder_ball_height == 0.0
         cmp.solder_ball_height = "100um"
-        assert cmp.solder_ball_height == 100e-6
+        assert cmp.solder_ball_height == pytest.approx(100e-6)
         assert cmp.solder_ball_shape
         cmp.solder_ball_shape = "cylinder"
         assert cmp.solder_ball_shape == "cylinder"

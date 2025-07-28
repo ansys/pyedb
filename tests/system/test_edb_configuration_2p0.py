@@ -61,33 +61,28 @@ def _assert_final_ic_die_properties(component: dict):
 
 
 class TestClass:
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch, edb_examples):
-        self.local_scratch = local_scratch
-        example_folder = edb_examples.example_models_path / "TEDB"
-        src_edb = example_folder / "ANSYS-HSD_V1.aedb"
-        src_input_folder = example_folder / "edb_config_json"
-
-        self.local_edb = Path(self.local_scratch.path) / "ansys.aedb"
-        self.local_input_folder = Path(self.local_scratch.path) / "input_files"
-        self.local_scratch.copyfolder(str(src_edb), str(self.local_edb))
-        self.local_scratch.copyfolder(str(src_input_folder), str(self.local_input_folder))
-        self.local_scratch.copyfile(
-            str(example_folder / "GRM32_DC0V_25degC_series.s2p"),
-            str(self.local_input_folder / "GRM32_DC0V_25degC_series.s2p"),
-        )
-        self.local_scratch.copyfile(
-            str(example_folder / "GRM32ER72A225KA35_25C_0V.sp"),
-            str(self.local_input_folder / "GRM32ER72A225KA35_25C_0V.sp"),
-        )
-
     @classmethod
     @pytest.fixture(scope="class", autouse=True)
-    def teardown_class(cls, request, edb_examples):
+    def setup_class(cls, request, edb_examples):
+        # Set up the EDB app once per class
+        cls.edbapp_shared = edb_examples.get_si_verse()
+
+        # Finalizer to close the EDB app after all tests
+        def teardown():
+            cls.edbapp_shared.close(terminate_rpc_session=True)
+
+        request.addfinalizer(teardown)
+
+    @pytest.fixture(autouse=True)
+    def init(self, edb_examples):
+        """init runs before each test."""
+        pass
+
+    @pytest.fixture(autouse=True)
+    def teardown(self, request, edb_examples):
+        """Code after yield runs after each teste."""
         yield
-        # not elegant way to ensure the EDB grpc is closed after all tests
-        edb = edb_examples.create_empty_edb()
-        edb.close_edb()
+        pass
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_13b_stackup_materials(self, edb_examples):
@@ -301,7 +296,8 @@ class TestClass:
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_04_nets(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(str(self.local_input_folder / "nets.json"), apply_file=True)
+        data = {"nets": {"power_ground_nets": ["1.2V_DVDDL"], "signal_nets": ["SFPA_VCCR"]}}
+        assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.nets["1.2V_DVDDL"].is_power_ground
         assert not edbapp.nets["SFPA_VCCR"].is_power_ground
         edbapp.close(terminate_rpc_session=False)
@@ -577,8 +573,9 @@ class TestClass:
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_06_s_parameters(self, edb_examples):
+        edbapp = edb_examples.get_si_verse(additional_files_folders="TEDB/GRM32_DC0V_25degC_series.s2p")
         data = {
-            "general": {"s_parameter_library": self.local_input_folder},
+            "general": {"s_parameter_library": edb_examples.test_folder},
             "s_parameters": [
                 {
                     "name": "cap_model1",
@@ -600,7 +597,7 @@ class TestClass:
                 },
             ],
         }
-        edbapp = edb_examples.get_si_verse()
+
         assert edbapp.configuration.load(data, apply_file=True)
         assert len(edbapp.components.nport_comp_definition) == 2
         assert edbapp.components.nport_comp_definition["CAPC3216X180X55ML20T25"].reference_file
@@ -774,7 +771,9 @@ class TestClass:
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_10_general(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(str(self.local_input_folder / "general.toml"), apply_file=True)
+        data = {"general": {"spice_model_library": "", "s_parameter_library": ""}}
+
+        assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
