@@ -589,7 +589,7 @@ class TestClass:
         cmp.solder_ball_height = 0.0
         assert cmp.solder_ball_height == 0.0
         cmp.solder_ball_height = "100um"
-        assert cmp.solder_ball_height == 100e-6
+        assert cmp.solder_ball_height == pytest.approx(100e-6)
         assert cmp.solder_ball_shape
         cmp.solder_ball_shape = "cylinder"
         assert cmp.solder_ball_shape == "cylinder"
@@ -626,8 +626,8 @@ class TestClass:
         assert round(test_esl, 12) == 2.59e-10
         assert network
         assert network.frequency.npoints == 400
-        network.write_touchstone(os.path.join(edbapp.directory, "test_export.s2p"))
-        assert os.path.isfile(os.path.join(edbapp.directory, "test_export.s2p"))
+        network.write_touchstone(os.path.join(edbapp.edbpath, "test_export.s2p"))
+        assert os.path.isfile(os.path.join(edbapp.edbpath, "test_export.s2p"))
 
     def test_properties(self, edb_examples):
         # TODO check with config file 2.0

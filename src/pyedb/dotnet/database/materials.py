@@ -111,7 +111,7 @@ class Material(object):
 
     def __init__(self, edb: Edb, material_def):
         self.__edb: Edb = edb
-        self.__edb_definition = edb.core.definition
+        self.__edb_definition = edb.core.Definition
         self.__name: str = material_def.GetName()
         self.__material_def = material_def
         self.__dc_model = material_def.GetDielectricMaterialModel()
@@ -191,12 +191,6 @@ class Material(object):
         )
         return self.dielectric_loss_tangent
 
-    @property
-    def dielectric_loss_tangent(self):
-        """Get material loss tangent."""
-        material_property_id = self.__edb_definition.MaterialPropertyId.DielectricLossTangent
-        return self.__property_value(material_property_id)
-
     @loss_tangent.setter
     def loss_tangent(self, value):
         """Set material loss tangent."""
@@ -205,11 +199,16 @@ class Material(object):
             "Use property dielectric_loss_tangent instead.",
             DeprecationWarning,
         )
-        return self.dielectric_loss_tangent(value)
+        self.dielectric_loss_tangent = value
+
+    @property
+    def dielectric_loss_tangent(self):
+        """Get material loss tangent."""
+        material_property_id = self.__edb_definition.MaterialPropertyId.DielectricLossTangent
+        return self.__property_value(material_property_id)
 
     @dielectric_loss_tangent.setter
     def dielectric_loss_tangent(self, value):
-        """Set material loss tangent."""
         edb_value = self.__edb_value(value)
         material_property_id = self.__edb_definition.MaterialPropertyId.DielectricLossTangent
         self.__material_def.SetProperty(material_property_id, edb_value)
@@ -553,7 +552,7 @@ class Materials(object):
 
     def __init__(self, edb: Edb):
         self.__edb = edb
-        self.__edb_definition = edb.core.definition
+        self.__edb_definition = edb.core.Definition
         self.__syslib = os.path.join(self.__edb.base_path, "syslib")
 
     def __contains__(self, item):
@@ -575,7 +574,7 @@ class Materials(object):
         """Get materials."""
         materials = {
             material_def.GetName(): Material(self.__edb, material_def)
-            for material_def in list(self.__edb.active_db.MaterialDefs)
+            for material_def in list(self.__edb._db.MaterialDefs)
         }
         return materials
 

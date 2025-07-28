@@ -133,7 +133,7 @@ class PrimitiveDotNet:
             if _poly is None or _poly.IsNull() or _poly is False:
                 self._logger.error("Failed to create void polygon data")
                 return False
-            point_list = self._app.core.cell.primitive.polygon.create(
+            point_list = self._app.core.Cell.primitive.polygon.create(
                 self._app.active_layout, self.layer_name, self.prim_obj.GetNet(), _poly
             ).prim_obj
         elif "prim_obj" in dir(point_list):
@@ -422,9 +422,9 @@ class RectangleDotNet(PrimitiveDotNet):
             net = net.api_object
         if isinstance(rep_type, int):
             if rep_type == 1:
-                rep_type = self.core.cell.primitive.RectangleRepresentationType.CenterWidthHeight
+                rep_type = self.core.Cell.primitive.RectangleRepresentationType.CenterWidthHeight
             else:
-                rep_type = self.core.cell.primitive.RectangleRepresentationType.LowerLeftUpperRight
+                rep_type = self.core.Cell.primitive.RectangleRepresentationType.LowerLeftUpperRight
         param1 = self._app.core.utility.value(param1)
         param2 = self._app.core.utility.value(param2)
         param3 = self._app.core.utility.value(param3)

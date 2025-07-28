@@ -1115,7 +1115,7 @@ class Modeler(object):
         #     return None
         # pointA = GrpcPointData(pointA[0]), self._get_edb_value(shape.pointA[1])
         # )
-        # pointB = self._edb.geometry.point_data(
+        # pointB = self._edb.Geometry.PointData(
         #     self._get_edb_value(shape.pointB[0]), self._get_edb_value(shape.pointB[1])
         # )
         # return self._edb.geometry.polygon_data.create_from_bbox((pointA, pointB))

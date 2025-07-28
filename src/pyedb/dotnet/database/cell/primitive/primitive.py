@@ -533,7 +533,7 @@ class Primitive(Connectable):
         -------
         list of float
         """
-        if isinstance(point, self._app.core.geometry.geometry.PointData):
+        if isinstance(point, self._app.core.Geometry.PointData):
             point = [point.X.ToDouble(), point.Y.ToDouble()]
         dist = 1e12
         out = None
