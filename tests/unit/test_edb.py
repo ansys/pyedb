@@ -204,7 +204,6 @@ class TestClass:
         "pyedb.edb_logger.pyedb_logger",
         new_callable=PropertyMock,
     )
-
     @pytest.mark.skipif(True, reason="needs refactor.")
     def test_conflict_files_removal_success(self, mock_logger, mock_unlink, mock_isfile):
         from pyedb.dotnet.edb import Edb as DotNetEdb
