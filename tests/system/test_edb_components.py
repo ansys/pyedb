@@ -627,8 +627,8 @@ class TestClass:
         assert round(test_esl, 12) == 2.59e-10
         assert network
         assert network.frequency.npoints == 400
-        network.write_touchstone(os.path.join(edbapp.directory, "test_export.s2p"))
-        assert os.path.isfile(os.path.join(edbapp.directory, "test_export.s2p"))
+        network.write_touchstone(os.path.join(edbapp.edbpath, "test_export.s2p"))
+        assert os.path.isfile(os.path.join(edbapp.edbpath, "test_export.s2p"))
 
     def test_properties(self, edb_examples):
         # TODO check with config file 2.0

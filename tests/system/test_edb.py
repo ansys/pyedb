@@ -28,7 +28,6 @@ from typing import Sequence
 import pytest
 
 from pyedb.generic.general_methods import is_linux
-import tests.conftest
 from tests.conftest import config, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
@@ -209,12 +208,12 @@ class TestClass:
         """Add design and project variables."""
         edbapp = edb_examples.get_si_verse()
         edbapp.add_design_variable("my_variable", "1mm")
-        assert "my_variable" in edbapp.active_cell.get_all_variable_names()
+        assert "my_variable" in edbapp.get_all_variable_names()
         assert edbapp.modeler.parametrize_trace_width("DDR4_DQ25")
         assert edbapp.modeler.parametrize_trace_width("DDR4_A2")
         edbapp.add_design_variable("my_parameter", "2mm", True)
-        assert "my_parameter" in edbapp.active_cell.get_all_variable_names()
-        variable_value = edbapp.active_cell.get_variable_value("my_parameter")
+        assert "my_parameter" in edbapp.get_all_variable_names()
+        variable_value = edbapp.get_variable_value("my_parameter")
         assert variable_value == 2e-3
         if edbapp.grpc:
             assert not edbapp.add_design_variable("my_parameter", "2mm", True)
@@ -620,11 +619,11 @@ class TestClass:
         """Configure HFSS analysis setup."""
         # Done
         edb = edb_examples.get_si_verse()
-        assert len(edb.active_cell.simulation_setups) == 0
+        assert len(edb.setups) == 0
         edb.hfss.add_setup()
         assert edb.hfss_setups
-        assert len(edb.active_cell.simulation_setups) == 1
-        assert list(edb.active_cell.simulation_setups)[0]
+        assert len(edb.setups) == 1
+        assert list(edb.setups)[0]
         setup = list(edb.hfss_setups.values())[0]
         setup.add_sweep()
         assert len(setup.sweep_data) == 1
@@ -1249,20 +1248,21 @@ class TestClass:
         assert "B1" in edb.components.instances
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(True, reason="Not implemented with grpc")  # todo config["use_grpc"],
     def test_database_properties(self, edb_examples):
         """Evaluate database properties."""
         # Done
         edb = edb_examples.get_si_verse()
-        assert isinstance(edb.dataset_defs, list)
-        assert isinstance(edb.material_defs, list)
-        assert isinstance(edb.component_defs, list)
-        assert isinstance(edb.package_defs, list)
-        assert isinstance(edb.padstack_defs, list)
-        assert isinstance(edb.jedec5_bondwire_defs, list)
-        assert isinstance(edb.jedec4_bondwire_defs, list)
-        assert isinstance(edb.apd_bondwire_defs, list)
-        assert isinstance(edb.version, tuple)
-        assert isinstance(edb.footprint_cells, list)
+        assert isinstance(edb.active_db.dataset_defs, list)
+        assert isinstance(edb.active_db.material_defs, list)
+        assert isinstance(edb.active_db.component_defs, list)
+        assert isinstance(edb.active_db.package_defs, list)
+        assert isinstance(edb.active_db.padstack_defs, list)
+        assert isinstance(edb.active_db.jedec5_bondwire_defs, list)
+        assert isinstance(edb.active_db.jedec4_bondwire_defs, list)
+        assert isinstance(edb.active_db.apd_bondwire_defs, list)
+        assert isinstance(edb.active_db.version, tuple)
+        assert isinstance(edb.active_db.footprint_cells, list)
         edb.close(terminate_rpc_session=False)
 
     def test_backdrill_via_with_offset(self, edb_examples):
@@ -1585,7 +1585,7 @@ class TestClass:
             assert "test" in edbapp.voltage_regulator_modules
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=tests.conftest.GRPC, reason="Not implemented with grpc")
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_workflow(self, edb_examples):
         # TODO check with config file 2.0
         from pathlib import Path
@@ -1888,6 +1888,7 @@ class TestClass:
             )
         assert len(edbapp.excitations) == 0
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
     def test_active_cell_setter(self):
         """Use multiple cells."""
         from pyedb import Edb

@@ -47,7 +47,7 @@ class TestDatabaseUtilities:
             edb_value = edbapp.core.utility.value.Value
 
         else:
-            edb_value = edbapp.core.utility.value
+            edb_value = edbapp.core.Utility.Value
 
         value = edbapp.value("1mm")
         value2 = edbapp.value(edb_value("1mm"))

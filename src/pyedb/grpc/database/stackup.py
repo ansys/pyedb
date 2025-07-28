@@ -1355,7 +1355,7 @@ class Stackup(LayerCollection):
         _offset_y = Value(offset_y)
 
         if edb_cell.name not in self._pedb.cell_names:
-            list_cells = self._pedb.copy_cells([edb_cell.api_object])
+            list_cells = self._pedb.copy_cells([edb_cell])
             edb_cell = list_cells[0]
         self._pedb.layout.cell.is_blackbox = True
         cell_inst2 = GrpcCellInstance.create(
