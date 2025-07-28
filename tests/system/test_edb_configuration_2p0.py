@@ -296,12 +296,7 @@ class TestClass:
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_04_nets(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        data = {
-              "nets": {
-                "power_ground_nets": ["1.2V_DVDDL"],
-                "signal_nets": ["SFPA_VCCR"]
-              }
-            }
+        data = {"nets": {"power_ground_nets": ["1.2V_DVDDL"], "signal_nets": ["SFPA_VCCR"]}}
         assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.nets["1.2V_DVDDL"].is_power_ground
         assert not edbapp.nets["SFPA_VCCR"].is_power_ground
@@ -776,12 +771,7 @@ class TestClass:
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_10_general(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        data = {
-              "general": {
-                "spice_model_library": "",
-                "s_parameter_library": ""
-              }
-            }
+        data = {"general": {"spice_model_library": "", "s_parameter_library": ""}}
 
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
