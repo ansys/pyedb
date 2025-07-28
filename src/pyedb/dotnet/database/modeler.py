@@ -560,7 +560,7 @@ class Modeler(object):
         polygon = self._edb.Cell.Primitive.Path.Create(
             self._active_layout,
             layer_name,
-            net,
+            net._edb_object,
             self._get_edb_value(width),
             start_cap_style,
             end_cap_style,
@@ -720,11 +720,10 @@ class Modeler(object):
         if isinstance(polygonData, PolygonData):
             polygonData = polygonData._edb_object
         polygon = self._pedb._edb.Cell.Primitive.Polygon.Create(
-            self._active_layout, layer_name, net, polygonData
+            self._active_layout, layer_name, net._edb_object, polygonData
         )
         if polygon.IsNull() or polygonData is False:  # pragma: no cover
-            self._logger.error("Null polygon created")
-            return False
+            raise RuntimeError("Null polygon created")
         else:
             return cast(polygon, self._pedb)
 
@@ -803,10 +802,10 @@ class Modeler(object):
         edb_net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "LowerLeftUpperRight":
             rep_type = self._edb.Cell.Primitive.RectangleRepresentationType.LowerLeftUpperRight
-            rect = self._edb.cell.Primitive.Rectangle.Create(
+            rect = self._edb.Cell.Primitive.Rectangle.Create(
                 self._active_layout,
                 layer_name,
-                edb_net.net_obj,
+                edb_net._edb_object,
                 rep_type,
                 self._get_edb_value(lower_left_point[0]),
                 self._get_edb_value(lower_left_point[1]),
@@ -817,10 +816,10 @@ class Modeler(object):
             )
         else:
             rep_type = self._edb.Cell.Primitive.RectangleRepresentationType.CenterWidthHeight
-            rect = self._edb.cell.Primitive.Rectangle.Create(
+            rect = self._edb.Cell.Primitive.Rectangle.Create(
                 self._active_layout,
                 layer_name,
-                edb_net.net_obj,
+                edb_net._edb_object,
                 rep_type,
                 self._get_edb_value(center_point[0]),
                 self._get_edb_value(center_point[1]),
@@ -829,8 +828,8 @@ class Modeler(object):
                 self._get_edb_value(corner_radius),
                 self._get_edb_value(rotation),
             )
-        if rect:
-            return self._pedb.layout.find_object_by_id(rect._edb_object.GetId())
+        if not rect.IsNull():
+            return self._pedb.layout.find_object_by_id(rect.GetId())
         return False  # pragma: no cover
 
     def create_circle(self, layer_name, x, y, radius, net_name=""):
@@ -860,13 +859,13 @@ class Modeler(object):
         circle = self._edb.Cell.Primitive.Circle.Create(
             self._active_layout,
             layer_name,
-            edb_net,
+            edb_net._edb_object,
             self._get_edb_value(x),
             self._get_edb_value(y),
             self._get_edb_value(radius),
         )
-        if circle:
-            return self._pedb.layout.find_object_by_id(circle._edb_object.GetId())
+        if not circle.IsNull():
+            return self._pedb.layout.find_object_by_id(circle.GetId())
         return False  # pragma: no cover
 
     def delete_primitives(self, net_names):
@@ -1283,7 +1282,7 @@ class Modeler(object):
                         list_polygon_data.append(i.GetPolygonData())
                         delete_list.append(i)
                         all_voids.append(i.Voids)
-            a = self._edb.geometry.polygon_data.unite(convert_py_list_to_net_list(list_polygon_data))
+            a = self._edb.Geometry.PolygonData.Unite(convert_py_list_to_net_list(list_polygon_data))
             for item in a:
                 for v in all_voids:
                     for void in v:

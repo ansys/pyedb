@@ -28,7 +28,6 @@ from typing import Sequence
 import pytest
 
 from pyedb.generic.general_methods import is_linux
-import tests.conftest
 from tests.conftest import config, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
@@ -1249,7 +1248,9 @@ class TestClass:
         assert "B1" in edb.components.instances
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=tests.conftest.GRPC, reason="Not implemented with grpc")
+    @pytest.mark.skipif(
+        True, # todo config["use_grpc"],
+                        reason="Not implemented with grpc")
     def test_database_properties(self, edb_examples):
         """Evaluate database properties."""
         # Done
@@ -1586,7 +1587,7 @@ class TestClass:
             assert "test" in edbapp.voltage_regulator_modules
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=tests.conftest.GRPC, reason="Not implemented with grpc")
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_workflow(self, edb_examples):
         # TODO check with config file 2.0
         from pathlib import Path

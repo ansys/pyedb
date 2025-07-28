@@ -981,15 +981,15 @@ class EdbHfss(object):
         """
         if not isinstance(nets, list):
             if isinstance(nets, str):
-                nets = [self._edb.cell.net.find_by_name(self._active_layout, nets)]
-            elif isinstance(nets, self._edb.cell.net.net):
+                nets = [self._edb.Cell.net.find_by_name(self._active_layout, nets)]
+            elif isinstance(nets, self._edb.Cell.net.net):
                 nets = [nets]
         else:
             temp_nets = []
             for nn in nets:
                 if isinstance(nn, str):
-                    temp_nets.append(self._edb.cell.net.find_by_name(self._active_layout, nn))
-                elif isinstance(nn, self._edb.cell.net.net):
+                    temp_nets.append(self._edb.Cell.net.find_by_name(self._active_layout, nn))
+                elif isinstance(nn, self._edb.Cell.net.net):
                     temp_nets.append(nn)
             nets = temp_nets
         port_created = False
@@ -1401,7 +1401,7 @@ class EdbHfss(object):
         l_inst = layout.GetLayoutInstance()
 
         for inst in simulation_setup.components:  # pragma: no cover
-            comp = self._pedb.core.cell.hierarchy.component.FindByName(layout, inst)
+            comp = self._pedb.core.Cell.Hierarchy.Component.FindByName(layout, inst)
             if comp.IsNull():
                 continue
 
@@ -1416,7 +1416,7 @@ class EdbHfss(object):
                 pin_list = [
                     obj
                     for obj in list(comp.LayoutObjs)
-                    if obj.GetObjType() == self._edb.cell.layout_object_type.PadstackInstance
+                    if obj.GetObjType() == self._edb.Cell.LayoutObjectType.PadstackInstance
                 ]
                 for pin in pin_list:
                     loi = l_inst.GetLayoutObjInstance(pin, None)
@@ -1473,12 +1473,12 @@ class EdbHfss(object):
             cmp_names = []
         ii = 0
         for cc in cmp_names:
-            cmp = self._pedb.core.cell.hierarchy.component.FindByName(self._active_layout, cc)
+            cmp = self._pedb.core.Cell.Hierarchy.Component.FindByName(self._active_layout, cc)
             if cmp.IsNull():
                 self._logger.warning("RenamePorts: could not find component {0}".format(cc))
                 continue
             terms = [
-                obj for obj in list(cmp.LayoutObjs) if obj.GetObjType() == self._edb.cell.layout_object_type.Terminal
+                obj for obj in list(cmp.LayoutObjs) if obj.GetObjType() == self._edb.Cell.LayoutObjType.Terminal
             ]
             for nn in net_names:
                 for tt in [term for term in terms if term.GetNet().GetName() == nn]:
@@ -1512,14 +1512,14 @@ class EdbHfss(object):
                             "'PEC Launch Width'='0mm')"
                         )
                         for tt in terms:
-                            tt.SetProductSolverOption(self._edb.core.ProductId.Designer, "HFSS", option)
+                            tt.SetProductSolverOption(self._edb.ProductId.Designer, "HFSS", option)
         return True
 
     def _get_terminals_bbox(self, comp, l_inst, terminals_only):
         terms_loi = []
         if terminals_only:
             term_list = [
-                obj for obj in list(comp.LayoutObjs) if obj.GetObjType() == self._edb.cell.layout_object_type.Terminal
+                obj for obj in list(comp.LayoutObjs) if obj.GetObjType() == self._edb.Cell.LayoutObjectType.Terminal
             ]
             for tt in term_list:
                 success, p_inst, lyr = tt.GetParameters()
@@ -1530,7 +1530,7 @@ class EdbHfss(object):
             pin_list = [
                 obj
                 for obj in list(comp.LayoutObjs)
-                if obj.GetObjType() == self._edb.cell.layout_object_type.PadstackInstance
+                if obj.GetObjType() == self._edb.Cell.LayoutObjectType.PadstackInstance
             ]
             for pi in pin_list:
                 loi = l_inst.GetLayoutObjInstance(pi, None)

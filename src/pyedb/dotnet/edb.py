@@ -480,10 +480,8 @@ class Edb:
 
     def value(self, val):
         """Convert a value into a pyedb value."""
-        if isinstance(val, self._edb.Utility.Value):
-            return Value(self, val)
-        else:
-            return Value(self, self.core.utility.value(val))
+        val_ = val if isinstance(val, self._edb.Utility.Value) else self.edb_value(val)
+        return Value(self, val_)
 
     @property
     def grpc(self):
@@ -499,7 +497,7 @@ class Edb:
         list of cell names : List[str]
         """
         names = []
-        for cell in self.circuit_cells:
+        for cell in [i for i in list(self._db.CircuitCells)]:
             names.append(cell.GetName())
         return names
 
@@ -1501,7 +1499,26 @@ class Edb:
         -------
         ``Geometry.Point3DData``.
         """
-        return self.core.geometry.point3d_data(x, y, z)
+        return self.core.Geometry.Point3DData(
+            self.edb_value(x), self.edb_value(y), self.edb_value(z))
+
+    def copy_cells(self, cells_to_copy):
+        """Copy Cells from other Databases or this Database into this Database.
+
+        Parameters
+        ----------
+        cells_to_copy : list[:class:`Cell <ansys.edb.layout.Cell>`]
+            Cells to copy.
+
+        Returns
+        -------
+        list[:class:`Cell <ansys.edb.layout.Cell>`]
+            New Cells created in this Database.
+        """
+        if not isinstance(cells_to_copy, list):
+            cells_to_copy = [cells_to_copy]
+        _dbCells = convert_py_list_to_net_list(cells_to_copy)
+        return self._db.CopyCells(_dbCells)
 
     def point_data(self, x, y=None):
         """Compute the Edb Point Data.
@@ -2917,7 +2934,7 @@ class Edb:
                 for pad in list(self.padstacks.definitions.keys()):
                     if pad == p.padstack_definition:
                         padstack = self.padstacks.definitions[pad].edb_padstack
-                        padstack_instance = self.core.cell.primitive.padstack_instance.create(
+                        padstack_instance = self.core.Cell.primitive.padstack_instance.create(
                             _cutout.GetLayout(),
                             net,
                             p.name,
@@ -2940,7 +2957,7 @@ class Edb:
                     center_y,
                     radius,
                 ) = void_circle.primitive_object.GetParameters(0.0, 0.0, 0.0)
-                cloned_circle = self.core.cell.primitive.circle.create(
+                cloned_circle = self.core.Cell.primitive.circle.create(
                     layout,
                     void_circle.layer_name,
                     void_circle.net,
@@ -2950,7 +2967,7 @@ class Edb:
                 )
                 cloned_circle.SetIsNegative(True)
             elif void_circle.type == "Polygon":
-                cloned_polygon = self.core.cell.primitive.polygon.create(
+                cloned_polygon = self.core.Cell.primitive.polygon.create(
                     layout,
                     void_circle.layer_name,
                     void_circle.net,
@@ -3578,7 +3595,7 @@ class Edb:
                     self.logger.info("Cutout processed.")
                     old_cell = self.active_cell.FindByName(
                         self._db,
-                        self.core.cell.CellType.CircuitCell,
+                        self.core.Cell.CellType.CircuitCell,
                         old_cell_name,
                     )
                     if old_cell:

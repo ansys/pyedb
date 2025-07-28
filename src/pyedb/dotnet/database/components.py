@@ -1415,7 +1415,7 @@ class Components(object):
                 neg_pin_term.SetIsCircuitPort(True)
             pos_pin_term.SetReferenceTerminal(neg_pin_term)
             rlc_values = component.rlc_values
-            rlc = self._edb.utility.Rlc()
+            rlc = self._edb.Utility.Rlc()
             if rlc_values[0]:
                 rlc.REnabled = True
                 rlc.R = self._edb.Utility.Value(rlc_values[0])
@@ -1481,7 +1481,7 @@ class Components(object):
 
 
         """
-        signal_layers = cmp.GetLayout().GetLayerCollection().Layers(self._edb.cell.layer_type_set.SignalLayerSet)
+        signal_layers = cmp.GetLayout().GetLayerCollection().Layers(self._edb.Cell.layer_type_set.SignalLayerSet)
         if cmp.GetPlacementLayer() == signal_layers[0]:
             return True
         else:

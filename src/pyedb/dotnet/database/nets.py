@@ -637,54 +637,54 @@ class EdbNets(CommonNets):
         """
         if not net_name and not start_with and not contain and not end_with:
             net_name = generate_unique_name("NET_")
-            net = self._edb.Cell.Net.Create(self._active_layout, net_name)
-            return net
+            self._edb.Cell.Net.Create(self._active_layout, net_name)
+            return self.nets[net_name]
         else:
             if not start_with and not contain and not end_with:
                 net = self._edb.Cell.Net.FindByName(self._active_layout, net_name)
                 if net.IsNull():
                     net = self._edb.Cell.Net.Create(self._active_layout, net_name)
-                return net
+                return self.nets[net_name]
             elif start_with:
                 nets_found = [
-                    self.nets[net].net_object for net in list(self.nets.keys()) if net.lower().startswith(start_with)
+                    self.nets[net] for net in list(self.nets.keys()) if net.lower().startswith(start_with)
                 ]
                 return nets_found
             elif start_with and end_with:
                 nets_found = [
-                    self.nets[net].net_object
+                    self.nets[net]
                     for net in list(self.nets.keys())
                     if net.lower().startswith(start_with) and net.lower().endswith(end_with)
                 ]
                 return nets_found
             elif start_with and contain and end_with:
                 nets_found = [
-                    self.nets[net].net_object
+                    self.nets[net]
                     for net in list(self.nets.keys())
                     if net.lower().startswith(start_with) and net.lower().endswith(end_with) and contain in net.lower()
                 ]
                 return nets_found
             elif start_with and contain:
                 nets_found = [
-                    self.nets[net].net_object
+                    self.nets[net]
                     for net in list(self.nets.keys())
                     if net.lower().startswith(start_with) and contain in net.lower()
                 ]
                 return nets_found
             elif contain and end_with:
                 nets_found = [
-                    self.nets[net].net_object
+                    self.nets[net]
                     for net in list(self.nets.keys())
                     if net.lower().endswith(end_with) and contain in net.lower()
                 ]
                 return nets_found
             elif end_with and not start_with and not contain:
                 nets_found = [
-                    self.nets[net].net_object for net in list(self.nets.keys()) if net.lower().endswith(end_with)
+                    self.nets[net] for net in list(self.nets.keys()) if net.lower().endswith(end_with)
                 ]
                 return nets_found
             elif contain and not start_with and not end_with:
-                nets_found = [self.nets[net].net_object for net in list(self.nets.keys()) if contain in net.lower()]
+                nets_found = [self.nets[net] for net in list(self.nets.keys()) if contain in net.lower()]
                 return nets_found
 
     def is_net_in_component(self, component_name, net_name):

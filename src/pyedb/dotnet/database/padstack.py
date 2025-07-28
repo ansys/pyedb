@@ -1207,7 +1207,7 @@ class EdbPadstacks(object):
         if padstack:
             padstack_instance = self._edb.Cell.Primitive.PadstackInstance.Create(
                 self._active_layout,
-                net,
+                net._edb_object,
                 via_name,
                 padstack,
                 position._edb_object,
@@ -1217,7 +1217,7 @@ class EdbPadstacks(object):
                 solderlayer,
                 None,
             )
-            padstack_instance.is_layout_pin = is_pin
+            padstack_instance.SetIsLayoutPin(is_pin)
             py_padstack_instance = EDBPadstackInstance(padstack_instance, self._pedb)
 
             return py_padstack_instance

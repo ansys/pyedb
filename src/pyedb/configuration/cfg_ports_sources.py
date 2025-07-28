@@ -676,7 +676,7 @@ class CfgProbe(CfgCircuitElement):
 
 class CfgEdgePort:
     def set_parameters_to_edb(self):
-        point_on_edge = PointData(self._pedb, x=self.point_on_edge[0], y=self.point_on_edge[1])
+        point_on_edge = PointData.create_from_xy(self._pedb, x=self.point_on_edge[0], y=self.point_on_edge[1])
         primitive = self._pedb.layout.primitives_by_aedt_name[self.primitive_name]
         pos_edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, point_on_edge._edb_object)
         pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb.core.Cell.Terminal.Edge)

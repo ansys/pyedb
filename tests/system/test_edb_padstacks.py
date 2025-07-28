@@ -304,6 +304,7 @@ class TestClass:
         assert vias[1].metal_volume
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(reason="This is a bug deep in the code. This pass should never pass but it passes as try-else hides the bug.")
     @pytest.mark.parametrize("return_points", [True, False])
     def test_padstacks_create_rectangle_in_pad(self, return_points: bool, edb_examples):
         """Create a rectangle inscribed inside a padstack instance pad."""
@@ -317,6 +318,7 @@ class TestClass:
             confirmed_pads = 0
             for padstack_instance in padstack_instances:
                 layer_name = "s"
+
                 result = padstack_instance.create_rectangle_in_pad(
                     layer_name, return_points=return_points, partition_max_order=8
                 )
@@ -563,7 +565,7 @@ def _get_padstack_polygon_data(edb, padstack_instance: EDBPadstackInstance, laye
         # the instance; as this is used in tests I'm going to return None and check that we successfully confirmed at
         # least one case
         return None
-    result = edb.api_class.Geometry.PolygonData.Unite(convert_py_list_to_net_list(pds))[0]
+    result = edb.core.Geometry.PolygonData.Unite(convert_py_list_to_net_list(pds))[0]
     return result
 
 

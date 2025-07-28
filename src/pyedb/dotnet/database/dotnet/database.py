@@ -78,7 +78,7 @@ class PolygonDataDotNet:  # pragma: no cover
 
     def __init__(self, pedb, api_object=None):
         self._pedb = pedb
-        self.dotnetobj = pedb.core.geometry.api_class.PolygonData
+        self.dotnetobj = pedb.core.Geometry.PolygonData
         self.core = api_object
         self._edb_object = api_object
 

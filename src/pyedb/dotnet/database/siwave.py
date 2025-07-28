@@ -1493,7 +1493,7 @@ class EdbSiwave(object):
         The power dissipation of the resistors are calculated from DC results.
         """
         siwave_id = self._pedb.core.ProductId.SIWave
-        cell = self._pedb.active_cell._active_cell
+        cell = self._pedb.active_cell
         _, value = cell.GetProductProperty(siwave_id, 422, "")
         return bool(value)
 

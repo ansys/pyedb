@@ -295,7 +295,7 @@ class EDBComponent(Group):
     @solder_ball_height.setter
     def solder_ball_height(self, value):
         if "GetSolderBallProperty" in dir(self.component_property):
-            sball_height = round(self._edb.utility.Value(value).ToDouble(), 9)
+            sball_height = round(self._pedb.edb_value(value).ToDouble(), 9)
             cmp_property = self.component_property
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
             solder_ball_prop.SetHeight(self._get_edb_value(sball_height))
