@@ -1422,6 +1422,7 @@ class Help:  # pragma: no cover
 
 online_help = Help()
 
+
 def execution_timer(custom_text):
     def decorator(func):
         @functools.wraps(func)
@@ -1432,5 +1433,7 @@ def execution_timer(custom_text):
             elapsed_time = end_time - start_time
             settings.logger.info(f"{custom_text} completed in {elapsed_time:.4f} seconds.")
             return result
+
         return wrapper
+
     return decorator

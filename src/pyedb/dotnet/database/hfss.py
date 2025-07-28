@@ -1477,9 +1477,7 @@ class EdbHfss(object):
             if cmp.IsNull():
                 self._logger.warning("RenamePorts: could not find component {0}".format(cc))
                 continue
-            terms = [
-                obj for obj in list(cmp.LayoutObjs) if obj.GetObjType() == self._edb.Cell.LayoutObjType.Terminal
-            ]
+            terms = [obj for obj in list(cmp.LayoutObjs) if obj.GetObjType() == self._edb.Cell.LayoutObjType.Terminal]
             for nn in net_names:
                 for tt in [term for term in terms if term.GetNet().GetName() == nn]:
                     if not tt.SetImpedance(self._pedb.edb_value("50ohm")):

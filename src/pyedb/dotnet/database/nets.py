@@ -556,7 +556,6 @@ class EdbNets(CommonNets):
         if not edb_net.IsNull():
             return self._pedb.pedb_class.database.edb_data.nets_data.EDBNetsData(edb_net, self._pedb)
 
-
     def delete_nets(self, netlist):
         """Delete one or more nets from EDB.
 
@@ -646,9 +645,7 @@ class EdbNets(CommonNets):
                     net = self._edb.Cell.Net.Create(self._active_layout, net_name)
                 return self.nets[net_name]
             elif start_with:
-                nets_found = [
-                    self.nets[net] for net in list(self.nets.keys()) if net.lower().startswith(start_with)
-                ]
+                nets_found = [self.nets[net] for net in list(self.nets.keys()) if net.lower().startswith(start_with)]
                 return nets_found
             elif start_with and end_with:
                 nets_found = [
@@ -679,9 +676,7 @@ class EdbNets(CommonNets):
                 ]
                 return nets_found
             elif end_with and not start_with and not contain:
-                nets_found = [
-                    self.nets[net] for net in list(self.nets.keys()) if net.lower().endswith(end_with)
-                ]
+                nets_found = [self.nets[net] for net in list(self.nets.keys()) if net.lower().endswith(end_with)]
                 return nets_found
             elif contain and not start_with and not end_with:
                 nets_found = [self.nets[net] for net in list(self.nets.keys()) if contain in net.lower()]

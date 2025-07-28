@@ -1248,9 +1248,7 @@ class TestClass:
         assert "B1" in edb.components.instances
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        True, # todo config["use_grpc"],
-                        reason="Not implemented with grpc")
+    @pytest.mark.skipif(True, reason="Not implemented with grpc")  # todo config["use_grpc"],
     def test_database_properties(self, edb_examples):
         """Evaluate database properties."""
         # Done

@@ -1005,7 +1005,6 @@ class Modeler(object):
             return None
 
     def _createPolygonDataFromPolygon(self, shape):
-
         points = shape.points
         if not self._validatePoint(points[0]):
             self._logger.error("Error validating point.")
