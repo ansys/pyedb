@@ -2142,7 +2142,6 @@ class EDBPadstackInstance(Primitive):
         else:
             path = self._pedb.modeler.Shape("polygon", points=new_rect)
             created_polygon = self._pedb.modeler.create_polygon(path, layer_name)
-            print(f"*** created_polygon")
             return created_polygon
 
     def get_reference_pins(self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True):
