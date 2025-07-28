@@ -12,3 +12,7 @@ PyEDB comes along with a set of libraries that allow improve user experience.
 
         Learn more about PyEDB basic RF libraries.
 
+    common
+    rf_basic
+    antennas
+

@@ -191,12 +191,6 @@ class Material(object):
         )
         return self.dielectric_loss_tangent
 
-    @property
-    def dielectric_loss_tangent(self):
-        """Get material loss tangent."""
-        material_property_id = self.__edb_definition.MaterialPropertyId.DielectricLossTangent
-        return self.__property_value(material_property_id)
-
     @loss_tangent.setter
     def loss_tangent(self, value):
         """Set material loss tangent."""
@@ -205,11 +199,16 @@ class Material(object):
             "Use property dielectric_loss_tangent instead.",
             DeprecationWarning,
         )
-        return self.dielectric_loss_tangent(value)
+        self.dielectric_loss_tangent = value
+
+    @property
+    def dielectric_loss_tangent(self):
+        """Get material loss tangent."""
+        material_property_id = self.__edb_definition.MaterialPropertyId.DielectricLossTangent
+        return self.__property_value(material_property_id)
 
     @dielectric_loss_tangent.setter
     def dielectric_loss_tangent(self, value):
-        """Set material loss tangent."""
         edb_value = self.__edb_value(value)
         material_property_id = self.__edb_definition.MaterialPropertyId.DielectricLossTangent
         self.__material_def.SetProperty(material_property_id, edb_value)
