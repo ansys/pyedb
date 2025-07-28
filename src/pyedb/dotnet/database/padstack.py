@@ -1177,7 +1177,7 @@ class EdbPadstacks(object):
         for pad in list(self.definitions.keys()):
             if pad == definition_name:
                 padstack = self.definitions[pad].edb_padstack
-        #position = self._edb.Geometry.PointData(position[0], position[1])
+        # position = self._edb.Geometry.PointData(position[0], position[1])
         position = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(self._pedb, *position)
         net = self._pedb.nets.find_or_create_net(net_name)
         rotation = (

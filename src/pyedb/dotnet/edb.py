@@ -95,11 +95,11 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
 from pyedb.dotnet.database.utilities.value import Value
 from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import (
+    execution_timer,
     generate_unique_name,
     get_string_version,
     is_linux,
     is_windows,
-    execution_timer
 )
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
@@ -358,11 +358,12 @@ class Edb:
         self.logger.info(f"Edb version {version}")
         if float(version) >= 2025.2:
             from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
+
             warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
 
         """Initialize DLLs."""
-        from pyedb.dotnet.clr_module import _clr, edb_initialized
         from pyedb import __version__
+        from pyedb.dotnet.clr_module import _clr, edb_initialized
         from pyedb.generic.general_methods import (
             env_path,
             env_path_student,
@@ -670,7 +671,7 @@ class Edb:
                 if cell.GetName() == self.cellname:
                     self._active_cell = cell
         if self._active_cell is None:
-            for cell in[i for i in list(self._db.CircuitCells)]:
+            for cell in [i for i in list(self._db.CircuitCells)]:
                 if cell.GetName() == self.cellname:
                     self._active_cell = cell
         # if self._active_cell is still None, set it to default cell
@@ -1498,8 +1499,7 @@ class Edb:
         -------
         ``Geometry.Point3DData``.
         """
-        return self.core.Geometry.Point3DData(
-            self.edb_value(x), self.edb_value(y), self.edb_value(z))
+        return self.core.Geometry.Point3DData(self.edb_value(x), self.edb_value(y), self.edb_value(z))
 
     def copy_cells(self, cells_to_copy):
         """Copy Cells from other Databases or this Database into this Database.

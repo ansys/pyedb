@@ -188,7 +188,6 @@ class EDBPadProperties(object):
         else:
             return
 
-
     @property
     def parameters(self):
         """Get parameters.
@@ -1708,7 +1707,9 @@ class EDBPadstackInstance(Primitive):
                 pos.append(self._pedb.edb_value(v))
             else:
                 pos.append(v)
-        point_data = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(self._pedb, pos[0], pos[1])
+        point_data = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
+            self._pedb, pos[0], pos[1]
+        )
         self._edb_padstackinstance.SetPositionAndRotation(point_data._edb_object, self._pedb.edb_value(self.rotation))
 
     @property
@@ -1983,7 +1984,11 @@ class EDBPadstackInstance(Primitive):
         padstack_name = self.padstack_definition
 
         padstack = self._pedb.padstacks.definitions[padstack_name]
-        padstack_pad = padstack.pad_by_layer[layer_name] if layer_name in padstack.pad_by_layer else padstack.pad_by_layer[padstack.via_start_layer]
+        padstack_pad = (
+            padstack.pad_by_layer[layer_name]
+            if layer_name in padstack.pad_by_layer
+            else padstack.pad_by_layer[padstack.via_start_layer]
+        )
 
         pad_shape = padstack_pad.geometry_type
         params = padstack_pad.parameters_values

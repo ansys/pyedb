@@ -687,8 +687,7 @@ class Stackup(LayerCollection):
                 i.Clone() for i in list(list(lc_readonly.Layers(self._pedb.core.Cell.LayerTypeSet.StackupLayerSet)))
             ]
             non_stackup = [
-                i.Clone()
-                for i in list(list(lc_readonly.Layers(self._pedb.core.Cell.LayerTypeSet.NonStackupLayerSet)))
+                i.Clone() for i in list(list(lc_readonly.Layers(self._pedb.core.Cell.LayerTypeSet.NonStackupLayerSet)))
             ]
             _lc = self._pedb.core.Cell.LayerCollection()
             mode = lc_readonly.GetMode()
@@ -1176,9 +1175,7 @@ class Stackup(LayerCollection):
                     new_lc.AddStackupLayerAtElevation(cloned_layer)
 
             vialayers = [
-                lay
-                for lay in lc.Layers(self._pedb.core.Cell.LayerTypeSet.StackupLayerSet)
-                if lay.Clone().IsViaLayer()
+                lay for lay in lc.Layers(self._pedb.core.Cell.LayerTypeSet.StackupLayerSet) if lay.Clone().IsViaLayer()
             ]
             for layer in vialayers:
                 cloned_via_layer = layer.Clone()

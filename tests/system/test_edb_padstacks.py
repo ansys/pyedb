@@ -304,7 +304,9 @@ class TestClass:
         assert vias[1].metal_volume
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(reason="This is a bug deep in the code. This pass should never pass but it passes as try-else hides the bug.")
+    @pytest.mark.skipif(
+        reason="This is a bug deep in the code. This pass should never pass but it passes as try-else hides the bug."
+    )
     @pytest.mark.parametrize("return_points", [True, False])
     def test_padstacks_create_rectangle_in_pad(self, return_points: bool, edb_examples):
         """Create a rectangle inscribed inside a padstack instance pad."""
