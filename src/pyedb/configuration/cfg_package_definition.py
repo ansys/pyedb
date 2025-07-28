@@ -63,123 +63,67 @@ class CfgHeatSink(CfgBase):
 
 
 class CfgPackageDefinitions:
-    class Grpc:
-        def __init__(self, parent):
-            self.parent = parent
-            self._pedb = parent._pedb
+    def get_parameter_from_edb(self):
+        package_definitions = []
+        for pkg_name, pkg_obj in self._pedb.definitions.package.items():
+            pkg = {}
+            pkg_attrs = [i for i in dir(pkg_obj) if not i.startswith("_")]
+            pkg_attrs = {i for i in pkg_attrs if i in CfgPackage().__dict__}
+            for pkg_attr_name in pkg_attrs:
+                pkg[pkg_attr_name] = getattr(pkg_obj, pkg_attr_name)
+            hs_obj = pkg_obj.heatsink
+            if hs_obj:
+                hs = {}
+                hs_attrs = [i for i in dir(hs_obj) if not i.startswith("_")]
+                hs_attrs = [i for i in hs_attrs if i in CfgHeatSink().__dict__]
+                for hs_attr_name in hs_attrs:
+                    hs[hs_attr_name] = getattr(hs_obj, hs_attr_name)
+                pkg["heatsink"] = hs
+            package_definitions.append(pkg)
 
-        def set_parameter_to_edb(self):
-            from pyedb.grpc.database.definition.package_def import PackageDef
+        return package_definitions
 
-            for pkg in self.parent.packages:
-                comp_def_from_db = self._pedb.definitions.component[pkg.component_definition]
-                if pkg.name in self._pedb.definitions.package:
-                    self._pedb.definitions.package[pkg.name].delete()
+    def set_parameter_to_edb(self):
+        from pyedb.dotnet.database.definition.package_def import PackageDef
 
-                if pkg.extent_bounding_box:
-                    package_def = PackageDef(self._pedb, name=pkg.name, extent_bounding_box=pkg.extent_bounding_box)
-                else:
-                    package_def = PackageDef(self._pedb, name=pkg.name, component_part_name=pkg.component_definition)
-                pkg.set_attributes(package_def)
+        for pkg in self.packages:
+            comp_def_from_db = self._pedb.definitions.component[pkg.component_definition]
+            if pkg.name in self._pedb.definitions.package:
+                self._pedb.definitions.package[pkg.name].delete()
 
-                if pkg.heatsink:
-                    attrs = pkg.heatsink.get_attributes()
-                    for attr, value in attrs.items():
-                        package_def.set_heatsink(**attrs)
+            if pkg.extent_bounding_box:
+                package_def = PackageDef(self._pedb, name=pkg.name, extent_bounding_box=pkg.extent_bounding_box)
+            else:
+                package_def = PackageDef(self._pedb, name=pkg.name, component_part_name=pkg.component_definition)
+            pkg.set_attributes(package_def)
 
-                comp_list = dict()
-                if pkg.apply_to_all:
-                    comp_list.update(
-                        {
-                            refdes: comp
-                            for refdes, comp in comp_def_from_db.components.items()
-                            if refdes not in pkg.components
-                        }
-                    )
-                else:
-                    comp_list.update(
-                        {
-                            refdes: comp
-                            for refdes, comp in comp_def_from_db.components.items()
-                            if refdes in pkg.components
-                        }
-                    )
-                for _, i in comp_list.items():
-                    i.package_def = pkg.name
+            if pkg.heatsink:
+                attrs = pkg.heatsink.get_attributes()
+                for attr, value in attrs.items():
+                    package_def.set_heatsink(**attrs)
 
-        def get_parameter_from_edb(self):
-            package_definitions = []
-            for pkg_name, pkg_obj in self._pedb.definitions.package.items():
-                pkg = {}
-                pkg_attrs = [i for i in dir(pkg_obj) if not i.startswith("_")]
-                pkg_attrs = {i for i in pkg_attrs if i in CfgPackage().__dict__}
-                for pkg_attr_name in pkg_attrs:
-                    pkg[pkg_attr_name] = getattr(pkg_obj, pkg_attr_name)
-                hs_obj = pkg_obj.heatsink
-                if hs_obj:
-                    hs = {}
-                    hs_attrs = [i for i in dir(hs_obj) if not i.startswith("_")]
-                    hs_attrs = [i for i in hs_attrs if i in CfgHeatSink().__dict__]
-                    for hs_attr_name in hs_attrs:
-                        hs[hs_attr_name] = getattr(hs_obj, hs_attr_name)
-                    pkg["heatsink"] = hs
-                package_definitions.append(pkg)
-
-            return package_definitions
-
-    class DotNet(Grpc):
-        def __init__(self, parent):
-            super().__init__(parent)
-
-        def set_parameter_to_edb(self):
-            from pyedb.dotnet.database.definition.package_def import PackageDef
-
-            for pkg in self.parent.packages:
-                comp_def_from_db = self._pedb.definitions.component[pkg.component_definition]
-                if pkg.name in self._pedb.definitions.package:
-                    self._pedb.definitions.package[pkg.name].delete()
-
-                if pkg.extent_bounding_box:
-                    package_def = PackageDef(self._pedb, name=pkg.name, extent_bounding_box=pkg.extent_bounding_box)
-                else:
-                    package_def = PackageDef(self._pedb, name=pkg.name, component_part_name=pkg.component_definition)
-                pkg.set_attributes(package_def)
-
-                if pkg.heatsink:
-                    attrs = pkg.heatsink.get_attributes()
-                    for attr, value in attrs.items():
-                        package_def.set_heatsink(**attrs)
-
-                comp_list = dict()
-                if pkg.apply_to_all:
-                    comp_list.update(
-                        {
-                            refdes: comp
-                            for refdes, comp in comp_def_from_db.components.items()
-                            if refdes not in pkg.components
-                        }
-                    )
-                else:
-                    comp_list.update(
-                        {
-                            refdes: comp
-                            for refdes, comp in comp_def_from_db.components.items()
-                            if refdes in pkg.components
-                        }
-                    )
-                for _, i in comp_list.items():
-                    i.package_def = pkg.name
+            comp_list = dict()
+            if pkg.apply_to_all:
+                comp_list.update(
+                    {
+                        refdes: comp
+                        for refdes, comp in comp_def_from_db.components.items()
+                        if refdes not in pkg.components
+                    }
+                )
+            else:
+                comp_list.update(
+                    {refdes: comp for refdes, comp in comp_def_from_db.components.items() if refdes in pkg.components}
+                )
+            for _, i in comp_list.items():
+                i.package_def = pkg.name
 
     def __init__(self, pedb, data):
         self._pedb = pedb
-        if self._pedb.grpc:
-            self.api = self.Grpc(self)
-        else:
-            self.api = self.DotNet(self)
         self.packages = [CfgPackage(**package) for package in data]
 
     def apply(self):
-        self.api.set_parameter_to_edb()
+        self.set_parameter_to_edb()
 
     def get_data_from_db(self):
-        return self.api.get_parameter_from_edb()
+        return self.get_parameter_from_edb()

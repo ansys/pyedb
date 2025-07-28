@@ -229,22 +229,15 @@ class TestClass:
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
         setup = data_from_db["setups"][0]
         assert setup["name"] == "hfss_setup_1"
-        if edbapp.grpc:
-            # grpc sweep data has been refactored, ending up with same values but organized differently.
-            sweep1 = setup["freq_sweep"][1]
-            assert sweep1["frequencies"] == ["LIN 10MHz 20MHz 11", "LIN 1KHz 100kHz 10", "LIN 50MHz 200MHz 10MHz"]
-            sweep2 = setup["freq_sweep"][0]
-            assert sweep2["type"] == "discrete"
-        else:
-            sweep1 = setup["freq_sweep"][0]
-            assert sweep1["name"] == "sweep1"
-            assert sweep1["frequencies"] == [
-                "LIN 0.05GHz 0.2GHz 0.01GHz",
-                "DEC 1e-06GHz 0.0001GHz 10",
-                "LINC 0.01GHz 0.02GHz 11",
-            ]
-            sweep2 = setup["freq_sweep"][1]
-            assert sweep2["type"] == "discrete"
+        sweep1 = setup["freq_sweep"][0]
+        assert sweep1["name"] == "sweep1"
+        assert sweep1["frequencies"] == [
+            "LIN 0.05GHz 0.2GHz 0.01GHz",
+            "DEC 1e-06GHz 0.0001GHz 10",
+            "LINC 0.01GHz 0.02GHz 11",
+        ]
+        sweep2 = setup["freq_sweep"][1]
+        assert sweep2["type"] == "discrete"
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=tests.conftest.GRPC, reason="Not implemented with grpc")
