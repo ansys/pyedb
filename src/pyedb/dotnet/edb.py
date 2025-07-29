@@ -518,8 +518,6 @@ class Edb:
     def ansys_em_path(self):
         return self.base_path
 
-
-
     @property
     def project_variables(self):
         """Get all project variables.

@@ -420,8 +420,9 @@ from pyedb.generic.settings import settings as pyaedb_settings
 
 if any("aedt_logger" in str(i) for i in logger.filters):
     from ansys.aedt.core.generic.settings import settings as pyaedt_settings
+
     pyaedb_settings.use_pyaedt_log = True
-    pyaedb_settings.logger =  pyaedt_settings.logger
+    pyaedb_settings.logger = pyaedt_settings.logger
 
 else:
     pyaedb_settings.logger = EdbLogger(to_stdout=settings.enable_screen_logs)
