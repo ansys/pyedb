@@ -4900,7 +4900,6 @@ class Edb:
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        self.save()
         if not results:
             results = self.edbpath[:-5] + "_compare_results"
             os.mkdir(results)
@@ -4910,11 +4909,11 @@ class Edb:
             cmd_input = [mono_path, command, input_file, self.edbpath, results]
         else:
             cmd_input = [command, input_file, self.edbpath, results]
-        subprocess.run(cmd_input)
-
-        if not os.path.exists(os.path.join(results, "EDBDiff.csv")):
-            self.logger.error("Comparison execution failed")
-            return False
+        p = subprocess.run(cmd_input)
+        if p.returncode == 0:
+            return str(Path(self.base_path).joinpath("EDBDiff.exe"))
         else:
-            self.logger.info("Comparison correctly completed")
-            return True
+            raise RuntimeError(
+                "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
+            )
+

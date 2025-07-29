@@ -2155,11 +2155,32 @@ class TestClass:
         edbapp.close(terminate_rpc_session=False)
 
     def test_compare_edbs(self, edb_examples):
+        mock_process = MagicMock()
+        mock_process.returncode = 0
+
         edbapp = edb_examples.get_si_verse()
         edb_base = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1.aedb")
-        assert edbapp.compare(edb_base)
-        folder = edbapp.edbpath[:-5] + "_compare_results"
-        assert os.path.exists(folder)
+
+        with patch("subprocess.run", return_value=mock_process) as mock_run:
+            edbapp.compare(edb_base)
+            popen_args, popen_kwargs = mock_run.call_args
+            input_cmd = popen_args[0]
+
+        if is_linux:
+           assert input_cmd == [
+                os.path.join(edbapp.base_path, "common/mono/Linux64/bin/mono"),
+                os.path.join(edbapp.base_path, "EDBDiff.exe"),
+                edb_base,
+                edbapp.edbpath,
+                str(Path(edbapp.edbpath).stem + "compare_results")
+            ]
+        else:
+            assert input_cmd == [
+                os.path.join(edbapp.base_path, "EDBDiff.exe"),
+                edb_base,
+                edbapp.edbpath,
+                str(Path(edbapp.edbpath).with_name(Path(edbapp.edbpath).stem + "_compare_results"))
+            ]
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
     def test_create_layout_component(self, edb_examples):
