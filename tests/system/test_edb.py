@@ -25,9 +25,9 @@
 import os
 from pathlib import Path
 from typing import Sequence
+from unittest.mock import MagicMock, patch
 
 import pytest
-from unittest.mock import MagicMock, patch
 
 from pyedb.generic.general_methods import is_linux
 from tests.conftest import config, local_path, test_subfolder
@@ -431,35 +431,38 @@ class TestClass:
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
         out = edb.write_export3d_option_config_file(edb_examples.test_folder, options_config)
         assert Path(out).exists()
-        with  patch('subprocess.run', return_value=mock_process) as mock_run:
+        with patch("subprocess.run", return_value=mock_process) as mock_run:
             edb.export_hfss(None)
             popen_args, popen_kwargs = mock_run.call_args
             input_cmd = popen_args[0]
 
-            input_cmd_ = [str(Path(edb.ansys_em_path) / "siwave.exe"),
-                          '-RunScriptAndExit',
-                          str(Path(edb.edbpath).parent / "export_cad.py")
-                          ]
+            input_cmd_ = [
+                str(Path(edb.ansys_em_path) / "siwave.exe"),
+                "-RunScriptAndExit",
+                str(Path(edb.edbpath).parent / "export_cad.py"),
+            ]
             assert input_cmd == input_cmd_
 
             edb.export_q3d(None)
             popen_args, popen_kwargs = mock_run.call_args
             input_cmd = popen_args[0]
 
-            input_cmd_ = [str(Path(edb.ansys_em_path) / "siwave.exe"),
-                          '-RunScriptAndExit',
-                          str(Path(edb.edbpath).parent / "export_cad.py")
-                          ]
+            input_cmd_ = [
+                str(Path(edb.ansys_em_path) / "siwave.exe"),
+                "-RunScriptAndExit",
+                str(Path(edb.edbpath).parent / "export_cad.py"),
+            ]
             assert input_cmd == input_cmd_
 
             edb.export_maxwell(None)
             popen_args, popen_kwargs = mock_run.call_args
             input_cmd = popen_args[0]
 
-            input_cmd_ = [str(Path(edb.ansys_em_path) / "siwave.exe"),
-                          '-RunScriptAndExit',
-                          str(Path(edb.edbpath).parent / "export_cad.py")
-                          ]
+            input_cmd_ = [
+                str(Path(edb.ansys_em_path) / "siwave.exe"),
+                "-RunScriptAndExit",
+                str(Path(edb.edbpath).parent / "export_cad.py"),
+            ]
             assert input_cmd == input_cmd_
 
         edb.close(terminate_rpc_session=False)
@@ -1372,27 +1375,34 @@ class TestClass:
         edbapp = edb_examples.create_empty_edb()
         exec_path = edbapp.siwave.create_exec_file(add_dc=True)
         assert Path(exec_path).exists()
-        with  patch('subprocess.Popen', return_value=mock_process) as mock_popen:
+        with patch("subprocess.Popen", return_value=mock_process) as mock_popen:
             siw_path = edbapp.solve_siwave()
             popen_args, popen_kwargs = mock_popen.call_args
             input_cmd = popen_args[0]
 
-        input_cmd_ = " ".join([str(Path(edbapp.ansys_em_path) / "siwave_ng.exe"),
-                               edbapp.edbpath,
-                               str(Path(edbapp.edbpath).with_suffix(".exec")),
-                               '-formatOutput -useSubdir'])
+        input_cmd_ = " ".join(
+            [
+                str(Path(edbapp.ansys_em_path) / "siwave_ng.exe"),
+                edbapp.edbpath,
+                str(Path(edbapp.edbpath).with_suffix(".exec")),
+                "-formatOutput -useSubdir",
+            ]
+        )
         assert input_cmd == input_cmd_
 
-        with  patch('subprocess.Popen', return_value=mock_process) as mock_popen:
+        with patch("subprocess.Popen", return_value=mock_process) as mock_popen:
             edbapp.export_siwave_dc_results(siw_path, "SIwaveDCIR1")
             popen_args, popen_kwargs = mock_popen.call_args
             input_cmd = popen_args[0]
 
-        input_cmd_ = " ".join([str(Path(edbapp.ansys_em_path) / "siwave.exe"),
-                               "-embedding",
-                               "-RunScriptAndExit",
-                               str(Path(edbapp.edbpath).parent / "export_results.py")
-                               ])
+        input_cmd_ = " ".join(
+            [
+                str(Path(edbapp.ansys_em_path) / "siwave.exe"),
+                "-embedding",
+                "-RunScriptAndExit",
+                str(Path(edbapp.edbpath).parent / "export_results.py"),
+            ]
+        )
 
         assert input_cmd == input_cmd_
 
@@ -1954,7 +1964,7 @@ class TestClass:
     @pytest.mark.parametrize("positive_pin_names", (["R20", "R21", "T20"], ["R20"]))
     @pytest.mark.parametrize("pec_boundary", (False, True))
     def test_create_circuit_port_on_component_pins_pingroup_on_multiple_pins(
-            self, edb_examples, pec_boundary: bool, positive_pin_names: Sequence[str]
+        self, edb_examples, pec_boundary: bool, positive_pin_names: Sequence[str]
     ):
         EXPECTED_TERMINAL_TYPE = "PinGroupTerminal" if len(positive_pin_names) > 1 else "PadstackInstanceTerminal"
         edbapp = edb_examples.get_si_verse()
@@ -1977,7 +1987,7 @@ class TestClass:
     @pytest.mark.parametrize("positive_pin_names", (["R20", "R21", "T20"], ["R20"]))
     @pytest.mark.parametrize("pec_boundary", (False, True))
     def test_create_circuit_port_on_component_pins_pingroup_on_multiple_pins(
-            self, edb_examples, pec_boundary: bool, positive_pin_names: Sequence[str]
+        self, edb_examples, pec_boundary: bool, positive_pin_names: Sequence[str]
     ):
         EXPECTED_TERMINAL_TYPE = "PinGroupTerminal" if len(positive_pin_names) > 1 else "PadstackInstanceTerminal"
         edbapp = edb_examples.get_si_verse()

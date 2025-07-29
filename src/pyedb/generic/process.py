@@ -1,6 +1,6 @@
 import os.path
-import subprocess
 from pathlib import Path
+import subprocess
 
 from pyedb.generic.general_methods import is_linux, is_windows
 
