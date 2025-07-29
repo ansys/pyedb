@@ -1936,6 +1936,7 @@ class TestClass:
         map_file = os.path.join(local_path, "example_models", "cad", "GDS", "dummy_layermap.map")
         edb = Edb()
         assert edb.import_layout_file(input_file=input_file, control_file=control_file, map_file=map_file)
+        assert edb.close()
 
     @pytest.mark.parametrize("positive_pin_names", (["R20", "R21", "T20"], ["R20"]))
     @pytest.mark.parametrize("pec_boundary", (False, True))
@@ -2150,3 +2151,12 @@ class TestClass:
             edbapp = Edb(grpc=config["use_grpc"], edbversion=config["desktopVersion"])
             layout_comp = edbapp.import_layout_component(out_file)
             assert not layout_comp.cell_instance.is_null
+
+    def test_import_vlctech(self, edb_examples):
+        from pyedb import Edb
+
+        vlctech_path = os.path.join(local_path, "example_models", "cad", "vlctech", "test.vlc.tech.typ")
+        edbapp = Edb()
+        assert edbapp.import_vlctech_stackup(vlctech_path)
+        assert os.path.exists(edbapp.edbpath) and edbapp.edbpath[-12:] == "vlctech.aedb"
+        assert edbapp.close()
