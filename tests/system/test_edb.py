@@ -2167,19 +2167,19 @@ class TestClass:
             input_cmd = popen_args[0]
 
         if is_linux:
-           assert input_cmd == [
+            assert input_cmd == [
                 os.path.join(edbapp.base_path, "common/mono/Linux64/bin/mono"),
                 os.path.join(edbapp.base_path, "EDBDiff.exe"),
                 edb_base,
                 edbapp.edbpath,
-                str(Path(edbapp.edbpath).stem + "compare_results")
+                str(Path(edbapp.edbpath).stem + "compare_results"),
             ]
         else:
             assert input_cmd == [
                 os.path.join(edbapp.base_path, "EDBDiff.exe"),
                 edb_base,
                 edbapp.edbpath,
-                str(Path(edbapp.edbpath).with_name(Path(edbapp.edbpath).stem + "_compare_results"))
+                str(Path(edbapp.edbpath).with_name(Path(edbapp.edbpath).stem + "_compare_results")),
             ]
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")

@@ -4916,4 +4916,3 @@ class Edb:
             raise RuntimeError(
                 "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
             )
-
