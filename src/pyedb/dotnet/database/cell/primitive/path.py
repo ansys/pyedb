@@ -122,7 +122,7 @@ class Path(Primitive):
             last_point = list(center_line.Points)[-1]
             x = "({})+({})".format(x, last_point.X.ToString())
             y = "({})+({})".format(y, last_point.Y.ToString())
-        center_line.AddPoint(PointData(self._pedb, x=x, y=y)._edb_object)
+        center_line.AddPoint(PointData.create_from_xy(self._pedb, x=x, y=y)._edb_object)
         return self._edb_object.SetCenterLine(center_line)
 
     def get_center_line(self, to_string=False):
@@ -151,19 +151,17 @@ class Path(Primitive):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        center_line = self.center_line
-        width = self.width
         corner_style = self.corner_style
         end_cap_style = self.get_end_cap_style()
-        cloned_path = self._app.core.cell.primitive.path.create(
+        cloned_path = self._app.core.Cell.Primitive.Path.Create(
             self._app.active_layout,
             self.layer_name,
-            self.net,
-            width,
+            self.net._edb_object,
+            self._edb_object.GetWidthValue(),
             end_cap_style[1],
             end_cap_style[2],
             corner_style,
-            center_line,
+            self._edb_object.GetCenterLine(),
         )
         if cloned_path:
             return cloned_path
@@ -338,7 +336,7 @@ class Path(Primitive):
     def center_line(self, value):
         if isinstance(value, list):
             points = [self._pedb.point_data(i[0], i[1]) for i in value]
-            polygon_data = self._edb.geometry.polygon_data.dotnetobj(convert_py_list_to_net_list(points), False)
+            polygon_data = self._edb.Geometry.PolygonData(convert_py_list_to_net_list(points), False)
             self._edb_object.SetCenterLine(polygon_data)
 
     def get_center_line_polygon_data(self):

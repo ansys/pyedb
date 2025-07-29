@@ -49,7 +49,7 @@ class LayerEdbClass(object):
         layer_type = self._layer_name_mapping[layer_type]
         layer_type = self._doc_layer_mapping[layer_type]
 
-        self._edb_object = self._pedb.core.cell._cell.Layer(
+        self._edb_object = self._pedb.core.Cell.Layer(
             self._name,
             layer_type,
         )
@@ -83,30 +83,30 @@ class LayerEdbClass(object):
     @property
     def _stackup_layer_mapping(self):
         return {
-            "SignalLayer": self._edb.cell.layer_type.SignalLayer,
-            "DielectricLayer": self._edb.cell.layer_type.DielectricLayer,
+            "SignalLayer": self._edb.Cell.LayerType.SignalLayer,
+            "DielectricLayer": self._edb.Cell.LayerType.DielectricLayer,
         }
 
     @property
     def _doc_layer_mapping(self):
         return {
-            "ConductingLayer": self._edb.cell.layer_type.ConductingLayer,
-            "AirlinesLayer": self._edb.cell.layer_type.AirlinesLayer,
-            "ErrorsLayer": self._edb.cell.layer_type.ErrorsLayer,
-            "SymbolLayer": self._edb.cell.layer_type.SymbolLayer,
-            "MeasureLayer": self._edb.cell.layer_type.MeasureLayer,
-            "AssemblyLayer": self._edb.cell.layer_type.AssemblyLayer,
-            "SilkscreenLayer": self._edb.cell.layer_type.SilkscreenLayer,
-            "SolderMaskLayer": self._edb.cell.layer_type.SolderMaskLayer,
-            "SolderPasteLayer": self._edb.cell.layer_type.SolderPasteLayer,
-            "GlueLayer": self._edb.cell.layer_type.GlueLayer,
-            "WirebondLayer": self._edb.cell.layer_type.WirebondLayer,
-            "UserLayer": self._edb.cell.layer_type.UserLayer,
-            "SIwaveHFSSSolverRegions": self._edb.cell.layer_type.SIwaveHFSSSolverRegions,
-            "PostprocessingLayer": self._edb.cell.layer_type.PostprocessingLayer,
-            "OutlineLayer": self._edb.cell.layer_type.OutlineLayer,
-            "LayerTypesCount": self._edb.cell.layer_type.LayerTypesCount,
-            "UndefinedLayerType": self._edb.cell.layer_type.UndefinedLayerType,
+            "ConductingLayer": self._edb.Cell.LayerType.ConductingLayer,
+            "AirlinesLayer": self._edb.Cell.LayerType.AirlinesLayer,
+            "ErrorsLayer": self._edb.Cell.LayerType.ErrorsLayer,
+            "SymbolLayer": self._edb.Cell.LayerType.SymbolLayer,
+            "MeasureLayer": self._edb.Cell.LayerType.MeasureLayer,
+            "AssemblyLayer": self._edb.Cell.LayerType.AssemblyLayer,
+            "SilkscreenLayer": self._edb.Cell.LayerType.SilkscreenLayer,
+            "SolderMaskLayer": self._edb.Cell.LayerType.SolderMaskLayer,
+            "SolderPasteLayer": self._edb.Cell.LayerType.SolderPasteLayer,
+            "GlueLayer": self._edb.Cell.LayerType.GlueLayer,
+            "WirebondLayer": self._edb.Cell.LayerType.WirebondLayer,
+            "UserLayer": self._edb.Cell.LayerType.UserLayer,
+            "SIwaveHFSSSolverRegions": self._edb.Cell.LayerType.SIwaveHFSSSolverRegions,
+            "PostprocessingLayer": self._edb.Cell.LayerType.PostprocessingLayer,
+            "OutlineLayer": self._edb.Cell.LayerType.OutlineLayer,
+            "LayerTypesCount": self._edb.Cell.LayerType.LayerTypesCount,
+            "UndefinedLayerType": self._edb.Cell.LayerType.UndefinedLayerType,
         }
 
     @property
@@ -289,7 +289,7 @@ class StackupLayerEdbClass(LayerEdbClass):
     def _create(self, layer_type):
         layer_type_edb_name = self._layer_name_mapping[layer_type]
         layer_type = self._layer_type_mapping[layer_type_edb_name]
-        self._edb_object = self._pedb.core.cell._cell.StackupLayer(
+        self._edb_object = self._pedb.core.Cell.StackupLayer(
             self._name,
             layer_type,
             self._pedb.edb_value(0),

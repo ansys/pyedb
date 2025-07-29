@@ -1144,7 +1144,7 @@ class Padstacks(object):
             padstack_instance.is_layout_pin = is_pin
             return PadstackInstance(self._pedb, padstack_instance)
         else:
-            return False
+            raise RuntimeError("Place padstack failed")
 
     def remove_pads_from_padstack(self, padstack_name: str, layer_name: Optional[str] = None):
         """Remove pads from a padstack definition on specified layers.

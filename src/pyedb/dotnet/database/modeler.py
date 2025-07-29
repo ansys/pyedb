@@ -26,6 +26,7 @@ This module contains these classes: `EdbLayout` and `Shape`.
 import math
 import warnings
 
+from pyedb.dotnet.clr_module import Tuple
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.database.dotnet.primitive import CircleDotNet, RectangleDotNet
 from pyedb.dotnet.database.edb_data.primitives_data import Primitive, cast
@@ -289,7 +290,7 @@ class Modeler(object):
         if not isinstance(point, list) and len(point) == 2:
             self._logger.error("Provided point must be a list of two values")
             return False
-        pt = self._edb.geometry.point_data(self._pedb.edb_value(point[0]), self._pedb.edb_value(point[1]))
+        pt = self._edb.Geometry.PointData(self._pedb.edb_value(point[0]), self._pedb.edb_value(point[1]))
         if nets:
             if isinstance(nets, str):
                 nets = [nets]
@@ -536,30 +537,30 @@ class Modeler(object):
         """
         net = self._pedb.nets.find_or_create_net(net_name)
         if start_cap_style.lower() == "round":
-            start_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Round
+            start_cap_style = self._edb.Cell.Primitive.PathEndCapStyle.Round
         elif start_cap_style.lower() == "extended":
-            start_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Extended  # pragma: no cover
+            start_cap_style = self._edb.Cell.Primitive.PathEndCapStyle.Extended  # pragma: no cover
         else:
-            start_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Flat  # pragma: no cover
+            start_cap_style = self._edb.Cell.Primitive.PathEndCapStyle.Flat  # pragma: no cover
         if end_cap_style.lower() == "round":
-            end_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Round  # pragma: no cover
+            end_cap_style = self._edb.Cell.Primitive.PathEndCapStyle.Round  # pragma: no cover
         elif end_cap_style.lower() == "extended":
-            end_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Extended  # pragma: no cover
+            end_cap_style = self._edb.Cell.Primitive.PathEndCapStyle.Extended  # pragma: no cover
         else:
-            end_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Flat
+            end_cap_style = self._edb.Cell.Primitive.PathEndCapStyle.Flat
         if corner_style.lower() == "round":
-            corner_style = self._edb.cell.primitive.api.PathCornerStyle.RoundCorner
+            corner_style = self._edb.Cell.Primitive.PathCornerStyle.RoundCorner
         elif corner_style.lower() == "sharp":
-            corner_style = self._edb.cell.primitive.api.PathCornerStyle.SharpCorner  # pragma: no cover
+            corner_style = self._edb.Cell.Primitive.PathCornerStyle.SharpCorner  # pragma: no cover
         else:
-            corner_style = self._edb.cell.primitive.api.PathCornerStyle.MiterCorner  # pragma: no cover
+            corner_style = self._edb.Cell.Primitive.PathCornerStyle.MiterCorner  # pragma: no cover
 
         pointlists = [self._pedb.point_data(i[0], i[1]) for i in path_list.points]
-        polygonData = self._edb.geometry.polygon_data.dotnetobj(convert_py_list_to_net_list(pointlists), False)
-        polygon = self._edb.cell.primitive.path.create(
+        polygonData = self._edb.Geometry.PolygonData(convert_py_list_to_net_list(pointlists), False)
+        polygon = self._edb.Cell.Primitive.Path.Create(
             self._active_layout,
             layer_name,
-            net,
+            net._edb_object,
             self._get_edb_value(width),
             start_cap_style,
             end_cap_style,
@@ -567,9 +568,9 @@ class Modeler(object):
             polygonData,
         )
 
-        if polygon.prim_obj.IsNull():  # pragma: no cover
+        if polygon.IsNull():  # pragma: no cover
             raise RuntimeError("Failed to create path.")
-        polygon = self._pedb.layout.find_object_by_id(polygon.prim_obj.GetId())
+        polygon = self._pedb.layout.find_object_by_id(polygon.GetId())
         return polygon
 
     def create_trace(
@@ -719,11 +720,10 @@ class Modeler(object):
         if isinstance(polygonData, PolygonData):
             polygonData = polygonData._edb_object
         polygon = self._pedb._edb.Cell.Primitive.Polygon.Create(
-            self._active_layout, layer_name, net.net_obj, polygonData
+            self._active_layout, layer_name, net._edb_object, polygonData
         )
         if polygon.IsNull() or polygonData is False:  # pragma: no cover
-            self._logger.error("Null polygon created")
-            return False
+            raise RuntimeError("Null polygon created")
         else:
             return cast(polygon, self._pedb)
 
@@ -801,11 +801,11 @@ class Modeler(object):
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "LowerLeftUpperRight":
-            rep_type = self._edb.cell.primitive.api.RectangleRepresentationType.LowerLeftUpperRight
-            rect = self._edb.cell.primitive.rectangle.create(
+            rep_type = self._edb.Cell.Primitive.RectangleRepresentationType.LowerLeftUpperRight
+            rect = self._edb.Cell.Primitive.Rectangle.Create(
                 self._active_layout,
                 layer_name,
-                edb_net.net_obj,
+                edb_net._edb_object,
                 rep_type,
                 self._get_edb_value(lower_left_point[0]),
                 self._get_edb_value(lower_left_point[1]),
@@ -815,11 +815,11 @@ class Modeler(object):
                 self._get_edb_value(rotation),
             )
         else:
-            rep_type = self._edb.cell.primitive.api.RectangleRepresentationType.CenterWidthHeight
-            rect = self._edb.cell.primitive.rectangle.create(
+            rep_type = self._edb.Cell.Primitive.RectangleRepresentationType.CenterWidthHeight
+            rect = self._edb.Cell.Primitive.Rectangle.Create(
                 self._active_layout,
                 layer_name,
-                edb_net.net_obj,
+                edb_net._edb_object,
                 rep_type,
                 self._get_edb_value(center_point[0]),
                 self._get_edb_value(center_point[1]),
@@ -828,8 +828,8 @@ class Modeler(object):
                 self._get_edb_value(corner_radius),
                 self._get_edb_value(rotation),
             )
-        if rect:
-            return self._pedb.layout.find_object_by_id(rect._edb_object.GetId())
+        if not rect.IsNull():
+            return self._pedb.layout.find_object_by_id(rect.GetId())
         return False  # pragma: no cover
 
     def create_circle(self, layer_name, x, y, radius, net_name=""):
@@ -856,16 +856,16 @@ class Modeler(object):
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
 
-        circle = self._edb.cell.primitive.circle.create(
+        circle = self._edb.Cell.Primitive.Circle.Create(
             self._active_layout,
             layer_name,
-            edb_net,
+            edb_net._edb_object,
             self._get_edb_value(x),
             self._get_edb_value(y),
             self._get_edb_value(radius),
         )
-        if circle:
-            return self._pedb.layout.find_object_by_id(circle._edb_object.GetId())
+        if not circle.IsNull():
+            return self._pedb.layout.find_object_by_id(circle.GetId())
         return False  # pragma: no cover
 
     def delete_primitives(self, net_names):
@@ -948,7 +948,7 @@ class Modeler(object):
                 radius,
             ) = void_circle.primitive_object.GetParameters()
 
-            cloned_circle = self._edb.cell.primitive.circle.create(
+            cloned_circle = self._edb.Cell.Primitive.Circle.Create(
                 self._active_layout,
                 void_circle.layer_name,
                 void_circle.net,
@@ -1031,7 +1031,7 @@ class Modeler(object):
                     or endPoint[0].IsParametric()
                     or endPoint[1].IsParametric()
                 )
-                arc = self._edb.geometry.arc_data(
+                arc = self._edb.Geometry.ArcData(
                     self._pedb.point_data(startPoint[0].ToDouble(), startPoint[1].ToDouble()),
                     self._pedb.point_data(endPoint[0].ToDouble(), endPoint[1].ToDouble()),
                 )
@@ -1045,10 +1045,10 @@ class Modeler(object):
                     or endPoint[1].IsParametric()
                     or endPoint[2].IsParametric()
                 )
-                arc = self._edb.geometry.arc_data(
+                arc = self._edb.Geometry.Arc_data(
                     self._pedb.point_data(startPoint[0].ToDouble(), startPoint[1].ToDouble()),
                     self._pedb.point_data(endPoint[0].ToDouble(), endPoint[1].ToDouble()),
-                    endPoint[2].ToDouble(),
+                    # endPoint[2].ToDouble(),  # This argument is never used in the original code. There might be a bug.
                 )
                 arcs.append(arc)
             elif len(endPoint) == 5:
@@ -1061,29 +1061,27 @@ class Modeler(object):
                     or endPoint[3].IsParametric()
                     or endPoint[4].IsParametric()
                 )
-                rotationDirection = self._edb.geometry.geometry.RotationDirection.Colinear
                 if endPoint[2].ToString() == "cw":
                     rotationDirection = self._edb.geometry.geometry.RotationDirection.CW
                 elif endPoint[2].ToString() == "ccw":
                     rotationDirection = self._edb.geometry.geometry.RotationDirection.CCW
                 else:
-                    self._logger.error("Invalid rotation direction %s is specified.", endPoint[2])
-                    return None
-                arc = self._edb.geometry.arc_data(
+                    raise ValueError("Invalid rotation direction %s is specified.", endPoint[2])
+                arc = self._edb.Geometry.ArcData(
                     self._pedb.point_data(startPoint[0].ToDouble(), startPoint[1].ToDouble()),
                     self._pedb.point_data(endPoint[0].ToDouble(), endPoint[1].ToDouble()),
                     rotationDirection,
                     self._pedb.point_data(endPoint[3].ToDouble(), endPoint[4].ToDouble()),
                 )
                 arcs.append(arc)
-        polygon = self._edb.geometry.polygon_data.create_from_arcs(arcs, True)
+        polygon = self._edb.Geometry.PolygonData.CreateFromArcs(convert_py_list_to_net_list(arcs), True)
         if not is_parametric:
             return polygon
         else:
             k = 0
             for pt in points:
                 point = [self._get_edb_value(i) for i in pt]
-                new_points = self._edb.geometry.point_data(point[0], point[1])
+                new_points = self._edb.Geometry.PointData(point[0], point[1])
                 if len(point) > 2:
                     k += 1
                 polygon.SetPoint(k, new_points)
@@ -1140,13 +1138,14 @@ class Modeler(object):
     def _createPolygonDataFromRectangle(self, shape):
         if not self._validatePoint(shape.pointA, False) or not self._validatePoint(shape.pointB, False):
             return None
-        pointA = self._edb.geometry.point_data(
+        pointA = self._edb.Geometry.PointData(
             self._get_edb_value(shape.pointA[0]), self._get_edb_value(shape.pointA[1])
         )
-        pointB = self._edb.geometry.point_data(
+        pointB = self._edb.Geometry.PointData(
             self._get_edb_value(shape.pointB[0]), self._get_edb_value(shape.pointB[1])
         )
-        return self._edb.geometry.polygon_data.create_from_bbox((pointA, pointB))
+        points = Tuple[self._pedb.core.Geometry.PointData, self._pedb.core.Geometry.PointData](pointA, pointB)
+        return self._edb.Geometry.PolygonData.CreateFromBBox(points)
 
     class Shape(object):
         """Shape class.
@@ -1282,7 +1281,7 @@ class Modeler(object):
                         list_polygon_data.append(i.GetPolygonData())
                         delete_list.append(i)
                         all_voids.append(i.Voids)
-            a = self._edb.geometry.polygon_data.unite(convert_py_list_to_net_list(list_polygon_data))
+            a = self._edb.Geometry.PolygonData.Unite(convert_py_list_to_net_list(list_polygon_data))
             for item in a:
                 for v in all_voids:
                     for void in v:
@@ -1505,7 +1504,7 @@ class Modeler(object):
             self._logger.error("No pin found.")
             return False
         pins = list(pins.values())
-        obj = self._edb.cell.hierarchy.pin_group.Create(
+        obj = self._edb.Cell.Hierarchy.PinGroup.Create(
             self._pedb.active_layout, name, convert_py_list_to_net_list(pins)
         )
         if obj.IsNull():
