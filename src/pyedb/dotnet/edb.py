@@ -183,14 +183,9 @@ class Edb:
 
     """
 
-    settings = None
     logger = None
     edbversion = None
     _db = None
-
-    @property
-    def logger(self):
-        return self.settings.logger
 
     @execution_timer("EDB initialization")
     def __init__(
@@ -209,8 +204,7 @@ class Edb:
         layer_filter: str = None,
         remove_existing_aedt: bool = False,
     ):
-        self.settings = settings
-        self.settings.aedt_version = edbversion
+        self.logger = settings.logger
         now = datetime.now()
         self.logger.info(f"Star initializing Edb {now.time()}")
 
