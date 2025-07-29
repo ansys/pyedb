@@ -238,8 +238,8 @@ class TestClass:
     def test_save_edb_as(self, edb_examples):
         """Save edb as some file."""
         # Done
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.save_edb_as(os.path.join(self.local_scratch.path, "si_verse_new.aedb"))
+        edbapp = edb_examples.create_empty_edb()
+        assert edbapp.save_as(os.path.join(self.local_scratch.path, "si_verse_new.aedb"))
         assert os.path.exists(os.path.join(self.local_scratch.path, "si_verse_new.aedb", "edb.def"))
         edbapp.close(terminate_rpc_session=False)
 
@@ -382,7 +382,7 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "MicrostripSpliGnd.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
 
-        edbapp = edb_examples.load_edb(target_path, copy_to_temp=False)
+        edbapp = edb_examples.load_edb(target_path)
 
         assert edbapp.cutout(
             signal_list=["trace_n"],
@@ -398,7 +398,7 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "Multizone_GroundVoids.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
 
-        edbapp = edb_examples.load_edb(target_path, copy_to_temp=False)
+        edbapp = edb_examples.load_edb(target_path)
 
         assert edbapp.cutout(
             signal_list=["DIFF_N", "DIFF_P"],
