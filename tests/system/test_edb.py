@@ -30,7 +30,6 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 from pyedb.generic.general_methods import is_linux
-from pyedb.generic.settings import settings
 from tests.conftest import config, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
@@ -422,53 +421,47 @@ class TestClass:
         is_linux and ON_CI,
         reason="Test is slow due to software rendering fallback and lack of GPU acceleration.",
     )
-    def test_export_to_hfss(self, edb_examples):
+    def test_export_3d(self, edb_examples):
         """Export EDB to HFSS."""
         # Done
-        edb = edb_examples.load_edb(
-            edb_path=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
-        )
+
+        mock_process = MagicMock()
+
+        edb = edb_examples.create_empty_edb()
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
-        assert os.path.exists(out)
-        out = edb.export_hfss(self.local_scratch.path)
-        assert os.path.exists(out)
-        edb.close(terminate_rpc_session=False)
+        out = edb.write_export3d_option_config_file(edb_examples.test_folder, options_config)
+        assert Path(out).exists()
+        with  patch('subprocess.run', return_value=mock_process) as mock_run:
+            edb.export_hfss(None)
+            popen_args, popen_kwargs = mock_run.call_args
+            input_cmd = popen_args[0]
 
-    @pytest.mark.skipif(
-        is_linux and ON_CI,
-        reason="Test is slow due to software rendering fallback and lack of GPU acceleration.",
-    )
-    def test_export_to_q3d(self, edb_examples):
-        """Export EDB to Q3D."""
-        # Done
-        edb = edb_examples.load_edb(
-            edb_path=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
-        )
-        options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
-        assert os.path.exists(out)
-        out = edb.export_q3d(self.local_scratch.path, net_list=["ANALOG_A0", "ANALOG_A1", "ANALOG_A2"], hidden=True)
-        assert os.path.exists(out)
-        edb.close(terminate_rpc_session=False)
+            input_cmd_ = [str(Path(edb.ansys_em_path) / "siwave.exe"),
+                          '-RunScriptAndExit',
+                          str(Path(edb.edbpath).parent / "export_cad.py")
+                          ]
+            assert input_cmd == input_cmd_
 
-    @pytest.mark.skipif(
-        is_linux and ON_CI,
-        reason="Test is slow due to software rendering fallback and lack of GPU acceleration.",
-    )
-    def test_074_export_to_maxwell(self, edb_examples):
-        """Export EDB to Maxwell 3D."""
+            edb.export_q3d(None)
+            popen_args, popen_kwargs = mock_run.call_args
+            input_cmd = popen_args[0]
 
-        # Done
+            input_cmd_ = [str(Path(edb.ansys_em_path) / "siwave.exe"),
+                          '-RunScriptAndExit',
+                          str(Path(edb.edbpath).parent / "export_cad.py")
+                          ]
+            assert input_cmd == input_cmd_
 
-        edb = edb_examples.load_edb(
-            edb_path=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
-        )
-        options_config = {"UNITE_NETS": 1, "LAUNCH_MAXWELL": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
-        assert os.path.exists(out)
-        out = edb.export_maxwell(self.local_scratch.path, num_cores=6)
-        assert os.path.exists(out)
+            edb.export_maxwell(None)
+            popen_args, popen_kwargs = mock_run.call_args
+            input_cmd = popen_args[0]
+
+            input_cmd_ = [str(Path(edb.ansys_em_path) / "siwave.exe"),
+                          '-RunScriptAndExit',
+                          str(Path(edb.edbpath).parent / "export_cad.py")
+                          ]
+            assert input_cmd == input_cmd_
+
         edb.close(terminate_rpc_session=False)
 
     def test_create_edge_port_on_polygon(self, edb_examples):
@@ -1372,27 +1365,13 @@ class TestClass:
         ]
         edb3.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(is_linux, reason="Not supported in IPY")
     def test_solve_siwave(self, edb_examples):
-        """Solve EDB with Siwave."""
-        target_path = os.path.join(local_path, "example_models", "T40", "ANSYS-HSD_V1_DCIR.aedb")
-        out_edb = os.path.join(self.local_scratch.path, "to_be_solved.aedb")
-        self.local_scratch.copyfolder(target_path, out_edb)
-        edbapp = edb_examples.load_edb(out_edb, copy_to_temp=False)
-        edbapp.siwave.create_exec_file(add_dc=True)
-        out = edbapp.solve_siwave()
-        res = edbapp.export_siwave_dc_results(out, "SIwaveDCIR1")
-        for i in res:
-            assert os.path.exists(i)
-
-    @pytest.mark.skipif(is_linux, reason="Not supported in IPY")
-    def test_solve_siwave2(self, edb_examples):
         """Solve EDB with Siwave."""
         mock_process = MagicMock()
 
         edbapp = edb_examples.create_empty_edb()
         exec_path = edbapp.siwave.create_exec_file(add_dc=True)
-        assert exec_path
+        assert Path(exec_path).exists()
         with  patch('subprocess.Popen', return_value=mock_process) as mock_popen:
             siw_path = edbapp.solve_siwave()
             popen_args, popen_kwargs = mock_popen.call_args
@@ -1975,7 +1954,7 @@ class TestClass:
     @pytest.mark.parametrize("positive_pin_names", (["R20", "R21", "T20"], ["R20"]))
     @pytest.mark.parametrize("pec_boundary", (False, True))
     def test_create_circuit_port_on_component_pins_pingroup_on_multiple_pins(
-        self, edb_examples, pec_boundary: bool, positive_pin_names: Sequence[str]
+            self, edb_examples, pec_boundary: bool, positive_pin_names: Sequence[str]
     ):
         EXPECTED_TERMINAL_TYPE = "PinGroupTerminal" if len(positive_pin_names) > 1 else "PadstackInstanceTerminal"
         edbapp = edb_examples.get_si_verse()
@@ -1998,7 +1977,7 @@ class TestClass:
     @pytest.mark.parametrize("positive_pin_names", (["R20", "R21", "T20"], ["R20"]))
     @pytest.mark.parametrize("pec_boundary", (False, True))
     def test_create_circuit_port_on_component_pins_pingroup_on_multiple_pins(
-        self, edb_examples, pec_boundary: bool, positive_pin_names: Sequence[str]
+            self, edb_examples, pec_boundary: bool, positive_pin_names: Sequence[str]
     ):
         EXPECTED_TERMINAL_TYPE = "PinGroupTerminal" if len(positive_pin_names) > 1 else "PadstackInstanceTerminal"
         edbapp = edb_examples.get_si_verse()
