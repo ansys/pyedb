@@ -183,9 +183,14 @@ class Edb:
 
     """
 
+    settings = None
     logger = None
     edbversion = None
     _db = None
+
+    @property
+    def logger(self):
+        return self.settings.logger
 
     @execution_timer("EDB initialization")
     def __init__(
@@ -204,7 +209,8 @@ class Edb:
         layer_filter: str = None,
         remove_existing_aedt: bool = False,
     ):
-        self.logger = settings.logger
+        self.settings = settings
+        self.settings.aedt_version = edbversion
         now = datetime.now()
         self.logger.info(f"Star initializing Edb {now.time()}")
 
@@ -513,6 +519,12 @@ class Edb:
         for i in self.active_cell.GetVariableServer().GetAllVariableNames():
             d_var[i] = Variable(self, i)
         return d_var
+
+    @property
+    def ansys_em_path(self):
+        return self.base_path
+
+
 
     @property
     def project_variables(self):
@@ -3270,11 +3282,9 @@ class Edb:
         str
             Siwave project path.
         """
-        process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
-        try:
-            self.close()
-        except:
-            pass
+        process = SiwaveSolve(self)
+        self.save()
+        self.close()
         process.solve()
         return self.edbpath[:-5] + ".siw"
 
@@ -3321,11 +3331,8 @@ class Edb:
         list
             List of files generated.
         """
-        process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
-        try:
-            self.close()
-        except:
-            pass
+        process = SiwaveSolve(self)
+        self.close()
         return process.export_dc_report(
             siwave_project,
             solution_name,
