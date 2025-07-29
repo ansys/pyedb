@@ -4703,10 +4703,9 @@ class Edb:
             ``True`` when succeeded, ``False`` if failed.
         """
         if not temp_directory:
-            self.logger.error("Temp directory must be provided when creating model foe arbitrary wave port")
-            return False
+            raise RuntimeWarning("Temp directory must be provided when creating model foe arbitrary wave port")
         if mounting_side not in ["top", "bottom"]:
-            self.logger.error(
+            raise RuntimeWarning(
                 "Mounting side must be provided and only `top` or `bottom` are supported. Setting to "
                 "`top` will take the top layer from the current design as reference. Setting to `bottom` "
                 "will take the bottom one."
@@ -4739,11 +4738,10 @@ class Edb:
             if poly.layer_name == reference_layer and poly.type == "Polygon" and poly.has_voids
         ]
         if not polys:
-            self.logger.error(
+            raise RuntimeWarning(
                 f"No polygon found with voids on layer {reference_layer} during model creation for "
                 f"arbitrary wave ports"
             )
-            return False
         void_padstacks = []
         for poly in polys:
             for void in poly.voids:
@@ -4758,10 +4756,9 @@ class Edb:
                     void_padstacks.append((void, [self.padstacks.instances[edb_id] for edb_id in included_instances]))
 
         if not void_padstacks:
-            self.logger.error(
+            raise RuntimeWarning(
                 "No padstack instances found inside evaluated voids during model creation for arbitrary" "waveports"
             )
-            return False
         cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion)
 
         cloned_edb.stackup.add_layer(
@@ -4816,7 +4813,7 @@ class Edb:
                     net_name=inst.net_name,
                 )
                 if not _temp_circle:
-                    self.logger.error(
+                    raise RuntimeWarning(
                         f"Failed to create circle for terminal during create_model_for_arbitrary_wave_ports"
                     )
         cloned_edb.save_as(output_edb)
