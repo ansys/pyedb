@@ -416,13 +416,17 @@ class EdbLogger(object):
 
 
 logger = logging.getLogger("Global")
-from pyedb.generic.settings import settings as pyaedb_settings
-
 if any("aedt_logger" in str(i) for i in logger.filters):
     from ansys.aedt.core.generic.settings import settings as pyaedt_settings
+
+    from pyedb.generic.settings import settings as pyaedb_settings
+
+    pyedb_logger = pyaedt_settings.logger
     pyaedb_settings.use_pyaedt_log = True
-    pyaedb_settings.logger =  pyaedt_settings.logger
+    pyaedb_settings.logger = pyedb_logger
 
 else:
-    pyaedb_settings.logger = EdbLogger(to_stdout=settings.enable_screen_logs)
-pyedb_logger = pyaedb_settings.logger
+    pyedb_logger = EdbLogger(to_stdout=settings.enable_screen_logs)
+    from pyedb.generic.settings import settings as pyaedb_settings
+
+    pyaedb_settings.logger = pyedb_logger

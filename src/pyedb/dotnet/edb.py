@@ -103,6 +103,7 @@ from pyedb.generic.general_methods import (
 )
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
+from pyedb.edb_logger import pyedb_logger
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
@@ -204,7 +205,7 @@ class Edb:
         layer_filter: str = None,
         remove_existing_aedt: bool = False,
     ):
-        self.logger = settings.logger
+        self.logger = pyedb_logger
         now = datetime.now()
         self.logger.info(f"Star initializing Edb {now.time()}")
 
