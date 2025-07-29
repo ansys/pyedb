@@ -11,6 +11,13 @@ class SiwaveSolve(object):
 
     @property
     def __siwave_exe_path(self):
+        executable = "siwave"
+        executable = executable if is_linux else executable + ".exe"
+        full_path = Path(self._pedb.ansys_em_path) / executable
+        return str(full_path)
+
+    @property
+    def __siwave_ng_exe_path(self):
         executable = "siwave_ng"
         executable = executable if is_linux else executable + ".exe"
         full_path = Path(self._pedb.ansys_em_path) / executable
@@ -31,7 +38,7 @@ class SiwaveSolve(object):
                     os.remove(exec_file)
                     f = open(exec_file, "w")
                     f.writelines(content)
-        command = [self.__siwave_exe_path, self._pedb.edbpath, exec_file, "-formatOutput -useSubdir"]
+        command = [self.__siwave_ng_exe_path, self._pedb.edbpath, exec_file, "-formatOutput -useSubdir"]
         command_ = command if os.name == "posix" else " ".join(command)
         p = subprocess.Popen(command_)
         p.wait()
