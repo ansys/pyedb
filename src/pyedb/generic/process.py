@@ -44,7 +44,7 @@ class SiwaveSolve(object):
         p.wait()
 
     def export_3d_cad(
-        self, format_3d="Q3D", output_folder=None, net_list=None, num_cores=None, aedt_file_name=None, hidden=False
+        self, format_3d="Q3D", output_folder=None, net_list=None, num_cores=4, aedt_file_name=None, hidden=False
     ):  # pragma: no cover
         """Export edb to Q3D or HFSS
 
@@ -65,11 +65,11 @@ class SiwaveSolve(object):
             path to aedt file
         """
         if not output_folder:
-            output_folder = os.path.dirname(self.projectpath)
+            output_folder = os.path.dirname(self._pedb.edbpath)
         scriptname = os.path.join(output_folder, "export_cad.py")
         with open(scriptname, "w") as f:
             f.write("import os\n")
-            f.write("edbpath = r'{}'\n".format(self.projectpath))
+            f.write("edbpath = r'{}'\n".format(self._pedb.edbpath))
             f.write("exportOptions = os.path.join(r'{}', 'options.config')\n".format(output_folder))
             f.write("oDoc.ScrImportEDB(edbpath)\n")
             f.write("oDoc.ScrSaveProjectAs(os.path.join(r'{}','{}'))\n".format(output_folder, "test.siw"))
@@ -86,14 +86,11 @@ class SiwaveSolve(object):
             f.write("q3d_filename = os.path.join(r'{}', '{}')\n".format(output_folder, aedt_file_name))
             if num_cores:
                 f.write("oDoc.ScrSetNumCpusToUse('{}')\n".format(num_cores))
-                self.nbcores = num_cores
             f.write("oDoc.ScrExport3DModel('{}', q3d_filename)\n".format(format_3d))
             f.write("oDoc.ScrCloseProject()\n")
             f.write("oApp.Quit()\n")
-        _exe = os.path.join(self.installer_path, "siwave")
-        if is_windows:
-            _exe += ".exe"
-        command = [_exe]
+
+        command = [self.__siwave_exe_path]
         if hidden:
             command.append("-embedding")
         command += ["-RunScriptAndExit", scriptname]
@@ -215,7 +212,7 @@ class SiwaveSolve(object):
         if hidden:
             command.append("-embedding")
         command.append("-RunScriptAndExit")
-        command.append('"' + scriptname + '"')
+        command.append(scriptname)
         print(command)
         if os.name == "posix":
             p = subprocess.Popen(command)

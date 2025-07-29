@@ -3164,7 +3164,7 @@ class Edb:
         >>> edb.write_export3d_option_config_file(r"C:\\temp", options_config)
         >>> edb.export_hfss(r"C:\\temp")
         """
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
 
     def export_q3d(
@@ -3207,7 +3207,7 @@ class Edb:
         >>> edb.export_q3d("C:\\temp")
         """
 
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad(
             "Q3D",
             path_to_output,
@@ -3258,7 +3258,7 @@ class Edb:
         >>> edb.write_export3d_option_config_file("C:\\temp", options_config)
         >>> edb.export_maxwell("C:\\temp")
         """
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad(
             "Maxwell",
             path_to_output,

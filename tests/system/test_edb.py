@@ -23,11 +23,14 @@
 """Tests related to Edb"""
 
 import os
+from pathlib import Path
 from typing import Sequence
 
 import pytest
+from unittest.mock import MagicMock, patch
 
 from pyedb.generic.general_methods import is_linux
+from pyedb.generic.settings import settings
 from tests.conftest import config, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
@@ -1381,6 +1384,38 @@ class TestClass:
         res = edbapp.export_siwave_dc_results(out, "SIwaveDCIR1")
         for i in res:
             assert os.path.exists(i)
+
+    @pytest.mark.skipif(is_linux, reason="Not supported in IPY")
+    def test_solve_siwave2(self, edb_examples):
+        """Solve EDB with Siwave."""
+        mock_process = MagicMock()
+
+        edbapp = edb_examples.create_empty_edb()
+        exec_path = edbapp.siwave.create_exec_file(add_dc=True)
+        assert exec_path
+        with  patch('subprocess.Popen', return_value=mock_process) as mock_popen:
+            siw_path = edbapp.solve_siwave()
+            popen_args, popen_kwargs = mock_popen.call_args
+            input_cmd = popen_args[0]
+
+        input_cmd_ = " ".join([str(Path(edbapp.ansys_em_path) / "siwave_ng.exe"),
+                               edbapp.edbpath,
+                               str(Path(edbapp.edbpath).with_suffix(".exec")),
+                               '-formatOutput -useSubdir'])
+        assert input_cmd == input_cmd_
+
+        with  patch('subprocess.Popen', return_value=mock_process) as mock_popen:
+            edbapp.export_siwave_dc_results(siw_path, "SIwaveDCIR1")
+            popen_args, popen_kwargs = mock_popen.call_args
+            input_cmd = popen_args[0]
+
+        input_cmd_ = " ".join([str(Path(edbapp.ansys_em_path) / "siwave.exe"),
+                               "-embedding",
+                               "-RunScriptAndExit",
+                               str(Path(edbapp.edbpath).parent / "export_results.py")
+                               ])
+
+        assert input_cmd == input_cmd_
 
     def test_cutout_return_clipping_extent(self, edb_examples):
         """"""
