@@ -3276,7 +3276,6 @@ class Edb:
             Siwave project path.
         """
         process = SiwaveSolve(self)
-        self.save()
         self.close()
         process.solve()
         return self.edbpath[:-5] + ".siw"
