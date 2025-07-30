@@ -1644,14 +1644,9 @@ class TestClass:
         )
         edbapp.close(terminate_rpc_session=False)
 
-    def test_create_edb_with_zip(self):
+    def test_create_edb_with_zip(self, edb_examples):
         """Create EDB from zip file."""
-        # Done
-        from pyedb import Edb
-
-        src = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1_0.zip")
-        zip_path = self.local_scratch.copyfile(src)
-        edb = Edb(zip_path)
+        edb = edb_examples.get_si_verse()
         assert edb.nets
         assert edb.components
         edb.close(terminate_rpc_session=False)
