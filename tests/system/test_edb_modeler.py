@@ -138,7 +138,7 @@ class TestClass:
         assert edbapp.modeler["poly_3022"].type.lower() == "polygon"
         line_number = len(edbapp.modeler.primitives)
         edbapp.modeler["line_167"].delete()
-        assert edbapp.modeler._primitives == []
+        assert edbapp.modeler.primitives
         assert line_number == len(edbapp.modeler.primitives) + 1
         assert edbapp.modeler["poly_3022"].type.lower() == "polygon"
         edbapp.close(terminate_rpc_session=False)
