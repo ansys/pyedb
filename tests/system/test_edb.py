@@ -408,7 +408,7 @@ class TestClass:
         )
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(is_linux, reason="Test is slow due lack of GPU acceleration.")
+    @pytest.mark.skipif(is_linux, reason="Test is slow due to lack of GPU acceleration.")
     def test_export_to_hfss(self, edb_examples):
         """Export EDB to HFSS."""
         # Done
