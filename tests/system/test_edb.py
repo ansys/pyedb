@@ -416,7 +416,7 @@ class TestClass:
     #     edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        is_linux and ON_CI,
+        is_linux,
         reason="Test is slow due to software rendering fallback and lack of GPU acceleration.",
     )
     def test_export_to_hfss(self, edb_examples):
