@@ -422,7 +422,7 @@ class TestClass:
         assert os.path.exists(out)
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(is_linux, reason="Test is slow due lack of GPU acceleration.")
+    @pytest.mark.skipif(is_linux, reason="Test is slow due to lack of GPU acceleration.")
     def test_export_to_q3d(self, edb_examples):
         """Export EDB to Q3D."""
         edb = edb_examples.load_edb(
