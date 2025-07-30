@@ -2,7 +2,7 @@ import os.path
 from pathlib import Path
 import subprocess
 
-from pyedb.generic.general_methods import is_linux, is_windows
+from pyedb.generic.general_methods import is_linux
 
 
 class SiwaveSolve(object):
