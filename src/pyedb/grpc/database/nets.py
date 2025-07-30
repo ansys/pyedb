@@ -25,9 +25,12 @@ from __future__ import absolute_import  # noreorder
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 import warnings
 
+from ansys.edb.core.net.net_class import NetClass as GrpcNetClass
+
 from pyedb.common.nets import CommonNets
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.net.net import Net
+from pyedb.grpc.database.net.net_class import NetClass
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.path import Path
 from pyedb.grpc.database.primitive.polygon import Polygon
@@ -888,3 +891,55 @@ class Nets(CommonNets):
         if isinstance(net_names_list, str):
             net_names_list = [net_names_list]
         return self._pedb.modeler.unite_polygons_on_layer(net_names_list=net_names_list)
+
+
+class NetClasses:
+    """Net classes management.
+
+    This class provides access to net classes in the EDB layout.
+    It allows for operations like retrieving nets, adding/removing nets,
+    and checking if a net is part of a net class.
+
+    Examples
+    --------
+    >>> from pyedb import Edb
+    >>> edb = Edb(myedb, edbversion="2025.1")
+    >>> net_classes = edb.net_classes
+    """
+
+    def __init__(self, pedb):
+        self._pedb = pedb
+        self._net_classes = pedb.active_layout.net_classes
+
+    @property
+    def items(self):
+        """Extended nets.
+
+        Returns
+        -------
+        Dict[str, :class:`pyedb.grpc.database.nets.nets_class.NetClass`]
+            Dictionary of extended nets.
+        """
+        return {i.name: i for i in self._pedb.layout.net_classes}
+
+    def create(self, name) -> Union[bool, NetClass]:
+        """Create a new net class.
+
+        Parameters
+        ----------
+        name : str
+            Name of the net class.
+        net : str, list
+           Name of the nets to be added into this net class.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.database.edb_data.nets_data.EDBNetClassData` `False` if net name already exists.
+        """
+        if name in self.items:
+            self._pedb.logger.error("{} already exists.".format(name))
+            return False
+        grpc_net_class = GrpcNetClass.create(self._pedb.active_layout, name)
+        net_class = NetClass(self._pedb, grpc_net_class)
+        self.items[name] = net_class
+        return net_class

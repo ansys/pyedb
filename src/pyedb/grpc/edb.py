@@ -99,8 +99,7 @@ from pyedb.grpc.database.layout_validation import LayoutValidation
 from pyedb.grpc.database.modeler import Modeler
 from pyedb.grpc.database.net.differential_pair import DifferentialPairs
 from pyedb.grpc.database.net.extended_net import ExtendedNets
-from pyedb.grpc.database.net.net_class import NetClass
-from pyedb.grpc.database.nets import Nets
+from pyedb.grpc.database.nets import NetClasses, Nets
 from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.ports.ports import BundleWavePort, CoaxPort, GapPort, WavePort
 from pyedb.grpc.database.primitive.circle import Circle
@@ -1063,16 +1062,16 @@ class Edb(EdbInit):
         return self._nets
 
     @property
-    def net_classes(self) -> NetClass:
+    def net_classes(self) -> NetClasses:
         """Net class management.
 
         Returns
         -------
-        dict[str, :class:`NetClass <pyedb.grpc.database.net.net_class.NetClass>`]
-            Net class names and objects.
+        :class:`NetClass <pyedb.grpc.database.nets.NetClasses>`
+            Net classes objects.
         """
         if self.active_db:
-            return {net.name: NetClass(self, net) for net in self.active_layout.net_classes}
+            return NetClasses(self)
 
     @property
     def extended_nets(self) -> ExtendedNets:
