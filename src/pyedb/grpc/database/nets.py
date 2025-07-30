@@ -911,8 +911,19 @@ class NetClasses:
         self._pedb = pedb
         self._net_classes = pedb.active_layout.net_classes
 
+    def __getitem__(self, name: str) -> NetClass:
+        """Get a net by name.
+
+        Parameters
+        ----------
+        name : str
+            Name of the net to retrieve.
+
+        """
+        return self.items[name]
+
     @property
-    def items(self):
+    def items(self) -> Dict[str, NetClass]:
         """Extended nets.
 
         Returns
@@ -922,7 +933,7 @@ class NetClasses:
         """
         return {i.name: i for i in self._pedb.layout.net_classes}
 
-    def create(self, name) -> Union[bool, NetClass]:
+    def create(self, name, net) -> Union[bool, NetClass]:
         """Create a new net class.
 
         Parameters
@@ -940,6 +951,10 @@ class NetClasses:
             self._pedb.logger.error("{} already exists.".format(name))
             return False
         grpc_net_class = GrpcNetClass.create(self._pedb.active_layout, name)
+        if isinstance(net, str):
+            net = [net]
+        for i in net:
+            grpc_net_class.add_net(self._pedb.nets[i])
         net_class = NetClass(self._pedb, grpc_net_class)
         self.items[name] = net_class
         return net_class
