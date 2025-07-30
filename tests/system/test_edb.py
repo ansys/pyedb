@@ -435,7 +435,7 @@ class TestClass:
         assert os.path.exists(out)
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(is_linux, reason="Test is slow due lack of GPU acceleration.")
+    @pytest.mark.skipif(is_linux, reason="Test is slow due to lack of GPU acceleration.")
     def test_074_export_to_maxwell(self, edb_examples):
         """Export EDB to Maxwell 3D."""
         edb = edb_examples.load_edb(
