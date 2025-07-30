@@ -117,7 +117,7 @@ class TestClass:
 
     @pytest.fixture(autouse=True)
     def teardown(self, request, edb_examples):
-        """Code after yield runs after each teste."""
+        """Code after yield runs after each test."""
         yield
         pass
 
