@@ -50,7 +50,7 @@ class PointTerminal(Terminal):
         -------
         :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`
         """
-        terminal = self._pedb.core.cell.terminal.PointTerminal.Create(
+        terminal = self._pedb.core.Cell.Terminal.PointTerminal.Create(
             self._pedb.active_layout,
             self._pedb.layout.find_net_by_name(net)._edb_object,
             name,

@@ -90,12 +90,12 @@ class PolygonData:
     def create_from_points(self, points, closed=True):
         list_of_point_data = []
         for pt in points:
-            list_of_point_data.append(PointData(self._pedb, x=pt[0], y=pt[1])._edb_object)
-        return self._pedb.core.geometry.api_class.PolygonData(convert_py_list_to_net_list(list_of_point_data), closed)
+            list_of_point_data.append(PointData.create_from_xy(self._pedb, x=pt[0], y=pt[1])._edb_object)
+        return self._pedb.core.Geometry.PolygonData(convert_py_list_to_net_list(list_of_point_data), closed)
 
     def create_from_bounding_box(self, points):
         bbox = BBox(self._pedb, point_1=points[0], point_2=points[1])
-        return self._pedb.core.geometry.api_class.PolygonData.CreateFromBBox(bbox._edb_object)
+        return self._pedb.core.Geometry.PolygonData.CreateFromBBox(bbox._edb_object)
 
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
         """Expand the polygon shape by an absolute value in all direction.

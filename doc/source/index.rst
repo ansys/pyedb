@@ -63,6 +63,7 @@ API to make scripting simpler.
    user_guide/index
    grpc_api/index
    dotnet_api/index
+   libraries/index
    contributing
 
 Indices and tables
