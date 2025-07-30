@@ -31,12 +31,9 @@ class TestClass:
     def init(self, local_scratch, edb_examples):
         edbapp = edb_examples.get_si_verse()
         path = edbapp.layout.find_primitive(name="line_272")[0]
-        self.path_center_line_polygon_data = path.get_center_line_polygon_data()
-        self.point_data = self.path_center_line_polygon_data.get_point(1)
-        pass
+        self.path_center_line_polygon_data = path.center_line
+        self.point_data = path.center_line[0]
 
     def test_point_data(self):
-        assert isinstance(self.point_data.x_evaluated, float)
-        assert isinstance(self.point_data.y_evaluated, float)
-        self.point_data.x = "1mm"
-        assert self.point_data.x == "1mm"
+        assert isinstance(self.point_data[0], float)
+        assert isinstance(self.point_data[1], float)
