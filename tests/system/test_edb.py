@@ -1891,9 +1891,7 @@ class TestClass:
     @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
     def test_active_cell_setter(self, edb_examples):
         """Use multiple cells."""
-
-        src = os.path.join(local_path, "example_models", "TEDB", "multi_cells.aedb")
-        edb = edb_examples.load_edb(edbpath=src)
+        edb = edb_examples.get_multi_cells_edb()
         edb.active_cell = edb.circuit_cells[0]
         assert len(edb.modeler.primitives) == 2096
         assert len(edb.components.instances) == 509
