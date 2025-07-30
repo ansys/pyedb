@@ -57,7 +57,7 @@ class TestClass:
 
     def test_dc_shorts(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        edbapp.layout_validation.dc_shorts()
+        edbapp.layout_validation.dc_shorts(fix=True)
 
     def test_fix_self_intersecting(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
@@ -65,8 +65,12 @@ class TestClass:
 
     def test_illegal_net_names(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        edbapp.layout_validation.illegal_net_names()
+        edbapp.layout_validation.illegal_net_names(fix=True)
 
     def test_padstacks_no_name(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        edbapp.layout_validation.padstacks_no_name()
+        edbapp.layout_validation.padstacks_no_name(fix=True)
+
+    def test_padstacks_no_layer(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.layout_validation.illegal_rlc_values(fix=True)
