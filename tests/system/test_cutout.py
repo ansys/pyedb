@@ -19,11 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import os
 from pathlib import Path
 
 import pytest
 
-import os
 from tests.conftest import local_path, test_subfolder
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -35,6 +35,7 @@ class TestClass:
     def setup_class(cls, request, edb_examples):
         # Set up the EDB app once per class
         pass
+
         # Finalizer to close the EDB app after all tests
         def teardown():
             cls.edbapp_shared = edb_examples.get_si_verse()
