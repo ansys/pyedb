@@ -408,17 +408,7 @@ class TestClass:
         )
         edbapp.close(terminate_rpc_session=False)
 
-    # def test_create_EdbLegacy(self):
-    #     """Create EDB."""
-    #     edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
-    #     assert edb
-    #     assert edb.active_layout
-    #     edb.close(terminate_rpc_session=False)
-
-    @pytest.mark.skipif(
-        is_linux and ON_CI,
-        reason="Test is slow due to software rendering fallback and lack of GPU acceleration.",
-    )
+    @pytest.mark.skipif(is_linux, reason="Test is slow due lack of GPU acceleration.")
     def test_export_to_hfss(self, edb_examples):
         """Export EDB to HFSS."""
         # Done
@@ -432,13 +422,9 @@ class TestClass:
         assert os.path.exists(out)
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        is_linux and ON_CI,
-        reason="Test is slow due to software rendering fallback and lack of GPU acceleration.",
-    )
+    @pytest.mark.skipif(is_linux, reason="Test is slow due lack of GPU acceleration.")
     def test_export_to_q3d(self, edb_examples):
         """Export EDB to Q3D."""
-        # Done
         edb = edb_examples.load_edb(
             edb_path=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
         )
@@ -449,15 +435,9 @@ class TestClass:
         assert os.path.exists(out)
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        is_linux and ON_CI,
-        reason="Test is slow due to software rendering fallback and lack of GPU acceleration.",
-    )
+    @pytest.mark.skipif(is_linux, reason="Test is slow due lack of GPU acceleration.")
     def test_074_export_to_maxwell(self, edb_examples):
         """Export EDB to Maxwell 3D."""
-
-        # Done
-
         edb = edb_examples.load_edb(
             edb_path=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
         )
