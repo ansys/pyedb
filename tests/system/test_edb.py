@@ -1356,24 +1356,6 @@ class TestClass:
             assert setup.dc_ir_settings.source_terms_to_ground
         edbapp.close(terminate_rpc_session=False)
 
-    def test_arbitrary_wave_ports(self):
-        # TODO check later when sever instances is improved.
-        from pyedb import Edb
-
-        example_folder = os.path.join(local_path, "example_models", test_subfolder)
-        source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
-        target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
-        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = Edb(target_path_edb)
-        assert edbapp.create_model_for_arbitrary_wave_ports(
-            temp_directory=self.local_scratch.path,
-            output_edb=os.path.join(self.local_scratch.path, "wave_ports.aedb"),
-            mounting_side="top",
-        )
-        edb_model = os.path.join(self.local_scratch.path, "wave_ports.aedb")
-        assert os.path.isdir(edb_model)
-        edbapp.close(terminate_rpc_session=False)
-
     def test_bondwire(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         bondwire_1 = edbapp.modeler.create_bondwire(

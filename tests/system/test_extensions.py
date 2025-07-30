@@ -102,6 +102,26 @@ PADSTACK_DEFS = [
 
 
 class TestClass:
+
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def setup_class(cls, request, edb_examples):
+        # Set up the EDB app once per class
+        pass
+
+        # Finalizer to close the EDB app after all tests
+        def teardown():
+            cls.edbapp_shared = edb_examples.get_si_verse()
+            cls.edbapp_shared.close(terminate_rpc_session=True)
+
+        request.addfinalizer(teardown)
+
+    @pytest.fixture(autouse=True)
+    def teardown(self, request, edb_examples):
+        """Code after yield runs after each teste."""
+        yield
+        pass
+
     @pytest.fixture(autouse=True)
     def init(self, local_scratch):
         working_dir = Path(local_scratch.path)
@@ -606,3 +626,20 @@ class TestClass:
             },
         }
         app = ViaDesignBackend(cfg)
+
+    def test_arbitrary_wave_ports(self, edb_examples):
+        # TODO check later when sever instances is improved.
+        import os
+        local_path = Path(__file__).parent.parent
+        example_folder = os.path.join(local_path, "example_models", "TEDB")
+        source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
+
+        edbapp = edb_examples.load_edb(source_path_edb)
+        assert edbapp.create_model_for_arbitrary_wave_ports(
+            temp_directory=edb_examples.test_folder,
+            output_edb=os.path.join(edb_examples.test_folder, "wave_ports.aedb"),
+            mounting_side="top",
+        )
+        edb_model = os.path.join(edb_examples.test_folder, "wave_ports.aedb")
+        assert os.path.isdir(edb_model)
+        edbapp.close(terminate_rpc_session=False)
