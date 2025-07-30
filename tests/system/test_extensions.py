@@ -102,7 +102,6 @@ PADSTACK_DEFS = [
 
 
 class TestClass:
-
     @classmethod
     @pytest.fixture(scope="class", autouse=True)
     def setup_class(cls, request, edb_examples):
@@ -630,6 +629,7 @@ class TestClass:
     def test_arbitrary_wave_ports(self, edb_examples):
         # TODO check later when sever instances is improved.
         import os
+
         local_path = Path(__file__).parent.parent
         example_folder = os.path.join(local_path, "example_models", "TEDB")
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
