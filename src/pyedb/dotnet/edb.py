@@ -48,7 +48,6 @@ from pyedb.dotnet.database.cell.layout import Layout
 from pyedb.dotnet.database.cell.terminal.terminal import Terminal
 from pyedb.dotnet.database.components import Components
 import pyedb.dotnet.database.dotnet.database
-from pyedb.dotnet.database.dotnet.database import Database
 from pyedb.dotnet.database.edb_data.design_options import EdbDesignOptions
 from pyedb.dotnet.database.edb_data.ports import (
     BundleWavePort,
@@ -215,7 +214,6 @@ class Edb:
         self.edbversion = get_string_version(edbversion)
         self._clean_variables()
         self.__initialization(self.edbversion, student_version)
-        Database.__init__(self)
 
         self.standalone = True
         self.oproject = oproject
@@ -1606,6 +1604,7 @@ class Edb:
         warnings.warn("Use new property :func:`close` instead.", DeprecationWarning)
         return self.close()
 
+    @execution_timer("Close Edb file")
     def close(self, **kwargs):
         """Close EDB and cleanup variables.
 
@@ -1615,14 +1614,11 @@ class Edb:
             ``True`` when successful, ``False`` when failed.
 
         """
-        Database.close(self)
+        self._db.Close()
 
         if self.log_name and settings.enable_local_log_file:
             self.logger.remove_all_file_loggers()
-        start_time = time.time()
         self._wait_for_file_release()
-        elapsed_time = time.time() - start_time
-        self.logger.info("EDB file release time: {0:.2f}ms".format(elapsed_time * 1000.0))
         self._clean_variables()
         return True
 
@@ -1641,6 +1637,7 @@ class Edb:
         warnings.warn("Use new method :func:`save` instead.", DeprecationWarning)
         return self.save()
 
+    @execution_timer("Save Edb file")
     def save(self):
         """Save the EDB file.
 
@@ -1651,11 +1648,8 @@ class Edb:
 
         """
 
-        Database.save(self)
-        start_time = time.time()
+        self._db.Save()
         self._wait_for_file_release()
-        elapsed_time = time.time() - start_time
-        self.logger.info("EDB file save time: {0:.2f}ms".format(elapsed_time * 1000.0))
         return True
 
     def save_edb_as(self, path):
@@ -2155,7 +2149,7 @@ class Edb:
             legacy_path = self.edbpath
             if expansion_factor > 0 and not custom_extent:
                 start = time.time()
-                self.save_edb()
+                self.save()
                 dummy_path = self.edbpath.replace(".aedb", "_smart_cutout_temp.aedb")
                 working_cutout = False
                 i = 1
@@ -2440,7 +2434,7 @@ class Edb:
         from concurrent.futures import ThreadPoolExecutor
 
         if output_aedb_path:
-            self.save_edb_as(output_aedb_path)
+            self.save_as(output_aedb_path)
         self.logger.info("Cutout Multithread started.")
         expansion_size = self.edb_value(expansion_size).ToDouble()
 
@@ -4025,6 +4019,7 @@ class Edb:
             setattr(setup, k, v)
         return setup
 
+    @execution_timer("calculate_initial_extent")
     def calculate_initial_extent(self, expansion_factor):
         """Compute a float representing the larger number between the dielectric thickness or trace width
         multiplied by the nW factor. The trace width search is limited to nets with ports attached.
