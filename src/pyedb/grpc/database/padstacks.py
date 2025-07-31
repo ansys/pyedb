@@ -795,7 +795,7 @@ class Padstacks(object):
         if net_list and not isinstance(net_list, list):
             net_list = [net_list]
         via_list = []
-        for inst in self._layout.padstack_instances:
+        for inst_id, inst in self._layout.padstack_instances.items():
             pad_layers_name = inst.padstack_def.data.layer_names
             if len(pad_layers_name) > 1:
                 if not net_list:
