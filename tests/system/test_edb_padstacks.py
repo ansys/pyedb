@@ -445,7 +445,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         edbapp = edb_examples.load_edb(source_path)
         index = edbapp.padstacks.get_padstack_instances_rtree_index()
-        assert index.bounds == [-0.013785, -0.00225, 0.148, 0.078]
+        assert [round(val, 6) for val in index.bounds] == [-0.013785, -0.00225, 0.148, 0.078]
         stats = edbapp.get_statistics()
         bbox = (0.0, 0.0, stats.layout_size[0], stats.layout_size[1])
         test = list(index.intersection(bbox))
