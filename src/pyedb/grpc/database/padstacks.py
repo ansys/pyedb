@@ -342,6 +342,7 @@ class Padstacks(object):
     @property
     def pad_type(self) -> GrpcPadType:
         """Return a PadType Enumerator."""
+        return GrpcPadType
 
     def create_circular_padstack(
         self,
