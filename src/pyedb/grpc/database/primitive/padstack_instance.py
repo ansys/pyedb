@@ -22,6 +22,7 @@
 
 import math
 import re
+import warnings
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
@@ -68,6 +69,16 @@ class PadstackInstance(GrpcPadstackInstance):
         self._object_instance = None
 
     @property
+    def is_pin(self):
+        """Property added for backward compatibility with earlier versions of pyEDB."""
+        return self.is_layout_pin
+
+    @is_pin.setter
+    def is_pin(self, value):
+        """Property added for backward compatibility with earlier versions of pyEDB."""
+        self.is_layout_pin = value
+
+    @property
     def definition(self) -> PadstackDef:
         """Padstack definition.
 
@@ -107,6 +118,77 @@ class PadstackInstance(GrpcPadstackInstance):
         if not term.is_null:
             term = PadstackInstanceTerminal(self._pedb, term)
         return term if not term.is_null else None
+
+    def set_backdrill_top(self, drill_depth, drill_diameter, offset=0.0):
+        """Set backdrill from top.
+
+        .deprecated:: 0.55.0
+        Use :method:`set_back_drill_by_depth` instead.
+
+        Parameters
+        ----------
+        drill_depth : str
+            Name of the drill to layer.
+        drill_diameter : float, str
+            Diameter of backdrill size.
+        offset : str, optional.
+            offset with respect to the layer to drill to.
+
+        Returns
+        -------
+        bool
+            True if success, False otherwise.
+        """
+        warnings.warn(
+            "`set_backdrill_top` is deprecated. Use `set_back_drill_by_depth` or " "`set_back_drill_by_layer` instead.",
+            DeprecationWarning,
+        )
+        if isinstance(drill_depth, str):
+            if drill_depth in self._pedb.stackup.layers:
+                return self.set_back_drill_by_layer(
+                    drill_to_layer=self._pedb.stackup.layers[drill_depth],
+                    offset=Value(offset),
+                    diameter=Value(drill_diameter),
+                    from_bottom=False,
+                )
+            else:
+                return self.set_back_drill_by_depth(Value(drill_depth), Value(drill_diameter), from_bottom=False)
+
+    def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
+        """Set backdrill from bottom.
+
+        .deprecated: 0.55.0
+        Use: method:`set_back_drill_by_depth` instead.
+
+        Parameters
+        ----------
+        drill_depth : str
+            Name of the drill to layer.
+        drill_diameter : float, str
+            Diameter of backdrill size.
+        offset : str, optional.
+            offset with respect to the layer to drill to.
+
+        Returns
+        -------
+        bool
+            True if success, False otherwise.
+        """
+        warnings.warn(
+            "`set_backdrill_bottom` is deprecated. Use `set_back_drill_by_depth` or "
+            "`set_back_drill_by_layer` instead.",
+            DeprecationWarning,
+        )
+        if isinstance(drill_depth, str):
+            if drill_depth in self._pedb.stackup.layers:
+                return self.set_back_drill_by_layer(
+                    drill_to_layer=self._pedb.stackup.layers[drill_depth],
+                    offset=Value(offset),
+                    diameter=Value(drill_diameter),
+                    from_bottom=True,
+                )
+            else:
+                return self.set_back_drill_by_depth(Value(drill_depth), Value(drill_diameter), from_bottom=True)
 
     def create_terminal(self, name=None) -> PadstackInstanceTerminal:
         """Create a padstack instance terminal.

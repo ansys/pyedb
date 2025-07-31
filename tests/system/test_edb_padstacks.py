@@ -91,27 +91,26 @@ class TestClass:
         assert edbapp.padstacks.place(["via_x", "via_x+via_y*2"], "myVia_bullet")
         edbapp.padstacks["via_test1"].net_name = "GND"
         assert edbapp.padstacks["via_test1"].net_name == "GND"
-        padstack = edbapp.padstacks.place(["via_x", "via_x+via_y*3"], "myVia", is_pin=True)
-        for test_prop in (edbapp.padstacks.instances, edbapp.padstacks.instances):
-            padstack_instance = test_prop[padstack.id]
-            assert padstack_instance.is_pin
-            assert padstack_instance.position
-            assert padstack_instance.start_layer in padstack_instance.layer_range_names
-            assert padstack_instance.stop_layer in padstack_instance.layer_range_names
-            padstack_instance.position = [0.001, 0.002]
-            assert padstack_instance.position == [0.001, 0.002]
-            assert padstack_instance.parametrize_position()
-            assert isinstance(padstack_instance.rotation, float)
-            edbapp.padstacks.create_circular_padstack(padstackname="mycircularvia")
-            assert "mycircularvia" in list(edbapp.padstacks.definitions.keys())
-            assert not padstack_instance.backdrill_top
-            assert not padstack_instance.backdrill_bottom
-            assert padstack_instance.delete()
-            via = edbapp.padstacks.place([0, 0], "myVia")
-            assert via.set_backdrill_top("Inner4(Sig2)", 0.5e-3)
-            assert via.backdrill_top
-            assert via.set_backdrill_bottom("16_Bottom", 0.5e-3)
-            assert via.backdrill_bottom
+        padstack_instance = edbapp.padstacks.place(["via_x", "via_x+via_y*3"], "myVia", is_pin=True)
+        assert padstack_instance.is_pin
+        assert padstack_instance.position
+        assert padstack_instance.start_layer in padstack_instance.layer_range_names
+        assert padstack_instance.stop_layer in padstack_instance.layer_range_names
+        padstack_instance.position = [0.001, 0.002]
+        assert padstack_instance.position == [0.001, 0.002]
+        assert padstack_instance.parametrize_position()
+        assert isinstance(padstack_instance.rotation, float)
+        edbapp.padstacks.create_circular_padstack(padstackname="mycircularvia")
+        assert "mycircularvia" in list(edbapp.padstacks.definitions.keys())
+        assert not padstack_instance.backdrill_top
+        assert not padstack_instance.backdrill_bottom
+        if not edbapp.grpc:
+            assert padstack_instance.delete()  # grpc does not return boolean
+        via = edbapp.padstacks.place([0, 0], "myVia")
+        via.set_backdrill_top("Inner4(Sig2)", 0.5e-3)  # grpc is not returning boolean
+        assert via.backdrill_top
+        via.set_backdrill_bottom("16_Bottom", 0.5e-3)
+        assert via.backdrill_bottom
 
         via = edbapp.padstacks.instances_by_name["Via1266"]
         via.backdrill_parameters = {
