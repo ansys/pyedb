@@ -110,6 +110,26 @@ class PadProperties:
         """
         return self._pad_parameter_value[0].name.split("_")[-1].lower()
 
+    @shape.setter
+    def shape(self, value: str):
+        """Set pad shape.
+
+        Parameters
+        ----------
+        value : str
+            Pad shape.
+        """
+        if value.lower() == "circle":
+            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_CIRCLE)
+        elif value.lower() == "rectangle":
+            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE)
+        elif value.lower() == "polygon":
+            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_POLYGON)
+        else:
+            raise ValueError(
+                f"Unsupported pad shape: {value}. Supported shapes are 'circle', " f"'rectangle', and 'polygon'."
+            )
+
     @property
     def parameters_values(self):
         """Parameters.
