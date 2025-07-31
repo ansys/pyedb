@@ -201,7 +201,7 @@ jobs:
     name: Test dotnet (linux)
     runs-on: [ Linux, self-hosted, pyedb ]
     env:
-      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANSYSEM_ROOT251: '/usr/ansys_inc/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
@@ -272,7 +272,7 @@ jobs:
     name: Test dotnet (linux)
     runs-on: [ Linux, self-hosted, pyedb ]
     env:
-      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANSYSEM_ROOT251: '/usr/ansys_inc/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
@@ -437,7 +437,7 @@ jobs:
     needs: [smoke-tests]
     runs-on: [ self-hosted, Linux, pyaedt ]
     env:
-      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANSYSEM_ROOT251: '/usr/ansys_inc/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
