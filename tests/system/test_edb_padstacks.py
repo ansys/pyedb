@@ -29,7 +29,7 @@ import pytest
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.dotnet.database.padstack import EDBPadstackInstance
-from tests.conftest import local_path, test_subfolder
+from tests.conftest import GRPC, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
@@ -493,6 +493,7 @@ class TestClass:
         assert edbapp.padstacks.definitions["test2"]
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=GRPC, reason="Need to checked with grpc")
     def test_via_fence(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "via_fence_generic_project.aedb")
         target_path1 = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence1.aedb")
