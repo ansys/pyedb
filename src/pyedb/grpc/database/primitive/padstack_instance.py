@@ -28,6 +28,8 @@ from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure
+from ansys.edb.core.hierarchy.structure3d import Structure3D as GrpcStructure3D
 from ansys.edb.core.primitive.padstack_instance import (
     PadstackInstance as GrpcPadstackInstance,
 )
@@ -35,7 +37,9 @@ from ansys.edb.core.terminal.pin_group_terminal import (
     PinGroupTerminal as GrpcPinGroupTerminal,
 )
 
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
+from pyedb.grpc.database.modeler import Circle
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
@@ -765,6 +769,85 @@ class PadstackInstance(GrpcPadstackInstance):
     @side_number.setter
     def side_number(self, value):
         self._side_number = self.set_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21, value)
+
+    def split(self) -> list:
+        """Split padstack instance into multiple instances. The new instances only connect adjacent layers."""
+        pdef_name = self.padstack_definition
+        position = self.position
+        net_name = self.net_name
+        name = self.name
+        stackup_layer_range = list(self._pedb.stackup.signal_layers.keys())
+        start_idx = stackup_layer_range.index(self.start_layer)
+        stop_idx = stackup_layer_range.index(self.stop_layer)
+        temp = []
+        for idx, (l1, l2) in enumerate(
+            list(zip(stackup_layer_range[start_idx:stop_idx], stackup_layer_range[start_idx + 1 : stop_idx + 1]))
+        ):
+            pd_inst = self._pedb.padstacks.place(
+                position, pdef_name, net_name, f"{name}_{idx}", fromlayer=l1, tolayer=l2
+            )
+            temp.append(pd_inst)
+        self.delete()
+        return temp
+
+    def convert_hole_to_conical_shape(self, angle=75):
+        """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
+
+        Parameters
+        ----------
+        angle : float, optional
+            Angle of laser penetration in degrees. The angle defines the lowest hole diameter with this formula:
+            HoleDiameter -2*tan(laser_angle* Hole depth). Hole depth is the height of the via (dielectric thickness).
+            The default is ``75``.
+            The lowest hole is ``0.75*HoleDepth/HoleDiam``.
+
+        Returns
+        -------
+        """
+        stackup_layers = self._pedb.stackup.stackup_layers
+        signal_layers = self._pedb.stackup.signal_layers
+        layer_idx = list(signal_layers.keys()).index(self.start_layer)
+
+        _layer_idx = list(stackup_layers.keys()).index(self.start_layer)
+        diel_layer_idx = list(stackup_layers.keys())[_layer_idx + 1]
+        diel_thickness = stackup_layers[diel_layer_idx].thickness
+
+        rad_large = self.definition.hole_diameter / 2
+        rad_small = rad_large - diel_thickness * 1 / math.tan(math.radians(angle))
+
+        if layer_idx + 1 < len(signal_layers) / 2:  # upper half of stack
+            rad_u = rad_large
+            rad_l = rad_small
+        else:
+            rad_u = rad_small
+            rad_l = rad_large
+
+        layout = self._pedb.active_layout
+        cloned_circle = Circle.create(
+            layout,
+            self.start_layer,
+            self.net,
+            Value(self.position[0]),
+            Value(self.position[1]),
+            Value(rad_u),
+        )
+        cloned_circle2 = Circle.create(
+            layout,
+            self.stop_layer,
+            self.net,
+            Value(self.position[0]),
+            Value(self.position[1]),
+            Value(rad_l),
+        )
+
+        s3d = GrpcStructure3D.create(layout, generate_unique_name("via3d_" + self.aedt_name.replace("via_", ""), n=3))
+        s3d.add_member(cloned_circle)
+        s3d.add_member(cloned_circle2)
+        s3d.set_material(self.definition.material)
+        s3d.mesh_closure = GrpcMeshClosure.ENDS_CLOSED
+        hole_override_enabled = True
+        hole_override_diam = 0
+        self.set_hole_overrides(hole_override_enabled, Value(hole_override_diam))
 
     def get_backdrill_type(self, from_bottom=True):
         """Return backdrill type
