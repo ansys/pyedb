@@ -326,7 +326,7 @@ class PadstackDef(GrpcPadstackDef):
         """Via starting layer.
 
         .deprecated
-        Use: method:`start_layer <pyedb.grpc.database.definition.padstack_def.PadstackDef.start_layer>`
+        Use: :method:`start_layer <pyedb.grpc.database.definition.padstack_def.PadstackDef.start_layer>`
         instead.
 
         Returns
