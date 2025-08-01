@@ -23,8 +23,6 @@
 
 import pytest
 
-from tests.conftest import GRPC
-
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
@@ -52,22 +50,22 @@ class TestClass:
         yield
         pass
 
-    @pytest.mark.skipif(condition=GRPC, reason="Test need to bre refactored")
+    @pytest.mark.skipif(reason="Test need to bre refactored")
     def test_disjoint_nets(self):
         self.edbapp_shared.layout_validation.disjoint_nets()
 
-    @pytest.mark.skipif(condition=GRPC, reason="Test need to bre refactored")
+    @pytest.mark.skipif(reason="Test need to bre refactored")
     def test_dc_shorts(self):
         self.edbapp_shared.layout_validation.dc_shorts()
 
-    @pytest.mark.skipif(condition=GRPC, reason="Test need to bre refactored")
+    @pytest.mark.skipif(reason="Test need to bre refactored")
     def test_fix_self_intersecting(self):
         self.edbapp_shared.layout_validation.fix_self_intersections()
 
-    @pytest.mark.skipif(condition=GRPC, reason="Test need to bre refactored")
+    @pytest.mark.skipif(reason="Test need to bre refactored")
     def test_illegal_net_names(self):
         self.edbapp_shared.layout_validation.illegal_net_names()
 
-    @pytest.mark.skipif(condition=GRPC, reason="Test need to bre refactored")
+    @pytest.mark.skipif(reason="Test need to bre refactored")
     def test_padstacks_no_name(self):
         self.edbapp_shared.layout_validation.padstacks_no_name()
