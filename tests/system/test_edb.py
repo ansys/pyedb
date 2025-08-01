@@ -1227,7 +1227,7 @@ class TestClass:
             input_cmd = popen_args[0]
 
         input_cmd_ =             [
-                str(Path(edbapp.ansys_em_path) / "siwave.exe"),
+                str(Path(edbapp.ansys_em_path) / executable),
                 "-embedding",
                 "-RunScriptAndExit",
                 str(Path(edbapp.edbpath).parent / "export_results.py"),
