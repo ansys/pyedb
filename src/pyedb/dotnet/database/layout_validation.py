@@ -321,7 +321,7 @@ class LayoutValidation:
                     if fix:
                         v.rlc_values = [0, 1, 0]
 
-            self._pedb._logger.info(f"Found {len(temp)} {name} have no value.")
+            self._pedb.logger.info(f"Found {len(temp)} {name} have no value.")
         return
 
     @execution_timer("padstacks_no_name")
