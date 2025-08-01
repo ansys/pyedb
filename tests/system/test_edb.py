@@ -1212,12 +1212,12 @@ class TestClass:
             popen_args, popen_kwargs = mock_popen.call_args
             input_cmd = popen_args[0]
 
-        input_cmd_ =             [
-                str(Path(edbapp.ansys_em_path) / executable),
-                edbapp.edbpath,
-                str(Path(edbapp.edbpath).with_suffix(".exec")),
-                "-formatOutput -useSubdir",
-            ]
+        input_cmd_ = [
+            str(Path(edbapp.ansys_em_path) / executable),
+            edbapp.edbpath,
+            str(Path(edbapp.edbpath).with_suffix(".exec")),
+            "-formatOutput -useSubdir",
+        ]
 
         assert input_cmd == input_cmd_
 
@@ -1226,13 +1226,12 @@ class TestClass:
             popen_args, popen_kwargs = mock_popen.call_args
             input_cmd = popen_args[0]
 
-        input_cmd_ =             [
-                str(Path(edbapp.ansys_em_path) / "siwave.exe"),
-                "-embedding",
-                "-RunScriptAndExit",
-                str(Path(edbapp.edbpath).parent / "export_results.py"),
-            ]
-
+        input_cmd_ = [
+            str(Path(edbapp.ansys_em_path) / "siwave.exe"),
+            "-embedding",
+            "-RunScriptAndExit",
+            str(Path(edbapp.edbpath).parent / "export_results.py"),
+        ]
 
         assert input_cmd == input_cmd_
 
