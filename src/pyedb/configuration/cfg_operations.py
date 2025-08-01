@@ -20,15 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import List, Optional, Union, Any, Dict
+from typing import Any, Dict, List, Optional, Union
+
 from pydantic import BaseModel, Field
 
-#from pyedb.configuration.cfg_common import CfgBase
+# from pyedb.configuration.cfg_common import CfgBase
 
 
 class CfgCutout(BaseModel):
-
-    auto_identify_nets: Optional[Dict] = {"enabled": False, "resistor_below": 100, "inductor_below": 1, "capacitor_above": 1}
+    auto_identify_nets: Optional[Dict] = {
+        "enabled": False,
+        "resistor_below": 100,
+        "inductor_below": 1,
+        "capacitor_above": 1,
+    }
     signal_list: Optional[List[str]] = None
     reference_list: Optional[List[str]] = None
     extent_type: Optional[str] = "ConvexHull"
@@ -40,6 +45,4 @@ class CfgCutout(BaseModel):
 
 
 class CfgOperations(BaseModel):
-
-    cutout : Optional[CfgCutout] = None
-
+    cutout: Optional[CfgCutout] = None

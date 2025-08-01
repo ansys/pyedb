@@ -534,7 +534,6 @@ class Configuration:
                 op_cutout.reference_list = []
                 op_cutout.signal_list = net_names
 
-
     def export(
         self,
         file_path,
