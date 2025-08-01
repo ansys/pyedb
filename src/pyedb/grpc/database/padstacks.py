@@ -1286,7 +1286,7 @@ class Padstacks(object):
         """Get padstack instances by net name.
 
         .. deprecated:: 0.55.0
-        Use: func:`get_instances` with `net_name` parameter instead.
+        Use: :func:`get_instances` with `net_name` parameter instead.
 
         Parameters
         ----------
