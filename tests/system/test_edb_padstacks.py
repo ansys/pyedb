@@ -182,8 +182,8 @@ class TestClass:
             assert abs(pad.hole_properties[0] - hole_pad) < tol
         else:
             assert abs(pad.hole_properties - hole_pad) < tol
-        offset_x = 7.0
-        offset_y = 1.0
+        offset_x = 7
+        offset_y = 1
         pad.pad_by_layer[pad.via_stop_layer].shape = "Circle"
         pad.pad_by_layer[pad.via_stop_layer].parameters = 7.0
         pad.pad_by_layer[pad.via_stop_layer].offset_x = offset_x
@@ -191,7 +191,7 @@ class TestClass:
         if edbapp.grpc:
             assert pad.pad_by_layer[pad.via_stop_layer].parameters == 7.0
         else:
-            assert pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"] == 7.0
+            assert pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"].tofloat == 7.0
         assert str(pad.pad_by_layer[pad.via_stop_layer].offset_x) == str(offset_x)
         assert str(pad.pad_by_layer[pad.via_stop_layer].offset_y) == str(offset_y)
         if edbapp.grpc:
@@ -201,7 +201,7 @@ class TestClass:
         if edbapp.grpc:
             assert pad.pad_by_layer[pad.via_stop_layer].parameters == 8.0
         else:
-            assert pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"] == 8.0
+            assert pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"].tofloat == 8.0
         if not edbapp.grpc:  # not implemented in grpc
             assert pad.pad_by_layer[pad.via_stop_layer].shape == "Circle"
             pad.pad_by_layer[pad.via_stop_layer].parameters = {"Diameter": 1}
