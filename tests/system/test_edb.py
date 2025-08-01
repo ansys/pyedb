@@ -1206,6 +1206,7 @@ class TestClass:
         edbapp = edb_examples.create_empty_edb()
         exec_path = edbapp.siwave.create_exec_file(add_dc=True)
         assert Path(exec_path).exists()
+        executable = "siwave_ng" if is_linux else "siwave_ng.exe"
         with patch("subprocess.Popen", return_value=mock_process) as mock_popen:
             siw_path = edbapp.solve_siwave()
             popen_args, popen_kwargs = mock_popen.call_args
@@ -1213,7 +1214,7 @@ class TestClass:
 
         input_cmd_ = " ".join(
             [
-                str(Path(edbapp.ansys_em_path) / "siwave_ng.exe"),
+                str(Path(edbapp.ansys_em_path) / executable),
                 edbapp.edbpath,
                 str(Path(edbapp.edbpath).with_suffix(".exec")),
                 "-formatOutput -useSubdir",
