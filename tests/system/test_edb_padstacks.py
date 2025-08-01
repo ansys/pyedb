@@ -493,7 +493,7 @@ class TestClass:
         assert edbapp.padstacks.definitions["test2"]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=GRPC, reason="Need to checked with grpc")
+    @pytest.mark.skipif(condition=GRPC, reason="Needs to be checked with grpc")
     def test_via_fence(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "via_fence_generic_project.aedb")
         target_path1 = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence1.aedb")
