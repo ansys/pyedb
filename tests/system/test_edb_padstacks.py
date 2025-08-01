@@ -161,7 +161,7 @@ class TestClass:
                 polygon = pad._polygon_data_dotnet
                 if polygon:
                     assert polygon.GetBBox()
-        edbapp.close(terminate_rpc_session=False)
+        edbapp.close()
 
     def test_padstack_properties_setter(self, edb_examples):
         """Set padstack properties"""
@@ -530,13 +530,6 @@ class TestClass:
     def test_via_merge(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         polygon = [[[118e-3, 60e-3], [125e-3, 60e-3], [124e-3, 56e-3], [118e-3, 56e-3]]]
-        result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
-        assert len(result) == 1
-        edbapp.close(terminate_rpc_session=False)
-
-    def test_via_merge2(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        polygon = [[[123.37e-3, 69.5e-3], [124.83e-3, 69.25e-3], [124.573e-3, 60.23e-3], [123e-3, 60.5e-3]]]
         result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
         assert len(result) == 1
         edbapp.close(terminate_rpc_session=False)
