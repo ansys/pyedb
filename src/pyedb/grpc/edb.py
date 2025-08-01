@@ -2711,10 +2711,11 @@ class Edb(EdbInit):
         return False
 
     def get_variable_value(self, variable_name):
-        """ ""
-        .deprecated:: pyedb
-        0.55.0
-        Use: func:`get_variable` instead.
+        """
+        Deprecated method to get the value of a variable.
+
+        .. deprecated:: pyedb 0.55.0
+           Use :func:`get_variable` instead.
         """
         warnings.warn(
             "`get_variable_value` is deprecated use `get_variable` instead.",
