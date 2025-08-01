@@ -46,13 +46,13 @@ class TestClass:
     @pytest.fixture(autouse=True)
     def init(self, edb_examples):
         """init runs before each test."""
-        pass
+        return
 
     @pytest.fixture(autouse=True)
     def teardown(self, request, edb_examples):
         """Code after yield runs after each test."""
         yield
-        pass
+        return
 
     def test_dummy_test(self, edb_examples):
         """Dummy test to initialize Edb the first time."""

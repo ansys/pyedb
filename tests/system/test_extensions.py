@@ -119,7 +119,7 @@ class TestClass:
     def teardown(self, request, edb_examples):
         """Code after yield runs after each test."""
         yield
-        pass
+        return
 
     @pytest.fixture(autouse=True)
     def init(self, local_scratch):

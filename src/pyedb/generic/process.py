@@ -40,7 +40,8 @@ class SiwaveSolve(object):
                     f.writelines(content)
         command = [self.__siwave_ng_exe_path, self._pedb.edbpath, exec_file, "-formatOutput -useSubdir"]
         command_ = command if os.name == "posix" else " ".join(command)
-        p = subprocess.Popen(command_)
+        #p = subprocess.Popen(command_)
+        p = subprocess.Popen(command)
         p.wait()
 
     def export_3d_cad(
@@ -214,10 +215,6 @@ class SiwaveSolve(object):
         command.append("-RunScriptAndExit")
         command.append(scriptname)
         print(command)
-        if os.name == "posix":
-            p = subprocess.Popen(command)
-
-        else:
-            p = subprocess.Popen(" ".join(command))
+        p = subprocess.Popen(command)
         p.wait()
         return output_list

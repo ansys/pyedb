@@ -264,7 +264,7 @@ class TestClass:
             executable = "siwave" if is_linux else "siwave.exe"
 
             edb.export_hfss(None)
-            popen_args, popen_kwargs = mock_run.call_args
+            popen_args, _ = mock_run.call_args
             input_cmd = popen_args[0]
 
             input_cmd_ = [
@@ -272,10 +272,10 @@ class TestClass:
                 "-RunScriptAndExit",
                 str(Path(edb.edbpath).parent / "export_cad.py"),
             ]
-            assert input_cmd == input_cmd_ if is_linux else " ".join(input_cmd_)
+            assert input_cmd == input_cmd_ # if is_linux else " ".join(input_cmd_)
 
             edb.export_q3d(None)
-            popen_args, popen_kwargs = mock_run.call_args
+            popen_args, _ = mock_run.call_args
             input_cmd = popen_args[0]
 
             input_cmd_ = [
@@ -283,10 +283,10 @@ class TestClass:
                 "-RunScriptAndExit",
                 str(Path(edb.edbpath).parent / "export_cad.py"),
             ]
-            assert input_cmd == input_cmd_ if is_linux else " ".join(input_cmd_)
-            executable
+            assert input_cmd == input_cmd_ #  if is_linux else " ".join(input_cmd_)
+
             edb.export_maxwell(None)
-            popen_args, popen_kwargs = mock_run.call_args
+            popen_args, _ = mock_run.call_args
             input_cmd = popen_args[0]
 
             input_cmd_ = [
@@ -294,7 +294,7 @@ class TestClass:
                 "-RunScriptAndExit",
                 str(Path(edb.edbpath).parent / "export_cad.py"),
             ]
-            assert input_cmd == input_cmd_ if is_linux else " ".join(input_cmd_)
+            assert input_cmd == input_cmd_ # if is_linux else " ".join(input_cmd_)
 
         edb.close(terminate_rpc_session=False)
 
@@ -1209,7 +1209,7 @@ class TestClass:
         executable = "siwave_ng" if is_linux else "siwave_ng.exe"
         with patch("subprocess.Popen", return_value=mock_process) as mock_popen:
             siw_path = edbapp.solve_siwave()
-            popen_args, popen_kwargs = mock_popen.call_args
+            popen_args, _ = mock_popen.call_args
             input_cmd = popen_args[0]
 
         input_cmd_ = [
@@ -1224,7 +1224,7 @@ class TestClass:
         executable = "siwave" if is_linux else "siwave.exe"
         with patch("subprocess.Popen", return_value=mock_process) as mock_popen:
             edbapp.export_siwave_dc_results(siw_path, "SIwaveDCIR1")
-            popen_args, popen_kwargs = mock_popen.call_args
+            popen_args, _ = mock_popen.call_args
             input_cmd = popen_args[0]
 
         input_cmd_ = [
@@ -1234,7 +1234,7 @@ class TestClass:
             str(Path(edbapp.edbpath).parent / "export_results.py"),
         ]
 
-        assert input_cmd == input_cmd_ if is_linux else " ".join(input_cmd_)
+        assert input_cmd == input_cmd_ # if is_linux else " ".join(input_cmd_)
 
     def test_cutout_return_clipping_extent(self, edb_examples):
         """"""
@@ -1975,7 +1975,7 @@ class TestClass:
 
         with patch("subprocess.run", return_value=mock_process) as mock_run:
             edbapp.compare(edb_base)
-            popen_args, popen_kwargs = mock_run.call_args
+            popen_args, _ = mock_run.call_args
             input_cmd = popen_args[0]
 
         if is_linux:
