@@ -261,12 +261,14 @@ class TestClass:
         out = edb.write_export3d_option_config_file(edb_examples.test_folder, options_config)
         assert Path(out).exists()
         with patch("subprocess.run", return_value=mock_process) as mock_run:
+            executable = "siwave" if is_linux else "siwave.exe"
+
             edb.export_hfss(None)
             popen_args, popen_kwargs = mock_run.call_args
             input_cmd = popen_args[0]
 
             input_cmd_ = [
-                str(Path(edb.ansys_em_path) / "siwave.exe"),
+                str(Path(edb.ansys_em_path) / executable),
                 "-RunScriptAndExit",
                 str(Path(edb.edbpath).parent / "export_cad.py"),
             ]
@@ -277,7 +279,7 @@ class TestClass:
             input_cmd = popen_args[0]
 
             input_cmd_ = [
-                str(Path(edb.ansys_em_path) / "siwave.exe"),
+                str(Path(edb.ansys_em_path) / executable),
                 "-RunScriptAndExit",
                 str(Path(edb.edbpath).parent / "export_cad.py"),
             ]
@@ -288,7 +290,7 @@ class TestClass:
             input_cmd = popen_args[0]
 
             input_cmd_ = [
-                str(Path(edb.ansys_em_path) / "siwave.exe"),
+                str(Path(edb.ansys_em_path) / executable),
                 "-RunScriptAndExit",
                 str(Path(edb.edbpath).parent / "export_cad.py"),
             ]
