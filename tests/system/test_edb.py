@@ -1227,12 +1227,12 @@ class TestClass:
             popen_args, popen_kwargs = mock_popen.call_args
             input_cmd = popen_args[0]
 
-        input_cmd_ =[
-                str(Path(edbapp.ansys_em_path) / executable),
-                "-embedding",
-                "-RunScriptAndExit",
-                str(Path(edbapp.edbpath).parent / "export_results.py"),
-            ]
+        input_cmd_ = [
+            str(Path(edbapp.ansys_em_path) / executable),
+            "-embedding",
+            "-RunScriptAndExit",
+            str(Path(edbapp.edbpath).parent / "export_results.py"),
+        ]
 
         assert input_cmd == " ".join(input_cmd_)
 
