@@ -1285,7 +1285,7 @@ class Padstacks(object):
     def get_padstack_instance_by_net_name(self, net: str):
         """Get padstack instances by net name.
 
-        .deprecated: pyedb 0.55.0
+        .. deprecated:: 0.55.0
         Use: func:`get_instances` with `net_name` parameter instead.
 
         Parameters
