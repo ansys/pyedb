@@ -1984,7 +1984,7 @@ class TestClass:
                 os.path.join(edbapp.base_path, "EDBDiff.exe"),
                 edb_base,
                 edbapp.edbpath,
-                str(Path(edbapp.edbpath).stem + "compare_results"),
+                str(Path(edbapp.edbpath).with_name(Path(edbapp.edbpath).stem + "_compare_results")),
             ]
         else:
             assert input_cmd == [
