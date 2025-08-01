@@ -353,7 +353,7 @@ class PadstackDef(GrpcPadstackDef):
         """Via stop layer.
 
         .deprecated
-        Use: method:`stop_layer <pyedb.grpc.database.definition.padstack_def.PadstackDef.stop_layer>`
+        Use :method:`stop_layer <pyedb.grpc.database.definition.padstack_def.PadstackDef.stop_layer>`
         instead.
 
         Returns
