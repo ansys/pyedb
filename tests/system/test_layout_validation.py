@@ -54,24 +54,29 @@ class TestClass:
     def test_disjoint_nets(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         edbapp.layout_validation.disjoint_nets()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_dc_shorts(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         edbapp.layout_validation.dc_shorts(fix=True)
+        edbapp.close(terminate_rpc_session=False)
 
     def test_fix_self_intersecting(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         edbapp.layout_validation.fix_self_intersections()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_illegal_net_names(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         edbapp.layout_validation.illegal_net_names(fix=True)
+        edbapp.close(terminate_rpc_session=False)
 
     def test_padstacks_no_name(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         edbapp.layout_validation.padstacks_no_name(fix=True)
+        edbapp.close(terminate_rpc_session=False)
 
     def test_padstacks_no_layer(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         edbapp.layout_validation.illegal_rlc_values(fix=True)
+        edbapp.close(terminate_rpc_session=False)
