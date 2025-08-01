@@ -56,7 +56,6 @@ class TestClass:
         comp = edb.components.get_component_by_name("J1")
         assert comp is not None
         pin = edb.components.get_pin_from_component("J1", pin_name="1")
-        # TODO check if we agree to return aedt_name when it's a layout pin.
         if edb.grpc:
             assert pin[0].name == "1"
         else:
