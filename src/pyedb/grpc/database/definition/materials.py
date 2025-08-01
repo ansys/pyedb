@@ -378,7 +378,7 @@ class Material(GrpcMaterialDef):
             "Use property dielectric_loss_tangent instead.",
             DeprecationWarning,
         )
-        self.dielectric_loss_tangent(value)
+        self.dielectric_loss_tangent = value
 
     @dielectric_loss_tangent.setter
     def dielectric_loss_tangent(self, value):
