@@ -1219,21 +1219,22 @@ class TestClass:
             "-formatOutput -useSubdir",
         ]
 
-        assert input_cmd == input_cmd_
+        assert input_cmd == " ".join(input_cmd_)
 
+        executable = "siwave" if is_linux else "siwave.exe"
         with patch("subprocess.Popen", return_value=mock_process) as mock_popen:
             edbapp.export_siwave_dc_results(siw_path, "SIwaveDCIR1")
             popen_args, popen_kwargs = mock_popen.call_args
             input_cmd = popen_args[0]
 
-        input_cmd_ =             [
+        input_cmd_ =[
                 str(Path(edbapp.ansys_em_path) / executable),
                 "-embedding",
                 "-RunScriptAndExit",
                 str(Path(edbapp.edbpath).parent / "export_results.py"),
             ]
 
-        assert input_cmd == input_cmd_
+        assert input_cmd == " ".join(input_cmd_)
 
     def test_cutout_return_clipping_extent(self, edb_examples):
         """"""
