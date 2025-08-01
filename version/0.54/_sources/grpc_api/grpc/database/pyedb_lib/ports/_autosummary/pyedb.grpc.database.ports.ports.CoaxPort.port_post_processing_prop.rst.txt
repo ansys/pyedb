@@ -1,0 +1,6 @@
+port\_post\_processing\_prop
+============================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: CoaxPort.port_post_processing_prop

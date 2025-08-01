@@ -1,0 +1,6 @@
+hole\_plating\_thickness
+========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstack.hole_plating_thickness

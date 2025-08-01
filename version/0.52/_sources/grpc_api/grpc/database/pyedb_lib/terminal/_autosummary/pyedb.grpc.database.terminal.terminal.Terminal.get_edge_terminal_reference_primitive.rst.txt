@@ -1,0 +1,6 @@
+get\_edge\_terminal\_reference\_primitive
+=========================================
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. automethod:: Terminal.get_edge_terminal_reference_primitive

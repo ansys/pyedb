@@ -1,0 +1,6 @@
+edb\_uid
+========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: CoaxPort.edb_uid

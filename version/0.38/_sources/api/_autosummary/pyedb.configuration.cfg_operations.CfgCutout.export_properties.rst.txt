@@ -1,0 +1,6 @@
+export\_properties
+==================
+
+.. currentmodule:: pyedb.configuration.cfg_operations
+
+.. automethod:: CfgCutout.export_properties

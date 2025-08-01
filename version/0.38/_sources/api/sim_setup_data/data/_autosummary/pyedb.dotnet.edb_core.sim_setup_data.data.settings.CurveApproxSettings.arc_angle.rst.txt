@@ -1,0 +1,6 @@
+arc\_angle
+==========
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: CurveApproxSettings.arc_angle

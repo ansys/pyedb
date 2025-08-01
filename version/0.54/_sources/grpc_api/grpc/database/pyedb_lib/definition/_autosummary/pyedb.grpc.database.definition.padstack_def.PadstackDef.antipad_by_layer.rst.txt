@@ -1,0 +1,6 @@
+antipad\_by\_layer
+==================
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadstackDef.antipad_by_layer

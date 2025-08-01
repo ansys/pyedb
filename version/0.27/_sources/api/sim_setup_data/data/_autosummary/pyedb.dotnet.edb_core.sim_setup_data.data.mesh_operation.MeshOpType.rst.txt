@@ -1,0 +1,25 @@
+﻿MeshOpType
+==========
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.mesh_operation
+
+.. autoclass:: MeshOpType
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      MeshOpType.kMeshSetupBase
+      MeshOpType.kMeshSetupLength
+      MeshOpType.kMeshSetupSkinDepth
+      MeshOpType.kNumMeshOpTypes
+   
+   

@@ -1,0 +1,6 @@
+dc\_report\_show\_active\_devices
+=================================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings
+
+.. autoproperty:: SiwaveDCIRSettings.dc_report_show_active_devices

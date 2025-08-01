@@ -1,0 +1,116 @@
+﻿WavePort
+========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoclass:: WavePort
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      WavePort.cast
+      
+      
+      WavePort.couple_ports
+      
+      
+      WavePort.create
+      
+      
+      WavePort.create_3d_comp
+      
+      
+      WavePort.create_hfss
+      
+      
+      WavePort.create_stride
+      
+      
+      WavePort.delete
+      
+      
+      WavePort.find
+      
+      
+      WavePort.find_by_id
+      
+      
+      WavePort.get_product_property
+      
+      
+      WavePort.get_product_property_ids
+      
+      
+      WavePort.product_solver_names
+      
+      
+      WavePort.product_solver_option
+      
+      
+      WavePort.set_product_property
+      
+      
+      WavePort.set_product_solver_option
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      WavePort.boundary_type
+      WavePort.bundle_terminal
+      WavePort.component
+      WavePort.deembed
+      WavePort.deembed_length
+      WavePort.edb_uid
+      WavePort.edges
+      WavePort.group
+      WavePort.hfss_pi_type
+      WavePort.hfss_type
+      WavePort.horizontal_extent_factor
+      WavePort.id
+      WavePort.impedance
+      WavePort.is_auto_port
+      WavePort.is_circuit_port
+      WavePort.is_interface_terminal
+      WavePort.is_mcad
+      WavePort.is_mcad_3d_comp
+      WavePort.is_mcad_hfss
+      WavePort.is_mcad_stride
+      WavePort.is_null
+      WavePort.is_port
+      WavePort.is_reference_terminal
+      WavePort.is_wave_port
+      WavePort.layout
+      WavePort.layout_obj_type
+      WavePort.model
+      WavePort.msg
+      WavePort.name
+      WavePort.net
+      WavePort.obj_type
+      WavePort.pec_launch_width
+      WavePort.port_post_processing_prop
+      WavePort.ref_terminal
+      WavePort.reference_layer
+      WavePort.reference_terminal
+      WavePort.rlc_boundary_parameters
+      WavePort.source_amplitude
+      WavePort.source_phase
+      WavePort.term_to_ground
+      WavePort.terminal_type
+      WavePort.type
+      WavePort.use_reference_from_hierarchy
+      WavePort.vertical_extent_factor
+   
+   

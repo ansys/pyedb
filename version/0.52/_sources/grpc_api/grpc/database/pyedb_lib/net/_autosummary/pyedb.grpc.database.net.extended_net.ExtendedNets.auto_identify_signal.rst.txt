@@ -1,0 +1,6 @@
+auto\_identify\_signal
+======================
+
+.. currentmodule:: pyedb.grpc.database.net.extended_net
+
+.. automethod:: ExtendedNets.auto_identify_signal

@@ -1,0 +1,6 @@
+material\_property\_to\_id
+==========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.materials
+
+.. automethod:: Materials.material_property_to_id

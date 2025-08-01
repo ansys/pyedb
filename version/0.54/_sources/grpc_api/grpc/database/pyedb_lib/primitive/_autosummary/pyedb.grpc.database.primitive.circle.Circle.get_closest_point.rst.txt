@@ -1,0 +1,6 @@
+get\_closest\_point
+===================
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. automethod:: Circle.get_closest_point

@@ -1,0 +1,6 @@
+create\_edge\_port\_on\_polygon
+===============================
+
+.. currentmodule:: pyedb.dotnet.database.hfss
+
+.. automethod:: EdbHfss.create_edge_port_on_polygon

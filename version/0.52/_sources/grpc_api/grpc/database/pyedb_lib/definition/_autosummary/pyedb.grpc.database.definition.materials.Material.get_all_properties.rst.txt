@@ -1,0 +1,6 @@
+get\_all\_properties
+====================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Material.get_all_properties
