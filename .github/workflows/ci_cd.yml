@@ -199,9 +199,9 @@ jobs:
 
   system-tests-linux:
     name: Test dotnet (linux)
-    runs-on: [ Linux, self-hosted, toolkits ]
+    runs-on: [ Linux, self-hosted, pyedb ]
     env:
-      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANSYSEM_ROOT251: '/usr/ansys_inc/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
@@ -270,9 +270,9 @@ jobs:
 
   unit-tests-linux:
     name: Test dotnet (linux)
-    runs-on: [ Linux, self-hosted, toolkits ]
+    runs-on: [ Linux, self-hosted, pyedb ]
     env:
-      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANSYSEM_ROOT251: '/usr/ansys_inc/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
@@ -342,7 +342,7 @@ jobs:
     name: Testing PyAEDT main branch (Windows)
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
-    runs-on: [ self-hosted, Windows, pyaedt ]
+    runs-on: [ self-hosted, Windows, pyedb ]
     steps:
       - name: Install Git and checkout project
         uses: actions/checkout@v4
@@ -384,7 +384,7 @@ jobs:
           .venv\Scripts\Activate.ps1
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
-          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa
+          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.3.1
 
       - name: Run PyAEDT tests
         uses: nick-fields/retry@v3
@@ -435,9 +435,9 @@ jobs:
     name: Testing PyAEDT main branch (Linux)
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
-    runs-on: [ self-hosted, Linux, pyaedt ]
+    runs-on: [ self-hosted, Linux, pyedb ]
     env:
-      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANSYSEM_ROOT251: '/usr/ansys_inc/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
@@ -487,7 +487,7 @@ jobs:
           . .venv/bin/activate
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
-          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa
+          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.3.1
 
       - name: Run PyAEDT tests
         uses: nick-fields/retry@v3
