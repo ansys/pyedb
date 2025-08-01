@@ -342,6 +342,7 @@ class Padstacks(object):
     @property
     def pad_type(self) -> GrpcPadType:
         """Return a PadType Enumerator."""
+        return GrpcPadType
 
     def create_circular_padstack(
         self,
@@ -794,7 +795,7 @@ class Padstacks(object):
         if net_list and not isinstance(net_list, list):
             net_list = [net_list]
         via_list = []
-        for inst in self._layout.padstack_instances:
+        for inst_id, inst in self._layout.padstack_instances.items():
             pad_layers_name = inst.padstack_def.data.layer_names
             if len(pad_layers_name) > 1:
                 if not net_list:
@@ -1280,6 +1281,29 @@ class Padstacks(object):
             )
         self.definitions[padstack_name].data = new_padstack_def
         return True
+
+    def get_padstack_instance_by_net_name(self, net: str):
+        """Get padstack instances by net name.
+
+        .. deprecated:: 0.55.0
+        Use: :func:`get_instances` with `net_name` parameter instead.
+
+        Parameters
+        ----------
+        net : str
+            Net name to filter padstack instances.
+
+        Returns
+        -------
+        list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+            List of padstack instances associated with the specified net.
+        """
+        warnings.warn(
+            "`get_padstack_instance_by_net_name` is deprecated, use `get_instances` with `net_name` "
+            "parameter instead.",
+            DeprecationWarning,
+        )
+        return self.get_instances(net_name=net)
 
     def get_instances(
         self,

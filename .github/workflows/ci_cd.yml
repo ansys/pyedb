@@ -135,7 +135,7 @@ jobs:
 # =================================================================================================
 
   unit-tests-windows:
-    name: Test dotnet (windows)
+    name: Unit test dotnet (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: "Install Git and clone project"
@@ -269,7 +269,7 @@ jobs:
 # =================================================================================================
 
   unit-tests-linux:
-    name: Test dotnet (linux)
+    name: Unit test dotnet (linux)
     runs-on: [ Linux, self-hosted, pyedb ]
     env:
       ANSYSEM_ROOT251: '/usr/ansys_inc/v251/AnsysEM'

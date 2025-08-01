@@ -60,6 +60,7 @@ class Settings(object):
         self._edb_environment_variables = {}
         self._use_pyaedt_log = False
         self._logger = None
+        self._aedt_version = None
 
     @property
     def logger(self):

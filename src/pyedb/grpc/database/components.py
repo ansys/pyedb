@@ -46,6 +46,7 @@ from pyedb.component_libraries.ansys_components import (
     Series,
 )
 from pyedb.generic.general_methods import (
+    deprecate_argument_name,
     generate_unique_name,
     get_filename_without_extension,
 )
@@ -500,6 +501,7 @@ class Components(object):
         """
         return self.instances[name]
 
+    @deprecate_argument_name({"pinName": "pin_name"})
     def get_pin_from_component(
         self,
         component: Union[str, Component],
