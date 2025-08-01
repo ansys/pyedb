@@ -272,7 +272,7 @@ class TestClass:
                 "-RunScriptAndExit",
                 str(Path(edb.edbpath).parent / "export_cad.py"),
             ]
-            assert input_cmd == input_cmd_ # if is_linux else " ".join(input_cmd_)
+            assert input_cmd == input_cmd_  # if is_linux else " ".join(input_cmd_)
 
             edb.export_q3d(None)
             popen_args, _ = mock_run.call_args
@@ -283,7 +283,7 @@ class TestClass:
                 "-RunScriptAndExit",
                 str(Path(edb.edbpath).parent / "export_cad.py"),
             ]
-            assert input_cmd == input_cmd_ #  if is_linux else " ".join(input_cmd_)
+            assert input_cmd == input_cmd_  #  if is_linux else " ".join(input_cmd_)
 
             edb.export_maxwell(None)
             popen_args, _ = mock_run.call_args
@@ -294,7 +294,7 @@ class TestClass:
                 "-RunScriptAndExit",
                 str(Path(edb.edbpath).parent / "export_cad.py"),
             ]
-            assert input_cmd == input_cmd_ # if is_linux else " ".join(input_cmd_)
+            assert input_cmd == input_cmd_  # if is_linux else " ".join(input_cmd_)
 
         edb.close(terminate_rpc_session=False)
 
@@ -1234,7 +1234,7 @@ class TestClass:
             str(Path(edbapp.edbpath).parent / "export_results.py"),
         ]
 
-        assert input_cmd == input_cmd_ # if is_linux else " ".join(input_cmd_)
+        assert input_cmd == input_cmd_  # if is_linux else " ".join(input_cmd_)
 
     def test_cutout_return_clipping_extent(self, edb_examples):
         """"""

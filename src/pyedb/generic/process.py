@@ -40,7 +40,7 @@ class SiwaveSolve(object):
                     f.writelines(content)
         command = [self.__siwave_ng_exe_path, self._pedb.edbpath, exec_file, "-formatOutput -useSubdir"]
         command_ = command if os.name == "posix" else " ".join(command)
-        #p = subprocess.Popen(command_)
+        # p = subprocess.Popen(command_)
         p = subprocess.Popen(command)
         p.wait()
 
