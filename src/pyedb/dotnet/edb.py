@@ -397,9 +397,7 @@ class Edb:
                 self.base_path = main.oDesktop.GetExeDir()
                 os.environ[env_value(version)] = self.base_path  # Todo is this necessary?
         else:
-            raise RuntimeError(
-                f"Version {version} is not installed on the system. "
-            )
+            raise RuntimeError(f"Version {version} is not installed on the system. ")
         sys.path.append(self.base_path)
 
         _clr.AddReference("Ansys.Ansoft.Edb")
