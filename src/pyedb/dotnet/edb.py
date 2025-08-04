@@ -363,11 +363,7 @@ class Edb:
         """Initialize DLLs."""
         from pyedb import __version__
         from pyedb.dotnet.clr_module import _clr, edb_initialized
-        from pyedb.generic.general_methods import (
-            env_value,
-            is_linux,
-            settings,
-        )
+        from pyedb.generic.general_methods import env_value, is_linux, settings
 
         if not settings.use_pyaedt_log:
             if settings.enable_screen_logs:
