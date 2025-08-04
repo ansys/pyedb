@@ -364,8 +364,6 @@ class Edb:
         from pyedb import __version__
         from pyedb.dotnet.clr_module import _clr, edb_initialized
         from pyedb.generic.general_methods import (
-            env_path,
-            env_path_student,
             env_value,
             is_linux,
             settings,
