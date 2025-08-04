@@ -382,40 +382,29 @@ class Edb:
         self.logger.info("legacy v%s", __version__)
         self.logger.info("Python version %s", sys.version)
 
-        if is_linux:  # pragma: no cover
-            if env_value(version) in os.environ or settings.edb_dll_path:
-                if settings.edb_dll_path:
-                    self.base_path = settings.edb_dll_path
-                else:
-                    self.base_path = env_path(version)
-                sys.path.append(self.base_path)
+        if settings.edb_dll_path:
+            self.base_path = settings.edb_dll_path
+        elif student_version:
+            if version:
+                self.base_path = settings.installed_student_versions[version]
             else:
-                main = sys.modules["__main__"]
-                if "oDesktop" in dir(main):
-                    self.base_path = main.oDesktop.GetExeDir()
-                    sys.path.append(main.oDesktop.GetExeDir())
-                    os.environ[env_value(version)] = self.base_path
-                else:
-                    edb_path = os.getenv("PYAEDT_SERVER_AEDT_PATH")
-                    if edb_path:
-                        self.base_path = edb_path
-                        sys.path.append(edb_path)
-                        os.environ[env_value(version)] = self.base_path
-
-            _clr.AddReference("Ansys.Ansoft.Edb")
-            _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
-            _clr.AddReference("Ansys.Ansoft.SimSetupData")
+                self.base_path = settings.latest_student_version
+        elif version in settings.installed_versions:
+            self.base_path = settings.installed_versions[version]
+        elif is_linux:
+            main = sys.modules["__main__"]
+            if "oDesktop" in dir(main):
+                self.base_path = main.oDesktop.GetExeDir()
+                os.environ[env_value(version)] = self.base_path  # Todo is this necessary?
         else:
-            if settings.edb_dll_path:
-                self.base_path = settings.edb_dll_path
-            elif student_version:
-                self.base_path = env_path_student(version)
-            else:
-                self.base_path = env_path(version)
-            sys.path.append(self.base_path)
-            _clr.AddReference("Ansys.Ansoft.Edb")
-            _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
-            _clr.AddReference("Ansys.Ansoft.SimSetupData")
+            raise RuntimeError(
+                f"Version {version} is not installed on the system. "
+            )
+        sys.path.append(self.base_path)
+
+        _clr.AddReference("Ansys.Ansoft.Edb")
+        _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
+        _clr.AddReference("Ansys.Ansoft.SimSetupData")
         os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = self.base_path
         oaDirectory = os.path.join(self.base_path, "common", "oa")
         os.environ["ANSYS_OADIR"] = oaDirectory

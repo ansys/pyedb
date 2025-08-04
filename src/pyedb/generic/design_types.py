@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING, Literal, Union, overload
 import warnings
 
 from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
-from pyedb.misc.misc import list_installed_ansysem
+from pyedb.generic.settings import settings
 
 if TYPE_CHECKING:
     from pyedb.dotnet.edb import Edb as EdbDotnet
@@ -260,7 +260,7 @@ def Edb(
 
     if not edbversion:  # pragma: no cover
         try:
-            version = "20{}.{}".format(list_installed_ansysem()[0][-3:-1], list_installed_ansysem()[0][-1:])
+            version = settings.latest_version
         except IndexError:
             raise Exception("No ANSYSEM_ROOTxxx is found.")
     else:
