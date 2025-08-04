@@ -1,10 +1,3 @@
-from pathlib import Path
-
-from pyedb.extensions.via_design_backend import ViaDesignBackend
-
-import toml
-
-
 # Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
@@ -29,6 +22,7 @@ import toml
 from pathlib import Path
 
 import pytest
+import toml
 
 from pyedb.extensions.via_design_backend import ViaDesignBackend
 from tests.conftest import desktop_version
