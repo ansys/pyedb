@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from pyedb.extensions.via_design_backend import ViaDesignBackend
-
 import toml
+
+from pyedb.extensions.via_design_backend import ViaDesignBackend
 
 
 def test_custom():
