@@ -292,6 +292,7 @@ class Settings(object):
         if self.__latest_version is None:
             self.__installed_aedt_versions()
         return self.__latest_version
+
     @property
     def latest_student_version(self):
         """Latest installed AEDT student version."""
@@ -331,10 +332,7 @@ class Settings(object):
         if len(self.__installed_versions):
             self.__latest_version = max(standard_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
         if len(self.__installed_student_versions):
-            self.__latest_student_version = max(
-                student_versions.keys(), key=lambda x: tuple(map(int, x.split(".")))
-            )
-
+            self.__latest_student_version = max(student_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
 
 
 settings = Settings()
