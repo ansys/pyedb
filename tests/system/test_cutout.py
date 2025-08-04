@@ -2,16 +2,7 @@ from pathlib import Path
 
 from pyedb.extensions.via_design_backend import ViaDesignBackend
 
-from ansys.aedt.core.extensions.misc import get_aedt_version
-from ansys.aedt.core.extensions.misc import get_port
-from ansys.aedt.core.extensions.misc import get_process_id
-from ansys.aedt.core.extensions.misc import is_student
-from ansys.aedt.core.hfss3dlayout import Hfss3dLayout
-
-PORT = get_port()
-VERSION = get_aedt_version()
-AEDT_PROCESS_ID = get_process_id()
-IS_STUDENT = is_student()
+import toml
 
 
 def test_custom():
