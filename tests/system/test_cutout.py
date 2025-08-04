@@ -1,12 +1,14 @@
 from pathlib import Path
 
-from pyedb.extensions.via_design_backend import ViaDesignBackend
-
-from ansys.aedt.core.extensions.misc import get_aedt_version
-from ansys.aedt.core.extensions.misc import get_port
-from ansys.aedt.core.extensions.misc import get_process_id
-from ansys.aedt.core.extensions.misc import is_student
+from ansys.aedt.core.extensions.misc import (
+    get_aedt_version,
+    get_port,
+    get_process_id,
+    is_student,
+)
 from ansys.aedt.core.hfss3dlayout import Hfss3dLayout
+
+from pyedb.extensions.via_design_backend import ViaDesignBackend
 
 PORT = get_port()
 VERSION = get_aedt_version()
