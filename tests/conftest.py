@@ -34,7 +34,6 @@ import pytest
 
 from pyedb.generic.design_types import Edb
 from pyedb.generic.filesystem import Scratch
-from pyedb.misc.misc import list_installed_ansysem
 
 local_path = os.path.dirname(os.path.realpath(__file__))
 example_models_path = Path(__file__).parent / "example_models"
