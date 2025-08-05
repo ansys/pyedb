@@ -263,6 +263,8 @@ def Edb(
             version = settings.latest_version
         except IndexError:
             raise Exception("No ANSYSEM_ROOTxxx is found.")
+    elif not isinstance(edbversion, str):
+        raise Exception("edbversion must be a string.")
     else:
         version = edbversion
 

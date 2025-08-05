@@ -211,7 +211,7 @@ class Edb:
         if isinstance(edbpath, Path):
             edbpath = str(edbpath)
 
-        self.edbversion = get_string_version(edbversion)
+        self.edbversion = edbversion
         self._clean_variables()
         self.__initialization(self.edbversion, student_version)
 

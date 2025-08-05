@@ -67,6 +67,7 @@ class Settings(object):
         self.__installed_student_versions = None
         self.__installed_client_versions = None
         self.__latest_version = None
+        self.__latest_student_version = None
 
     @property
     def logger(self):

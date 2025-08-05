@@ -60,10 +60,6 @@ if os.path.exists(local_config_file):
 desktop_version = config["desktopVersion"]
 GRPC = config["use_grpc"]
 
-if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_installed_ansysem():
-    desktop_version = list_installed_ansysem()[0][12:].replace(".", "")
-    desktop_version = "20{}.{}".format(desktop_version[:2], desktop_version[-1])
-
 test_subfolder = "TEDB"
 test_project_name = "ANSYS-HSD_V1"
 bom_example = "bom_example.csv"
