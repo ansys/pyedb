@@ -1,0 +1,6 @@
+rlc\_boundary\_parameters
+=========================
+
+.. currentmodule:: pyedb.grpc.database.terminal.bundle_terminal
+
+.. autoproperty:: BundleTerminal.rlc_boundary_parameters

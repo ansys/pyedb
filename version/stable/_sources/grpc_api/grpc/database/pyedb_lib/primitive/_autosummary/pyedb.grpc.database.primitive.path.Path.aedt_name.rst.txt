@@ -1,0 +1,6 @@
+aedt\_name
+==========
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. autoproperty:: Path.aedt_name

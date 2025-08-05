@@ -1,0 +1,6 @@
+add\_frequency\_sweep
+=====================
+
+.. currentmodule:: pyedb.dotnet.database.utilities.hfss_simulation_setup
+
+.. automethod:: HFSSPISimulationSetup.add_frequency_sweep

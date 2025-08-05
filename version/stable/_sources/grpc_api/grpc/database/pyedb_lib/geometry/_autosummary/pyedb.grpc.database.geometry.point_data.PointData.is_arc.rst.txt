@@ -1,0 +1,6 @@
+is\_arc
+=======
+
+.. currentmodule:: pyedb.grpc.database.geometry.point_data
+
+.. autoproperty:: PointData.is_arc

@@ -1,0 +1,6 @@
+edbversion
+==========
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoattribute:: Edb.edbversion

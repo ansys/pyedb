@@ -1,0 +1,6 @@
+position
+========
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.siwave_simulation_setup
+
+.. autoproperty:: SiwaveSimulationSetup.position

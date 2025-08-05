@@ -1,0 +1,6 @@
+pin\_groups
+===========
+
+.. currentmodule:: pyedb.grpc.database.siwave
+
+.. autoproperty:: Siwave.pin_groups

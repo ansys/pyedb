@@ -1,0 +1,6 @@
+model\_name
+===========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.spice_model
+
+.. autoproperty:: SpiceModel.model_name

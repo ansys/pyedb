@@ -1,0 +1,6 @@
+is\_mcad\_stride
+================
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoproperty:: Polygon.is_mcad_stride

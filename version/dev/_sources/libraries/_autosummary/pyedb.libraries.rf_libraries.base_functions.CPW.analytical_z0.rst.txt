@@ -1,0 +1,6 @@
+analytical\_z0
+==============
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. autoproperty:: CPW.analytical_z0

@@ -1,0 +1,37 @@
+﻿NetlistModel
+============
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.netlist_model
+
+.. autoclass:: NetlistModel
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      NetlistModel.clone
+      
+      
+      NetlistModel.create
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      NetlistModel.id
+      NetlistModel.is_null
+      NetlistModel.msg
+      NetlistModel.netlist
+   
+   

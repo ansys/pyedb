@@ -1,0 +1,6 @@
+is\_valid
+=========
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: LayerCollection.is_valid

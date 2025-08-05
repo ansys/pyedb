@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.delete

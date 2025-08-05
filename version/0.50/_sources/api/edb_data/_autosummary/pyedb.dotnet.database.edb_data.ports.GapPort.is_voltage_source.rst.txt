@@ -1,0 +1,6 @@
+is\_voltage\_source
+===================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: GapPort.is_voltage_source

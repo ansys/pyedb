@@ -1,0 +1,6 @@
+num\_bondwire\_sides
+====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
+
+.. autoproperty:: DCAdvancedSettings.num_bondwire_sides

@@ -1,0 +1,6 @@
+protected\_attributes
+=====================
+
+.. currentmodule:: pyedb.configuration.cfg_setup
+
+.. autoattribute:: CfgSetup.protected_attributes

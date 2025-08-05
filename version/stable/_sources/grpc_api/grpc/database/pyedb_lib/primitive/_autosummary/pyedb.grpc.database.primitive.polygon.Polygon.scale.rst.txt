@@ -1,0 +1,6 @@
+scale
+=====
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. automethod:: Polygon.scale

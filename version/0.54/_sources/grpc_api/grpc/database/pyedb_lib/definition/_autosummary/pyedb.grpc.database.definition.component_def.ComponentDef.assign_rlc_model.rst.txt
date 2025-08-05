@@ -1,0 +1,6 @@
+assign\_rlc\_model
+==================
+
+.. currentmodule:: pyedb.grpc.database.definition.component_def
+
+.. automethod:: ComponentDef.assign_rlc_model

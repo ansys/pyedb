@@ -1,0 +1,6 @@
+set\_heatsink
+=============
+
+.. currentmodule:: pyedb.grpc.database.definition.package_def
+
+.. automethod:: PackageDef.set_heatsink

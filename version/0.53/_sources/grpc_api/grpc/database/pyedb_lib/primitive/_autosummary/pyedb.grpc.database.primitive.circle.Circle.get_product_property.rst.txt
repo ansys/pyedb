@@ -1,0 +1,6 @@
+get\_product\_property
+======================
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. automethod:: Circle.get_product_property

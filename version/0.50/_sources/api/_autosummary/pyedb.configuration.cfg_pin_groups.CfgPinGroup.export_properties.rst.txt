@@ -1,0 +1,6 @@
+export\_properties
+==================
+
+.. currentmodule:: pyedb.configuration.cfg_pin_groups
+
+.. automethod:: CfgPinGroup.export_properties
