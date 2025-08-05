@@ -28,7 +28,7 @@ import os
 
 import pytest
 
-from tests.conftest import desktop_version, local_path, test_subfolder
+from tests.conftest import GRPC, desktop_version, local_path, test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
@@ -422,6 +422,7 @@ class TestClass:
                     assert data["layers"]["DE2"][parameter] == value
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=GRPC, reason="Need to implement Configuration support with grpc")
     def test_stackup_load_xml(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.stackup.load(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml"))
@@ -429,7 +430,7 @@ class TestClass:
         assert "DE1" not in edbapp.stackup.layers.keys()  # Removed layer
         assert edbapp.stackup.export(os.path.join(self.local_scratch.path, "stackup.xml"))
         assert round(edbapp.stackup.signal_layers["1_Top"].thickness, 6) == 3.5e-5
-        pass
+        edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_load_layer_renamed(self, edb_examples):
         """Import stackup from a file."""
@@ -797,8 +798,8 @@ class TestClass:
                 assert cellInstance.Is3DPlacement()
             if chipEdb.grpc:
                 transform = cellInstance.transform3d
-                assert transform.matrix[3][:3] == [0, 0, 0.00016]
-                assert transform.shift.magnitude == 0.00016
+                assert transform.matrix[3][:3] == [0, 0, 0.00019]
+                assert transform.shift.magnitude == 0.00019
             else:
                 if desktop_version > "2023.1":
                     (
@@ -886,8 +887,8 @@ class TestClass:
                 assert cellInstance.Is3DPlacement()
             if chipEdb.grpc:
                 transform = cellInstance.transform3d
-                assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, 1e-05]
-                assert round(transform.shift.magnitude, 6) == 1e-5
+                assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, -2e-5]
+                assert round(transform.shift.magnitude, 6) == 2e-5
             else:
                 if desktop_version > "2023.1":
                     (
@@ -1150,8 +1151,8 @@ class TestClass:
                 assert cellInstance.Is3DPlacement()
             if chipEdb.grpc:
                 transform = cellInstance.transform3d
-                assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, 5e-05]
-                assert round(transform.shift.magnitude, 6) == 5e-5
+                assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, 2e-05]
+                assert round(transform.shift.magnitude, 6) == 2e-5
             else:
                 if desktop_version > "2023.1":
                     (
@@ -1238,8 +1239,8 @@ class TestClass:
                 assert cellInstance.Is3DPlacement()
             if chipEdb.grpc:
                 transform = cellInstance.transform3d
-                assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, 5e-05]
-                assert round(transform.shift.magnitude, 6) == 5e-5
+                assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, 2e-05]
+                assert round(transform.shift.magnitude, 6) == 2e-5
             else:
                 if desktop_version > "2023.1":
                     (

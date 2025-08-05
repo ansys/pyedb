@@ -22,11 +22,14 @@
 
 import math
 import re
+import warnings
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure
+from ansys.edb.core.hierarchy.structure3d import Structure3D as GrpcStructure3D
 from ansys.edb.core.primitive.padstack_instance import (
     PadstackInstance as GrpcPadstackInstance,
 )
@@ -34,7 +37,9 @@ from ansys.edb.core.terminal.pin_group_terminal import (
     PinGroupTerminal as GrpcPinGroupTerminal,
 )
 
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
+from pyedb.grpc.database.modeler import Circle
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
@@ -66,6 +71,16 @@ class PadstackInstance(GrpcPadstackInstance):
         self._pdef = None
         self._pedb = pedb
         self._object_instance = None
+
+    @property
+    def is_pin(self):
+        """Property added for backward compatibility with earlier versions of pyEDB."""
+        return self.is_layout_pin
+
+    @is_pin.setter
+    def is_pin(self, value):
+        """Property added for backward compatibility with earlier versions of pyEDB."""
+        self.is_layout_pin = value
 
     @property
     def definition(self) -> PadstackDef:
@@ -107,6 +122,77 @@ class PadstackInstance(GrpcPadstackInstance):
         if not term.is_null:
             term = PadstackInstanceTerminal(self._pedb, term)
         return term if not term.is_null else None
+
+    def set_backdrill_top(self, drill_depth, drill_diameter, offset=0.0):
+        """Set backdrill from top.
+
+        .deprecated:: 0.55.0
+        Use :method:`set_back_drill_by_depth` instead.
+
+        Parameters
+        ----------
+        drill_depth : str
+            Name of the drill to layer.
+        drill_diameter : float, str
+            Diameter of backdrill size.
+        offset : str, optional.
+            offset with respect to the layer to drill to.
+
+        Returns
+        -------
+        bool
+            True if success, False otherwise.
+        """
+        warnings.warn(
+            "`set_backdrill_top` is deprecated. Use `set_back_drill_by_depth` or " "`set_back_drill_by_layer` instead.",
+            DeprecationWarning,
+        )
+        if isinstance(drill_depth, str):
+            if drill_depth in self._pedb.stackup.layers:
+                return self.set_back_drill_by_layer(
+                    drill_to_layer=self._pedb.stackup.layers[drill_depth],
+                    offset=Value(offset),
+                    diameter=Value(drill_diameter),
+                    from_bottom=False,
+                )
+            else:
+                return self.set_back_drill_by_depth(Value(drill_depth), Value(drill_diameter), from_bottom=False)
+
+    def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
+        """Set backdrill from bottom.
+
+        .deprecated: 0.55.0
+        Use: method:`set_back_drill_by_depth` instead.
+
+        Parameters
+        ----------
+        drill_depth : str
+            Name of the drill to layer.
+        drill_diameter : float, str
+            Diameter of backdrill size.
+        offset : str, optional.
+            offset with respect to the layer to drill to.
+
+        Returns
+        -------
+        bool
+            True if success, False otherwise.
+        """
+        warnings.warn(
+            "`set_backdrill_bottom` is deprecated. Use `set_back_drill_by_depth` or "
+            "`set_back_drill_by_layer` instead.",
+            DeprecationWarning,
+        )
+        if isinstance(drill_depth, str):
+            if drill_depth in self._pedb.stackup.layers:
+                return self.set_back_drill_by_layer(
+                    drill_to_layer=self._pedb.stackup.layers[drill_depth],
+                    offset=Value(offset),
+                    diameter=Value(drill_diameter),
+                    from_bottom=True,
+                )
+            else:
+                return self.set_back_drill_by_depth(Value(drill_depth), Value(drill_diameter), from_bottom=True)
 
     def create_terminal(self, name=None) -> PadstackInstanceTerminal:
         """Create a padstack instance terminal.
@@ -500,13 +586,16 @@ class PadstackInstance(GrpcPadstackInstance):
         list
             List of ``[x, y]`` coordinates for the padstack instance position.
         """
-        position = self.get_position_and_rotation()
-        if self.component:
-            out2 = self.component.transform.transform_point(GrpcPointData(position[:2]))
-            self._position = [Value(out2[0]), Value(out2[1])]
-        else:
-            self._position = [Value(pt) for pt in position[:2]]
-        return self._position
+        try:
+            position = self.get_position_and_rotation()
+            if self.component:
+                out2 = self.component.transform.transform_point(GrpcPointData(position[:2]))
+                self._position = [Value(out2[0]), Value(out2[1])]
+            else:
+                self._position = [Value(pt) for pt in position[:2]]
+            return self._position
+        except Exception:
+            return False
 
     @position.setter
     def position(self, value):
@@ -683,6 +772,85 @@ class PadstackInstance(GrpcPadstackInstance):
     @side_number.setter
     def side_number(self, value):
         self._side_number = self.set_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21, value)
+
+    def split(self) -> list:
+        """Split padstack instance into multiple instances. The new instances only connect adjacent layers."""
+        pdef_name = self.padstack_definition
+        position = self.position
+        net_name = self.net_name
+        name = self.name
+        stackup_layer_range = list(self._pedb.stackup.signal_layers.keys())
+        start_idx = stackup_layer_range.index(self.start_layer)
+        stop_idx = stackup_layer_range.index(self.stop_layer)
+        temp = []
+        for idx, (l1, l2) in enumerate(
+            list(zip(stackup_layer_range[start_idx:stop_idx], stackup_layer_range[start_idx + 1 : stop_idx + 1]))
+        ):
+            pd_inst = self._pedb.padstacks.place(
+                position, pdef_name, net_name, f"{name}_{idx}", fromlayer=l1, tolayer=l2
+            )
+            temp.append(pd_inst)
+        self.delete()
+        return temp
+
+    def convert_hole_to_conical_shape(self, angle=75):
+        """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
+
+        Parameters
+        ----------
+        angle : float, optional
+            Angle of laser penetration in degrees. The angle defines the lowest hole diameter with this formula:
+            HoleDiameter -2*tan(laser_angle* Hole depth). Hole depth is the height of the via (dielectric thickness).
+            The default is ``75``.
+            The lowest hole is ``0.75*HoleDepth/HoleDiam``.
+
+        Returns
+        -------
+        """
+        stackup_layers = self._pedb.stackup.stackup_layers
+        signal_layers = self._pedb.stackup.signal_layers
+        layer_idx = list(signal_layers.keys()).index(self.start_layer)
+
+        _layer_idx = list(stackup_layers.keys()).index(self.start_layer)
+        diel_layer_idx = list(stackup_layers.keys())[_layer_idx + 1]
+        diel_thickness = stackup_layers[diel_layer_idx].thickness
+
+        rad_large = self.definition.hole_diameter / 2
+        rad_small = rad_large - diel_thickness * 1 / math.tan(math.radians(angle))
+
+        if layer_idx + 1 < len(signal_layers) / 2:  # upper half of stack
+            rad_u = rad_large
+            rad_l = rad_small
+        else:
+            rad_u = rad_small
+            rad_l = rad_large
+
+        layout = self._pedb.active_layout
+        cloned_circle = Circle.create(
+            layout,
+            self.start_layer,
+            self.net,
+            Value(self.position[0]),
+            Value(self.position[1]),
+            Value(rad_u),
+        )
+        cloned_circle2 = Circle.create(
+            layout,
+            self.stop_layer,
+            self.net,
+            Value(self.position[0]),
+            Value(self.position[1]),
+            Value(rad_l),
+        )
+
+        s3d = GrpcStructure3D.create(layout, generate_unique_name("via3d_" + self.aedt_name.replace("via_", ""), n=3))
+        s3d.add_member(cloned_circle)
+        s3d.add_member(cloned_circle2)
+        s3d.set_material(self.definition.material)
+        s3d.mesh_closure = GrpcMeshClosure.ENDS_CLOSED
+        hole_override_enabled = True
+        hole_override_diam = 0
+        self.set_hole_overrides(hole_override_enabled, Value(hole_override_diam))
 
     def get_backdrill_type(self, from_bottom=True):
         """Return backdrill type

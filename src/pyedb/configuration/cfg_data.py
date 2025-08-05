@@ -75,7 +75,7 @@ class CfgData(object):
         ]
 
         self.package_definitions = CfgPackageDefinitions(self._pedb, data=kwargs.get("package_definitions", []))
-        self.operations = CfgOperations(self._pedb, data=kwargs.get("operations", {}))
+        self.operations = CfgOperations(**kwargs.get("operations", {}))
 
         self.modeler = CfgModeler(self._pedb, data=kwargs.get("modeler", {}))
 

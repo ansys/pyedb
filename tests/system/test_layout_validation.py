@@ -31,10 +31,11 @@ class TestClass:
     @pytest.fixture(scope="class", autouse=True)
     def setup_class(cls, request, edb_examples):
         # Set up the EDB app once per class
-        cls.edbapp_shared = edb_examples.get_si_verse()
+        pass
 
         # Finalizer to close the EDB app after all tests
         def teardown():
+            cls.edbapp_shared = edb_examples.get_si_verse()
             cls.edbapp_shared.close(terminate_rpc_session=True)
 
         request.addfinalizer(teardown)
@@ -50,17 +51,32 @@ class TestClass:
         yield
         pass
 
-    def test_disjoint_nets(self):
-        self.edbapp_shared.layout_validation.disjoint_nets()
+    def test_disjoint_nets(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.layout_validation.disjoint_nets()
+        edbapp.close(terminate_rpc_session=False)
 
-    def test_dc_shorts(self):
-        self.edbapp_shared.layout_validation.dc_shorts()
+    def test_dc_shorts(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.layout_validation.dc_shorts(fix=True)
+        edbapp.close(terminate_rpc_session=False)
 
-    def test_fix_self_intersecting(self):
-        self.edbapp_shared.layout_validation.fix_self_intersections()
+    def test_fix_self_intersecting(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.layout_validation.fix_self_intersections()
+        edbapp.close(terminate_rpc_session=False)
 
-    def test_illegal_net_names(self):
-        self.edbapp_shared.layout_validation.illegal_net_names()
+    def test_illegal_net_names(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.layout_validation.illegal_net_names(fix=True)
+        edbapp.close(terminate_rpc_session=False)
 
-    def test_padstacks_no_name(self):
-        self.edbapp_shared.layout_validation.padstacks_no_name()
+    def test_padstacks_no_name(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.layout_validation.padstacks_no_name(fix=True)
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_padstacks_no_layer(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.layout_validation.illegal_rlc_values(fix=True)
+        edbapp.close(terminate_rpc_session=False)

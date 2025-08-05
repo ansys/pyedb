@@ -814,7 +814,7 @@ class EdbSiwave(object):
                     f.write('ExportTouchstone "{}"\n'.format(touchstone_file_path))
             f.write("SaveSiw\n")
 
-        return True if os.path.exists(file_name) else False
+        return file_name
 
     def add_siwave_syz_analysis(
         self,

@@ -135,7 +135,7 @@ jobs:
 # =================================================================================================
 
   unit-tests-windows:
-    name: Test dotnet (windows)
+    name: Unit test dotnet (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: "Install Git and clone project"
@@ -199,9 +199,9 @@ jobs:
 
   system-tests-linux:
     name: Test dotnet (linux)
-    runs-on: [ Linux, self-hosted, toolkits ]
+    runs-on: [ Linux, self-hosted, pyedb ]
     env:
-      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANSYSEM_ROOT251: '/usr/ansys_inc/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
@@ -269,10 +269,10 @@ jobs:
 # =================================================================================================
 
   unit-tests-linux:
-    name: Test dotnet (linux)
-    runs-on: [ Linux, self-hosted, toolkits ]
+    name: Unit test dotnet (linux)
+    runs-on: [ Linux, self-hosted, pyedb ]
     env:
-      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANSYSEM_ROOT251: '/usr/ansys_inc/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
@@ -342,7 +342,7 @@ jobs:
     name: Testing PyAEDT main branch (Windows)
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
-    runs-on: [ self-hosted, Windows, pyaedt ]
+    runs-on: [ self-hosted, Windows, pyedb ]
     steps:
       - name: Install Git and checkout project
         uses: actions/checkout@v4
@@ -435,9 +435,9 @@ jobs:
     name: Testing PyAEDT main branch (Linux)
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
-    runs-on: [ self-hosted, Linux, pyaedt ]
+    runs-on: [ self-hosted, Linux, pyedb ]
     env:
-      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANSYSEM_ROOT251: '/usr/ansys_inc/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
