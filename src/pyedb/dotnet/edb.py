@@ -380,11 +380,11 @@ class Edb:
             self.base_path = settings.edb_dll_path
         elif student_version:
             if version:
-                self.base_path = settings.installed_student_versions[version]
+                self.base_path = settings.INSTALLED_STUDENT_VERSIONS[version]
             else:
-                self.base_path = settings.latest_student_version
-        elif version in settings.installed_versions:
-            self.base_path = settings.installed_versions[version]
+                self.base_path = settings.LATEST_STUDENT_VERSION
+        elif version in settings.INSTALLED_VERSIONS:
+            self.base_path = settings.INSTALLED_VERSIONS[version]
         elif is_linux:
             main = sys.modules["__main__"]
             if "oDesktop" in dir(main):

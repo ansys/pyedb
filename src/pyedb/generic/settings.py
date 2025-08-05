@@ -27,6 +27,13 @@ import time
 
 class Settings(object):
     """Manages all PyEDB environment variables and global settings."""
+    INSTALLED_VERSIONS = None
+    INSTALLED_STUDENT_VERSIONS = None
+    INSTALLED_CLIENT_VERSIONS = None
+    LATEST_VERSION = None
+    LATEST_STUDENT_VERSION = None
+
+    specified_version = None
 
     def __init__(self):
         self.remote_rpc_session = False
@@ -63,11 +70,7 @@ class Settings(object):
         self._logger = None
         self._aedt_version = None
 
-        self.__installed_versions = None
-        self.__installed_student_versions = None
-        self.__installed_client_versions = None
-        self.__latest_version = None
-        self.__latest_student_version = None
+        self.__get_version_information()
 
     @property
     def logger(self):
@@ -269,39 +272,7 @@ class Settings(object):
     def retry_n_times_time_interval(self, value):
         self._retry_n_times_time_interval = float(value)
 
-    @property
-    def installed_versions(self):
-        if self.__installed_versions is None:
-            self.__installed_aedt_versions()
-        return self.__installed_versions
-
-    @property
-    def installed_student_versions(self):
-        if self.__installed_student_versions is None:
-            self.__installed_aedt_versions()
-        return self.__installed_student_versions
-
-    @property
-    def installed_client_versions(self):
-        if self.__installed_client_versions is None:
-            self.__installed_aedt_versions()
-        return self.__installed_client_versions
-
-    @property
-    def latest_version(self):
-        """Latest installed AEDT version."""
-        if self.__latest_version is None:
-            self.__installed_aedt_versions()
-        return self.__latest_version
-
-    @property
-    def latest_student_version(self):
-        """Latest installed AEDT student version."""
-        if self.__latest_student_version is None:
-            self.__installed_aedt_versions()
-        return self.__latest_student_version
-
-    def __installed_aedt_versions(self):
+    def __get_version_information(self):
         """Get the installed AEDT versions.
 
         This method returns a dictionary, with the version as the key and installation path
@@ -326,14 +297,14 @@ class Settings(object):
                 client_versions[version_name] = aedt_path
             else:
                 student_versions[version_name] = aedt_path
-        self.__installed_versions = standard_versions
-        self.__installed_student_versions = student_versions
-        self.__installed_client_versions = client_versions
+        self.INSTALLED_VERSIONS = standard_versions
+        self.INSTALLED_STUDENT_VERSIONS = student_versions
+        self.INSTALLED_CLIENT_VERSIONS = client_versions
 
-        if len(self.__installed_versions):
-            self.__latest_version = max(standard_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
-        if len(self.__installed_student_versions):
-            self.__latest_student_version = max(student_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
+        if len(self.INSTALLED_VERSIONS):
+            self.LATEST_VERSION = max(standard_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
+        if len(self.INSTALLED_STUDENT_VERSIONS):
+            self.LATEST_STUDENT_VERSION = max(student_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
 
 
 settings = Settings()

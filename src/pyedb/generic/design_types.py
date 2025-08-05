@@ -260,7 +260,7 @@ def Edb(
 
     if not edbversion:  # pragma: no cover
         try:
-            version = settings.latest_version
+            version = settings.LATEST_VERSION
         except IndexError:
             raise Exception("No ANSYSEM_ROOTxxx is found.")
     elif not isinstance(edbversion, str):
