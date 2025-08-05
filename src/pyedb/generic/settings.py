@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import os
+import re
 import time
 
 
@@ -61,6 +62,11 @@ class Settings(object):
         self._use_pyaedt_log = False
         self._logger = None
         self._aedt_version = None
+
+        self.__installed_versions = None
+        self.__installed_student_versions = None
+        self.__installed_client_versions = None
+        self.__latest_version = None
 
     @property
     def logger(self):
@@ -261,6 +267,72 @@ class Settings(object):
     @retry_n_times_time_interval.setter
     def retry_n_times_time_interval(self, value):
         self._retry_n_times_time_interval = float(value)
+
+    @property
+    def installed_versions(self):
+        if self.__installed_versions is None:
+            self.__installed_aedt_versions()
+        return self.__installed_versions
+
+    @property
+    def installed_student_versions(self):
+        if self.__installed_student_versions is None:
+            self.__installed_aedt_versions()
+        return self.__installed_student_versions
+
+    @property
+    def installed_client_versions(self):
+        if self.__installed_client_versions is None:
+            self.__installed_aedt_versions()
+        return self.__installed_client_versions
+
+    @property
+    def latest_version(self):
+        """Latest installed AEDT version."""
+        if self.__latest_version is None:
+            self.__installed_aedt_versions()
+        return self.__latest_version
+
+    @property
+    def latest_student_version(self):
+        """Latest installed AEDT student version."""
+        if self.__latest_student_version is None:
+            self.__installed_aedt_versions()
+        return self.__latest_student_version
+
+    def __installed_aedt_versions(self):
+        """Get the installed AEDT versions.
+
+        This method returns a dictionary, with the version as the key and installation path
+        as the value."""
+        version_pattern = re.compile(r"^(ANSYSEM_ROOT|ANSYSEM_PY_CLIENT_ROOT|ANSYSEMSV_ROOT)\d{3}$")
+        env_list = sorted([x for x in os.environ if version_pattern.match(x)], reverse=True)
+        if not env_list:
+            raise Exception("No installed versions of AEDT are found in the system environment variables.")
+        aedt_system_env_variables = {i: os.environ[i] for i in env_list}
+
+        standard_versions = {}
+        client_versions = {}
+        student_versions = {}
+        # version_list is ordered: first normal versions, then client versions, finally student versions
+        for var_name, aedt_path in aedt_system_env_variables.items():
+            version_id = var_name[-3:]
+            version, release = version_id[0:2], version_id[2]
+            version_name = f"20{version}.{release}"
+            if "ANSYSEM_ROOT" in var_name:
+                standard_versions[version_name] = aedt_path
+            elif "ANSYSEM_PY_CLIENT_ROOT" in var_name:
+                client_versions[version_name] = aedt_path
+            else:
+                student_versions[version_name] = aedt_path
+        self.__installed_versions = standard_versions
+        self.__installed_student_versions = student_versions
+        self.__installed_client_versions = client_versions
+
+        if len(self.__installed_versions):
+            self.__latest_version = max(standard_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
+        if len(self.__installed_student_versions):
+            self.__latest_student_version = max(student_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
 
 
 settings = Settings()
