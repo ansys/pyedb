@@ -43,7 +43,7 @@ example_models_path = Path(__file__).parent / "example_models"
 
 
 config = {
-    "desktopVersion": "2025.1",
+    "desktopVersion": "2025.2",
     "use_grpc": False,
 }
 
