@@ -27,6 +27,7 @@ import time
 
 class Settings(object):
     """Manages all PyEDB environment variables and global settings."""
+
     INSTALLED_VERSIONS = None
     INSTALLED_STUDENT_VERSIONS = None
     INSTALLED_CLIENT_VERSIONS = None
