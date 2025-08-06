@@ -184,7 +184,8 @@ class Edb:
     """
 
     logger = None
-    edbversion = None
+    version = None
+    student_version = False
     _db = None
 
     @execution_timer("EDB initialization")
@@ -193,10 +194,8 @@ class Edb:
         edbpath: Union[str, Path] = None,
         cellname: str = None,
         isreadonly: bool = False,
-        edbversion: str = None,
         isaedtowned: bool = False,
         oproject=None,
-        student_version: bool = False,
         use_ppe: bool = False,
         control_file: str = None,
         map_file: str = None,
@@ -211,9 +210,8 @@ class Edb:
         if isinstance(edbpath, Path):
             edbpath = str(edbpath)
 
-        self.edbversion = edbversion
         self._clean_variables()
-        self.__initialization(self.edbversion, student_version)
+        self.__initialization()
 
         self.standalone = True
         self.oproject = oproject
@@ -353,12 +351,8 @@ class Edb:
         if description:  # Add the variable description if a two-item list is passed for variable_value.
             self.__getitem__(variable_name).description = description
 
-    def __initialization(self, version, student_version):
-        self.logger.info(f"Edb version {version}")
-        if float(version) >= 2025.2:
-            from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
-
-            warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
+    def __initialization(self):
+        self.logger.info(f"Edb version {self.edbversion}")
 
         """Initialize DLLs."""
         from pyedb import __version__
@@ -378,20 +372,20 @@ class Edb:
 
         if settings.edb_dll_path:
             self.base_path = settings.edb_dll_path
-        elif student_version:
-            if version:
-                self.base_path = settings.INSTALLED_STUDENT_VERSIONS[version]
+        elif self.student_version:
+            if self.version:
+                self.base_path = settings.INSTALLED_STUDENT_VERSIONS[self.version]
             else:
                 self.base_path = settings.LATEST_STUDENT_VERSION
-        elif version in settings.INSTALLED_VERSIONS:
-            self.base_path = settings.INSTALLED_VERSIONS[version]
+        elif self.version in settings.INSTALLED_VERSIONS:
+            self.base_path = settings.INSTALLED_VERSIONS[self.version]
         elif is_linux:
             main = sys.modules["__main__"]
             if "oDesktop" in dir(main):
                 self.base_path = main.oDesktop.GetExeDir()
-                os.environ[env_value(version)] = self.base_path  # Todo is this necessary?
+                os.environ[env_value(self.version)] = self.base_path  # Todo is this necessary?
         else:
-            raise RuntimeError(f"Version {version} is not installed on the system. ")
+            raise RuntimeError(f"Version {self.version} is not installed on the system. ")
         sys.path.append(self.base_path)
 
         _clr.AddReference("Ansys.Ansoft.Edb")
@@ -407,6 +401,10 @@ class Edb:
         self._edb = edb.Ansoft.Edb
         self.edbutils = edbbuilder.Ansoft.EdbBuilderUtils
         self.simsetupdata = self.simSetup.Ansoft.SimSetupData.Data
+
+    @property
+    def edbversion(self):
+        return self.version
 
     def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"

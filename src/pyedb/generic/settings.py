@@ -33,8 +33,6 @@ class Settings(object):
     LATEST_VERSION = None
     LATEST_STUDENT_VERSION = None
 
-    specified_version = None
-
     def __init__(self):
         self.remote_rpc_session = False
         self._enable_screen_logs = True
@@ -275,7 +273,7 @@ class Settings(object):
     def __get_version_information(self):
         """Get the installed AEDT versions.
 
-        This method returns a dictionary, with the version as the key and installation path
+        This method returns a dictionary, with the version as the key and the installation path
         as the value."""
         version_pattern = re.compile(r"^(ANSYSEM_ROOT|ANSYSEM_PY_CLIENT_ROOT|ANSYSEMSV_ROOT)\d{3}$")
         env_list = sorted([x for x in os.environ if version_pattern.match(x)], reverse=True)

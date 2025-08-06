@@ -333,16 +333,16 @@ class TestClass:
         assert 0.00045 == material.dielectric_loss_tangent
         assert 12 == material.permittivity
 
-    def test_update_materials_from_syslib(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        edbapp.materials.update_materials_from_sys_library(False, "copper")
-        assert edbapp.materials["copper"].thermal_conductivity == 400
-        edbapp.materials["FR4_epoxy"].thermal_conductivity = 1
-        edbapp.materials.update_materials_from_sys_library()
-        edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
-        edbapp.close(terminate_rpc_session=False)
+    def test_update_materials_from_syslib(self):
+        self.edbapp.materials.add_material("copper")
+        self.edbapp.materials.update_materials_from_sys_library(False, "copper")
+        assert self.edbapp.materials["copper"].thermal_conductivity == 400
+        self.edbapp.materials.add_material("FR4_epoxy")
+        self.edbapp.materials.update_materials_from_sys_library()
+        self.edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
 
-    def test_material_thermal_modifier(self, edb_examples):
+
+    def test_material_thermal_modifier(self):
         THERMAL_MODIFIER = {
             "basic_quadratic_temperature_reference": 21,
             "basic_quadratic_c1": 0.1,
@@ -353,7 +353,6 @@ class TestClass:
             "advanced_quadratic_lower_constant": 1.1,
             "advanced_quadratic_upper_constant": 1.1,
         }
-        edbapp = edb_examples.get_si_verse()
         material = self.edbapp.materials.add_material("new_matttt")
         material.conductivity = 5.7e8
         if not self.edbapp.grpc:  # This test is not valid for gRPC mode

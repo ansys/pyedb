@@ -26,7 +26,7 @@ from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from pyedb.edb_logger import pyedb_logger
 from pyedb.grpc.database.utility.heat_sink import HeatSink
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.misc import deprecated_property
+from pyedb.misc.decorators import deprecated_property
 
 
 class PackageDef(GrpcPackageDef):

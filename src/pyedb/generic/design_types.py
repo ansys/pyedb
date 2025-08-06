@@ -24,6 +24,9 @@ import warnings
 
 from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
 from pyedb.generic.settings import settings
+from pyedb.misc.decorators import (
+    deprecate_argument_name
+)
 
 if TYPE_CHECKING:
     from pyedb.dotnet.edb import Edb as EdbDotnet
@@ -46,18 +49,19 @@ def Edb(*, grpc: bool, **kwargs) -> Union["EdbGrpc", "EdbDotnet"]:
 
 
 # lazy imports
+@deprecate_argument_name({"edbversion": "version"})
 def Edb(
-    edbpath=None,
-    cellname=None,
-    isreadonly=False,
-    edbversion=None,
-    isaedtowned=False,
-    oproject=None,
-    student_version=False,
-    use_ppe=False,
-    technology_file=None,
-    grpc=False,
-    control_file=None,
+        edbpath=None,
+        cellname=None,
+        isreadonly=False,
+        version=None,
+        isaedtowned=False,
+        oproject=None,
+        student_version=False,
+        use_ppe=False,
+        technology_file=None,
+        grpc=False,
+        control_file=None,
 ):
     """Provides the EDB application interface.
 
@@ -258,43 +262,52 @@ def Edb(
 
     """
 
-    if not edbversion:  # pragma: no cover
+    if not version:  # pragma: no cover
         try:
             version = settings.LATEST_VERSION
         except IndexError:
             raise Exception("No ANSYSEM_ROOTxxx is found.")
-    elif not isinstance(edbversion, str):
+    elif not isinstance(version, str):
         raise Exception("edbversion must be a string.")
-    else:
-        version = edbversion
 
-    # Use EDB legacy (default choice)
-    if float(version) >= 2025.2:
-        if not grpc:
-            warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
-    else:
-        if grpc:
-            raise ValueError(f"gRPC flag was enabled however your ANSYS AEDT version {version} is not compatible")
     if grpc:
+        if float(version) < 2025.2:
+            raise ValueError(f"gRPC flag was enabled however your ANSYS AEDT version {version} is not compatible")
+
         from pyedb.grpc.edb import Edb as app
+
+        return app(
+            edbpath=edbpath,
+            cellname=cellname,
+            isreadonly=isreadonly,
+            edbversion=version,
+            isaedtowned=isaedtowned,
+            oproject=oproject,
+            use_ppe=use_ppe,
+            technology_file=technology_file,
+            control_file=control_file,
+        )
     else:
-        from pyedb.dotnet.edb import Edb as app
-    return app(
-        edbpath=edbpath,
-        cellname=cellname,
-        isreadonly=isreadonly,
-        edbversion=version,
-        isaedtowned=isaedtowned,
-        oproject=oproject,
-        student_version=student_version,
-        use_ppe=use_ppe,
-        technology_file=technology_file,
-        control_file=control_file,
-    )
+        if float(version) >= 2025.2:
+            warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
+
+        from pyedb.dotnet.edb import Edb
+        Edb.version = version
+        Edb.student_version = student_version
+        return Edb(
+            edbpath=edbpath,
+            cellname=cellname,
+            isreadonly=isreadonly,
+            isaedtowned=isaedtowned,
+            oproject=oproject,
+            use_ppe=use_ppe,
+            technology_file=technology_file,
+            control_file=control_file,
+        )
 
 
 def Siwave(
-    specified_version=None,
+        specified_version=None,
 ):
     """Siwave Class."""
     from pyedb.siwave import Siwave as app

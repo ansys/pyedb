@@ -46,10 +46,10 @@ from pyedb.component_libraries.ansys_components import (
     Series,
 )
 from pyedb.generic.general_methods import (
-    deprecate_argument_name,
     generate_unique_name,
     get_filename_without_extension,
 )
+from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.grpc.database.definition.component_def import ComponentDef
 from pyedb.grpc.database.definition.component_pin import ComponentPin
 from pyedb.grpc.database.hierarchy.component import Component

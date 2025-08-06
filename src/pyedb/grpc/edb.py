@@ -210,7 +210,6 @@ class Edb(EdbInit):
         technology_file: str = None,
         layer_filter: str = None,
         restart_rpc_server=False,
-        **kwargs,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()

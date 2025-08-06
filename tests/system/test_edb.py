@@ -1729,7 +1729,7 @@ class TestClass:
         """Use multiple cells."""
 
         src = os.path.join(local_path, "example_models", "TEDB", "multi_cells.aedb")
-        edb = edb_examples.load_edb(edbpath=src)
+        edb = edb_examples.load_edb(edb_path=src)
         edb.active_cell = edb.circuit_cells[0]
         assert len(edb.modeler.primitives) == 2096
         assert len(edb.components.instances) == 509
