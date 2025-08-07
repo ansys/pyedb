@@ -185,7 +185,7 @@ class Edb:
 
     @property
     def version(self):
-        return settings.specific_version
+        return settings.specified_version
 
     @property
     def base_path(self):
