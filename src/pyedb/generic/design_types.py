@@ -262,11 +262,13 @@ def Edb(
     settings.is_student_version = student_version
     if grpc is False and settings.edb_dll_path is not None:
         # Check if the user specified a .dll path
-        settings.logger(f"Force to use .dll from {settings.edb_dll_path} defined in settings.")
+        settings.logger.info(f"Force to use .dll from {settings.edb_dll_path} defined in settings.")
         settings.specified_version = "unknown"
     elif version is None:
-        # Use the latest version
-        if student_version:
+        if settings.specified_version is not None:
+            settings.logger.info(f"Use {settings.specified_version} defined in settings.")
+            # Use the latest version
+        elif student_version:
             if settings.LATEST_STUDENT_VERSION is None:
                 raise RuntimeWarning("AEDT is not properly installed.")
             else:

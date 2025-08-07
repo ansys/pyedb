@@ -26,7 +26,7 @@ import re
 import subprocess
 import sys
 
-from pyedb.edb_logger import pyedb_logger
+from pyedb.generic.settings import settings
 from pyedb.generic.general_methods import ET, env_path, env_value, is_linux
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 from pyedb.misc.misc import list_installed_ansysem
@@ -56,7 +56,7 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
             base_path = env_path(edbversion)
             sys.path.append(base_path)
         else:
-            pyedb_logger.error("No Edb installation found. Check environment variables")
+            settings.logger.error("No Edb installation found. Check environment variables")
             return False
         os.environ["HELIC_ROOT"] = os.path.join(base_path, "helic")
         if os.getenv("ANSYSLMD_LICENCE_FILE", None) is None:
@@ -69,7 +69,7 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
                             os.environ["ANSYSLMD_LICENSE_FILE"] = line.split("=")[1]
                             break
             else:
-                pyedb_logger.error("ANSYSLMD_LICENSE_FILE is not defined.")
+                settings.logger.error("ANSYSLMD_LICENSE_FILE is not defined.")
         vlc_file_name = os.path.splitext(tech_file)[0]
         if not control_file:
             control_file = vlc_file_name + ".xml"
@@ -103,9 +103,9 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
             p = subprocess.Popen(command, env=my_env)
             p.wait()
         if os.path.exists(control_file):
-            pyedb_logger.info("Xml file created.")
+            settings.logger.info("Xml file created.")
             return control_file
-    pyedb_logger.error("Technology files are supported only in Linux. Use control file instead.")
+    settings.logger.error("Technology files are supported only in Linux. Use control file instead.")
     return False
 
 

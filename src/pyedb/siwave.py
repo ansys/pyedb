@@ -20,7 +20,7 @@ import warnings
 
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
-from pyedb.edb_logger import pyedb_logger
+from pyedb.generic.settings import settings
 from pyedb.generic.general_methods import _pythonver, generate_unique_name, is_windows
 from pyedb.misc.misc import list_installed_ansysem
 from pyedb.siwave_core.icepak import Icepak
@@ -110,7 +110,7 @@ class Siwave(object):  # pragma no cover
         return self.version_keys[0]
 
     def __init__(self, specified_version=None):
-        self._logger = pyedb_logger
+        self._logger = settings.logger
         if is_windows:  # pragma: no cover
             modules = [tup[1] for tup in pkgutil.iter_modules()]
             if _clr:

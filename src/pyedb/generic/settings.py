@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+import logging
 import os
 import re
 import sys
@@ -75,6 +75,7 @@ class Settings(object):
         self._aedt_version = None
 
         self.__get_version_information()
+        self.__init_logger()
 
     @property
     def logger(self):
@@ -328,6 +329,17 @@ class Settings(object):
                 raise RuntimeError(f"Version {self.specified_version} is not installed on the system. ")
         else:
             raise RuntimeError(f"Version {self.specified_version} is not installed on the system. ")
+
+    def __init_logger(self):
+        logger = logging.getLogger("Global")
+        if any("aedt_logger" in str(i) for i in logger.filters):
+            from ansys.aedt.core.generic.settings import settings as pyaedt_settings
+
+            self.use_pyaedt_log = True
+            self.logger = pyaedt_settings.logger
+        else:
+            from pyedb.edb_logger import EdbLogger
+            self.logger = EdbLogger(to_stdout=self.enable_screen_logs, settings=self)
 
 
 settings = Settings()

@@ -823,8 +823,7 @@ class Edb:
             cmd_translator.append('-f="{}"'.format(layer_filter))
         subprocess.run(cmd_translator)
         if not os.path.exists(os.path.join(working_dir, aedb_name)):
-            self.logger.error("Translator failed to translate.")
-            return False
+            raise RuntimeWarning(f"Translator failed. command : {' '.join(cmd_translator)}")
         else:
             self.logger.info("Translation correctly completed")
         self.edbpath = os.path.join(working_dir, aedb_name)
