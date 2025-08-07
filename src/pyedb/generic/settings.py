@@ -22,6 +22,7 @@
 
 import os
 import re
+import sys
 import time
 
 
@@ -32,6 +33,9 @@ class Settings(object):
     INSTALLED_CLIENT_VERSIONS = None
     LATEST_VERSION = None
     LATEST_STUDENT_VERSION = None
+
+    specified_version = None
+    is_student_version = False
 
     def __init__(self):
         self.remote_rpc_session = False
@@ -303,6 +307,23 @@ class Settings(object):
             self.LATEST_VERSION = max(standard_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
         if len(self.INSTALLED_STUDENT_VERSIONS):
             self.LATEST_STUDENT_VERSION = max(student_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
+
+    @property
+    def aedt_installation_path(self):
+        if self.edb_dll_path:
+            return self.edb_dll_path
+        elif self.is_student_version:
+            return self.INSTALLED_STUDENT_VERSIONS[self.specified_version]
+        elif self.specified_version in self.INSTALLED_VERSIONS.keys() :
+            return self.INSTALLED_VERSIONS[self.specified_version]
+        elif os.name == "posix":
+            main = sys.modules["__main__"]
+            if "oDesktop" in dir(main):
+                return main.oDesktop.GetExeDir()
+            else:
+                raise RuntimeError(f"Version {self.specified_version} is not installed on the system. ")
+        else:
+            raise RuntimeError(f"Version {self.specified_version} is not installed on the system. ")
 
 
 settings = Settings()

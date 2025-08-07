@@ -261,18 +261,42 @@ def Edb(
     >>> workflow.run()
 
     """
-
-    if not version:  # pragma: no cover
-        try:
-            version = settings.LATEST_VERSION
-        except IndexError:
-            raise Exception("No ANSYSEM_ROOTxxx is found.")
+    settings.is_student_version = student_version
+    if grpc is False and settings.edb_dll_path is not None:
+        # Check if the user specified a .dll path
+        settings.logger(f"Force to use .dll from {settings.edb_dll_path} defined in settings.")
+        settings.specified_version = "unknown"
+    elif version is None:
+        # Use the latest version
+        if student_version:
+            if settings.LATEST_STUDENT_VERSION is None:
+                raise RuntimeWarning("AEDT is not properly installed.")
+            else:
+                settings.specified_version = settings.LATEST_STUDENT_VERSION
+        else:
+            if settings.LATEST_VERSION is None:
+                raise RuntimeWarning("AEDT is not properly installed.")
+            else:
+                settings.specified_version = settings.LATEST_VERSION
     elif not isinstance(version, str):
-        raise Exception("edbversion must be a string.")
+        raise ValueError("edbversion must be a string.")
+    else:
+        # Version is specified
+        if student_version:
+            if version not in settings.INSTALLED_STUDENT_VERSIONS:
+                raise RuntimeWarning(f"AEDT student version {version} is not properly installed.")
+            else:
+                settings.specified_version = version
+        else:
+            if version not in settings.INSTALLED_VERSIONS:
+                raise RuntimeWarning(f"AEDT version {version} is not properly installed.")
+            else:
+                settings.specified_version = version
+
 
     if grpc:
-        if float(version) < 2025.2:
-            raise ValueError(f"gRPC flag was enabled however your ANSYS AEDT version {version} is not compatible")
+        if float(settings.specified_version) < 2025.2:
+            raise ValueError(f"gRPC flag was enabled however your ANSYS AEDT version {settings.specified_version} is not compatible")
 
         from pyedb.grpc.edb import Edb as app
 
@@ -280,7 +304,7 @@ def Edb(
             edbpath=edbpath,
             cellname=cellname,
             isreadonly=isreadonly,
-            edbversion=version,
+            edbversion=settings.specified_version,
             isaedtowned=isaedtowned,
             oproject=oproject,
             use_ppe=use_ppe,
@@ -288,12 +312,10 @@ def Edb(
             control_file=control_file,
         )
     else:
-        if float(version) >= 2025.2:
+        if float(settings.specified_version) >= 2025.2:
             warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
 
         from pyedb.dotnet.edb import Edb
-        Edb.version = version
-        Edb.student_version = student_version
         return Edb(
             edbpath=edbpath,
             cellname=cellname,

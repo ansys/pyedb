@@ -800,7 +800,7 @@ class StackupLayerEdbClass(LayerEdbClass):
             "factor": self._edb_layer.GetEtchFactor().ToString(),
             "enabled": self._edb_layer.IsEtchFactorEnabled(),
         }
-        if self._pedb.edbversion >= "2024.2":
+        if self._pedb.version >= "2024.2":
             etch_power_ground_nets = int(self._edb_layer.GetEtchNetClass())
             etch_power_ground_nets = False if etch_power_ground_nets else True
             data["etching"]["etch_power_ground_nets"] = etch_power_ground_nets
@@ -869,7 +869,7 @@ class StackupLayerEdbClass(LayerEdbClass):
             layer_clone = self._edb_layer
             layer_clone.SetEtchFactorEnabled(etching["enabled"])
             layer_clone.SetEtchFactor(self._pedb.stackup._edb_value(float(etching["factor"])))
-            if self._pedb.edbversion >= "2024.2":
+            if self._pedb.version >= "2024.2":
                 if etching["etch_power_ground_nets"]:
                     layer_clone.SetEtchNetClass(self._pedb._edb.Cell.EtchNetClass.NoEtchPowerGroundNets)
                 else:

@@ -92,12 +92,9 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SiwaveSimulationSetup,
 )
 from pyedb.dotnet.database.utilities.value import Value
-from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import (
-    execution_timer,
     generate_unique_name,
-    get_string_version,
     is_linux,
     is_windows,
 )
@@ -107,6 +104,7 @@ from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflow import Workflow
+from pyedb.misc.decorators import execution_timer
 
 
 class Edb:
@@ -127,7 +125,7 @@ class Edb:
     isreadonly : bool, optional
         Whether to open EBD in read-only mode when it is
         owned by HFSS 3D Layout. The default is ``False``.
-    edbversion : str, int, float, optional
+    version : str, int, float, optional
         Version of EDB to use. The default is ``None``.
         Examples of input values are ``232``, ``23.2``, ``2023.2``, ``"2023.2"``.
     isaedtowned : bool, optional
@@ -183,10 +181,19 @@ class Edb:
 
     """
 
-    logger = None
-    version = None
-    student_version = False
     _db = None
+
+    @property
+    def logger(self):
+        return settings.logger
+
+    @property
+    def version(self):
+        return settings.specific_version
+
+    @property
+    def base_path(self):
+        return settings.aedt_installation_path
 
     @execution_timer("EDB initialization")
     def __init__(
@@ -203,7 +210,6 @@ class Edb:
         layer_filter: str = None,
         remove_existing_aedt: bool = False,
     ):
-        self.logger = pyedb_logger
         now = datetime.now()
         self.logger.info(f"Star initializing Edb {now.time()}")
 
@@ -352,12 +358,11 @@ class Edb:
             self.__getitem__(variable_name).description = description
 
     def __initialization(self):
-        self.logger.info(f"Edb version {self.edbversion}")
+        self.logger.info(f"Edb version {self.version}")
 
         """Initialize DLLs."""
         from pyedb import __version__
         from pyedb.dotnet.clr_module import _clr, edb_initialized
-        from pyedb.generic.general_methods import env_value, is_linux, settings
 
         if not settings.use_pyaedt_log:
             if settings.enable_screen_logs:
@@ -370,22 +375,6 @@ class Edb:
         self.logger.info("legacy v%s", __version__)
         self.logger.info("Python version %s", sys.version)
 
-        if settings.edb_dll_path:
-            self.base_path = settings.edb_dll_path
-        elif self.student_version:
-            if self.version:
-                self.base_path = settings.INSTALLED_STUDENT_VERSIONS[self.version]
-            else:
-                self.base_path = settings.LATEST_STUDENT_VERSION
-        elif self.version in settings.INSTALLED_VERSIONS:
-            self.base_path = settings.INSTALLED_VERSIONS[self.version]
-        elif is_linux:
-            main = sys.modules["__main__"]
-            if "oDesktop" in dir(main):
-                self.base_path = main.oDesktop.GetExeDir()
-                os.environ[env_value(self.version)] = self.base_path  # Todo is this necessary?
-        else:
-            raise RuntimeError(f"Version {self.version} is not installed on the system. ")
         sys.path.append(self.base_path)
 
         _clr.AddReference("Ansys.Ansoft.Edb")
@@ -401,10 +390,6 @@ class Edb:
         self._edb = edb.Ansoft.Edb
         self.edbutils = edbbuilder.Ansoft.EdbBuilderUtils
         self.simsetupdata = self.simSetup.Ansoft.SimSetupData.Data
-
-    @property
-    def edbversion(self):
-        return self.version
 
     def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
@@ -633,8 +618,8 @@ class Edb:
         ``True`` when succeed ``False`` if failed : bool
         """
         # self.logger.info("EDB Path is %s", self.edbpath)
-        # self.logger.info("EDB Version is %s", self.edbversion)
-        # if self.edbversion > "2023.1":
+        # self.logger.info("EDB Version is %s", self.version)
+        # if self.version > "2023.1":
         #     self.standalone = False
 
         self.core.Database.SetRunAsStandAlone(self.standalone)
@@ -645,7 +630,7 @@ class Edb:
         if self._db.IsNull():
             raise AttributeError(f"Failed to open edb file {self.edbpath}")
 
-        self.logger.info("Database {} Opened in {}".format(os.path.split(self.edbpath)[-1], self.edbversion))
+        self.logger.info("Database {} Opened in {}".format(os.path.split(self.edbpath)[-1], self.version))
 
         self._active_cell = None
         if self.cellname:
@@ -686,7 +671,7 @@ class Edb:
         -------
         ``True`` when succeed ``False`` if failed : bool
         """
-        # if self.edbversion > "2023.1":
+        # if self.version > "2023.1":
         #     self.standalone = False
 
         self.core.Database.SetRunAsStandAlone(self.standalone)
@@ -2073,7 +2058,7 @@ class Edb:
         Examples
         --------
         >>> from pyedb import Edb
-        >>> edb = Edb(r'C:\\test.aedb', edbversion="2022.2")
+        >>> edb = Edb(r'C:\\test.aedb', version="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
         >>> start = time.time()
@@ -2733,7 +2718,7 @@ class Edb:
         Examples
         --------
         >>> from pyedb import Edb
-        >>> edb = Edb(r'C:\\test.aedb', edbversion="2022.2")
+        >>> edb = Edb(r'C:\\test.aedb', version="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
         >>> start = time.time()
@@ -3130,7 +3115,7 @@ class Edb:
         --------
 
         >>> from pyedb import Edb
-        >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", edbversion="2023.2")
+        >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", version="2023.2")
 
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
         >>> edb.write_export3d_option_config_file(r"C:\\temp", options_config)
@@ -3173,7 +3158,7 @@ class Edb:
         --------
 
         >>> from pyedb import Edb
-        >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", edbversion="2021.2")
+        >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", version="2021.2")
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
         >>> edb.write_export3d_option_config_file("C:\\temp", options_config)
         >>> edb.export_q3d("C:\\temp")
@@ -3224,7 +3209,7 @@ class Edb:
 
         >>> from pyedb import Edb
 
-        >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", edbversion="2021.2")
+        >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", version="2021.2")
 
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
         >>> edb.write_export3d_option_config_file("C:\\temp", options_config)
@@ -3906,7 +3891,7 @@ class Edb:
         if name in self.setups:
             self.logger.error("Setup name already used in the layout")
             return False
-        version = self.edbversion.split(".")
+        version = self.version.split(".")
         if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
             setup = RaptorXSimulationSetup(self).create(name)
             return setup
@@ -3931,8 +3916,7 @@ class Edb:
         if name in self.setups:
             self.logger.error("Setup name already used in the layout")
             return False
-        version = self.edbversion.split(".")
-        if float(self.edbversion) < 2024.2:
+        if float(self.version) < 2024.2:
             self.logger.error("HFSSPI simulation only supported with Ansys release 2024R2 and higher")
             return False
         return HFSSPISimulationSetup(self, name=name)
@@ -4105,7 +4089,7 @@ class Edb:
         defined_ports = {}
         project_connexions = None
         for edb_path, zone_info in zone_dict.items():
-            edb = Edb(edbversion=self.edbversion, edbpath=edb_path)
+            edb = Edb(edbpath=edb_path)
             edb.cutout(
                 use_pyaedt_cutout=True,
                 custom_extent=zone_info[1],
@@ -4733,7 +4717,7 @@ class Edb:
             raise RuntimeWarning(
                 "No padstack instances found inside evaluated voids during model creation for arbitrary" "waveports"
             )
-        cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion)
+        cloned_edb = Edb(edbpath=output_edb)
 
         cloned_edb.stackup.add_layer(
             layer_name="ports",
