@@ -311,7 +311,7 @@ def Edb(
             control_file=control_file,
         )
     else:
-        if float(version) >= 2025.2:
+        if float(settings.specified_version) >= 2025.2:
             warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
 
         from pyedb.dotnet.edb import Edb
