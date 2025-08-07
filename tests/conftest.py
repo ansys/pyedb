@@ -34,7 +34,6 @@ import pytest
 
 from pyedb.generic.design_types import Edb
 from pyedb.generic.filesystem import Scratch
-from pyedb.misc.misc import list_installed_ansysem
 
 local_path = os.path.dirname(os.path.realpath(__file__))
 example_models_path = Path(__file__).parent / "example_models"
@@ -59,10 +58,6 @@ if os.path.exists(local_config_file):
 
 desktop_version = config["desktopVersion"]
 GRPC = config["use_grpc"]
-
-if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_installed_ansysem():
-    desktop_version = list_installed_ansysem()[0][12:].replace(".", "")
-    desktop_version = "20{}.{}".format(desktop_version[:2], desktop_version[-1])
 
 test_subfolder = "TEDB"
 test_project_name = "ANSYS-HSD_V1"

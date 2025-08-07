@@ -46,7 +46,6 @@ from pyedb.component_libraries.ansys_components import (
     Series,
 )
 from pyedb.generic.general_methods import (
-    deprecate_argument_name,
     generate_unique_name,
     get_filename_without_extension,
 )
@@ -58,6 +57,7 @@ from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.utility.sources import SourceType
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 

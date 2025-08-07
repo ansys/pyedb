@@ -210,7 +210,6 @@ class Edb(EdbInit):
         technology_file: str = None,
         layer_filter: str = None,
         restart_rpc_server=False,
-        **kwargs,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
@@ -2491,7 +2490,7 @@ class Edb(EdbInit):
         >>> # Export to HFSS project:
         >>> edb.export_hfss(r"C:/output", net_list=["SignalNet"])
         """
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self.edbpath)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
 
     def export_q3d(
@@ -2593,7 +2592,7 @@ class Edb(EdbInit):
         >>> # Solve with SIwave:
         >>> edb.solve_siwave()
         """
-        process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
+        process = SiwaveSolve(self.edbpath)
         try:
             self.close()
         except:
