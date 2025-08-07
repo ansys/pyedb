@@ -184,9 +184,6 @@ def _function_handler_wrapper(user_function):  # pragma: no cover
     return wrapper
 
 
-import functools
-
-
 def get_filename_without_extension(path):
     """Get the filename without its extension.
 
