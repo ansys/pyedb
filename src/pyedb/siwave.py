@@ -20,8 +20,8 @@ import warnings
 
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
-from pyedb.generic.settings import settings
 from pyedb.generic.general_methods import _pythonver, generate_unique_name, is_windows
+from pyedb.generic.settings import settings
 from pyedb.misc.misc import list_installed_ansysem
 from pyedb.siwave_core.icepak import Icepak
 

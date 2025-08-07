@@ -339,6 +339,7 @@ class Settings(object):
             self.logger = pyaedt_settings.logger
         else:
             from pyedb.edb_logger import EdbLogger
+
             self.logger = EdbLogger(to_stdout=self.enable_screen_logs, settings=self)
 
 

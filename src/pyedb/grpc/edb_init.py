@@ -31,8 +31,8 @@ import time
 import ansys.edb.core.database as database
 
 from pyedb import __version__
-from pyedb.generic.settings import settings
 from pyedb.generic.general_methods import env_path, env_value, is_linux
+from pyedb.generic.settings import settings
 from pyedb.grpc.rpc_session import RpcSession
 
 

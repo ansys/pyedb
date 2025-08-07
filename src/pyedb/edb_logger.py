@@ -412,4 +412,3 @@ class EdbLogger(object):
         """Global logger."""
         self._global = logging.getLogger("Global")
         return self._global
-
