@@ -24,9 +24,7 @@ import warnings
 
 from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
 from pyedb.generic.settings import settings
-from pyedb.misc.decorators import (
-    deprecate_argument_name
-)
+from pyedb.misc.decorators import deprecate_argument_name
 
 if TYPE_CHECKING:
     from pyedb.dotnet.edb import Edb as EdbDotnet
@@ -51,17 +49,17 @@ def Edb(*, grpc: bool, **kwargs) -> Union["EdbGrpc", "EdbDotnet"]:
 # lazy imports
 @deprecate_argument_name({"edbversion": "version"})
 def Edb(
-        edbpath=None,
-        cellname=None,
-        isreadonly=False,
-        version=None,
-        isaedtowned=False,
-        oproject=None,
-        student_version=False,
-        use_ppe=False,
-        technology_file=None,
-        grpc=False,
-        control_file=None,
+    edbpath=None,
+    cellname=None,
+    isreadonly=False,
+    version=None,
+    isaedtowned=False,
+    oproject=None,
+    student_version=False,
+    use_ppe=False,
+    technology_file=None,
+    grpc=False,
+    control_file=None,
 ):
     """Provides the EDB application interface.
 
@@ -304,7 +302,7 @@ def Edb(
             edbpath=edbpath,
             cellname=cellname,
             isreadonly=isreadonly,
-            edbversion=settings.specified_version,
+            edbversion=version,
             isaedtowned=isaedtowned,
             oproject=oproject,
             use_ppe=use_ppe,
@@ -312,7 +310,7 @@ def Edb(
             control_file=control_file,
         )
     else:
-        if float(settings.specified_version) >= 2025.2:
+        if float(version) >= 2025.2:
             warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
 
         from pyedb.dotnet.edb import Edb
@@ -329,7 +327,7 @@ def Edb(
 
 
 def Siwave(
-        specified_version=None,
+    specified_version=None,
 ):
     """Siwave Class."""
     from pyedb.siwave import Siwave as app
