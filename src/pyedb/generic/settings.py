@@ -24,6 +24,7 @@ import os
 import re
 import sys
 import time
+import warnings
 
 
 class Settings(object):
@@ -283,7 +284,9 @@ class Settings(object):
         version_pattern = re.compile(r"^(ANSYSEM_ROOT|ANSYSEM_PY_CLIENT_ROOT|ANSYSEMSV_ROOT)\d{3}$")
         env_list = sorted([x for x in os.environ if version_pattern.match(x)], reverse=True)
         if not env_list:
-            raise Exception("No installed versions of AEDT are found in the system environment variables.")
+            warnings.warn("No installed versions of AEDT are found in the system environment variables.")
+            return
+
         aedt_system_env_variables = {i: os.environ[i] for i in env_list}
 
         standard_versions = {}
