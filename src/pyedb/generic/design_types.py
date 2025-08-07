@@ -291,10 +291,11 @@ def Edb(
             else:
                 settings.specified_version = version
 
-
     if grpc:
         if float(settings.specified_version) < 2025.2:
-            raise ValueError(f"gRPC flag was enabled however your ANSYS AEDT version {settings.specified_version} is not compatible")
+            raise ValueError(
+                f"gRPC flag was enabled however your ANSYS AEDT version {settings.specified_version} is not compatible"
+            )
 
         from pyedb.grpc.edb import Edb as app
 
@@ -314,6 +315,7 @@ def Edb(
             warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
 
         from pyedb.dotnet.edb import Edb
+
         return Edb(
             edbpath=edbpath,
             cellname=cellname,

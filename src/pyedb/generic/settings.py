@@ -315,7 +315,7 @@ class Settings(object):
             return self.edb_dll_path
         elif self.is_student_version:
             return self.INSTALLED_STUDENT_VERSIONS[self.specified_version]
-        elif self.specified_version in self.INSTALLED_VERSIONS.keys() :
+        elif self.specified_version in self.INSTALLED_VERSIONS.keys():
             return self.INSTALLED_VERSIONS[self.specified_version]
         elif os.name == "posix":
             main = sys.modules["__main__"]
