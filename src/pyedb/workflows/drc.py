@@ -226,17 +226,12 @@ class Drc:
     >>> drc.to_ipc356a("fab_review.ipc")
     """
 
-    # ------------------------------------------------------------
-    # Construction
-    # ------------------------------------------------------------
     def __init__(self, edb: pyedb.Edb):
         self.edb = edb
         self.violations: List[Dict[str, Any]] = []
         self._build_spatial_index()
 
-    # ------------------------------------------------------------
     # Spatial index (R-tree)
-    # ------------------------------------------------------------
     def _build_spatial_index(self) -> None:
         self.idx_vias = rtree_index.Index()
         self.idx_components = rtree_index.Index()
@@ -246,9 +241,6 @@ class Drc:
         for i, comp in enumerate(self.edb.components.components.values()):
             self.idx_components.insert(i, comp.bounding_box)
 
-    # ------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------
     def check(self, rules: Rules) -> List[Dict[str, Any]]:
         """
         Run all rules and return the list of violations.
@@ -273,9 +265,7 @@ class Drc:
     def _to_um(self, s: str) -> float:
         return self.edb.value(s) * 1e6  # m -> µm
 
-    # ------------------------------------------------------------
     # Geometry / Manufacturing Rules
-    # ------------------------------------------------------------
     def _rule_min_line_width(self, r):
         lim = self._to_um(r["value"])
         layers = r.get("layers") or self.edb.stackup.signal_layers.keys()
@@ -358,9 +348,7 @@ class Drc:
                     {"rule": "copperBalance", "layer": lyr, "imbalance_pct": imbalance, "limit_pct": max_imbalance}
                 )
 
-    # ------------------------------------------------------------
     # High-speed rules
-    # ------------------------------------------------------------
     def _rule_diff_pair_length_match(self, r):
         tol = self._to_um(r["tolerance"])
         for pair in r["pairs"]:
@@ -379,9 +367,7 @@ class Drc:
                     }
                 )
 
-    # ------------------------------------------------------------
     # Impedance rules (improved analytical)
-    # ------------------------------------------------------------
     def _rule_impedance_single_end(self, r):
         target = float(r["value"])
         tol = float(r.get("tolerance", 5))
@@ -436,9 +422,7 @@ class Drc:
                     }
                 )
 
-    # ------------------------------------------------------------
     # Back-drill / stub rules
-    # ------------------------------------------------------------
     def _rule_back_drill_stub_length(self, r):
         max_stub = self._to_um(r["value"])
         for via in self.edb.padstacks.instances.values():
@@ -448,9 +432,7 @@ class Drc:
                     {"rule": "backDrillStubLength", "via": via.name, "stub_um": stub, "limit_um": max_stub}
                 )
 
-    # ------------------------------------------------------------
     # Helper methods for impedance
-    # ------------------------------------------------------------
     def _spacing_between_nets(self, net1, net2):
         p1 = self.edb.nets.nets[net1].primitives[0]
         p2 = self.edb.nets.nets[net2].primitives[0]
@@ -473,9 +455,7 @@ class Drc:
         lyr = next(p.layer for p in self.edb.nets.nets[net_name].primitives)
         return lyr.type == "signal"
 
-    # ------------------------------------------------------------
     # Export utilities
-    # ------------------------------------------------------------
     def to_dataframe(self) -> pd.DataFrame:
         """Return violations as a Pandas DataFrame."""
         return pd.DataFrame(self.violations)
