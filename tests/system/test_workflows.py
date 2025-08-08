@@ -78,18 +78,18 @@ class TestClass:
         from pyedb.workflows.drc import Drc, Rules
 
         RULES_DICT = {
-            "minLineWidth": [{"name": "MW", "value": "3.5mil"}],
-            "minClearance": [{"name": "CLR", "value": "4mil", "net1": "*", "net2": "*"}],
-            "minAnnularRing": [{"name": "AR", "value": "2mil"}],
-            "diffPairLengthMatch": [
+            "min_line_width": [{"name": "MW", "value": "3.5mil"}],
+            "min_clearance": [{"name": "CLR", "value": "4mil", "net1": "*", "net2": "*"}],
+            "min_annular_ring": [{"name": "AR", "value": "2mil"}],
+            "diff_pair_length_match": [
                 {"name": "DPMATCH", "tolerance": "5mil", "pairs": [{"positive": "DP_P", "negative": "DP_N"}]}
             ],
-            "impedanceSingleEnd": [{"name": "Z0_50", "value": 50, "layers": ["TOP", "BOTTOM"], "tolerance": 3}],
-            "impedanceDiffPair": [
+            "impedance_single_end": [{"name": "Z0_50", "value": 50, "layers": ["TOP", "BOTTOM"], "tolerance": 3}],
+            "impedance_diff_pair": [
                 {"name": "Zdiff_90", "value": 90, "pairs": [{"p": "D_P", "n": "D_N"}], "tolerance": 3}
             ],
-            "backDrillStubLength": [{"name": "STUB", "value": "6mil"}],
-            "copperBalance": [{"name": "CB", "max_percent": 15, "layers": ["L3", "L4"]}],
+            "back_drill_stub_length": [{"name": "STUB", "value": "6mil"}],
+            "copper_balance": [{"name": "CB", "max_percent": 15, "layers": ["L3", "L4"]}],
         }
 
         edbapp = edb_examples.get_si_verse()

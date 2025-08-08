@@ -18,6 +18,7 @@ pip install pyedb rtree pandas shapely
 
 from __future__ import annotations
 
+from collections import defaultdict
 import datetime
 import itertools
 import math
@@ -30,6 +31,7 @@ from shapely.geometry import Polygon
 from shapely.ops import unary_union
 
 import pyedb
+from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 class MinLineWidth(BaseModel):
@@ -190,7 +192,7 @@ class Rules(BaseModel):
     copper_balance: List[CopperBalance]
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> Rules:
+    def from_dict(cls, data: Dict[str, Any]) -> "Rules":
         """
         Import data from a dictionary.
 
@@ -233,9 +235,13 @@ class Drc:
 
     # Spatial index (R-tree)
     def _build_spatial_index(self) -> None:
+        self.idx_primitives = rtree_index.Index()
         self.idx_vias = rtree_index.Index()
         self.idx_components = rtree_index.Index()
 
+        for i, prim in enumerate(self.edb.modeler.primitives):
+            bbox = prim.bbox
+            self.idx_primitives.insert(i, coordinates=[bbox[0], bbox[1], bbox[2], bbox[3]])
         for i, via in enumerate(self.edb.padstacks.instances.values()):
             self.idx_vias.insert(i, via.position)
         for i, comp in enumerate(self.edb.components.components.values()):
@@ -247,9 +253,8 @@ class Drc:
 
         Parameters
         ----------
-        rules : dict
-            JSON-like dictionary with rule groups as keys and list of rule dicts
-            as values.
+        rules : Rules
+            An instance of the Rules class containing the design rules.
 
         Returns
         -------
@@ -257,61 +262,92 @@ class Drc:
             Each element is a dict describing the violation.
         """
         self.violations.clear()
-        for group, rule_list in rules.items():
-            for rule in rule_list:
-                getattr(self, f"_rule_{group}", self._noop)(rule)
+
+        # Iterate through each rule in the Rules object
+        for rule_group in rules.__fields__:
+            rule_list = getattr(rules, rule_group)
+            if rule_list:
+                for rule in rule_list:
+                    rule_method_name = f"_rule_{rule_group}"
+                    getattr(self, rule_method_name, self._noop)(rule)
         return self.violations
 
-    def _to_um(self, s: str) -> float:
-        return self.edb.value(s) * 1e6  # m -> µm
+    def _noop(self, rule):
+        raise NotImplementedError(f"Rule handler for '{rule.name}' not implemented. ")
 
     # Geometry / Manufacturing Rules
-    def _rule_min_line_width(self, r):
-        lim = self._to_um(r["value"])
-        layers = r.get("layers") or self.edb.stackup.signal_layers.keys()
+    def _rule_min_line_width(self, rule: MinLineWidth):
+        lim = self.edb.value(rule.value)
+        layers = rule.layers if hasattr(rule, "layers") else self.edb.stackup.signal_layers.keys()
+        primitives = self.edb.modeler.primitives_by_layer
         for lyr in layers:
-            for prim in self.edb.modeler.primitives_by_layer.get(lyr, []):
-                if prim.primitive_type.name == "Path":
-                    w = prim.width * 1e6
-                    if w < lim:
+            if lyr in primitives:
+                paths = [prim for prim in self.edb.modeler.primitives_by_layer[lyr] if prim.primitive_type == "path"]
+                for path in paths:
+                    if path.width < lim:
                         self.violations.append(
-                            {"rule": "minLineWidth", "layer": lyr, "primitive": prim.id, "value_um": w, "limit_um": lim}
+                            {
+                                "rule": "minLineWidth",
+                                "layer": lyr,
+                                "primitive": path.id,
+                                "value_um": path.width * 1e-6,
+                                "limit_um": rule.value,
+                            }
                         )
 
-    def _rule_max_line_width(self, r):
-        lim = self._to_um(r["value"])
-        layers = r.get("layers") or self.edb.stackup.signal_layers.keys()
-        for lyr in layers:
-            for prim in self.edb.modeler.primitives_by_layer.get(lyr, []):
-                if prim.primitive_type.name == "Path":
-                    w = prim.width * 1e6
-                    if w > lim:
-                        self.violations.append(
-                            {"rule": "maxLineWidth", "layer": lyr, "primitive": prim.id, "value_um": w, "limit_um": lim}
-                        )
-
-    def _rule_min_clearance(self, r):
-        gap = self._to_um(r["value"])
-        net1, net2 = r.get("net1", "*"), r.get("net2", "*")
+    def _rule_min_clearance(self, rule: MinClearance):
+        gap = self.edb.value(rule.value)
+        net1, net2 = rule.net1, rule.net2
         nets1 = [net1] if net1 != "*" else list(self.edb.nets.nets.keys())
         nets2 = [net2] if net2 != "*" else list(self.edb.nets.nets.keys())
-        for n1, n2 in itertools.product(nets1, nets2):
+
+        # Create a dictionary to hold primitives by net
+        primitives_by_net = {net: self.edb.nets[net].primitives for net in set(nets1 + nets2)}
+
+        # Iterate over unique pairs of nets
+        for n1, n2 in itertools.combinations_with_replacement(sorted(set(nets1 + nets2)), 2):
             if n1 == n2:
                 continue
-            for i1 in self.idx_primitives.intersection((0, 0, 1e9, 1e9), objects=True):
-                if i1.object.net_name != n1:
-                    continue
-                for i2 in self.idx_primitives.intersection(i1.bbox, objects=True):
-                    if i2.object.net_name != n2:
-                        continue
-                    d = i1.object.GetPolygonData().Distance(i2.object.GetPolygonData()) * 1e6
-                    if 0 < d < gap:
-                        self.violations.append(
-                            {"rule": "minClearance", "net1": n1, "net2": n2, "distance_um": d, "limit_um": gap}
-                        )
 
-    def _rule_min_annular_ring(self, r):
-        lim = self._to_um(r["value"])
+            primitives_n1 = primitives_by_net[n1]
+            primitives_n2 = primitives_by_net[n2]
+
+            # sorting primitives by layers
+            primitives_n1_layers = defaultdict(list)
+            primitives_n2_layers = defaultdict(list)
+            for prim in primitives_n1:
+                primitives_n1_layers[prim.layer.name].append(prim)
+            for prim in primitives_n2:
+                primitives_n2_layers[prim.layer.name].append(prim)
+            primitives_n1_layers = dict(primitives_n1_layers)
+            primitives_n2_layers = dict(primitives_n2_layers)
+            for layer, __primitives in primitives_n1_layers.items():
+                if layer in primitives_n2_layers:
+                    for prim in __primitives:
+                        intersect_primitives = list(
+                            self.idx_primitives.intersection(list(itertools.chain(*prim.polygon_data.bounding_box)))
+                        )
+                        potential_intersections = [prim.id for prim in list(primitives_n2_layers[layer])]
+                        intersections = [id for id in intersect_primitives if id in potential_intersections]
+                        if intersections:
+                            for id_ in intersections:
+                                primitive2 = self.edb.modeler.primitives[id_]
+                                p1 = prim.polygon_data.points_without_arcs
+                                p2 = primitive2.polygon_data.points_without_arcs
+                                d = GeometryOperators.smallest_distance_between_polygons(polygon1=p1, polygon2=p2)
+                                if 0 < d < gap:
+                                    self.violations.append(
+                                        {
+                                            "rule": "minClearance",
+                                            "net1": n1,
+                                            "net2": n2,
+                                            "distance_um": d,
+                                            "limit_um": gap,
+                                        }
+                                    )
+
+    def _rule_min_annular_ring(self, rule: MinAnnularRing):
+        lim = self._to_um(rule.value)
         for via in self.edb.padstacks.instances.values():
             pad = via.padstack_def.pad_by_layer.values().__iter__().__next__()
             od = pad[0].parameters_values[0] * 1e6
@@ -329,7 +365,7 @@ class Drc:
                     d = prim.GetPolygonData().Distance(o.GetPolygonData()) * 1e6
                     if d < gap:
                         self.violations.append(
-                            {"rule": "minCopperToBoardEdge", "layer": lyr, "distance_um": d, "limit_um": gap}
+                            {"rule": "min_copper_to_board_edge", "layer": lyr, "distance_um": d, "limit_um": gap}
                         )
 
     def _rule_copper_balance(self, r):
@@ -345,7 +381,7 @@ class Drc:
             imbalance = abs(area_copper - area_board / 2) / (area_board / 2) * 100
             if imbalance > max_imbalance:
                 self.violations.append(
-                    {"rule": "copperBalance", "layer": lyr, "imbalance_pct": imbalance, "limit_pct": max_imbalance}
+                    {"rule": "copper_balance", "layer": lyr, "imbalance_pct": imbalance, "limit_pct": max_imbalance}
                 )
 
     # High-speed rules
@@ -359,7 +395,7 @@ class Drc:
             if abs(len_p - len_n) > tol:
                 self.violations.append(
                     {
-                        "rule": "diffPairLengthMatch",
+                        "rule": "diff_pair_length_match",
                         "positive": pair["positive"],
                         "negative": pair["negative"],
                         "delta_um": abs(len_p - len_n),
@@ -385,7 +421,7 @@ class Drc:
             if abs(z0 - target) / target * 100 > tol:
                 self.violations.append(
                     {
-                        "rule": "impedanceSingleEnd",
+                        "rule": "impedance_single_end",
                         "layer": lyr_name,
                         "z0_ohm": round(z0, 2),
                         "target_ohm": target,
@@ -413,7 +449,7 @@ class Drc:
             if abs(z_diff - target) / target * 100 > tol:
                 self.violations.append(
                     {
-                        "rule": "impedanceDiffPair",
+                        "rule": "impedance_diff_pair",
                         "positive": p_net,
                         "negative": n_net,
                         "zdiff_ohm": round(z_diff, 2),
@@ -429,7 +465,7 @@ class Drc:
             stub = via.length - via.backdrill_depth if hasattr(via, "backdrill_depth") else 0
             if stub > max_stub:
                 self.violations.append(
-                    {"rule": "backDrillStubLength", "via": via.name, "stub_um": stub, "limit_um": max_stub}
+                    {"rule": "back_drill_stub_length", "via": via.name, "stub_um": stub, "limit_um": max_stub}
                 )
 
     # Helper methods for impedance
