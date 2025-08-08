@@ -43,7 +43,7 @@ example_models_path = Path(__file__).parent / "example_models"
 
 
 config = {
-    "desktopVersion": "2025.1",
+    "desktopVersion": "2025.2",
     "use_grpc": False,
 }
 
@@ -143,6 +143,14 @@ class EdbExamples:
                     self.local_scratch.copyfile(src, file_folder_name)
                 else:
                     self.local_scratch.copyfolder(src, file_folder_name)
+        if edbapp:
+            version = desktop_version if version is None else version
+            return Edb(aedb, edbversion=version, grpc=self.grpc)
+        else:
+            return aedb
+
+    def get_multi_cells_edb(self, edbapp=True, version=None, source_file_path="TEDB/multi_cells.aedb"):
+        aedb = self._copy_file_folder_into_local_folder(source_file_path)
         if edbapp:
             version = desktop_version if version is None else version
             return Edb(aedb, edbversion=version, grpc=self.grpc)
