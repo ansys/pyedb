@@ -19,9 +19,11 @@ pip install pyedb rtree pandas shapely
 from __future__ import annotations
 
 from collections import defaultdict
+import concurrent.futures
 import datetime
 import itertools
 import math
+from queue import Queue
 from typing import Any, Dict, List
 
 import pandas as pd
@@ -304,11 +306,11 @@ class Drc:
         # Create a dictionary to hold primitives by net
         primitives_by_net = {net: self.edb.nets[net].primitives for net in set(nets1 + nets2)}
 
-        # Iterate over unique pairs of nets
-        for n1, n2 in itertools.combinations_with_replacement(sorted(set(nets1 + nets2)), 2):
-            if n1 == n2:
-                continue
+        # Use a thread-safe queue for violations
+        self.violations = Queue()
 
+        # Function to process a pair of nets
+        def process_net_pair(n1, n2):
             primitives_n1 = primitives_by_net[n1]
             primitives_n2 = primitives_by_net[n2]
 
@@ -321,6 +323,7 @@ class Drc:
                 primitives_n2_layers[prim.layer.name].append(prim)
             primitives_n1_layers = dict(primitives_n1_layers)
             primitives_n2_layers = dict(primitives_n2_layers)
+
             for layer, __primitives in primitives_n1_layers.items():
                 if layer in primitives_n2_layers:
                     for prim in __primitives:
@@ -336,15 +339,35 @@ class Drc:
                                 p2 = primitive2.polygon_data.points_without_arcs
                                 d = GeometryOperators.smallest_distance_between_polygons(polygon1=p1, polygon2=p2)
                                 if 0 < d < gap:
-                                    self.violations.append(
-                                        {
-                                            "rule": "minClearance",
-                                            "net1": n1,
-                                            "net2": n2,
-                                            "distance_um": d,
-                                            "limit_um": gap,
-                                        }
-                                    )
+                                    violation = {
+                                        "rule": "minClearance",
+                                        "net1": n1,
+                                        "net2": n2,
+                                        "distance_um": d,
+                                        "limit_um": gap,
+                                    }
+                                    self.violations.put(violation)  # Use thread-safe queue
+
+        # Use ThreadPoolExecutor with max_workers to run the checks in parallel
+        max_workers = 8  # Set the maximum number of threads
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = []
+            for n1, n2 in itertools.combinations_with_replacement(sorted(set(nets1 + nets2)), 2):
+                if n1 == n2:
+                    continue
+                futures.append(executor.submit(process_net_pair, n1, n2))
+
+            # Wait for all futures to complete
+            for future in concurrent.futures.as_completed(futures):
+                future.result()  # This will raise an exception if any occurred
+
+        # Convert the thread-safe queue back to a list
+        violations_list = []
+        while not self.violations.empty():
+            violations_list.append(self.violations.get())
+
+        # Update self.violations with the final list
+        self.violations = violations_list
 
     def _rule_min_annular_ring(self, rule: MinAnnularRing):
         lim = self._to_um(rule.value)
