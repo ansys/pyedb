@@ -24,6 +24,7 @@ import datetime
 import itertools
 import math
 from queue import Queue
+from threading import Lock
 from typing import Any, Dict, List
 
 import pandas as pd
@@ -303,78 +304,71 @@ class Drc:
         nets1 = [net1] if net1 != "*" else list(self.edb.nets.nets.keys())
         nets2 = [net2] if net2 != "*" else list(self.edb.nets.nets.keys())
 
-        # Create a dictionary to hold primitives by net
-        primitives_by_net = {net: self.edb.nets[net].primitives for net in set(nets1 + nets2)}
+        # === LAYER 1: EDB access (single-threaded) ===
+        primitives_by_net_layer = {}
+        primitive_points_map = {}
 
-        # Use a thread-safe queue for violations
-        self.violations = Queue()
+        for net in set(nets1 + nets2):
+            primitives = self.edb.nets[net].primitives
+            net_layer_map = defaultdict(list)
 
-        # Function to process a pair of nets
+            for prim in primitives:
+                bbox = list(itertools.chain(*prim.polygon_data.bounding_box))
+                points = prim.polygon_data.points_without_arcs
+
+                primitive_points_map[prim.id] = points
+                net_layer_map[prim.layer.name].append({"id": prim.id, "bbox": bbox})
+
+            primitives_by_net_layer[net] = dict(net_layer_map)
+
+        # Shared index and lock
+        idx_primitives = self.idx_primitives
+        idx_lock = Lock()
+
+        # === LAYER 2: Multi-threaded geometry checks ===
+        results_queue = Queue()
+
         def process_net_pair(n1, n2):
-            primitives_n1 = primitives_by_net[n1]
-            primitives_n2 = primitives_by_net[n2]
+            net1_layers = primitives_by_net_layer[n1]
+            net2_layers = primitives_by_net_layer[n2]
 
-            # sorting primitives by layers
-            primitives_n1_layers = defaultdict(list)
-            primitives_n2_layers = defaultdict(list)
-            for prim in primitives_n1:
-                primitives_n1_layers[prim.layer.name].append(prim)
-            for prim in primitives_n2:
-                primitives_n2_layers[prim.layer.name].append(prim)
-            primitives_n1_layers = dict(primitives_n1_layers)
-            primitives_n2_layers = dict(primitives_n2_layers)
+            for layer, prims_n1 in net1_layers.items():
+                if layer in net2_layers:
+                    prims_n2 = net2_layers[layer]
+                    potential_ids_n2 = {p["id"] for p in prims_n2}
 
-            for layer, __primitives in primitives_n1_layers.items():
-                if layer in primitives_n2_layers:
-                    for prim in __primitives:
-                        intersect_primitives = list(
-                            self.idx_primitives.intersection(list(itertools.chain(*prim.polygon_data.bounding_box)))
-                        )
-                        potential_intersections = [prim.id for prim in list(primitives_n2_layers[layer])]
-                        intersections = [id for id in intersect_primitives if id in potential_intersections]
-                        if intersections:
-                            for id_ in intersections:
-                                primitive2 = self.edb.modeler.primitives[id_]
-                                p1 = prim.polygon_data.points_without_arcs
-                                p2 = primitive2.polygon_data.points_without_arcs
-                                d = GeometryOperators.smallest_distance_between_polygons(polygon1=p1, polygon2=p2)
-                                if 0 < d < gap:
-                                    violation = {
-                                        "rule": "minClearance",
-                                        "net1": n1,
-                                        "net2": n2,
-                                        "distance_um": d,
-                                        "limit_um": gap,
-                                    }
-                                    self.violations.put(violation)  # Use thread-safe queue
+                    for prim in prims_n1:
+                        with idx_lock:
+                            intersect_ids = set(idx_primitives.intersection(prim["bbox"]))
+                        intersections = potential_ids_n2.intersection(intersect_ids)
 
-        # Use ThreadPoolExecutor with max_workers to run the checks in parallel
-        max_workers = 8  # Set the maximum number of threads
-        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = []
-            for n1, n2 in itertools.combinations_with_replacement(sorted(set(nets1 + nets2)), 2):
-                if n1 == n2:
-                    continue
-                futures.append(executor.submit(process_net_pair, n1, n2))
+                        for id_ in intersections:
+                            p1 = primitive_points_map[prim["id"]]
+                            p2 = primitive_points_map[id_]
+                            d = GeometryOperators.smallest_distance_between_polygons(p1, p2)
+                            if 0 < d < gap:
+                                results_queue.put(
+                                    {"rule": "minClearance", "net1": n1, "net2": n2, "distance_um": d, "limit_um": gap}
+                                )
 
-            # Wait for all futures to complete
-            for future in concurrent.futures.as_completed(futures):
-                future.result()  # This will raise an exception if any occurred
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+            futures = [
+                executor.submit(process_net_pair, n1, n2)
+                for n1, n2 in itertools.combinations_with_replacement(sorted(set(nets1 + nets2)), 2)
+                if n1 != n2
+            ]
+            for f in concurrent.futures.as_completed(futures):
+                f.result()
 
-        # Convert the thread-safe queue back to a list
-        violations_list = []
-        while not self.violations.empty():
-            violations_list.append(self.violations.get())
-
-        # Update self.violations with the final list
-        self.violations = violations_list
+        # Final violations list
+        self.violations = list(results_queue.queue)
 
     def _rule_min_annular_ring(self, rule: MinAnnularRing):
-        lim = self._to_um(rule.value)
+        lim = self.edb.value(rule.value)
         for via in self.edb.padstacks.instances.values():
             pad = via.padstack_def.pad_by_layer.values().__iter__().__next__()
-            od = pad[0].parameters_values[0] * 1e6
-            id_ = via.padstack_def.hole_properties[0] * 1e6
+            od = pad[0].parameters_values[0]
+            id_ = via.padstack_def.hole_properties[0]
             ring = (od - id_) / 2
             if ring < lim:
                 self.violations.append({"rule": "minAnnularRing", "via": via.name, "ring_um": ring, "limit_um": lim})
