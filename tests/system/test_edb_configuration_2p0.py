@@ -29,7 +29,6 @@ from pyedb.generic.general_methods import is_linux
 from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
-
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 U8_IC_DIE_PROPERTIES = {
@@ -63,7 +62,6 @@ def _assert_final_ic_die_properties(component: dict):
 
 
 class TestClass(BaseTestClass):
-
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_13b_stackup_materials(self, edb_examples):
         data = {

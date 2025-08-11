@@ -103,7 +103,6 @@ PADSTACK_DEFS = [
 
 
 class TestClass(BaseTestClass):
-
     @pytest.fixture(autouse=True)
     def init(self, local_scratch):
         working_dir = Path(local_scratch.path)

@@ -50,7 +50,6 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
 class TestClass(BaseTestClass):
-
     def test_stackup(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(edb)
