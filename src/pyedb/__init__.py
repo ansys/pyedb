@@ -3,7 +3,6 @@ import os
 import sys
 import warnings
 
-
 LATEST_DEPRECATED_PYTHON_VERSION = (3, 7)
 
 
