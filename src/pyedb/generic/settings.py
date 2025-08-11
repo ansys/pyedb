@@ -314,6 +314,7 @@ class Settings(object):
 
     def __init_logger(self):
         from pyedb.edb_logger import EdbLogger
+
         self.logger = EdbLogger(to_stdout=self.enable_screen_logs, settings=self)
 
 
