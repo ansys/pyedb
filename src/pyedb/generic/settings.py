@@ -284,7 +284,7 @@ class Settings(object):
         as the value."""
         version_pattern = re.compile(r"^(ANSYSEM_ROOT|ANSYSEM_PY_CLIENT_ROOT|ANSYSEMSV_ROOT)\d{3}$")
         env_list = sorted([x for x in os.environ if version_pattern.match(x)], reverse=True)
-        if not env_list:
+        if not env_list:  # pragma: no cover
             warnings.warn("No installed versions of AEDT are found in the system environment variables.")
             return
 
