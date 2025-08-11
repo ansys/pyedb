@@ -22,14 +22,14 @@
 
 
 import pytest
+
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
 class TestClass(BaseTestClass):
-
-    def test_point_data(self,edb_examples):
+    def test_point_data(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         path = edbapp.layout.find_primitive(name="line_272")[0]
         self.path_center_line_polygon_data = path.center_line

@@ -22,13 +22,13 @@
 
 
 import pytest
+
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
 class TestClass(BaseTestClass):
-
     def test_disjoint_nets(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         edbapp.layout_validation.disjoint_nets()

@@ -57,4 +57,3 @@ class BaseTestClass:
         """Dummy test to initialize Edb the first time."""
         edbapp = edb_examples.create_empty_edb()
         edbapp.close(terminate_rpc_session=False)
-
