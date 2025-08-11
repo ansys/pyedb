@@ -1238,7 +1238,7 @@ class Modeler(object):
                         p.width = self._pedb.edb_value(parameter_name)
         return True
 
-    def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_names_list=[]):
+    def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_names_list=None):
         """Try to unite all Polygons on specified layer.
 
         Parameters
@@ -1255,51 +1255,53 @@ class Modeler(object):
         bool
             ``True`` is successful.
         """
-        if isinstance(layer_name, str):
-            layer_name = [layer_name]
-        if not layer_name:
-            layer_name = list(self._pedb.stackup.signal_layers.keys())
 
-        for lay in layer_name:
-            self._logger.info("Uniting Objects on layer %s.", lay)
-            poly_by_nets = {}
-            all_voids = []
-            list_polygon_data = []
-            delete_list = []
-            if lay in list(self.polygons_by_layer.keys()):
-                for poly in self.polygons_by_layer[lay]:
-                    poly = poly._edb_object
-                    if not poly.GetNet().GetName() in list(poly_by_nets.keys()):
-                        if poly.GetNet().GetName():
-                            poly_by_nets[poly.GetNet().GetName()] = [poly]
-                    else:
-                        if poly.GetNet().GetName():
-                            poly_by_nets[poly.GetNet().GetName()].append(poly)
-            for net in poly_by_nets:
-                if net in net_names_list or not net_names_list:
-                    for i in poly_by_nets[net]:
-                        list_polygon_data.append(i.GetPolygonData())
-                        delete_list.append(i)
-                        all_voids.append(i.Voids)
-            a = self._edb.Geometry.PolygonData.Unite(convert_py_list_to_net_list(list_polygon_data))
-            for item in a:
-                for v in all_voids:
-                    for void in v:
-                        if int(item.GetIntersectionType(void.GetPolygonData())) == 2:
-                            item.AddHole(void.GetPolygonData())
-                self.create_polygon(item, layer_name=lay, voids=[], net_name=net)
-            for v in all_voids:
-                for void in v:
-                    for poly in poly_by_nets[net]:  # pragma no cover
-                        if int(void.GetPolygonData().GetIntersectionType(poly.GetPolygonData())) >= 2:
-                            try:
-                                id = delete_list.index(poly)
-                            except ValueError:
-                                id = -1
-                            if id >= 0:
-                                delete_list.pop(id)
-            for poly in delete_list:
-                poly.Delete()
+        def unite_polygons(polygons: list):
+            """Unite a list of polygons.
+
+            Parameters
+            ----------
+            polygons
+            """
+            if len(polygons) < 2:
+                raise ValueError("At least two polygons are required to unite.")
+            layer = set([i.layer_name for i in polygons])
+            if len(layer) > 1:
+                raise ValueError("Polygons must be on the same layer.")
+            layer = list(layer)[0]
+
+            new_polygon_data = self._pedb.core.Geometry.PolygonData.Unite(
+                convert_py_list_to_net_list([i.polygon_data._edb_object for i in polygons])
+            )
+            voids = []
+            for i in polygons:
+                voids.extend(i.voids)
+
+            new_polygons = []
+            for pdata in new_polygon_data:
+                voids_ = [i for i in voids if int(pdata.GetIntersectionType(i.GetPolygonData())) == 2]
+
+                new_polygons.append(self.create_polygon(pdata, layer, voids_, polygons[0].net_name))
+
+            for i in polygons:
+                i.delete()
+            return new_polygons
+
+        if not layer_name:
+            layers = list(self._pedb.stackup.signal_layers.keys())
+        elif isinstance(layer_name, str):
+            layers = [layer_name]
+        else:
+            layers = layer_name
+
+        for layer in layers:
+            self._logger.info("Uniting Objects on layer %s.", layer)
+            if net_names_list:
+                polygons = [i for i in self._pedb.layout.find_primitive(layer_name=layer, net_name=net_names_list) if i.primitive_type == "polygon"]
+            else:
+                polygons = [i for i in self._pedb.layout.find_primitive(layer_name=layer) if i.primitive_type == "polygon"]
+            if len(polygons) > 1:
+                unite_polygons(polygons)
 
         if delete_padstack_gemometries:
             self._logger.info("Deleting Padstack Definitions")
