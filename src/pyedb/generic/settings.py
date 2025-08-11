@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import logging
+
 import os
 import re
 import sys
@@ -70,30 +70,12 @@ class Settings(object):
         self._global_log_file_size = 10
         self._lsf_queue = None
         self._edb_environment_variables = {}
-        self._use_pyaedt_log = False
-        self._logger = None
+        self.logger = None
+        self.log_file = None
         self._aedt_version = None
 
         self.__get_version_information()
         self.__init_logger()
-
-    @property
-    def logger(self):
-        """Active logger."""
-        return self._logger
-
-    @logger.setter
-    def logger(self, val):
-        self._logger = val
-
-    @property
-    def use_pyaedt_log(self):
-        """Flag that disable Edb log when PyAEDT is used."""
-        return self._use_pyaedt_log
-
-    @use_pyaedt_log.setter
-    def use_pyaedt_log(self, value):
-        self._use_pyaedt_log = value
 
     @property
     def edb_environment_variables(self):
@@ -331,16 +313,8 @@ class Settings(object):
             raise RuntimeError(f"Version {self.specified_version} is not installed on the system. ")
 
     def __init_logger(self):
-        logger = logging.getLogger("Global")
-        if any("aedt_logger" in str(i) for i in logger.filters):
-            from ansys.aedt.core.generic.settings import settings as pyaedt_settings
-
-            self.use_pyaedt_log = True
-            self.logger = pyaedt_settings.logger
-        else:
-            from pyedb.edb_logger import EdbLogger
-
-            self.logger = EdbLogger(to_stdout=self.enable_screen_logs, settings=self)
+        from pyedb.edb_logger import EdbLogger
+        self.logger = EdbLogger(to_stdout=self.enable_screen_logs, settings=self)
 
 
 settings = Settings()
