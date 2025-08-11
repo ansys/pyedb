@@ -31,8 +31,8 @@ import time
 import ansys.edb.core.database as database
 
 from pyedb import __version__
-from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import env_path, env_value, is_linux
+from pyedb.generic.settings import settings
 from pyedb.grpc.rpc_session import RpcSession
 
 
@@ -40,7 +40,7 @@ class EdbInit(object):
     """Edb Dot Net Class."""
 
     def __init__(self, edbversion):
-        self.logger = pyedb_logger
+        self.logger = settings.logger
         self._db = None
         self.edbversion = edbversion
         self.logger.info("Logger is initialized in EDB.")

@@ -34,8 +34,8 @@ from ansys.edb.core.utility.io_manager import (
 import psutil
 
 from pyedb import __version__
-from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import env_path, env_value, is_linux
+from pyedb.generic.settings import settings
 from pyedb.misc.misc import list_installed_ansysem
 
 latency_delay = 0.1
@@ -80,12 +80,12 @@ class RpcSession:
         if not edb_version:  # pragma: no cover
             try:
                 edb_version = "20{}.{}".format(list_installed_ansysem()[0][-3:-1], list_installed_ansysem()[0][-1:])
-                pyedb_logger.info("Edb version " + edb_version)
+                settings.logger.info("Edb version " + edb_version)
             except IndexError:
                 raise Exception("No ANSYSEM_ROOTxxx is found.")
-        pyedb_logger.info("Logger is initialized in EDB.")
-        pyedb_logger.info("legacy v%s", __version__)
-        pyedb_logger.info("Python version %s", sys.version)
+        settings.logger.info("Logger is initialized in EDB.")
+        settings.logger.info("legacy v%s", __version__)
+        settings.logger.info("Python version %s", sys.version)
         if is_linux:
             if env_value(edb_version) in os.environ:
                 RpcSession.base_path = env_path(edb_version)
@@ -106,18 +106,18 @@ class RpcSession:
 
         if RpcSession.pid:
             if restart_server:
-                pyedb_logger.logger.info("Restarting RPC server")
+                settings.logger.logger.info("Restarting RPC server")
                 RpcSession.kill()
                 RpcSession.__start_rpc_server()
             else:
-                pyedb_logger.info(f"Server already running on port {RpcSession.port}")
+                settings.logger.info(f"Server already running on port {RpcSession.port}")
         else:
             RpcSession.__start_rpc_server()
             if RpcSession.rpc_session:
                 RpcSession.server_pid = RpcSession.rpc_session.local_server_proc.pid
-                pyedb_logger.info(f"Grpc session started: pid={RpcSession.server_pid}")
+                settings.logger.info(f"Grpc session started: pid={RpcSession.server_pid}")
             else:
-                pyedb_logger.error("Failed to start EDB_RPC_server process")
+                settings.logger.error("Failed to start EDB_RPC_server process")
 
     @staticmethod
     def __get_process_id():
@@ -135,7 +135,7 @@ class RpcSession:
         time.sleep(latency_delay)
         if RpcSession.rpc_session:
             RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
-            pyedb_logger.logger.info("Grpc session started")
+            settings.logger.logger.info("Grpc session started")
 
     @staticmethod
     def kill():

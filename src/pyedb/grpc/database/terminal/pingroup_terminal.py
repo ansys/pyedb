@@ -27,7 +27,7 @@ from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
 from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.misc import deprecated_property
+from pyedb.misc.decorators import deprecated_property
 
 
 class PinGroupTerminal(GrpcPinGroupTerminal):

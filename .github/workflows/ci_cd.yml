@@ -202,6 +202,7 @@ jobs:
     runs-on: [ Linux, self-hosted, pyedb ]
     env:
       ANSYSEM_ROOT251: '/usr/ansys_inc/v251/AnsysEM'
+      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
@@ -238,7 +239,7 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             xvfb-run pytest tests/system -n auto --dist loadfile -v --cov
 
