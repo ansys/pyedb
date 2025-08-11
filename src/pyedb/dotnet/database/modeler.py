@@ -1279,7 +1279,7 @@ class Modeler(object):
 
             new_polygons = []
             for pdata in new_polygon_data:
-                voids_ = [i for i in voids if int(pdata.GetIntersectionType(i.GetPolygonData())) == 2]
+                voids_ = [i for i in voids if int(pdata.GetIntersectionType(i.polygon_data._edb_object)) == 2]
 
                 new_polygons.append(self.create_polygon(pdata, layer, voids_, polygons[0].net_name))
 
