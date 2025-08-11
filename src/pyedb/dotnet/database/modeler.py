@@ -1297,9 +1297,15 @@ class Modeler(object):
         for layer in layers:
             self._logger.info("Uniting Objects on layer %s.", layer)
             if net_names_list:
-                polygons = [i for i in self._pedb.layout.find_primitive(layer_name=layer, net_name=net_names_list) if i.primitive_type == "polygon"]
+                polygons = [
+                    i
+                    for i in self._pedb.layout.find_primitive(layer_name=layer, net_name=net_names_list)
+                    if i.primitive_type == "polygon"
+                ]
             else:
-                polygons = [i for i in self._pedb.layout.find_primitive(layer_name=layer) if i.primitive_type == "polygon"]
+                polygons = [
+                    i for i in self._pedb.layout.find_primitive(layer_name=layer) if i.primitive_type == "polygon"
+                ]
             if len(polygons) > 1:
                 unite_polygons(polygons)
 
