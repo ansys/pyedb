@@ -43,7 +43,6 @@ import tempfile
 import time
 import traceback
 
-from pyedb.exceptions import MaterialModelException
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.settings import settings
 
