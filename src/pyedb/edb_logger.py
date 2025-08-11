@@ -88,6 +88,7 @@ class EdbLogger(object):
     to_stdout : bool, optional
         Whether to write log messages to stdout. The default is ``False``.
     """
+
     log_file = ""
 
     def __init__(self, level=logging.DEBUG, filename=None, to_stdout=False, settings=None):
