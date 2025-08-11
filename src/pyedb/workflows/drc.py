@@ -20,18 +20,15 @@ from __future__ import annotations
 
 from collections import defaultdict
 import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor
 import datetime
 import itertools
-import math
+import os
 from queue import Queue
-from threading import Lock
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Set
 
-import pandas as pd
 from pydantic import BaseModel
 from rtree import index as rtree_index
-from shapely.geometry import Polygon
-from shapely.ops import unary_union
 
 import pyedb
 from pyedb.modeler.geometry_operators import GeometryOperators
@@ -108,40 +105,6 @@ class DiffPairLengthMatch(BaseModel):
     pairs: List[DiffPair]
 
 
-class ImpedanceSingleEnd(BaseModel):
-    """
-    Represents the single-ended impedance rule.
-
-    Attributes:
-        name (str): The name of the rule.
-        value (int): The impedance value (e.g., 50).
-        layers (List[str]): The layers where this rule applies.
-        tolerance (int): The tolerance value for the impedance.
-    """
-
-    name: str
-    value: int
-    layers: List[str]
-    tolerance: int
-
-
-class ImpedanceDiffPair(BaseModel):
-    """
-    Represents the differential pair impedance rule.
-
-    Attributes:
-        name (str): The name of the rule.
-        value (int): The impedance value (e.g., 90).
-        pairs (List[Dict[str, str]]): A list of differential pairs.
-        tolerance (int): The tolerance value for the impedance.
-    """
-
-    name: str
-    value: int
-    pairs: List[Dict[str, str]]
-    tolerance: int
-
-
 class BackDrillStubLength(BaseModel):
     """
     Represents the back-drill stub length rule.
@@ -189,8 +152,6 @@ class Rules(BaseModel):
     min_clearance: List[MinClearance]
     min_annular_ring: List[MinAnnularRing]
     diff_pair_length_match: List[DiffPairLengthMatch]
-    impedance_single_end: List[ImpedanceSingleEnd]
-    impedance_diff_pair: List[ImpedanceDiffPair]
     back_drill_stub_length: List[BackDrillStubLength]
     copper_balance: List[CopperBalance]
 
@@ -279,240 +240,321 @@ class Drc:
         raise NotImplementedError(f"Rule handler for '{rule.name}' not implemented. ")
 
     # Geometry / Manufacturing Rules
-    def _rule_min_line_width(self, rule: MinLineWidth):
+
+    def _rule_min_line_width(self, rule: MinLineWidth, max_workers: int = None):
+        """
+        Multi-threaded, thread-safe min-line-width check.
+        Extracts EDB data in single-thread, processes in parallel.
+        """
+        # === Detect available cores ===
+        if max_workers is None:
+            total_cores = os.cpu_count() or 4
+            max_workers = max(1, total_cores - 1)
+
         lim = self.edb.value(rule.value)
-        layers = rule.layers if hasattr(rule, "layers") else self.edb.stackup.signal_layers.keys()
+
+        # === STEP 1: Extract relevant primitives from EDB ===
+        layers = rule.layers if hasattr(rule, "layers") else list(self.edb.stackup.signal_layers.keys())
         primitives = self.edb.modeler.primitives_by_layer
+
+        path_data = []  # store only Python-native info
         for lyr in layers:
             if lyr in primitives:
-                paths = [prim for prim in self.edb.modeler.primitives_by_layer[lyr] if prim.primitive_type == "path"]
-                for path in paths:
-                    if path.width < lim:
-                        self.violations.append(
-                            {
-                                "rule": "minLineWidth",
-                                "layer": lyr,
-                                "primitive": path.id,
-                                "value_um": path.width * 1e-6,
-                                "limit_um": rule.value,
-                            }
-                        )
+                for prim in primitives[lyr]:
+                    if prim.primitive_type == "path":
+                        path_data.append({"layer": lyr, "id": prim.id, "width": prim.width})
 
-    def _rule_min_clearance(self, rule: MinClearance):
+        # === STEP 2: Worker function ===
+        def check_path(path_entry):
+            if path_entry["width"] < lim:
+                return {
+                    "rule": "minLineWidth",
+                    "layer": path_entry["layer"],
+                    "primitive": path_entry["id"],
+                    "value_um": path_entry["width"] * 1e-6,
+                    "limit_um": rule.value,
+                }
+            return None
+
+        # === STEP 3: Parallel processing ===
+        violations = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [executor.submit(check_path, p) for p in path_data]
+            for f in concurrent.futures.as_completed(futures):
+                result = f.result()
+                if result:
+                    violations.append(result)
+
+        # === STEP 4: Store results ===
+        self.violations.extend(violations)
+
+    def _rule_min_clearance(
+        self, rule: MinClearance, max_workers: int = None, chunked_precompute: bool = False, chunk_size: int = 5000
+    ):
+        """
+        High-performance min-clearance check with auto core detection.
+        """
+        if max_workers is None:
+            total_cores = os.cpu_count() or 4  # fallback to 4 if detection fails
+            max_workers = max(1, total_cores - 1)  # leave 1 core free for the OS
+
         gap = self.edb.value(rule.value)
         net1, net2 = rule.net1, rule.net2
         nets1 = [net1] if net1 != "*" else list(self.edb.nets.nets.keys())
         nets2 = [net2] if net2 != "*" else list(self.edb.nets.nets.keys())
+        all_nets = sorted(set(nets1 + nets2))
 
-        # === LAYER 1: EDB access (single-threaded) ===
-        primitives_by_net_layer = {}
-        primitive_points_map = {}
+        # === LAYER 1: single-threaded EDB extraction ===
+        primitives_by_net_layer: Dict[str, Dict[str, List[dict]]] = {}
+        primitive_points_map: Dict[int, List[tuple]] = {}  # prim_id -> points
+        prim_bboxes: Dict[int, List[float]] = {}  # prim_id -> [minx,miny,maxx,maxy]
+        prim_to_net: Dict[int, str] = {}  # prim_id -> net name
 
-        for net in set(nets1 + nets2):
+        # Extract primitives (only basic python types)
+        for net in all_nets:
             primitives = self.edb.nets[net].primitives
             net_layer_map = defaultdict(list)
 
             for prim in primitives:
-                bbox = list(itertools.chain(*prim.polygon_data.bounding_box))
+                pid = prim.id
+                bbox = list(itertools.chain(*prim.polygon_data.bounding_box))  # [minx,miny,maxx,maxy]
                 points = prim.polygon_data.points_without_arcs
 
-                primitive_points_map[prim.id] = points
-                net_layer_map[prim.layer.name].append({"id": prim.id, "bbox": bbox})
+                primitive_points_map[pid] = points
+                prim_bboxes[pid] = bbox
+                prim_to_net[pid] = net
+
+                net_layer_map[prim.layer.name].append({"id": pid})
 
             primitives_by_net_layer[net] = dict(net_layer_map)
 
-        # Shared index and lock
-        idx_primitives = self.idx_primitives
-        idx_lock = Lock()
+        # Flatten list of primitive ids we care about (only those on nets we will compare)
+        primitive_ids = list(prim_bboxes.keys())
 
-        # === LAYER 2: Multi-threaded geometry checks ===
-        results_queue = Queue()
+        # === SINGLE-THREADED: Precompute index intersections for each primitive id ===
+        # intersections_map[prim_id] = set(intersecting_prim_ids)
+        intersections_map: Dict[int, Set[int]] = {}
 
-        def process_net_pair(n1, n2):
+        idx = self.idx_primitives  # Rtree index (not thread-safe)
+        if not chunked_precompute:
+            # Full precompute (fast, memory-heavy)
+            for pid in primitive_ids:
+                bbox = prim_bboxes[pid]
+                # Rtree intersection returns generator/iterator - force into set
+                intersections_map[pid] = set(idx.intersection(bbox))
+        else:
+            # Chunked precompute to reduce peak memory / rtree query overhead
+            # Process primitives in batches and store results incrementally
+            for i in range(0, len(primitive_ids), chunk_size):
+                chunk = primitive_ids[i : i + chunk_size]
+                for pid in chunk:
+                    bbox = prim_bboxes[pid]
+                    intersections_map[pid] = set(idx.intersection(bbox))
+                # optional: you could free memory of chunk-specific temp variables here
+
+        # === LAYER 2: Multi-threaded geometry checks (no locks needed) ===
+        results_q = Queue()
+
+        def process_net_pair(n1: str, n2: str):
             net1_layers = primitives_by_net_layer[n1]
             net2_layers = primitives_by_net_layer[n2]
 
             for layer, prims_n1 in net1_layers.items():
-                if layer in net2_layers:
-                    prims_n2 = net2_layers[layer]
-                    potential_ids_n2 = {p["id"] for p in prims_n2}
+                if layer not in net2_layers:
+                    continue
 
-                    for prim in prims_n1:
-                        with idx_lock:
-                            intersect_ids = set(idx_primitives.intersection(prim["bbox"]))
-                        intersections = potential_ids_n2.intersection(intersect_ids)
+                prims_n2 = net2_layers[layer]
+                potential_ids_n2 = {p["id"] for p in prims_n2}
 
-                        for id_ in intersections:
-                            p1 = primitive_points_map[prim["id"]]
-                            p2 = primitive_points_map[id_]
-                            d = GeometryOperators.smallest_distance_between_polygons(p1, p2)
-                            if 0 < d < gap:
-                                results_queue.put(
-                                    {"rule": "minClearance", "net1": n1, "net2": n2, "distance_um": d, "limit_um": gap}
-                                )
+                for prim in prims_n1:
+                    pid = prim["id"]
+                    intersect_ids = intersections_map.get(pid, set())
+                    # Keep only ids that belong to the other net on the same layer
+                    intersections = potential_ids_n2.intersection(intersect_ids)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
-            futures = [
-                executor.submit(process_net_pair, n1, n2)
-                for n1, n2 in itertools.combinations_with_replacement(sorted(set(nets1 + nets2)), 2)
-                if n1 != n2
-            ]
+                    for id_ in intersections:
+                        # avoid same-primitive and same-net (if you didn't want to compare same net)
+                        if id_ == pid:
+                            continue
+
+                        p1 = primitive_points_map[pid]
+                        p2 = primitive_points_map[id_]
+
+                        # GeometryOperators.smallest_distance_between_polygons is CPU-bound and thread-safe
+                        d = GeometryOperators.smallest_distance_between_polygons(polygon1=p1, polygon2=p2)
+                        if 0 < d < gap:
+                            results_q.put(
+                                {
+                                    "rule": "minClearance",
+                                    "net1": n1,
+                                    "net2": n2,
+                                    "primitive1": pid,
+                                    "primitive2": id_,
+                                    "distance_um": d,
+                                    "limit_um": gap,
+                                }
+                            )
+
+        # Spawn threads for net-pair combinations (skip comparing net to itself)
+        net_list = all_nets
+        pair_iter = ((a, b) for a, b in itertools.combinations_with_replacement(net_list, 2) if a != b)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as ex:
+            futures = [ex.submit(process_net_pair, n1, n2) for n1, n2 in pair_iter]
             for f in concurrent.futures.as_completed(futures):
-                f.result()
+                f.result()  # re-raise exceptions if any
 
-        # Final violations list
+        # Collect results
+        violations = []
+        while not results_q.empty():
+            violations.append(results_q.get())
+
+        self.violations = violations
+
+    def _rule_min_annular_ring(self, rule: MinAnnularRing, max_workers: int = None):
+        """
+        Thread-safe min-annular-ring check with auto core detection.
+        Skips padstack instances without a hole.
+        """
+        # === Determine optimal worker count ===
+        if max_workers is None:
+            total_cores = os.cpu_count() or 4
+            max_workers = max(1, total_cores - 1)
+
+        lim = self.edb.value(rule.value)
+
+        # === STEP 1: Extract all EDB data in single-thread ===
+        padstacks_definitions = self.edb.padstacks.definitions
+        via_data = []
+        for via in self.edb.padstacks.instances.values():
+            via_def = padstacks_definitions[via.padstack_definition]
+
+            # Skip if no hole properties (non-drilled padstack)
+            if not via_def.hole_properties:
+                continue
+
+            # Some padstacks may not have pad shapes either
+            if not via_def.pad_by_layer:
+                continue
+
+            first_pad = next(iter(via_def.pad_by_layer.values()))
+            od = first_pad.parameters_values[0]
+            id_ = via_def.hole_properties[0]
+            via_data.append({"via_name": via.name, "od": od, "id": id_})
+
+        # === STEP 2: Multi-threaded computation ===
+        results_queue = Queue()
+
+        def check_via(via_entry):
+            ring = (via_entry["od"] - via_entry["id"]) / 2
+            if ring < lim:
+                results_queue.put(
+                    {"rule": "minAnnularRing", "via": via_entry["via_name"], "ring_um": ring, "limit_um": lim}
+                )
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [executor.submit(check_via, v) for v in via_data]
+            for f in concurrent.futures.as_completed(futures):
+                f.result()  # propagate exceptions
+
+        # === STEP 3: Store results ===
         self.violations = list(results_queue.queue)
 
-    def _rule_min_annular_ring(self, rule: MinAnnularRing):
-        lim = self.edb.value(rule.value)
-        for via in self.edb.padstacks.instances.values():
-            pad = via.padstack_def.pad_by_layer.values().__iter__().__next__()
-            od = pad[0].parameters_values[0]
-            id_ = via.padstack_def.hole_properties[0]
-            ring = (od - id_) / 2
-            if ring < lim:
-                self.violations.append({"rule": "minAnnularRing", "via": via.name, "ring_um": ring, "limit_um": lim})
+    def _rule_copper_balance(self, rule: CopperBalance):
+        max_imbalance = self.edb.value(rule.max_percent)
 
-    def _rule_min_copper_to_board_edge(self, r):
-        gap = self._to_um(r["value"])
-        outline = self.edb.modeler.primitives_by_layer.get("__outline__", [])
-        for lyr in self.edb.stackup.metal_layers:
-            for prim in self.edb.modeler.primitives_by_layer.get(lyr, []):
-                for o in outline:
-                    d = prim.GetPolygonData().Distance(o.GetPolygonData()) * 1e6
-                    if d < gap:
-                        self.violations.append(
-                            {"rule": "min_copper_to_board_edge", "layer": lyr, "distance_um": d, "limit_um": gap}
-                        )
+        # Snapshot data for thread safety
+        primitives_by_layer = dict(self.edb.modeler.primitives_by_layer)
+        layout_outline = [prim for prim in self.edb.modeler.primitives if prim.layer.name.lower() == "outline"]
+        if not layout_outline:
+            raise ValueError("No outline primitive found in the layout.")
+        area_board = layout_outline[0].polygon_data.area
 
-    def _rule_copper_balance(self, r):
-        max_imbalance = r["max_percent"]
-        layers = r.get("layers") or list(self.edb.stackup.metal_layers.keys())
-        for lyr in layers:
-            polys = [
-                Polygon([(p.X * 1e6, p.Y * 1e6) for p in prim.GetPolygonData().Points])
-                for prim in self.edb.modeler.primitives_by_layer.get(lyr, [])
-            ]
-            area_copper = unary_union(polys).area
-            area_board = self.edb.modeler.bounding_box.area * 1e12
+        def check_layer(layer, prim_list):
+            area_copper = sum(prim.polygon_data.area for prim in prim_list)
             imbalance = abs(area_copper - area_board / 2) / (area_board / 2) * 100
             if imbalance > max_imbalance:
-                self.violations.append(
-                    {"rule": "copper_balance", "layer": lyr, "imbalance_pct": imbalance, "limit_pct": max_imbalance}
-                )
+                return {
+                    "rule": "copper_balance",
+                    "layer": layer,
+                    "imbalance_pct": imbalance,
+                    "limit_pct": max_imbalance,
+                }
+            return None
+
+        workers = max(1, (os.cpu_count() or 2) - 1)
+
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            results = list(executor.map(lambda kv: check_layer(kv[0], kv[1]), primitives_by_layer.items()))
+
+        # Append results in the main thread only (lock-free)
+        self.violations.extend(r for r in results if r is not None)
 
     # High-speed rules
-    def _rule_diff_pair_length_match(self, r):
-        tol = self._to_um(r["tolerance"])
-        for pair in r["pairs"]:
-            np = self.edb.nets.nets[pair["positive"]]
-            nn = self.edb.nets.nets[pair["negative"]]
-            len_p = sum(p.length for p in np.primitives if hasattr(p, "length"))
-            len_n = sum(p.length for p in nn.primitives if hasattr(p, "length"))
-            if abs(len_p - len_n) > tol:
-                self.violations.append(
-                    {
+    def _rule_diff_pair_length_match(self, rule: DiffPairLengthMatch):
+        tol = self.edb.value(rule.tolerance)
+
+        # Snapshot nets for thread safety
+        nets = dict(self.edb.nets.nets)
+
+        def check_pair(pair):
+            if pair.positive in nets and pair.negative in nets:
+                np = nets[pair.positive]
+                nn = nets[pair.negative]
+                len_p = sum(p.length for p in np.primitives if hasattr(p, "length"))
+                len_n = sum(p.length for p in nn.primitives if hasattr(p, "length"))
+                delta = abs(len_p - len_n)
+                if delta > tol:
+                    return {
                         "rule": "diff_pair_length_match",
-                        "positive": pair["positive"],
-                        "negative": pair["negative"],
-                        "delta_um": abs(len_p - len_n),
+                        "positive": pair.positive,
+                        "negative": pair.negative,
+                        "delta_um": delta,
                         "limit_um": tol,
                     }
-                )
+            return None
 
-    # Impedance rules (improved analytical)
-    def _rule_impedance_single_end(self, r):
-        target = float(r["value"])
-        tol = float(r.get("tolerance", 5))
-        layers = r.get("layers") or list(self.edb.stackup.signal_layers.keys())
-        for lyr_name in layers:
-            lyr = self.edb.stackup.signal_layers[lyr_name]
-            w = lyr.width * 1e6
-            h = lyr.thickness * 1e6
-            er = lyr.material.permittivity
-            if lyr.type == "signal":  # microstrip
-                z0 = 87 / math.sqrt(er + 1.41) * math.log(5.98 * h / (0.8 * w + w))
-            else:  # stripline
-                h_sub = self._substrate_thickness(lyr_name)
-                z0 = 60 / math.sqrt(er) * math.log(4 * h_sub / (0.67 * math.pi * (0.8 * w + w)))
-            if abs(z0 - target) / target * 100 > tol:
-                self.violations.append(
-                    {
-                        "rule": "impedance_single_end",
-                        "layer": lyr_name,
-                        "z0_ohm": round(z0, 2),
-                        "target_ohm": target,
-                        "tolerance_pct": tol,
-                    }
-                )
+        workers = max(1, (os.cpu_count() or 2) - 1)
 
-    def _rule_impedance_diff_pair(self, r):
-        target = float(r["value"])
-        tol = float(r.get("tolerance", 5))
-        for pair in r["pairs"]:
-            p_net, n_net = pair["p"], pair["n"]
-            w = self._trace_width_for_net(p_net) * 1e6
-            s = self._spacing_between_nets(p_net, n_net) * 1e6
-            er = self._effective_er_for_net(p_net)
-            h_sub = self._substrate_thickness_for_net(p_net)
-            if self._is_microstrip(p_net):
-                z0_se = 87 / math.sqrt(er + 1.41) * math.log(5.98 * h_sub / (0.8 * w + w))
-                z_odd = z0_se * math.sqrt(1 - 0.48 * math.exp(-0.96 * s / w))
-                z_diff = 2 * z_odd
-            else:
-                z0_se = 60 / math.sqrt(er) * math.log(4 * h_sub / (0.67 * math.pi * (0.8 * w + w)))
-                z_odd = z0_se * math.sqrt(1 - 0.347 * math.exp(-1.2 * s / w))
-                z_diff = 2 * z_odd
-            if abs(z_diff - target) / target * 100 > tol:
-                self.violations.append(
-                    {
-                        "rule": "impedance_diff_pair",
-                        "positive": p_net,
-                        "negative": n_net,
-                        "zdiff_ohm": round(z_diff, 2),
-                        "target_ohm": target,
-                        "tolerance_pct": tol,
-                    }
-                )
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            results = list(executor.map(check_pair, rule.pairs))
+
+        # Merge results in main thread (lock-free)
+        self.violations.extend(r for r in results if r is not None)
 
     # Back-drill / stub rules
-    def _rule_back_drill_stub_length(self, r):
-        max_stub = self._to_um(r["value"])
-        for via in self.edb.padstacks.instances.values():
-            stub = via.length - via.backdrill_depth if hasattr(via, "backdrill_depth") else 0
-            if stub > max_stub:
-                self.violations.append(
-                    {"rule": "back_drill_stub_length", "via": via.name, "stub_um": stub, "limit_um": max_stub}
-                )
+    def _rule_back_drill_stub_length(self, rule: BackDrillStubLength):
+        max_stub = self.edb.value(rule.value)
 
-    # Helper methods for impedance
-    def _spacing_between_nets(self, net1, net2):
-        p1 = self.edb.nets.nets[net1].primitives[0]
-        p2 = self.edb.nets.nets[net2].primitives[0]
-        return p1.GetPolygonData().Distance(p2.GetPolygonData())
+        # Snapshot data for thread safety
+        padstack_instances = list(self.edb.padstacks.instances.values())
+        layers = dict(self.edb.stackup.layers)
 
-    def _effective_er_for_net(self, net_name):
-        lyr = next(p.layer for p in self.edb.nets.nets[net_name].primitives)
-        return lyr.material.permittivity
+        def check_via(via):
+            start = via.layer_range_names[0]
+            stop = via.layer_range_names[-1]
+            if via.backdrill_parameters:
+                via_length = abs(layers[start].upper_elevation - layers[stop].lower_elevation)
+                if via.backdrill_type == "layer_drill":
+                    if via.backdrill_bottom:
+                        stub = abs(via_length - layers[via.backdrill_parameters[0]].lower_elevation)
+                    else:
+                        stub = abs(via_length - layers[via.backdrill_parameters[0]].upper_elevation)
+                else:
+                    stub = 0  # If other drill types exist, handle here
+                if stub > max_stub:
+                    return {"rule": "back_drill_stub_length", "via": via.name, "stub_um": stub, "limit_um": max_stub}
+            return None
 
-    def _substrate_thickness(self, layer_name):
-        stack = self.edb.stackup
-        idx = next(i for i, l in enumerate(stack.layers) if l.name == layer_name)
-        return sum(l.thickness for l in stack.layers[idx + 1 :] if l.type == "dielectric")
+        workers = max(1, (os.cpu_count() or 2) - 1)
 
-    def _substrate_thickness_for_net(self, net_name):
-        lyr = next(p.layer for p in self.edb.nets.nets[net_name].primitives)
-        return self._substrate_thickness(lyr.name)
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            results = list(executor.map(check_via, padstack_instances))
 
-    def _is_microstrip(self, net_name):
-        lyr = next(p.layer for p in self.edb.nets.nets[net_name].primitives)
-        return lyr.type == "signal"
+        # Merge results lock-free in main thread
+        self.violations.extend(r for r in results if r is not None)
 
     # Export utilities
-    def to_dataframe(self) -> pd.DataFrame:
-        """Return violations as a Pandas DataFrame."""
-        return pd.DataFrame(self.violations)
-
     def to_ipc356a(self, file_path: str) -> None:
         """
         Write a complete IPC-D-356A netlist plus DRC comments for fab review.
@@ -527,16 +569,25 @@ class Drc:
             f.write(f"DATE {datetime.date.today():%Y%m%d}\n")
             f.write("SOURCE PYEDB_DRC_FULL\n\n")
             # Netlist section
+            padstack_instances = {}
+            padstacks = self.edb.padstacks.instances
+
+            for inst in padstacks.values():
+                net_name = getattr(inst, "net", None)
+                if net_name:
+                    padstack_instances.setdefault(net_name, []).append(inst)
+
             for net_name, net in self.edb.nets.nets.items():
                 f.write(f"NET {net_name}\n")
                 for prim in net.primitives:
-                    if hasattr(prim, "start") and hasattr(prim, "end"):
-                        x1, y1 = prim.start
-                        x2, y2 = prim.end
-                        f.write(f"  P {x * 1e6:.0f} {y * 1e6:.0f} {x2 * 1e6:.0f} {y2 * 1e6:.0f}\n")
-                for via in net.vias:
-                    x, y = via.position
-                    f.write(f"  V {x * 1e6:.0f} {y * 1e6:.0f}\n")
+                    if hasattr(prim, "polygon_data"):
+                        points = prim.polygon_data.points_without_arcs
+                        if points:
+                            coords = " ".join(f"x:{x}, y:{y}" for x, y in points)
+                            f.write(f"  P {coords}\n")
+                for inst in padstack_instances.get(net_name, []):
+                    x, y = inst.position
+                    f.write(f" Padstack instance position: {x} {y}\n")
             # DRC section
             for v in self.violations:
                 f.write(

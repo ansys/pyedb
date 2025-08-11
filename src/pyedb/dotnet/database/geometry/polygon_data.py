@@ -67,6 +67,11 @@ class PolygonData:
         return BBox(self._pedb, self._edb_object.GetBBox()).corner_points
 
     @property
+    def area(self):
+        """Get the area of the polygon."""
+        return self._edb_object.Area()
+
+    @property
     def arcs(self):
         """Get the Primitive Arc Data."""
         from pyedb.dotnet.database.edb_data.primitives_data import EDBArcs

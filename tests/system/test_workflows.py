@@ -82,11 +82,11 @@ class TestClass:
             "min_clearance": [{"name": "CLR", "value": "4mil", "net1": "*", "net2": "*"}],
             "min_annular_ring": [{"name": "AR", "value": "2mil"}],
             "diff_pair_length_match": [
-                {"name": "DPMATCH", "tolerance": "5mil", "pairs": [{"positive": "DP_P", "negative": "DP_N"}]}
-            ],
-            "impedance_single_end": [{"name": "Z0_50", "value": 50, "layers": ["TOP", "BOTTOM"], "tolerance": 3}],
-            "impedance_diff_pair": [
-                {"name": "Zdiff_90", "value": 90, "pairs": [{"p": "D_P", "n": "D_N"}], "tolerance": 3}
+                {
+                    "name": "DPMATCH",
+                    "tolerance": "5mil",
+                    "pairs": [{"positive": "PCIe_Gen4_TX3_CAP_P", "negative": "PCIe_Gen4_TX3_CAP_N"}],
+                }
             ],
             "back_drill_stub_length": [{"name": "STUB", "value": "6mil"}],
             "copper_balance": [{"name": "CB", "max_percent": 15, "layers": ["L3", "L4"]}],
@@ -96,10 +96,6 @@ class TestClass:
         rules = Rules.from_dict(RULES_DICT)
         drc = Drc(edbapp)
         drc.check(rules)
-        #
-        # print(f"Found {len(drc.violations)} violations")
-        # drc.to_dataframe().to_csv("violations.csv", index=False)
-        # drc.to_ipc356a("fab_review.ipc")
-        #
-        # edb.save()
-        # edb.close()
+        output_file = os.path.join(self.local_scratch.path, "drc_results.ipc356a")
+        drc.to_ipc356a(file_path=output_file)
+        assert os.path.isfile(output_file)
