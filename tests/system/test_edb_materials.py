@@ -34,6 +34,7 @@ from pyedb.dotnet.database.materials import (
 from tests.conftest import GRPC, local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
+from tests.system.base_test_class import BaseTestClass
 
 PROPERTIES = (
     "conductivity",
@@ -62,19 +63,18 @@ VALUES = (FLOAT_VALUE, INT_VALUE, STR_VALUE)
 MATERIAL_NAME = "DummyMaterial"
 
 
-class TestClass:
+class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, edb_examples):
         self.edbapp = edb_examples.create_empty_edb()
         if MATERIAL_NAME in self.edbapp.materials:
             self.edbapp.materials[MATERIAL_NAME].delete()
 
-    @classmethod
-    @pytest.fixture(scope="class", autouse=True)
-    def teardown_class(cls, request, edb_examples):
+    @pytest.fixture(autouse=True)
+    def teardown(self, request, edb_examples):
+        """Code after yield runs after each test."""
         yield
-        edb = edb_examples.create_empty_edb()
-        edb.close_edb()
+        self.edbapp.close(terminate_rpc_session=True)
 
     def test_material_name(self):
         """Evaluate material properties."""

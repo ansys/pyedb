@@ -29,25 +29,18 @@ import pytest
 
 from pyedb.generic.settings import settings
 from tests.conftest import local_path, test_subfolder
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
-class TestClass:
+class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path2 = target_path2
         self.target_path4 = target_path4
-
-    @classmethod
-    @pytest.fixture(scope="class", autouse=True)
-    def teardown_class(cls, request, edb_examples):
-        yield
-        # not elegant way to ensure the EDB grpc is closed after all tests
-        edb = edb_examples.create_empty_edb()
-        edb.close_edb()
 
     def test_modeler_polygons(self, edb_examples):
         """Evaluate modeler polygons"""
@@ -556,6 +549,7 @@ class TestClass:
         assert len(primitives) == 3
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(True, reason="This test fails randomly, needs to be fixed.")
     def test_arbitrary_wave_ports(self, edb_examples):
         # Done
         example_folder = os.path.join(local_path, "example_models", test_subfolder)

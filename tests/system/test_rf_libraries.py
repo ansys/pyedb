@@ -42,20 +42,14 @@ from pyedb.libraries.rf_libraries.planar_antennas import (
     RectangularPatch,
     TriangularPatch,
 )
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
 ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
-class TestClass:
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path2, target_path4):
-        self.local_scratch = local_scratch
-        self.target_path = target_path
-        self.target_path2 = target_path2
-        self.target_path4 = target_path4
-
+class TestClass(BaseTestClass):
     def test_stackup(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(edb)
@@ -64,7 +58,7 @@ class TestClass:
         assert stackup.top_metal.name == "TOP_METAL"
         assert edb.stackup.layers["TOP_METAL"].material == "Gold"
         assert stackup.top_metal.material.conductivity == 5.8e7
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_cpw(self, edb_examples):
         edb = edb_examples.create_empty_edb()
@@ -89,7 +83,7 @@ class TestClass:
         assert edb.modeler.rectangles[0].bbox == [-5e-06, 0.0, 5e-06, 0.001]
         assert edb.variables["g"] == 5e-06
         assert edb.variables["w"] == 1e-05
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_diff_tline(self, edb_examples):
         edb = edb_examples.create_empty_edb()
@@ -100,7 +94,7 @@ class TestClass:
         assert len(edb.modeler.paths) == 2
         assert edb.modeler.paths[0].net.name == "P"
         assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.01, 0.0]]
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_hatch_grounded(self, edb_examples):
         edb = edb_examples.create_empty_edb()
@@ -113,7 +107,7 @@ class TestClass:
         assert hatch.board_size == 0.01
         assert edb.modeler.polygons[0].net.name == "GND"
         assert len(edb.modeler.polygons[0].arcs) == 356
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_interdigited_capacitor(self, edb_examples):
         edb = edb_examples.create_empty_edb()
@@ -135,7 +129,7 @@ class TestClass:
         assert round(idc.capacitance_pf, 3) == 2.276
         assert len(edb.modeler.rectangles) == 26
         assert edb.modeler.rectangles[0].net.name == "P1"
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_radial_stud(self, edb_examples):
         edb = edb_examples.create_empty_edb()
@@ -145,7 +139,7 @@ class TestClass:
         assert round(stub.electrical_length_deg, 3) == 5.038
         assert edb.modeler.polygons[0].net.name == "RF"
         assert edb.modeler.rectangles[0].net.name == "RF"
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_rat_race(self, edb_examples):
         edb = edb_examples.create_empty_edb()
@@ -165,7 +159,7 @@ class TestClass:
         assert round(rat_race.circumference, 3) == 0.013
         assert len(edb.modeler.paths) == 5
         assert edb.modeler.paths[0].net.name == "RR"
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_spiral_inductor(self, edb_examples):
         edb = edb_examples.create_empty_edb()
@@ -199,7 +193,7 @@ class TestClass:
         assert len(edb.modeler.rectangles) == 2
         assert len(edb.modeler.paths) == 2
         assert edb.modeler.paths[0].net.name == "IN"
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_ustrip(self, edb_examples):
         edb = edb_examples.create_empty_edb()
@@ -226,7 +220,7 @@ class TestClass:
         assert str(patch_antenna.estimated_frequency) == "1.928Ghz"
         assert patch_antenna.width == 0.04164
         assert patch_antenna.length == 0.03337
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_circular_patch_antenna(self, edb_examples):
         edb = edb_examples.create_empty_edb()
@@ -237,7 +231,7 @@ class TestClass:
         patch_antenna.create()
         assert str(patch_antenna.estimated_frequency) == "2.412GHz"
         assert patch_antenna.radius == 0.0174
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     def test_triangular_antenna(self, edb_examples):
         edb = edb_examples.create_empty_edb()
@@ -248,4 +242,4 @@ class TestClass:
         patch_antenna.create()
         assert str(patch_antenna.estimated_frequency) == "2.43GHz"
         assert patch_antenna.side == 0.039201
-        edb.close()
+        edb.close(terminate_rpc_session=False)
