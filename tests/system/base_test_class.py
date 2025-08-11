@@ -20,33 +20,36 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
 import pytest
-
-from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
-class TestClass(BaseTestClass):
-    def test_find(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128", net_name=["2V5"])
-        edbapp.close(terminate_rpc_session=False)
+class BaseTestClass:
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def setup_class(cls, request, edb_examples):
+        # Set up the EDB app once per class
 
-    def test_primitives(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        prim = edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128", net_name=["2V5"])[0]
-        assert prim.polygon_data.is_inside(["111.4mm", 44.7e-3])
-        edbapp.close(terminate_rpc_session=False)
+        # Finalizer to close the EDB app after all tests
+        def teardown():
+            dummy_edb = edb_examples.create_empty_edb()
+            dummy_edb.close(terminate_rpc_session=True)
 
-    def test_primitive_path(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        if not edbapp.grpc:
-            # TODO check if center line setter defined in grpc.
-            path_obj = edbapp.layout.find_primitive(name="line_272")[0]
-            center_line = path_obj.center_line
-            center_line[0] = [0, 0]
-            path_obj.center_line = center_line
-            assert path_obj.center_line[0] == [0, 0]
+        request.addfinalizer(teardown)
+
+    @pytest.fixture(autouse=True)
+    def init(self, edb_examples):
+        """init runs before each test."""
+        return
+
+    @pytest.fixture(autouse=True)
+    def teardown(self, request, edb_examples):
+        """Code after yield runs after each test."""
+        yield
+        return
+
+    def test_dummy_test(self, edb_examples):
+        """Dummy test to initialize Edb the first time."""
+        edbapp = edb_examples.create_empty_edb()
         edbapp.close(terminate_rpc_session=False)

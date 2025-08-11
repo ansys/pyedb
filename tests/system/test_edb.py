@@ -31,13 +31,14 @@ import pytest
 
 from pyedb.generic.general_methods import is_linux
 from tests.conftest import config, local_path, test_subfolder
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
 ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
-class TestClass:
+class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
         self.local_scratch = local_scratch

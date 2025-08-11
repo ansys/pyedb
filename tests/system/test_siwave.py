@@ -28,12 +28,13 @@ import pytest
 
 from pyedb.siwave import Siwave
 from tests.conftest import desktop_version, local_path
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
 @pytest.mark.skipif(True, reason="skipping test on CI because they fail in non-graphical")
-class TestClass:
+class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch):
         self.local_scratch = local_scratch
