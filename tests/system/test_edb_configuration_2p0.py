@@ -27,6 +27,8 @@ import pytest
 
 from pyedb.generic.general_methods import is_linux
 from tests.conftest import config
+from tests.system.base_test_class import BaseTestClass
+
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
@@ -60,29 +62,7 @@ def _assert_final_ic_die_properties(component: dict):
     assert component["solder_ball_properties"]["diameter"] == "244um"
 
 
-class TestClass:
-    @classmethod
-    @pytest.fixture(scope="class", autouse=True)
-    def setup_class(cls, request, edb_examples):
-        # Set up the EDB app once per class
-
-        # Finalizer to close the EDB app after all tests
-        def teardown():
-            edbapp_shared = edb_examples.create_empty_edb()
-            edbapp_shared.close(terminate_rpc_session=True)
-
-        request.addfinalizer(teardown)
-
-    @pytest.fixture(autouse=True)
-    def init(self, edb_examples):
-        """init runs before each test."""
-        return
-
-    @pytest.fixture(autouse=True)
-    def teardown(self, request, edb_examples):
-        """Code after yield runs after each teste."""
-        yield
-        pass
+class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_13b_stackup_materials(self, edb_examples):

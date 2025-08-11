@@ -19,31 +19,42 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-"""Tests related to Edb differential pairs
-"""
+import os
+from pathlib import Path
 
 import pytest
-from tests.system.base_test_class import BaseTestClass
 
-pytestmark = [pytest.mark.system, pytest.mark.legacy]
+from tests.conftest import local_path, test_subfolder
+
+pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
-class TestClass(BaseTestClass):
+class BaseTestClass:
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def setup_class(cls, request, edb_examples):
+        # Set up the EDB app once per class
+
+        # Finalizer to close the EDB app after all tests
+        def teardown():
+            dummy_edb = edb_examples.create_empty_edb()
+            dummy_edb.close(terminate_rpc_session=True)
+
+        request.addfinalizer(teardown)
+
     @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path2, target_path4):
-        self.local_scratch = local_scratch
-        self.target_path = target_path
-        self.target_path2 = target_path2
-        self.target_path4 = target_path4
+    def init(self, edb_examples):
+        """init runs before each test."""
+        return
 
-    def test_differential_pairs_queries(self, edb_examples):
-        """Evaluate differential pairs queries"""
-        # Done
-        edbapp = edb_examples.get_si_verse()
-        edbapp.differential_pairs.auto_identify()
-        diff_pair = edbapp.differential_pairs.create("new_pair1", "PCIe_Gen4_RX1_P", "PCIe_Gen4_RX1_N")
-        assert diff_pair.positive_net.name == "PCIe_Gen4_RX1_P"
-        assert diff_pair.negative_net.name == "PCIe_Gen4_RX1_N"
-        assert edbapp.differential_pairs.items["new_pair1"]
+    @pytest.fixture(autouse=True)
+    def teardown(self, request, edb_examples):
+        """Code after yield runs after each test."""
+        yield
+        return
+
+    def test_dummy_test(self, edb_examples):
+        """Dummy test to initialize Edb the first time."""
+        edbapp = edb_examples.create_empty_edb()
         edbapp.close(terminate_rpc_session=False)
+

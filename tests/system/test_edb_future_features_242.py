@@ -24,24 +24,14 @@
 """
 
 import pytest
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 VERSION = 2024.2
 
 
 @pytest.mark.skipif(True, reason="AEDT 2024.2 is not installed")
-class TestClass:
-    @pytest.fixture(autouse=True)
-    def init(self):
-        pass
-
-    @classmethod
-    @pytest.fixture(scope="class", autouse=True)
-    def teardown_class(cls, request, edb_examples):
-        yield
-        # not elegant way to ensure the EDB grpc is closed after all tests
-        edb = edb_examples.create_empty_edb()
-        edb.close_edb()
+class TestClass(BaseTestClass):
 
     def test_add_raptorx_setup(self, edb_examples):
         edbapp = edb_examples.get_si_verse(version=VERSION)
