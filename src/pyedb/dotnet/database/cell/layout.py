@@ -23,7 +23,7 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
-from typing import Union
+from typing import Union, List
 
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
@@ -337,11 +337,11 @@ class Layout(ObjBase):
         -------
 
         """
-        obj = self._pedb._edb.Cell.Hierarchy.Component.FindByName(self._edb_object, value)
+        obj = self._pedb.core.Cell.Hierarchy.Component.FindByName(self._edb_object, value)
         return EDBComponent(self._pedb, obj) if obj is not None else None
 
     def find_primitive(
-        self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
+            self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
     ) -> list:
         """Find a primitive objects by layer name.
 
@@ -369,3 +369,48 @@ class Layout(ObjBase):
         prims = [i for i in prims if i.layer_name in layer_name] if layer_name is not None else prims
         prims = [i for i in prims if i.net_name in net_name] if net_name is not None else prims
         return prims
+
+    def find_padstack_instances(self,
+                                aedt_name: Union[str, List[str]] = None,
+                                component_name: Union[str, List[str]] = None,
+                                component_pin_name: Union[str, List[str]] = None,
+                                net_name: Union[str, List[str]] = None,
+                                instance_id : Union[int, List[int]] = None
+                                ) -> List:
+        """
+        Find padstack instances by AEDT name.
+        Parameters
+        ----------
+        name : str, list
+            Aedt name of the padstack instance.
+
+        Returns
+        -------
+
+        """
+        candidates = self.padstack_instances
+        if instance_id is not None:
+            if isinstance(instance_id, int):
+                instance_id = [instance_id]
+            candidates = [i for i in candidates if i.id in instance_id]
+
+        if aedt_name is not None:
+            name = aedt_name if isinstance(aedt_name, list) else [aedt_name]
+            candidates = [i for i in candidates if i.aedt_name in name]
+
+        if component_name is not None:
+            value = component_name if isinstance(component_name, list) else [component_name]
+            candidates = [i for i in candidates if i.component_name in value]
+
+        if net_name is not None:
+            value = net_name if isinstance(net_name, list) else [net_name]
+            candidates = [i for i in candidates if i.net_name in value]
+
+        if component_pin_name is not None:
+            value = component_pin_name if isinstance(component_pin_name, list) else [component_pin_name]
+            candidates = [i for i in candidates if i.name in value]
+        if not candidates:
+            raise ValueError(
+                f"Failed to find padstack instances with aedt_name={aedt_name}, component_name={component_name}, net_name={net_name}, component_pin_name={component_pin_name}"
+            )
+        return candidates
