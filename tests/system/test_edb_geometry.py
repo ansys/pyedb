@@ -23,20 +23,17 @@
 
 import pytest
 
+from tests.system.base_test_class import BaseTestClass
+
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
-class TestClass:
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch, edb_examples):
+class TestClass(BaseTestClass):
+    def test_point_data(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         path = edbapp.layout.find_primitive(name="line_272")[0]
-        self.path_center_line_polygon_data = path.get_center_line_polygon_data()
-        self.point_data = self.path_center_line_polygon_data.get_point(1)
-        pass
-
-    def test_point_data(self):
-        assert isinstance(self.point_data.x_evaluated, float)
-        assert isinstance(self.point_data.y_evaluated, float)
-        self.point_data.x = "1mm"
-        assert self.point_data.x == "1mm"
+        self.path_center_line_polygon_data = path.center_line
+        self.point_data = path.center_line[0]
+        assert isinstance(self.point_data[0], float)
+        assert isinstance(self.point_data[1], float)
+        edbapp.close(terminate_rpc_session=False)

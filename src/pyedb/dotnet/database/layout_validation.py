@@ -24,7 +24,8 @@ import re
 
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.primitives_data import Primitive
-from pyedb.generic.general_methods import execution_timer, generate_unique_name
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.misc.decorators import execution_timer
 
 
 class LayoutValidation:
@@ -321,7 +322,7 @@ class LayoutValidation:
                     if fix:
                         v.rlc_values = [0, 1, 0]
 
-            self._pedb._logger.info(f"Found {len(temp)} {name} have no value.")
+            self._pedb.logger.info(f"Found {len(temp)} {name} have no value.")
         return
 
     @execution_timer("padstacks_no_name")

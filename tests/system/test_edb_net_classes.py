@@ -25,10 +25,12 @@
 
 import pytest
 
+from tests.system.base_test_class import BaseTestClass
+
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
-class TestClass:
+class TestClass(BaseTestClass):
     def test_net_classes_queries(self, edb_examples):
         """Evaluate net classes queries"""
         edbapp = edb_examples.get_si_verse()

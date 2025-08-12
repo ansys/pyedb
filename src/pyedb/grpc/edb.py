@@ -65,7 +65,7 @@ import sys
 import tempfile
 import time
 import traceback
-from typing import Union
+from typing import Dict, List, Union
 import warnings
 from zipfile import ZipFile as zpf
 
@@ -99,8 +99,7 @@ from pyedb.grpc.database.layout_validation import LayoutValidation
 from pyedb.grpc.database.modeler import Modeler
 from pyedb.grpc.database.net.differential_pair import DifferentialPairs
 from pyedb.grpc.database.net.extended_net import ExtendedNets
-from pyedb.grpc.database.net.net_class import NetClass
-from pyedb.grpc.database.nets import Nets
+from pyedb.grpc.database.nets import NetClasses, Nets
 from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.ports.ports import BundleWavePort, CoaxPort, GapPort, WavePort
 from pyedb.grpc.database.primitive.circle import Circle
@@ -211,7 +210,6 @@ class Edb(EdbInit):
         technology_file: str = None,
         layer_filter: str = None,
         restart_rpc_server=False,
-        **kwargs,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
@@ -404,7 +402,7 @@ class Edb(EdbInit):
         self._differential_pairs = DifferentialPairs(self)
         self._extended_nets = ExtendedNets(self)
 
-    def value(self, val):
+    def value(self, val) -> float:
         """Convert a value into a pyedb value."""
         if isinstance(val, GrpcValue):
             return Value(val)
@@ -413,7 +411,7 @@ class Edb(EdbInit):
             return Value(GrpcValue(val, context), context)
 
     @property
-    def cell_names(self) -> [str]:
+    def cell_names(self) -> List[str]:
         """List of all cell names in the database.
 
         Returns
@@ -424,7 +422,7 @@ class Edb(EdbInit):
         return [cell.name for cell in self.active_db.top_circuit_cells]
 
     @property
-    def design_variables(self) -> dict[str, float]:
+    def design_variables(self) -> Dict[str, float]:
         """All design variables in active cell.
 
         Returns
@@ -435,7 +433,7 @@ class Edb(EdbInit):
         return {i: Value(self.active_cell.get_variable_value(i)) for i in self.active_cell.get_all_variable_names()}
 
     @property
-    def project_variables(self) -> dict[str, float]:
+    def project_variables(self) -> Dict[str, float]:
         """All project variables in database.
 
         Returns
@@ -457,7 +455,7 @@ class Edb(EdbInit):
         return LayoutValidation(self)
 
     @property
-    def variables(self) -> dict[str, float]:
+    def variables(self) -> Dict[str, float]:
         """All variables (project + design) in database.
 
         Returns
@@ -473,7 +471,7 @@ class Edb(EdbInit):
         return all_vars
 
     @property
-    def terminals(self) -> dict[str, Terminal]:
+    def terminals(self) -> Dict[str, Terminal]:
         """Terminals in active layout.
 
         Returns
@@ -484,7 +482,7 @@ class Edb(EdbInit):
         return {i.name: i for i in self.layout.terminals}
 
     @property
-    def excitations(self) -> dict[str, GapPort]:
+    def excitations(self) -> Dict[str, GapPort]:
         """All layout excitations.
 
         Returns
@@ -502,7 +500,7 @@ class Edb(EdbInit):
         return temp
 
     @property
-    def ports(self) -> dict[str, GapPort]:
+    def ports(self) -> Dict[str, GapPort]:
         """All ports in design.
 
         Returns
@@ -535,7 +533,7 @@ class Edb(EdbInit):
         return ports
 
     @property
-    def excitations_nets(self) -> [str]:
+    def excitations_nets(self) -> List[str]:
         """Nets with excitations defined.
 
         Returns
@@ -546,7 +544,7 @@ class Edb(EdbInit):
         return list(set([i.net.name for i in self.layout.terminals if not i.is_reference_terminal]))
 
     @property
-    def sources(self) -> dict[str, Terminal]:
+    def sources(self) -> Dict[str, Terminal]:
         """All layout sources.
 
         Returns
@@ -576,7 +574,7 @@ class Edb(EdbInit):
         return _vrms
 
     @property
-    def probes(self) -> dict[str, Terminal]:
+    def probes(self) -> Dict[str, Terminal]:
         """All layout probes.
 
         Returns
@@ -1063,16 +1061,16 @@ class Edb(EdbInit):
         return self._nets
 
     @property
-    def net_classes(self) -> NetClass:
+    def net_classes(self) -> NetClasses:
         """Net class management.
 
         Returns
         -------
-        dict[str, :class:`NetClass <pyedb.grpc.database.net.net_class.NetClass>`]
-            Net class names and objects.
+        :class:`NetClass <pyedb.grpc.database.nets.NetClasses>`
+            Net classes objects.
         """
         if self.active_db:
-            return {net.name: NetClass(self, net) for net in self.active_layout.net_classes}
+            return NetClasses(self)
 
     @property
     def extended_nets(self) -> ExtendedNets:
@@ -1407,7 +1405,7 @@ class Edb(EdbInit):
             print(command)
             temp_inputGDS = inputGDS.split(".gds")[0]
             self.edbpath = temp_inputGDS + ".aedb"
-            return self.open_edb()
+            return self.open()
 
     def _create_extent(
         self,
@@ -2492,7 +2490,7 @@ class Edb(EdbInit):
         >>> # Export to HFSS project:
         >>> edb.export_hfss(r"C:/output", net_list=["SignalNet"])
         """
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self.edbpath)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
 
     def export_q3d(
@@ -2594,7 +2592,7 @@ class Edb(EdbInit):
         >>> # Solve with SIwave:
         >>> edb.solve_siwave()
         """
-        process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
+        process = SiwaveSolve(self.edbpath)
         try:
             self.close()
         except:
@@ -2710,6 +2708,30 @@ class Edb(EdbInit):
                 return self.active_cell.get_variable_value(variable)
         self.logger.info(f"Variable {variable_name} doesn't exists.")
         return False
+
+    def get_variable_value(self, variable_name):
+        """
+        Deprecated method to get the value of a variable.
+
+        .. deprecated:: pyedb 0.55.0
+           Use :func:`get_variable` instead.
+        """
+        warnings.warn(
+            "`get_variable_value` is deprecated use `get_variable` instead.",
+            DeprecationWarning,
+        )
+        return self.get_variable(variable_name)
+
+    def get_all_variable_names(self) -> List[str]:
+        """Method added for compatibility with grpc.
+
+        Returns
+        -------
+        List[str]
+            List of variable names.
+
+        """
+        return list(self.active_cell.get_all_variable_names())
 
     def add_project_variable(self, variable_name, variable_value, description=None) -> bool:
         """Add project variable.

@@ -57,6 +57,7 @@ from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.utility.sources import SourceType
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -500,6 +501,7 @@ class Components(object):
         """
         return self.instances[name]
 
+    @deprecate_argument_name({"pinName": "pin_name"})
     def get_pin_from_component(
         self,
         component: Union[str, Component],
