@@ -23,7 +23,7 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
-from typing import Union, List
+from typing import List, Union
 
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
@@ -341,7 +341,7 @@ class Layout(ObjBase):
         return EDBComponent(self._pedb, obj) if obj is not None else None
 
     def find_primitive(
-            self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
+        self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
     ) -> list:
         """Find a primitive objects by layer name.
 
@@ -370,13 +370,14 @@ class Layout(ObjBase):
         prims = [i for i in prims if i.net_name in net_name] if net_name is not None else prims
         return prims
 
-    def find_padstack_instances(self,
-                                aedt_name: Union[str, List[str]] = None,
-                                component_name: Union[str, List[str]] = None,
-                                component_pin_name: Union[str, List[str]] = None,
-                                net_name: Union[str, List[str]] = None,
-                                instance_id : Union[int, List[int]] = None
-                                ) -> List:
+    def find_padstack_instances(
+        self,
+        aedt_name: Union[str, List[str]] = None,
+        component_name: Union[str, List[str]] = None,
+        component_pin_name: Union[str, List[str]] = None,
+        net_name: Union[str, List[str]] = None,
+        instance_id: Union[int, List[int]] = None,
+    ) -> List:
         """
         Finds padstack instances matching the specified criteria.
 
