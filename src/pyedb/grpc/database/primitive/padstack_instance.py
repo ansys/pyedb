@@ -424,7 +424,7 @@ class PadstackInstance(GrpcPadstackInstance):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        int_val = 1 if polygon_data.point_in_polygon(GrpcPointData(self.position)) else 0
+        int_val = 1 if polygon_data.is_inside(GrpcPointData(self.position)) else 0
         if int_val == 0:
             return False
         else:
@@ -434,11 +434,11 @@ class PadstackInstance(GrpcPadstackInstance):
         # 1 = this object fully inside other (no common contour points)
         # 2 = other object fully inside this
         # 3 = common contour points 4 = undefined intersection
-        if int_val == 0:
+        if int_val.value == 0:
             return False
         elif include_partial:
             return True
-        elif int_val < 3:
+        elif int_val.value < 3:
             return True
         else:
             return False
