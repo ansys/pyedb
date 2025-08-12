@@ -1791,7 +1791,7 @@ class EDBPadstackInstance(Connectable):
             if self.component_name:
                 aedt_name = f"{self.component_name}-{self.name}"
             else:
-                aedt_name = "Via-{}".format(self.id)
+                aedt_name = "Via_{}".format(self.id)
             self.aedt_name = aedt_name
         return aedt_name
 

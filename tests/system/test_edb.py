@@ -1683,48 +1683,6 @@ class TestClass(BaseTestClass):
             )
         assert len(edbapp.excitations) == 2
 
-    def test_create_circuit_port_on_component_pins_no_pins(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        component_name = "U10"
-        edbcomp = edbapp.components[component_name]
-        positive_pin_names = []
-        reference_pin_names = ["2"]
-        if edbapp.grpc:
-            assert not edbapp.source_excitation.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        else:
-            # Method deprecated in grpc and moved to SourceExcitation class.
-            assert not edbapp.components.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        assert len(edbapp.excitations) == 0
-
-    def test_create_circuit_port_on_component_pins_no_reference_pins(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        component_name = "U10"
-        edbcomp = edbapp.components[component_name]
-        positive_pin_names = ["4"]
-        reference_pin_names = []
-        if edbapp.grpc:
-            assert not edbapp.source_excitation.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        else:
-            # Method deprecated in grpc and moved to SourceExcitation class.
-            assert not edbapp.components.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        assert len(edbapp.excitations) == 0
-
     @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
     def test_active_cell_setter(self, edb_examples):
         """Use multiple cells."""

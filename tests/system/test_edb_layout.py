@@ -36,6 +36,8 @@ class TestClass(BaseTestClass):
         assert len(edbapp.layout.find_padstack_instances(component_name="U7"))
         assert edbapp.layout.find_padstack_instances(component_name="U7", component_pin_name="T7")[0].name == "T7"
         assert edbapp.layout.find_padstack_instances(component_name="U7", net_name="DDR4_A9")[0].aedt_name == "U7-R7"
+        assert edbapp.layout.find_padstack_instances(aedt_name="U7-R7")[0].aedt_name == "U7-R7"
+        assert edbapp.layout.find_padstack_instances(instance_id=4294967296)[0].id == 4294967296
         edbapp.close(terminate_rpc_session=False)
 
     def test_primitives(self, edb_examples):

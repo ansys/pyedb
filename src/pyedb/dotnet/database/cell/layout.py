@@ -378,21 +378,35 @@ class Layout(ObjBase):
                                 instance_id : Union[int, List[int]] = None
                                 ) -> List:
         """
-        Find padstack instances by AEDT name.
+        Finds padstack instances matching the specified criteria.
+
+        This method filters the available padstack instances based on specified attributes such as
+        `aedt_name`, `component_name`, `component_pin_name`, `net_name`, or `instance_id`. Criteria
+        can be passed as individual values or as a list of values. If no padstack instances match
+        the criteria, an error is raised.
+
         Parameters
         ----------
-        name : str, list
-            Aedt name of the padstack instance.
+        aedt_name : Union[str, List[str]], optional
+            Name(s) of the AEDT padstack instance(s) to filter.
+        component_name : Union[str, List[str]], optional
+            Name(s) of the component(s) to filter padstack instances by.
+        component_pin_name : Union[str, List[str]], optional
+            Name(s) of the component pin(s) to filter padstack instances by.
+        net_name : Union[str, List[str]], optional
+            Name(s) of the net(s) to filter padstack instances by.
+        instance_id : Union[int, List[int]], optional
+            ID(s) of the padstack instance(s) to filter.
 
         Returns
         -------
-
+        List
+            A list of padstack instances matching the specified criteria.
         """
         candidates = self.padstack_instances
         if instance_id is not None:
-            if isinstance(instance_id, int):
-                instance_id = [instance_id]
-            candidates = [i for i in candidates if i.id in instance_id]
+            value = instance_id if isinstance(instance_id, list) else [instance_id]
+            candidates = [i for i in candidates if i.id in value]
 
         if aedt_name is not None:
             name = aedt_name if isinstance(aedt_name, list) else [aedt_name]
@@ -409,7 +423,7 @@ class Layout(ObjBase):
         if component_pin_name is not None:
             value = component_pin_name if isinstance(component_pin_name, list) else [component_pin_name]
             candidates = [i for i in candidates if i.name in value]
-        if not candidates:
+        if not candidates:  # pragma: no cover
             raise ValueError(
                 f"Failed to find padstack instances with aedt_name={aedt_name}, component_name={component_name}, net_name={net_name}, component_pin_name={component_pin_name}"
             )
