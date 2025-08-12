@@ -32,6 +32,10 @@ class TestClass(BaseTestClass):
     def test_find(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128", net_name=["2V5"])
+        assert edbapp.layout.find_padstack_instances(aedt_name="U7-T7")[0].aedt_name == "U7-T7"
+        assert len(edbapp.layout.find_padstack_instances(component_name="U7"))
+        assert edbapp.layout.find_padstack_instances(component_name="U7", component_pin_name="T7")[0].name == "T7"
+        assert edbapp.layout.find_padstack_instances(component_name="U7", net_name="DDR4_A9")[0].aedt_name == "U7-R7"
         edbapp.close(terminate_rpc_session=False)
 
     def test_primitives(self, edb_examples):
@@ -50,3 +54,4 @@ class TestClass(BaseTestClass):
             path_obj.center_line = center_line
             assert path_obj.center_line[0] == [0, 0]
         edbapp.close(terminate_rpc_session=False)
+
