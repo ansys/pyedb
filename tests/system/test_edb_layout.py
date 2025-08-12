@@ -56,4 +56,3 @@ class TestClass(BaseTestClass):
             path_obj.center_line = center_line
             assert path_obj.center_line[0] == [0, 0]
         edbapp.close(terminate_rpc_session=False)
-
