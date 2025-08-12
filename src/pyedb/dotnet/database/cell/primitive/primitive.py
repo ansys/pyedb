@@ -233,18 +233,6 @@ class Primitive(Connectable):
         """
         return point.IsArc()
 
-    def get_connected_object_id_set(self):
-        """Produce a list of all geometries physically connected to a given layout object.
-
-        Returns
-        -------
-        list
-            Found connected objects IDs with Layout object.
-        """
-        layoutInst = self._edb_object.GetLayout().GetLayoutInstance()
-        layoutObjInst = layoutInst.GetLayoutObjInstance(self._edb_object, None)  # 2nd arg was []
-        return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
-
     @property
     def bbox(self):
         """Return the primitive bounding box points. Lower left corner, upper right corner.

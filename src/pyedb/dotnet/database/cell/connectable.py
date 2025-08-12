@@ -100,3 +100,15 @@ class Connectable(LayoutObj):
         list
         """
         return self._pedb.get_connected_objects(self._layout_obj_instance)
+
+    def get_connected_object_id_set(self):
+        """Produce a list of all geometries physically connected to a given layout object.
+
+        Returns
+        -------
+        list
+            Found connected objects IDs with Layout object.
+        """
+        layoutInst = self._edb_object.GetLayout().GetLayoutInstance()
+        layoutObjInst = layoutInst.GetLayoutObjInstance(self._edb_object, None)  # 2nd arg was []
+        return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
