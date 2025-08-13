@@ -159,7 +159,7 @@ class TestClass(BaseTestClass):
         assert edbapp.cutout(
             signal_list=["DDR4_DQS0_P", "DDR4_DQS0_N"],
             reference_list=["GND"],
-            extent_type="ConvexHull",
+            extent_type="bounding_box",
             use_pyaedt_extent_computing=True,
             include_pingroups=True,
             check_terminals=True,
@@ -191,7 +191,7 @@ class TestClass(BaseTestClass):
         assert edbapp.cutout(
             signal_list=["DIFF_N", "DIFF_P"],
             reference_list=["GND"],
-            extent_type="Conformal",
+            extent_type="bounding_box",
             use_pyaedt_extent_computing=True,
             check_terminals=True,
             expansion_factor=3,
