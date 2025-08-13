@@ -1462,7 +1462,7 @@ class Edb(EdbInit):
             )
             if ext_type.lower() in ["convex_hull", "convexhull"]:
                 poly = GrpcPolygonData.convex_hull(poly)
-        elif ext_type.lower() in ["bounding", "bounding_box", "bbox"]:
+        elif ext_type.lower() in ["bounding", "bounding_box", "bbox", "boundingbox"]:
             poly = self.layout.expanded_extent(
                 nets=nets,
                 extent=GrpcExtentType.BOUNDING_BOX,
