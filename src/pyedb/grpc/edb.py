@@ -65,7 +65,7 @@ import sys
 import tempfile
 import time
 import traceback
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Sequence, Union
 import warnings
 from zipfile import ZipFile as zpf
 
@@ -137,6 +137,15 @@ from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
 
 os.environ["no_proxy"] = "localhost,127.0.0.1"
+
+
+def _safe_net_name(obj) -> str | None:
+    """Return obj.net.name if both exist, else None."""
+    try:
+        net = getattr(obj, "net", None)
+        return net.name if net else None
+    except Exception:
+        return None
 
 
 class Edb(EdbInit):
@@ -1475,82 +1484,100 @@ class Edb(EdbInit):
             raise ValueError(f"Unknown extent type: {ext_type}. Supported: 'Conforming', 'ConvexHull', 'BoundingBox'.")
         return poly
 
+    # ------------------------------------------------------------------
+    # Helper: safe net-name extractor
+    # ------------------------------------------------------------------
+
+    # ------------------------------------------------------------------
+    # Vectorised worker – single thread only
+    # ------------------------------------------------------------------
     @execution_timer("_cutout_worker")
-    def _cutout_worker(self, polygon, output_path, open_when_done, signal_nets, reference_nets, **kw):
-        """Two-phase worker: read → write."""
-        from concurrent.futures import ThreadPoolExecutor
-
-        # ---------- 0. pre-flight -------------------------------------------
-        legacy_path = self.edbpath
-        if output_path:
-            self.save_as(output_path)
-        else:
-            self.save()
-        self.logger.info("Starting cutout worker (read-then-write)")
-
-        # ---------- 1. READ phase – collect objects to delete ----------------
-        keep_nets = signal_nets + reference_nets
+    def _cutout_worker(
+        self,
+        polygon: GrpcPolygonData,
+        output_path: Optional[str],
+        open_when_done: bool,
+        signal_nets: Optional[Sequence[str]],
+        reference_nets: Optional[Sequence[str]],
+        **kw,
+    ) -> list[list[float]]:
+        keep_nets = set((signal_nets or []) + (reference_nets or []))
         if not keep_nets:
-            raise ValueError("No nets specified to keep. Please provide 'signal_nets' or 'reference_nets'.")
-        nets_del = [n for n in list(self.nets.nets.values()) if n.name not in keep_nets]
+            raise ValueError("No nets specified to keep.")
 
-        def _collect_pins():
-            pins_to_del = []
-            for pin in list(self.padstacks.instances.values()):
-                if not pin.in_polygon(polygon, include_partial=kw.get("include_partial_instances", False)):
-                    pins_to_del.append(pin)
-                elif hasattr(pin, "net"):
-                    if pin.net.name not in keep_nets:
-                        pins_to_del.append(pin)
-            return pins_to_del
+        legacy_path = self.edbpath
+        (self.save_as(output_path) if output_path else self.save())
 
-        def _collect_prims():
-            primitives = self.modeler.primitives
-            prims_to_del = [prim for prim in primitives if hasattr(prim, "net") and prim.net.name not in keep_nets]
-            prims_to_clip = []
-            for p in primitives:
-                if hasattr(p, "polygon_data"):
-                    intersection_type = p.polygon_data.intersection_type(polygon).value
-                    if intersection_type == 0:
-                        prims_to_del.append(p)
-                    elif intersection_type in [1, 2, 3]:
-                        if hasattr(p, "net"):
-                            if p.net.name in reference_nets:
-                                voids = []
-                                if p.has_voids:
-                                    voids = [void.polygon_data for void in p.voids]
-                                prims_to_clip.append((p, voids))  # casting voids at early stage
-            return prims_to_del, prims_to_clip
+        # 1. READ – collect objects to delete / clip -----------------------------
+        include_partial = kw.get("include_partial_instances", False)
 
-        with ThreadPoolExecutor(kw.get("number_of_threads", (os.cpu_count() - 1))) as pool:
-            pins_del = list(pool.map(lambda _: _collect_pins(), [None]))[0]
-            prims_del, prims_clip = list(pool.map(lambda _: _collect_prims(), [None]))[0]
+        # 1-a nets
+        nets_del = [n for n in self.layout.nets if n.name not in keep_nets]
 
-        # ---------- 2. WRITE phase – perform all deletions -------------------
-        for net in nets_del:
-            net.delete()
-        for obj in pins_del + prims_del:
-            obj.delete()
-        for obj in prims_clip:
-            clipped_prim = GrpcPolygonData.subtract(polygon, obj[0].polygon_data)
-            for prim in clipped_prim:
-                poly = self.modeler.create_polygon(prim, net_name=obj[0].net.name, layer_name=obj[0].layer.name)
-                for void in obj[1]:
-                    if void.intersection_type(prim) in [1, 2, 3]:
-                        poly.add_void(void.points)
-            obj[0].delete()
+        # 1-b pins
+        pins_del = []
+        for pin in self.padstacks.instances.values():
+            net_name = _safe_net_name(pin)
+            if net_name is None or net_name not in keep_nets:
+                pins_del.append(pin)
+                continue
+            if not pin.in_polygon(polygon, include_partial=include_partial):
+                pins_del.append(pin)
+
+        # 1-c primitives
+        prims_del, prims_clip = [], []
+        for p in self.modeler.primitives:
+            net_name = _safe_net_name(p)
+            if net_name is None or net_name not in keep_nets:
+                prims_del.append(p)
+                continue
+
+            poly_data = getattr(p, "polygon_data", None)
+            if poly_data is None:
+                continue
+
+            itype = poly_data.intersection_type(polygon).value
+            if itype == 0:  # fully outside
+                prims_del.append(p)
+            elif itype in {1, 2, 3}:  # intersect / inside
+                if net_name in (reference_nets or []):
+                    voids = [v.polygon_data for v in p.voids] if getattr(p, "has_voids", False) else []
+                    prims_clip.append((p, voids))
+            # else (no intersection enum) – keep as-is
+
+        # 2. WRITE – single-threaded tight loops ------------------------------
+        for n in nets_del:
+            n.delete()
+        for p in pins_del:
+            p.delete()
+        for p in prims_del:
+            p.delete()
+
+        # 2-b clipping
+        for prim, voids in prims_clip:
+            clipped_polys = GrpcPolygonData.subtract(polygon, prim.polygon_data)
+            for c in clipped_polys:
+                new_poly = self.modeler.create_polygon(
+                    c,
+                    net_name=_safe_net_name(prim),
+                    layer_name=prim.layer.name,
+                )
+                for v in voids:
+                    if v.intersection_type(c) != 0:
+                        new_poly.add_void(v.points)
+            prim.delete()
+
+        # 3. post-processing
         if kw.get("remove_single_pin_components", True):
             self.components.delete_single_pin_rlc()
             self.components.refresh_components()
 
-        # save / reopen
         self.save()
         if not open_when_done and output_path:
             self.close()
             self.edbpath = legacy_path
             self.open()
 
-        # outline for caller
         return [[pt.x.value, pt.y.value] for pt in polygon.without_arcs().points]
 
     @staticmethod
