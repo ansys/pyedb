@@ -1497,7 +1497,7 @@ class Edb(EdbInit):
         def _collect_pins():
             pins_to_del = []
             for pin in list(self.padstacks.instances.values()):
-                if not pin.in_polygon(polygon, include_partial=kw.get("include_partial_instances", True)):
+                if not pin.in_polygon(polygon, include_partial=kw.get("include_partial_instances", False)):
                     pins_to_del.append(pin)
                 elif hasattr(pin, "net"):
                     if pin.net.name not in keep_nets:
