@@ -23,7 +23,6 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
-from concurrent.futures import ThreadPoolExecutor
 import math
 from typing import Any, Dict, List, Optional, Sequence, Union
 
@@ -1576,6 +1575,13 @@ class Modeler(object):
             raise ValueError(f"Unknown extent type: {ext_type}. Supported: 'Conforming', 'ConvexHull', 'BoundingBox'.")
         return poly
 
+    # ------------------------------------------------------------------
+    # Helper: safe net-name extractor
+    # ------------------------------------------------------------------
+
+    # ------------------------------------------------------------------
+    # Vectorised worker – single thread only
+    # ------------------------------------------------------------------
     @execution_timer("_cutout_worker")
     def _cutout_worker(
         self,
@@ -1593,60 +1599,44 @@ class Modeler(object):
         legacy_path = self._pedb.edbpath
         (self._pedb.save_as(output_path) if output_path else self._pedb.save())
 
+        # 1. READ – collect objects to delete / clip -----------------------------
         include_partial = kw.get("include_partial_instances", False)
 
-        # -------------------------------------------------------------
-        # STEP 1: BULK FETCH (single-threaded)
-        # -------------------------------------------------------------
-        # Extract plain Python representations to avoid threading issues
-        nets_all = list(self._pedb.layout.nets)
-        pins_all = list(self._pedb.padstacks.instances.values())
-        prims_all = list(self.primitives)
+        # 1-a nets
+        nets_del = [n for n in self._pedb.layout.nets if n.name not in keep_nets]
 
-        # -------------------------------------------------------------
-        # STEP 2: CLASSIFICATION (pure Python)
-        # -------------------------------------------------------------
-        def classify_net(net):
-            return net if net.name not in keep_nets else None
-
-        def classify_pin(pin):
+        # 1-b pins
+        pins_del = []
+        for pin in self._pedb.padstacks.instances.values():
             net_name = _safe_net_name(pin)
             if net_name is None or net_name not in keep_nets:
-                return "delete", pin
+                pins_del.append(pin)
+                continue
             if not pin.in_polygon(polygon, include_partial=include_partial):
-                return "delete", pin
-            return "keep", None
+                pins_del.append(pin)
 
-        def classify_primitive(prim):
-            net_name = _safe_net_name(prim)
+        # 1-c primitives
+        prims_del, prims_clip = [], []
+        for p in self.primitives:
+            net_name = _safe_net_name(p)
             if net_name is None or net_name not in keep_nets:
-                return "delete", prim, None
-            poly_data = getattr(prim, "polygon_data", None)
+                prims_del.append(p)
+                continue
+
+            poly_data = getattr(p, "polygon_data", None)
             if poly_data is None:
-                return "keep", None, None
+                continue
+
             itype = poly_data.intersection_type(polygon).value
-            if itype == 0:  # outside
-                return "delete", prim, None
-            elif itype in {1, 2, 3} and net_name in (reference_nets or []):
-                voids = [v.polygon_data for v in prim.voids] if getattr(prim, "has_voids", False) else []
-                return "clip", prim, voids
-            return "keep", None, None
+            if itype == 0:  # fully outside
+                prims_del.append(p)
+            elif itype in {1, 2, 3}:  # intersect / inside
+                if net_name in (reference_nets or []):
+                    voids = [v.polygon_data for v in p.voids] if getattr(p, "has_voids", False) else []
+                    prims_clip.append((p, voids))
+            # else (no intersection enum) – keep as-is
 
-        # -------------------------------------------------------------
-        # STEP 3: PARALLEL CLASSIFICATION
-        # -------------------------------------------------------------
-        with ThreadPoolExecutor() as executor:
-            nets_del = list(filter(None, executor.map(classify_net, nets_all)))
-            pin_results = list(executor.map(classify_pin, pins_all))
-            prim_results = list(executor.map(classify_primitive, prims_all))
-
-        pins_del = [obj for action, obj in pin_results if action == "delete"]
-        prims_del = [prim for action, prim, _ in prim_results if action == "delete"]
-        prims_clip = [(prim, voids) for action, prim, voids in prim_results if action == "clip"]
-
-        # -------------------------------------------------------------
-        # STEP 4: WRITE PHASE (single-threaded)
-        # -------------------------------------------------------------
+        # 2. WRITE – single-threaded tight loops ------------------------------
         for n in nets_del:
             n.delete()
         for p in pins_del:
@@ -1654,6 +1644,7 @@ class Modeler(object):
         for p in prims_del:
             p.delete()
 
+        # 2-b clipping
         for prim, voids in prims_clip:
             clipped_polys = GrpcPolygonData.subtract(polygon, prim.polygon_data)
             for c in clipped_polys:
@@ -1667,6 +1658,7 @@ class Modeler(object):
                         new_poly.add_void(v.points)
             prim.delete()
 
+        # 3. post-processing
         if kw.get("remove_single_pin_components", True):
             self._pedb.components.delete_single_pin_rlc()
             self._pedb.components.refresh_components()
