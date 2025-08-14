@@ -65,7 +65,7 @@ import sys
 import tempfile
 import time
 import traceback
-from typing import Dict, List, Optional, Sequence, Union
+from typing import Dict, List, Union
 import warnings
 from zipfile import ZipFile as zpf
 
@@ -132,20 +132,10 @@ from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
-from pyedb.misc.decorators import execution_timer
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
 
 os.environ["no_proxy"] = "localhost,127.0.0.1"
-
-
-def _safe_net_name(obj) -> str | None:
-    """Return obj.net.name if both exist, else None."""
-    try:
-        net = getattr(obj, "net", None)
-        return net.name if net else None
-    except Exception:
-        return None
 
 
 class Edb(EdbInit):
@@ -1430,155 +1420,13 @@ class Edb(EdbInit):
         """
         Create an EDB cutout.
 
-        Two mutually exclusive modes:
-
-        1. Net-driven
-           >>> edb.cutout(signal_nets=["DDR4_D0"], reference_nets=["GND"])
-        2. Polygon-driven
-           >>> edb.cutout(point_list=[[0,0],[5e-3,0],[5e-3,5e-3],[0,5e-3]])
-
-        All legacy keyword arguments (``use_pyaedt_cutout``,
-        ``remove_single_pin_components``, ``number_of_threads``, …) are still
-        accepted via ``**kw``.
+        .deprecated:: 0.50.1
+        use :func:`modeler.cutout` instead.
         """
-        if point_list is not None:
-            poly = GrpcPolygonData(point_list)
-        else:
-            poly = self._extent_from_nets(
-                signal_list or [],
-                expansion,
-                extent_type,
-                **kw,
-            )
-        return self._cutout_worker(poly, output_path, open_when_done, signal_list, reference_list, **kw)
-
-    # -----------------------------------------------------------------------
-    #  Private helpers
-    # -----------------------------------------------------------------------
-    def _extent_from_nets(self, sig, exp, ext_type, **kw):
-        """Compute clipping polygon from net lists."""
-        from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType
-
-        nets = [n for n in self.layout.nets if n.name in sig]
-        if ext_type.lower() in ["conforming", "conformal", "convex_hull", "convexhull"]:
-            poly = self.layout.expanded_extent(
-                nets=nets,
-                extent=GrpcExtentType.CONFORMING,
-                expansion_factor=exp,
-                expansion_unitless=False,
-                use_round_corner=kw.get("use_round_corner", False),
-                num_increments=1,
-            )
-            if ext_type.lower() in ["convex_hull", "convexhull"]:
-                poly = GrpcPolygonData.convex_hull(poly)
-        elif ext_type.lower() in ["bounding", "bounding_box", "bbox", "boundingbox"]:
-            poly = self.layout.expanded_extent(
-                nets=nets,
-                extent=GrpcExtentType.BOUNDING_BOX,
-                expansion_factor=exp,
-                expansion_unitless=False,
-                use_round_corner=kw.get("use_round_corner", False),
-                num_increments=1,
-            )
-        else:
-            raise ValueError(f"Unknown extent type: {ext_type}. Supported: 'Conforming', 'ConvexHull', 'BoundingBox'.")
-        return poly
-
-    # ------------------------------------------------------------------
-    # Helper: safe net-name extractor
-    # ------------------------------------------------------------------
-
-    # ------------------------------------------------------------------
-    # Vectorised worker – single thread only
-    # ------------------------------------------------------------------
-    @execution_timer("_cutout_worker")
-    def _cutout_worker(
-        self,
-        polygon: GrpcPolygonData,
-        output_path: Optional[str],
-        open_when_done: bool,
-        signal_nets: Optional[Sequence[str]],
-        reference_nets: Optional[Sequence[str]],
-        **kw,
-    ) -> list[list[float]]:
-        keep_nets = set((signal_nets or []) + (reference_nets or []))
-        if not keep_nets:
-            raise ValueError("No nets specified to keep.")
-
-        legacy_path = self.edbpath
-        (self.save_as(output_path) if output_path else self.save())
-
-        # 1. READ – collect objects to delete / clip -----------------------------
-        include_partial = kw.get("include_partial_instances", False)
-
-        # 1-a nets
-        nets_del = [n for n in self.layout.nets if n.name not in keep_nets]
-
-        # 1-b pins
-        pins_del = []
-        for pin in self.padstacks.instances.values():
-            net_name = _safe_net_name(pin)
-            if net_name is None or net_name not in keep_nets:
-                pins_del.append(pin)
-                continue
-            if not pin.in_polygon(polygon, include_partial=include_partial):
-                pins_del.append(pin)
-
-        # 1-c primitives
-        prims_del, prims_clip = [], []
-        for p in self.modeler.primitives:
-            net_name = _safe_net_name(p)
-            if net_name is None or net_name not in keep_nets:
-                prims_del.append(p)
-                continue
-
-            poly_data = getattr(p, "polygon_data", None)
-            if poly_data is None:
-                continue
-
-            itype = poly_data.intersection_type(polygon).value
-            if itype == 0:  # fully outside
-                prims_del.append(p)
-            elif itype in {1, 2, 3}:  # intersect / inside
-                if net_name in (reference_nets or []):
-                    voids = [v.polygon_data for v in p.voids] if getattr(p, "has_voids", False) else []
-                    prims_clip.append((p, voids))
-            # else (no intersection enum) – keep as-is
-
-        # 2. WRITE – single-threaded tight loops ------------------------------
-        for n in nets_del:
-            n.delete()
-        for p in pins_del:
-            p.delete()
-        for p in prims_del:
-            p.delete()
-
-        # 2-b clipping
-        for prim, voids in prims_clip:
-            clipped_polys = GrpcPolygonData.subtract(polygon, prim.polygon_data)
-            for c in clipped_polys:
-                new_poly = self.modeler.create_polygon(
-                    c,
-                    net_name=_safe_net_name(prim),
-                    layer_name=prim.layer.name,
-                )
-                for v in voids:
-                    if v.intersection_type(c) != 0:
-                        new_poly.add_void(v.points)
-            prim.delete()
-
-        # 3. post-processing
-        if kw.get("remove_single_pin_components", True):
-            self.components.delete_single_pin_rlc()
-            self.components.refresh_components()
-
-        self.save()
-        if not open_when_done and output_path:
-            self.close()
-            self.edbpath = legacy_path
-            self.open()
-
-        return [[pt.x.value, pt.y.value] for pt in polygon.without_arcs().points]
+        warnings.warn("`cutout` is deprecated, use `modeler.cutout` instead.", DeprecationWarning)
+        return self.modeler.cutout(
+            signal_list, reference_list, point_list, expansion, extent_type, output_path, open_when_done, **kw
+        )
 
     @staticmethod
     def write_export3d_option_config_file(path_to_output, config_dictionaries=None):

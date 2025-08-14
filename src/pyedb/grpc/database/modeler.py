@@ -23,8 +23,9 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
+from concurrent.futures import ThreadPoolExecutor
 import math
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 from ansys.edb.core.geometry.arc_data import ArcData as GrpcArcData
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
@@ -49,6 +50,16 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import execution_timer
+
+
+def _safe_net_name(obj) -> str | None:
+    """Return obj.net.name if both exist, else None."""
+    try:
+        net = getattr(obj, "net", None)
+        return net.name if net else None
+    except Exception:
+        return None
 
 
 class Modeler(object):
@@ -1499,3 +1510,171 @@ class Modeler(object):
             if net_obj:
                 obj.net = net_obj[0]
         return self._pedb.siwave.pin_groups[name]
+
+    def cutout(
+        self,
+        signal_list: "list[str] | None" = None,
+        reference_list: "list[str] | None" = None,
+        point_list: "list[list[float]] | None" = None,
+        expansion: float = 0.002,
+        extent_type: str = "bounding_box",
+        output_path: "str | None" = None,
+        open_when_done: bool = True,
+        **kw,
+    ) -> "list[list[float]]":
+        """
+        Create an EDB cutout.
+
+        Two mutually exclusive modes:
+
+        1. Net-driven
+           >>> edb.cutout(signal_nets=["DDR4_D0"], reference_nets=["GND"])
+        2. Polygon-driven
+           >>> edb.cutout(point_list=[[0,0],[5e-3,0],[5e-3,5e-3],[0,5e-3]])
+
+        All legacy keyword arguments (``use_pyaedt_cutout``,
+        ``remove_single_pin_components``, ``number_of_threads``, …) are still
+        accepted via ``**kw``.
+        """
+        if point_list is not None:
+            poly = GrpcPolygonData(point_list)
+        else:
+            poly = self._extent_from_nets(
+                signal_list or [],
+                expansion,
+                extent_type,
+                **kw,
+            )
+        return self._cutout_worker(poly, output_path, open_when_done, signal_list, reference_list, **kw)
+
+    def _extent_from_nets(self, sig, exp, ext_type, **kw):
+        """Compute clipping polygon from net lists."""
+        from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType
+
+        nets = [n for n in self._pedb.layout.nets if n.name in sig]
+        if ext_type.lower() in ["conforming", "conformal", "convex_hull", "convexhull"]:
+            poly = self._pedb.layout.expanded_extent(
+                nets=nets,
+                extent=GrpcExtentType.CONFORMING,
+                expansion_factor=exp,
+                expansion_unitless=False,
+                use_round_corner=kw.get("use_round_corner", False),
+                num_increments=1,
+            )
+            if ext_type.lower() in ["convex_hull", "convexhull"]:
+                poly = GrpcPolygonData.convex_hull(poly)
+        elif ext_type.lower() in ["bounding", "bounding_box", "bbox", "boundingbox"]:
+            poly = self._pedb.layout.expanded_extent(
+                nets=nets,
+                extent=GrpcExtentType.BOUNDING_BOX,
+                expansion_factor=exp,
+                expansion_unitless=False,
+                use_round_corner=kw.get("use_round_corner", False),
+                num_increments=1,
+            )
+        else:
+            raise ValueError(f"Unknown extent type: {ext_type}. Supported: 'Conforming', 'ConvexHull', 'BoundingBox'.")
+        return poly
+
+    @execution_timer("_cutout_worker")
+    def _cutout_worker(
+        self,
+        polygon: GrpcPolygonData,
+        output_path: Optional[str],
+        open_when_done: bool,
+        signal_nets: Optional[Sequence[str]],
+        reference_nets: Optional[Sequence[str]],
+        **kw,
+    ) -> list[list[float]]:
+        keep_nets = set((signal_nets or []) + (reference_nets or []))
+        if not keep_nets:
+            raise ValueError("No nets specified to keep.")
+
+        legacy_path = self._pedb.edbpath
+        (self._pedb.save_as(output_path) if output_path else self._pedb.save())
+
+        include_partial = kw.get("include_partial_instances", False)
+
+        # -------------------------------------------------------------
+        # STEP 1: BULK FETCH (single-threaded)
+        # -------------------------------------------------------------
+        # Extract plain Python representations to avoid threading issues
+        nets_all = list(self._pedb.layout.nets)
+        pins_all = list(self._pedb.padstacks.instances.values())
+        prims_all = list(self.primitives)
+
+        # -------------------------------------------------------------
+        # STEP 2: CLASSIFICATION (pure Python)
+        # -------------------------------------------------------------
+        def classify_net(net):
+            return net if net.name not in keep_nets else None
+
+        def classify_pin(pin):
+            net_name = _safe_net_name(pin)
+            if net_name is None or net_name not in keep_nets:
+                return "delete", pin
+            if not pin.in_polygon(polygon, include_partial=include_partial):
+                return "delete", pin
+            return "keep", None
+
+        def classify_primitive(prim):
+            net_name = _safe_net_name(prim)
+            if net_name is None or net_name not in keep_nets:
+                return "delete", prim, None
+            poly_data = getattr(prim, "polygon_data", None)
+            if poly_data is None:
+                return "keep", None, None
+            itype = poly_data.intersection_type(polygon).value
+            if itype == 0:  # outside
+                return "delete", prim, None
+            elif itype in {1, 2, 3} and net_name in (reference_nets or []):
+                voids = [v.polygon_data for v in prim.voids] if getattr(prim, "has_voids", False) else []
+                return "clip", prim, voids
+            return "keep", None, None
+
+        # -------------------------------------------------------------
+        # STEP 3: PARALLEL CLASSIFICATION
+        # -------------------------------------------------------------
+        with ThreadPoolExecutor() as executor:
+            nets_del = list(filter(None, executor.map(classify_net, nets_all)))
+            pin_results = list(executor.map(classify_pin, pins_all))
+            prim_results = list(executor.map(classify_primitive, prims_all))
+
+        pins_del = [obj for action, obj in pin_results if action == "delete"]
+        prims_del = [prim for action, prim, _ in prim_results if action == "delete"]
+        prims_clip = [(prim, voids) for action, prim, voids in prim_results if action == "clip"]
+
+        # -------------------------------------------------------------
+        # STEP 4: WRITE PHASE (single-threaded)
+        # -------------------------------------------------------------
+        for n in nets_del:
+            n.delete()
+        for p in pins_del:
+            p.delete()
+        for p in prims_del:
+            p.delete()
+
+        for prim, voids in prims_clip:
+            clipped_polys = GrpcPolygonData.subtract(polygon, prim.polygon_data)
+            for c in clipped_polys:
+                new_poly = self.create_polygon(
+                    c,
+                    net_name=_safe_net_name(prim),
+                    layer_name=prim.layer.name,
+                )
+                for v in voids:
+                    if v.intersection_type(c) != 0:
+                        new_poly.add_void(v.points)
+            prim.delete()
+
+        if kw.get("remove_single_pin_components", True):
+            self._pedb.components.delete_single_pin_rlc()
+            self._pedb.components.refresh_components()
+
+        self._pedb.save()
+        if not open_when_done and output_path:
+            self._pedb.close()
+            self._pedb.edbpath = legacy_path
+            self._pedb.open()
+
+        return [[pt.x.value, pt.y.value] for pt in polygon.without_arcs().points]
