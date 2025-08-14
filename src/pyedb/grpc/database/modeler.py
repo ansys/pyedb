@@ -23,6 +23,8 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
+import concurrent.futures as _cf
+from functools import lru_cache
 import math
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
@@ -40,6 +42,8 @@ from ansys.edb.core.primitive.path import PathEndCapType as GrpcPathEndCapType
 from ansys.edb.core.primitive.rectangle import (
     RectangleRepresentationType as GrpcRectangleRepresentationType,
 )
+import numpy as np
+from shapely import contains_xy as _contains_xy
 from shapely.geometry import Point as ShapelyPoint
 from shapely.geometry import Polygon as ShapelyPolygon
 
@@ -1575,11 +1579,8 @@ class Modeler(object):
             raise ValueError(f"Unknown extent type: {ext_type}. Supported: 'Conforming', 'ConvexHull', 'BoundingBox'.")
         return [(pt.x.value, pt.y.value) for pt in poly.points]
 
-    def _cached_pins(self):
-        """Cached pins."""
-        return [(pin, pin.position) for pin in self._pedb.padstacks.instances.values()]
-
-    def classify_intersection(self, poly1_pts, poly2_pts) -> Tuple[bool, str]:
+    @staticmethod
+    def classify_intersection(poly1_pts, poly2_pts) -> Tuple[bool, str]:
         """
         poly1_pts, poly2_pts: list of (x, y) tuples
         returns: (intersects?, type_string)
@@ -1610,71 +1611,129 @@ class Modeler(object):
 
     def point_inside(self, poly_pts, pt) -> bool:
         """
-        poly_pts : list[(x, y), …]– ring of the polygon
-        pt : (x, y) – query point
+        Parameters
+        ----------
+        poly_pts : list[(x, y), …]
+        pt: (x, y)
+            query point
         returns True if pt lies inside/on the boundary of poly_pts
         """
         return ShapelyPolygon(poly_pts).contains(ShapelyPoint(pt))
-        # use .covers(...) if you want boundary=inside
+
+    # ------------------------------------------------------------------
+    # Vectorised pin filtering
+    # ------------------------------------------------------------------
+    def pick_pins(
+        self,
+        pin_handles: np.ndarray,
+        net_arr: np.ndarray,
+        xy_arr: np.ndarray,
+        keep_nets: set[str],
+        extent_pts: list[tuple[float, float]],
+    ) -> list[Any]:
+        mask = np.isin(net_arr, list(keep_nets))
+        if not mask.any():
+            return pin_handles.tolist()
+
+        poly = ShapelyPolygon(extent_pts)
+        inside = _contains_xy(poly, xy_arr[:, 0], xy_arr[:, 1])  # vectorised
+        mask &= inside
+        return pin_handles[~mask].tolist()
+
+    @staticmethod
+    @lru_cache(maxsize=1)
+    def _cached_pin_array(edb_obj):
+        pins = list(edb_obj._pedb.padstacks.instances.values())
+        handles = np.array(pins, dtype=object)
+        nets = np.array([_safe_net_name(p) for p in pins], dtype=object)
+        xy = np.array([(p.position[0], p.position[1]) for p in pins], dtype=np.float64)
+        return handles, nets, xy
+
+    @staticmethod
+    @lru_cache(maxsize=1)
+    def _cached_primitive_array(edb_obj):
+        handles, nets, pts_per_prim = [], [], []
+        for p in edb_obj.primitives:
+            net_name = _safe_net_name(p)
+            poly_data = getattr(p, "polygon_data", None)
+            pts = [(pt.x.value, pt.y.value) for pt in poly_data.points] if poly_data else None
+            handles.append(p)
+            nets.append(net_name)
+            pts_per_prim.append(pts)
+        return np.array(handles, dtype=object), np.array(nets, dtype=object), pts_per_prim
+
+    @staticmethod
+    def classify_primitives_batch(
+        handles: np.ndarray,
+        net_arr: np.ndarray,
+        pts_per_prim: list,
+        keep_nets: set[str],
+        extent_pts: list[tuple[float, float]],
+        reference_nets: set[str],
+    ) -> tuple[list[Any], list[tuple[Any, list]]]:
+        prims_del, prims_clip = [], []
+        ext_poly = ShapelyPolygon(extent_pts)
+
+        for handle, net_name, pts in zip(handles, net_arr, pts_per_prim):
+            if net_name is None or net_name not in keep_nets:
+                prims_del.append(handle)
+                continue
+            if pts is None or len(pts) < 3:
+                prims_del.append(handle)
+                continue
+
+            poly = ShapelyPolygon(pts)
+            if poly.disjoint(ext_poly):
+                prims_del.append(handle)
+            elif reference_nets and net_name in reference_nets:
+                voids = [v.polygon_data for v in handle.voids] if getattr(handle, "has_voids", False) else []
+                prims_clip.append((handle, voids))
+
+        return prims_del, prims_clip
 
     @execution_timer("_cutout_worker")
     def _cutout_worker(
         self,
-        extent_points: List[Tuple[float, float]],
-        output_path: Optional[str],
+        extent_points: list[tuple[float, float]],
+        output_path: str | None,
         open_when_done: bool,
-        signal_nets: Optional[Sequence[str]],
-        reference_nets: Optional[Sequence[str]],
+        signal_nets: Sequence[str] | None,
+        reference_nets: Sequence[str] | None,
         **kw,
-    ) -> list[Tuple[float, float]]:
+    ) -> bool:
         keep_nets = set((signal_nets or []) + (reference_nets or []))
+        reference_nets = set(reference_nets or [])
         if not keep_nets:
             raise ValueError("No nets specified to keep.")
 
         legacy_path = self._pedb.edbpath
         (self._pedb.save_as(output_path) if output_path else self._pedb.save())
 
-        # 1. READ – collect objects to delete / clip -----------------------------
-        include_partial = kw.get("include_partial_instances", False)
+        # ------------------------------------------------------------------
+        # Parallel READ phase
+        # ------------------------------------------------------------------
+        with _cf.ThreadPoolExecutor() as pool:
+            # pins
+            pin_handles, pin_nets, pin_xy = self._cached_pin_array(self)
+            pins_del = pool.submit(self.pick_pins, pin_handles, pin_nets, pin_xy, keep_nets, extent_points).result()
 
-        # 1-a nets
+            # primitives
+            prim_handles, prim_nets, pts_per_prim = self._cached_primitive_array(self)
+            prims_del, prims_clip = pool.submit(
+                self.classify_primitives_batch,
+                prim_handles,
+                prim_nets,
+                pts_per_prim,
+                keep_nets,
+                extent_points,
+                reference_nets,
+            ).result()
+
+        # ------------------------------------------------------------------
+        # Single-threaded WRITE phase
+        # ------------------------------------------------------------------
         nets_del = [n for n in self._pedb.layout.nets if n.name not in keep_nets]
 
-        # 1-b pins
-
-        pins_del = []
-        cached_pins = self._cached_pins()
-        for pin in cached_pins:
-            net_name = _safe_net_name(pin[0])
-            if net_name is None or net_name not in keep_nets:
-                pins_del.append(pin[0])
-                continue
-            if not self.point_inside(extent_points, pin[1]):
-                pins_del.append(pin[0])
-
-        # 1-c primitives
-        prims_del, prims_clip = [], []
-        for p in self.primitives:
-            net_name = _safe_net_name(p)
-            if net_name is None or net_name not in keep_nets:
-                prims_del.append(p)
-                continue
-
-            poly_data = getattr(p, "polygon_data", None)
-            if poly_data is None:
-                continue
-            poly_points = [(pt.x.value, pt.y.value) for pt in poly_data.points]
-
-            intersection_type = self.classify_intersection(extent_points, poly_points)
-            if not intersection_type[0]:
-                prims_del.append(p)
-                continue
-            else:  # intersect / inside
-                if net_name in (reference_nets or []):
-                    voids = [v.polygon_data for v in p.voids] if getattr(p, "has_voids", False) else []
-                    prims_clip.append((p, voids))
-
-        # 2. WRITE – single-threaded tight loops ------------------------------
         for n in nets_del:
             n.delete()
         for p in pins_del:
@@ -1682,7 +1741,6 @@ class Modeler(object):
         for p in prims_del:
             p.delete()
 
-        # 2-b clipping
         for prim, voids in prims_clip:
             extent = GrpcPolygonData(points=extent_points)
             clipped_polys = GrpcPolygonData.subtract(extent, prim.polygon_data)
@@ -1697,7 +1755,7 @@ class Modeler(object):
                         new_poly.add_void(v.points)
             prim.delete()
 
-        # 3. post-processing
+        # post-processing
         if kw.get("remove_single_pin_components", True):
             self._pedb.components.delete_single_pin_rlc()
             self._pedb.components.refresh_components()
