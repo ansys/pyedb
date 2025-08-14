@@ -24,7 +24,7 @@
 This module contains these classes: `EdbLayout` and `Shape`.
 """
 import math
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 from ansys.edb.core.geometry.arc_data import ArcData as GrpcArcData
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
@@ -40,6 +40,8 @@ from ansys.edb.core.primitive.path import PathEndCapType as GrpcPathEndCapType
 from ansys.edb.core.primitive.rectangle import (
     RectangleRepresentationType as GrpcRectangleRepresentationType,
 )
+from shapely.geometry import Point as ShapelyPoint
+from shapely.geometry import Polygon as ShapelyPolygon
 
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.circle import Circle
@@ -1520,7 +1522,7 @@ class Modeler(object):
         output_path: "str | None" = None,
         open_when_done: bool = True,
         **kw,
-    ) -> "list[list[float]]":
+    ) -> "list[Tuple[float, float]]":
         """
         Create an EDB cutout.
 
@@ -1535,16 +1537,14 @@ class Modeler(object):
         ``remove_single_pin_components``, ``number_of_threads``, …) are still
         accepted via ``**kw``.
         """
-        if point_list is not None:
-            poly = GrpcPolygonData(point_list)
-        else:
-            poly = self._extent_from_nets(
-                signal_list or [],
-                expansion,
-                extent_type,
-                **kw,
-            )
-        return self._cutout_worker(poly, output_path, open_when_done, signal_list, reference_list, **kw)
+        extent_points = self._extent_from_nets(
+            signal_list or [],
+            expansion,
+            extent_type,
+            **kw,
+        )
+        self._cutout_worker(extent_points, output_path, open_when_done, signal_list, reference_list, **kw)
+        return extent_points
 
     def _extent_from_nets(self, sig, exp, ext_type, **kw):
         """Compute clipping polygon from net lists."""
@@ -1573,25 +1573,60 @@ class Modeler(object):
             )
         else:
             raise ValueError(f"Unknown extent type: {ext_type}. Supported: 'Conforming', 'ConvexHull', 'BoundingBox'.")
-        return poly
+        return [(pt.x.value, pt.y.value) for pt in poly.points]
 
-    # ------------------------------------------------------------------
-    # Helper: safe net-name extractor
-    # ------------------------------------------------------------------
+    def _cached_pins(self):
+        """Cached pins."""
+        return [(pin, pin.position) for pin in self._pedb.padstacks.instances.values()]
 
-    # ------------------------------------------------------------------
-    # Vectorised worker – single thread only
-    # ------------------------------------------------------------------
+    def classify_intersection(self, poly1_pts, poly2_pts) -> Tuple[bool, str]:
+        """
+        poly1_pts, poly2_pts: list of (x, y) tuples
+        returns: (intersects?, type_string)
+        """
+        poly1 = ShapelyPolygon(poly1_pts)
+        poly2 = ShapelyPolygon(poly2_pts)
+
+        # Fast path: disjoint() is a single DE-9IM query (cheapest)
+        if poly1.disjoint(poly2):
+            return False, "disjoint"
+
+        # Ordered from cheapest to slightly more expensive.
+        # Pick the FIRST predicate that is true; this avoids extra work.
+        if poly1.contains(poly2):
+            return True, "contains"
+        if poly2.contains(poly1):
+            return True, "within"
+        if poly1.covers(poly2):  # covers is marginally cheaper than equals
+            return True, "covers"
+        if poly2.covers(poly1):
+            return True, "covered_by"
+        if poly1.equals(poly2):
+            return True, "equals"
+        if poly1.touches(poly2):
+            return True, "touches"
+        # At this point we have proper intersection (overlap of interiors)
+        return True, "overlaps"
+
+    def point_inside(self, poly_pts, pt) -> bool:
+        """
+        poly_pts : list[(x, y), …]– ring of the polygon
+        pt : (x, y) – query point
+        returns True if pt lies inside/on the boundary of poly_pts
+        """
+        return ShapelyPolygon(poly_pts).contains(ShapelyPoint(pt))
+        # use .covers(...) if you want boundary=inside
+
     @execution_timer("_cutout_worker")
     def _cutout_worker(
         self,
-        polygon: GrpcPolygonData,
+        extent_points: List[Tuple[float, float]],
         output_path: Optional[str],
         open_when_done: bool,
         signal_nets: Optional[Sequence[str]],
         reference_nets: Optional[Sequence[str]],
         **kw,
-    ) -> list[list[float]]:
+    ) -> list[Tuple[float, float]]:
         keep_nets = set((signal_nets or []) + (reference_nets or []))
         if not keep_nets:
             raise ValueError("No nets specified to keep.")
@@ -1606,14 +1641,16 @@ class Modeler(object):
         nets_del = [n for n in self._pedb.layout.nets if n.name not in keep_nets]
 
         # 1-b pins
+
         pins_del = []
-        for pin in self._pedb.padstacks.instances.values():
-            net_name = _safe_net_name(pin)
+        cached_pins = self._cached_pins()
+        for pin in cached_pins:
+            net_name = _safe_net_name(pin[0])
             if net_name is None or net_name not in keep_nets:
-                pins_del.append(pin)
+                pins_del.append(pin[0])
                 continue
-            if not pin.in_polygon(polygon, include_partial=include_partial):
-                pins_del.append(pin)
+            if not self.point_inside(extent_points, pin[1]):
+                pins_del.append(pin[0])
 
         # 1-c primitives
         prims_del, prims_clip = [], []
@@ -1626,15 +1663,16 @@ class Modeler(object):
             poly_data = getattr(p, "polygon_data", None)
             if poly_data is None:
                 continue
+            poly_points = [(pt.x.value, pt.y.value) for pt in poly_data.points]
 
-            itype = poly_data.intersection_type(polygon).value
-            if itype == 0:  # fully outside
+            intersection_type = self.classify_intersection(extent_points, poly_points)
+            if not intersection_type[0]:
                 prims_del.append(p)
-            elif itype in {1, 2, 3}:  # intersect / inside
+                continue
+            else:  # intersect / inside
                 if net_name in (reference_nets or []):
                     voids = [v.polygon_data for v in p.voids] if getattr(p, "has_voids", False) else []
                     prims_clip.append((p, voids))
-            # else (no intersection enum) – keep as-is
 
         # 2. WRITE – single-threaded tight loops ------------------------------
         for n in nets_del:
@@ -1646,7 +1684,8 @@ class Modeler(object):
 
         # 2-b clipping
         for prim, voids in prims_clip:
-            clipped_polys = GrpcPolygonData.subtract(polygon, prim.polygon_data)
+            extent = GrpcPolygonData(points=extent_points)
+            clipped_polys = GrpcPolygonData.subtract(extent, prim.polygon_data)
             for c in clipped_polys:
                 new_poly = self.create_polygon(
                     c,
@@ -1668,5 +1707,4 @@ class Modeler(object):
             self._pedb.close()
             self._pedb.edbpath = legacy_path
             self._pedb.open()
-
-        return [[pt.x.value, pt.y.value] for pt in polygon.without_arcs().points]
+        return True
