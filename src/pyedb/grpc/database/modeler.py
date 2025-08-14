@@ -719,12 +719,7 @@ class Modeler(object):
         """
         net = self._pedb.nets.find_or_create_net(net_name)
         if isinstance(points, list):
-            new_points = []
-            for idx, i in enumerate(points):
-                new_points.append(
-                    GrpcPointData([Value(i[0], self._pedb.active_cell), Value(i[1], self._pedb.active_cell)])
-                )
-            polygon_data = GrpcPolygonData(points=new_points)
+            polygon_data = GrpcPolygonData(points=points)
 
         elif isinstance(points, GrpcPolygonData):
             polygon_data = points
@@ -1715,11 +1710,11 @@ class Modeler(object):
         with _cf.ThreadPoolExecutor() as pool:
             # pins
             pin_handles, pin_nets, pin_xy = self._cached_pin_array(self)
-            pins_del = pool.submit(self.pick_pins, pin_handles, pin_nets, pin_xy, keep_nets, extent_points).result()
+            fut_pins = pool.submit(self.pick_pins, pin_handles, pin_nets, pin_xy, keep_nets, extent_points)
 
             # primitives
             prim_handles, prim_nets, pts_per_prim = self._cached_primitive_array(self)
-            prims_del, prims_clip = pool.submit(
+            fut_prims = pool.submit(
                 self.classify_primitives_batch,
                 prim_handles,
                 prim_nets,
@@ -1727,7 +1722,11 @@ class Modeler(object):
                 keep_nets,
                 extent_points,
                 reference_nets,
-            ).result()
+            )
+
+            # wait for both
+            pins_del = fut_pins.result()
+            prims_del, prims_clip = fut_prims.result()
 
         # ------------------------------------------------------------------
         # Single-threaded WRITE phase
