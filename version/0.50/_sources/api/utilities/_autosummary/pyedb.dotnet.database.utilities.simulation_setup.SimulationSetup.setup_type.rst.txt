@@ -1,0 +1,6 @@
+setup\_type
+===========
+
+.. currentmodule:: pyedb.dotnet.database.utilities.simulation_setup
+
+.. autoproperty:: SimulationSetup.setup_type

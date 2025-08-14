@@ -1,0 +1,6 @@
+import\_layout\_pcb
+===================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.import_layout_pcb

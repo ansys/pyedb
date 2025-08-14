@@ -1,0 +1,6 @@
+is\_null
+========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.netlist_model
+
+.. autoproperty:: NetlistModel.is_null

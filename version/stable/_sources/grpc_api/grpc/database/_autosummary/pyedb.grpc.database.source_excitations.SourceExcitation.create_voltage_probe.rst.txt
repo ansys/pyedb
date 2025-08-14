@@ -1,0 +1,6 @@
+create\_voltage\_probe
+======================
+
+.. currentmodule:: pyedb.grpc.database.source_excitations
+
+.. automethod:: SourceExcitation.create_voltage_probe

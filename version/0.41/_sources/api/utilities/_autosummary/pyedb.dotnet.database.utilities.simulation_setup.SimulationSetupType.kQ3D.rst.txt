@@ -1,0 +1,6 @@
+kQ3D
+====
+
+.. currentmodule:: pyedb.dotnet.database.utilities.simulation_setup
+
+.. autoattribute:: SimulationSetupType.kQ3D

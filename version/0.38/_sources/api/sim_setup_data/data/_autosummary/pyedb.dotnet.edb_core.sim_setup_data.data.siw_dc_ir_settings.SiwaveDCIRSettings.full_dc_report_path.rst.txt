@@ -1,0 +1,6 @@
+full\_dc\_report\_path
+======================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.siw_dc_ir_settings
+
+.. autoproperty:: SiwaveDCIRSettings.full_dc_report_path

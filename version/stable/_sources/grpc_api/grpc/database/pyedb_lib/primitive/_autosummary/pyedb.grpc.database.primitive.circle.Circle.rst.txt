@@ -1,0 +1,164 @@
+﻿Circle
+======
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. autoclass:: Circle
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Circle.add_void
+      
+      
+      Circle.area
+      
+      
+      Circle.can_be_zone_primitive
+      
+      
+      Circle.cast
+      
+      
+      Circle.convert_to_polygon
+      
+      
+      Circle.create
+      
+      
+      Circle.create_3d_comp
+      
+      
+      Circle.create_hfss
+      
+      
+      Circle.create_stride
+      
+      
+      Circle.delete
+      
+      
+      Circle.expand
+      
+      
+      Circle.find_by_id
+      
+      
+      Circle.get_closest_arc_midpoint
+      
+      
+      Circle.get_closest_point
+      
+      
+      Circle.get_connected_object_id_set
+      
+      
+      Circle.get_connected_objects
+      
+      
+      Circle.get_hfss_prop
+      
+      
+      Circle.get_parameters
+      
+      
+      Circle.get_product_property
+      
+      
+      Circle.get_product_property_ids
+      
+      
+      Circle.intersect
+      
+      
+      Circle.intersection_type
+      
+      
+      Circle.is_intersecting
+      
+      
+      Circle.make_zone_primitive
+      
+      
+      Circle.plot
+      
+      
+      Circle.points
+      
+      
+      Circle.remove_hfss_prop
+      
+      
+      Circle.render
+      
+      
+      Circle.scale
+      
+      
+      Circle.set_hfss_prop
+      
+      
+      Circle.set_parameters
+      
+      
+      Circle.set_product_property
+      
+      
+      Circle.subtract
+      
+      
+      Circle.unite
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Circle.aedt_name
+      Circle.arcs
+      Circle.bbox
+      Circle.center
+      Circle.component
+      Circle.edb_uid
+      Circle.group
+      Circle.has_voids
+      Circle.id
+      Circle.is_mcad
+      Circle.is_mcad_3d_comp
+      Circle.is_mcad_hfss
+      Circle.is_mcad_stride
+      Circle.is_negative
+      Circle.is_null
+      Circle.is_parameterized
+      Circle.is_void
+      Circle.is_zone_primitive
+      Circle.layer
+      Circle.layer_name
+      Circle.layout
+      Circle.layout_obj_type
+      Circle.longest_arc
+      Circle.msg
+      Circle.net
+      Circle.net_name
+      Circle.obj_type
+      Circle.object_instance
+      Circle.owner
+      Circle.points_raw
+      Circle.polygon_data
+      Circle.primitive_type
+      Circle.shortest_arc
+      Circle.type
+      Circle.voids
+   
+   

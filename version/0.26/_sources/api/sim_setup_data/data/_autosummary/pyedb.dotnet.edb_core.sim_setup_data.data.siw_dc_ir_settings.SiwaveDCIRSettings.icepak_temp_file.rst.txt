@@ -1,0 +1,6 @@
+icepak\_temp\_file
+==================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.siw_dc_ir_settings
+
+.. autoproperty:: SiwaveDCIRSettings.icepak_temp_file

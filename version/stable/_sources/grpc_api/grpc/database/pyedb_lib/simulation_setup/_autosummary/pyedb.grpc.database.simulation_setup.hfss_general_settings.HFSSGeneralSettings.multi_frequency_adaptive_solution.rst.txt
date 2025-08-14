@@ -1,0 +1,6 @@
+multi\_frequency\_adaptive\_solution
+====================================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_general_settings
+
+.. autoproperty:: HFSSGeneralSettings.multi_frequency_adaptive_solution

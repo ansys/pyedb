@@ -1,0 +1,6 @@
+number\_with\_units
+===================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.number_with_units

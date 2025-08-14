@@ -1,0 +1,6 @@
+create\_pin\_group
+==================
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. automethod:: Modeler.create_pin_group

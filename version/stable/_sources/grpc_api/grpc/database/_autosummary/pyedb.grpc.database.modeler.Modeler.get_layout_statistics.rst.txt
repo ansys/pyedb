@@ -1,0 +1,6 @@
+get\_layout\_statistics
+=======================
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. automethod:: Modeler.get_layout_statistics

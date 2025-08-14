@@ -1,0 +1,6 @@
+dielectrics
+===========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.control_file
+
+.. autoproperty:: ControlFileStackup.dielectrics

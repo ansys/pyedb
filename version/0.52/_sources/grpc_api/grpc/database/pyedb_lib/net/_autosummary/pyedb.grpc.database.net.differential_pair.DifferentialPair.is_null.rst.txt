@@ -1,0 +1,6 @@
+is\_null
+========
+
+.. currentmodule:: pyedb.grpc.database.net.differential_pair
+
+.. autoproperty:: DifferentialPair.is_null

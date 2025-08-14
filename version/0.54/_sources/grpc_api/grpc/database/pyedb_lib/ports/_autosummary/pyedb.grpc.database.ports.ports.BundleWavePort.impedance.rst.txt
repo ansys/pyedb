@@ -1,0 +1,6 @@
+impedance
+=========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: BundleWavePort.impedance

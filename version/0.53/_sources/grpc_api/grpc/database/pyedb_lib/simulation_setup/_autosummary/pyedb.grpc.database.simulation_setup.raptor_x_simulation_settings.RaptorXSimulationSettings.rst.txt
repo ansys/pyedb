@@ -1,0 +1,25 @@
+﻿RaptorXSimulationSettings
+=========================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_simulation_settings
+
+.. autoclass:: RaptorXSimulationSettings
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      RaptorXSimulationSettings.advanced
+      RaptorXSimulationSettings.enabled
+      RaptorXSimulationSettings.general
+      RaptorXSimulationSettings.msg
+   
+   

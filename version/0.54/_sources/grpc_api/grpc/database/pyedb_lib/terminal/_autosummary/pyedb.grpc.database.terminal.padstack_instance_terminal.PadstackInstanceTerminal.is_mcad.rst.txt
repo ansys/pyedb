@@ -1,0 +1,6 @@
+is\_mcad
+========
+
+.. currentmodule:: pyedb.grpc.database.terminal.padstack_instance_terminal
+
+.. autoproperty:: PadstackInstanceTerminal.is_mcad

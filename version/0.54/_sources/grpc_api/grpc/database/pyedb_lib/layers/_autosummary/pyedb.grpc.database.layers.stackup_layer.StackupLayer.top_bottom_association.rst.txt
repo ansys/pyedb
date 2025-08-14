@@ -1,0 +1,6 @@
+top\_bottom\_association
+========================
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoproperty:: StackupLayer.top_bottom_association

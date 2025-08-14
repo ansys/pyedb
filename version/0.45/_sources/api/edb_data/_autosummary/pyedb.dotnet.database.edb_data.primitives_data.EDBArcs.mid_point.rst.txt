@@ -1,0 +1,6 @@
+mid\_point
+==========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.primitives_data
+
+.. autoproperty:: EDBArcs.mid_point

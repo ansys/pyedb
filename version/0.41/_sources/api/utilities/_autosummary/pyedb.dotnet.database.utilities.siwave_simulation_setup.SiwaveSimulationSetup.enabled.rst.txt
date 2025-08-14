@@ -1,0 +1,6 @@
+enabled
+=======
+
+.. currentmodule:: pyedb.dotnet.database.utilities.siwave_simulation_setup
+
+.. autoproperty:: SiwaveSimulationSetup.enabled

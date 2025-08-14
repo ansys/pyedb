@@ -1,0 +1,6 @@
+edge\_mesh
+==========
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings
+
+.. autoproperty:: RaptorXAdvancedSettings.edge_mesh
