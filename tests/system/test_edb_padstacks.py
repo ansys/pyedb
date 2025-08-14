@@ -209,7 +209,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_padstack_get_instance(self, edb_examples):
-        edbapp = edb_examples.get_si_verse(source_file_path="TEDB/ANSYS_SVP_V1_1.aedb")
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.padstacks.get_instances(name="Via1961")
         assert edbapp.padstacks.get_instances(definition_name="v35h15")
         assert edbapp.padstacks.get_instances(net_name="1V0")

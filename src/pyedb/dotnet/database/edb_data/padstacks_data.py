@@ -25,7 +25,7 @@ import math
 import warnings
 
 from pyedb.dotnet.clr_module import String
-from pyedb.dotnet.database.cell.primitive.primitive import Primitive
+from pyedb.dotnet.database.cell.primitive.primitive import Connectable
 from pyedb.dotnet.database.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.database.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.database.general import (
@@ -1161,7 +1161,7 @@ class EDBPadstack(object):
         return True
 
 
-class EDBPadstackInstance(Primitive):
+class EDBPadstackInstance(Connectable):
     """Manages EDB functionalities for a padstack.
 
     Parameters
@@ -1674,14 +1674,6 @@ class EDBPadstackInstance(Primitive):
         self._edb_padstackinstance.SetIsLayoutPin(pin)
 
     @property
-    def component(self):
-        """Component."""
-        from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
-
-        comp = EDBComponent(self._pedb, self._edb_object.GetComponent())
-        return comp if not comp.is_null else False
-
-    @property
     def position(self):
         """Padstack instance position.
 
@@ -1727,19 +1719,6 @@ class EDBPadstackInstance(Primitive):
             return round(out[2].ToDouble(), 6)
 
     @property
-    def name(self):
-        """Padstack Instance Name. If it is a pin, the syntax will be like in AEDT ComponentName-PinName."""
-        if self.is_pin:
-            return self.aedt_name
-        else:
-            return self.component_pin
-
-    @name.setter
-    def name(self, value):
-        self._edb_padstackinstance.SetName(value)
-        self._edb_padstackinstance.SetProductProperty(self._pedb.core.ProductId.Designer, 11, value)
-
-    @property
     def metal_volume(self):
         """Metal volume of the via hole instance in cubic units (m3). Metal plating ratio is accounted.
 
@@ -1775,13 +1754,14 @@ class EDBPadstackInstance(Primitive):
     @property
     def pin_number(self):
         """Get pin number."""
-        warnings.warn("`pin_number` is deprecated. Use `component_pin` method instead.", DeprecationWarning)
-        return self.component_pin
+        warnings.warn("`pin_number` is deprecated. Use `name` method instead.", DeprecationWarning)
+        return self.name
 
     @property
     def component_pin(self):
         """Get component pin."""
-        return self._edb_padstackinstance.GetName()
+        warnings.warn("`pin_number` is deprecated. Use `name` method instead.", DeprecationWarning)
+        return self.name
 
     @property
     def aedt_name(self):
@@ -1808,10 +1788,10 @@ class EDBPadstackInstance(Primitive):
         _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.core.ProductId.Designer, 11, val)
         aedt_name = str(name).strip("'")
         if aedt_name == "":
-            if self.is_pin and self.component:
-                aedt_name = f"{self.component.name}-{self.component_pin}"
-            elif self.component_pin:
-                aedt_name = self.component_pin
+            if self.component_name:
+                aedt_name = f"{self.component_name}-{self.name}"
+            else:
+                aedt_name = "Via_{}".format(self.id)
             self.aedt_name = aedt_name
         return aedt_name
 
