@@ -99,7 +99,7 @@ class EdbLogger(object):
         self.filename = filename or settings.logger_file_path
         settings.logger_file_path = self.filename
 
-        self._global = logging.getLogger("Global")
+        self._global = logging.getLogger("Edb")
         if not settings.enable_logger:
             self._global.addHandler(logging.NullHandler())
             return
