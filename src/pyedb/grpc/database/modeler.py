@@ -23,10 +23,9 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
-import concurrent.futures as _cf
-from functools import lru_cache
+
 import math
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from ansys.edb.core.geometry.arc_data import ArcData as GrpcArcData
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
@@ -42,10 +41,6 @@ from ansys.edb.core.primitive.path import PathEndCapType as GrpcPathEndCapType
 from ansys.edb.core.primitive.rectangle import (
     RectangleRepresentationType as GrpcRectangleRepresentationType,
 )
-import numpy as np
-from shapely import contains_xy as _contains_xy
-from shapely.geometry import Point as ShapelyPoint
-from shapely.geometry import Polygon as ShapelyPolygon
 
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.circle import Circle
@@ -55,16 +50,6 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import execution_timer
-
-
-def _safe_net_name(obj) -> str | None:
-    """Return obj.net.name if both exist, else None."""
-    try:
-        net = getattr(obj, "net", None)
-        return net.name if net else None
-    except Exception:
-        return None
 
 
 class Modeler(object):
@@ -1536,232 +1521,14 @@ class Modeler(object):
         ``remove_single_pin_components``, ``number_of_threads``, …) are still
         accepted via ``**kw``.
         """
-        extent_points = self._extent_from_nets(
+        from pyedb.grpc.database.utility.cutout import cutout_worker, extent_from_nets
+
+        extent_points = extent_from_nets(
+            self._pedb,
             signal_list or [],
             expansion,
             extent_type,
             **kw,
         )
-        self._cutout_worker(extent_points, output_path, open_when_done, signal_list, reference_list, **kw)
+        cutout_worker(self._pedb, extent_points, output_path, open_when_done, signal_list, reference_list, **kw)
         return extent_points
-
-    def _extent_from_nets(self, sig, exp, ext_type, **kw):
-        """Compute clipping polygon from net lists."""
-        from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType
-
-        nets = [n for n in self._pedb.layout.nets if n.name in sig]
-        if ext_type.lower() in ["conforming", "conformal", "convex_hull", "convexhull"]:
-            poly = self._pedb.layout.expanded_extent(
-                nets=nets,
-                extent=GrpcExtentType.CONFORMING,
-                expansion_factor=exp,
-                expansion_unitless=False,
-                use_round_corner=kw.get("use_round_corner", False),
-                num_increments=1,
-            )
-            if ext_type.lower() in ["convex_hull", "convexhull"]:
-                poly = GrpcPolygonData.convex_hull(poly)
-        elif ext_type.lower() in ["bounding", "bounding_box", "bbox", "boundingbox"]:
-            poly = self._pedb.layout.expanded_extent(
-                nets=nets,
-                extent=GrpcExtentType.BOUNDING_BOX,
-                expansion_factor=exp,
-                expansion_unitless=False,
-                use_round_corner=kw.get("use_round_corner", False),
-                num_increments=1,
-            )
-        else:
-            raise ValueError(f"Unknown extent type: {ext_type}. Supported: 'Conforming', 'ConvexHull', 'BoundingBox'.")
-        return [(pt.x.value, pt.y.value) for pt in poly.points]
-
-    @staticmethod
-    def classify_intersection(poly1_pts, poly2_pts) -> Tuple[bool, str]:
-        """
-        poly1_pts, poly2_pts: list of (x, y) tuples
-        returns: (intersects?, type_string)
-        """
-        poly1 = ShapelyPolygon(poly1_pts)
-        poly2 = ShapelyPolygon(poly2_pts)
-
-        # Fast path: disjoint() is a single DE-9IM query (cheapest)
-        if poly1.disjoint(poly2):
-            return False, "disjoint"
-
-        # Ordered from cheapest to slightly more expensive.
-        # Pick the FIRST predicate that is true; this avoids extra work.
-        if poly1.contains(poly2):
-            return True, "contains"
-        if poly2.contains(poly1):
-            return True, "within"
-        if poly1.covers(poly2):  # covers is marginally cheaper than equals
-            return True, "covers"
-        if poly2.covers(poly1):
-            return True, "covered_by"
-        if poly1.equals(poly2):
-            return True, "equals"
-        if poly1.touches(poly2):
-            return True, "touches"
-        # At this point we have proper intersection (overlap of interiors)
-        return True, "overlaps"
-
-    def point_inside(self, poly_pts, pt) -> bool:
-        """
-        Parameters
-        ----------
-        poly_pts : list[(x, y), …]
-        pt: (x, y)
-            query point
-        returns True if pt lies inside/on the boundary of poly_pts
-        """
-        return ShapelyPolygon(poly_pts).contains(ShapelyPoint(pt))
-
-    # ------------------------------------------------------------------
-    # Vectorised pin filtering
-    # ------------------------------------------------------------------
-    def pick_pins(
-        self,
-        pin_handles: np.ndarray,
-        net_arr: np.ndarray,
-        xy_arr: np.ndarray,
-        keep_nets: set[str],
-        extent_pts: list[tuple[float, float]],
-    ) -> list[Any]:
-        mask = np.isin(net_arr, list(keep_nets))
-        if not mask.any():
-            return pin_handles.tolist()
-
-        poly = ShapelyPolygon(extent_pts)
-        inside = _contains_xy(poly, xy_arr[:, 0], xy_arr[:, 1])  # vectorised
-        mask &= inside
-        return pin_handles[~mask].tolist()
-
-    @staticmethod
-    @lru_cache(maxsize=1)
-    def _cached_pin_array(edb_obj):
-        pins = list(edb_obj._pedb.padstacks.instances.values())
-        handles = np.array(pins, dtype=object)
-        nets = np.array([_safe_net_name(p) for p in pins], dtype=object)
-        xy = np.array([(p.position[0], p.position[1]) for p in pins], dtype=np.float64)
-        return handles, nets, xy
-
-    @staticmethod
-    @lru_cache(maxsize=1)
-    def _cached_primitive_array(edb_obj):
-        handles, nets, pts_per_prim = [], [], []
-        for p in edb_obj.primitives:
-            net_name = _safe_net_name(p)
-            poly_data = getattr(p, "polygon_data", None)
-            pts = [(pt.x.value, pt.y.value) for pt in poly_data.points] if poly_data else None
-            handles.append(p)
-            nets.append(net_name)
-            pts_per_prim.append(pts)
-        return np.array(handles, dtype=object), np.array(nets, dtype=object), pts_per_prim
-
-    @staticmethod
-    def classify_primitives_batch(
-        handles: np.ndarray,
-        net_arr: np.ndarray,
-        pts_per_prim: list,
-        keep_nets: set[str],
-        extent_pts: list[tuple[float, float]],
-        reference_nets: set[str],
-    ) -> tuple[list[Any], list[tuple[Any, list]]]:
-        prims_del, prims_clip = [], []
-        ext_poly = ShapelyPolygon(extent_pts)
-
-        for handle, net_name, pts in zip(handles, net_arr, pts_per_prim):
-            if net_name is None or net_name not in keep_nets:
-                prims_del.append(handle)
-                continue
-            if pts is None or len(pts) < 3:
-                prims_del.append(handle)
-                continue
-
-            poly = ShapelyPolygon(pts)
-            if poly.disjoint(ext_poly):
-                prims_del.append(handle)
-            elif reference_nets and net_name in reference_nets:
-                voids = [v.polygon_data for v in handle.voids] if getattr(handle, "has_voids", False) else []
-                prims_clip.append((handle, voids))
-
-        return prims_del, prims_clip
-
-    @execution_timer("_cutout_worker")
-    def _cutout_worker(
-        self,
-        extent_points: list[tuple[float, float]],
-        output_path: str | None,
-        open_when_done: bool,
-        signal_nets: Sequence[str] | None,
-        reference_nets: Sequence[str] | None,
-        **kw,
-    ) -> bool:
-        keep_nets = set((signal_nets or []) + (reference_nets or []))
-        reference_nets = set(reference_nets or [])
-        if not keep_nets:
-            raise ValueError("No nets specified to keep.")
-
-        legacy_path = self._pedb.edbpath
-        (self._pedb.save_as(output_path) if output_path else self._pedb.save())
-
-        # ------------------------------------------------------------------
-        # Parallel READ phase
-        # ------------------------------------------------------------------
-        with _cf.ThreadPoolExecutor() as pool:
-            # pins
-            pin_handles, pin_nets, pin_xy = self._cached_pin_array(self)
-            fut_pins = pool.submit(self.pick_pins, pin_handles, pin_nets, pin_xy, keep_nets, extent_points)
-
-            # primitives
-            prim_handles, prim_nets, pts_per_prim = self._cached_primitive_array(self)
-            fut_prims = pool.submit(
-                self.classify_primitives_batch,
-                prim_handles,
-                prim_nets,
-                pts_per_prim,
-                keep_nets,
-                extent_points,
-                reference_nets,
-            )
-
-            # wait for both
-            pins_del = fut_pins.result()
-            prims_del, prims_clip = fut_prims.result()
-
-        # ------------------------------------------------------------------
-        # Single-threaded WRITE phase
-        # ------------------------------------------------------------------
-        nets_del = [n for n in self._pedb.layout.nets if n.name not in keep_nets]
-
-        for n in nets_del:
-            n.delete()
-        for p in pins_del:
-            p.delete()
-        for p in prims_del:
-            p.delete()
-
-        for prim, voids in prims_clip:
-            extent = GrpcPolygonData(points=extent_points)
-            clipped_polys = GrpcPolygonData.subtract(extent, prim.polygon_data)
-            for c in clipped_polys:
-                new_poly = self.create_polygon(
-                    c,
-                    net_name=_safe_net_name(prim),
-                    layer_name=prim.layer.name,
-                )
-                for v in voids:
-                    if v.intersection_type(c) != 0:
-                        new_poly.add_void(v.points)
-            prim.delete()
-
-        # post-processing
-        if kw.get("remove_single_pin_components", True):
-            self._pedb.components.delete_single_pin_rlc()
-            self._pedb.components.refresh_components()
-
-        self._pedb.save()
-        if not open_when_done and output_path:
-            self._pedb.close()
-            self._pedb.edbpath = legacy_path
-            self._pedb.open()
-        return True
