@@ -21,6 +21,8 @@
 # SOFTWARE.
 import re
 
+from System import String
+
 from pyedb.dotnet.database.cell.connectable import Connectable
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
@@ -147,15 +149,6 @@ class Primitive(Connectable):
         """
         return self._edb_object.IsVoid()
 
-    def get_connected_objects(self):
-        """Get connected objects.
-
-        Returns
-        -------
-        list
-        """
-        return self._pedb.get_connected_objects(self._layout_obj_instance)
-
     def area(self, include_voids=True):
         """Return the total area.
 
@@ -239,18 +232,6 @@ class Primitive(Connectable):
         bool
         """
         return point.IsArc()
-
-    def get_connected_object_id_set(self):
-        """Produce a list of all geometries physically connected to a given layout object.
-
-        Returns
-        -------
-        list
-            Found connected objects IDs with Layout object.
-        """
-        layoutInst = self._edb_object.GetLayout().GetLayoutInstance()
-        layoutObjInst = layoutInst.GetLayoutObjInstance(self._edb_object, None)  # 2nd arg was []
-        return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
 
     @property
     def bbox(self):
@@ -581,8 +562,6 @@ class Primitive(Connectable):
         str
             Name.
         """
-        from System import String
-
         val = String("")
 
         _, name = self._edb_object.GetProductProperty(self._pedb._edb.ProductId.Designer, 1, val)
