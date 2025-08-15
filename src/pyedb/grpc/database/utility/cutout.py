@@ -86,16 +86,16 @@ def classify_intersection(poly1_pts, poly2_pts) -> Tuple[bool, str]:
 
     # Ordered from cheapest to slightly more expensive.
     # Pick the FIRST predicate that is true; this avoids extra work.
-    if poly1.contains(poly2):
-        return True, "contains"
+    # if poly1.contains(poly2):
+    #    return True, "contains"
     if poly2.contains(poly1):
         return True, "within"
-    if poly1.covers(poly2):  # covers is marginally cheaper than equals
-        return True, "covers"
+    # if poly1.covers(poly2):  # covers is marginally cheaper than equals
+    #    return True, "covers"
     if poly2.covers(poly1):
         return True, "covered_by"
-    if poly1.equals(poly2):
-        return True, "equals"
+    # if poly1.equals(poly2):
+    #    return True, "equals"
     if poly1.touches(poly2):
         return True, "touches"
     # At this point we have proper intersection (overlap of interiors)
@@ -179,7 +179,12 @@ def classify_primitives_batch(
         if poly.disjoint(ext_poly):
             prims_del.append(handle)
         elif reference_nets and net_name in reference_nets:
-            voids = [v.polygon_data for v in handle.voids] if getattr(handle, "has_voids", False) else []
+            voids = []
+            if getattr(handle, "has_voids", False):
+                for v in handle.voids:
+                    void_pts = [(pt.x.value, pt.y.value) for pt in v.polygon_data.without_arcs().points]
+                    if classify_intersection(void_pts, extent_pts)[0]:
+                        voids.append(v.polygon_data)
             prims_clip.append((handle, voids))
 
     return prims_del, prims_clip
@@ -239,26 +244,24 @@ def cutout_worker(
     for p in prims_del:
         p.delete()
 
-    for prim, voids in prims_clip:
-        extent = GrpcPolygonData(points=extent_points)
-        clipped_polys = GrpcPolygonData.subtract(extent, prim.polygon_data)
+    extent = GrpcPolygonData(points=extent_points)
+    for prim in prims_clip:
+        clipped_polys = GrpcPolygonData.intersect(extent, prim[0].polygon_data)
         for c in clipped_polys:
             new_poly = edb.modeler.create_polygon(
                 c,
                 net_name=_safe_net_name(prim),
-                layer_name=prim.layer.name,
+                layer_name=prim[0].layer.name,
             )
-            for v in voids:
-                if v.intersection_type(c) != 0:
-                    new_poly.add_void(v.points)
-        prim.delete()
+            for v in prim[1]:
+                new_poly.add_void(v.points)
+        prim[0].delete()
 
     # post-processing
     if kw.get("remove_single_pin_components", True):
         edb.components.delete_single_pin_rlc()
         edb.components.refresh_components()
 
-    edb.save()
     if not open_when_done and output_path:
         edb.close()
         edb.edbpath = legacy_path
