@@ -272,5 +272,7 @@ class Polygon(GrpcPolygon, Primitive):
 
     def add_void(self, polygon):
         if isinstance(polygon, list):
-            polygon = self._pedb.modeler.create_polygon(points=polygon, layer_name=self.layer.name)
-        return self._edb_object.add_void(polygon._edb_object)
+            polygon = self._pedb.modeler.create_polygon(
+                points=polygon, layer_name=self.layer.name, net_name=self.net.name
+            )
+        self._edb_object.add_void(polygon)

@@ -170,6 +170,8 @@ def classify_primitives_batch(
     for handle, net_name, pts in zip(handles, net_arr, pts_per_prim):
         if net_name is None or net_name not in keep_nets:
             prims_del.append(handle)
+            if getattr(handle, "has_void", None) is not None:
+                prims_del.append(handle.voids)
             continue
         if pts is None or len(pts) < 3:
             prims_del.append(handle)
@@ -184,7 +186,7 @@ def classify_primitives_batch(
                 for v in handle.voids:
                     void_pts = [(pt.x.value, pt.y.value) for pt in v.polygon_data.without_arcs().points]
                     if classify_intersection(void_pts, extent_pts)[0]:
-                        voids.append(v.polygon_data)
+                        voids.append(v)
             prims_clip.append((handle, voids))
 
     return prims_del, prims_clip
@@ -254,7 +256,7 @@ def cutout_worker(
                 layer_name=prim[0].layer.name,
             )
             for v in prim[1]:
-                new_poly.add_void(v.points)
+                new_poly.add_void(v)
         prim[0].delete()
 
     # post-processing
