@@ -21,18 +21,30 @@
 # SOFTWARE.
 
 
+from collections.abc import Iterable
 import concurrent.futures as _cf
 from functools import lru_cache
-from typing import Any, Sequence, Tuple
+from typing import Any, List, Sequence, Tuple
 
+import alphashape
 from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 import numpy as np
 from shapely import contains_xy as _contains_xy
+from shapely.geometry import MultiPoint
 from shapely.geometry import Point as ShapelyPoint
 from shapely.geometry import Polygon as ShapelyPolygon
+from shapely.ops import unary_union
 
 from pyedb.misc.decorators import execution_timer
+
+
+def flatten(seq):
+    for elem in seq:
+        if isinstance(elem, Iterable) and not isinstance(elem, (str, bytes)):
+            yield from flatten(elem)
+        else:
+            yield elem
 
 
 def _safe_net_name(obj) -> str | None:
@@ -44,10 +56,61 @@ def _safe_net_name(obj) -> str | None:
         return None
 
 
+# ------------------------------------------------------------------
+# 1)  Bounding box
+# ------------------------------------------------------------------
+def bounding_box(points: np.ndarray) -> List[Tuple[float, float]]:
+    """
+    Axis-aligned bounding box from (N,2) array.
+    Returns 4-point polygon in CCW order.
+    """
+    if points.ndim != 2 or points.shape[1] != 2:
+        raise ValueError("points must be (N,2) array or list")
+    points = np.asarray(points)
+    xmin, ymin = points.min(axis=0)
+    xmax, ymax = points.max(axis=0)
+    return [(xmin, ymin), (xmax, ymin), (xmax, ymax), (xmin, ymax)]
+
+
+# ------------------------------------------------------------------
+# 2)  Convex hull
+# ------------------------------------------------------------------
+def convex_hull(points: np.ndarray) -> List[Tuple[float, float]]:
+    """
+    Convex hull from (N,2) array.
+    """
+    mp = MultiPoint(points)
+    return list(mp.convex_hull.exterior.coords)[:-1]  # last == first
+
+
+# ------------------------------------------------------------------
+# 3)  Conforming (concave) hull via alpha-shape
+# ------------------------------------------------------------------
+def conforming_hull(points: np.ndarray, alpha: float | None = None) -> List[Tuple[float, float]]:
+    """
+    Concave α-shape (conforming hull) from (N,2) array.
+
+    alpha=None  -> alphashape auto-optimises
+    alpha=float -> fixed α (smaller = tighter)
+    """
+    poly: ShapelyPolygon = alphashape.alphashape(points, alpha)
+    if poly.is_empty:
+        return convex_hull(points)  # fallback
+    if isinstance(poly, MultiPoint):
+        return convex_hull(points)
+    # Ensure single Polygon
+    if poly.geom_type == "MultiPolygon":
+        poly = unary_union(poly)
+    return list(poly.exterior.coords)[:-1]
+
+
+@execution_timer("extent_generation")
 def extent_from_nets(edb, sig, exp, ext_type, **kw):
     """Compute clipping polygon from net lists."""
     nets = [n for n in edb.layout.nets if n.name in sig]
-    if ext_type.lower() in ["conforming", "conformal", "convex_hull", "convexhull"]:
+    ext_type = ext_type.lower()
+
+    if ext_type in {"conforming", "conformal", "convex_hull", "convexhull"}:
         poly = edb.layout.expanded_extent(
             nets=nets,
             extent=GrpcExtentType.CONFORMING,
@@ -56,19 +119,18 @@ def extent_from_nets(edb, sig, exp, ext_type, **kw):
             use_round_corner=kw.get("use_round_corner", False),
             num_increments=1,
         )
-        if ext_type.lower() in ["convex_hull", "convexhull"]:
+        if ext_type in {"convex_hull", "convexhull"}:
             poly = GrpcPolygonData.convex_hull(poly)
-    elif ext_type.lower() in ["bounding", "bounding_box", "bbox", "boundingbox"]:
-        poly = edb.layout.expanded_extent(
-            nets=nets,
-            extent=GrpcExtentType.BOUNDING_BOX,
-            expansion_factor=exp,
-            expansion_unitless=False,
-            use_round_corner=kw.get("use_round_corner", False),
-            num_increments=1,
-        )
+    elif ext_type in {"bounding", "bounding_box", "bbox", "boundingbox"}:
+        prims = []
+        for net in sig:
+            prims.extend(edb.nets[net].primitives)
+        point_clouds = list(flatten([p.polygon_data.without_arcs().points for p in prims]))
+        point_clouds = [(pt.x.value, pt.y.value) for pt in point_clouds]
+        return bounding_box(np.asarray(point_clouds, dtype=np.float64))
     else:
-        raise ValueError(f"Unknown extent type: {ext_type}. Supported: 'Conforming', 'ConvexHull', 'BoundingBox'.")
+        raise ValueError(f"Unknown extent type: {ext_type}. " "Supported: 'Conforming', 'ConvexHull', 'BoundingBox'.")
+
     return [(pt.x.value, pt.y.value) for pt in poly.points]
 
 
@@ -246,7 +308,7 @@ def cutout_worker(
     for p in prims_del:
         p.delete()
 
-    extent = GrpcPolygonData(points=extent_points)
+    extent = GrpcPolygonData(points=[[edb.value(pt[0]), edb.value(pt[1])] for pt in extent_points])
     for prim in prims_clip:
         clipped_polys = GrpcPolygonData.intersect(extent, prim[0].polygon_data)
         for c in clipped_polys:
