@@ -89,7 +89,7 @@ def extent_from_nets(edb, signal_nets, expansion, extent_type, **kw):
         bbox = GrpcPolygonData.bbox(poly)
         return [
             ((bbox[0].x - edb.value(expansion)).value, (bbox[0].y - edb.value(expansion)).value),
-            ((bbox[1].x + edb.value(expansion)).value, (bbox[0].y - -edb.value(expansion)).value),
+            ((bbox[1].x + edb.value(expansion)).value, (bbox[0].y - edb.value(expansion)).value),
             ((bbox[1].x + edb.value(expansion)).value, (bbox[1].y + edb.value(expansion)).value),
             ((bbox[0].x - edb.value(expansion)).value, (bbox[1].y + edb.value(expansion)).value),
         ]
@@ -273,7 +273,7 @@ def cutout_worker(
         for c in clipped_polys:
             new_poly = edb.modeler.create_polygon(
                 c,
-                net_name=_safe_net_name(prim),
+                net_name=_safe_net_name(prim[0]),
                 layer_name=prim[0].layer.name,
             )
             for v in prim[1]:

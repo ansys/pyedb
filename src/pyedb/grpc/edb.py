@@ -1411,7 +1411,7 @@ class Edb(EdbInit):
         signal_list: "list[str] | None" = None,
         reference_list: "list[str] | None" = None,
         point_list: "list[list[float]] | None" = None,
-        expansion: float = 0.002,
+        expansion: Union[float, str] = "2mm",
         extent_type: str = "bounding_box",
         output_path: "str | None" = None,
         open_when_done: bool = True,
