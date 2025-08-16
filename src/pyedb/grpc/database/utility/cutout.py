@@ -79,14 +79,17 @@ def extent_from_nets(edb, sig, exp, ext_type, **kw):
         )
         return [(pt.x.value, pt.y.value) for pt in poly.points]
     elif ext_type in ["convex_hull", "convexhull"]:
-        return [(pt.x.value, pt.y.value) for pt in GrpcPolygonData.convex_hull(poly).points]
+        return [
+            (pt.x.value, pt.y.value)
+            for pt in GrpcPolygonData.convex_hull(poly).expand(edb.value(exp), False, edb.value(exp))[0].points
+        ]
     elif ext_type in {"bounding", "bounding_box", "bbox", "boundingbox"}:
         bbox = GrpcPolygonData.bbox(poly)
         return [
-            (bbox[0].x.value, bbox[0].y.value),
-            (bbox[1].x.value, bbox[0].y.value),
-            (bbox[1].x.value, bbox[1].y.value),
-            (bbox[0].x.value, bbox[1].y.value),
+            (bbox[0].x.value - edb.value(exp), bbox[0].y.value - edb.value(exp)),
+            (bbox[1].x.value + edb.value(exp), bbox[0].y.value - -edb.value(exp)),
+            (bbox[1].x.value + edb.value(exp), bbox[1].y.value + edb.value(exp)),
+            (bbox[0].x.value - edb.value(exp), bbox[1].y.value) + edb.value(exp),
         ]
     else:
         raise ValueError(f"Unknown extent type: {ext_type}. " "Supported: 'Conforming', 'ConvexHull', 'BoundingBox'.")

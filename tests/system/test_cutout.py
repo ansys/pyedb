@@ -159,11 +159,11 @@ class TestClass(BaseTestClass):
         assert edbapp.cutout(
             signal_list=["DDR4_DQS0_P", "DDR4_DQS0_N"],
             reference_list=["GND"],
-            extent_type="bounding_box",
+            extent_type="convex_hull",
             use_pyaedt_extent_computing=True,
             include_pingroups=True,
             check_terminals=True,
-            expansion_factor=4,
+            expansion_factor="1mm",
         )
         edbapp.close(terminate_rpc_session=False)
 
