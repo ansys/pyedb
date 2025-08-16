@@ -24,17 +24,15 @@
 from collections.abc import Iterable
 import concurrent.futures as _cf
 from functools import lru_cache
-from typing import Any, List, Sequence, Tuple
+from typing import Any, Sequence, Tuple
+import warnings
 
-import alphashape
 from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 import numpy as np
 from shapely import contains_xy as _contains_xy
-from shapely.geometry import MultiPoint
 from shapely.geometry import Point as ShapelyPoint
 from shapely.geometry import Polygon as ShapelyPolygon
-from shapely.ops import unary_union
 
 from pyedb.misc.decorators import execution_timer
 
@@ -56,61 +54,21 @@ def _safe_net_name(obj) -> str | None:
         return None
 
 
-# ------------------------------------------------------------------
-# 1)  Bounding box
-# ------------------------------------------------------------------
-def bounding_box(points: np.ndarray) -> List[Tuple[float, float]]:
-    """
-    Axis-aligned bounding box from (N,2) array.
-    Returns 4-point polygon in CCW order.
-    """
-    if points.ndim != 2 or points.shape[1] != 2:
-        raise ValueError("points must be (N,2) array or list")
-    points = np.asarray(points)
-    xmin, ymin = points.min(axis=0)
-    xmax, ymax = points.max(axis=0)
-    return [(xmin, ymin), (xmax, ymin), (xmax, ymax), (xmin, ymax)]
-
-
-# ------------------------------------------------------------------
-# 2)  Convex hull
-# ------------------------------------------------------------------
-def convex_hull(points: np.ndarray) -> List[Tuple[float, float]]:
-    """
-    Convex hull from (N,2) array.
-    """
-    mp = MultiPoint(points)
-    return list(mp.convex_hull.exterior.coords)[:-1]  # last == first
-
-
-# ------------------------------------------------------------------
-# 3)  Conforming (concave) hull via alpha-shape
-# ------------------------------------------------------------------
-def conforming_hull(points: np.ndarray, alpha: float | None = None) -> List[Tuple[float, float]]:
-    """
-    Concave α-shape (conforming hull) from (N,2) array.
-
-    alpha=None  -> alphashape auto-optimises
-    alpha=float -> fixed α (smaller = tighter)
-    """
-    poly: ShapelyPolygon = alphashape.alphashape(points, alpha)
-    if poly.is_empty:
-        return convex_hull(points)  # fallback
-    if isinstance(poly, MultiPoint):
-        return convex_hull(points)
-    # Ensure single Polygon
-    if poly.geom_type == "MultiPolygon":
-        poly = unary_union(poly)
-    return list(poly.exterior.coords)[:-1]
-
-
 @execution_timer("extent_generation")
 def extent_from_nets(edb, sig, exp, ext_type, **kw):
     """Compute clipping polygon from net lists."""
     nets = [n for n in edb.layout.nets if n.name in sig]
-    ext_type = ext_type.lower()
+    prims = []
+    for net in nets:
+        prims.extend(net.primitives)
+    point_clouds = list(flatten([p.polygon_data.without_arcs().points for p in prims]))
+    poly = GrpcPolygonData(point_clouds)
 
-    if ext_type in {"conforming", "conformal", "convex_hull", "convexhull"}:
+    if ext_type.lower() in ["conforming", "conformal"]:
+        warnings.warn(
+            "'Conforming' extent type is not recommended and CPU expensive. "
+            "Use 'convex_hull' or 'bounding_box instead."
+        )
         poly = edb.layout.expanded_extent(
             nets=nets,
             extent=GrpcExtentType.CONFORMING,
@@ -119,19 +77,19 @@ def extent_from_nets(edb, sig, exp, ext_type, **kw):
             use_round_corner=kw.get("use_round_corner", False),
             num_increments=1,
         )
-        if ext_type in {"convex_hull", "convexhull"}:
-            poly = GrpcPolygonData.convex_hull(poly)
+        return [(pt.x.value, pt.y.value) for pt in poly.points]
+    elif ext_type in ["convex_hull", "convexhull"]:
+        return [(pt.x.value, pt.y.value) for pt in GrpcPolygonData.convex_hull(poly).points]
     elif ext_type in {"bounding", "bounding_box", "bbox", "boundingbox"}:
-        prims = []
-        for net in sig:
-            prims.extend(edb.nets[net].primitives)
-        point_clouds = list(flatten([p.polygon_data.without_arcs().points for p in prims]))
-        point_clouds = [(pt.x.value, pt.y.value) for pt in point_clouds]
-        return bounding_box(np.asarray(point_clouds, dtype=np.float64))
+        bbox = GrpcPolygonData.bbox(poly)
+        return [
+            (bbox[0].x.value, bbox[0].y.value),
+            (bbox[1].x.value, bbox[0].y.value),
+            (bbox[1].x.value, bbox[1].y.value),
+            (bbox[0].x.value, bbox[1].y.value),
+        ]
     else:
         raise ValueError(f"Unknown extent type: {ext_type}. " "Supported: 'Conforming', 'ConvexHull', 'BoundingBox'.")
-
-    return [(pt.x.value, pt.y.value) for pt in poly.points]
 
 
 def classify_intersection(poly1_pts, poly2_pts) -> Tuple[bool, str]:
@@ -148,20 +106,14 @@ def classify_intersection(poly1_pts, poly2_pts) -> Tuple[bool, str]:
 
     # Ordered from cheapest to slightly more expensive.
     # Pick the FIRST predicate that is true; this avoids extra work.
-    # if poly1.contains(poly2):
-    #    return True, "contains"
     if poly2.contains(poly1):
         return True, "within"
-    # if poly1.covers(poly2):  # covers is marginally cheaper than equals
-    #    return True, "covers"
     if poly2.covers(poly1):
         return True, "covered_by"
-    # if poly1.equals(poly2):
-    #    return True, "equals"
-    if poly1.touches(poly2):
+    if poly2.touches(poly1):
         return True, "touches"
     # At this point we have proper intersection (overlap of interiors)
-    return True, "overlaps"
+    return False, "overlaps"
 
 
 def point_inside(poly_pts, pt) -> bool:
@@ -179,6 +131,7 @@ def point_inside(poly_pts, pt) -> bool:
 # ------------------------------------------------------------------
 # Vectorised pin filtering
 # ------------------------------------------------------------------
+@execution_timer("vectorised_pin_filtering")
 def pick_pins(
     pin_handles: np.ndarray,
     net_arr: np.ndarray,
@@ -196,6 +149,7 @@ def pick_pins(
     return pin_handles[~mask].tolist()
 
 
+@execution_timer("pin_array_cache")
 @lru_cache(maxsize=1)
 def _cached_pin_array(edb):
     pins = list(edb.padstacks.instances.values())
@@ -205,6 +159,7 @@ def _cached_pin_array(edb):
     return handles, nets, xy
 
 
+@execution_timer("primitive_cache")
 @lru_cache(maxsize=1)
 def _cached_primitive_array(edb):
     handles, nets, pts_per_prim = [], [], []
@@ -218,6 +173,7 @@ def _cached_primitive_array(edb):
     return np.array(handles, dtype=object), np.array(nets, dtype=object), pts_per_prim
 
 
+@execution_timer("primitive_classification")
 def classify_primitives_batch(
     handles: np.ndarray,
     net_arr: np.ndarray,
@@ -254,7 +210,7 @@ def classify_primitives_batch(
     return prims_del, prims_clip
 
 
-@execution_timer("_cutout_worker")
+@execution_timer("cutout_worker")
 def cutout_worker(
     edb,
     extent_points: list[tuple[float, float]],
