@@ -1621,6 +1621,12 @@ class Modeler(object):
         ...            (2e-3, 5e-3), (0, 5e-3])]
         >>> extent = edb.cutout(point_list=outline)
         """
+        # TODO add support for include_partial_instances,
+        # TODO add support for check_terminals
+        # TODO add support for preserve_components_with_model
+        # TODO add support for simple_pad_check
+        # TODO add support for keep_lines_as_paths
+
         from pyedb.grpc.database.utility.cutout import cutout_worker, extent_from_nets
 
         if getattr(kw, "use_round_corner", None):
