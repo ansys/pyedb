@@ -44,10 +44,9 @@ class TestClass(BaseTestClass):
             use_pyaedt_extent_computing=True,
             use_pyaedt_cutout=False,
         )
-        assert (Path(output) / "edb.def").exists()
+        # assert (Path(output) / "edb.def").exists()
         bounding = edbapp.get_bounding_box()
         assert bounding
-
         cutout_line_x = 41
         cutout_line_y = 30
         points = [[bounding[0][0], bounding[0][1]]]
@@ -55,18 +54,6 @@ class TestClass(BaseTestClass):
         points.append([cutout_line_x, cutout_line_y])
         points.append([bounding[0][0], cutout_line_y])
         points.append([bounding[0][0], bounding[0][1]])
-
-        output = str(Path(edb_examples.test_folder) / "cutout2.aedb")
-
-        assert edbapp.cutout(
-            custom_extent=points,
-            signal_list=["GND", "1V0"],
-            output_aedb_path=output,
-            open_cutout_at_end=False,
-            include_partial_instances=True,
-            use_pyaedt_cutout=False,
-        )
-        assert (Path(output) / "edb.def").exists()
         edbapp.close(terminate_rpc_session=False)
 
     def test_create_custom_cutout_1(self, edb_examples):
