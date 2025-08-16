@@ -55,16 +55,16 @@ def _safe_net_name(obj) -> str | None:
 
 
 @execution_timer("extent_generation")
-def extent_from_nets(edb, sig, exp, ext_type, **kw):
+def extent_from_nets(edb, signal_nets, expansion, extent_type, **kw):
     """Compute clipping polygon from net lists."""
-    nets = [n for n in edb.layout.nets if n.name in sig]
+    nets = [n for n in edb.layout.nets if n.name in signal_nets]
     prims = []
     for net in nets:
         prims.extend(net.primitives)
     point_clouds = list(flatten([p.polygon_data.without_arcs().points for p in prims]))
     poly = GrpcPolygonData(point_clouds)
 
-    if ext_type.lower() in ["conforming", "conformal"]:
+    if extent_type.lower() in ["conforming", "conformal"]:
         warnings.warn(
             "'Conforming' extent type is not recommended and CPU expensive. "
             "Use 'convex_hull' or 'bounding_box instead."
@@ -72,27 +72,31 @@ def extent_from_nets(edb, sig, exp, ext_type, **kw):
         poly = edb.layout.expanded_extent(
             nets=nets,
             extent=GrpcExtentType.CONFORMING,
-            expansion_factor=exp,
+            expansion_factor=expansion,
             expansion_unitless=False,
             use_round_corner=kw.get("use_round_corner", False),
             num_increments=1,
         )
         return [(pt.x.value, pt.y.value) for pt in poly.points]
-    elif ext_type in ["convex_hull", "convexhull"]:
+    elif extent_type in ["convex_hull", "convexhull"]:
         return [
             (pt.x.value, pt.y.value)
-            for pt in GrpcPolygonData.convex_hull(poly).expand(edb.value(exp), False, edb.value(exp))[0].points
+            for pt in GrpcPolygonData.convex_hull(poly)
+            .expand(edb.value(expansion), False, edb.value(expansion))[0]
+            .points
         ]
-    elif ext_type in {"bounding", "bounding_box", "bbox", "boundingbox"}:
+    elif extent_type in {"bounding", "bounding_box", "bbox", "boundingbox"}:
         bbox = GrpcPolygonData.bbox(poly)
         return [
-            (bbox[0].x.value - edb.value(exp), bbox[0].y.value - edb.value(exp)),
-            (bbox[1].x.value + edb.value(exp), bbox[0].y.value - -edb.value(exp)),
-            (bbox[1].x.value + edb.value(exp), bbox[1].y.value + edb.value(exp)),
-            (bbox[0].x.value - edb.value(exp), bbox[1].y.value) + edb.value(exp),
+            (bbox[0].x.value - edb.value(expansion), bbox[0].y.value - edb.value(expansion)),
+            (bbox[1].x.value + edb.value(expansion), bbox[0].y.value - -edb.value(expansion)),
+            (bbox[1].x.value + edb.value(expansion), bbox[1].y.value + edb.value(expansion)),
+            (bbox[0].x.value - edb.value(expansion), bbox[1].y.value) + edb.value(expansion),
         ]
     else:
-        raise ValueError(f"Unknown extent type: {ext_type}. " "Supported: 'Conforming', 'ConvexHull', 'BoundingBox'.")
+        raise ValueError(
+            f"Unknown extent type: {extent_type}. " "Supported: 'Conforming', 'ConvexHull', 'BoundingBox'."
+        )
 
 
 def classify_intersection(poly1_pts, poly2_pts) -> Tuple[bool, str]:
@@ -217,10 +221,9 @@ def classify_primitives_batch(
 def cutout_worker(
     edb,
     extent_points: list[tuple[float, float]],
-    output_path: str | None,
-    open_when_done: bool,
     signal_nets: Sequence[str] | None,
     reference_nets: Sequence[str] | None,
+    number_of_threads: int = None,
     **kw,
 ) -> bool:
     keep_nets = set((signal_nets or []) + (reference_nets or []))
@@ -228,13 +231,10 @@ def cutout_worker(
     if not keep_nets:
         raise ValueError("No nets specified to keep.")
 
-    legacy_path = edb.edbpath
-    (edb.save_as(output_path) if output_path else edb.save())
-
     # ------------------------------------------------------------------
     # Parallel READ phase
     # ------------------------------------------------------------------
-    with _cf.ThreadPoolExecutor() as pool:
+    with _cf.ThreadPoolExecutor(max_workers=number_of_threads) as pool:
         # pins
         pin_handles, pin_nets, pin_xy = _cached_pin_array(edb)
         fut_pins = pool.submit(pick_pins, pin_handles, pin_nets, pin_xy, keep_nets, extent_points)
@@ -284,9 +284,4 @@ def cutout_worker(
     if kw.get("remove_single_pin_components", True):
         edb.components.delete_single_pin_rlc()
         edb.components.refresh_components()
-
-    if not open_when_done and output_path:
-        edb.close()
-        edb.edbpath = legacy_path
-        edb.open()
     return True
