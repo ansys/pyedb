@@ -1624,31 +1624,31 @@ class Modeler(object):
         from pyedb.grpc.database.utility.cutout import cutout_worker, extent_from_nets
 
         if getattr(kw, "use_round_corner", None):
-            warnings.warn("Argument `use_round_corner` is deprecated. ", UserWarning)
+            warnings.warn("Argument `use_round_corner` is deprecated. ", DeprecationWarning)
         if getattr(kw, "use_pyaedt_cutout", None):
-            warnings.warn("Argument `use_pyaedt_cutout` is deprecated. ", UserWarning)
+            warnings.warn("Argument `use_pyaedt_cutout` is deprecated. ", DeprecationWarning)
         if getattr(kw, "use_pyaedt_extent_computing", None):
-            warnings.warn("Argument `use_pyaedt_extent_computing` is deprecated. ", UserWarning)
+            warnings.warn("Argument `use_pyaedt_extent_computing` is deprecated. ", DeprecationWarning)
         if getattr(kw, "extent_defeature", None):
-            warnings.warn("Argument `extent_defeature` is deprecated. ", UserWarning)
+            warnings.warn("Argument `extent_defeature` is deprecated. ", DeprecationWarning)
         if getattr(kw, "remove_single_pin_components", None):
-            warnings.warn("Argument `remove_single_pin_components` is deprecated. ", UserWarning)
+            warnings.warn("Argument `remove_single_pin_components` is deprecated. ", DeprecationWarning)
         if getattr(kw, "custom_extent", None):
-            warnings.warn("Argument `custom_extent` is deprecated. ", UserWarning)
+            warnings.warn("Argument `custom_extent` is deprecated. ", DeprecationWarning)
         if getattr(kw, "keep_voids", None):
-            warnings.warn("Argument `keep_voids` is deprecated. ", UserWarning)
+            warnings.warn("Argument `keep_voids` is deprecated. ", DeprecationWarning)
         if getattr(kw, "include_pingroups", None):
-            warnings.warn("Argument `include_pingroups` is deprecated. ", UserWarning)
+            warnings.warn("Argument `include_pingroups` is deprecated. ", DeprecationWarning)
         if getattr(kw, "expansion_factor", None):
-            warnings.warn("Argument `expansion_factor` is deprecated. ", UserWarning)
+            warnings.warn("Argument `expansion_factor` is deprecated. ", DeprecationWarning)
         if getattr(kw, "maximum_iterations", None):
-            warnings.warn("Argument `maximum_iterations` is deprecated. ", UserWarning)
+            warnings.warn("Argument `maximum_iterations` is deprecated. ", DeprecationWarning)
         if getattr(kw, "include_voids_in_extents", None):
-            warnings.warn("Argument `include_voids_in_extents` is deprecated. ", UserWarning)
+            warnings.warn("Argument `include_voids_in_extents` is deprecated. ", DeprecationWarning)
         if getattr(kw, "output_aedb_path", None):
-            warnings.warn("Argument `output_aedb_path` is deprecated. ", UserWarning)
+            warnings.warn("Argument `output_aedb_path` is deprecated. ", DeprecationWarning)
         if getattr(kw, "open_cutout_at_end", None):
-            warnings.warn("Argument `open_cutout_at_end` is deprecated. ", UserWarning)
+            warnings.warn("Argument `open_cutout_at_end` is deprecated. ", DeprecationWarning)
 
         if extent_points:
             if custom_extent_units:
