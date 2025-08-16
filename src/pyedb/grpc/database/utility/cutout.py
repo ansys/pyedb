@@ -78,20 +78,20 @@ def extent_from_nets(edb, signal_nets, expansion, extent_type, **kw):
             num_increments=1,
         )
         return [(pt.x.value, pt.y.value) for pt in poly.points]
-    elif extent_type in ["convex_hull", "convexhull"]:
+    elif extent_type.lower() in ["convex_hull", "convexhull"]:
         return [
             (pt.x.value, pt.y.value)
             for pt in GrpcPolygonData.convex_hull(poly)
             .expand(edb.value(expansion), False, edb.value(expansion))[0]
             .points
         ]
-    elif extent_type in {"bounding", "bounding_box", "bbox", "boundingbox"}:
+    elif extent_type.lower() in {"bounding", "bounding_box", "bbox", "boundingbox"}:
         bbox = GrpcPolygonData.bbox(poly)
         return [
-            (bbox[0].x.value - edb.value(expansion), bbox[0].y.value - edb.value(expansion)),
-            (bbox[1].x.value + edb.value(expansion), bbox[0].y.value - -edb.value(expansion)),
-            (bbox[1].x.value + edb.value(expansion), bbox[1].y.value + edb.value(expansion)),
-            (bbox[0].x.value - edb.value(expansion), bbox[1].y.value) + edb.value(expansion),
+            ((bbox[0].x - edb.value(expansion)).value, (bbox[0].y - edb.value(expansion)).value),
+            ((bbox[1].x + edb.value(expansion)).value, (bbox[0].y - -edb.value(expansion)).value),
+            ((bbox[1].x + edb.value(expansion)).value, (bbox[1].y + edb.value(expansion)).value),
+            ((bbox[0].x - edb.value(expansion)).value, (bbox[1].y + edb.value(expansion)).value),
         ]
     else:
         raise ValueError(

@@ -65,7 +65,7 @@ import sys
 import tempfile
 import time
 import traceback
-from typing import Dict, List, Union
+from typing import Dict, List, Tuple, Union
 import warnings
 from zipfile import ZipFile as zpf
 
@@ -1416,7 +1416,7 @@ class Edb(EdbInit):
         output_path: "str | None" = None,
         open_when_done: bool = True,
         **kw,
-    ) -> "list[list[float]]":
+    ) -> "list[Tuple[float, float]]":
         """
         Create an EDB cutout.
 

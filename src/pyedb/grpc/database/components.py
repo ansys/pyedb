@@ -1311,13 +1311,16 @@ class Components(object):
         """
         deleted_comps = []
         for comp, val in self.instances.items():
-            if val.numpins < 2 and val.type in ["Resistor", "Capacitor", "Inductor"]:
-                if deactivate_only:
-                    val.is_enabled = False
-                    val.model_type = "RLC"
-                else:
-                    val.edbcomponent.delete()
-                    deleted_comps.append(comp)
+            try:
+                if val.num_pins == 1 and val.type in ["Resistor", "Capacitor", "Inductor"]:
+                    if deactivate_only:
+                        val.is_enabled = False
+                        val.model_type = "RLC"
+                    else:
+                        val.edbcomponent.delete()
+                        deleted_comps.append(comp)
+            except Exception as e:
+                self._pedb.logger.warning(f"Error processing component {comp}: {e}")
         if not deactivate_only:
             self.refresh_components()
         self._pedb.logger.info("Deleted {} components".format(len(deleted_comps)))
