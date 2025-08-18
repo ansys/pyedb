@@ -76,7 +76,7 @@ jobs:
     runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
@@ -139,7 +139,7 @@ jobs:
     runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
@@ -206,7 +206,7 @@ jobs:
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: "Set up Python"
         uses: actions/setup-python@v5
@@ -277,7 +277,7 @@ jobs:
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: "Set up Python"
         uses: actions/setup-python@v5
@@ -346,7 +346,7 @@ jobs:
     runs-on: [ self-hosted, Windows, pyedb ]
     steps:
       - name: Install Git and checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -364,7 +364,7 @@ jobs:
           python -m pip install -U pip
 
       - name: Clone PyAEDT on main branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ansys/pyaedt
           path: "external/pyaedt"
@@ -442,7 +442,7 @@ jobs:
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install OS packages
         run: |
@@ -464,7 +464,7 @@ jobs:
           python -m pip install -U pip
 
       - name: Clone PyAEDT on main branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ansys/pyaedt
           path: "external/pyaedt"
