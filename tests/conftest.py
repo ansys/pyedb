@@ -122,7 +122,7 @@ class EdbExamples:
         dst = self.local_scratch.copyfolder(src, file_folder_name)
         return dst
 
-    def _get_test_board(        self, edbapp, additional_files_folders, version, source_file_path    ):
+    def _get_test_board(self, edbapp, additional_files_folders, version, source_file_path):
         """Copy si_verse board file into local folder. A new temporary folder will be created."""
         aedb = self._copy_file_folder_into_local_folder(source_file_path)
         if additional_files_folders:
