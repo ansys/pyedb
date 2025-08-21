@@ -24,12 +24,20 @@ API to make scripting simpler.
 
         Understand how to use PyEDB by looking at some simple tutorials.
 
-    .. grid-item-card:: API reference :fa:`book-bookmark`
+    .. grid-item-card:: gRPC API reference :fa:`book-bookmark`
         :padding: 2 2 2 2
-        :link: api/index
+        :link: grpc_api/index
         :link-type: doc
 
-        Understand PyEDB API endpoints, their capabilities,
+        Understand PyEDB gRPC API endpoints, their capabilities,
+        and how to interact with them programmatically.
+
+    .. grid-item-card:: DotNet API reference :fa:`book-bookmark`
+        :padding: 2 2 2 2
+        :link: dotnet_api/index
+        :link-type: doc
+
+        Understand PyEDB DotNet API endpoints, their capabilities,
         and how to interact with them programmatically.
 
     .. grid-item-card:: Examples :fa:`scroll`
@@ -53,7 +61,9 @@ API to make scripting simpler.
 
    getting_started/index
    user_guide/index
-   api/index
+   grpc_api/index
+   dotnet_api/index
+   libraries/index
    contributing
 
 Indices and tables

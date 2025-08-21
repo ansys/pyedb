@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import re
+from typing import Any, List, Optional, Union
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 
@@ -33,11 +34,11 @@ from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 class LayoutValidation:
     """Manages all layout validation capabilities"""
 
-    def __init__(self, pedb):
+    def __init__(self, pedb: Any) -> None:
         self._pedb = pedb
         self._layout_instance = self._pedb.layout_instance
 
-    def dc_shorts(self, net_list=None, fix=False) -> list[list[str, str]]:
+    def dc_shorts(self, net_list: Optional[Union[str, List[str]]] = None, fix: bool = False) -> List[List[str]]:
         """Find DC shorts on layout.
 
         Parameters
@@ -55,10 +56,12 @@ class LayoutValidation:
 
         Examples
         --------
-
         >>> edb = Edb("edb_file")
-        >>> dc_shorts = edb.layout_validation.dc_shorts()
-
+        >>> # Find shorts without fixing
+        >>> shorts = edb.layout_validation.dc_shorts()
+        >>>
+        >>> # Find and fix shorts on specific nets
+        >>> fixed_shorts = edb.layout_validation.dc_shorts(net_list=["GND", "VCC"], fix=True)
         """
         if not net_list:
             net_list = list(self._pedb.nets.nets.keys())
@@ -125,12 +128,12 @@ class LayoutValidation:
 
     def disjoint_nets(
         self,
-        net_list=None,
-        keep_only_main_net=False,
-        clean_disjoints_less_than=0.0,
-        order_by_area=False,
-        keep_disjoint_pins=False,
-    ) -> list[str]:
+        net_list: Optional[Union[str, List[str]]] = None,
+        keep_only_main_net: bool = False,
+        clean_disjoints_less_than: float = 0.0,
+        order_by_area: bool = False,
+        keep_disjoint_pins: bool = False,
+    ) -> List[str]:
         """Find and fix disjoint nets from a given netlist.
 
         Parameters
@@ -154,8 +157,17 @@ class LayoutValidation:
 
         Examples
         --------
-
-        >>> renamed_nets = edb.layout_validation.disjoint_nets(["GND","Net2"])
+        >>> edb = Edb("edb_file")
+        >>> # Find disjoint nets on all nets
+        >>> new_nets = edb.layout_validation.disjoint_nets()
+        >>>
+        >>> # Clean disjoints on specific nets with advanced options
+        >>> cleaned = edb.layout_validation.disjoint_nets(
+        ...     net_list=["GND"],
+        ...     keep_only_main_net=True,
+        ...     clean_disjoints_less_than=1e-6,
+        ...     order_by_area=True
+        ... ))
         """
         timer_start = self._pedb.logger.reset_timer()
 
@@ -263,7 +275,7 @@ class LayoutValidation:
 
         return new_nets
 
-    def fix_self_intersections(self, net_list=None) -> bool:
+    def fix_self_intersections(self, net_list: Optional[Union[str, List[str]]] = None) -> bool:
         """Find and fix self intersections from a given netlist.
 
         Parameters
@@ -274,6 +286,15 @@ class LayoutValidation:
         Returns
         -------
         bool
+
+        Examples
+        --------
+        >>> edb = Edb("edb_file")
+        >>> # Fix self-intersections on all nets
+        >>> edb.layout_validation.fix_self_intersections()
+        >>>
+        >>> # Fix self-intersections on specific nets
+        >>> edb.layout_validation.fix_self_intersections(net_list=["RF_line"])
         """
         if not net_list:
             net_list = list(self._pedb.nets.nets.keys())
@@ -289,8 +310,18 @@ class LayoutValidation:
             self._pedb.logger.info("Self-intersection not found.")
         return True
 
-    def illegal_net_names(self, fix=False):
-        """Find and fix illegal net names."""
+    def illegal_net_names(self, fix: bool = False) -> None:
+        """Find and fix illegal net names.
+
+        Examples
+        --------
+        >>> edb = Edb("edb_file")
+        >>> # Identify illegal net names
+        >>> edb.layout_validation.illegal_net_names()
+        >>>
+        >>> # Find and automatically fix illegal names
+        >>> edb.layout_validation.illegal_net_names(fix=True)
+        """
         pattern = r"[\(\)\\\/:;*?<>\'\"|`~$]"
 
         nets = self._pedb.nets.nets
@@ -303,11 +334,21 @@ class LayoutValidation:
                     new_name = re.sub(pattern, "_", net)
                     val.name = new_name
 
-        self._pedb._logger.info("Found {} illegal net names.".format(len(renamed_nets)))
+        self._pedb.logger.info("Found {} illegal net names.".format(len(renamed_nets)))
         return
 
-    def illegal_rlc_values(self, fix=False) -> list[str]:
-        """Find and fix RLC illegal values."""
+    def illegal_rlc_values(self, fix: bool = False) -> List[str]:
+        """Find and fix RLC illegal values.
+
+        Examples
+        --------
+        >>> edb = Edb("edb_file")
+        >>> # Identify components with illegal RLC values
+        >>> bad_components = edb.layout_validation.illegal_rlc_values()
+        >>>
+        >>> # Automatically fix invalid inductor values
+        >>> edb.layout_validation.illegal_rlc_values(fix=True)
+        """
         inductors = self._pedb.components.inductors
 
         temp = []
@@ -317,10 +358,21 @@ class LayoutValidation:
                 temp.append(k)
                 if fix:
                     v.rlc_values = [0, 1, 0]
-        self._pedb._logger.info(f"Found {len(temp)} inductors have no value.")
+        self._pedb.logger.info(f"Found {len(temp)} inductors have no value.")
         return temp
 
-    def padstacks_no_name(self, fix=False):
+    def padstacks_no_name(self, fix: bool = False) -> None:
+        """Identify and fix padstacks without names.
+
+        Examples
+        --------
+        >>> edb = Edb("edb_file")
+        >>> # Report unnamed padstacks
+        >>> edb.layout_validation.padstacks_no_name()
+        >>>
+        >>> # Automatically assign names to unnamed padstacks
+        >>> edb.layout_validation.padstacks_no_name(fix=True)
+        """
         pds = self._pedb.layout.padstack_instances
         counts = 0
         via_count = 1
@@ -337,4 +389,4 @@ class LayoutValidation:
                         obj.set_product_property(
                             GrpcProductIdType.DESIGNER, 11, f"{obj.component.name}-{obj.component_pin}"
                         )
-        self._pedb._logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")
+        self._pedb.logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")

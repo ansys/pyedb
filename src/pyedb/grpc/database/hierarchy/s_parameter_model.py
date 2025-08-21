@@ -29,5 +29,5 @@ class SparamModel(GrpcSParameterModel):  # pragma: no cover
     """Manage :class:`SParameterModel <ansys.edb.core.hierarchy.sparameter_model.SParameterModel>`"""
 
     def __init__(self, edb_object):
-        super().__init__(self.msg)
+        super().__init__(edb_object.msg)
         self._edb_model = edb_object

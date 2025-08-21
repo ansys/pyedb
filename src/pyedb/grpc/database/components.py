@@ -28,7 +28,7 @@ import json
 import math
 import os
 import re
-from typing import Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 import warnings
 
 from ansys.edb.core.definition.die_property import DieOrientation as GrpDieOrientation
@@ -39,7 +39,6 @@ from ansys.edb.core.definition.solder_ball_property import (
 from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
 from ansys.edb.core.hierarchy.spice_model import SPICEModel as GrpcSPICEModel
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.component_libraries.ansys_components import (
     ComponentLib,
@@ -57,22 +56,23 @@ from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.utility.sources import SourceType
+from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 def resistor_value_parser(r_value) -> float:
-    """Convert a resistor value.
+    """Convert a resistor value to float.
 
     Parameters
     ----------
-    r_value : float
-        Resistor value.
+    r_value : float or str
+        Resistor value to convert.
 
     Returns
     -------
     float
-        Resistor value.
-
+        Converted resistor value.
     """
     if isinstance(r_value, str):
         r_value = r_value.replace(" ", "")
@@ -87,11 +87,12 @@ def resistor_value_parser(r_value) -> float:
 
 
 class Components(object):
-    """Manages EDB components and related method accessible from `Edb.components` property.
+    """Manages EDB components and related methods accessible from `Edb.components`.
 
     Parameters
     ----------
-    edb_class : :class:`pyedb.grpc.edb.Edb`
+    p_edb : :class:`pyedb.grpc.edb.Edb`
+        EDB object.
 
     Examples
     --------
@@ -100,17 +101,23 @@ class Components(object):
     >>> edbapp.components
     """
 
-    def __getitem__(self, name):
-        """Get  a component or component definition from the Edb project.
+    def __getitem__(self, name: str) -> Optional[Union[Component, ComponentDef]]:
+        """Get a component or component definition by name.
 
         Parameters
         ----------
         name : str
+            Name of the component or definition.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`
+        :class:`pyedb.grpc.database.hierarchy.component.Component` or
+        :class:`pyedb.grpc.database.definition.component_def.ComponentDef` or None
+            Component instance if found, component definition if found by name, otherwise None.
 
+        Examples
+        --------
+        >>> component = edbapp.components["R1"]
         """
         if name in self.instances:
             return self.instances[name]
@@ -119,75 +126,125 @@ class Components(object):
         self._pedb.logger.error("Component or definition not found.")
         return
 
-    def __init__(self, p_edb):
+    def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
         self.refresh_components()
         self._pins = {}
         self._comps_by_part = {}
         self._padstack = Padstacks(self._pedb)
-        # self._excitations = self._pedb.excitations
 
     @property
-    def _logger(self):
-        """Logger."""
+    def _logger(self) -> Any:
+        """Logger instance for the component manager.
+
+        Returns
+        -------
+        :class:`logging.Logger`
+            Logger instance.
+        """
         return self._pedb.logger
 
     @property
     def _active_layout(self):
+        """Active layout of the EDB database.
+
+        Returns
+        -------
+        :class:`ansys.edb.core.layout.Layout`
+            Active layout object.
+        """
         return self._pedb.active_layout
 
     @property
     def _layout(self):
+        """Layout of the EDB database.
+
+        Returns
+        -------
+        :class:`ansys.edb.core.layout.Layout`
+            Layout object.
+        """
         return self._pedb.layout
 
     @property
     def _cell(self):
+        """Cell of the EDB database.
+
+        Returns
+        -------
+        :class:`ansys.edb.core.layout.Cell`
+            Cell object.
+        """
         return self._pedb.cell
 
     @property
     def _db(self):
-        return self._pedb.active_db
-
-    @property
-    def instances(self) -> dict[str, Component]:
-        """All Cell components objects.
+        """Active database.
 
         Returns
         -------
-        Dict[str, :class:`pyedb.grpc.database.cell.hierarchy.component.Component`]
-            Default dictionary for the EDB component.
+        :class:`ansys.edb.core.database.Database`
+            Active database object.
+        """
+        return self._pedb.active_db
+
+    @property
+    def instances(self) -> Dict[str, Component]:
+        """Dictionary of all component instances in the layout.
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.grpc.database.hierarchy.component.Component`]
+            Dictionary of component instances keyed by name.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.instances
-
         """
         return self._cmp
 
     @property
-    def definitions(self) -> dict[str, ComponentDef]:
-        """Retrieve component definition list.
+    def definitions(self) -> Dict[str, ComponentDef]:
+        """Dictionary of all component definitions.
 
         Returns
         -------
-        dict of :class:`EDBComponentDef`"""
+        dict[str, :class:`pyedb.grpc.database.definition.component_def.ComponentDef`]
+            Dictionary of component definitions keyed by name.
+
+        Examples
+        --------
+        >>> edbapp.components.definitions
+        """
         return {l.name: ComponentDef(self._pedb, l) for l in self._pedb.component_defs}
 
     @property
-    def nport_comp_definition(self) -> dict[str, Component]:
-        """Retrieve Nport component definition list."""
+    def nport_comp_definition(self) -> Dict[str, Component]:
+        """Dictionary of N-port component definitions.
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.grpc.database.hierarchy.component.Component`]
+            Dictionary of N-port component definitions keyed by name.
+        """
         return {name: l for name, l in self.definitions.items() if l.reference_file}
 
     def import_definition(self, file_path) -> bool:
-        """Import component definition from json file.
+        """Import component definitions from a JSON file.
 
         Parameters
         ----------
         file_path : str
-            File path of json file.
+            Path to the JSON file.
+
+        Returns
+        -------
+        bool
+            True if successful, False otherwise.
+
+        Examples
+        --------
+        >>> edbapp.components.import_definition("definitions.json")
         """
         with codecs.open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -216,17 +273,21 @@ class Components(object):
         return True
 
     def export_definition(self, file_path) -> bool:
-        """Export component definitions to json file.
+        """Export component definitions to a JSON file.
 
         Parameters
         ----------
         file_path : str
-            File path of json file.
+            Path to the output JSON file.
 
         Returns
         -------
         bool
+            True if successful, False otherwise.
 
+        Examples
+        --------
+        >>> edbapp.components.export_definition("exported_definitions.json")
         """
         data = {
             "SParameterModel": {},
@@ -267,7 +328,17 @@ class Components(object):
         return True
 
     def refresh_components(self) -> bool:
-        """Refresh the component dictionary."""
+        """Refresh the component dictionary.
+
+        Returns
+        -------
+        bool
+            True if successful, False otherwise.
+
+        Examples
+        --------
+        >>> edbapp.components.refresh_components()
+        """
         self._logger.info("Refreshing the Components dictionary.")
         self._cmp = {}
         self._res = {}
@@ -301,133 +372,107 @@ class Components(object):
         return True
 
     @property
-    def resistors(self) -> dict[str, Component]:
-        """Resistors.
+    def resistors(self) -> Dict[str, Component]:
+        """Dictionary of resistor components.
 
         Returns
         -------
-        dict[str, .:class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
-            Dictionary of resistors.
+        dict[str, :class:`pyedb.grpc.database.hierarchy.component.Component`]
+            Dictionary of resistor components keyed by name.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.resistors
         """
         return self._res
 
     @property
-    def capacitors(self) -> dict[str, Component]:
-        """Capacitors.
+    def capacitors(self) -> Dict[str, Component]:
+        """Dictionary of capacitor components.
 
         Returns
         -------
-        dict[str, .:class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
-            Dictionary of capacitors.
+        dict[str, :class:`pyedb.grpc.database.hierarchy.component.Component`]
+            Dictionary of capacitor components keyed by name.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.capacitors
         """
         return self._cap
 
     @property
-    def inductors(self) -> dict[str, Component]:
-        """Inductors.
+    def inductors(self) -> Dict[str, Component]:
+        """Dictionary of inductor components.
 
         Returns
         -------
-        dict[str, .:class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
-            Dictionary of inductors.
+        dict[str, :class:`pyedb.grpc.database.hierarchy.component.Component`]
+            Dictionary of inductor components keyed by name.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.inductors
-
         """
         return self._ind
 
     @property
-    def ICs(self) -> dict[str, Component]:
-        """Integrated circuits.
+    def ICs(self) -> Dict[str, Component]:
+        """Dictionary of integrated circuit components.
 
         Returns
         -------
-        dict[str, .:class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
-            Dictionary of integrated circuits.
+        dict[str, :class:`pyedb.grpc.database.hierarchy.component.Component`]
+            Dictionary of IC components keyed by name.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.ICs
-
         """
         return self._ics
 
     @property
-    def IOs(self) -> dict[str, Component]:
-        """Circuit inupts and outputs.
+    def IOs(self) -> Dict[str, Component]:
+        """Dictionary of I/O components.
 
         Returns
         -------
-        dict[str, .:class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
-            Dictionary of circuit inputs and outputs.
+        dict[str, :class:`pyedb.grpc.database.hierarchy.component.Component`]
+            Dictionary of I/O components keyed by name.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.IOs
-
         """
         return self._ios
 
     @property
-    def Others(self) -> dict[str, Component]:
-        """Other core components.
+    def Others(self) -> Dict[str, Component]:
+        """Dictionary of other components.
 
         Returns
         -------
-        dict[str, .:class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
-            Dictionary of other core components.
+        dict[str, :class:`pyedb.grpc.database.hierarchy.component.Component`]
+            Dictionary of other components keyed by name.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.others
-
+        >>> edbapp.components.Others
         """
         return self._others
 
     @property
-    def components_by_partname(self) -> dict[str, Component]:
-        """Components by part name.
+    def components_by_partname(self) -> Dict[str, List[Component]]:
+        """Dictionary of components grouped by part name.
 
         Returns
         -------
-        dict
-            Dictionary of components by part name.
+        dict[str, list[:class:`pyedb.grpc.database.hierarchy.component.Component`]]
+            Dictionary of components lists keyed by part name.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.components_by_partname
-
         """
         self._comps_by_part = {}
         for el, val in self.instances.items():
@@ -447,28 +492,41 @@ class Components(object):
 
         Returns
         -------
-        bool
-            Component object.
+        :class:`pyedb.grpc.database.hierarchy.component.Component`
+            Component instance.
 
+        Examples
+        --------
+        >>> comp = edbapp.components.get_component_by_name("R1")
         """
         return self.instances[name]
 
-    def get_pin_from_component(self, component, net_name=None, pin_name=None) -> list:
-        """Return component pins.
+    @deprecate_argument_name({"pinName": "pin_name"})
+    def get_pin_from_component(
+        self,
+        component: Union[str, Component],
+        net_name: Optional[Union[str, List[str]]] = None,
+        pin_name: Optional[str] = None,
+    ) -> List[Any]:
+        """Get pins from a component with optional filtering.
+
         Parameters
         ----------
-        component: .:class: `Component` or str.
-            Component object or component name.
-        net_name : str, List[str], optional
-            Apply filter on net name.
+        component : str or :class:`pyedb.grpc.database.hierarchy.component.Component`
+            Component name or instance.
+        net_name : str or list[str], optional
+            Net name(s) to filter by.
         pin_name : str, optional
-            Apply filter on specific pin name.
-        Return
-        ------
-        List[:clas: `PadstackInstance`]
+            Pin name to filter by.
 
+        Returns
+        -------
+        list[:class:`pyedb.grpc.database.padstacks.PadstackInstance`]
+            List of pin instances.
 
-
+        Examples
+        --------
+        >>> pins = edbapp.components.get_pin_from_component("R1", net_name="GND")
         """
         if isinstance(component, Component):
             component = component.name
@@ -481,19 +539,22 @@ class Components(object):
             pins = [pin for pin in pins if pin.name == pin_name]
         return pins
 
-    def get_components_from_nets(self, netlist=None) -> list[Component]:
-        """Retrieve components from a net list.
+    def get_components_from_nets(self, netlist=None) -> list[str]:
+        """Get components connected to specified nets.
 
         Parameters
         ----------
-        netlist : str, optional
-            Name of the net list. The default is ``None``.
+        netlist : str or list[str], optional
+            Net name(s) to filter by.
 
         Returns
         -------
-        list
-            List of components that belong to the signal nets.
+        list[str]
+            List of component names.
 
+        Examples
+        --------
+        >>> comps = edbapp.components.get_components_from_nets(["GND", "VCC"])
         """
         cmp_list = []
         if isinstance(netlist, str):
@@ -505,7 +566,21 @@ class Components(object):
                 cmp_list.append(refdes)
         return cmp_list
 
-    def _get_edb_pin_from_pin_name(self, cmp, pin):
+    def _get_edb_pin_from_pin_name(self, cmp: Component, pin: str) -> Union[ComponentPin, bool]:
+        """Get EDB pin from pin name.
+
+        Parameters
+        ----------
+        cmp : :class:`pyedb.grpc.database.hierarchy.component.Component`
+            Component instance.
+        pin : str
+            Pin name.
+
+        Returns
+        -------
+        :class:`pyedb.grpc.database.definition.component_pin.ComponentPin` or bool
+            Pin instance if found, False otherwise.
+        """
         if not isinstance(cmp, Component):
             return False
         if not isinstance(pin, str):
@@ -516,60 +591,51 @@ class Components(object):
 
     def get_component_placement_vector(
         self,
-        mounted_component,
-        hosting_component,
-        mounted_component_pin1,
-        mounted_component_pin2,
-        hosting_component_pin1,
-        hosting_component_pin2,
-        flipped=False,
-    ):
-        """Get the placement vector between 2 components.
+        mounted_component: Component,
+        hosting_component: Component,
+        mounted_component_pin1: str,
+        mounted_component_pin2: str,
+        hosting_component_pin1: str,
+        hosting_component_pin2: str,
+        flipped: bool = False,
+    ) -> Tuple[bool, List[float], float, float]:
+        """Get placement vector between two components.
 
         Parameters
         ----------
-        mounted_component : `edb.cell.hierarchy._hierarchy.Component`
-            Mounted component name.
-        hosting_component : `edb.cell.hierarchy._hierarchy.Component`
-            Hosting component name.
+        mounted_component : :class:`pyedb.grpc.database.hierarchy.component.Component`
+            Mounted component.
+        hosting_component : :class:`pyedb.grpc.database.hierarchy.component.Component`
+            Hosting component.
         mounted_component_pin1 : str
-            Mounted component Pin 1 name.
+            Pin name on mounted component.
         mounted_component_pin2 : str
-            Mounted component Pin 2 name.
+            Pin name on mounted component.
         hosting_component_pin1 : str
-            Hosted component Pin 1 name.
+            Pin name on hosting component.
         hosting_component_pin2 : str
-            Hosted component Pin 2 name.
+            Pin name on hosting component.
         flipped : bool, optional
-            Either if the mounted component will be flipped or not.
+            Whether the component is flipped.
 
         Returns
         -------
         tuple
-            Tuple of Vector offset, rotation and solder height.
+            (success, vector, rotation, solder_ball_height)
 
         Examples
         --------
-        >>> edb1 = Edb(edbpath=targetfile1,  edbversion="2021.2")
-        >>> hosting_cmp = edb1.components.get_component_by_name("U100")
-        >>> mounted_cmp = edb2.components.get_component_by_name("BGA")
-        >>> vector, rotation, solder_ball_height = edb1.components.get_component_placement_vector(
-        ...                                             mounted_component=mounted_cmp,
-        ...                                             hosting_component=hosting_cmp,
-        ...                                             mounted_component_pin1="A12",
-        ...                                             mounted_component_pin2="A14",
-        ...                                             hosting_component_pin1="A12",
-        ...                                             hosting_component_pin2="A14")
+        >>> vec, rot, height = edbapp.components.get_component_placement_vector(...)
         """
-        m_pin1_pos = [0.0, 0.0]
-        m_pin2_pos = [0.0, 0.0]
-        h_pin1_pos = [0.0, 0.0]
-        h_pin2_pos = [0.0, 0.0]
         if not isinstance(mounted_component, Component):
             return False
         if not isinstance(hosting_component, Component):
             return False
 
+        m_pin1_pos = [0.0, 0.0]
+        m_pin2_pos = [0.0, 0.0]
+        h_pin1_pos = [0.0, 0.0]
+        h_pin2_pos = [0.0, 0.0]
         if mounted_component_pin1:
             m_pin1 = self._get_edb_pin_from_pin_name(mounted_component, mounted_component_pin1)
             m_pin1_pos = self.get_pin_position(m_pin1)
@@ -611,39 +677,38 @@ class Components(object):
         self._logger.warning("Failed to compute vector.")
         return False, [0, 0], 0, 0
 
-    def get_solder_ball_height(self, cmp) -> float:
-        """Get component solder ball height.
+    def get_solder_ball_height(self, cmp: Union[str, Component]) -> float:
+        """Get solder ball height of a component.
 
         Parameters
         ----------
-        cmp : str or `Component` object.
-            EDB component or str component name.
+        cmp : str or :class:`pyedb.grpc.database.hierarchy.component.Component`
+            Component name or instance.
 
         Returns
         -------
-        double, bool
-            Salder ball height vale, ``False`` when failed.
+        float
+            Solder ball height in meters.
 
+        Examples
+        --------
+        >>> height = edbapp.components.get_solder_ball_height("U1")
         """
         if isinstance(cmp, str):
             cmp = self.get_component_by_name(cmp)
         return cmp.solder_ball_height
 
     def get_vendor_libraries(self) -> ComponentLib:
-        """Retrieve all capacitors and inductors libraries from ANSYS installation (used by Siwave).
+        """Get vendor component libraries.
 
         Returns
         -------
-        ComponentLib object contains nested dictionaries to navigate through [component type][vendors][series]
-        :class: `pyedb.component_libraries.ansys_components.ComponentPart`
+        :class:`pyedb.component_libraries.ansys_components.ComponentLib`
+            Component library object.
 
         Examples
         --------
-        >>> edbapp = Edb()
-        >>> comp_lib = edbapp.components.get_vendor_libraries()
-        >>> network = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].s_parameters
-        >>> network.write_touchstone(os.path.join(edbapp.directory, "test_export.s2p"))
-
+        >>> lib = edbapp.components.get_vendor_libraries()
         """
         comp_lib_path = os.path.join(self._pedb.base_path, "complib", "Locked")
         comp_types = ["Capacitors", "Inductors"]
@@ -673,22 +738,21 @@ class Components(object):
                 comp_lib.inductors = vendors
         return comp_lib
 
-    def create_source_on_component(self, sources=None):
-        """Create voltage, current source, or resistor on component.
+    def create_source_on_component(self, sources=None):  # pragma: no cover
+        """Create sources on components.
 
-        . deprecated:: pyedb 0.28.0
-        Use .:func:`pyedb.grpc.core.excitations.create_source_on_component` instead.
+        .. deprecated:: 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_source_on_component` instead.
 
         Parameters
         ----------
-        sources : list[Source]
-            List of ``edb_data.sources.Source`` objects.
+        sources : list, optional
+            List of sources.
 
         Returns
         -------
         bool
-            ``True`` when successful, ``False`` when failed.
-
+            True if successful, False otherwise.
         """
         warnings.warn(
             "`create_source_on_component` is deprecated and is now located here "
@@ -706,42 +770,33 @@ class Components(object):
         port_name=None,
         pec_boundary=False,
         pingroup_on_single_pin=False,
-    ):
-        """Create circuit port between pins and reference ones.
+    ):  # pragma: no cover
+        """Create port on pins.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.create_port_on_pins` instead.
+        .. deprecated:: 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_port_on_pins` instead.
 
         Parameters
         ----------
-        refdes : Component reference designator
-            str or EDBComponent object.
-        pins : pin name where the terminal has to be created. Single pin or several ones can be provided.If several
-        pins are provided a pin group will is created. Pin names can be the EDB name or the EDBPadstackInstance one.
-        For instance the pin called ``Pin1`` located on component ``U1``, ``U1-Pin1`` or ``Pin1`` can be provided and
-        will be handled.
-            str, [str], EDBPadstackInstance, [EDBPadstackInstance]
-        reference_pins : reference pin name used for terminal reference. Single pin or several ones can be provided.
-        If several pins are provided a pin group will is created. Pin names can be the EDB name or the
-        EDBPadstackInstance one. For instance the pin called ``Pin1`` located on component ``U1``, ``U1-Pin1``
-        or ``Pin1`` can be provided and will be handled.
-            str, [str], EDBPadstackInstance, [EDBPadstackInstance]
-        impedance : Port impedance
-            str, float
+        refdes : str
+            Reference designator.
+        pins : list
+            List of pins.
+        reference_pins : list
+            List of reference pins.
+        impedance : float, optional
+            Port impedance.
         port_name : str, optional
-            Port name. The default is ``None``, in which case a name is automatically assigned.
+            Port name.
         pec_boundary : bool, optional
-        Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
-        a perfect short is created between the pin and impedance is ignored. This
-        parameter is only supported on a port created between two pins, such as
-        when there is no pin group.
-        pingroup_on_single_pin : bool
-            If ``True`` force using pingroup definition on single pin to have the port created at the pad center. If
-            ``False`` the port is created at the pad edge. Default value is ``False``.
+            Use PEC boundary.
+        pingroup_on_single_pin : bool, optional
+            Use pin group on single pin.
 
         Returns
         -------
-        EDB terminal created, or False if failed to create.
+        bool
+            True if successful, False otherwise.
         """
         warnings.warn(
             "`create_port_on_pins` is deprecated and is now located here "
@@ -770,50 +825,39 @@ class Components(object):
         solder_balls_size=None,
         solder_balls_mid_size=None,
         extend_reference_pins_outside_component=False,
-    ):
+    ):  # pragma: no cover
         """Create ports on a component.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.create_port_on_component` instead.
+        .. deprecated:: 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_port_on_component` instead.
 
         Parameters
         ----------
-        component : str or  self._pedb.component
-            EDB component or str component name.
-        net_list : str or list of string.
-            List of nets where ports must be created on the component.
-            If the net is not part of the component, this parameter is skipped.
-        port_type : SourceType enumerator, CoaxPort or CircuitPort
-            Type of port to create. ``CoaxPort`` generates solder balls.
-            ``CircuitPort`` generates circuit ports on pins belonging to the net list.
-        do_pingroup : bool
-            True activate pingroup during port creation (only used with combination of CircPort),
-            False will take the closest reference pin and generate one port per signal pin.
-        refnet : string or list of string.
-            list of the reference net.
-        port_name : str
-            Port name for overwriting the default port-naming convention,
-            which is ``[component][net][pin]``. The port name must be unique.
-            If a port with the specified name already exists, the
-            default naming convention is used so that port creation does
-            not fail.
+        component : str
+            Component name.
+        net_list : list
+            List of nets.
+        port_type : SourceType, optional
+            Port type.
+        do_pingroup : bool, optional
+            Use pin groups.
+        reference_net : str, optional
+            Reference net.
+        port_name : str, optional
+            Port name.
         solder_balls_height : float, optional
-            Solder balls height used for the component. When provided default value is overwritten and must be
-            provided in meter.
+            Solder ball height.
         solder_balls_size : float, optional
-            Solder balls diameter. When provided auto evaluation based on padstack size will be disabled.
+            Solder ball size.
         solder_balls_mid_size : float, optional
-            Solder balls mid-diameter. When provided if value is different than solder balls size, spheroid shape will
-            be switched.
-        extend_reference_pins_outside_component : bool
-            When no reference pins are found on the component extend the pins search with taking the closest one. If
-            `do_pingroup` is `True` will be set to `False`. Default value is `False`.
+            Solder ball mid size.
+        extend_reference_pins_outside_component : bool, optional
+            Extend reference pins outside component.
 
         Returns
         -------
-        double, bool
-            Salder ball height vale, ``False`` when failed.
-
+        bool
+            True if successful, False otherwise.
         """
         warnings.warn(
             "`create_port_on_component` is deprecated and is now located here "
@@ -833,22 +877,23 @@ class Components(object):
             extend_reference_pins_outside_component=extend_reference_pins_outside_component,
         )
 
-    def _create_terminal(self, pin, term_name=None):
-        """Create terminal on component pin.
+    def _create_terminal(self, pin, term_name=None):  # pragma: no cover
+        """Create terminal on pin.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations._create_terminal` instead.
+        .. deprecated:: 0.28.0
+            Use :func:`pyedb.grpc.core.excitations._create_terminal` instead.
 
         Parameters
         ----------
-        pin : Edb padstack instance.
-
-        term_name : Terminal name (Optional).
-            str.
+        pin : :class:`pyedb.grpc.database.padstacks.PadstackInstance`
+            Pin instance.
+        term_name : str, optional
+            Terminal name.
 
         Returns
         -------
-        EDB terminal.
+        bool
+            True if successful, False otherwise.
         """
         warnings.warn(
             "`_create_terminal` is deprecated and is now located here "
@@ -858,18 +903,19 @@ class Components(object):
         self._pedb.excitations._create_terminal(pin, term_name=term_name)
 
     def _get_closest_pin_from(self, pin, ref_pinlist):
-        """Returns the closest pin from given pin among the list of reference pins.
+        """Get closest pin from a list of pins.
 
         Parameters
         ----------
-        pin : Edb padstack instance.
-
-        ref_pinlist : list of reference edb pins.
+        pin : :class:`pyedb.grpc.database.padstacks.PadstackInstance`
+            Source pin.
+        ref_pinlist : list[:class:`pyedb.grpc.database.padstacks.PadstackInstance`]
+            List of reference pins.
 
         Returns
         -------
-        Edb pin.
-
+        :class:`pyedb.grpc.database.padstacks.PadstackInstance`
+            Closest pin.
         """
         distance = 1e3
         pin_position = pin.position
@@ -881,173 +927,29 @@ class Components(object):
                 closest_pin = ref_pin
         return closest_pin
 
-    def replace_rlc_by_gap_boundaries(self, component=None):
-        """Replace RLC component by RLC gap boundaries. These boundary types are compatible with 3D modeler export.
-        Only 2 pins RLC components are supported in this command.
+    def _create_pin_group_terminal(
+        self, pingroup, isref=False, term_name=None, term_type="circuit"
+    ):  # pragma: no cover
+        """Create pin group terminal.
+
+        .. deprecated:: 0.28.0
+            Use :func:`pyedb.grpc.core.excitations._create_pin_group_terminal` instead.
 
         Parameters
         ----------
-        component : str
-            Reference designator of the RLC component.
+        pingroup : :class:`pyedb.grpc.database.hierarchy.pingroup.PinGroup`
+            Pin group.
+        isref : bool, optional
+            Is reference terminal.
+        term_name : str, optional
+            Terminal name.
+        term_type : str, optional
+            Terminal type.
 
         Returns
         -------
         bool
-        ``True`` when succeed, ``False`` if it failed.
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edb = Edb(edb_file)
-        >>>  for refdes, cmp in edb.components.capacitors.items():
-        >>>     edb.components.replace_rlc_by_gap_boundaries(refdes)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
-        """
-        if not component:
-            return False
-        if isinstance(component, str):
-            component = self.instances[component]
-            if not component:
-                self._logger.error("component %s not found.", component)
-                return False
-        if component.type in ["other", "ic", "io"]:
-            self._logger.info(f"Component {component.refdes} skipped to deactivate is not an RLC.")
-            return False
-        component.enabled = False
-        return self._pedb.source_excitation.add_rlc_boundary(component.refdes, False)
-
-    def deactivate_rlc_component(self, component=None, create_circuit_port=False, pec_boundary=False) -> bool:
-        """Deactivate RLC component with a possibility to convert it to a circuit port.
-
-        Parameters
-        ----------
-        component : str
-            Reference designator of the RLC component.
-
-        create_circuit_port : bool, optional
-            Whether to replace the deactivated RLC component with a circuit port. The default
-            is ``False``.
-        pec_boundary : bool, optional
-            Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
-            a perfect short is created between the pin and impedance is ignored. This
-            parameter is only supported on a port created between two pins, such as
-            when there is no pin group.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edb_file = r'C:\my_edb_file.aedb'
-        >>> edb = Edb(edb_file)
-        >>> for cmp in list(edb.components.instances.keys()):
-        >>>     edb.components.deactivate_rlc_component(component=cmp, create_circuit_port=False)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
-        """
-        if not component:
-            return False
-        if isinstance(component, str):
-            component = self.instances[component]
-            if not component:
-                self._logger.error("component %s not found.", component)
-                return False
-        if component.type in ["other", "ic", "io"]:
-            self._logger.info(f"Component {component.refdes} passed to deactivate is not an RLC.")
-            return False
-        component.is_enabled = False
-        return self._pedb.source_excitation.add_port_on_rlc_component(
-            component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
-        )
-
-    def add_port_on_rlc_component(self, component=None, circuit_ports=True, pec_boundary=False):
-        """Deactivate RLC component and replace it with a circuit port.
-        The circuit port supports only two-pin components.
-
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.add_port_on_rlc_component` instead.
-
-        Parameters
-        ----------
-        component : str
-            Reference designator of the RLC component.
-
-        circuit_ports : bool
-            ``True`` will replace RLC component by circuit ports, ``False`` gap ports compatible with HFSS 3D modeler
-            export.
-
-        pec_boundary : bool, optional
-            Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
-            a perfect short is created between the pin and impedance is ignored. This
-            parameter is only supported on a port created between two pins, such as
-            when there is no pin group.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-        """
-        warnings.warn(
-            "`add_port_on_rlc_component` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.add_port_on_rlc_component` instead.",
-            DeprecationWarning,
-        )
-        return self._pedb.source_excitation.add_port_on_rlc_component(
-            component=component, circuit_ports=circuit_ports, pec_boundary=pec_boundary
-        )
-
-    def add_rlc_boundary(self, component=None, circuit_type=True):
-        """Add RLC gap boundary on component and replace it with a circuit port.
-        The circuit port supports only 2-pin components.
-
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.add_rlc_boundary` instead.
-
-        Parameters
-        ----------
-        component : str
-            Reference designator of the RLC component.
-        circuit_type : bool
-            When ``True`` circuit type are defined, if ``False`` gap type will be used instead (compatible with HFSS 3D
-            modeler). Default value is ``True``.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-        """
-        warnings.warn(
-            "`add_rlc_boundary` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.add_rlc_boundary` instead.",
-            DeprecationWarning,
-        )
-        return self._pedb.source_excitation.add_rlc_boundary(self, component=component, circuit_type=circuit_type)
-
-    def _create_pin_group_terminal(self, pingroup, isref=False, term_name=None, term_type="circuit"):
-        """Creates an EDB pin group terminal from a given EDB pin group.
-
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations._create_pin_group_terminal` instead.
-
-        Parameters
-        ----------
-        pingroup : Edb pin group.
-
-        isref : bool
-        Specify if this terminal a reference terminal.
-
-        term_name : Terminal name (Optional). If not provided default name is Component name, Pin name, Net name.
-            str.
-
-        term_type: Type of terminal, gap, circuit or auto.
-        str.
-        Returns
-        -------
-        Edb pin group terminal.
+            True if successful, False otherwise.
         """
         warnings.warn(
             "`_create_pin_group_terminal` is deprecated and is now located here "
@@ -1059,19 +961,17 @@ class Components(object):
         )
 
     def _is_top_component(self, cmp) -> bool:
-        """Test the component placement layer.
+        """Check if component is on top layer.
 
         Parameters
         ----------
-        cmp :  self._pedb.component
-             Edb component.
+        cmp : :class:`pyedb.grpc.database.hierarchy.component.Component`
+            Component instance.
 
         Returns
         -------
         bool
-            ``True`` when component placed on top layer, ``False`` on bottom layer.
-
-
+            True if on top layer, False otherwise.
         """
         top_layer = self._pedb.stackup.signal[0].name
         if cmp.placement_layer == top_layer:
@@ -1079,7 +979,21 @@ class Components(object):
         else:
             return False
 
-    def _get_component_definition(self, name, pins):
+    def _get_component_definition(self, name, pins) -> Union[ComponentDef, None]:
+        """Get or create component definition.
+
+        Parameters
+        ----------
+        name : str
+            Definition name.
+        pins : list
+            List of pins.
+
+        Returns
+        -------
+        :class:`pyedb.grpc.database.definition.component_def.ComponentDef` or None
+            Component definition if successful, None otherwise.
+        """
         component_definition = ComponentDef.find(self._db, name)
         if component_definition.is_null:
             from ansys.edb.core.layout.cell import Cell as GrpcCell
@@ -1089,7 +1003,7 @@ class Components(object):
             component_definition = ComponentDef.create(self._db, name, fp=foot_print_cell)
             if component_definition.is_null:
                 self._logger.error(f"Failed to create component definition {name}")
-                return False
+                return None
             ind = 1
             for pin in pins:
                 if not pin.name:
@@ -1105,52 +1019,47 @@ class Components(object):
 
     def create(
         self,
-        pins,
-        component_name=None,
-        placement_layer=None,
-        component_part_name=None,
-        is_rlc=False,
-        r_value=None,
-        c_value=None,
-        l_value=None,
-        is_parallel=False,
-    ) -> bool:
-        """Create a component from pins.
+        pins: List[Any],
+        component_name: Optional[str] = None,
+        placement_layer: Optional[str] = None,
+        component_part_name: Optional[str] = None,
+        is_rlc: bool = False,
+        r_value: Optional[float] = None,
+        c_value: Optional[float] = None,
+        l_value: Optional[float] = None,
+        is_parallel: bool = False,
+    ) -> Union[Component, bool]:
+        """Create a new component.
 
         Parameters
         ----------
-        pins : list
-            List of EDB core pins.
-        component_name : str
-            Name of the reference designator for the component.
+        pins : list[:class:`pyedb.grpc.database.padstacks.PadstackInstance`]
+            List of pins.
+        component_name : str, optional
+            Component name.
         placement_layer : str, optional
-            Name of the layer used for placing the component.
+            Placement layer name.
         component_part_name : str, optional
-            Part name of the component.
+            Part name.
         is_rlc : bool, optional
-            Whether if the new component will be an RLC or not.
-        r_value : float
-            Resistor value.
-        c_value : float
+            Whether the component is RLC.
+        r_value : float, optional
+            Resistance value.
+        c_value : float, optional
             Capacitance value.
-        l_value : float
-            Inductor value.
-        is_parallel : bool
-            Using parallel model when ``True``, series when ``False``.
+        l_value : float, optional
+            Inductance value.
+        is_parallel : bool, optional
+            Whether RLC is parallel.
 
         Returns
         -------
-        bool
-            ``True`` when successful, ``False`` when failed.
+        :class:`pyedb.grpc.database.hierarchy.component.Component` or bool
+            New component instance if successful, False otherwise.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> pins = edbapp.components.get_pin_from_component("A1")
-        >>> edbapp.components.create(pins, "A1New")
-
+        >>> new_comp = edbapp.components.create(pins, "R1")
         """
         from ansys.edb.core.hierarchy.component_group import (
             ComponentGroup as GrpcComponentGroup,
@@ -1191,17 +1100,17 @@ class Components(object):
                 rlc.r_enabled = False
             else:
                 rlc.r_enabled = True
-                rlc.r = GrpcValue(r_value)
+                rlc.r = Value(r_value)
             if l_value is None:
                 rlc.l_enabled = False
             else:
                 rlc.l_enabled = True
-                rlc.l = GrpcValue(l_value)
+                rlc.l = Value(l_value)
             if c_value is None:
                 rlc.c_enabled = False
             else:
                 rlc.c_enabled = True
-                rlc.C = GrpcValue(c_value)
+                rlc.C = Value(c_value)
             if rlc.r_enabled and not rlc.c_enabled and not rlc.l_enabled:
                 new_cmp.component_type = GrpcComponentType.RESISTOR
             elif rlc.c_enabled and not rlc.r_enabled and not rlc.l_enabled:
@@ -1223,36 +1132,27 @@ class Components(object):
 
     def create_component_from_pins(
         self, pins, component_name, placement_layer=None, component_part_name=None
-    ) -> bool:  # pragma: no cover
-        """Create a component from pins.
+    ) -> Union[Component, bool]:  # pragma: no cover
+        """Create component from pins.
 
         .. deprecated:: 0.6.62
-           Use :func:`create` method instead.
+            Use :func:`create` instead.
 
         Parameters
         ----------
         pins : list
-            List of EDB core pins.
+            List of pins.
         component_name : str
-            Name of the reference designator for the component.
+            Component name.
         placement_layer : str, optional
-            Name of the layer used for placing the component.
+            Placement layer.
         component_part_name : str, optional
-            Part name of the component. It's created a new definition if doesn't exists.
+            Part name.
 
         Returns
         -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> pins = edbapp.components.get_pin_from_component("A1")
-        >>> edbapp.components.create(pins, "A1New")
-
+        :class:`pyedb.grpc.database.hierarchy.component.Component` or bool
+            Component instance if successful, False otherwise.
         """
         warnings.warn("`create_component_from_pins` is deprecated use `create` instead..", DeprecationWarning)
         return self.create(
@@ -1263,35 +1163,34 @@ class Components(object):
             is_rlc=False,
         )
 
-    def set_component_model(self, componentname, model_type="Spice", modelpath=None, modelname=None) -> bool:
-        """Assign a Spice or Touchstone model to a component.
+    def set_component_model(
+        self,
+        componentname: str,
+        model_type: str = "Spice",
+        modelpath: Optional[str] = None,
+        modelname: Optional[str] = None,
+    ) -> bool:
+        """Set component model.
 
         Parameters
         ----------
         componentname : str
-            Name of the component.
+            Component name.
         model_type : str, optional
-            Type of the model. Options are ``"Spice"`` and
-            ``"Touchstone"``.  The default is ``"Spice"``.
+            Model type ("Spice" or "Touchstone").
         modelpath : str, optional
-            Full path to the model file. The default is ``None``.
+            Model file path.
         modelname : str, optional
-            Name of the model. The default is ``None``.
+            Model name.
 
         Returns
         -------
         bool
-            ``True`` when successful, ``False`` when failed.
+            True if successful, False otherwise.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.set_component_model("A1", model_type="Spice",
-        ...                                            modelpath="pathtospfile",
-        ...                                            modelname="spicemodelname")
-
+        >>> edbapp.components.set_component_model("U1", "Spice", "path/to/model.sp")
         """
         if not modelname:
             modelname = get_filename_without_extension(modelpath)
@@ -1342,31 +1241,28 @@ class Components(object):
             component.component_property.model = s_parameter_mod
         return True
 
-    def create_pingroup_from_pins(self, pins, group_name=None) -> Union[PinGroup, bool]:
-        """Create a pin group on a component.
+    def create_pingroup_from_pins(self, pins: List[Any], group_name: Optional[str] = None) -> Union[PinGroup, bool]:
+        """Create pin group from pins.
 
         Parameters
         ----------
-        pins : list
-            List of EDB pins.
+        pins : list[:class:`pyedb.grpc.database.padstacks.PadstackInstance`]
+            List of pins.
         group_name : str, optional
-            Name for the group. The default is ``None``, in which case
-            a default name is assigned as follows: ``[component Name] [NetName]``.
+            Group name.
 
         Returns
         -------
-        pingroup object.
+        :class:`pyedb.grpc.database.hierarchy.pingroup.PinGroup` or bool
+            Pin group instance if successful, False otherwise.
 
         Examples
         --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.create_pingroup_from_pins(gndpinlist, "MyGNDPingroup")
-
+        >>> pingroup = edbapp.components.create_pingroup_from_pins(pins, "GND_pins")
         """
         if len(pins) < 1:
             self._logger.error("No pins specified for pin group %s", group_name)
-            return (False, None)
+            return False
         if group_name is None:
             group_name = PinGroup.unique_name(self._active_layout, "pin_group")
         for pin in pins:
@@ -1396,31 +1292,22 @@ class Components(object):
             pin_group.net = pins[0].net
             return pin_group
 
-    def delete_single_pin_rlc(self, deactivate_only=False) -> list[Component]:
-        # type: (bool) -> list
-        """Delete all RLC components with a single pin.
-        Single pin component model type will be reverted to ``"RLC"``.
+    def delete_single_pin_rlc(self, deactivate_only: bool = False) -> List[str]:
+        """Delete or deactivate single-pin RLC components.
 
         Parameters
         ----------
         deactivate_only : bool, optional
-            Whether to only deactivate RLC components with a single point rather than
-            delete them. The default is ``False``, in which case they are deleted.
+            Whether to only deactivate instead of deleting.
 
         Returns
         -------
-        list
-            List of deleted RLC components.
-
+        list[str]
+            List of affected components.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> list_of_deleted_rlcs = edbapp.components.delete_single_pin_rlc()
-        >>> print(list_of_deleted_rlcs)
-
+        >>> deleted = edbapp.components.delete_single_pin_rlc()
         """
         deleted_comps = []
         for comp, val in self.instances.items():
@@ -1436,26 +1323,22 @@ class Components(object):
         self._pedb.logger.info("Deleted {} components".format(len(deleted_comps)))
         return deleted_comps
 
-    def delete(self, component_name) -> bool:
+    def delete(self, component_name: str) -> bool:
         """Delete a component.
 
         Parameters
         ----------
         component_name : str
-            Name of the component.
+            Component name.
 
         Returns
         -------
         bool
-            ``True`` when successful, ``False`` when failed.
+            True if successful, False otherwise.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.delete("A1")
-
+        >>> edbapp.components.delete("R1")
         """
         edb_cmp = self.get_component_by_name(component_name)
         if edb_cmp is not None:
@@ -1465,26 +1348,22 @@ class Components(object):
             return True
         return False
 
-    def disable_rlc_component(self, component_name) -> bool:
-        """Disable a RLC component.
+    def disable_rlc_component(self, component_name: str) -> bool:
+        """Disable RLC component.
 
         Parameters
         ----------
         component_name : str
-            Name of the RLC component.
+            Component name.
 
         Returns
         -------
         bool
-            ``True`` when successful, ``False`` when failed.
+            True if successful, False otherwise.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.disable_rlc_component("A1")
-
+        >>> edbapp.components.disable_rlc_component("R1")
         """
         cmp = self.get_component_by_name(component_name)
         if cmp is not None:
@@ -1503,56 +1382,50 @@ class Components(object):
 
     def set_solder_ball(
         self,
-        component="",
-        sball_diam=None,
-        sball_height=None,
-        shape="Cylinder",
-        sball_mid_diam=None,
-        chip_orientation="chip_down",
-        auto_reference_size=True,
-        reference_size_x=0,
-        reference_size_y=0,
-        reference_height=0,
+        component: Union[str, Component] = "",
+        sball_diam: Optional[float] = None,
+        sball_height: Optional[float] = None,
+        shape: str = "Cylinder",
+        sball_mid_diam: Optional[float] = None,
+        chip_orientation: str = "chip_down",
+        auto_reference_size: bool = True,
+        reference_size_x: float = 0,
+        reference_size_y: float = 0,
+        reference_height: float = 0,
     ) -> bool:
-        """Set cylindrical solder balls on a given component.
+        """Set solder ball properties for a component.
 
         Parameters
         ----------
-        component : str or EDB component, optional
-            Name of the discrete component.
-        sball_diam  : str, float, optional
-            Diameter of the solder ball.
-        sball_height : str, float, optional
-            Height of the solder ball.
+        component : str or :class:`pyedb.grpc.database.hierarchy.component.Component`, optional
+            Component name or instance.
+        sball_diam : float, optional
+            Solder ball diameter.
+        sball_height : float, optional
+            Solder ball height.
         shape : str, optional
-            Shape of solder ball. Options are ``"Cylinder"``,
-            ``"Spheroid"``. The default is ``"Cylinder"``.
-        sball_mid_diam : str, float, optional
-            Mid diameter of the solder ball.
+            Solder ball shape ("Cylinder" or "Spheroid").
+        sball_mid_diam : float, optional
+            Solder ball mid diameter.
         chip_orientation : str, optional
-            Give the chip orientation, ``"chip_down"`` or ``"chip_up"``. Default is ``"chip_down"``. Only applicable on
-            IC model.
+            Chip orientation ("chip_down" or "chip_up").
         auto_reference_size : bool, optional
-            Whether to automatically set reference size.
-        reference_size_x : int, str, float, optional
-            X size of the reference. Applicable when auto_reference_size is False.
-        reference_size_y : int, str, float, optional
-            Y size of the reference. Applicable when auto_reference_size is False.
-        reference_height : int, str, float, optional
-            Height of the reference. Applicable when auto_reference_size is False.
+            Use auto reference size.
+        reference_size_x : float, optional
+            Reference size X.
+        reference_size_y : float, optional
+            Reference size Y.
+        reference_height : float, optional
+            Reference height.
 
         Returns
         -------
         bool
-            ``True`` when successful, ``False`` when failed.
+            True if successful, False otherwise.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.set_solder_ball("A1")
-
+        >>> edbapp.components.set_solder_ball("U1", sball_diam=0.5e-3)
         """
         if isinstance(component, str):
             if component in self.instances:
@@ -1563,12 +1436,12 @@ class Components(object):
             pin1 = list(cmp.pins.values())[0]
             pin_layers = pin1.padstack_def.data.layer_names
             pad_params = self._pedb.padstacks.get_pad_parameters(pin=pin1, layername=pin_layers[0], pad_type=0)
-            _sb_diam = min([abs(GrpcValue(val).value) for val in pad_params[1]])
+            _sb_diam = min([abs(Value(val)) for val in pad_params[1]])
             sball_diam = 0.8 * _sb_diam
         if sball_height:
-            sball_height = round(GrpcValue(sball_height).value, 9)
+            sball_height = Value(sball_height)
         else:
-            sball_height = round(GrpcValue(sball_diam).value, 9) / 2
+            sball_height = Value(sball_diam)
 
         if not sball_mid_diam:
             sball_mid_diam = sball_diam
@@ -1589,58 +1462,52 @@ class Components(object):
             cmp_property.die_property = ic_die_prop
 
         solder_ball_prop = cmp_property.solder_ball_property
-        solder_ball_prop.set_diameter(GrpcValue(sball_diam), GrpcValue(sball_mid_diam))
-        solder_ball_prop.height = GrpcValue(sball_height)
+        solder_ball_prop.set_diameter(Value(sball_diam), Value(sball_mid_diam))
+        solder_ball_prop.height = Value(sball_height)
 
         solder_ball_prop.shape = sball_shape
         cmp_property.solder_ball_property = solder_ball_prop
 
         port_prop = cmp_property.port_property
-        port_prop.reference_height = GrpcValue(reference_height)
+        port_prop.reference_height = Value(reference_height)
         port_prop.reference_size_auto = auto_reference_size
         if not auto_reference_size:
-            port_prop.set_reference_size(GrpcValue(reference_size_x), GrpcValue(reference_size_y))
+            port_prop.set_reference_size(Value(reference_size_x), Value(reference_size_y))
         cmp_property.port_property = port_prop
         cmp.component_property = cmp_property
         return True
 
     def set_component_rlc(
         self,
-        componentname,
-        res_value=None,
-        ind_value=None,
-        cap_value=None,
-        isparallel=False,
+        componentname: str,
+        res_value: Optional[float] = None,
+        ind_value: Optional[float] = None,
+        cap_value: Optional[float] = None,
+        isparallel: bool = False,
     ) -> bool:
-        """Update values for an RLC component.
+        """Set RLC values for a component.
 
         Parameters
         ----------
-        componentname :
-            Name of the RLC component.
+        componentname : str
+            Component name.
         res_value : float, optional
-            Resistance value. The default is ``None``.
+            Resistance value.
         ind_value : float, optional
-            Inductor value.  The default is ``None``.
-        cap_value : float optional
-            Capacitor value.  The default is ``None``.
+            Inductance value.
+        cap_value : float, optional
+            Capacitance value.
         isparallel : bool, optional
-            Whether the RLC component is parallel. The default is ``False``.
+            Whether RLC is parallel.
 
         Returns
         -------
         bool
-            ``True`` when successful, ``False`` when failed.
+            True if successful, False otherwise.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.set_component_rlc(
-        ...     "R1", res_value=50, ind_value=1e-9, cap_value=1e-12, isparallel=False
-        ... )
-
+        >>> edbapp.components.set_component_rlc("R1", res_value=50)
         """
         if res_value is None and ind_value is None and cap_value is None:
             self.instances[componentname].enabled = False
@@ -1655,17 +1522,17 @@ class Components(object):
             rlc.is_parallel = isparallel
             if res_value is not None:
                 rlc.r_enabled = True
-                rlc.r = GrpcValue(res_value)
+                rlc.r = Value(res_value)
             else:
                 rlc.r_enabled = False
             if ind_value is not None:
                 rlc.l_enabled = True
-                rlc.l = GrpcValue(ind_value)
+                rlc.l = Value(ind_value)
             else:
                 rlc.l_enabled = False
             if cap_value is not None:
                 rlc.c_enabled = True
-                rlc.c = GrpcValue(cap_value)
+                rlc.c = Value(cap_value)
             else:
                 rlc.CEnabled = False
             pin_pair = (from_pin.name, to_pin.name)
@@ -1685,39 +1552,35 @@ class Components(object):
 
     def update_rlc_from_bom(
         self,
-        bom_file,
-        delimiter=";",
-        valuefield="Func des",
-        comptype="Prod name",
-        refdes="Pos / Place",
+        bom_file: str,
+        delimiter: str = ";",
+        valuefield: str = "Func des",
+        comptype: str = "Prod name",
+        refdes: str = "Pos / Place",
     ) -> bool:
-        """Update the EDC core component values (RLCs) with values coming from a BOM file.
+        """Update RLC values from BOM file.
 
         Parameters
         ----------
         bom_file : str
-            Full path to the BOM file, which is a delimited text file.
-            Header values needed inside the BOM reader must
-            be explicitly set if different from the defaults.
+            BOM file path.
         delimiter : str, optional
-            Value to use for the delimiter. The default is ``";"``.
+            Delimiter character.
         valuefield : str, optional
-            Field header containing the value of the component. The default is ``"Func des"``.
-            The value for this parameter must being with the value of the component
-            followed by a space and then the rest of the value. For example, ``"22pF"``.
+            Value field name.
         comptype : str, optional
-            Field header containing the type of component. The default is ``"Prod name"``. For
-            example, you might enter ``"Inductor"``.
+            Component type field name.
         refdes : str, optional
-            Field header containing the reference designator of the component. The default is
-            ``"Pos / Place"``. For example, you might enter ``"C100"``.
+            Reference designator field name.
 
         Returns
         -------
         bool
-            ``True`` if the file contains the header and it is correctly parsed. ``True`` is
-            returned even if no values are assigned.
+            True if successful, False otherwise.
 
+        Examples
+        --------
+        >>> edbapp.components.update_rlc_from_bom("bom.csv")
         """
         with open(bom_file, "r") as f:
             Lines = f.readlines()
@@ -1754,35 +1617,38 @@ class Components(object):
 
     def import_bom(
         self,
-        bom_file,
-        delimiter=",",
-        refdes_col=0,
-        part_name_col=1,
-        comp_type_col=2,
-        value_col=3,
+        bom_file: str,
+        delimiter: str = ",",
+        refdes_col: int = 0,
+        part_name_col: int = 1,
+        comp_type_col: int = 2,
+        value_col: int = 3,
     ) -> bool:
-        """Load external BOM file.
+        """Import BOM file.
 
         Parameters
         ----------
         bom_file : str
-            Full path to the BOM file, which is a delimited text file.
+            BOM file path.
         delimiter : str, optional
-            Value to use for the delimiter. The default is ``","``.
+            Delimiter character.
         refdes_col : int, optional
-            Column index of reference designator. The default is ``"0"``.
+            Reference designator column index.
         part_name_col : int, optional
-             Column index of part name. The default is ``"1"``. Set to ``None`` if
-             the column does not exist.
+            Part name column index.
         comp_type_col : int, optional
-            Column index of component type. The default is ``"2"``.
+            Component type column index.
         value_col : int, optional
-            Column index of value. The default is ``"3"``. Set to ``None``
-            if the column does not exist.
+            Value column index.
 
         Returns
         -------
         bool
+            True if successful, False otherwise.
+
+        Examples
+        --------
+        >>> edbapp.components.import_bom("bom.csv")
         """
         with open(bom_file, "r") as f:
             lines = f.readlines()
@@ -1840,19 +1706,24 @@ class Components(object):
                 self.instances[comp].enabled = False
         return True
 
-    def export_bom(self, bom_file, delimiter=",") -> bool:
-        """Export Bom file from layout.
+    def export_bom(self, bom_file: str, delimiter: str = ",") -> bool:
+        """Export BOM file.
 
         Parameters
         ----------
         bom_file : str
-            Full path to the BOM file, which is a delimited text file.
+            Output file path.
         delimiter : str, optional
-            Value to use for the delimiter. The default is ``","``.
+            Delimiter character.
 
         Returns
         -------
         bool
+            True if successful, False otherwise.
+
+        Examples
+        --------
+        >>> edbapp.components.export_bom("exported_bom.csv")
         """
         with open(bom_file, "w") as f:
             f.writelines([delimiter.join(["RefDes", "Part name", "Type", "Value\n"])])
@@ -1874,61 +1745,66 @@ class Components(object):
                 f.writelines([delimiter.join([refdes, part_name, comp_type, value + "\n"])])
         return True
 
-    def find_by_reference_designator(self, reference_designator) -> Component:
-        """Find a component.
+    def find_by_reference_designator(self, reference_designator: str) -> Component:
+        """Find component by reference designator.
 
         Parameters
         ----------
         reference_designator : str
-            Reference designator of the component.
+            Reference designator.
 
         Returns
         -------
-        Component object.
+        :class:`pyedb.grpc.database.hierarchy.component.Component`
+            Component instance.
+
+        Examples
+        --------
+        >>> comp = edbapp.components.find_by_reference_designator("R1")
         """
         return self.instances[reference_designator]
 
-    def get_aedt_pin_name(self, pin) -> str:
-        """Retrieve the pin name that is shown in AEDT.
-
-        .. note::
-           To obtain the EDB core pin name, use `pin.GetName()`.
+    def get_aedt_pin_name(self, pin: Any) -> str:
+        """Get AEDT pin name.
 
         Parameters
         ----------
-        pin : str
-            Name of the pin in EDB core.
+        pin : :class:`pyedb.grpc.database.padstacks.PadstackInstance`
+            Pin instance.
 
         Returns
         -------
         str
-            Name of the pin in AEDT.
+            AEDT pin name.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edbapp.components.get_aedt_pin_name(pin)
-
+        >>> name = edbapp.components.get_aedt_pin_name(pin)
         """
         return pin.aedt_name
 
-    def get_pins(self, reference_designator, net_name=None, pin_name=None):
-        """Get component pins.
+    def get_pins(
+        self, reference_designator: str, net_name: Optional[str] = None, pin_name: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Get pins of a component.
 
         Parameters
         ----------
         reference_designator : str
-            Reference designator of the component.
+            Reference designator.
         net_name : str, optional
-            Name of the net.
+            Net name filter.
         pin_name : str, optional
-            Name of the pin.
+            Pin name filter.
 
         Returns
         -------
-        list of PadstackInstance object.
+        dict
+            Dictionary of pins.
+
+        Examples
+        --------
+        >>> pins = edbapp.components.get_pins("U1", net_name="GND")
         """
         comp = self.find_by_reference_designator(reference_designator)
 
@@ -1941,26 +1817,22 @@ class Components(object):
 
         return pins
 
-    def get_pin_position(self, pin) -> list[float, float]:
-        """Retrieve the pin position in meters.
+    def get_pin_position(self, pin: Any) -> List[float]:
+        """Get pin position.
 
         Parameters
         ----------
-        pin : str
-            Name of the pin.
+        pin : :class:`pyedb.grpc.database.padstacks.PadstackInstance`
+            Pin instance.
 
         Returns
         -------
-        list
-            Pin position as a list of float values in the form ``[x, y]``.
+        list[float]
+            [x, y] position in meters.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edbapp.components.get_pin_position(pin)
-
+        >>> pos = edbapp.components.get_pin_position(pin)
         """
 
         pt_pos = pin.position
@@ -1968,30 +1840,26 @@ class Components(object):
             transformed_pt_pos = pt_pos
         else:
             transformed_pt_pos = pin.component.transform.transform_point(pt_pos)
-        return [transformed_pt_pos[0].value, transformed_pt_pos[1].value]
+        return [Value(transformed_pt_pos[0]), Value(transformed_pt_pos[1])]
 
-    def get_pins_name_from_net(self, net_name, pin_list=None) -> list[str]:
-        """Retrieve pins belonging to a net.
+    def get_pins_name_from_net(self, net_name: str, pin_list: Optional[List[Any]] = None) -> List[str]:
+        """Get pin names from net.
 
         Parameters
         ----------
-        pin_list : list of EDBPadstackInstance, optional
-            List of pins to check. The default is ``None``, in which case all pins are checked
         net_name : str
-            Name of the net.
+            Net name.
+        pin_list : list, optional
+            List of pins to search.
 
         Returns
         -------
-        list of str names:
-            Pins belonging to the net.
+        list[str]
+            List of pin names.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edbapp.components.get_pins_name_from_net(pin_list, net_name)
-
+        >>> pins = edbapp.components.get_pins_name_from_net("GND")
         """
         pin_names = []
         if not pin_list:
@@ -2005,49 +1873,41 @@ class Components(object):
                     pin_names.append(self.get_aedt_pin_name(pin))
         return pin_names
 
-    def get_nets_from_pin_list(self, pins) -> list[str]:
-        """Retrieve nets with one or more pins.
+    def get_nets_from_pin_list(self, pins: List[Any]) -> List[str]:
+        """Get nets from pin list.
 
         Parameters
         ----------
-        PinList : list
+        pins : list
             List of pins.
 
         Returns
         -------
-        list
-            List of nets with one or more pins.
+        list[str]
+            List of net names.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edbapp.components.get_nets_from_pin_list(pins)
-
+        >>> nets = edbapp.components.get_nets_from_pin_list(pins)
         """
         return list(set([pin.net.name for pin in pins]))
 
-    def get_component_net_connection_info(self, refdes) -> Component:
-        """Retrieve net connection information.
+    def get_component_net_connection_info(self, refdes: str) -> Dict[str, List[str]]:
+        """Get net connection info for a component.
 
         Parameters
         ----------
-        refdes :
-            Reference designator for the net.
+        refdes : str
+            Reference designator.
 
         Returns
         -------
         dict
-            Dictionary of the net connection information for the reference designator.
+            Dictionary with refdes, pin_name, and net_name.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edbapp.components.get_component_net_connection_info(refdes)
-
+        >>> info = edbapp.components.get_component_net_connection_info("U1")
         """
         data = {"refdes": [], "pin_name": [], "net_name": []}
         for _, pin_obj in self.instances[refdes].pins.items():
@@ -2060,22 +1920,17 @@ class Components(object):
                     data["net_name"].append(net_name)
         return data
 
-    def get_rats(self) -> list[dict[str, str]]:
-        """Retrieve a list of dictionaries of the reference designator, pin names, and net names.
+    def get_rats(self) -> List[Dict[str, List[str]]]:
+        """Get RATS (Reference Designator, Pin, Net) information.
 
         Returns
         -------
-        list
-            List of dictionaries of the reference designator, pin names,
-            and net names.
+        list[dict]
+            List of dictionaries with refdes, pin_name, and net_name.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edbapp.components.get_rats()
-
+        >>> rats = edbapp.components.get_rats()
         """
         df_list = []
         for refdes in self.instances.keys():
@@ -2083,26 +1938,22 @@ class Components(object):
             df_list.append(df)
         return df_list
 
-    def get_through_resistor_list(self, threshold=1) -> list[Component]:
-        """Retrieve through resistors.
+    def get_through_resistor_list(self, threshold: float = 1) -> List[str]:
+        """Get through resistors below threshold.
 
         Parameters
         ----------
-        threshold : int, optional
-            Threshold value. The default is ``1``.
+        threshold : float, optional
+            Resistance threshold.
 
         Returns
         -------
-        list
-            List of through resistors.
+        list[str]
+            List of component names.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edbapp.components.get_through_resistor_list()
-
+        >>> resistors = edbapp.components.get_through_resistor_list(1)
         """
         through_comp_list = []
         for refdes, comp_obj in self.resistors.items():
@@ -2117,30 +1968,28 @@ class Components(object):
 
         return through_comp_list
 
-    def short_component_pins(self, component_name, pins_to_short=None, width=1e-3) -> bool:
-        """Short pins of component with a trace.
+    def short_component_pins(
+        self, component_name: str, pins_to_short: Optional[List[str]] = None, width: float = 1e-3
+    ) -> bool:
+        """Short component pins with traces.
 
         Parameters
         ----------
         component_name : str
-            Name of the component.
-        pins_to_short : list, optional
-            List of pins to short. If `None`, all pins will be shorted.
+            Component name.
+        pins_to_short : list[str], optional
+            List of pin names to short.
         width : float, optional
-            Short Trace width. It will be used in trace computation algorithm
+            Trace width.
 
         Returns
         -------
         bool
-            ``True`` when successful, ``False`` when failed.
+            True if successful, False otherwise.
 
         Examples
         --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.short_component_pins("J4A2", ["G4", "9", "3"])
-
         """
         component = self.instances[component_name]
         pins = component.pins
@@ -2174,8 +2023,8 @@ class Components(object):
                 w = min(pars[0], w)
             elif pad.polygon_data:  # pragma: no cover
                 bbox = pad.polygon_data.bbox()
-                lower = [bbox[0].x.value, bbox[0].y.value]
-                upper = [bbox[1].x.value, bbox[1].y.value]
+                lower = [Value(bbox[0].x), Value(bbox[0].y)]
+                upper = [Value(bbox[1].x), Value(bbox[1].y)]
                 pars = [abs(lower[0] - upper[0]), abs(lower[1] - upper[1])]
                 delta_pins.append(max(pars) + min(pars) / 2)
                 w = min(min(pars), w)
@@ -2257,21 +2106,28 @@ class Components(object):
             i += 1
         return True
 
-    def create_pin_group(self, reference_designator, pin_numbers, group_name=None) -> Union[tuple[str, PinGroup], bool]:
-        """Create pin group on the component.
+    def create_pin_group(
+        self, reference_designator: str, pin_numbers: Union[str, List[str]], group_name: Optional[str] = None
+    ) -> Union[Tuple[str, PinGroup], bool]:
+        """Create pin group on a component.
 
         Parameters
         ----------
         reference_designator : str
-            References designator of the component.
-        pin_numbers : int, str, list[str] or list[:class: `PadstackInstance]`
-            List of pins.
+            Reference designator.
+        pin_numbers : list[str]
+            List of pin names.
         group_name : str, optional
-            Name of the pin group.
+            Group name.
 
         Returns
         -------
-        PinGroup
+        tuple[str, :class:`pyedb.grpc.database.hierarchy.pingroup.PinGroup`] or bool
+            (group_name, PinGroup) if successful, False otherwise.
+
+        Examples
+        --------
+        >>> name, group = edbapp.components.create_pin_group("U1", ["1", "2"])
         """
         if not isinstance(pin_numbers, list):
             pin_numbers = [pin_numbers]
@@ -2297,23 +2153,178 @@ class Components(object):
                         return group_name, PinGroup(self._pedb, pingroup)
         return False
 
-    def create_pin_group_on_net(self, reference_designator, net_name, group_name=None) -> PinGroup:
-        """Create pin group on component by net name.
+    def create_pin_group_on_net(
+        self, reference_designator: str, net_name: str, group_name: Optional[str] = None
+    ) -> PinGroup:
+        """Create pin group by net name.
 
         Parameters
         ----------
         reference_designator : str
-            References designator of the component.
+            Reference designator.
         net_name : str
-            Name of the net.
+            Net name.
         group_name : str, optional
-            Name of the pin group. The default value is ``None``.
+            Group name.
 
         Returns
         -------
-        PinGroup
+        :class:`pyedb.grpc.database.hierarchy.pingroup.PinGroup`
+            Pin group instance.
+
+        Examples
+        --------
+        >>> group = edbapp.components.create_pin_group_on_net("U1", "GND")
         """
         pins = [
             pin.name for pin in list(self.instances[reference_designator].pins.values()) if pin.net_name == net_name
         ]
         return self.create_pin_group(reference_designator, pins, group_name)
+
+    def deactivate_rlc_component(
+        self, component: Optional[str] = None, create_circuit_port: bool = False, pec_boundary: bool = False
+    ) -> bool:
+        """Deactivate RLC component with a possibility to convert it to a circuit port.
+
+        Parameters
+        ----------
+        component : str
+            Reference designator of the RLC component.
+
+        create_circuit_port : bool, optional
+            Whether to replace the deactivated RLC component with a circuit port. The default
+            is ``False``.
+        pec_boundary : bool, optional
+            Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
+            a perfect short is created between the pin and impedance is ignored. This
+            parameter is only supported on a port created between two pins, such as
+            when there is no pin group.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb_file = r'C:\my_edb_file.aedb'
+        >>> edb = Edb(edb_file)
+        >>> for cmp in list(edb.components.instances.keys()):
+        >>>     edb.components.deactivate_rlc_component(component=cmp, create_circuit_port=False)
+        >>> edb.save_edb()
+        >>> edb.close_edb()
+        """
+        if not component:
+            return False
+        if isinstance(component, str):
+            component = self.instances[component]
+            if not component:
+                self._logger.error("component %s not found.", component)
+                return False
+        if component.type in ["other", "ic", "io"]:
+            self._logger.info(f"Component {component.refdes} passed to deactivate is not an RLC.")
+            return False
+        component.is_enabled = False
+        return self._pedb.source_excitation.add_port_on_rlc_component(
+            component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
+        )
+
+    def add_port_on_rlc_component(
+        self, component: Optional[Union[str, Component]] = None, circuit_ports: bool = True, pec_boundary: bool = False
+    ) -> bool:
+        """Deactivate RLC component and replace it with a circuit port.
+        The circuit port supports only two-pin components.
+
+        Parameters
+        ----------
+        component : str
+            Reference designator of the RLC component.
+
+        circuit_ports : bool
+            ``True`` will replace RLC component by circuit ports, ``False`` gap ports compatible with HFSS 3D modeler
+            export.
+
+        pec_boundary : bool, optional
+            Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
+            a perfect short is created between the pin and impedance is ignored. This
+            parameter is only supported on a port created between two pins, such as
+            when there is no pin group.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.source_excitation.add_port_on_rlc_component("R1")
+        """
+        return self._pedb.source_excitation.add_port_on_rlc_component(
+            component=component, circuit_ports=circuit_ports, pec_boundary=pec_boundary
+        )
+
+    def replace_rlc_by_gap_boundaries(self, component: Optional[Union[str, Component]] = None) -> bool:
+        """Replace RLC component by RLC gap boundaries. These boundary types are compatible with 3D modeler export.
+        Only 2 pins RLC components are supported in this command.
+
+        Parameters
+        ----------
+        component : str
+            Reference designator of the RLC component.
+
+        Returns
+        -------
+        bool
+        ``True`` when succeed, ``False`` if it failed.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb(edb_file)
+        >>>  for refdes, cmp in edb.components.capacitors.items():
+        >>>     edb.components.replace_rlc_by_gap_boundaries(refdes)
+        >>> edb.save_edb()
+        >>> edb.close_edb()
+        """
+        if not component:
+            return False
+        if isinstance(component, str):
+            component = self.instances[component]
+            if not component:
+                self._logger.error("component %s not found.", component)
+                return False
+        if component.type in ["other", "ic", "io"]:
+            self._logger.info(f"Component {component.refdes} skipped to deactivate is not an RLC.")
+            return False
+        component.enabled = False
+        return self._pedb.source_excitation.add_rlc_boundary(component.refdes, False)
+
+    def add_rlc_boundary(self, component: Optional[Union[str, Component]] = None, circuit_type: bool = True) -> bool:
+        """Add RLC gap boundary on component and replace it with a circuit port.
+        The circuit port supports only 2-pin components.
+
+        . deprecated:: pyedb 0.28.0
+        Use :func:`pyedb.grpc.core.excitations.add_rlc_boundary` instead.
+
+        Parameters
+        ----------
+        component : str
+            Reference designator of the RLC component.
+        circuit_type : bool
+            When ``True`` circuit type are defined, if ``False`` gap type will be used instead (compatible with HFSS 3D
+            modeler). Default value is ``True``.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        warnings.warn(
+            "`add_rlc_boundary` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.add_rlc_boundary` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.source_excitation.add_rlc_boundary(self, component=component, circuit_type=circuit_type)

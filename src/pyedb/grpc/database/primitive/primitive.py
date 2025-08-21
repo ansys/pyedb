@@ -25,6 +25,7 @@ from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.primitive.circle import Circle as GrpcCircle
 from ansys.edb.core.primitive.primitive import Primitive as GrpcPrimitive
 
+from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.utilities import compute_arc_points
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -51,7 +52,7 @@ class Primitive(GrpcPrimitive):
         self._object_instance = None
 
     @property
-    def type(self):
+    def type(self) -> str:
         """Type of the primitive.
 
         Expected output is among ``"Circle"``, ``"Rectangle"``,``"Polygon"``,``"Path"`` or ``"Bondwire"``.
@@ -87,7 +88,7 @@ class Primitive(GrpcPrimitive):
         return self._object_instance
 
     @property
-    def net_name(self):
+    def net_name(self) -> str:
         """Net name.
 
         Returns
@@ -105,7 +106,7 @@ class Primitive(GrpcPrimitive):
             self.net = self._pedb.nets.nets[value]
 
     @property
-    def layer_name(self):
+    def layer_name(self) -> str:
         """Layer name.
 
         Returns
@@ -121,7 +122,7 @@ class Primitive(GrpcPrimitive):
             self.layer = self._pedb.stackup.layers[value]
 
     @property
-    def voids(self):
+    def voids(self) -> list[any]:
         """Primitive voids.
 
         Returns
@@ -132,7 +133,7 @@ class Primitive(GrpcPrimitive):
         return [Primitive(self._pedb, prim) for prim in super().voids]
 
     @property
-    def aedt_name(self):
+    def aedt_name(self) -> str:
         """Name to be visualized in AEDT.
 
         Returns
@@ -174,7 +175,7 @@ class Primitive(GrpcPrimitive):
         """
         return self._pedb.get_connected_objects(self.object_instance)
 
-    def area(self, include_voids=True):
+    def area(self, include_voids=True) -> float:
         """Return the total area.
 
         Parameters
@@ -202,15 +203,15 @@ class Primitive(GrpcPrimitive):
         y = []
         for i, point in enumerate(my_net_points):
             if not point.is_arc:
-                x.append(point.x.value)
-                y.append(point.y.value)
+                x.append(Value(point.x))
+                y.append(Value(point.y))
             else:
-                arc_h = point.arc_height.value
-                p1 = [my_net_points[i - 1].x.value, my_net_points[i - 1].y.value]
+                arc_h = Value(point.arc_height)
+                p1 = [Value(my_net_points[i - 1].x), Value(my_net_points[i - 1].y)]
                 if i + 1 < len(my_net_points):
-                    p2 = [my_net_points[i + 1].x.value, my_net_points[i + 1].y.value]
+                    p2 = [Value(my_net_points[i + 1].x), Value(my_net_points[i + 1].y)]
                 else:
-                    p2 = [my_net_points[0].x.value, my_net_points[0].y.value]
+                    p2 = [Value(my_net_points[0].x), Value(my_net_points[0].y)]
                 x_arc, y_arc = compute_arc_points(p1, p2, arc_h, num)
                 x.extend(x_arc)
                 y.extend(y_arc)
@@ -218,7 +219,7 @@ class Primitive(GrpcPrimitive):
         return x, y
 
     @property
-    def center(self):
+    def center(self) -> list[float]:
         """Return the primitive bounding box center coordinate.
 
         Returns
@@ -228,9 +229,9 @@ class Primitive(GrpcPrimitive):
 
         """
         center = self.cast().polygon_data.bounding_circle()[0]
-        return [center.x.value, center.y.value]
+        return [Value(center.x), Value(center.y)]
 
-    def get_connected_object_id_set(self):
+    def get_connected_object_id_set(self) -> list[int]:
         """Produce a list of all geometries physically connected to a given layout object.
 
         Returns
@@ -243,7 +244,7 @@ class Primitive(GrpcPrimitive):
         return [loi.layout_obj.id for loi in layout_inst.get_connected_objects(layout_obj_inst)]
 
     @property
-    def bbox(self):
+    def bbox(self) -> list[float]:
         """Return the primitive bounding box points. Lower left corner, upper right corner.
 
         Returns
@@ -253,12 +254,7 @@ class Primitive(GrpcPrimitive):
 
         """
         bbox = self.cast().polygon_data.bbox()
-        return [
-            round(bbox[0].x.value, 6),
-            round(bbox[0].y.value, 6),
-            round(bbox[1].x.value, 6),
-            round(bbox[1].y.value, 6),
-        ]
+        return [Value(bbox[0].x), Value(bbox[0].y), Value(bbox[1].x), Value(bbox[1].y)]
 
     def convert_to_polygon(self):
         """Convert path to polygon.
@@ -299,7 +295,7 @@ class Primitive(GrpcPrimitive):
         else:
             return 4
 
-    def is_intersecting(self, primitive):
+    def is_intersecting(self, primitive) -> bool:
         """Check if actual primitive and another primitive or polygon data intesects.
 
         Parameters
@@ -312,7 +308,7 @@ class Primitive(GrpcPrimitive):
         """
         return True if self.intersection_type(primitive) >= 1 else False
 
-    def get_closest_point(self, point):
+    def get_closest_point(self, point) -> list[float]:
         """Get the closest point of the primitive to the input data.
 
         Parameters
@@ -329,7 +325,7 @@ class Primitive(GrpcPrimitive):
             point = GrpcPointData(point)
 
         p0 = self.cast().polygon_data.closest_point(point)
-        return [p0.x.value, p0.y.value]
+        return [Value(p0.x), Value(p0.y)]
 
     @property
     def arcs(self):
@@ -342,7 +338,7 @@ class Primitive(GrpcPrimitive):
         return self.polygon_data.arc_data
 
     @property
-    def longest_arc(self):
+    def longest_arc(self) -> float:
         """Longest arc.
 
         Returns
@@ -358,7 +354,7 @@ class Primitive(GrpcPrimitive):
                 len = i.length
         return arc
 
-    def subtract(self, primitives):
+    def subtract(self, primitives) -> list[any]:
         """Subtract active primitive with one or more primitives.
 
         Parameters
@@ -412,7 +408,7 @@ class Primitive(GrpcPrimitive):
                     continue
         return new_polys
 
-    def intersect(self, primitives):
+    def intersect(self, primitives) -> list[any]:
         """Intersect active primitive with one or more primitives.
 
         Parameters
@@ -482,7 +478,7 @@ class Primitive(GrpcPrimitive):
             prim.delete()
         return new_polys
 
-    def unite(self, primitives):
+    def unite(self, primitives) -> list[any]:
         """Unite active primitive with one or more primitives.
 
         Parameters
@@ -535,7 +531,7 @@ class Primitive(GrpcPrimitive):
                     continue
         return new_polys
 
-    def get_closest_arc_midpoint(self, point):
+    def get_closest_arc_midpoint(self, point) -> list[float]:
         """Get the closest arc midpoint of the primitive to the input data.
 
         Parameters
@@ -549,19 +545,19 @@ class Primitive(GrpcPrimitive):
         """
 
         if isinstance(point, GrpcPointData):
-            point = [point.x.value, point.y.value]
+            point = [Value(point.x), Value(point.y)]
         dist = 1e12
         out = None
         for arc in self.arcs:
             mid_point = arc.midpoint
-            mid_point = [mid_point.x.value, mid_point.y.value]
+            mid_point = [Value(mid_point.x), Value(mid_point.y)]
             if GeometryOperators.points_distance(mid_point, point) < dist:
                 out = arc.midpoint
                 dist = GeometryOperators.points_distance(mid_point, point)
-        return [out.x.value, out.y.value]
+        return [Value(out.x), Value(out.y)]
 
     @property
-    def shortest_arc(self):
+    def shortest_arc(self) -> float:
         """Longest arc.
 
         Returns
@@ -577,7 +573,7 @@ class Primitive(GrpcPrimitive):
                 len = i.length
         return arc
 
-    def add_void(self, point_list):
+    def add_void(self, point_list) -> bool:
         """Add a void to current primitive.
 
         Parameters
@@ -599,7 +595,7 @@ class Primitive(GrpcPrimitive):
             void_poly = self._pedb.modeler.create_polygon(_poly, layer_name=self.layer_name, net_name=self.net.name)
         return self.add_void(void_poly)
 
-    def points(self, arc_segments=6):
+    def points(self, arc_segments=6) -> tuple[float, float]:
         """Return the list of points with arcs converted to segments.
 
         Parameters
@@ -630,7 +626,7 @@ class Primitive(GrpcPrimitive):
 
         return self.polygon_data.points
 
-    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> list[any]:
         """Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
 
@@ -655,7 +651,7 @@ class Primitive(GrpcPrimitive):
             offset=offset, round_corner=round_corners, max_corner_ext=maximum_corner_extension, tol=tolerance
         )
 
-    def scale(self, factor, center=None):
+    def scale(self, factor, center=None) -> bool:
         """Scales the polygon relative to a center point by a factor.
 
         Parameters

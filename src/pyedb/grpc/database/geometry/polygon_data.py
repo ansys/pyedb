@@ -25,6 +25,7 @@ from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 
 from pyedb.grpc.database.geometry.arc_data import ArcData
+from pyedb.grpc.database.utility.value import Value
 
 
 class PolygonData(GrpcPolygonData):
@@ -54,7 +55,7 @@ class PolygonData(GrpcPolygonData):
             self._edb_object = edb_object
 
     @property
-    def bounding_box(self):
+    def bounding_box(self) -> list[float]:
         """Bounding box.
 
         Returns
@@ -65,10 +66,10 @@ class PolygonData(GrpcPolygonData):
             X upper right corner, Y upper right corner].
         """
         bbox = self.bbox()
-        return [bbox[0].x.value, bbox[0].xyvalue, bbox[1].x.value, bbox[1].y.value]
+        return [Value(bbox[0].x), Value(bbox[0].y), Value(bbox[1].x), Value(bbox[1].y)]
 
     @property
-    def arcs(self):
+    def arcs(self) -> list[ArcData]:
         """Get the Primitive Arc Data.
 
         Returns
@@ -79,14 +80,14 @@ class PolygonData(GrpcPolygonData):
         return arcs
 
     @property
-    def points(self):
+    def points(self) -> list[list[float]]:
         """Get all points in polygon.
 
         Returns
         -------
         list[list[float]]
         """
-        return [[i.x.value, i.y.value] for i in list(self.points)]
+        return [[Value(i.x), Value(i.y)] for i in list(self.points)]
 
     def create_from_points(self, points, closed=True):
         list_of_point_data = []
@@ -95,7 +96,7 @@ class PolygonData(GrpcPolygonData):
         return PolygonData.create_from_points(points=list_of_point_data, closed=closed)
 
     @staticmethod
-    def create_from_bounding_box(points):
+    def create_from_bounding_box(points) -> GrpcPolygonData:
         """Create PolygonData from point list.
 
         Returns
@@ -105,7 +106,7 @@ class PolygonData(GrpcPolygonData):
         """
         return PolygonData.create_from_bounding_box(points=points)
 
-    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> bool:
         """Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
 
@@ -126,7 +127,7 @@ class PolygonData(GrpcPolygonData):
         bool
 
         """
-        new_poly = self.expand(offset, tolerance, round_corners, maximum_corner_extension)
+        new_poly = super().expand(offset, tolerance, round_corners, maximum_corner_extension)
         if not new_poly[0].points:
             return False
         self._edb_object = new_poly[0]

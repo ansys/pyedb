@@ -35,7 +35,7 @@ class Node(object):
         self._name = ""
 
     @property
-    def component(self):  # pragma: no cover
+    def component(self) -> str:
         """Component name containing the node."""
         return self._component
 

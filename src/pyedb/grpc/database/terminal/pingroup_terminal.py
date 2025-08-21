@@ -26,7 +26,8 @@ from ansys.edb.core.terminal.pin_group_terminal import (
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
 from pyedb.grpc.database.net.net import Net
-from pyedb.misc.misc import deprecated_property
+from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated_property
 
 
 class PinGroupTerminal(GrpcPinGroupTerminal):
@@ -38,7 +39,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         self._pedb = pedb
 
     @property
-    def boundary_type(self):
+    def boundary_type(self) -> str:
         """Boundary type.
 
         Returns
@@ -60,13 +61,13 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         super(PinGroupTerminal, self.__class__).boundary_type.__set__(self, value)
 
     @property
-    def is_port(self):
+    def is_port(self) -> bool:
         if self.boundary_type == "port":
             return True
         return False
 
     @property
-    def magnitude(self):
+    def magnitude(self) -> float:
         """Source magnitude.
 
         Returns
@@ -74,14 +75,14 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         float : magnitude value.
 
         """
-        return self.source_amplitude
+        return Value(self.source_amplitude)
 
     @magnitude.setter
     def magnitude(self, value):
-        self.source_amplitude = value
+        self.source_amplitude = Value(value)
 
     @property
-    def phase(self):
+    def phase(self) -> float:
         """Source phase.
 
         Returns
@@ -89,14 +90,14 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         float : phase value.
 
         """
-        return self.source_phase
+        return Value(self.source_phase)
 
     @phase.setter
     def phase(self, value):
-        self.source_phase = value
+        self.source_phase = Value(value)
 
     @property
-    def source_amplitude(self):
+    def source_amplitude(self) -> float:
         """Source amplitude.
 
         Returns
@@ -104,14 +105,14 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         float : source magnitude.
 
         """
-        return super().source_amplitude
+        return Value(super().source_amplitude)
 
     @source_amplitude.setter
     def source_amplitude(self, value):
-        super(PinGroupTerminal, self.__class__).source_amplitude.__set__(self, value)
+        super(PinGroupTerminal, self.__class__).source_amplitude.__set__(self, Value(value))
 
     @property
-    def source_phase(self):
+    def source_phase(self) -> float:
         """Source phase.
 
         Returns
@@ -119,14 +120,14 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         foat : source phase.
 
         """
-        return super().source_amplitude.value
+        return Value(super().source_amplitude)
 
     @source_phase.setter
     def source_phase(self, value):
-        super(PinGroupTerminal, self.__class__).source_phase.__set__(self, value)
+        super(PinGroupTerminal, self.__class__).source_phase.__set__(self, Value(value))
 
     @property
-    def impedance(self):
+    def impedance(self) -> float:
         """Terminal impedance.
 
         Returns
@@ -134,14 +135,14 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         float : terminal impedance.
 
         """
-        return super().impedance.value
+        return Value(super().impedance)
 
     @impedance.setter
     def impedance(self, value):
-        super(PinGroupTerminal, self.__class__).impedance.__set__(self, value)
+        super(PinGroupTerminal, self.__class__).impedance.__set__(self, Value(value))
 
     @property
-    def net(self):
+    def net(self) -> Net:
         """Terminal net.
 
         Returns
@@ -157,7 +158,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         super(PinGroupTerminal, self.__class__).net.__set__(self, value)
 
     @property
-    def pin_group(self):
+    def pin_group(self) -> any:
         """Pingroup.
 
         Returns
@@ -171,7 +172,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         return PinGroup(self._pedb, super().pin_group)
 
     @property
-    def terminal_type(self):
+    def terminal_type(self) -> str:
         return "PinGroupTerminal"
 
     @property
@@ -192,11 +193,11 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         self.reference_terminal = value
 
     @property
-    def hfss_type(self):
+    def hfss_type(self) -> str:
         return "circuit"
 
     @property
-    def is_current_source(self):
+    def is_current_source(self) -> bool:
         if self.boundary_type == "current_source":
             return True
         return False

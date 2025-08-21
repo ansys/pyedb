@@ -22,11 +22,11 @@
 
 from ansys.edb.core.definition.package_def import PackageDef as GrpcPackageDef
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.utility.value import Value as GrpcValue
 
-from pyedb.edb_logger import pyedb_logger
+from pyedb.generic.settings import settings
 from pyedb.grpc.database.utility.heat_sink import HeatSink
-from pyedb.misc.misc import deprecated_property
+from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated_property
 
 
 class PackageDef(GrpcPackageDef):
@@ -82,7 +82,7 @@ class PackageDef(GrpcPackageDef):
         else:
             bbox = extent_bounding_box
         if bbox is None:
-            pyedb_logger.warning(
+            settings.logger.warning(
                 "Package creation uses bounding box but it cannot be inferred. "
                 "Please set argument 'component_part_name' or 'extent_bounding_box'."
             )
@@ -92,7 +92,7 @@ class PackageDef(GrpcPackageDef):
         return edb_object
 
     @property
-    def exterior_boundary(self):
+    def exterior_boundary(self) -> GrpcPolygonData:
         """Get the exterior boundary of a package definition.
 
         Returns
@@ -107,7 +107,7 @@ class PackageDef(GrpcPackageDef):
         super(PackageDef, self.__class__).exterior_boundary.__set__(self, value)
 
     @property
-    def maximum_power(self):
+    def maximum_power(self) -> float:
         """Maximum power of the package.
 
         Returns
@@ -115,14 +115,14 @@ class PackageDef(GrpcPackageDef):
         float
             maximum power value.
         """
-        return super().maximum_power.value
+        return Value(super().maximum_power)
 
     @maximum_power.setter
     def maximum_power(self, value):
-        super(PackageDef, self.__class__).maximum_power.__set__(self, GrpcValue(value))
+        super(PackageDef, self.__class__).maximum_power.__set__(self, Value(value))
 
     @property
-    def therm_cond(self):
+    def therm_cond(self) -> float:
         """Thermal conductivity of the package.
 
         Returns
@@ -131,14 +131,14 @@ class PackageDef(GrpcPackageDef):
             Thermal conductivity value.
 
         """
-        return super().thermal_conductivity.value
+        return Value(super().thermal_conductivity)
 
     @therm_cond.setter
     def therm_cond(self, value):
-        super(PackageDef, self.__class__).thermal_conductivity.__set__(self, GrpcValue(value))
+        super(PackageDef, self.__class__).thermal_conductivity.__set__(self, Value(value))
 
     @property
-    def theta_jb(self):
+    def theta_jb(self) -> float:
         """Theta Junction-to-Board of the package.
 
         Returns
@@ -146,14 +146,14 @@ class PackageDef(GrpcPackageDef):
         float
             Theta jb value.
         """
-        return super().theta_jb.value
+        return Value(super().theta_jb)
 
     @theta_jb.setter
     def theta_jb(self, value):
-        super(PackageDef, self.__class__).theta_jb.__set__(self, GrpcValue(value))
+        super(PackageDef, self.__class__).theta_jb.__set__(self, Value(value))
 
     @property
-    def theta_jc(self):
+    def theta_jc(self) -> float:
         """Theta Junction-to-Case of the package.
 
         Returns
@@ -161,14 +161,14 @@ class PackageDef(GrpcPackageDef):
         float
             Theta jc value.
         """
-        return super().theta_jc.value
+        return Value(super().theta_jc)
 
     @theta_jc.setter
     def theta_jc(self, value):
-        super(PackageDef, self.__class__).theta_jc.__set__(self, GrpcValue(value))
+        super(PackageDef, self.__class__).theta_jc.__set__(self, Value(value))
 
     @property
-    def height(self):
+    def height(self) -> float:
         """Height of the package.
 
         Returns
@@ -176,14 +176,14 @@ class PackageDef(GrpcPackageDef):
         float
             Height value.
         """
-        return super().height.value
+        return Value(super().height)
 
     @height.setter
     def height(self, value):
-        super(PackageDef, self.__class__).height.__set__(self, GrpcValue(value))
+        super(PackageDef, self.__class__).height.__set__(self, Value(value))
 
     @property
-    def heat_sink(self):
+    def heat_sink(self) -> HeatSink:
         """Package heat sink.
 
         Returns
@@ -206,7 +206,7 @@ class PackageDef(GrpcPackageDef):
         """
         return self.heat_sink
 
-    def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness):
+    def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness) -> HeatSink:
         """Set Heat sink.
         Parameters
         ----------
@@ -235,10 +235,10 @@ class PackageDef(GrpcPackageDef):
         super(PackageDef, self.__class__).heat_sink.__set__(
             self,
             GrpcHeatSink(
-                GrpcValue(fin_thickness),
-                GrpcValue(fin_spacing),
-                GrpcValue(fin_base_height),
-                GrpcValue(fin_height),
+                Value(fin_thickness),
+                Value(fin_spacing),
+                Value(fin_base_height),
+                Value(fin_height),
                 fin_orientation,
             ),
         )

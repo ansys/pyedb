@@ -22,23 +22,28 @@
 
 import math
 import re
+import warnings
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure
+from ansys.edb.core.hierarchy.structure3d import Structure3D as GrpcStructure3D
 from ansys.edb.core.primitive.padstack_instance import (
     PadstackInstance as GrpcPadstackInstance,
 )
 from ansys.edb.core.terminal.pin_group_terminal import (
     PinGroupTerminal as GrpcPinGroupTerminal,
 )
-from ansys.edb.core.utility.value import Value as GrpcValue
 
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
+from pyedb.grpc.database.modeler import Circle
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
+from pyedb.grpc.database.utility.value import Value
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -62,12 +67,23 @@ class PadstackInstance(GrpcPadstackInstance):
         self._edb_object = edb_instance
         self._bounding_box = []
         self._position = []
+        self._side_number = None
         self._pdef = None
         self._pedb = pedb
         self._object_instance = None
 
     @property
-    def definition(self):
+    def is_pin(self):
+        """Property added for backward compatibility with earlier versions of pyEDB."""
+        return self.is_layout_pin
+
+    @is_pin.setter
+    def is_pin(self, value):
+        """Property added for backward compatibility with earlier versions of pyEDB."""
+        self.is_layout_pin = value
+
+    @property
+    def definition(self) -> PadstackDef:
         """Padstack definition.
 
         Returns
@@ -77,7 +93,7 @@ class PadstackInstance(GrpcPadstackInstance):
         return PadstackDef(self._pedb, self.padstack_def)
 
     @property
-    def padstack_definition(self):
+    def padstack_definition(self) -> str:
         """Padstack definition name.
 
         Returns
@@ -89,7 +105,7 @@ class PadstackInstance(GrpcPadstackInstance):
         return self.padstack_def.name
 
     @property
-    def terminal(self):
+    def terminal(self) -> PadstackInstanceTerminal:
         """PadstackInstanceTerminal.
 
         Returns
@@ -107,7 +123,78 @@ class PadstackInstance(GrpcPadstackInstance):
             term = PadstackInstanceTerminal(self._pedb, term)
         return term if not term.is_null else None
 
-    def create_terminal(self, name=None):
+    def set_backdrill_top(self, drill_depth, drill_diameter, offset=0.0):
+        """Set backdrill from top.
+
+        .deprecated:: 0.55.0
+        Use :method:`set_back_drill_by_depth` instead.
+
+        Parameters
+        ----------
+        drill_depth : str
+            Name of the drill to layer.
+        drill_diameter : float, str
+            Diameter of backdrill size.
+        offset : str, optional.
+            offset with respect to the layer to drill to.
+
+        Returns
+        -------
+        bool
+            True if success, False otherwise.
+        """
+        warnings.warn(
+            "`set_backdrill_top` is deprecated. Use `set_back_drill_by_depth` or " "`set_back_drill_by_layer` instead.",
+            DeprecationWarning,
+        )
+        if isinstance(drill_depth, str):
+            if drill_depth in self._pedb.stackup.layers:
+                return self.set_back_drill_by_layer(
+                    drill_to_layer=self._pedb.stackup.layers[drill_depth],
+                    offset=Value(offset),
+                    diameter=Value(drill_diameter),
+                    from_bottom=False,
+                )
+            else:
+                return self.set_back_drill_by_depth(Value(drill_depth), Value(drill_diameter), from_bottom=False)
+
+    def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
+        """Set backdrill from bottom.
+
+        .deprecated: 0.55.0
+        Use: method:`set_back_drill_by_depth` instead.
+
+        Parameters
+        ----------
+        drill_depth : str
+            Name of the drill to layer.
+        drill_diameter : float, str
+            Diameter of backdrill size.
+        offset : str, optional.
+            offset with respect to the layer to drill to.
+
+        Returns
+        -------
+        bool
+            True if success, False otherwise.
+        """
+        warnings.warn(
+            "`set_backdrill_bottom` is deprecated. Use `set_back_drill_by_depth` or "
+            "`set_back_drill_by_layer` instead.",
+            DeprecationWarning,
+        )
+        if isinstance(drill_depth, str):
+            if drill_depth in self._pedb.stackup.layers:
+                return self.set_back_drill_by_layer(
+                    drill_to_layer=self._pedb.stackup.layers[drill_depth],
+                    offset=Value(offset),
+                    diameter=Value(drill_diameter),
+                    from_bottom=True,
+                )
+            else:
+                return self.set_back_drill_by_depth(Value(drill_depth), Value(drill_diameter), from_bottom=True)
+
+    def create_terminal(self, name=None) -> PadstackInstanceTerminal:
         """Create a padstack instance terminal.
 
         Returns
@@ -129,7 +216,7 @@ class PadstackInstance(GrpcPadstackInstance):
         )
         return PadstackInstanceTerminal(self._pedb, term)
 
-    def get_terminal(self, create_new_terminal=True):
+    def get_terminal(self, create_new_terminal=True) -> PadstackInstanceTerminal:
         """Returns padstack instance terminal.
 
         Parameters
@@ -265,11 +352,11 @@ class PadstackInstance(GrpcPadstackInstance):
     @_em_properties.setter
     def _em_properties(self, em_prop):
         """Set EM properties"""
-        pid = self._pedb.edb_api.ProductId.Designer
+        pid = self._pedb.core.ProductId.Designer
         self.set_product_property(pid, 18, em_prop)
 
     @property
-    def dcir_equipotential_region(self):
+    def dcir_equipotential_region(self) -> bool:
         """Check whether dcir equipotential region is enabled.
 
         Returns
@@ -308,7 +395,7 @@ class PadstackInstance(GrpcPadstackInstance):
         return self._object_instance
 
     @property
-    def bounding_box(self):
+    def bounding_box(self) -> list[float]:
         """Padstack instance bounding box.
         Because this method is slow, the bounding box is stored in a variable and reused.
 
@@ -321,7 +408,7 @@ class PadstackInstance(GrpcPadstackInstance):
             return self._bounding_box
         return self._bounding_box
 
-    def in_polygon(self, polygon_data, include_partial=True):
+    def in_polygon(self, polygon_data, include_partial=True) -> bool:
         """Check if padstack Instance is in given polygon data.
 
         Parameters
@@ -357,7 +444,7 @@ class PadstackInstance(GrpcPadstackInstance):
             return False
 
     @property
-    def start_layer(self):
+    def start_layer(self) -> str:
         """Starting layer.
 
         Returns
@@ -374,7 +461,7 @@ class PadstackInstance(GrpcPadstackInstance):
         self.set_layer_range(start_layer, stop_layer)
 
     @property
-    def stop_layer(self):
+    def stop_layer(self) -> str:
         """Stopping layer.
 
         Returns
@@ -391,7 +478,7 @@ class PadstackInstance(GrpcPadstackInstance):
         self.set_layer_range(start_layer, stop_layer)
 
     @property
-    def layer_range_names(self):
+    def layer_range_names(self) -> list[str]:
         """List of all layers to which the padstack instance belongs.
 
         Returns
@@ -423,7 +510,7 @@ class PadstackInstance(GrpcPadstackInstance):
         return layer_list
 
     @property
-    def net_name(self):
+    def net_name(self) -> str:
         """Net name.
 
         Returns
@@ -462,7 +549,7 @@ class PadstackInstance(GrpcPadstackInstance):
         return obj_inst[0] if obj_inst else None
 
     @property
-    def is_pin(self):
+    def is_pin(self) -> bool:
         """Determines whether this padstack instance is a layout pin.
 
         Returns
@@ -491,7 +578,7 @@ class PadstackInstance(GrpcPadstackInstance):
         return comp if not comp.is_null else False
 
     @property
-    def position(self):
+    def position(self) -> list[float]:
         """Padstack instance position.
 
         Returns
@@ -499,29 +586,32 @@ class PadstackInstance(GrpcPadstackInstance):
         list
             List of ``[x, y]`` coordinates for the padstack instance position.
         """
-        position = self.get_position_and_rotation()
-        if self.component:
-            out2 = self.component.transform.transform_point(GrpcPointData(position[:2]))
-            self._position = [round(out2[0].value, 6), round(out2[1].value, 6)]
-        else:
-            self._position = [round(pt.value, 6) for pt in position[:2]]
-        return self._position
+        try:
+            position = self.get_position_and_rotation()
+            if self.component:
+                out2 = self.component.transform.transform_point(GrpcPointData(position[:2]))
+                self._position = [Value(out2[0]), Value(out2[1])]
+            else:
+                self._position = [Value(pt) for pt in position[:2]]
+            return self._position
+        except Exception:
+            return False
 
     @position.setter
     def position(self, value):
         pos = []
         for v in value:
             if isinstance(v, (float, int, str)):
-                pos.append(GrpcValue(v, self._pedb.active_cell))
+                pos.append(Value(v, self._pedb.active_cell))
             else:
                 pos.append(v)
         point_data = GrpcPointData(pos[0], pos[1])
         self.set_position_and_rotation(
-            x=point_data.x, y=point_data.y, rotation=GrpcValue(self.rotation, self._pedb.active_cell)
+            x=point_data.x, y=point_data.y, rotation=Value(self.rotation, self._pedb.active_cell)
         )
 
     @property
-    def rotation(self):
+    def rotation(self) -> float:
         """Padstack instance rotation.
 
         Returns
@@ -529,10 +619,10 @@ class PadstackInstance(GrpcPadstackInstance):
         float
             Rotatation value for the padstack instance.
         """
-        return self.get_position_and_rotation()[-1].value
+        return Value(self.get_position_and_rotation()[-1])
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Padstack Instance Name.
 
         Returns
@@ -552,7 +642,7 @@ class PadstackInstance(GrpcPadstackInstance):
         self.set_product_property(GrpcProductIdType.DESIGNER, 11, value)
 
     @property
-    def backdrill_type(self):
+    def backdrill_type(self) -> str:
         """Backdrill type.
 
 
@@ -565,7 +655,7 @@ class PadstackInstance(GrpcPadstackInstance):
         return self.get_backdrill_type()
 
     @property
-    def backdrill_top(self):
+    def backdrill_top(self) -> bool:
         if self.get_back_drill_type(False).value == 0:
             return False
         else:
@@ -576,7 +666,7 @@ class PadstackInstance(GrpcPadstackInstance):
                 return False
 
     @property
-    def backdrill_bottom(self):
+    def backdrill_bottom(self) -> bool:
         """Check is backdrill is starting at bottom.
 
 
@@ -595,7 +685,7 @@ class PadstackInstance(GrpcPadstackInstance):
                 return False
 
     @property
-    def metal_volume(self):
+    def metal_volume(self) -> float:
         """Metal volume of the via hole instance in cubic units (m3). Metal plating ratio is accounted.
 
         Returns
@@ -632,7 +722,7 @@ class PadstackInstance(GrpcPadstackInstance):
         return volume
 
     @property
-    def component_pin(self):
+    def component_pin(self) -> str:
         """Component pin.
 
         Returns
@@ -644,7 +734,7 @@ class PadstackInstance(GrpcPadstackInstance):
         return self.name
 
     @property
-    def aedt_name(self):
+    def aedt_name(self) -> str:
         """Retrieve the pin name that is shown in AEDT.
 
         .. note::
@@ -671,6 +761,97 @@ class PadstackInstance(GrpcPadstackInstance):
     def aedt_name(self, value):
         self.set_product_property(GrpcProductIdType.DESIGNER, 11, value)
 
+    @property
+    def side_number(self) -> int:
+        if not self._side_number:
+            prop_string = "$begin ''\n\tsid=3\n\tmat='copper'\n\tvs='Wirebond'\n$end ''\n"
+            self.set_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21, prop_string)
+        self._side_number = self.get_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21)
+        return self._side_number
+
+    @side_number.setter
+    def side_number(self, value):
+        self._side_number = self.set_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21, value)
+
+    def split(self) -> list:
+        """Split padstack instance into multiple instances. The new instances only connect adjacent layers."""
+        pdef_name = self.padstack_definition
+        position = self.position
+        net_name = self.net_name
+        name = self.name
+        stackup_layer_range = list(self._pedb.stackup.signal_layers.keys())
+        start_idx = stackup_layer_range.index(self.start_layer)
+        stop_idx = stackup_layer_range.index(self.stop_layer)
+        temp = []
+        for idx, (l1, l2) in enumerate(
+            list(zip(stackup_layer_range[start_idx:stop_idx], stackup_layer_range[start_idx + 1 : stop_idx + 1]))
+        ):
+            pd_inst = self._pedb.padstacks.place(
+                position, pdef_name, net_name, f"{name}_{idx}", fromlayer=l1, tolayer=l2
+            )
+            temp.append(pd_inst)
+        self.delete()
+        return temp
+
+    def convert_hole_to_conical_shape(self, angle=75):
+        """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
+
+        Parameters
+        ----------
+        angle : float, optional
+            Angle of laser penetration in degrees. The angle defines the lowest hole diameter with this formula:
+            HoleDiameter -2*tan(laser_angle* Hole depth). Hole depth is the height of the via (dielectric thickness).
+            The default is ``75``.
+            The lowest hole is ``0.75*HoleDepth/HoleDiam``.
+
+        Returns
+        -------
+        """
+        stackup_layers = self._pedb.stackup.stackup_layers
+        signal_layers = self._pedb.stackup.signal_layers
+        layer_idx = list(signal_layers.keys()).index(self.start_layer)
+
+        _layer_idx = list(stackup_layers.keys()).index(self.start_layer)
+        diel_layer_idx = list(stackup_layers.keys())[_layer_idx + 1]
+        diel_thickness = stackup_layers[diel_layer_idx].thickness
+
+        rad_large = self.definition.hole_diameter / 2
+        rad_small = rad_large - diel_thickness * 1 / math.tan(math.radians(angle))
+
+        if layer_idx + 1 < len(signal_layers) / 2:  # upper half of stack
+            rad_u = rad_large
+            rad_l = rad_small
+        else:
+            rad_u = rad_small
+            rad_l = rad_large
+
+        layout = self._pedb.active_layout
+        cloned_circle = Circle.create(
+            layout,
+            self.start_layer,
+            self.net,
+            Value(self.position[0]),
+            Value(self.position[1]),
+            Value(rad_u),
+        )
+        cloned_circle2 = Circle.create(
+            layout,
+            self.stop_layer,
+            self.net,
+            Value(self.position[0]),
+            Value(self.position[1]),
+            Value(rad_l),
+        )
+
+        s3d = GrpcStructure3D.create(layout, generate_unique_name("via3d_" + self.aedt_name.replace("via_", ""), n=3))
+        s3d.add_member(cloned_circle)
+        s3d.add_member(cloned_circle2)
+        s3d.set_material(self.definition.material)
+        s3d.mesh_closure = GrpcMeshClosure.ENDS_CLOSED
+        hole_override_enabled = True
+        hole_override_diam = 0
+        self.set_hole_overrides(hole_override_enabled, Value(hole_override_diam))
+
     def get_backdrill_type(self, from_bottom=True):
         """Return backdrill type
         Parameters
@@ -686,7 +867,7 @@ class PadstackInstance(GrpcPadstackInstance):
         """
         return super().get_back_drill_type(from_bottom).name.lower()
 
-    def get_back_drill_by_layer(self, from_bottom=True):
+    def get_back_drill_by_layer(self, from_bottom=True) -> tuple[str, float, float]:
         """Get backdrill by layer.
 
         Parameters
@@ -701,11 +882,11 @@ class PadstackInstance(GrpcPadstackInstance):
         """
         back_drill = super().get_back_drill_by_layer(from_bottom)
         layer = back_drill[0].name
-        offset = round(back_drill[1].value, 9)
-        diameter = round(back_drill[2].value, 9)
+        offset = Value(back_drill[1])
+        diameter = Value(back_drill[2])
         return layer, offset, diameter
 
-    def get_back_drill_by_depth(self, from_bottom=True):
+    def get_back_drill_by_depth(self, from_bottom=True) -> tuple[float, float]:
         """Get back drill by depth parameters
         Parameters
         ----------
@@ -717,8 +898,8 @@ class PadstackInstance(GrpcPadstackInstance):
         tuple (drill_depth, drill_diameter) (float, float)
         """
         back_drill = super().get_back_drill_by_depth(from_bottom)
-        drill_depth = back_drill[0].value
-        drill_diameter = back_drill[1].value
+        drill_depth = Value(back_drill[0])
+        drill_diameter = Value(back_drill[1])
         return drill_depth, drill_diameter
 
     def set_back_drill_by_depth(self, drill_depth, diameter, from_bottom=True):
@@ -734,7 +915,7 @@ class PadstackInstance(GrpcPadstackInstance):
             Default value is `True`.
         """
         super().set_back_drill_by_depth(
-            drill_depth=GrpcValue(drill_depth), diameter=GrpcValue(diameter), from_bottom=from_bottom
+            drill_depth=Value(drill_depth), diameter=Value(diameter), from_bottom=from_bottom
         )
 
     def set_back_drill_by_layer(self, drill_to_layer, offset, diameter, from_bottom=True):
@@ -755,12 +936,12 @@ class PadstackInstance(GrpcPadstackInstance):
             drill_to_layer = self._pedb.stackup.layers[drill_to_layer]
         super().set_back_drill_by_layer(
             drill_to_layer=drill_to_layer,
-            offset=GrpcValue(offset),
-            diameter=GrpcValue(diameter),
+            offset=Value(offset),
+            diameter=Value(diameter),
             from_bottom=from_bottom,
         )
 
-    def parametrize_position(self, prefix=None):
+    def parametrize_position(self, prefix=None) -> list[str]:
         """Parametrize the instance position.
 
         Parameters
@@ -784,7 +965,7 @@ class PadstackInstance(GrpcPadstackInstance):
         self.position = [var_name + "X", var_name + "Y"]
         return [var_name + "X", var_name + "Y"]
 
-    def in_voids(self, net_name=None, layer_name=None):
+    def in_voids(self, net_name=None, layer_name=None) -> list[any]:
         """Check if this padstack instance is in any void.
 
         Parameters
@@ -799,8 +980,8 @@ class PadstackInstance(GrpcPadstackInstance):
         List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             List of the voids that include this padstack instance.
         """
-        x_pos = GrpcValue(self.position[0])
-        y_pos = GrpcValue(self.position[1])
+        x_pos = Value(self.position[0])
+        y_pos = Value(self.position[1])
         point_data = GrpcPointData([x_pos, y_pos])
 
         voids = []
@@ -843,7 +1024,7 @@ class PadstackInstance(GrpcPadstackInstance):
         return self.component.layer
 
     @property
-    def lower_elevation(self):
+    def lower_elevation(self) -> float:
         """Lower elevation of the placement layer.
 
         Returns
@@ -854,7 +1035,7 @@ class PadstackInstance(GrpcPadstackInstance):
         return self._pedb.stackup.layers[self.component.placement_layer].lower_elevation
 
     @property
-    def upper_elevation(self):
+    def upper_elevation(self) -> float:
         """Upper elevation of the placement layer.
 
         Returns
@@ -865,7 +1046,7 @@ class PadstackInstance(GrpcPadstackInstance):
         return self._pedb.stackup.layers[self.component.placement_layer].upper_elevation
 
     @property
-    def top_bottom_association(self):
+    def top_bottom_association(self) -> int:
         """Top/bottom association of the placement layer.
 
         Returns
@@ -1055,7 +1236,7 @@ class PadstackInstance(GrpcPadstackInstance):
                 if point.is_arc:
                     continue
                 else:
-                    points.append([point.x.value, point.y.value])
+                    points.append([Value(point.x), Value(point.y)])
             xpoly, ypoly = zip(*points)
             polygon = [list(xpoly), list(ypoly)]
             rectangles = GeometryOperators.find_largest_rectangle_inside_polygon(
@@ -1073,14 +1254,16 @@ class PadstackInstance(GrpcPadstackInstance):
         for point in path.points:
             if self.component:
                 p_transf = self.component.transform.transform_point(point)
-                new_rect.append([p_transf.x.value, p_transf.y.value])
+                new_rect.append([Value(p_transf.x), Value(p_transf.y)])
         if return_points:
             return new_rect
         else:
             created_polygon = self._pedb.modeler.create_polygon(path, layer_name)
             return created_polygon
 
-    def get_reference_pins(self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True):
+    def get_reference_pins(
+        self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True
+    ) -> list[any]:
         """Search for reference pins using given criteria.
 
         Parameters

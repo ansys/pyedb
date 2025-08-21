@@ -19,255 +19,185 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from copy import deepcopy as copy
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, TypedDict, Union
 
 from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition, CfgPadstackInstance
-from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstack
 
 
+@dataclass
 class CfgTrace:
-    def __init__(self, **kwargs):
-        self.name = kwargs.get("name", "")
-        self.layer = kwargs["layer"]
-        self.path = kwargs.get("path")
-        self.width = kwargs["width"]
-        self.net_name = kwargs.get("net_name", "")
-        self.start_cap_style = kwargs.get("start_cap_style", "round")
-        self.end_cap_style = kwargs.get("end_cap_style", "round")
-        self.corner_style = kwargs.get("corner_style", "sharp")
-
-        self.incremental_path = kwargs.get("incremental_path")
+    name: str
+    layer: str
+    path: List[List[Union[float, str]]]
+    width: str
+    net_name: str
+    start_cap_style: str
+    end_cap_style: str
+    corner_style: str
+    incremental_path: List[List[Union[float, str]]]
 
 
+@dataclass
 class CfgPlane:
-    def __init__(self, **kwargs):
-        self.name = kwargs.get("name", "")
-        self.layer = kwargs["layer"]
-        self.net_name = kwargs.get("net_name", "")
-        self.type = kwargs.get("type", "rectangle")
+    name: str = ""
+    layer: str = ""
+    net_name: str = ""
+    type: str = "rectangle"
 
-        # rectangle
-        self.lower_left_point = kwargs.get("lower_left_point", [])
-        self.upper_right_point = kwargs.get("upper_right_point", [])
-        self.corner_radius = kwargs.get("corner_radius", 0)
-        self.rotation = kwargs.get("rotation", 0)
-        self.voids = kwargs.get("voids", [])
+    # rectangle
+    lower_left_point: List[Union[float, str]] = field(default_factory=list)
+    upper_right_point: List[Union[float, str]] = field(default_factory=list)
+    corner_radius: Union[float, str] = 0
+    rotation: Union[float, str] = 0
+    voids: List[Any] = field(default_factory=list)
 
-        # polygon
-        self.points = kwargs.get("points", [])
+    # polygon
+    points: List[List[float]] = field(default_factory=list)
 
-        # circle
-        self.radius = kwargs.get("radius", 0)
-        self.position = kwargs.get("position", [0, 0])
+    # circle
+    radius: Union[float, str] = 0
+    position: List[float] = field(default_factory=lambda: [0, 0])
 
 
+class PrimitivesToDeleteDict(TypedDict, total=False):
+    layer_name: List[str]
+    name: List[str]
+    net_name: List[str]
+
+
+@dataclass
 class CfgModeler:
     """Manage configuration general settings."""
 
-    class Grpc:
-        def __init__(self, parent):
-            self.parent = parent
-            self._pedb = parent._pedb
+    traces: List[CfgTrace] = field(default_factory=list)
+    planes: List[CfgPlane] = field(default_factory=list)
 
-        def set_parameter_to_edb(self):
-            from ansys.edb.core.definition.padstack_def import (
-                PadstackDef as GrpcPadstackDef,
-            )
-            from ansys.edb.core.definition.padstack_def_data import (
-                PadstackDefData as GrpcPadstackDefData,
-            )
-
-            from pyedb.grpc.database.definition.padstack_def import PadstackDef
-
-            if self.parent.traces:
-                for t in self.parent.traces:
-                    obj = self._pedb.modeler.create_trace(
-                        path_list=t.path,
-                        layer_name=t.layer,
-                        net_name=t.net_name,
-                        width=t.width,
-                        start_cap_style=t.start_cap_style,
-                        end_cap_style=t.end_cap_style,
-                        corner_style=t.corner_style,
-                    )
-                    obj.aedt_name = t.name
-
-            if self.parent.padstack_defs:
-                for p in self.parent.padstack_defs:
-                    pdata = GrpcPadstackDefData.create()
-                    pdef = GrpcPadstackDef.create(self._pedb.active_db, p.name)
-                    pdef.data = pdata
-                    pdef = PadstackDef(self._pedb, pdef)
-                    p.pyedb_obj = pdef
-                    p.api.set_parameters_to_edb()
-
-            if self.parent.padstack_instances:
-                for p in self.parent.padstack_instances:
-                    p_inst = self._pedb.padstacks.place(
-                        via_name=p.name,
-                        net_name=p.net_name,
-                        position=p.position,
-                        definition_name=p.definition,
-                    )
-                    p.pyedb_obj = p_inst
-                    p.api.set_parameters_to_edb()
-
-            if self.parent.planes:
-                for p in self.parent.planes:
-                    if p.type == "rectangle":
-                        obj = self._pedb.modeler.create_rectangle(
-                            layer_name=p.layer,
-                            net_name=p.net_name,
-                            lower_left_point=p.lower_left_point,
-                            upper_right_point=p.upper_right_point,
-                            corner_radius=p.corner_radius,
-                            rotation=p.rotation,
-                        )
-                        obj.aedt_name = p.name
-                    elif p.type == "polygon":
-                        obj = self._pedb.modeler.create_polygon(
-                            points=p.points, layer_name=p.layer, net_name=p.net_name
-                        )
-                        obj.aedt_name = p.name
-
-                    for v in p.voids:
-                        for i in self._pedb.layout.primitives:
-                            if i.aedt_name == v:
-                                self._pedb.modeler.add_void(obj, i)
-
-            if self.parent.components:
-                pedb_p_inst = self._pedb.padstacks.instances_by_name
-                for c in self.parent.components:
-                    obj = self._pedb.components.create(
-                        [pedb_p_inst[i] for i in c.pins],
-                        component_name=c.reference_designator,
-                        placement_layer=c.placement_layer,
-                        component_part_name=c.definition,
-                    )
-                    c.pyedb_obj = obj
-                    c.api.set_parameters_to_edb()
-
-        def delete_primitives(self):
-            primitives = self._pedb.layout.find_primitive(**self.parent.primitives_to_delete)
-            for i in primitives:
-                i.delete()
-
-    class DotNet(Grpc):
-        def __init__(self, parent):
-            super().__init__(parent)
-
-        def set_parameter_to_edb(self):
-            if self.parent.traces:
-                for t in self.parent.traces:
-                    if t.path:
-                        obj = self._pedb.modeler.create_trace(
-                            path_list=t.path,
-                            layer_name=t.layer,
-                            net_name=t.net_name,
-                            width=t.width,
-                            start_cap_style=t.start_cap_style,
-                            end_cap_style=t.end_cap_style,
-                            corner_style=t.corner_style,
-                        )
-                        obj.aedt_name = t.name
-                    else:
-                        obj = self._pedb.modeler.create_trace(
-                            path_list=[t.incremental_path[0]],
-                            layer_name=t.layer,
-                            net_name=t.net_name,
-                            width=t.width,
-                            start_cap_style=t.start_cap_style,
-                            end_cap_style=t.end_cap_style,
-                            corner_style=t.corner_style,
-                        )
-                        obj.aedt_name = t.name
-                        for x, y in t.incremental_path[1:]:
-                            obj.add_point(x, y, True)
-
-            if self.parent.padstack_defs:
-                for p in self.parent.padstack_defs:
-                    pdata = self._pedb._edb.Definition.PadstackDefData.Create()
-                    pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
-                    pdef.SetData(pdata)
-                    pdef = EDBPadstack(pdef, self._pedb.padstacks)
-                    p.pyedb_obj = pdef
-                    p.api.set_parameters_to_edb()
-
-            if self.parent.padstack_instances:
-                for p in self.parent.padstack_instances:
-                    p_inst = self._pedb.padstacks.place(
-                        via_name=p.name,
-                        net_name=p.net_name,
-                        position=p.position,
-                        definition_name=p.definition,
-                        rotation=p.rotation if p.rotation is not None else 0,
-                    )
-                    p.pyedb_obj = p_inst
-                    p.api.set_parameters_to_edb()
-
-            if self.parent.planes:
-                for p in self.parent.planes:
-                    if p.type == "rectangle":
-                        obj = self._pedb.modeler.create_rectangle(
-                            layer_name=p.layer,
-                            net_name=p.net_name,
-                            lower_left_point=p.lower_left_point,
-                            upper_right_point=p.upper_right_point,
-                            corner_radius=p.corner_radius,
-                            rotation=p.rotation,
-                        )
-                        obj.aedt_name = p.name
-                    elif p.type == "polygon":
-                        obj = self._pedb.modeler.create_polygon(
-                            main_shape=p.points, layer_name=p.layer, net_name=p.net_name
-                        )
-                        obj.aedt_name = p.name
-                    elif p.type == "circle":
-                        obj = self._pedb.modeler.create_circle(
-                            layer_name=p.layer,
-                            net_name=p.net_name,
-                            x=p.position[0],
-                            y=p.position[1],
-                            radius=p.radius,
-                        )
-                        obj.aedt_name = p.name
-                    else:
-                        raise
-
-                    for v in p.voids:
-                        for i in self._pedb.layout.primitives:
-                            if i.aedt_name == v:
-                                self._pedb.modeler.add_void(obj, i)
-
-            if self.parent.components:
-                pedb_p_inst = self._pedb.padstacks.instances_by_name
-                for c in self.parent.components:
-                    obj = self._pedb.components.create(
-                        [pedb_p_inst[i] for i in c.pins],
-                        component_name=c.reference_designator,
-                        placement_layer=c.placement_layer,
-                        component_part_name=c.definition,
-                    )
-                    c.pyedb_obj = obj
-                    c.api.set_parameters_to_edb()
-
-    def __init__(self, pedb, data):
+    def __init__(self, pedb, data: Dict):
         self._pedb = pedb
-        if self._pedb.grpc:
-            self.api = self.Grpc(self)
-        else:
-            self.api = self.DotNet(self)
-        self.traces = [CfgTrace(**i) for i in data.get("traces", [])]
-        self.padstack_defs = [
-            CfgPadstackDefinition(self._pedb, None, **i) for i in data.get("padstack_definitions", [])
-        ]
-        self.padstack_instances = [
-            CfgPadstackInstance(self._pedb, None, **i) for i in data.get("padstack_instances", [])
-        ]
-        self.planes = [CfgPlane(**i) for i in data.get("planes", [])]
-        self.components = [CfgComponent(self._pedb, None, **i) for i in data.get("components", [])]
-        self.primitives_to_delete = data.get("primitives_to_delete", {"layer_name": [], "name": [], "net_name": []})
+        self.traces = []
+        self.planes = []
 
-    def apply(self):
-        self.api.set_parameter_to_edb()
-        self.api.delete_primitives()
+        self.padstack_defs = [CfgPadstackDefinition(pedb, None, **i) for i in data.get("padstack_definitions", [])]
+        self.padstack_instances = [CfgPadstackInstance(pedb, None, **i) for i in data.get("padstack_instances", [])]
+
+        self.components = [CfgComponent(pedb, None, **i) for i in data.get("components", [])]
+        self.primitives_to_delete: PrimitivesToDeleteDict = data.get(
+            "primitives_to_delete", {"layer_name": [], "name": [], "net_name": []}
+        )
+
+        for trace_data in data.get("traces", []):
+            self.add_trace(**trace_data)
+
+        for plane_data in data.get("planes", []):
+            plane_data = copy(plane_data)
+            shape = plane_data.pop("type")
+            if shape == "rectangle":
+                self.add_rectangular_plane(**plane_data)
+            elif shape == "circle":
+                self.add_circular_plane(**plane_data)
+            elif shape == "polygon":
+                self.add_polygon_plane(**plane_data)
+
+    def add_trace(
+        self,
+        layer: str,
+        width: str,
+        name: str,
+        net_name: str = "",
+        start_cap_style: str = "round",
+        end_cap_style: str = "round",
+        corner_style: str = "sharp",
+        path: Optional[Any] = None,
+        incremental_path: Optional[Any] = None,
+    ):
+        """Add a trace from a dictionary of parameters."""
+
+        trace_obj = CfgTrace(
+            name,
+            layer,
+            path,
+            width,
+            net_name,
+            start_cap_style,
+            end_cap_style,
+            corner_style,
+            incremental_path,
+        )
+        self.traces.append(trace_obj)
+        return name
+
+    def add_rectangular_plane(
+        self,
+        layer: str,
+        name: str = "",
+        net_name: str = "",
+        lower_left_point: List[float] = "",
+        upper_right_point: List[float] = "",
+        corner_radius: float = 0,
+        rotation: float = 0,
+        voids: Optional[List[Any]] = "",
+    ):
+        plane_obj = CfgPlane(
+            name=name,
+            layer=layer,
+            net_name=net_name,
+            type="rectangle",
+            lower_left_point=lower_left_point,
+            upper_right_point=upper_right_point,
+            corner_radius=corner_radius,
+            rotation=rotation,
+            voids=voids,
+        )
+        self.planes.append(plane_obj)
+        return name
+
+    def add_circular_plane(
+        self,
+        layer: str,
+        name: str = "",
+        net_name: str = "",
+        corner_radius: float = 0,
+        rotation: float = 0,
+        voids: Optional[List[Any]] = "",
+        radius: Union[float, str] = 0,
+        position: List[Union[float, str]] = "",
+    ):
+        plane_obj = CfgPlane(
+            name=name,
+            layer=layer,
+            net_name=net_name,
+            type="circle",
+            corner_radius=corner_radius,
+            rotation=rotation,
+            voids=voids,
+            radius=radius,
+            position=position,
+        )
+        self.planes.append(plane_obj)
+        return name
+
+    def add_polygon_plane(
+        self,
+        layer: str,
+        name: str = "",
+        net_name: str = "",
+        corner_radius: float = 0,
+        rotation: float = 0,
+        voids: Optional[List[Any]] = "",
+        points: List[List[float]] = "",
+    ):
+        plane_obj = CfgPlane(
+            name=name,
+            layer=layer,
+            net_name=net_name,
+            type="polygon",
+            corner_radius=corner_radius,
+            rotation=rotation,
+            voids=voids,
+            points=points,
+        )
+        self.planes.append(plane_obj)
+        return name

@@ -22,7 +22,8 @@
 
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.terminal.point_terminal import PointTerminal as GrpcPointTerminal
-from ansys.edb.core.utility.value import Value as GrpcValue
+
+from pyedb.grpc.database.utility.value import Value
 
 
 class PointTerminal(GrpcPointTerminal):
@@ -33,7 +34,7 @@ class PointTerminal(GrpcPointTerminal):
         self._pedb = pedb
 
     @property
-    def location(self):
+    def location(self) -> list[float]:
         """Terminal position.
 
         Returns
@@ -41,17 +42,17 @@ class PointTerminal(GrpcPointTerminal):
         [float, float] : [x,y]
 
         """
-        return [self.point.x.value, self.point.y.value]
+        return [Value(self.point.x), Value(self.point.y)]
 
     @location.setter
     def location(self, value):
         if not isinstance(value, list):
             return
-        value = [GrpcValue(i) for i in value]
+        value = [Value(i) for i in value]
         self.point = GrpcPointData(value)
 
     @property
-    def layer(self):
+    def layer(self) -> any:
         """Terminal layer.
 
         Returns
@@ -69,7 +70,7 @@ class PointTerminal(GrpcPointTerminal):
             super(PointTerminal, self.__class__).layer.__set__(self, value)
 
     @property
-    def ref_terminal(self):
+    def ref_terminal(self) -> any:
         """Reference terminal.
 
         Returns
@@ -84,7 +85,7 @@ class PointTerminal(GrpcPointTerminal):
         super().reference_terminal = value
 
     @property
-    def reference_terminal(self):
+    def reference_terminal(self) -> any:
         """Reference terminal.
 
         Returns
@@ -99,10 +100,10 @@ class PointTerminal(GrpcPointTerminal):
         super(PointTerminal, self.__class__).reference_terminal.__set__(self, value)
 
     @property
-    def terminal_type(self):
+    def terminal_type(self) -> str:
         return "PointTerminal"
 
     @property
-    def is_port(self):
+    def is_port(self) -> bool:
         """Adding DotNet compatibility."""
         return True

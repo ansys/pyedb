@@ -53,7 +53,7 @@ class Layer(GrpcLayer):
                 self._pedb.logger.error(f"{k} is not a valid layer attribute")
 
     @property
-    def properties(self):
+    def properties(self) -> dict[str, str]:
         from ansys.edb.core.layer.stackup_layer import StackupLayer as GrpcStackupLayer
 
         from pyedb.grpc.database.stackup import StackupLayer
@@ -77,7 +77,7 @@ class Layer(GrpcLayer):
             self.color = color
 
     @property
-    def type(self):
+    def type(self) -> str:
         return super().type.name.lower().split("_")[0]
 
     @property

@@ -26,9 +26,9 @@ import math
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.primitive.polygon import Polygon as GrpcPolygon
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.primitive.primitive import Primitive
+from pyedb.grpc.database.utility.value import Value
 
 
 class Polygon(GrpcPolygon, Primitive):
@@ -38,7 +38,7 @@ class Polygon(GrpcPolygon, Primitive):
         self._pedb = pedb
 
     @property
-    def type(self):
+    def type(self) -> str:
         """Primitive type.
 
         Return
@@ -50,7 +50,7 @@ class Polygon(GrpcPolygon, Primitive):
         return self.primitive_type.name.lower()
 
     @property
-    def has_self_intersections(self):
+    def has_self_intersections(self) -> bool:
         """Check if Polygon has self intersections.
 
         Returns
@@ -59,7 +59,7 @@ class Polygon(GrpcPolygon, Primitive):
         """
         return self.polygon_data.has_self_intersections()
 
-    def fix_self_intersections(self):
+    def fix_self_intersections(self) -> list[any]:
         """Remove self intersections if they exist.
 
         Returns
@@ -96,7 +96,7 @@ class Polygon(GrpcPolygon, Primitive):
             duplicated_polygon.add_void(void)
         return duplicated_polygon
 
-    def duplicate_across_layers(self, layers):
+    def duplicate_across_layers(self, layers) -> bool:
         """Duplicate across layer a primitive object.
 
         Parameters:
@@ -127,7 +127,7 @@ class Polygon(GrpcPolygon, Primitive):
                 return False
         return True
 
-    def move(self, vector):
+    def move(self, vector) -> bool:
         """Move polygon along a vector.
 
         Parameters
@@ -147,12 +147,12 @@ class Polygon(GrpcPolygon, Primitive):
         >>>     polygon.move(vector=["2mm", "100um"])
         """
         if vector and isinstance(vector, list) and len(vector) == 2:
-            _vector = [GrpcValue(pt).value for pt in vector]
+            _vector = [Value(pt) for pt in vector]
             self.polygon_data = self.polygon_data.move(_vector)
             return True
         return False
 
-    def scale(self, factor, center=None):
+    def scale(self, factor, center=None) -> bool:
         """Scales the polygon relative to a center point by a factor.
 
         Parameters
@@ -177,12 +177,12 @@ class Polygon(GrpcPolygon, Primitive):
                 else:
                     self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
             elif isinstance(center, list) and len(center) == 2:
-                center = GrpcPointData([GrpcValue(center[0]), GrpcValue(center[1])])
+                center = GrpcPointData([Value(center[0]), Value(center[1])])
                 self.polygon_data = self.polygon_data.scale(factor, center)
                 return True
         return False
 
-    def rotate(self, angle, center=None):
+    def rotate(self, angle, center=None) -> bool:
         """Rotate polygon around a center point by an angle.
 
         Parameters
@@ -215,7 +215,7 @@ class Polygon(GrpcPolygon, Primitive):
                 return True
         return False
 
-    def move_layer(self, layer):
+    def move_layer(self, layer) -> bool:
         """Move polygon to given layer.
 
         Parameters
@@ -237,7 +237,7 @@ class Polygon(GrpcPolygon, Primitive):
         self,
         point_data,
         include_partial=True,
-    ):
+    ) -> bool:
         """Check if padstack Instance is in given polygon data.
 
         Parameters

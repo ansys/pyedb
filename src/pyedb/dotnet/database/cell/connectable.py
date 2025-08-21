@@ -55,10 +55,11 @@ class Connectable(LayoutObj):
         -------
         str
         """
-        try:
-            return self._edb_object.GetNet().GetName()
-        except (KeyError, AttributeError):  # pragma: no cover
-            return None
+        net = self._edb_object.GetNet()
+        if net.IsNull():
+            return ""
+        else:
+            return net.GetName()
 
     @net_name.setter
     def net_name(self, name):
@@ -76,10 +77,38 @@ class Connectable(LayoutObj):
         -------
         :class:`dotnet.database.edb_data.nets_data.EDBComponent`
         """
-        from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
+        return self._pedb.layout.find_component_by_name(self.component_name) if self.component_name else ""
 
-        edb_comp = self._edb_object.GetComponent()
-        if edb_comp.IsNull():
-            return None
+    @component.setter
+    def component(self, value):
+        self._edb_object.SetGroup(self._pedb.components.instances[value]._edb_object)
+
+    @property
+    def component_name(self):
+        """Get the name of the component connected to this object."""
+        comp = self._edb_object.GetComponent()
+        if comp.IsNull():
+            return ""
         else:
-            return EDBComponent(self._pedb, edb_comp)
+            return comp.GetName()
+
+    def get_connected_objects(self):
+        """Get connected objects.
+
+        Returns
+        -------
+        list
+        """
+        return self._pedb.get_connected_objects(self._layout_obj_instance)
+
+    def get_connected_object_id_set(self):
+        """Produce a list of all geometries physically connected to a given layout object.
+
+        Returns
+        -------
+        list
+            Found connected objects IDs with Layout object.
+        """
+        layoutInst = self._edb_object.GetLayout().GetLayoutInstance()
+        layoutObjInst = layoutInst.GetLayoutObjInstance(self._edb_object, None)  # 2nd arg was []
+        return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]

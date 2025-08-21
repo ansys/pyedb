@@ -21,6 +21,8 @@
 # SOFTWARE.
 import re
 
+from System import String
+
 from pyedb.dotnet.database.cell.connectable import Connectable
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
@@ -147,15 +149,6 @@ class Primitive(Connectable):
         """
         return self._edb_object.IsVoid()
 
-    def get_connected_objects(self):
-        """Get connected objects.
-
-        Returns
-        -------
-        list
-        """
-        return self._pedb.get_connected_objects(self._layout_obj_instance)
-
     def area(self, include_voids=True):
         """Return the total area.
 
@@ -240,18 +233,6 @@ class Primitive(Connectable):
         """
         return point.IsArc()
 
-    def get_connected_object_id_set(self):
-        """Produce a list of all geometries physically connected to a given layout object.
-
-        Returns
-        -------
-        list
-            Found connected objects IDs with Layout object.
-        """
-        layoutInst = self._edb_object.GetLayout().GetLayoutInstance()
-        layoutObjInst = layoutInst.GetLayoutObjInstance(self._edb_object, None)  # 2nd arg was []
-        return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
-
     @property
     def bbox(self):
         """Return the primitive bounding box points. Lower left corner, upper right corner.
@@ -264,10 +245,10 @@ class Primitive(Connectable):
         """
         bbox = self.polygon_data._edb_object.GetBBox()
         return [
-            round(bbox.Item1.X.ToDouble(), 6),
-            round(bbox.Item1.Y.ToDouble(), 6),
-            round(bbox.Item2.X.ToDouble(), 6),
-            round(bbox.Item2.Y.ToDouble(), 6),
+            round(bbox.Item1.X.ToDouble(), 9),
+            round(bbox.Item1.Y.ToDouble(), 9),
+            round(bbox.Item2.X.ToDouble(), 9),
+            round(bbox.Item2.Y.ToDouble(), 9),
         ]
 
     def convert_to_polygon(self):
@@ -336,7 +317,7 @@ class Primitive(Connectable):
         list of float
         """
         if isinstance(point, (list, tuple)):
-            point = self._app.edb_api.geometry.point_data(self._app.edb_value(point[0]), self._app.edb_value(point[1]))
+            point = self._app.core.geometry.point_data(self._app.edb_value(point[0]), self._app.edb_value(point[1]))
 
         p0 = self.polygon_data._edb_object.GetClosestPoint(point)
         return [p0.X.ToDouble(), p0.Y.ToDouble()]
@@ -540,7 +521,7 @@ class Primitive(Connectable):
         -------
         list of float
         """
-        if isinstance(point, self._app.edb_api.geometry.geometry.PointData):
+        if isinstance(point, self._app.core.Geometry.PointData):
             point = [point.X.ToDouble(), point.Y.ToDouble()]
         dist = 1e12
         out = None
@@ -581,8 +562,6 @@ class Primitive(Connectable):
         str
             Name.
         """
-        from System import String
-
         val = String("")
 
         _, name = self._edb_object.GetProductProperty(self._pedb._edb.ProductId.Designer, 1, val)
@@ -821,7 +800,7 @@ class Primitive(Connectable):
             r"$end 'EM properties'\n"
         )
 
-        pid = self._pedb.edb_api.ProductId.Designer
+        pid = self._pedb.core.ProductId.Designer
         _, p = self._edb_object.GetProductProperty(pid, 18, "")
         if p:
             return p
@@ -831,7 +810,7 @@ class Primitive(Connectable):
     @_em_properties.setter
     def _em_properties(self, em_prop):
         """Set EM properties"""
-        pid = self._pedb.edb_api.ProductId.Designer
+        pid = self._pedb.core.ProductId.Designer
         self._edb_object.SetProductProperty(pid, 18, em_prop)
 
     @property

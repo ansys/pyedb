@@ -25,6 +25,7 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 ``PinGroup``, ``ResistorSource``, ``Source``, ``SourceType``, and ``VoltageSource``.
 """
 import os
+from typing import Any, Dict, Optional, Union
 import warnings
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
@@ -36,6 +37,9 @@ from ansys.edb.core.simulation_setup.simulation_setup import (
 )
 from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSweepData
 
+from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
+    SIWaveCPASimulationSetup,
+)
 from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
 
 
@@ -54,62 +58,91 @@ class Siwave(object):
     >>> edb_siwave = edbapp.siwave
     """
 
-    def __init__(self, p_edb):
+    def __init__(self, p_edb) -> None:
         self._pedb = p_edb
 
     @property
-    def _edb(self):
-        """EDB."""
+    def _edb(self) -> Any:
+        """EDB object."""
         return self._pedb
 
     @property
-    def _logger(self):
-        """EDB."""
+    def _logger(self) -> Any:
+        """Logger object."""
         return self._pedb.logger
 
     @property
-    def _active_layout(self):
+    def _active_layout(self) -> Any:
         """Active layout."""
         return self._pedb.active_layout
 
     @property
-    def _layout(self):
+    def _layout(self) -> Any:
         """Active layout."""
         return self._pedb.layout
 
     @property
-    def _cell(self):
-        """Cell."""
+    def _cell(self) -> Any:
+        """Active cell."""
         return self._pedb.active_cell
 
     @property
-    def _db(self):
-        """ """
+    def _db(self) -> Any:
+        """Active database."""
         return self._pedb.active_db
 
     @property
-    def excitations(self):
-        """Get all excitations."""
+    def excitations(self) -> Dict[str, Any]:
+        """Excitation sources in the layout.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+        >>> excitations = edbapp.siwave.excitations
+        """
         return self._pedb.excitations
 
     @property
-    def sources(self):
-        """Get all sources."""
+    def sources(self) -> Dict[str, Any]:
+        """All sources in the layout.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+        >>> sources = edbapp.siwave.sources
+        """
         return self._pedb.sources
 
     @property
-    def probes(self):
-        """Get all probes."""
+    def probes(self) -> Dict[str, Any]:
+        """All probes in the layout.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+        >>> probes = edbapp.siwave.probes
+        """
         return self._pedb.probes
 
     @property
-    def pin_groups(self):
-        """All Layout Pin groups.
+    def pin_groups(self) -> Dict[str, Any]:
+        """All layout pin groups.
 
         Returns
         -------
-        list
-            List of all layout pin groups.
+        dict
+            Dictionary of pin groups with names as keys and pin group objects as values.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+        >>> pin_groups = edbapp.siwave.pin_groups
+        >>> for name, group in pin_groups.items():
+        ...     print(f"Pin group {name} has {len(group.pins)} pins")
         """
         _pingroups = {}
         for el in self._pedb.layout.pin_groups:
@@ -118,8 +151,9 @@ class Siwave(object):
 
     def _create_terminal_on_pins(self, source):
         """Create a terminal on pins.
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations._create_terminal_on_pins` instead.
+
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations._create_terminal_on_pins` instead.
 
         Parameters
         ----------
@@ -137,8 +171,8 @@ class Siwave(object):
     def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
         """Create a circuit port on a pin.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.create_circuit_port_on_pin` instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_circuit_port_on_pin` instead.
 
         Parameters
         ----------
@@ -146,8 +180,8 @@ class Siwave(object):
             Edb Pin
         neg_pin : Object
             Edb Pin
-        impedance : float
-            Port Impedance
+        impedance : float, optional
+            Port Impedance. Default is ``50``.
         port_name : str, optional
             Port Name
 
@@ -168,21 +202,21 @@ class Siwave(object):
     ):
         """Create circuit port between pin and a reference layer.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.create_port_between_pin_and_layer` instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_port_between_pin_and_layer` instead.
 
         Parameters
         ----------
         component_name : str
-            Component name. The default is ``None``.
+            Component name.
         pins_name : str
-            Pin name or list of pin names. The default is ``None``.
+            Pin name or list of pin names.
         layer_name : str
-            Layer name. The default is ``None``.
+            Layer name.
         reference_net : str
-            Reference net name. The default is ``None``.
+            Reference net name.
         impedance : float, optional
-            Port impedance. The default is ``50.0`` in ohms.
+            Port impedance. Default is ``50.0`` ohms.
 
         Returns
         -------
@@ -200,8 +234,9 @@ class Siwave(object):
 
     def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
         """Create a voltage source.
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.create_voltage_source_on_pin` instead.
+
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_voltage_source_on_pin` instead.
 
         Parameters
         ----------
@@ -210,11 +245,11 @@ class Siwave(object):
         neg_pin : Object
             Negative Pin.
         voltage_value : float, optional
-            Value for the voltage. The default is ``3.3``.
+            Value for the voltage. Default is ``3.3``.
         phase_value : optional
-            Value for the phase. The default is ``0``.
+            Value for the phase. Default is ``0``.
         source_name : str, optional
-            Name of the source. The default is ``""``.
+            Name of the source. Default is ``""``.
 
         Returns
         -------
@@ -234,8 +269,8 @@ class Siwave(object):
     def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
         """Create a current source.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.create_current_source_on_pin` instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_current_source_on_pin` instead.
 
         Parameters
         ----------
@@ -244,11 +279,11 @@ class Siwave(object):
         neg_pin : Object
             Negative pin.
         current_value : float, optional
-            Value for the current. The default is ``0.1``.
+            Value for the current. Default is ``0.1``.
         phase_value : optional
-            Value for the phase. The default is ``0``.
+            Value for the phase. Default is ``0``.
         source_name : str, optional
-            Name of the source. The default is ``""``.
+            Name of the source. Default is ``""``.
 
         Returns
         -------
@@ -265,10 +300,10 @@ class Siwave(object):
         )
 
     def create_resistor_on_pin(self, pos_pin, neg_pin, rvalue=1, resistor_name=""):
-        """Create a Resistor boundary between two given pins.
+        """Create a resistor boundary between two given pins.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.create_resistor_on_pin` instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_resistor_on_pin` instead.
 
         Parameters
         ----------
@@ -277,9 +312,9 @@ class Siwave(object):
         neg_pin : Object
             Negative Pin.
         rvalue : float, optional
-            Resistance value. The default is ``1``.
+            Resistance value. Default is ``1``.
         resistor_name : str, optional
-            Name of the resistor. The default is ``""``.
+            Name of the resistor. Default is ``""``.
 
         Returns
         -------
@@ -294,10 +329,10 @@ class Siwave(object):
         return self._pedb.source_excitation.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
 
     def _check_gnd(self, component_name):
-        """
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations._check_gnd` instead.
+        """Check ground reference.
 
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations._check_gnd` instead.
         """
         warnings.warn(
             "`_check_gnd` is deprecated and is now located here " "`pyedb.grpc.core.excitations._check_gnd` instead.",
@@ -314,12 +349,12 @@ class Siwave(object):
         impedance_value=50,
         port_name="",
     ):
-        """Create a circuit port on a NET.
+        """Create a circuit port on a net.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.create_circuit_port_on_net` instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_circuit_port_on_net` instead.
 
-        It groups all pins belonging to the specified net and then applies the port on PinGroups.
+        Groups all pins belonging to the specified net and applies the port on PinGroups.
 
         Parameters
         ----------
@@ -328,20 +363,18 @@ class Siwave(object):
         positive_net_name : str
             Name of the positive net.
         negative_component_name : str, optional
-            Name of the negative component. The default is ``None``, in which case the name of
-            the positive net is assigned.
+            Name of the negative component. Default is ``None``.
         negative_net_name : str, optional
-            Name of the negative net name. The default is ``None`` which will look for GND Nets.
+            Name of the negative net name. Default is ``None`` (searches for GND nets).
         impedance_value : float, optional
-            Port impedance value. The default is ``50``.
+            Port impedance value. Default is ``50``.
         port_name : str, optional
-            Name of the port. The default is ``""``.
+            Name of the port. Default is ``""``.
 
         Returns
         -------
         str
             The name of the port.
-
         """
         warnings.warn(
             "`create_circuit_port_on_net` is deprecated and is now located here "
@@ -367,10 +400,10 @@ class Siwave(object):
         phase_value=0,
         source_name="",
     ):
-        """Create a voltage source.
+        """Create a voltage source on a net.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.create_voltage_source_on_net` instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_voltage_source_on_net` instead.
 
         Parameters
         ----------
@@ -379,22 +412,20 @@ class Siwave(object):
         positive_net_name : str
             Name of the positive net.
         negative_component_name : str, optional
-            Name of the negative component. The default is ``None``, in which case the name of
-            the positive net is assigned.
+            Name of the negative component. Default is ``None``.
         negative_net_name : str, optional
-            Name of the negative net name. The default is ``None`` which will look for GND Nets.
+            Name of the negative net name. Default is ``None`` (searches for GND nets).
         voltage_value : float, optional
-            Value for the voltage. The default is ``3.3``.
+            Value for the voltage. Default is ``3.3``.
         phase_value : optional
-            Value for the phase. The default is ``0``.
+            Value for the phase. Default is ``0``.
         source_name : str, optional
-            Name of the source. The default is ``""``.
+            Name of the source. Default is ``""``.
 
         Returns
         -------
         str
             The name of the source.
-
         """
         warnings.warn(
             "`create_voltage_source_on_net` is deprecated and is now located here "
@@ -421,10 +452,10 @@ class Siwave(object):
         phase_value=0,
         source_name="",
     ):
-        """Create a current source.
+        """Create a current source on a net.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.create_current_source_on_net` instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_current_source_on_net` instead.
 
         Parameters
         ----------
@@ -433,16 +464,15 @@ class Siwave(object):
         positive_net_name : str
             Name of the positive net.
         negative_component_name : str, optional
-            Name of the negative component. The default is ``None``, in which case the name of
-            the positive net is assigned.
+            Name of the negative component. Default is ``None``.
         negative_net_name : str, optional
-            Name of the negative net name. The default is ``None`` which will look for GND Nets.
+            Name of the negative net name. Default is ``None`` (searches for GND nets).
         current_value : float, optional
-            Value for the current. The default is ``0.1``.
+            Value for the current. Default is ``0.1``.
         phase_value : optional
-            Value for the phase. The default is ``0``.
+            Value for the phase. Default is ``0``.
         source_name : str, optional
-            Name of the source. The default is ``""``.
+            Name of the source. Default is ``""``.
 
         Returns
         -------
@@ -470,10 +500,10 @@ class Siwave(object):
         net_name,
         source_name="",
     ):
-        """Create a dc terminal.
+        """Create a DC terminal.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.create_dc_terminal` instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_dc_terminal` instead.
 
         Parameters
         ----------
@@ -481,9 +511,8 @@ class Siwave(object):
             Name of the positive component.
         net_name : str
             Name of the positive net.
-
         source_name : str, optional
-            Name of the source. The default is ``""``.
+            Name of the source. Default is ``""``.
 
         Returns
         -------
@@ -498,26 +527,46 @@ class Siwave(object):
         return self._pedb.source_excitation.create_dc_terminal(component_name, net_name, source_name)
 
     def create_exec_file(
-        self, add_dc=False, add_ac=False, add_syz=False, export_touchstone=False, touchstone_file_path=""
-    ):
+        self,
+        add_dc: bool = False,
+        add_ac: bool = False,
+        add_syz: bool = False,
+        export_touchstone: bool = False,
+        touchstone_file_path: str = "",
+    ) -> bool:
         """Create an executable file.
 
         Parameters
         ----------
         add_dc : bool, optional
-            Whether to add the DC option in the EXE file. The default is ``False``.
+            Whether to add the DC option in the EXE file. Default is ``False``.
         add_ac : bool, optional
-            Whether to add the AC option in the EXE file. The default is
-            ``False``.
+            Whether to add the AC option in the EXE file. Default is ``False``.
         add_syz : bool, optional
-            Whether to add the SYZ option in the EXE file
+            Whether to add the SYZ option in the EXE file. Default is ``False``.
         export_touchstone : bool, optional
-            Add the Touchstone file export option in the EXE file.
-            The default is ``False``.
+            Add the Touchstone file export option in the EXE file. Default is ``False``.
         touchstone_file_path : str, optional
-            File path for the Touchstone file. The default is ``""``.  When no path is
-            specified and ``export_touchstone=True``, the path for the project is
-            used.
+            File path for the Touchstone file. Default is ``""``. When no path is
+            specified and ``export_touchstone=True``, the project path is used.
+
+        Returns
+        -------
+        bool
+            ``True`` if file was created, ``False`` otherwise.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+        >>> # Create exec file with AC and SYZ options
+        >>> success = edbapp.siwave.create_exec_file(add_ac=True, add_syz=True)
+        >>> # Create exec file with Touchstone export
+        >>> success = edbapp.siwave.create_exec_file(
+        ...     add_ac=True,
+        ...     export_touchstone=True,
+        ...     touchstone_file_path="C:/temp/my_touchstone.s2p"
+        ... )
         """
         workdir = os.path.dirname(self._pedb.edbpath)
         file_name = os.path.join(workdir, os.path.splitext(os.path.basename(self._pedb.edbpath))[0] + ".exec")
@@ -540,44 +589,73 @@ class Siwave(object):
                     f.write('ExportTouchstone "{}"\n'.format(touchstone_file_path))
             f.write("SaveSiw\n")
 
-        return True if os.path.exists(file_name) else False
+        return file_name
+
+    def add_cpa_analysis(self, name=None, siwave_cpa_setup_class=None):
+        if not name:
+            from pyedb.generic.general_methods import generate_unique_name
+
+            if not siwave_cpa_setup_class:
+                name = generate_unique_name("cpa_setup")
+            else:
+                name = siwave_cpa_setup_class.name
+        cpa_setup = SIWaveCPASimulationSetup(self._pedb, name=name, siwave_cpa_setup_class=siwave_cpa_setup_class)
+        return cpa_setup
 
     def add_siwave_syz_analysis(
         self,
-        accuracy_level=1,
-        distribution="linear",
-        start_freq=1,
-        stop_freq=1e9,
-        step_freq=1e6,
-        discrete_sweep=False,
-    ):
+        accuracy_level: int = 1,
+        distribution: str = "linear",
+        start_freq: Union[str, float] = 1,
+        stop_freq: Union[str, float] = 1e9,
+        step_freq: Union[str, float, int] = 1e6,
+        discrete_sweep: bool = False,
+    ) -> Any:
         """Add a SIwave AC analysis to EDB.
 
         Parameters
         ----------
         accuracy_level : int, optional
-           Level of accuracy of SI slider. The default is ``1``.
+           Level of accuracy of SI slider. Default is ``1``.
         distribution : str, optional
-            Type of the sweep. The default is `"linear"`. Options are:
-            - `"linear"`
-            - `"linear_count"`
-            - `"decade_count"`
-            - `"octave_count"`
-            - `"exponential"`
+            Type of the sweep. Default is ``"linear"``. Options are:
+            - ``"linear"``
+            - ``"linear_count"``
+            - ``"decade_count"``
+            - ``"octave_count"``
+            - ``"exponential"``
         start_freq : str, float, optional
-            Starting frequency. The default is ``1``.
+            Starting frequency. Default is ``1``.
         stop_freq : str, float, optional
-            Stopping frequency. The default is ``1e9``.
+            Stopping frequency. Default is ``1e9``.
         step_freq : str, float, int, optional
-            Frequency step. The default is ``1e6``. or used for `"decade_count"`, "linear_count"`, "octave_count"`
+            Frequency step. Default is ``1e6``. Used for ``"decade_count"``, ``"linear_count"``, ``"octave_count"``
             distribution. Must be integer in that case.
         discrete_sweep : bool, optional
-            Whether the sweep is discrete. The default is ``False``.
+            Whether the sweep is discrete. Default is ``False``.
 
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
             Setup object class.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+        >>> # Add SYZ analysis with linear sweep from 1kHz to 10GHz
+        >>> setup = edbapp.siwave.add_siwave_syz_analysis(
+        ...     start_freq=1e3,
+        ...     stop_freq=10e9,
+        ...     distribution="linear"
+        ... )
+        >>> # Add SYZ analysis with decade sweep
+        >>> setup = edbapp.siwave.add_siwave_syz_analysis(
+        ...     start_freq=1e3,
+        ...     stop_freq=10e9,
+        ...     distribution="decade_count",
+        ...     step_freq=10  # 10 points per decade
+        ... )
         """
         setup = self._pedb.create_siwave_syz_setup()
         start_freq = self._pedb.number_with_units(start_freq, "Hz")
@@ -612,11 +690,8 @@ class Siwave(object):
         self.create_exec_file(add_ac=True)
         return setup
 
-    def add_siwave_dc_analysis(self, name=None):
+    def add_siwave_dc_analysis(self, name: Optional[str] = None) -> Any:
         """Add a Siwave DC analysis in EDB.
-
-        If a setup is present, it is deleted and replaced with
-        actual settings.
 
         .. note::
            Source Reference to Ground settings works only from 2021.2
@@ -637,7 +712,6 @@ class Siwave(object):
         >>> edb = Edb("pathtoaedb", edbversion="2021.2")
         >>> edb.siwave.add_siwave_ac_analysis()
         >>> edb.siwave.add_siwave_dc_analysis2("my_setup")
-
         """
         setup = self._pedb.create_siwave_dc_setup(name)
         self.create_exec_file(add_dc=True)
@@ -646,8 +720,8 @@ class Siwave(object):
     def create_pin_group_terminal(self, source):
         """Create a pin group terminal.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.create_pin_group_terminal` instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_pin_group_terminal` instead.
 
         Parameters
         ----------
@@ -671,36 +745,30 @@ class Siwave(object):
         l_value=1e-9,
         is_parallel=False,
     ):
-        """Create physical Rlc component.
+        """Create physical RLC component.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.components.create_pin_group_terminal` instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.components.create_rlc_component` instead.
 
         Parameters
         ----------
         pins : list[Edb.Cell.Primitive.PadstackInstance]
              List of EDB pins.
-
         component_name : str
             Component name.
-
         r_value : float
             Resistor value.
-
         c_value : float
             Capacitance value.
-
         l_value : float
             Inductor value.
-
         is_parallel : bool
-            Using parallel model when ``True``, series when ``False``.
+            Use parallel model when ``True``, series when ``False``.
 
         Returns
         -------
-        class:`pyedb.dotnet.database.components.Components`
+        :class:`pyedb.dotnet.database.components.Components`
             Created EDB component.
-
         """
         warnings.warn(
             "`create_rlc_component` is deprecated and is now located here "
@@ -720,8 +788,8 @@ class Siwave(object):
     def create_pin_group(self, reference_designator, pin_numbers, group_name=None):
         """Create pin group on the component.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.components.create_pin_group_terminal` instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.components.create_pin_group` instead.
 
         Parameters
         ----------
@@ -735,6 +803,7 @@ class Siwave(object):
         Returns
         -------
         PinGroup
+            Pin group object.
         """
         warnings.warn(
             "`create_pin_group` is deprecated and is now located here "
@@ -746,8 +815,8 @@ class Siwave(object):
     def create_pin_group_on_net(self, reference_designator, net_name, group_name=None):
         """Create pin group on component by net name.
 
-        . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.components.create_pin_group_terminal` instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.components.create_pin_group_on_net` instead.
 
         Parameters
         ----------
@@ -756,11 +825,12 @@ class Siwave(object):
         net_name : str
             Name of the net.
         group_name : str, optional
-            Name of the pin group. The default value is ``None``.
+            Name of the pin group.
 
         Returns
         -------
         PinGroup
+            Pin group object.
         """
         warnings.warn(
             "`create_pin_group_on_net` is deprecated and is now located here "
@@ -774,9 +844,8 @@ class Siwave(object):
     ):
         """Create current source between two pin groups.
 
-        .deprecated:: pyedb 0.28.0
-        Use: func:`pyedb.grpc.core.excitations.create_current_source_on_pin_group`
-        instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_current_source_on_pin_group` instead.
 
         Parameters
         ----------
@@ -785,16 +854,16 @@ class Siwave(object):
         neg_pin_group_name : str
             Name of the negative pin group.
         magnitude : int, float, optional
-            Magnitude of the source.
+            Magnitude of the source. Default is ``1``.
         phase : int, float, optional
-            Phase of the source
+            Phase of the source. Default is ``0``.
         name : str, optional
-            source name.
+            Source name.
 
         Returns
         -------
         bool
-
+            ``True`` when successful, ``False`` otherwise.
         """
         warnings.warn(
             "`create_current_source_on_pin_group` is deprecated and is now located here "
@@ -810,25 +879,28 @@ class Siwave(object):
     ):
         """Create voltage source between two pin groups.
 
-        .deprecated:: pyedb 0.28.0
-        Use: func:`pyedb.grpc.core.excitations.create_voltage_source_on_pin_group`
-        instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_voltage_source_on_pin_group` instead.
 
-            Parameters
-            ----------
-            pos_pin_group_name : str
-                Name of the positive pin group.
-            neg_pin_group_name : str
-                Name of the negative pin group.
-            magnitude : int, float, optional
-                Magnitude of the source.
-            phase : int, float, optional
-                Phase of the source
+        Parameters
+        ----------
+        pos_pin_group_name : str
+            Name of the positive pin group.
+        neg_pin_group_name : str
+            Name of the negative pin group.
+        magnitude : int, float, optional
+            Magnitude of the source. Default is ``1``.
+        phase : int, float, optional
+            Phase of the source. Default is ``0``.
+        name : str, optional
+            Source name.
+        impedance : float, optional
+            Source impedance. Default is ``0.001``.
 
-            Returns
-            -------
-            bool
-
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` otherwise.
         """
         warnings.warn(
             "`create_voltage_source_on_pin_group` is deprecated and is now located here "
@@ -842,9 +914,8 @@ class Siwave(object):
     def create_voltage_probe_on_pin_group(self, probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1e6):
         """Create voltage probe between two pin groups.
 
-        .deprecated:: pyedb 0.28.0
-        Use: func:`pyedb.grpc.core.excitations.create_voltage_probe_on_pin_group`
-        instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_voltage_probe_on_pin_group` instead.
 
         Parameters
         ----------
@@ -855,12 +926,12 @@ class Siwave(object):
         neg_pin_group_name : str
             Name of the negative pin group.
         impedance : int, float, optional
-            Phase of the source.
+            Probe impedance. Default is ``1e6``.
 
         Returns
         -------
         bool
-
+            ``True`` when successful, ``False`` otherwise.
         """
 
         warnings.warn(
@@ -875,9 +946,8 @@ class Siwave(object):
     def create_circuit_port_on_pin_group(self, pos_pin_group_name, neg_pin_group_name, impedance=50, name=None):
         """Create a port between two pin groups.
 
-        .deprecated:: pyedb 0.28.0
-        Use: func:`pyedb.grpc.core.excitations.create_circuit_port_on_pin_group`
-        instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.create_circuit_port_on_pin_group` instead.
 
         Parameters
         ----------
@@ -893,7 +963,7 @@ class Siwave(object):
         Returns
         -------
         bool
-
+            ``True`` when successful, ``False`` otherwise.
         """
         warnings.warn(
             "`create_circuit_port_on_pin_group` is deprecated and is now located here "
@@ -916,21 +986,20 @@ class Siwave(object):
     ):
         """Place a voltage probe between two points.
 
-        .deprecated:: pyedb 0.28.0
-        Use: func:`pyedb.grpc.core.excitations.place_voltage_probe`
-        instead.
+        .. deprecated:: pyedb 0.28.0
+            Use :func:`pyedb.grpc.core.excitations.place_voltage_probe` instead.
 
         Parameters
         ----------
-        name : str,
+        name : str
             Name of the probe.
         positive_net_name : str
             Name of the positive net.
         positive_location : list
             Location of the positive terminal.
-        positive_layer : str,
+        positive_layer : str
             Layer of the positive terminal.
-        negative_net_name : str,
+        negative_net_name : str
             Name of the negative net.
         negative_location : list
             Location of the negative terminal.
@@ -952,69 +1021,33 @@ class Siwave(object):
             negative_layer,
         )
 
-    # def create_vrm_module(
-    #     self,
-    #     name=None,
-    #     is_active=True,
-    #     voltage="3V",
-    #     positive_sensor_pin=None,
-    #     negative_sensor_pin=None,
-    #     load_regulation_current="1A",
-    #     load_regulation_percent=0.1,
-    # ):
-    #     """Create a voltage regulator module.
-    #
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         Name of the voltage regulator.
-    #     is_active : bool optional
-    #         Set the voltage regulator active or not. Default value is ``True``.
-    #     voltage ; str, float
-    #         Set the voltage value.
-    #     positive_sensor_pin : int, .class pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance
-    #         defining the positive sensor pin.
-    #     negative_sensor_pin : int, .class pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance
-    #         defining the negative sensor pin.
-    #     load_regulation_current : str or float
-    #         definition the load regulation current value.
-    #     load_regulation_percent : float
-    #         definition the load regulation percent value.
-    #     """
-    #     from pyedb.grpc.database.voltage_regulator import VoltageRegulator
-    #
-    #     voltage = self._pedb.edb_value(voltage)
-    #     load_regulation_current = self._pedb.edb_value(load_regulation_current)
-    #     load_regulation_percent = self._pedb.edb_value(load_regulation_percent)
-    #     edb_vrm = self._edb_object = self._pedb._edb.Cell.VoltageRegulator.Create(
-    #         self._pedb.active_layout, name, is_active, voltage, load_regulation_current, load_regulation_percent
-    #     )
-    #     vrm = VoltageRegulator(self._pedb, edb_vrm)
-    #     if positive_sensor_pin:
-    #         vrm.positive_remote_sense_pin = positive_sensor_pin
-    #     if negative_sensor_pin:
-    #         vrm.negative_remote_sense_pin = negative_sensor_pin
-    #     return vrm
-
-    @property
-    def icepak_use_minimal_comp_defaults(self):
-        """Icepak default setting. If "True", only resistor are active in Icepak simulation.
-        The power dissipation of the resistors are calculated from DC results.
-        """
-        return self._pedb.active_cell.get_product_property(GrpcProductIdType.SIWAVE, 422).value
-
-    def create_impedance_crosstalk_scan(self, scan_type="impedance"):
-        """Create Siwave crosstalk scan object
+    def create_impedance_crosstalk_scan(self, scan_type: str = "impedance") -> "SiwaveScanConfig":
+        """Create Siwave crosstalk scan object.
 
         Parameters
         ----------
-        scan_type : str
-            Scan type to be analyzed. 3 options are available, ``impedance`` for frequency impedance scan,
-            ``frequency_xtalk`` for frequency domain crosstalk and ``time_xtalk`` for time domain crosstalk.
-            Default value is ``frequency``.
+        scan_type : str, optional
+            Scan type to be analyzed. Options are:
+            - ``"impedance"`` for frequency impedance scan
+            - ``"frequency_xtalk"`` for frequency domain crosstalk
+            - ``"time_xtalk"`` for time domain crosstalk
+            Default is ``"impedance"``.
 
+        Returns
+        -------
+        SiwaveScanConfig
+            Scan configuration object.
         """
         return SiwaveScanConfig(self._pedb, scan_type)
+
+    @property
+    def icepak_use_minimal_comp_defaults(self) -> bool:
+        """Icepak default setting.
+
+        If ``True``, only resistors are active in Icepak simulation and power dissipation
+        is calculated from DC results.
+        """
+        return self._pedb.active_cell.get_product_property(GrpcProductIdType.SIWAVE, 422).value
 
     @icepak_use_minimal_comp_defaults.setter
     def icepak_use_minimal_comp_defaults(self, value):
@@ -1022,10 +1055,9 @@ class Siwave(object):
         self._pedb.active_cell.set_product_property(GrpcProductIdType.SIWAVE, 422, value)
 
     @property
-    def icepak_component_file(self):
+    def icepak_component_file(self) -> str:
         """Icepak component file path."""
         return self._pedb.active_cell.get_product_property(GrpcProductIdType.SIWAVE, 420).value
-        return value
 
     @icepak_component_file.setter
     def icepak_component_file(self, value):

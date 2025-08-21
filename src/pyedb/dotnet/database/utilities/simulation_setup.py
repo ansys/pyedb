@@ -86,7 +86,7 @@ class SimulationSetup(object):
             "kNumSetupTypes": None,
         }
 
-        if float(self._pedb.edbversion) >= 2024.2:
+        if float(self._pedb.version) >= 2024.2:
             self._simulation_setup_type.update(
                 {
                     "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings,
@@ -169,7 +169,7 @@ class SimulationSetup(object):
             "kNumSetupTypes": None,
         }
 
-        if float(self._pedb.edbversion) >= 2024.2:
+        if float(self._pedb.version) >= 2024.2:
             setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
             setup_type_mapping["kHFSSPI"] = utility.HFSSPISimulationSetup
         sim_setup_type = self.sim_setup_info.sim_setup_type
@@ -377,5 +377,5 @@ class SimulationSetup(object):
         ...     ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
         ...     ])
         """
-        warnings.warn("`create_component_from_pins` is deprecated. Use `add_sweep` method instead.", DeprecationWarning)
+        warnings.warn("`add_frequency_sweep` is deprecated. Use `add_sweep` method instead.", DeprecationWarning)
         return self.add_sweep(name, frequency_sweep)

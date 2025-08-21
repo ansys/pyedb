@@ -26,28 +26,22 @@ import atexit
 import os
 import signal
 import sys
+import time
 
 import ansys.edb.core.database as database
 
 from pyedb import __version__
-from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import env_path, env_value, is_linux
+from pyedb.generic.settings import settings
 from pyedb.grpc.rpc_session import RpcSession
-from pyedb.misc.misc import list_installed_ansysem
 
 
 class EdbInit(object):
     """Edb Dot Net Class."""
 
     def __init__(self, edbversion):
-        self.logger = pyedb_logger
+        self.logger = settings.logger
         self._db = None
-        if not edbversion:  # pragma: no cover
-            try:
-                edbversion = "20{}.{}".format(list_installed_ansysem()[0][-3:-1], list_installed_ansysem()[0][-1:])
-                self.logger.info("Edb version " + edbversion)
-            except IndexError:
-                raise Exception("No ANSYSEM_ROOTxxx is found.")
         self.edbversion = edbversion
         self.logger.info("Logger is initialized in EDB.")
         self.logger.info("legacy v%s", __version__)
@@ -78,14 +72,14 @@ class EdbInit(object):
 
     @staticmethod
     def _signal_handler(signum=None, frame=None):
-        RpcSession.kill()
+        RpcSession.kill_all_instances()
 
     @property
     def db(self):
         """Active database object."""
         return self._db
 
-    def create(self, db_path, port=0, restart_rpc_server=False):
+    def _create(self, db_path, port=0, restart_rpc_server=False):
         """Create a Database at the specified file location.
 
         Parameters
@@ -115,7 +109,7 @@ class EdbInit(object):
         self._db = database.Database.create(db_path)
         return self._db
 
-    def open(self, db_path, read_only, port=0, restart_rpc_server=False):
+    def _open(self, db_path, read_only, port=0, restart_rpc_server=False):
         """Open an existing Database at the specified file location.
 
         Parameters
@@ -159,7 +153,32 @@ class EdbInit(object):
 
     def save(self):
         """Save any changes into a file."""
-        return self._db.save()
+        self._db.save()
+        return True
+
+    def _wait_for_file_release(self, timeout=30, file_to_release=None) -> bool:
+        # if not file_to_release:
+        #     file_to_release = os.path.join(self.edbpath)
+        tstart = time.time()
+        while True:
+            if self._is_file_existing_and_released(file_to_release):
+                return True
+            elif time.time() - tstart > timeout:
+                return False
+            else:
+                time.sleep(0.250)
+
+    @staticmethod
+    def _is_file_existing_and_released(filename) -> bool:
+        if os.path.exists(filename):
+            try:
+                os.rename(filename, filename + "_")
+                os.rename(filename + "_", filename)
+                return True
+            except OSError as e:
+                return False
+        else:
+            return False
 
     def close(self, terminate_rpc_session=True):
         """Close the database.
@@ -167,17 +186,37 @@ class EdbInit(object):
         Parameters
         ----------
         terminate_rpc_session : bool, optional
-
+            Terminate RPC session when closing the database. The default value is `True`.
 
         . note::
-            Unsaved changes will be lost.
+            Unsaved changes will be lost. If multiple databases are open and RPC session is terminated, the connection
+            with all databases will be lost. You might be careful and set to `False` until the last open database
+            remains.
         """
         self._db.close()
         self._db = None
         if terminate_rpc_session:
             RpcSession.rpc_session.disconnect()
             RpcSession.pid = 0
+        self._clean_variables()
         return True
+
+    def _clean_variables(self):
+        """Initialize internal variables and perform garbage collection."""
+        self.grpc = True
+        self._materials = None
+        self._components = None
+        self._core_primitives = None
+        self._stackup = None
+        self._padstack = None
+        self._siwave = None
+        self._hfss = None
+        self._nets = None
+        self._layout_instance = None
+        self._variables = None
+        self._active_cell = None
+        self._layout = None
+        self._configuration = None
 
     @property
     def top_circuit_cells(self):
@@ -257,6 +296,9 @@ class EdbInit(object):
             EDB version to save to. Empty string means current version.
         """
         self._db.save_as(path, version)
+        if os.path.exists(path):
+            return True
+        return False
 
     @property
     def directory(self):
