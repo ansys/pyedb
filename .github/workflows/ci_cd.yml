@@ -65,6 +65,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Import python package
+        shell: bash
         run: |
           ${{ steps.build-wheelhouse.outputs.activate-venv }}
           python -c "import pyedb; from pyedb import __version__"
