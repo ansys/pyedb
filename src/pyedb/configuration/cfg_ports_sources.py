@@ -596,6 +596,9 @@ class CfgSource(CfgCircuitElement):
                 elem = create_xxx_source(j, self.neg_terminal[name])
             else:
                 elem = create_xxx_source(j, self.neg_terminal)
+
+            elem.impedance = 5e7 if self.type == "current" else 1e-6
+
             if self._elem_num == 1:
                 elem.name = self.name
                 elem.magnitude = self.magnitude
