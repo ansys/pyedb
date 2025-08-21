@@ -26,7 +26,7 @@ import os
 from mock import MagicMock, PropertyMock, patch
 import pytest
 
-from pyedb.generic.design_types import Edb
+from pyedb import Edb
 from tests.conftest import desktop_version
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
