@@ -274,6 +274,7 @@ jobs:
     runs-on: [ Linux, self-hosted, pyedb ]
     env:
       ANSYSEM_ROOT251: '/usr/ansys_inc/v251/AnsysEM'
+      ANSYSEM_ROOT252: '/usr/ansys_inc/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
