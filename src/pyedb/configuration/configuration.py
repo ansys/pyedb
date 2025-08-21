@@ -488,28 +488,17 @@ class Configuration:
                         auto_identify_nets.get("exception_list", []),
                     )
                     signal_nets = []
-                    for i in self._pedb.ports.values():
-                        # Positive terminal
+                    for i in self._pedb.terminals.values():
+                        if i.net_name in reference_list:
+                            continue
+
                         extended_net = i.net.extended_net
                         if extended_net:
                             temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_list]
                             temp = [i2 for i2 in temp if i2 not in signal_nets]
                             signal_nets.extend(temp)
                         else:
-                            signal_nets.append(i.net.name)
-
-                        # Negative terminal
-                        ref_net = i.ref_terminal.net if i.ref_terminal else None
-                        if ref_net is None:
-                            continue
-                        elif ref_net.name not in reference_list:
-                            extended_net = ref_net.extended_net
-                            if extended_net:
-                                temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_list]
-                                temp = [i2 for i2 in temp if i2 not in signal_nets]
-                                signal_nets.extend(temp)
-                            else:
-                                signal_nets.append(ref_net.name)
+                            signal_nets.append(i.net_name)
 
                     cutout_params["signal_list"] = signal_nets
             polygon_points = self._pedb.cutout(**cutout_params)
