@@ -288,6 +288,7 @@ class TestClass(BaseTestClass):
                     "name": "CIRCUIT_C375_1_2",
                     "reference_designator": "C375",
                     "type": "circuit",
+                    "impedance": "1ohm",
                     "positive_terminal": {"pin": "1"},
                     "negative_terminal": {"pin": "2"},
                 },
@@ -326,6 +327,7 @@ class TestClass(BaseTestClass):
         assert "CIRCUIT_C376_1_2" in edbapp.ports
         assert "CIRCUIT_X1_B8_GND" in edbapp.ports
         assert "CIRCUIT_U7_VDD_DDR_GND" in edbapp.ports
+        assert edbapp.ports["CIRCUIT_C375_1_2"].impedance == pytest.approx(1)
         data_from_db = edbapp.configuration.get_data_from_db(ports=True, pin_groups=True)
         assert data_from_db["ports"]
         edbapp.close(terminate_rpc_session=False)
@@ -1038,6 +1040,7 @@ class TestClass(BaseTestClass):
                 "name": "VSOURCE_U2_1V0_GND",
                 "reference_designator": "U2",
                 "type": "voltage",
+                "impedance": 1,
                 "magnitude": 1,
                 "distributed": False,
                 "positive_terminal": {"net": "1V0"},
@@ -1052,6 +1055,7 @@ class TestClass(BaseTestClass):
         src_from_db = edbapp.configuration.cfg_data.sources.export_properties()
         assert src_from_db[0]["name"] == "VSOURCE_U2_1V0_GND"
         assert src_from_db[0]["type"] == "voltage"
+        assert src_from_db[0]["impedance"] == 1
         assert src_from_db[0]["magnitude"] == 1
         assert src_from_db[0]["positive_terminal"] == {"pin_group": "pg_VSOURCE_U2_1V0_GND_U2"}
         assert src_from_db[0]["negative_terminal"] == {"pin_group": "pg_VSOURCE_U2_1V0_GND_U2_ref"}

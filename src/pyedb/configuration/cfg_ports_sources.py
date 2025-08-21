@@ -130,6 +130,7 @@ class CfgSources:
                 self._pedb,
                 name=name,
                 type=src_type,
+                impedance=src.impedance,
                 magnitude=magnitude,
                 reference_designator=refdes,
                 positive_terminal=pos_term_info,
@@ -236,6 +237,7 @@ class CfgPorts:
                     self._pedb,
                     name=p.name,
                     type=port_type,
+                    impedance=p.impedance,
                     reference_designator=refdes,
                     positive_terminal=pos_term_info,
                     negative_terminal=neg_term_info,
@@ -245,6 +247,7 @@ class CfgPorts:
                     self._pedb,
                     name=p.name,
                     type=port_type,
+                    impedance=p.impedance,
                     reference_designator=refdes,
                     positive_terminal=pos_term_info,
                 )
@@ -275,6 +278,7 @@ class CfgCircuitElement(CfgBase):
         self._pedb = pedb
         self.name = kwargs["name"]
         self.type = kwargs["type"]
+        self.impedance = kwargs.get("impedance", 50)
         self.reference_designator = kwargs.get("reference_designator", None)
         self.distributed = kwargs.get("distributed", False)
         self._elem_num = 1
@@ -558,6 +562,7 @@ class CfgPort(CfgCircuitElement):
                 elem = self._pedb.create_port(j, self.neg_terminal[name], is_circuit_port)
             else:
                 elem = self._pedb.create_port(j, self.neg_terminal, is_circuit_port)
+            elem.impedance = self.impedance if self.impedance else self._pedb.edb_value(50)
             if not self.distributed:
                 elem.name = self.name
             circuit_elements.append(elem)
@@ -567,6 +572,7 @@ class CfgPort(CfgCircuitElement):
         data = {
             "name": self.name,
             "type": self.type,
+            "impedance": self.impedance,
             "reference_designator": self.reference_designator,
             "positive_terminal": self.positive_terminal_info.export_properties(),
         }
@@ -597,7 +603,10 @@ class CfgSource(CfgCircuitElement):
             else:
                 elem = create_xxx_source(j, self.neg_terminal)
 
-            elem.impedance = 5e7 if self.type == "current" else 1e-6
+            if self.impedance:
+                elem.impedance = self.impedance
+            else:
+                elem.impedance = 5e7 if self.type == "current" else 1e-6
 
             if self._elem_num == 1:
                 elem.name = self.name
@@ -653,6 +662,7 @@ class CfgSource(CfgCircuitElement):
             "name": self.name,
             "reference_designator": self.reference_designator,
             "type": self.type,
+            "impedance": self.impedance,
             "magnitude": self.magnitude,
             "positive_terminal": self.positive_terminal_info.export_properties(),
             "negative_terminal": self.negative_terminal_info.export_properties(),
