@@ -705,7 +705,6 @@ class ViaDesignBackendV2:  # pragma: no cover
             "modeler": {"traces": [], "planes": [], "padstack_definitions": [], "padstack_instances": []},
         }
 
-
         self.cfg = cfg
         self.version = self.cfg["general"]["version"]
         outline_extent = self.cfg["placement"]["outline_extent"]
@@ -728,9 +727,7 @@ class ViaDesignBackendV2:  # pragma: no cover
         self.output_dir.mkdir(parents=True, exist_ok=True)
         with open(self.output_dir / "config.json", "w") as f:
             json.dump(self.cfg_json, f, indent=4)
-        app = Edb(
-            edbpath=str((Path(self.output_dir) / self.cfg["title"]).with_suffix(".aedb")), version=self.version
-        )
+        app = Edb(edbpath=str((Path(self.output_dir) / self.cfg["title"]).with_suffix(".aedb")), version=self.version)
         app.configuration.load(self.cfg_json, apply_file=True)
         app.save()
         app.close()
