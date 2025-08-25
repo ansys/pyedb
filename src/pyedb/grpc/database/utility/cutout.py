@@ -72,7 +72,7 @@ def extent_from_nets(edb, signal_nets, expansion, extent_type, **kw):
         poly = edb.layout.expanded_extent(
             nets=nets,
             extent=GrpcExtentType.CONFORMING,
-            expansion_factor=expansion,
+            expansion_factor=edb.value(expansion),
             expansion_unitless=False,
             use_round_corner=kw.get("use_round_corner", False),
             num_increments=1,
