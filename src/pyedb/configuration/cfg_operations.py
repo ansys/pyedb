@@ -44,5 +44,10 @@ class CfgCutout(BaseModel):
     expansion_factor: Optional[float] = 0
 
 
+
+
 class CfgOperations(BaseModel):
     cutout: Optional[CfgCutout] = None
+
+    def add_cutout(self, **kwargs):
+        self.cutout = CfgCutout(**kwargs)

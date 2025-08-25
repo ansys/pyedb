@@ -507,21 +507,29 @@ class Configuration:
                 self._pedb.modeler.create_polygon(polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout")
 
     def get_operations(self):
-        op_cutout = self.cfg_data.operations.cutout
-        if "pyedb_cutout" in self._pedb.stackup.all_layers:
-            polygons = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")
-            if polygons:
-                poly = polygons[0]
-                op_cutout.custom_extent = poly.polygon_data.points
-                net_names = []
-                for name, obj in self._pedb.nets.nets.items():
-                    if obj.primitives:
-                        if obj.primitives[0].layer.name == "pyedb_cutout":
-                            continue
-                        else:
-                            net_names.append(name)
-                op_cutout.reference_list = []
-                op_cutout.signal_list = net_names
+
+        if "pyedb_cutout" not in self._pedb.stackup.all_layers:
+            return
+
+        polygons = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")
+        if polygons:
+            poly = polygons[0]
+            custom_extent = poly.polygon_data.points
+            net_names = []
+            for name, obj in self._pedb.nets.nets.items():
+                if obj.primitives:
+                    if obj.primitives[0].layer.name == "pyedb_cutout":
+                        continue
+                    else:
+                        net_names.append(name)
+            reference_list = []
+            signal_list = net_names
+
+            self.cfg_data.operations.add_cutout(
+                custom_extent=custom_extent,
+                reference_list=reference_list,
+                signal_list=signal_list,
+            )
 
     def export(
         self,
