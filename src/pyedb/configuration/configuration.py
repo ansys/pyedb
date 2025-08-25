@@ -507,7 +507,6 @@ class Configuration:
                 self._pedb.modeler.create_polygon(polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout")
 
     def get_operations(self):
-
         if "pyedb_cutout" not in self._pedb.stackup.all_layers:
             return
 

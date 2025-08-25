@@ -44,8 +44,6 @@ class CfgCutout(BaseModel):
     expansion_factor: Optional[float] = 0
 
 
-
-
 class CfgOperations(BaseModel):
     cutout: Optional[CfgCutout] = None
 
