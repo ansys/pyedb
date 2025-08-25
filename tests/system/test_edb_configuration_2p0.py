@@ -624,6 +624,15 @@ class TestClass(BaseTestClass):
                     "positive_terminal": {"pin": "AP18"},
                 }
             ],
+            "sources": [
+                {
+                    "name": "VSOURCE_1",
+                    "reference_designator": "U1",
+                    "type": "voltage",
+                    "positive_terminal": {"pin": "AH23"},
+                    "negative_terminal": {"net": "GND"},
+                },
+            ],
             "operations": {
                 "cutout": {
                     "auto_identify_nets": {
@@ -639,7 +648,7 @@ class TestClass(BaseTestClass):
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        assert {"PCIe_Gen4_TX3_CAP_P", "PCIe_Gen4_TX3_P"}.issubset(edbapp.nets.nets.keys())
+        assert {"PCIe_Gen4_TX3_CAP_P", "PCIe_Gen4_TX3_P", "PCIe_Gen4_RX3_N"}.issubset(edbapp.nets.nets.keys())
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
