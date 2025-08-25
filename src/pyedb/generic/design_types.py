@@ -278,10 +278,9 @@ def Edb(
                 raise RuntimeWarning("AEDT is not properly installed.")
             else:
                 settings.specified_version = settings.LATEST_VERSION
-    elif not isinstance(version, str):
-        raise ValueError("edbversion must be a string.")
     else:
         # Version is specified
+        version = str(version)
         if student_version:
             if version not in settings.INSTALLED_STUDENT_VERSIONS:
                 raise RuntimeWarning(f"AEDT student version {version} is not properly installed.")

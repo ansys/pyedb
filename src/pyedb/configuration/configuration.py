@@ -488,28 +488,17 @@ class Configuration:
                         auto_identify_nets.get("exception_list", []),
                     )
                     signal_nets = []
-                    for i in self._pedb.ports.values():
-                        # Positive terminal
+                    for i in self._pedb.terminals.values():
+                        if i.net_name in reference_list:
+                            continue
+
                         extended_net = i.net.extended_net
                         if extended_net:
                             temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_list]
                             temp = [i2 for i2 in temp if i2 not in signal_nets]
                             signal_nets.extend(temp)
                         else:
-                            signal_nets.append(i.net.name)
-
-                        # Negative terminal
-                        ref_net = i.ref_terminal.net if i.ref_terminal else None
-                        if ref_net is None:
-                            continue
-                        elif ref_net.name not in reference_list:
-                            extended_net = ref_net.extended_net
-                            if extended_net:
-                                temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_list]
-                                temp = [i2 for i2 in temp if i2 not in signal_nets]
-                                signal_nets.extend(temp)
-                            else:
-                                signal_nets.append(ref_net.name)
+                            signal_nets.append(i.net_name)
 
                     cutout_params["signal_list"] = signal_nets
             polygon_points = self._pedb.cutout(**cutout_params)
@@ -518,21 +507,28 @@ class Configuration:
                 self._pedb.modeler.create_polygon(polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout")
 
     def get_operations(self):
-        op_cutout = self.cfg_data.operations.cutout
-        if "pyedb_cutout" in self._pedb.stackup.all_layers:
-            polygons = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")
-            if polygons:
-                poly = polygons[0]
-                op_cutout.custom_extent = poly.polygon_data.points
-                net_names = []
-                for name, obj in self._pedb.nets.nets.items():
-                    if obj.primitives:
-                        if obj.primitives[0].layer.name == "pyedb_cutout":
-                            continue
-                        else:
-                            net_names.append(name)
-                op_cutout.reference_list = []
-                op_cutout.signal_list = net_names
+        if "pyedb_cutout" not in self._pedb.stackup.all_layers:
+            return
+
+        polygons = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")
+        if polygons:
+            poly = polygons[0]
+            custom_extent = poly.polygon_data.points
+            net_names = []
+            for name, obj in self._pedb.nets.nets.items():
+                if obj.primitives:
+                    if obj.primitives[0].layer.name == "pyedb_cutout":
+                        continue
+                    else:
+                        net_names.append(name)
+            reference_list = []
+            signal_list = net_names
+
+            self.cfg_data.operations.add_cutout(
+                custom_extent=custom_extent,
+                reference_list=reference_list,
+                signal_list=signal_list,
+            )
 
     def export(
         self,

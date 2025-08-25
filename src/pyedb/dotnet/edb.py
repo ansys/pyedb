@@ -360,14 +360,9 @@ class Edb:
         from pyedb import __version__
         from pyedb.dotnet.clr_module import _clr, edb_initialized
 
-        if not settings.use_pyaedt_log:
-            if settings.enable_screen_logs:
-                self.logger.enable_stdout_log()
-            else:  # pragma: no cover
-                self.logger.disable_stdout_log()
         if not edb_initialized:  # pragma: no cover
             raise RuntimeWarning("Failed to initialize Dlls.")
-        self.logger.info("Logger is initialized in EDB.")
+        self.logger.info(f"Logger is initialized. Log file is saved to {self.logger.log_file}.")
         self.logger.info("legacy v%s", __version__)
         self.logger.info("Python version %s", sys.version)
 
