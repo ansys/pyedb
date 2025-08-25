@@ -1,0 +1,6 @@
+via\_mesh\_plating
+==================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+.. autoproperty:: ViaSettings.via_mesh_plating

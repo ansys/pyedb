@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.grpc.database.net.net
+
+.. automethod:: Net.delete

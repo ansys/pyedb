@@ -1,0 +1,34 @@
+﻿CfgSweepData
+============
+
+.. currentmodule:: pyedb.configuration.cfg_setup
+
+.. autoclass:: CfgSweepData
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgSweepData.get_attributes
+      
+      
+      CfgSweepData.set_attributes
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CfgSweepData.protected_attributes
+   
+   

@@ -1,0 +1,6 @@
+net
+===
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoproperty:: Node.net

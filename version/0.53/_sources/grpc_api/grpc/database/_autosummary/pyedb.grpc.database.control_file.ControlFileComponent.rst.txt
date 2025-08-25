@@ -1,0 +1,27 @@
+﻿ControlFileComponent
+====================
+
+.. currentmodule:: pyedb.grpc.database.control_file
+
+.. autoclass:: ControlFileComponent
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      ControlFileComponent.add_pin
+      
+      
+      ControlFileComponent.add_port
+      
+   
+   
+
+   
+   
+   

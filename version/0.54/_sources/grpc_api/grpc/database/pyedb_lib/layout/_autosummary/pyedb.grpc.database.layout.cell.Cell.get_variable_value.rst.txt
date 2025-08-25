@@ -1,0 +1,6 @@
+get\_variable\_value
+====================
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. automethod:: Cell.get_variable_value

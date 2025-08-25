@@ -1,0 +1,6 @@
+contact\_radius
+===============
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoproperty:: DCSettings.contact_radius

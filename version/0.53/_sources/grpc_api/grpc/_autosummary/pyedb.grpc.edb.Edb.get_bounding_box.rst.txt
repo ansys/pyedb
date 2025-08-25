@@ -1,0 +1,6 @@
+get\_bounding\_box
+==================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.get_bounding_box

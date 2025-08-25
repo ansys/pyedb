@@ -1,0 +1,6 @@
+create
+======
+
+.. currentmodule:: pyedb.grpc.database.terminal.padstack_instance_terminal
+
+.. automethod:: PadstackInstanceTerminal.create

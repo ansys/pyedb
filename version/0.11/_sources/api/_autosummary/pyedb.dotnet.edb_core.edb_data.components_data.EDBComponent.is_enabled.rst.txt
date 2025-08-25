@@ -1,0 +1,6 @@
+is\_enabled
+===========
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.components_data
+
+.. autoproperty:: EDBComponent.is_enabled

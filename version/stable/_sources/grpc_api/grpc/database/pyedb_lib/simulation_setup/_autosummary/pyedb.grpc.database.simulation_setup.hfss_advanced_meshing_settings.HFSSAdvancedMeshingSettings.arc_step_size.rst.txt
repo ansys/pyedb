@@ -1,0 +1,6 @@
+arc\_step\_size
+===============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings
+
+.. autoproperty:: HFSSAdvancedMeshingSettings.arc_step_size

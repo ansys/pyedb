@@ -1,0 +1,6 @@
+layout\_obj\_type
+=================
+
+.. currentmodule:: pyedb.grpc.database.layout.voltage_regulator
+
+.. autoattribute:: VoltageRegulator.layout_obj_type

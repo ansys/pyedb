@@ -1,0 +1,6 @@
+terminal\_pin\_pairs
+====================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.spice_model
+
+.. autoproperty:: SpiceModel.terminal_pin_pairs

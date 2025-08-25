@@ -1,0 +1,6 @@
+set\_attributes
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_package_definition
+
+.. automethod:: CfgPackage.set_attributes

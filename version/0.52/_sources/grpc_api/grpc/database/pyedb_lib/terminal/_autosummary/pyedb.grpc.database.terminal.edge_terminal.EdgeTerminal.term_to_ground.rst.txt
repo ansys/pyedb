@@ -1,0 +1,6 @@
+term\_to\_ground
+================
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. autoproperty:: EdgeTerminal.term_to_ground

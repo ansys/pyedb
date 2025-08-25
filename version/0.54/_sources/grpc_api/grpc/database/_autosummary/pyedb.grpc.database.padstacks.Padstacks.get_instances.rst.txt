@@ -1,0 +1,6 @@
+get\_instances
+==============
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.get_instances

@@ -1,0 +1,6 @@
+group
+=====
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. autoproperty:: Primitive.group

@@ -1,0 +1,6 @@
+real
+====
+
+.. currentmodule:: pyedb.grpc.database.utility.value
+
+.. autoattribute:: Value.real

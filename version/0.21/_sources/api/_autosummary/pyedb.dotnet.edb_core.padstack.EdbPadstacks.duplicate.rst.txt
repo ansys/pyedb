@@ -1,0 +1,6 @@
+duplicate
+=========
+
+.. currentmodule:: pyedb.dotnet.edb_core.padstack
+
+.. automethod:: EdbPadstacks.duplicate

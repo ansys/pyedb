@@ -1,0 +1,6 @@
+reduce\_via\_in\_bounding\_box
+==============================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.reduce_via_in_bounding_box
