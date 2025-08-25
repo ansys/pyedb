@@ -2072,6 +2072,7 @@ class Edb:
 
 
         """
+        expansion_factor = self.value(expansion_factor)
         if expansion_factor > 0:
             expansion_size = self.calculate_initial_extent(expansion_factor)
         if signal_list is None:
