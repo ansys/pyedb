@@ -33,7 +33,7 @@ class HFSSAdvancedSettings(GrpcHFSSAdvancedSettings):
         self._pedb = pedb
 
     @property
-    def via_model_type(self):
+    def via_model_type(self) -> str:
         """Via model.
 
         Returns

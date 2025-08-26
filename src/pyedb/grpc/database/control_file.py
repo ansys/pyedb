@@ -25,29 +25,167 @@ import os
 import re
 import subprocess
 import sys
+from typing import Any, Dict, List, Optional, Union
 
-from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import ET, env_path, env_value, is_linux
+from pyedb.generic.settings import settings
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 from pyedb.misc.misc import list_installed_ansysem
 
 
 def convert_technology_file(tech_file, edbversion=None, control_file=None):
-    """Convert a technology file to edb control file (xml).
+    """Convert a technology file to EDB control file (XML).
 
-    Parameters
-    ----------
-    tech_file : str
-        Full path to technology file
-    edbversion : str,  optional
-            Edb version to use. Default is `None` to use latest available version of Edb.
-    control_file : str,  optional
-            Control file output file. Default is `None` to use same path and same name of `tech_file`.
+        Parameters
+        ----------
+        tech_file : str
+            Full path to technology file.
+        edbversion : str, optional
+            EDB version to use. If ``None``, uses latest available version.
+        control_file : str, optional
+            Output control file path. If ``None``, uses same path and name as ``tech_file``.
 
-    Returns
-    -------
-    str
-        Control file full path if created.
+        Returns
+        -------
+        str or bool
+            Full path to created control file if successful, ``False`` otherwise.
+
+        Notes
+        -----
+        This function is only supported on Linux systems.
+
+        Example
+        -------
+        # Example 1: Converting a technology file to control file
+    >>> converted_file = convert_technology_file(
+    >>> tech_file="/path/to/tech.t",
+    >>> edbversion="2025.2",
+    >>> control_file="/path/to/output.xml"
+    >>> )
+    >>> if converted_file:
+    >>> print(f"Converted to: {converted_file}")
+
+        # Example 2: Creating a material
+    >>> from pyedb import ControlFileMaterial
+    >>> material = ControlFileMaterial(
+    >>> "Copper",
+    >>> {"Permittivity": 1.0, "Conductivity": 5.8e7}
+    >>> )
+
+        # Example 3: Creating a dielectric layer
+    >>> from pyedb import ControlFileDielectric
+    >>> dielectric = ControlFileDielectric(
+    >>> "Core",
+    >>> {"Thickness": "0.2mm", "Material": "FR4"}
+    >>> )
+
+        # Example 4: Creating a signal layer
+    >>> from pyedb import ControlFileLayer
+    >>> signal_layer = ControlFileLayer(
+    >>> "TopLayer",
+    >>> {"Type": "signal", "Material": "Copper", "Thickness": "0.035mm"}
+    >>> )
+
+        # Example 5: Creating a via layer
+    >>> from pyedb import ControlFileVia
+    >>> via_layer = ControlFileVia(
+    >>> "Via1",
+    >>> {"StartLayer": "TopLayer", "StopLayer": "BottomLayer"}
+    >>> )
+    >>> via_layer.create_via_group = True
+    >>> via_layer.tolerance = "0.1mm"
+
+        # Example 6: Managing stackup
+    >>> from pyedb import ControlFileStackup
+    >>> stackup = ControlFileStackup(units="mm")
+    >>> stackup.add_material("FR4", permittivity=4.4, dielectric_loss_tg=0.02)
+    >>> stackup.add_layer("L1", elevation=0, material="Copper", thickness=0.035)
+    >>> stackup.add_dielectric("Diel1", material="FR4", thickness=0.2)
+    >>> stackup.add_via("Via1", start_layer="L1", stop_layer="L2")
+
+        # Example 7: Configuring import options
+    >>> from pyedb import ControlFileImportOptions
+    >>> import_ops = ControlFileImportOptions()
+    >>> import_ops.auto_close = True
+    >>> import_ops.defeature_tolerance = 0.001
+
+        # Example 8: Setting up simulation extents
+    >>> from pyedb import ControlExtent
+    >>> extent = ControlExtent(
+    >>> type="Conforming",
+    >>> diel_hactor=0.3,
+    >>> airbox_hfactor=0.5
+    >>> )
+
+        # Example 9: Creating circuit ports
+    >>> from pyedb import ControlCircuitPt
+    >>> port = ControlCircuitPt("Port1", 0, 0, "TopLayer", 1, 0, "TopLayer", 50)
+
+        # Example 10: Managing components
+    >>> from pyedb import ControlFileComponent
+    >>> comp = ControlFileComponent()
+    >>> comp.refdes = "U1"
+    >>> comp.add_pin("Pin1", 0.5, 0.5, "TopLayer")
+    >>> comp.add_port("Port1", 50, "Pin1", refpin="GND")
+
+        # Example 11: Component management
+    >>> from pyedb import ControlFileComponents
+    >>> components = ControlFileComponents()
+    >>> ic = components.add_component("U1", "BGA", "IC", die_type="Flip chip")
+    >>> ic.add_pin("A1", 1.0, 1.0, "TopLayer")
+
+         # Example 12: Boundary setup
+    >>> from pyedb import ControlFileBoundaries
+    >>> boundaries = ControlFileBoundaries()
+    >>> boundaries.add_port("Port1", 0, 0, "L1", 1, 0, "L1", 50)
+    >>> boundaries.add_extent(diel_hactor=0.3)
+
+        # Example 13: Frequency sweep configuration
+    >>> from pyedb import ControlFileSweep
+    >>> sweep = ControlFileSweep(
+    >>> "Sweep1", "1GHz", "10GHz", "0.1GHz",
+    >>> "Interpolating", "LinearStep", True
+    >>> )
+
+        # Example 14: Mesh operation setup
+    >>> from pyedb import ControlFileMeshOp
+    >>> mesh_op = ControlFileMeshOp(
+    >>> "FineMesh", "Region1", "MeshOperationSkinDepth",
+    >>> {"Net1": "TopLayer"}
+    >>> )
+    >>> mesh_op.skin_depth = "1um"
+
+        # Example 15: Simulation setup configuration
+    >>> from pyedb import ControlFileSetup
+    >>> setup = ControlFileSetup("SimSetup1")
+    >>> setup.frequency = "5GHz"
+    >>> setup.add_sweep("Sweep1", "1GHz", "10GHz", "0.5GHz")
+    >>> setup.add_mesh_operation("Mesh1", "Chip", "MeshOperationLength", {"PWR": "Top"})
+
+        # Example 16: Setup management
+    >>> from pyedb import ControlFileSetups
+    >>> setups = ControlFileSetups()
+    >>> sim_setup = setups.add_setup("MySetup", "10GHz")
+    >>> sim_setup.add_sweep("Swp1", "1GHz", "20GHz", 100, step_type="LinearCount")
+
+        # Example 17: Main control file creation
+    >>> from pyedb import ControlFile
+
+        # Create from scratch
+    >>> ctrl = ControlFile()
+    >>> ctrl.stackup.add_material("Copper", conductivity=5.8e7)
+    >>> ctrl.stackup.add_layer("Signal", thickness=0.035, material="Copper")
+    >>> ctrl.boundaries.add_port("Input", 0, 0, "Signal", 1, 0, "Signal", 50)
+    >>> ctrl.write_xml("/path/to/control.xml")
+
+        # Parse existing file
+    >>> ctrl = ControlFile(xml_input="/path/to/existing.xml")
+
+        # Convert technology file
+    >>> ctrl = ControlFile(tecnhology="/path/to/tech.t")
+
+        # Apply layer mapping
+    >>> ctrl.parse_layer_map("/path/to/layer_map.txt")
     """
     if is_linux:  # pragma: no cover
         if not edbversion:
@@ -56,7 +194,7 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
             base_path = env_path(edbversion)
             sys.path.append(base_path)
         else:
-            pyedb_logger.error("No Edb installation found. Check environment variables")
+            settings.logger.error("No EDB installation found. Check environment variables")
             return False
         os.environ["HELIC_ROOT"] = os.path.join(base_path, "helic")
         if os.getenv("ANSYSLMD_LICENCE_FILE", None) is None:
@@ -69,7 +207,7 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
                             os.environ["ANSYSLMD_LICENSE_FILE"] = line.split("=")[1]
                             break
             else:
-                pyedb_logger.error("ANSYSLMD_LICENSE_FILE is not defined.")
+                settings.logger.error("ANSYSLMD_LICENSE_FILE is not defined.")
         vlc_file_name = os.path.splitext(tech_file)[0]
         if not control_file:
             control_file = vlc_file_name + ".xml"
@@ -103,28 +241,48 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
             p = subprocess.Popen(command, env=my_env)
             p.wait()
         if os.path.exists(control_file):
-            pyedb_logger.info("Xml file created.")
+            settings.logger.info("XML file created.")
             return control_file
-    pyedb_logger.error("Technology files are supported only in Linux. Use control file instead.")
+    settings.logger.error("Technology files are supported only in Linux. Use control file instead.")
     return False
 
 
 class ControlProperty:
-    def __init__(self, property_name, value):
-        self.name = property_name
-        self.value = value
+    """Represents a property in the control file with name, value, and type.
+
+    Parameters
+    ----------
+    property_name : str
+        Name of the property.
+    value : str, float, or list
+        Value of the property.
+    """
+
+    def __init__(self, property_name: str, value: Union[str, float, list]) -> None:
+        self.name: str = property_name
+        self.value: Union[str, float, list] = value
+        self.type: int = self._get_type(value)
+
+    def _get_type(self, value: Any) -> int:
         if isinstance(value, str):
-            self.type = 1
+            return 1
         elif isinstance(value, list):
-            self.type = 2
+            return 2
         else:
             try:
                 float(value)
-                self.type = 0
+                return 0
             except TypeError:
-                pass
+                return -1
 
-    def _write_xml(self, root):
+    def _write_xml(self, root) -> None:
+        """Write the property to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+        """
         try:
             if self.type == 0:
                 content = ET.SubElement(root, self.name)
@@ -137,13 +295,30 @@ class ControlProperty:
 
 
 class ControlFileMaterial:
-    def __init__(self, name, properties):
-        self.name = name
-        self.properties = {}
-        for name, property in properties.items():
-            self.properties[name] = ControlProperty(name, property)
+    """Represents a material in the control file.
 
-    def _write_xml(self, root):
+    Parameters
+    ----------
+    name : str
+        Material name.
+    properties : dict
+        Material properties dictionary.
+    """
+
+    def __init__(self, name: str, properties: Dict[str, Any]) -> None:
+        self.name: str = name
+        self.properties: Dict[str, ControlProperty] = {
+            name: ControlProperty(name, prop) for name, prop in properties.items()
+        }
+
+    def _write_xml(self, root) -> None:
+        """Write material to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+        """
         content = ET.SubElement(root, "Material")
         content.set("Name", self.name)
         for property_name, property in self.properties.items():
@@ -151,13 +326,30 @@ class ControlFileMaterial:
 
 
 class ControlFileDielectric:
-    def __init__(self, name, properties):
-        self.name = name
-        self.properties = {}
+    """Represents a dielectric layer in the control file.
+
+    Parameters
+    ----------
+    name : str
+        Layer name.
+    properties : dict
+        Layer properties dictionary.
+    """
+
+    def __init__(self, name: str, properties: Dict[str, Any]) -> None:
+        self.name: str = name
+        self.properties: Dict[str, Any] = {}
         for name, prop in properties.items():
             self.properties[name] = prop
 
-    def _write_xml(self, root):
+    def _write_xml(self, root) -> None:
+        """Write dielectric layer to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+        """
         content = ET.SubElement(root, "Layer")
         for property_name, property in self.properties.items():
             if not property_name == "Index":
@@ -165,6 +357,16 @@ class ControlFileDielectric:
 
 
 class ControlFileLayer:
+    """Represents a general layer in the control file.
+
+    Parameters
+    ----------
+    name : str
+        Layer name.
+    properties : dict
+        Layer properties dictionary.
+    """
+
     def __init__(self, name, properties):
         self.name = name
         self.properties = {}
@@ -172,6 +374,13 @@ class ControlFileLayer:
             self.properties[name] = prop
 
     def _write_xml(self, root):
+        """Write layer to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+        """
         content = ET.SubElement(root, "Layer")
         content.set("Color", self.properties.get("Color", "#5c4300"))
         if self.properties.get("Elevation"):
@@ -196,19 +405,36 @@ class ControlFileLayer:
 
 
 class ControlFileVia(ControlFileLayer):
-    def __init__(self, name, properties):
-        ControlFileLayer.__init__(self, name, properties)
-        self.create_via_group = False
-        self.check_containment = True
-        self.method = "proximity"
-        self.persistent = False
-        self.tolerance = "1um"
-        self.snap_via_groups = False
-        self.snap_method = "areaFactor"
-        self.remove_unconnected = True
-        self.snap_tolerance = 3
+    """Represents a via layer in the control file.
 
-    def _write_xml(self, root):
+    Parameters
+    ----------
+    name : str
+        Via name.
+    properties : dict
+        Via properties dictionary.
+    """
+
+    def __init__(self, name: str, properties: Dict[str, Any]) -> None:
+        super().__init__(name, properties)
+        self.create_via_group: bool = False
+        self.check_containment: bool = True
+        self.method: str = "proximity"
+        self.persistent: bool = False
+        self.tolerance: str = "1um"
+        self.snap_via_groups: bool = False
+        self.snap_method: str = "areaFactor"
+        self.remove_unconnected: bool = True
+        self.snap_tolerance: int = 3
+
+    def _write_xml(self, root) -> None:
+        """Write via to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+        """
         content = ET.SubElement(root, "Layer")
         content.set("Color", self.properties.get("Color", "#5c4300"))
         if self.properties.get("Elevation"):
@@ -240,91 +466,94 @@ class ControlFileVia(ControlFileLayer):
 
 
 class ControlFileStackup:
-    """Class that manages the Stackup info."""
+    """Manages stackup information for the control file.
 
-    def __init__(self, units="mm"):
-        self._materials = {}
-        self._layers = []
-        self._dielectrics = []
-        self._vias = []
-        self.units = units
-        self.metal_layer_snapping_tolerance = None
-        self.dielectrics_base_elevation = 0
+    Parameters
+    ----------
+    units : str, optional
+        Length units (e.g., "mm", "um"). Default is "mm".
+    """
+
+    def __init__(self, units: str = "mm") -> None:
+        self._materials: Dict[str, ControlFileMaterial] = {}
+        self._layers: List[ControlFileLayer] = []
+        self._dielectrics: List[Any] = []
+        self._vias: List[ControlFileVia] = []
+        self.units: str = units
+        self.metal_layer_snapping_tolerance: Optional[float] = None
+        self.dielectrics_base_elevation: float = 0.0
 
     @property
     def vias(self):
-        """Via list.
+        """List of via objects.
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileVia`
-
+        list of ControlFileVia
         """
         return self._vias
 
     @property
-    def materials(self):
-        """Material list.
+    def materials(self) -> Dict[str, ControlFileMaterial]:
+        """Dictionary of material objects.
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileMaterial`
-
+        dict
+            Dictionary of material names to ControlFileMaterial objects.
         """
         return self._materials
 
     @property
     def dielectrics(self):
-        """Dielectric layer list.
+        """List of dielectric layers.
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileLayer`
-
+        list of ControlFileDielectric
         """
         return self._dielectrics
 
     @property
-    def layers(self):
-        """Layer list.
+    def layers(self) -> List[ControlFileLayer]:
+        """List of general layers.
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileLayer`
-
+        list of ControlFileLayer
         """
         return self._layers
 
     def add_material(
         self,
-        material_name,
-        permittivity=1.0,
-        dielectric_loss_tg=0.0,
-        permeability=1.0,
-        conductivity=0.0,
-        properties=None,
-    ):
-        """Add a new material with specific properties.
+        material_name: str,
+        permittivity: float = 1.0,
+        dielectric_loss_tg: float = 0.0,
+        permeability: float = 1.0,
+        conductivity: float = 0.0,
+        properties: Optional[Dict[str, Any]] = None,
+    ) -> ControlFileMaterial:
+        """Add a new material.
 
         Parameters
         ----------
         material_name : str
             Material name.
         permittivity : float, optional
-            Material permittivity. The default is ``1.0``.
+            Relative permittivity. Default is ``1.0``.
         dielectric_loss_tg : float, optional
-            Material tangent losses. The default is ``0.0``.
+            Dielectric loss tangent. Default is ``0.0``.
         permeability : float, optional
-            Material permeability. The default is ``1.0``.
+            Relative permeability. Default is ``1.0``.
         conductivity : float, optional
-            Material conductivity. The default is ``0.0``.
+            Conductivity (S/m). Default is ``0.0``.
         properties : dict, optional
-            Specific material properties. The default is ``None``.
-            Dictionary with key and material property value.
+            Additional material properties. Overrides default parameters.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileMaterial`
+        ControlFileMaterial
+            Created material object.
         """
         if isinstance(properties, dict):
             self._materials[material_name] = ControlFileMaterial(material_name, properties)
@@ -342,16 +571,16 @@ class ControlFileStackup:
 
     def add_layer(
         self,
-        layer_name,
-        elevation=0.0,
-        material="",
-        gds_type=0,
-        target_layer="",
-        thickness=0.0,
-        layer_type="conductor",
-        solve_inside=True,
-        properties=None,
-    ):
+        layer_name: str,
+        elevation: float = 0.0,
+        material: str = "",
+        gds_type: int = 0,
+        target_layer: str = "",
+        thickness: float = 0.0,
+        layer_type: str = "conductor",
+        solve_inside: bool = True,
+        properties: Optional[Dict[str, Any]] = None,
+    ) -> ControlFileLayer:
         """Add a new layer.
 
         Parameters
@@ -359,26 +588,26 @@ class ControlFileStackup:
         layer_name : str
             Layer name.
         elevation : float
-            Layer elevation.
+            Layer elevation (Z-position).
         material : str
-            Material for the layer.
+            Material name.
         gds_type : int
-            GDS type assigned on the layer. The value must be the same as in the GDS file otherwise geometries won't be
-            imported.
+            GDS data type for layer.
         target_layer : str
-            Layer name assigned in EDB or HFSS 3D layout after import.
+            Target layer name in EDB/HFSS.
         thickness : float
-            Layer thickness
-        layer_type : str
-            Define the layer type, default value for a layer is ``"conductor"``
-        solve_inside : bool
-            When ``True`` solver will solve inside metal, and not id ``False``. Default value is ``True``.
-        properties : dict
-            Dictionary with key and  property value.
+            Layer thickness.
+        layer_type : str, optional
+            Layer type ("conductor", "signal", etc.). Default is "conductor".
+        solve_inside : bool, optional
+            Whether to solve inside metal. Default is ``True``.
+        properties : dict, optional
+            Additional layer properties. Overrides default parameters.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileLayer`
+        ControlFileLayer
+            Created layer object.
         """
         if isinstance(properties, dict):
             self._layers.append(ControlFileLayer(layer_name, properties))
@@ -399,39 +628,37 @@ class ControlFileStackup:
 
     def add_dielectric(
         self,
-        layer_name,
-        layer_index=None,
-        material="",
-        thickness=0.0,
-        properties=None,
-        base_layer=None,
-        add_on_top=True,
-    ):
-        """Add a new dielectric.
+        layer_name: str,
+        layer_index: Optional[int] = None,
+        material: str = "",
+        thickness: float = 0.0,
+        properties: Optional[Dict[str, Any]] = None,
+        base_layer: Optional[str] = None,
+        add_on_top: bool = True,
+    ) -> ControlFileDielectric:
+        """Add a new dielectric layer.
 
         Parameters
         ----------
         layer_name : str
-            Layer name.
+            Dielectric layer name.
         layer_index : int, optional
-            Dielectric layer index as they must be stacked. If not provided the layer index will be incremented.
+            Stacking order index. Auto-assigned if ``None``.
         material : str
             Material name.
         thickness : float
             Layer thickness.
-        properties : dict
-            Dictionary with key and  property value.
-        base_layer : str,  optional
-            Layer name used for layer placement. Default value is ``None``. This option is used for inserting
-            dielectric layer between two existing ones. When no argument is provided the dielectric layer will be placed
-            on top of the stacked ones.
-        method : bool, Optional.
-            Provides the method to use when the argument ``base_layer`` is provided. When ``True`` the layer is added
-            on top on the base layer, when ``False`` it will be added below.
+        properties : dict, optional
+            Additional properties. Overrides default parameters.
+        base_layer : str, optional
+            Existing layer name for relative placement.
+        add_on_top : bool, optional
+            Whether to add on top of base layer. Default is ``True``.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileDielectric`
+        ControlFileDielectric
+            Created dielectric layer object.
         """
         if isinstance(properties, dict):
             self._dielectrics.append(ControlFileDielectric(layer_name, properties))
@@ -462,54 +689,55 @@ class ControlFileStackup:
 
     def add_via(
         self,
-        layer_name,
-        material="",
-        gds_type=0,
-        target_layer="",
-        start_layer="",
-        stop_layer="",
-        solve_inside=True,
-        via_group_method="proximity",
-        via_group_tol=1e-6,
-        via_group_persistent=True,
-        snap_via_group_method="distance",
-        snap_via_group_tol=10e-9,
-        properties=None,
-    ):
+        layer_name: str,
+        material: str = "",
+        gds_type: int = 0,
+        target_layer: str = "",
+        start_layer: str = "",
+        stop_layer: str = "",
+        solve_inside: bool = True,
+        via_group_method: str = "proximity",
+        via_group_tol: float = 1e-6,
+        via_group_persistent: bool = True,
+        snap_via_group_method: str = "distance",
+        snap_via_group_tol: float = 10e-9,
+        properties: Optional[Dict[str, Any]] = None,
+    ) -> ControlFileVia:
         """Add a new via layer.
 
         Parameters
         ----------
         layer_name : str
-            Layer name.
+            Via layer name.
         material : str
-            Define the material for this layer.
+            Material name.
         gds_type : int
-            Define the gds type.
+            GDS data type for via layer.
         target_layer : str
-            Target layer used after layout import in EDB and HFSS 3D layout.
+            Target layer name in EDB/HFSS.
         start_layer : str
-            Define the start layer for the via
+            Starting layer name.
         stop_layer : str
-            Define the stop layer for the via.
-        solve_inside : bool
-            When ``True`` solve inside this layer is anbled. Default value is ``True``.
-        via_group_method : str
-            Define the via group method, default value is ``"proximity"``
-        via_group_tol : float
-            Define the via group tolerance.
-        via_group_persistent : bool
-            When ``True`` activated otherwise when ``False``is deactivated. Default value is ``True``.
-        snap_via_group_method : str
-            Define the via group method, default value is ``"distance"``
-        snap_via_group_tol : float
-            Define the via group tolerance, default value is 10e-9.
-        properties : dict
-            Dictionary with key and  property value.
+            Stopping layer name.
+        solve_inside : bool, optional
+            Whether to solve inside via. Default is ``True``.
+        via_group_method : str, optional
+            Via grouping method. Default is "proximity".
+        via_group_tol : float, optional
+            Via grouping tolerance. Default is 1e-6.
+        via_group_persistent : bool, optional
+            Whether via groups are persistent. Default is ``True``.
+        snap_via_group_method : str, optional
+            Snap via group method. Default is "distance".
+        snap_via_group_tol : float, optional
+            Snap via group tolerance. Default is 10e-9.
+        properties : dict, optional
+            Additional properties. Overrides default parameters.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileVia`
+        ControlFileVia
+            Created via object.
         """
         if isinstance(properties, dict):
             self._vias.append(ControlFileVia(layer_name, properties))
@@ -532,7 +760,14 @@ class ControlFileStackup:
             self._vias.append(ControlFileVia(layer_name, properties))
             return self._vias[-1]
 
-    def _write_xml(self, root):
+    def _write_xml(self, root: ET.Element) -> None:
+        """Write stackup to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+        """
         content = ET.SubElement(root, "Stackup")
         content.set("schemaVersion", "1.0")
         materials = ET.SubElement(content, "Materials")
@@ -559,26 +794,39 @@ class ControlFileStackup:
 
 
 class ControlFileImportOptions:
-    """Import Options."""
+    """Manages import options for the control file."""
 
-    def __init__(self):
-        self.auto_close = False
-        self.convert_closed_wide_lines_to_polys = False
-        self.round_to = 0
-        self.defeature_tolerance = 0.0
-        self.flatten = True
-        self.enable_default_component_values = True
-        self.import_dummy_nets = False
-        self.gdsii_convert_polygon_to_circles = False
-        self.import_cross_hatch_shapes_as_lines = True
-        self.max_antipad_radius = 0.0
-        self.extracta_use_pin_names = False
-        self.min_bondwire_width = 0.0
-        self.antipad_repalce_radius = 0.0
-        self.gdsii_scaling_factor = 0.0
-        self.delte_empty_non_laminate_signal_layers = False
+    def __init__(self) -> None:
+        self.auto_close: bool = False
+        self.convert_closed_wide_lines_to_polys: bool = False
+        self.round_to: int = 0
+        self.defeature_tolerance: float = 0.0
+        self.flatten: bool = True
+        self.enable_default_component_values: bool = True
+        self.import_dummy_nets: bool = False
+        self.gdsii_convert_polygon_to_circles: bool = False
+        self.import_cross_hatch_shapes_as_lines: bool = True
+        self.max_antipad_radius: float = 0.0
+        self.extracta_use_pin_names: bool = False
+        self.min_bondwire_width: float = 0.0
+        self.antipad_replace_radius: float = 0.0
+        self.gdsii_scaling_factor: float = 0.0
+        self.delete_empty_non_laminate_signal_layers: bool = False
 
-    def _write_xml(self, root):
+    def _write_xml(self, root: ET.Element) -> bool:
+        """Write control file to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+
+        Returns
+        -------
+        bool
+            True if XML content was written successfully.
+        """
+
         content = ET.SubElement(root, "ImportOptions")
         content.set("AutoClose", str(self.auto_close).lower())
         if self.round_to != 0:
@@ -600,23 +848,46 @@ class ControlFileImportOptions:
         if self.gdsii_scaling_factor != 0.0:
             content.set("GDSIIScalingFactor", str(self.gdsii_scaling_factor))
         content.set("DeleteEmptyNonLaminateSignalLayers", str(self.delte_empty_non_laminate_signal_layers).lower())
+        return True
 
 
 class ControlExtent:
-    """Extent options."""
+    """Represents extent options for boundaries.
+
+    Parameters
+    ----------
+    type : str, optional
+        Extent type. Default is "bbox".
+    dieltype : str, optional
+        Dielectric extent type. Default is "bbox".
+    diel_hactor : float, optional
+        Dielectric horizontal factor. Default is 0.25.
+    airbox_hfactor : float, optional
+        Airbox horizontal factor. Default is 0.25.
+    airbox_vr_p : float, optional
+        Airbox vertical factor (positive). Default is 0.25.
+    airbox_vr_n : float, optional
+        Airbox vertical factor (negative). Default is 0.25.
+    useradiation : bool, optional
+        Use radiation boundary. Default is ``True``.
+    honor_primitives : bool, optional
+        Honor primitives. Default is ``True``.
+    truncate_at_gnd : bool, optional
+        Truncate at ground. Default is ``True``.
+    """
 
     def __init__(
         self,
-        type="bbox",
-        dieltype="bbox",
-        diel_hactor=0.25,
-        airbox_hfactor=0.25,
-        airbox_vr_p=0.25,
-        airbox_vr_n=0.25,
-        useradiation=True,
-        honor_primitives=True,
-        truncate_at_gnd=True,
-    ):
+        type: str = "bbox",
+        dieltype: str = "bbox",
+        diel_hactor: float = 0.25,
+        airbox_hfactor: float = 0.25,
+        airbox_vr_p: float = 0.25,
+        airbox_vr_n: float = 0.25,
+        useradiation: bool = True,
+        honor_primitives: bool = True,
+        truncate_at_gnd: bool = True,
+    ) -> None:
         self.type = type
         self.dieltype = dieltype
         self.diel_hactor = diel_hactor
@@ -628,6 +899,13 @@ class ControlExtent:
         self.truncate_at_gnd = truncate_at_gnd
 
     def _write_xml(self, root):
+        """Write extent options to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+        """
         content = ET.SubElement(root, "Extents")
         content.set("Type", self.type)
         content.set("DielType", self.dieltype)
@@ -641,7 +919,27 @@ class ControlExtent:
 
 
 class ControlCircuitPt:
-    """Circuit Port."""
+    """Represents a circuit port.
+
+    Parameters
+    ----------
+    name : str
+        Port name.
+    x1 : float
+        X-coordinate of first point.
+    y1 : float
+        Y-coordinate of first point.
+    lay1 : str
+        Layer of first point.
+    x2 : float
+        X-coordinate of second point.
+    y2 : float
+        Y-coordinate of second point.
+    lay2 : str
+        Layer of second point.
+    z0 : float
+        Characteristic impedance.
+    """
 
     def __init__(self, name, x1, y1, lay1, x2, y2, lay2, z0):
         self.name = name
@@ -654,6 +952,13 @@ class ControlCircuitPt:
         self.z0 = z0
 
     def _write_xml(self, root):
+        """Write circuit port to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+        """
         content = ET.SubElement(root, "CircuitPortPt")
         content.set("Name", self.name)
         content.set("x1", self.x1)
@@ -666,25 +971,63 @@ class ControlCircuitPt:
 
 
 class ControlFileComponent:
-    """Components."""
+    """Represents a component in the control file."""
 
-    def __init__(self):
-        self.refdes = "U1"
-        self.partname = "BGA"
-        self.parttype = "IC"
-        self.die_type = "None"
-        self.die_orientation = "Chip down"
-        self.solderball_shape = "None"
-        self.solder_diameter = "65um"
-        self.solder_height = "65um"
-        self.solder_material = "solder"
-        self.pins = []
-        self.ports = []
+    def __init__(self) -> None:
+        self.refdes: str = "U1"
+        self.partname: str = "BGA"
+        self.parttype: str = "IC"
+        self.die_type: str = "None"
+        self.die_orientation: str = "Chip down"
+        self.solderball_shape: str = "None"
+        self.solder_diameter: str = "65um"
+        self.solder_height: str = "65um"
+        self.solder_material: str = "solder"
+        self.pins: List[Dict[str, Union[str, float]]] = []
+        self.ports: List[Dict[str, Union[str, float, None]]] = []
 
-    def add_pin(self, name, x, y, layer):
+    def add_pin(self, name: str, x: float, y: float, layer: str) -> None:
+        """Add a pin to the component.
+
+        Parameters
+        ----------
+        name : str
+            Pin name.
+        x : float
+            X-coordinate.
+        y : float
+            Y-coordinate.
+        layer : str
+            Layer name.
+        """
         self.pins.append({"Name": name, "x": x, "y": y, "Layer": layer})
 
-    def add_port(self, name, z0, pospin, refpin=None, pos_type="pin", ref_type="pin"):
+    def add_port(
+        self,
+        name: str,
+        z0: float,
+        pospin: str,
+        refpin: Optional[str] = None,
+        pos_type: str = "pin",
+        ref_type: str = "pin",
+    ) -> None:
+        """Add a port to the component.
+
+        Parameters
+        ----------
+        name : str
+            Port name.
+        z0 : float
+            Characteristic impedance.
+        pospin : str
+            Positive pin/group name.
+        refpin : str, optional
+            Reference pin/group name.
+        pos_type : str, optional
+            Positive element type ("pin" or "pingroup"). Default is "pin".
+        ref_type : str, optional
+            Reference element type ("pin", "pingroup", or "net"). Default is "pin".
+        """
         args = {"Name": name, "Z0": z0}
         if pos_type == "pin":
             args["PosPin"] = pospin
@@ -700,6 +1043,13 @@ class ControlFileComponent:
         self.ports.append(args)
 
     def _write_xml(self, root):
+        """Write component to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+        """
         content = ET.SubElement(root, "GDS_COMPONENT")
         for p in self.pins:
             prop = ET.SubElement(content, "GDS_PIN")
@@ -725,31 +1075,34 @@ class ControlFileComponent:
 
 
 class ControlFileComponents:
-    """Class for component management."""
+    """Manages components for the control file."""
 
     def __init__(self):
-        self.units = "um"
-        self.components = []
+        self.units: str = "um"
+        self.components: List[str] = []
 
-    def add_component(self, ref_des, partname, component_type, die_type="None", solderball_shape="None"):
-        """Create a new component.
+    def add_component(
+        self, ref_des: str, partname: str, component_type: str, die_type: str = "None", solderball_shape: str = "None"
+    ) -> ControlFileComponent:
+        """Add a new component.
 
         Parameters
         ----------
         ref_des : str
-            Reference Designator name.
+            Reference designator.
         partname : str
             Part name.
         component_type : str
-            Component Type. Can be `"IC"`, `"IO"` or `"Other"`.
+            Component type ("IC", "IO", or "Other").
         die_type : str, optional
-            Die Type. Can be `"None"`, `"Flip chip"` or `"Wire bond"`.
+            Die type ("None", "Flip chip", or "Wire bond"). Default is "None".
         solderball_shape : str, optional
-            Solderball Type. Can be `"None"`, `"Cylinder"` or `"Spheroid"`.
+            Solderball shape ("None", "Cylinder", or "Spheroid"). Default is "None".
 
         Returns
         -------
-
+        ControlFileComponent
+            Created component object.
         """
         comp = ControlFileComponent()
         comp.refdes = ref_des
@@ -762,73 +1115,92 @@ class ControlFileComponents:
 
 
 class ControlFileBoundaries:
-    """Boundaries management."""
+    """Manages boundaries for the control file.
 
-    def __init__(self, units="um"):
-        self.ports = {}
-        self.extents = []
-        self.circuit_models = {}
-        self.circuit_elements = {}
-        self.units = units
+    Parameters
+    ----------
+    units : str, optional
+        Length units. Default is "um".
+    """
 
-    def add_port(self, name, x1, y1, layer1, x2, y2, layer2, z0=50):
-        """Add a new port to the gds.
+    def __init__(self, units: str = "um") -> None:
+        self.ports: Dict[str, ControlCircuitPt] = {}
+        self.extents: List[ControlExtent] = []
+        self.circuit_models: Dict[str, Any] = {}
+        self.circuit_elements: Dict[str, Any] = {}
+        self.units: str = units
+
+    def add_port(
+        self, name: str, x1: float, y1: float, layer1: str, x2: float, y2: float, layer2: str, z0: float = 50
+    ) -> ControlCircuitPt:
+        """Add a port.
 
         Parameters
         ----------
         name : str
             Port name.
-        x1 : str
-            Pin 1 x position.
-        y1 : str
-            Pin 1 y position.
+        x1 : float
+            X-coordinate of first point.
+        y1 : float
+            Y-coordinate of first point.
         layer1 : str
-            Pin 1 layer.
-        x2 : str
-            Pin 2 x position.
-        y2 : str
-            Pin 2 y position.
+            Layer of first point.
+        x2 : float
+            X-coordinate of second point.
+        y2 : float
+            Y-coordinate of second point.
         layer2 : str
-            Pin 2 layer.
-        z0 : str
-            Characteristic impedance.
+            Layer of second point.
+        z0 : float, optional
+            Characteristic impedance. Default is 50.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.control_file.ControlCircuitPt`
+        ControlCircuitPt
+            Created port object.
         """
         self.ports[name] = ControlCircuitPt(name, str(x1), str(y1), layer1, str(x2), str(y2), layer2, str(z0))
         return self.ports[name]
 
     def add_extent(
         self,
-        type="bbox",
-        dieltype="bbox",
-        diel_hactor=0.25,
-        airbox_hfactor=0.25,
-        airbox_vr_p=0.25,
-        airbox_vr_n=0.25,
-        useradiation=True,
-        honor_primitives=True,
-        truncate_at_gnd=True,
-    ):
-        """Add a new extent.
+        type: str = "bbox",
+        dieltype: str = "bbox",
+        diel_hactor: float = 0.25,
+        airbox_hfactor: float = 0.25,
+        airbox_vr_p: float = 0.25,
+        airbox_vr_n: float = 0.25,
+        useradiation: bool = True,
+        honor_primitives: bool = True,
+        truncate_at_gnd: bool = True,
+    ) -> ControlExtent:
+        """Add an extent.
 
         Parameters
         ----------
-        type
-        dieltype
-        diel_hactor
-        airbox_hfactor
-        airbox_vr_p
-        airbox_vr_n
-        useradiation
-        honor_primitives
-        truncate_at_gnd
+        type : str, optional
+            Extent type. Default is "bbox".
+        dieltype : str, optional
+            Dielectric extent type. Default is "bbox".
+        diel_hactor : float, optional
+            Dielectric horizontal factor. Default is 0.25.
+        airbox_hfactor : float, optional
+            Airbox horizontal factor. Default is 0.25.
+        airbox_vr_p : float, optional
+            Airbox vertical factor (positive). Default is 0.25.
+        airbox_vr_n : float, optional
+            Airbox vertical factor (negative). Default is 0.25.
+        useradiation : bool, optional
+            Use radiation boundary. Default is ``True``.
+        honor_primitives : bool, optional
+            Honor primitives. Default is ``True``.
+        truncate_at_gnd : bool, optional
+            Truncate at ground. Default is ``True``.
 
         Returns
         -------
-
+        ControlExtent
+            Created extent object.
         """
         self.extents.append(
             ControlExtent(
@@ -846,6 +1218,13 @@ class ControlFileBoundaries:
         return self.extents[-1]
 
     def _write_xml(self, root):
+        """Write boundaries to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+        """
         content = ET.SubElement(root, "Boundaries")
         content.set("LengthUnit", self.units)
         for p in self.circuit_models.values():
@@ -859,16 +1238,45 @@ class ControlFileBoundaries:
 
 
 class ControlFileSweep:
-    def __init__(self, name, start, stop, step, sweep_type, step_type, use_q3d):
-        self.name = name
-        self.start = start
-        self.stop = stop
-        self.step = step
-        self.sweep_type = sweep_type
-        self.step_type = step_type
-        self.use_q3d = use_q3d
+    """Represents a frequency sweep.
+
+    Parameters
+    ----------
+    name : str
+        Sweep name.
+    start : str
+        Start frequency.
+    stop : str
+        Stop frequency.
+    step : str
+        Frequency step/count.
+    sweep_type : str
+        Sweep type ("Discrete" or "Interpolating").
+    step_type : str
+        Step type ("LinearStep", "DecadeCount", or "LinearCount").
+    use_q3d : bool
+        Whether to use Q3D for DC point.
+    """
+
+    def __init__(
+        self, name: str, start: str, stop: str, step: str, sweep_type: str, step_type: str, use_q3d: bool
+    ) -> None:
+        self.name: str = name
+        self.start: str = start
+        self.stop: str = stop
+        self.step: str = step
+        self.sweep_type: str = sweep_type
+        self.step_type: str = step_type
+        self.use_q3d: bool = use_q3d
 
     def _write_xml(self, root):
+        """Write sweep to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+        """
         sweep = ET.SubElement(root, "FreqSweep")
         prop = ET.SubElement(sweep, "Name")
         prop.text = self.name
@@ -889,21 +1297,42 @@ class ControlFileSweep:
 
 
 class ControlFileMeshOp:
-    def __init__(self, name, region, type, nets_layers):
-        self.name = name
-        self.region = name
-        self.type = type
-        self.nets_layers = nets_layers
-        self.num_max_elem = 1000
-        self.restrict_elem = False
-        self.restrict_length = True
-        self.max_length = "20um"
-        self.skin_depth = "1um"
-        self.surf_tri_length = "1mm"
-        self.num_layers = 2
-        self.region_solve_inside = False
+    """Represents a mesh operation.
+
+    Parameters
+    ----------
+    name : str
+        Operation name.
+    region : str
+        Region name.
+    type : str
+        Operation type ("MeshOperationLength" or "MeshOperationSkinDepth").
+    nets_layers : dict
+        Dictionary of nets and layers.
+    """
+
+    def __init__(self, name: str, region: str, type: str, nets_layers: Dict[str, str]) -> None:
+        self.name: str = name
+        self.region: str = region
+        self.type: str = type
+        self.nets_layers: Dict[str, str] = nets_layers
+        self.num_max_elem: int = 1000
+        self.restrict_elem: bool = False
+        self.restrict_length: bool = True
+        self.max_length: str = "20um"
+        self.skin_depth: str = "1um"
+        self.surf_tri_length: str = "1mm"
+        self.num_layers: int = 2
+        self.region_solve_inside: bool = False
 
     def _write_xml(self, root):
+        """Write mesh operation to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+        """
         mop = ET.SubElement(root, "MeshOperation")
         prop = ET.SubElement(mop, "Name")
         prop.text = self.name
@@ -941,76 +1370,100 @@ class ControlFileMeshOp:
 
 
 class ControlFileSetup:
-    """Setup Class."""
+    """Represents a simulation setup.
 
-    def __init__(self, name):
-        self.name = name
-        self.enabled = True
-        self.save_fields = False
-        self.save_rad_fields = False
-        self.frequency = "1GHz"
-        self.maxpasses = 10
-        self.max_delta = 0.02
-        self.union_polygons = True
-        self.small_voids_area = 0
-        self.mode_type = "IC"
-        self.ic_model_resolution = "Auto"
-        self.order_basis = "FirstOrder"
-        self.solver_type = "Auto"
-        self.low_freq_accuracy = False
-        self.mesh_operations = []
-        self.sweeps = []
+    Parameters
+    ----------
+    name : str
+        Setup name.
+    """
 
-    def add_sweep(self, name, start, stop, step, sweep_type="Interpolating", step_type="LinearStep", use_q3d=True):
-        """Add a new sweep.
+    def __init__(self, name: str) -> None:
+        self.name: str = name
+        self.enabled: bool = True
+        self.save_fields: bool = False
+        self.save_rad_fields: bool = False
+        self.frequency: str = "1GHz"
+        self.maxpasses: int = 10
+        self.max_delta: float = 0.02
+        self.union_polygons: bool = True
+        self.small_voids_area: int = 0
+        self.mode_type: str = "IC"
+        self.ic_model_resolution: str = "Auto"
+        self.order_basis: str = "FirstOrder"
+        self.solver_type: str = "Auto"
+        self.low_freq_accuracy: bool = False
+        self.mesh_operations: List[ControlFileMeshOp] = []
+        self.sweeps: List[ControlFileSweep] = []
+
+    def add_sweep(
+        self,
+        name: str,
+        start: str,
+        stop: str,
+        step: str,
+        sweep_type: str = "Interpolating",
+        step_type: str = "LinearStep",
+        use_q3d: bool = True,
+    ) -> ControlFileSweep:
+        """Add a frequency sweep.
 
         Parameters
         ----------
         name : str
             Sweep name.
         start : str
-            Frequency start.
+            Start frequency.
         stop : str
-            Frequency stop.
+            Stop frequency.
         step : str
-            Frequency step or count.
-        sweep_type : str
-            Sweep type. It can be `"Discrete"` or  `"Interpolating"`.
-        step_type : str
-            Sweep type. It can be `"LinearStep"`, `"DecadeCount"` or  `"LinearCount"`.
-        use_q3d
+            Frequency step/count.
+        sweep_type : str, optional
+            Sweep type ("Discrete" or "Interpolating"). Default is "Interpolating".
+        step_type : str, optional
+            Step type ("LinearStep", "DecadeCount", or "LinearCount"). Default is "LinearStep".
+        use_q3d : bool, optional
+            Whether to use Q3D for DC point. Default is ``True``.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileSweep`
+        ControlFileSweep
+            Created sweep object.
         """
         self.sweeps.append(ControlFileSweep(name, start, stop, step, sweep_type, step_type, use_q3d))
         return self.sweeps[-1]
 
-    def add_mesh_operation(self, name, region, type, nets_layers):
-        """Add mesh operations.
+    def add_mesh_operation(self, name: str, region: str, type: str, nets_layers: Dict[str, str]) -> ControlFileMeshOp:
+        """Add a mesh operation.
 
         Parameters
         ----------
         name : str
-            Mesh name.
+            Operation name.
         region : str
-            Region to apply mesh operation.
+            Region name.
         type : str
-            Mesh operation type. It can be `"MeshOperationLength"` or  `"MeshOperationSkinDepth"`.
+            Operation type ("MeshOperationLength" or "MeshOperationSkinDepth").
         nets_layers : dict
-            Dictionary containing nets and layers on which apply mesh.
+            Dictionary of nets and layers.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileMeshOp`
-
+        ControlFileMeshOp
+            Created mesh operation object.
         """
         mop = ControlFileMeshOp(name, region, type, nets_layers)
         self.mesh_operations.append(mop)
         return mop
 
     def _write_xml(self, root):
+        """Write setup to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+        """
         setups = ET.SubElement(root, "HFSSSetup")
         setups.set("schemaVersion", "1.0")
         setups.set("Name", self.name)
@@ -1056,24 +1509,25 @@ class ControlFileSetup:
 
 
 class ControlFileSetups:
-    """Setup manager class."""
+    """Manages simulation setups."""
 
     def __init__(self):
         self.setups = []
 
-    def add_setup(self, name, frequency):
-        """Add a new setup
+    def add_setup(self, name: str, frequency: str) -> ControlFileSetup:
+        """Add a simulation setup.
 
         Parameters
         ----------
         name : str
             Setup name.
         frequency : str
-            Setup Frequency.
+            Adaptive frequency.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileSetup`
+        ControlFileSetup
+            Created setup object.
         """
         setup = ControlFileSetup(name)
         setup.frequency = frequency
@@ -1081,20 +1535,50 @@ class ControlFileSetups:
         return setup
 
     def _write_xml(self, root):
+        """Write setups to XML element.
+
+        Parameters
+        ----------
+        root : xml.etree.ElementTree.Element
+            Parent XML element to append to.
+        """
         content = ET.SubElement(root, "SimulationSetups")
         for setup in self.setups:
             setup._write_xml(content)
 
 
 class ControlFile:
-    """Control File Class. It helps the creation and modification of edb xml control files."""
+    """Main class for EDB control file creation and management.
 
-    def __init__(self, xml_input=None, tecnhology=None, layer_map=None):
+    Parameters
+    ----------
+    xml_input : str, optional
+        Path to existing XML file to parse.
+    tecnhology : str, optional
+        Path to technology file to convert.
+    layer_map : str, optional
+        Path to layer map file.
+    """
+
+    def __init__(
+        self, xml_input: Optional[str] = None, technology: Optional[str] = None, layer_map: Optional[str] = None
+    ) -> None:
+        """Initialize control file object.
+
+        Parameters
+        ----------
+        xml_input : str, optional
+            Path to existing XML file to parse.
+        tecnhology : str, optional
+            Path to technology file to convert.
+        layer_map : str, optional
+            Path to layer map file.
+        """
         self.stackup = ControlFileStackup()
         if xml_input:
             self.parse_xml(xml_input)
-        if tecnhology:
-            self.parse_technology(tecnhology)
+        if technology:
+            self.parse_technology(technology)
         if layer_map:
             self.parse_layer_map(layer_map)
         self.boundaries = ControlFileBoundaries()
@@ -1106,35 +1590,38 @@ class ControlFile:
         self.import_options = ControlFileImportOptions()
         pass
 
-    def parse_technology(self, tecnhology, edbversion=None):
-        """Parse technology files using Helic and convert it to xml file.
+    def parse_technology(self, tecnhology: str, edbversion: Optional[str] = None) -> bool:
+        """Parse a technology file and convert to XML control file.
 
         Parameters
         ----------
-        layer_map : str
-            Full path to technology file.
+        tecnhology : str
+            Path to technology file.
+        edbversion : str, optional
+            EDB version to use for conversion.
 
         Returns
         -------
         bool
+            ``True`` if successful, ``False`` otherwise.
         """
         xml_temp = os.path.splitext(tecnhology)[0] + "_temp.xml"
         xml_temp = convert_technology_file(tech_file=tecnhology, edbversion=edbversion, control_file=xml_temp)
         if xml_temp:
             return self.parse_xml(xml_temp)
 
-    def parse_layer_map(self, layer_map):
-        """Parse layer map and adds info to the stackup info.
-        This operation must be performed after a tech file is imported.
+    def parse_layer_map(self, layer_map: str) -> bool:
+        """Parse a layer map file and update stackup.
 
         Parameters
         ----------
         layer_map : str
-            Full path to `".map"` file.
+            Path to layer map file.
 
         Returns
         -------
-
+        bool
+            ``True`` if successful, ``False`` otherwise.
         """
         with open(layer_map, "r") as f:
             lines = f.readlines()
@@ -1173,17 +1660,18 @@ class ControlFile:
                             break
         return True
 
-    def parse_xml(self, xml_input):
-        """Parse an xml and populate the class with materials and Stackup only.
+    def parse_xml(self, xml_input: str) -> bool:
+        """Parse an XML control file and populate the object.
 
         Parameters
         ----------
         xml_input : str
-            Full path to xml.
+            Path to XML control file.
 
         Returns
         -------
         bool
+            ``True`` if successful, ``False`` otherwise.
         """
         tree = ET.parse(xml_input)
         root = tree.getroot()
@@ -1244,16 +1732,17 @@ class ControlFile:
         return True
 
     def write_xml(self, xml_output):
-        """Write xml to output file
+        """Write control file to XML.
 
         Parameters
         ----------
         xml_output : str
-            Path to the output xml file.
+            Output XML file path.
 
         Returns
         -------
         bool
+            ``True`` if file created successfully, ``False`` otherwise.
         """
         control = ET.Element("{http://www.ansys.com/control}Control", attrib={"schemaVersion": "1.0"})
         self.stackup._write_xml(control)

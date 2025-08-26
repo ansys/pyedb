@@ -23,8 +23,7 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
-
-from typing import Union
+from typing import List, Union
 
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
@@ -81,6 +80,7 @@ def primitive_cast(pedb, edb_object):
 class Layout(ObjBase):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
+        self._primitives = []
 
     @property
     def cell(self):
@@ -102,7 +102,7 @@ class Layout(ObjBase):
 
     @property
     def _edb(self):
-        return self._pedb.edb_api
+        return self._pedb.core
 
     def expanded_extent(self, nets, extent, expansion_factor, expansion_unitless, use_round_corner, num_increments):
         """Get an expanded polygon for the Nets collection.
@@ -231,7 +231,15 @@ class Layout(ObjBase):
         -------
         list of :class:`dotnet.database.dotnet.primitive.PrimitiveDotNet` cast objects.
         """
-        return [primitive_cast(self._pedb, p) for p in self._edb_object.Primitives if p]
+        primitives = list(self._edb_object.Primitives)
+        if len(primitives) != len(self._primitives):
+            self._primitives = [primitive_cast(self._pedb, p) for p in primitives]
+        return self._primitives
+
+    @property
+    def primitives_by_aedt_name(self) -> dict:
+        """Primitives."""
+        return {i.aedt_name: i for i in self.primitives}
 
     @property
     def bondwires(self):
@@ -329,7 +337,7 @@ class Layout(ObjBase):
         -------
 
         """
-        obj = self._pedb._edb.Cell.Hierarchy.Component.FindByName(self._edb_object, value)
+        obj = self._pedb.core.Cell.Hierarchy.Component.FindByName(self._edb_object, value)
         return EDBComponent(self._pedb, obj) if obj is not None else None
 
     def find_primitive(
@@ -361,3 +369,64 @@ class Layout(ObjBase):
         prims = [i for i in prims if i.layer_name in layer_name] if layer_name is not None else prims
         prims = [i for i in prims if i.net_name in net_name] if net_name is not None else prims
         return prims
+
+    def find_padstack_instances(
+        self,
+        aedt_name: Union[str, List[str]] = None,
+        component_name: Union[str, List[str]] = None,
+        component_pin_name: Union[str, List[str]] = None,
+        net_name: Union[str, List[str]] = None,
+        instance_id: Union[int, List[int]] = None,
+    ) -> List:
+        """
+        Finds padstack instances matching the specified criteria.
+
+        This method filters the available padstack instances based on specified attributes such as
+        `aedt_name`, `component_name`, `component_pin_name`, `net_name`, or `instance_id`. Criteria
+        can be passed as individual values or as a list of values. If no padstack instances match
+        the criteria, an error is raised.
+
+        Parameters
+        ----------
+        aedt_name : Union[str, List[str]], optional
+            Name(s) of the AEDT padstack instance(s) to filter.
+        component_name : Union[str, List[str]], optional
+            Name(s) of the component(s) to filter padstack instances by.
+        component_pin_name : Union[str, List[str]], optional
+            Name(s) of the component pin(s) to filter padstack instances by.
+        net_name : Union[str, List[str]], optional
+            Name(s) of the net(s) to filter padstack instances by.
+        instance_id : Union[int, List[int]], optional
+            ID(s) of the padstack instance(s) to filter.
+
+        Returns
+        -------
+        List
+            A list of padstack instances matching the specified criteria.
+        """
+        candidates = self.padstack_instances
+        if instance_id is not None:
+            value = instance_id if isinstance(instance_id, list) else [instance_id]
+            candidates = [i for i in candidates if i.id in value]
+
+        if aedt_name is not None:
+            name = aedt_name if isinstance(aedt_name, list) else [aedt_name]
+            candidates = [i for i in candidates if i.aedt_name in name]
+
+        if component_name is not None:
+            value = component_name if isinstance(component_name, list) else [component_name]
+            candidates = [i for i in candidates if i.component_name in value]
+
+        if net_name is not None:
+            value = net_name if isinstance(net_name, list) else [net_name]
+            candidates = [i for i in candidates if i.net_name in value]
+
+        if component_pin_name is not None:
+            value = component_pin_name if isinstance(component_pin_name, list) else [component_pin_name]
+            candidates = [i for i in candidates if i.name in value]
+        if not candidates:  # pragma: no cover
+            raise ValueError(
+                f"Failed to find padstack instances with aedt_name={aedt_name}, component_name={component_name}, "
+                f"net_name={net_name}, component_pin_name={component_pin_name}"
+            )
+        return candidates

@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
 
 
 class Variable:
@@ -41,7 +42,7 @@ class Variable:
         if self._is_design_varible:
             return self._pedb.active_cell.GetVariableServer()
         else:
-            return self._pedb.active_db.GetVariableServer()
+            return self._pedb._db.GetVariableServer()
 
     @property
     def name(self):
@@ -57,7 +58,10 @@ class Variable:
         str
 
         """
-        return self._pedb.get_variable(self.name).tostring
+        warnings.warn(
+            "`value_string` is deprecated. Use `str(value)` method instead.", DeprecationWarning, stacklevel=2
+        )
+        return str(self.value)
 
     @property
     def value_object(self):
@@ -77,11 +81,11 @@ class Variable:
         -------
         float
         """
-        return self._pedb.get_variable(self.name).tofloat
+        return self._pedb.value(self._var_server.GetVariableValue(self.name)[1])
 
     @value.setter
     def value(self, value):
-        self._pedb.change_design_variable_value(self.name, value)
+        self._var_server.SetVariableValue(self.name, self._pedb.value(value)._edb_obj)
 
     @property
     def description(self):

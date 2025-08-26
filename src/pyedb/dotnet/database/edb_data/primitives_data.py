@@ -109,7 +109,7 @@ class EdbPolygon(Primitive):
             new_polygons = list(self.polygon_data._edb_object.RemoveSelfIntersections())
             self._edb_object.SetPolygonData(new_polygons[0])
             for p in new_polygons[1:]:
-                cloned_poly = self._app.edb_api.cell.primitive.polygon.create(
+                cloned_poly = self._app.core.Cell.primitive.polygon.create(
                     self._app.active_layout, self.layer_name, self.net, p
                 )
                 new_polys.append(cloned_poly)
@@ -258,10 +258,10 @@ class EdbPolygon(Primitive):
             ``True`` when successful, ``False`` when failed.
         """
         if isinstance(point_data, list):
-            point_data = self._app.edb_api.geometry.point_data(
-                self._app.edb_value(point_data[0]), self._app.edb_value(point_data[1])
+            point_data = self._app.pedb_class.database.geometry.point_data.PointData.create_from_xy(
+                self._app, self._app.edb_value(point_data[0]), self._app.edb_value(point_data[1])
             )
-        int_val = int(self.polygon_data._edb_object.PointInPolygon(point_data))
+        int_val = int(self.polygon_data._edb_object.PointInPolygon(point_data._edb_object))
 
         # Intersection type:
         # 0 = objects do not intersect
@@ -297,7 +297,7 @@ class EdbPolygon(Primitive):
     #         if _poly is None or _poly.IsNull() or _poly is False:
     #             self._logger.error("Failed to create void polygon data")
     #             return False
-    #         prim = self._app.edb_api.cell.primitive.polygon.create(
+    #         prim = self._app.core.Cell.primitive.polygon.create(
     #             self._app.active_layout, self.layer_name, self.primitive_object.GetNet(), _poly
     #         )
     #     elif isinstance(point_list, Primitive):
@@ -522,9 +522,9 @@ class EDBArcs(object):
             xt, yt = self._app._active_cell.primitive._get_points_for_plot(my_net_points, arc_segments)
             if not xt:
                 return []
-            x, y = GeometryOperators.orient_polygon(xt, yt, clockwise=True)
-            return x, y
+            x, y = list(GeometryOperators.orient_polygon(xt, yt, clockwise=True))
+            return [x, y]
         except:
             x = []
             y = []
-        return x, y
+        return [x, y]

@@ -269,7 +269,9 @@ class SiwaveSimulationSetup(SimulationSetup):
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
         >>> setup1.add_sweep(name="sw1", frequency_set=["linear count", "1MHz", "100MHz", 10])
         """
-        sweep_data = SimulationSetup.add_sweep(self, name, frequency_set, sweep_type, **kwargs)
+        sweep_data = SimulationSetup.add_sweep(
+            self, name=name, frequency_set=frequency_set, sweep_type=sweep_type, **kwargs
+        )
         self._siwave_sweeps_list.append(sweep_data)
         return sweep_data
 
@@ -277,6 +279,21 @@ class SiwaveSimulationSetup(SimulationSetup):
     def sweeps(self):
         """List of frequency sweeps."""
         return {i.name: i for i in self._siwave_sweeps_list}
+
+    @property
+    def dc_settings(self):
+        """SIwave DC setting."""
+        return DCSettings(self)
+
+    @property
+    def dc_advanced_settings(self):
+        """Siwave DC advanced settings.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
+        """
+        return DCAdvancedSettings(self)
 
 
 class SiwaveDCSimulationSetup(SimulationSetup):

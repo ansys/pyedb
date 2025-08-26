@@ -25,7 +25,7 @@
 This module is implicitly loaded in HFSS 3D Layout when launched.
 
 """
-
+from datetime import datetime
 from itertools import combinations
 import os
 from pathlib import Path
@@ -43,13 +43,12 @@ import rtree
 
 from pyedb.configuration.configuration import Configuration
 import pyedb.dotnet
+from pyedb.dotnet.database.Variables import decompose_variable_value
 from pyedb.dotnet.database.cell.layout import Layout
 from pyedb.dotnet.database.cell.terminal.terminal import Terminal
 from pyedb.dotnet.database.components import Components
 import pyedb.dotnet.database.dotnet.database
-from pyedb.dotnet.database.dotnet.database import Database
 from pyedb.dotnet.database.edb_data.design_options import EdbDesignOptions
-from pyedb.dotnet.database.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.database.edb_data.ports import (
     BundleWavePort,
     CircuitPort,
@@ -92,22 +91,19 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
     SiwaveSimulationSetup,
 )
-from pyedb.dotnet.database.Variables import decompose_variable_value
+from pyedb.dotnet.database.utilities.value import Value
 from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
-from pyedb.generic.general_methods import (
-    generate_unique_name,
-    get_string_version,
-    is_linux,
-    is_windows,
-)
+from pyedb.generic.general_methods import generate_unique_name, is_linux, is_windows
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
+from pyedb.misc.decorators import execution_timer
 from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflow import Workflow
 
 
-class Edb(Database):
+class Edb:
     """Provides the EDB application interface.
 
     This module inherits all objects that belong to EDB.
@@ -125,7 +121,7 @@ class Edb(Database):
     isreadonly : bool, optional
         Whether to open EBD in read-only mode when it is
         owned by HFSS 3D Layout. The default is ``False``.
-    edbversion : str, int, float, optional
+    version : str, int, float, optional
         Version of EDB to use. The default is ``None``.
         Examples of input values are ``232``, ``23.2``, ``2023.2``, ``"2023.2"``.
     isaedtowned : bool, optional
@@ -156,19 +152,19 @@ class Edb(Database):
 
     Add a new variable named "s1" to the ``Edb`` instance.
 
-    >>> app["s1"] = "0.25 mm"
-    >>> app["s1"].tofloat
+    >>> app['s1'] = "0.25 mm"
+    >>> app['s1'].tofloat
     >>> 0.00025
-    >>> app["s1"].tostring
+    >>> app['s1'].tostring
     >>> "0.25mm"
 
     or add a new parameter with description:
 
-    >>> app["s2"] = ["20um", "Spacing between traces"]
-    >>> app["s2"].value
+    >>> app['s2'] = ["20um", "Spacing between traces"]
+    >>> app['s2'].value
     >>> 1.9999999999999998e-05
-    >>> app["s2"].description
-    >>> "Spacing between traces"
+    >>> app['s2'].description
+    >>> 'Spacing between traces'
 
     Create an ``Edb`` object and open the specified project.
 
@@ -181,15 +177,28 @@ class Edb(Database):
 
     """
 
+    _db = None
+
+    @property
+    def logger(self):
+        return settings.logger
+
+    @property
+    def version(self):
+        return settings.specified_version
+
+    @property
+    def base_path(self):
+        return settings.aedt_installation_path
+
+    @execution_timer("EDB initialization")
     def __init__(
         self,
         edbpath: Union[str, Path] = None,
         cellname: str = None,
         isreadonly: bool = False,
-        edbversion: str = None,
         isaedtowned: bool = False,
         oproject=None,
-        student_version: bool = False,
         use_ppe: bool = False,
         control_file: str = None,
         map_file: str = None,
@@ -197,12 +206,15 @@ class Edb(Database):
         layer_filter: str = None,
         remove_existing_aedt: bool = False,
     ):
+        now = datetime.now()
+        self.logger.info(f"Star initializing Edb {now.time()}")
+
         if isinstance(edbpath, Path):
             edbpath = str(edbpath)
 
-        edbversion = get_string_version(edbversion)
         self._clean_variables()
-        Database.__init__(self, edbversion=edbversion, student_version=student_version)
+        self.__initialization()
+
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
@@ -255,9 +267,8 @@ class Edb(Database):
                 map_file=map_file,
             ):
                 raise AttributeError("Translation was unsuccessful")
-                return False
             if settings.enable_local_log_file and self.log_name:
-                self._logger.add_file_logger(self.log_name, "Edb")
+                self.logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)
         elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
@@ -272,28 +283,25 @@ class Edb(Database):
                 map_file=map_file,
             ):
                 raise AttributeError("Translation was unsuccessful")
-                return False
             if settings.enable_local_log_file and self.log_name:
-                self._logger.add_file_logger(self.log_name, "Edb")
+                self.logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath[-2:])
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
             if settings.enable_local_log_file and self.log_name:
-                self._logger.add_file_logger(self.log_name, "Edb")
+                self.logger.add_file_logger(self.log_name, "Edb")
             self.open_edb()
         elif not os.path.exists(os.path.join(self.edbpath, "edb.def")):
             self.create_edb()
             if settings.enable_local_log_file and self.log_name:
-                self._logger.add_file_logger(self.log_name, "Edb")
+                self.logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s created correctly.", self.edbpath)
         elif ".aedb" in edbpath:
             self.edbpath = edbpath
             if settings.enable_local_log_file and self.log_name:
-                self._logger.add_file_logger(self.log_name, "Edb")
+                self.logger.add_file_logger(self.log_name, "Edb")
             self.open_edb()
-        if self.active_cell:
-            self.logger.info("EDB initialized.")
-        else:
+        if not self.active_cell:
             raise AttributeError("Failed to initialize DLLs.")
 
     def __enter__(self):
@@ -345,6 +353,35 @@ class Edb(Database):
         if description:  # Add the variable description if a two-item list is passed for variable_value.
             self.__getitem__(variable_name).description = description
 
+    def __initialization(self):
+        self.logger.info(f"Edb version {self.version}")
+
+        """Initialize DLLs."""
+        from pyedb import __version__
+        from pyedb.dotnet.clr_module import _clr, edb_initialized
+
+        if not edb_initialized:  # pragma: no cover
+            raise RuntimeWarning("Failed to initialize Dlls.")
+        self.logger.info(f"Logger is initialized. Log file is saved to {self.logger.log_file}.")
+        self.logger.info("legacy v%s", __version__)
+        self.logger.info("Python version %s", sys.version)
+
+        sys.path.append(self.base_path)
+
+        _clr.AddReference("Ansys.Ansoft.Edb")
+        _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
+        _clr.AddReference("Ansys.Ansoft.SimSetupData")
+        os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = self.base_path
+        oaDirectory = os.path.join(self.base_path, "common", "oa")
+        os.environ["ANSYS_OADIR"] = oaDirectory
+        os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
+        edb = __import__("Ansys.Ansoft.Edb")
+        edbbuilder = __import__("Ansys.Ansoft.EdbBuilderUtils")
+        self.simSetup = __import__("Ansys.Ansoft.SimSetupData")
+        self._edb = edb.Ansoft.Edb
+        self.edbutils = edbbuilder.Ansoft.EdbBuilderUtils
+        self.simsetupdata = self.simSetup.Ansoft.SimSetupData.Data
+
     def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         files = [aedt_file, aedt_file + ".lock"]
@@ -393,8 +430,12 @@ class Edb(Database):
 
     @property
     def pedb_class(self):
-        if not self.grpc:
-            return pyedb.dotnet
+        return pyedb.dotnet
+
+    def value(self, val):
+        """Convert a value into a pyedb value."""
+        val_ = val if isinstance(val, self._edb.Utility.Value) else self.edb_value(val)
+        return Value(self, val_)
 
     @property
     def grpc(self):
@@ -410,7 +451,7 @@ class Edb(Database):
         list of cell names : List[str]
         """
         names = []
-        for cell in self.circuit_cells:
+        for cell in [i for i in list(self._db.CircuitCells)]:
             names.append(cell.GetName())
         return names
 
@@ -428,6 +469,10 @@ class Edb(Database):
         return d_var
 
     @property
+    def ansys_em_path(self):
+        return self.base_path
+
+    @property
     def project_variables(self):
         """Get all project variables.
 
@@ -437,7 +482,7 @@ class Edb(Database):
 
         """
         p_var = dict()
-        for i in self.active_db.GetVariableServer().GetAllVariableNames():
+        for i in self._db.GetVariableServer().GetAllVariableNames():
             p_var[i] = Variable(self, i)
         return p_var
 
@@ -462,9 +507,9 @@ class Edb(Database):
         """
         all_vars = dict()
         for i, j in self.project_variables.items():
-            all_vars[i] = j
+            all_vars[i] = j.value
         for i, j in self.design_variables.items():
-            all_vars[i] = j
+            all_vars[i] = j.value
         return all_vars
 
     @property
@@ -555,6 +600,7 @@ class Edb(Database):
                     temp[name] = val
         return temp
 
+    @execution_timer("open_edb")
     def open_edb(self):
         """Open EDB.
 
@@ -563,32 +609,32 @@ class Edb(Database):
         ``True`` when succeed ``False`` if failed : bool
         """
         # self.logger.info("EDB Path is %s", self.edbpath)
-        # self.logger.info("EDB Version is %s", self.edbversion)
-        # if self.edbversion > "2023.1":
+        # self.logger.info("EDB Version is %s", self.version)
+        # if self.version > "2023.1":
         #     self.standalone = False
 
-        self.run_as_standalone(self.standalone)
+        self.core.Database.SetRunAsStandAlone(self.standalone)
+        self._db = self.core.Database.Open(
+            self.edbpath,
+            self.isreadonly,
+        )
+        if self._db.IsNull():
+            raise AttributeError(f"Failed to open edb file {self.edbpath}")
 
-        # self.logger.info("EDB Standalone %s", self.standalone)
-        self.open(self.edbpath, self.isreadonly)
-        if not self.active_db:
-            self.logger.warning("Error Opening db")
-            self._active_cell = None
-            return None
-        self.logger.info("Database {} Opened in {}".format(os.path.split(self.edbpath)[-1], self.edbversion))
+        self.logger.info("Database {} Opened in {}".format(os.path.split(self.edbpath)[-1], self.version))
 
         self._active_cell = None
         if self.cellname:
-            for cell in list(self.top_circuit_cells):
+            for cell in [i for i in list(self._db.TopCircuitCells)]:
                 if cell.GetName() == self.cellname:
                     self._active_cell = cell
         if self._active_cell is None:
-            for cell in list(self.circuit_cells):
+            for cell in [i for i in list(self._db.CircuitCells)]:
                 if cell.GetName() == self.cellname:
                     self._active_cell = cell
         # if self._active_cell is still None, set it to default cell
         if self._active_cell is None:
-            self._active_cell = list(self.top_circuit_cells)[0]
+            self._active_cell = list(self._db.TopCircuitCells)[0]
         self.logger.info("Cell %s Opened", self._active_cell.GetName())
         if self._active_cell:
             self._init_objects()
@@ -598,6 +644,17 @@ class Edb(Database):
 
         return True
 
+    @property
+    def core(self):
+        """Edb Dotnet Api class.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.database.dotnet.database.CellDotNet`
+        """
+        return self._edb
+
+    @execution_timer("create_edb")
     def create_edb(self):
         """Create EDB.
 
@@ -605,20 +662,20 @@ class Edb(Database):
         -------
         ``True`` when succeed ``False`` if failed : bool
         """
-        # if self.edbversion > "2023.1":
+        # if self.version > "2023.1":
         #     self.standalone = False
 
-        self.run_as_standalone(self.standalone)
-        self._db = self.create(self.edbpath)
-        if not self.active_db:
+        self.core.Database.SetRunAsStandAlone(self.standalone)
+
+        self._db = self.core.Database.Create(self.edbpath)
+
+        if not self._db:
             self.logger.warning("Error creating the database.")
             self._active_cell = None
             return None
         if not self.cellname:
             self.cellname = generate_unique_name("Cell")
-        self._active_cell = self.edb_api.cell.create(
-            self.active_db, self.edb_api.cell.CellType.CircuitCell, self.cellname
-        )
+        self._active_cell = self.core.Cell.Cell.Create(self._db, self.core.Cell.CellType.CircuitCell, self.cellname)
         if self._active_cell:
             self._init_objects()
             return True
@@ -680,6 +737,7 @@ class Edb(Database):
             layer_filter,
         )
 
+    @execution_timer("import_layout_file")
     def import_layout_file(
         self,
         input_file,
@@ -760,8 +818,7 @@ class Edb(Database):
             cmd_translator.append('-f="{}"'.format(layer_filter))
         subprocess.run(cmd_translator)
         if not os.path.exists(os.path.join(working_dir, aedb_name)):
-            self.logger.error("Translator failed to translate.")
-            return False
+            raise RuntimeWarning(f"Translator failed. command : {' '.join(cmd_translator)}")
         else:
             self.logger.info("Translation correctly completed")
         self.edbpath = os.path.join(working_dir, aedb_name)
@@ -843,7 +900,7 @@ class Edb(Database):
     @property
     def active_db(self):
         """Database object."""
-        return self.db
+        return self._db
 
     @property
     def active_cell(self):
@@ -901,7 +958,7 @@ class Edb(Database):
         >>> edbapp = Edb("myproject.aedb")
         >>> comp = edbapp.components.get_component_by_name("J1")
         """
-        if not self._components and self.active_db:
+        if not self._components and self._db:
             self._components = Components(self)
         return self._components
 
@@ -916,7 +973,7 @@ class Edb(Database):
         mess = "`core_stackup` is deprecated.\n"
         mess += " Use `app.stackup` directly to instantiate new stackup methods."
         warnings.warn(mess, DeprecationWarning)
-        if not self._stackup and self.active_db:
+        if not self._stackup and self._db:
             self._stackup = Stackup(self)
         return self._stackup
 
@@ -964,7 +1021,7 @@ class Edb(Database):
         >>> edbapp.materials.add_debye_material("debye_mat", 5, 3, 0.02, 0.05, 1e5, 1e9)
         >>> edbapp.materials.add_djordjevicsarkar_material("djord_mat", 3.3, 0.02, 3.3)
         """
-        if not self._materials and self.active_db:
+        if not self._materials and self._db:
             self._materials = Materials(self)
         return self._materials
 
@@ -1012,7 +1069,7 @@ class Edb(Database):
         >>> ... )
         """
 
-        if not self._padstack and self.active_db:
+        if not self._padstack and self._db:
             self._padstack = EdbPadstacks(self)
         return self._padstack
 
@@ -1050,7 +1107,7 @@ class Edb(Database):
         >>> edbapp = Edb("myproject.aedb")
         >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
         """
-        if not self._siwave and self.active_db:
+        if not self._siwave and self._db:
             self._siwave = EdbSiwave(self)
         return self._siwave
 
@@ -1094,7 +1151,7 @@ class Edb(Database):
         >>> sim_config.mesh_freq = "10Ghz"
         >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
         """
-        if not self._hfss and self.active_db:
+        if not self._hfss and self._db:
             self._hfss = EdbHfss(self)
         return self._hfss
 
@@ -1135,7 +1192,7 @@ class Edb(Database):
         >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
         """
 
-        if not self._nets and self.active_db:
+        if not self._nets and self._db:
             raise Exception("")
             self._nets = EdbNets(self)
         return self._nets
@@ -1155,7 +1212,7 @@ class Edb(Database):
         >>> edbapp.net_classes
         """
 
-        if self.active_db:
+        if self._db:
             return EdbNetClasses(self)
 
     @property
@@ -1173,7 +1230,7 @@ class Edb(Database):
         >>> edbapp.extended_nets
         """
 
-        if self.active_db:
+        if self._db:
             return EdbExtendedNets(self)
 
     @property
@@ -1190,7 +1247,7 @@ class Edb(Database):
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.differential_pairs
         """
-        if self.active_db:
+        if self._db:
             return EdbDifferentialPairs(self)
         else:  # pragma: no cover
             return
@@ -1229,12 +1286,12 @@ class Edb(Database):
         >>> edbapp = Edb("myproject.aedb")
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
-        if not self._core_primitives and self.active_db:
+        if not self._core_primitives and self._db:
             self._core_primitives = Modeler(self)
         return self._core_primitives
 
     @property
-    def layout(self):
+    def layout(self) -> Layout:
         """Layout object.
 
         Returns
@@ -1349,12 +1406,12 @@ class Edb(Database):
             VoltageProbe,
         ) = range(0, 9)
 
-    def edb_value(self, val):
+    def edb_value(self, value, var_server=None):
         """Convert a value to an EDB value. Value can be a string, float or integer. Mainly used in internal calls.
 
         Parameters
         ----------
-        val : str, float, int
+        value : str, float, int
 
 
         Returns
@@ -1362,7 +1419,26 @@ class Edb(Database):
         Instance of `Edb.Utility.Value`
 
         """
-        return self.edb_api.utility.value(val)
+        if isinstance(value, self.core.Utility.Value):
+            return value
+        if var_server:
+            return self.core.Utility.Value(value, var_server)
+        if isinstance(value, (int, float)):
+            return self.core.Utility.Value(value)
+        m1 = re.findall(r"(?<=[/+-/*//^/(/[])([a-z_A-Z/$]\w*)", str(value).replace(" ", ""))
+        m2 = re.findall(r"^([a-z_A-Z/$]\w*)", str(value).replace(" ", ""))
+        val_decomposed = list(set(m1).union(m2))
+        if not val_decomposed:
+            return self.core.Utility.Value(value)
+        var_server_db = self._db.GetVariableServer()
+        var_names = var_server_db.GetAllVariableNames()
+        var_server_cell = self.active_cell.GetVariableServer()
+        var_names_cell = var_server_cell.GetAllVariableNames()
+        if set(val_decomposed).intersection(var_names_cell):
+            return self.core.Utility.Value(value, var_server_cell)
+        if set(val_decomposed).intersection(var_names):
+            return self.core.Utility.Value(value, var_server_db)
+        return self.core.Utility.Value(value)
 
     def point_3d(self, x, y, z=0.0):
         """Compute the Edb 3d Point Data.
@@ -1380,7 +1456,25 @@ class Edb(Database):
         -------
         ``Geometry.Point3DData``.
         """
-        return self.edb_api.geometry.point3d_data(x, y, z)
+        return self.core.Geometry.Point3DData(self.edb_value(x), self.edb_value(y), self.edb_value(z))
+
+    def copy_cells(self, cells_to_copy):
+        """Copy Cells from other Databases or this Database into this Database.
+
+        Parameters
+        ----------
+        cells_to_copy : list[:class:`Cell <ansys.edb.layout.Cell>`]
+            Cells to copy.
+
+        Returns
+        -------
+        list[:class:`Cell <ansys.edb.layout.Cell>`]
+            New Cells created in this Database.
+        """
+        if not isinstance(cells_to_copy, list):
+            cells_to_copy = [cells_to_copy]
+        _dbCells = convert_py_list_to_net_list(cells_to_copy)
+        return self._db.CopyCells(_dbCells)
 
     def point_data(self, x, y=None):
         """Compute the Edb Point Data.
@@ -1398,9 +1492,9 @@ class Edb(Database):
         ``Geometry.PointData``.
         """
         if y is None:
-            return self.edb_api.geometry.point_data(x)
+            return self.core.Geometry.PointData(self.edb_value(x))
         else:
-            return self.edb_api.geometry.point_data(x, y)
+            return self.core.Geometry.PointData(self.edb_value(x), self.edb_value(y))
 
     def _is_file_existing_and_released(self, filename):
         if os.path.exists(filename):
@@ -1464,7 +1558,8 @@ class Edb(Database):
         warnings.warn("Use new property :func:`close` instead.", DeprecationWarning)
         return self.close()
 
-    def close(self):
+    @execution_timer("Close Edb file")
+    def close(self, **kwargs):
         """Close EDB and cleanup variables.
 
         Returns
@@ -1473,14 +1568,11 @@ class Edb(Database):
             ``True`` when successful, ``False`` when failed.
 
         """
-        Database.close(self)
+        self._db.Close()
 
         if self.log_name and settings.enable_local_log_file:
-            self._logger.remove_all_file_loggers()
-        start_time = time.time()
+            self.logger.remove_all_file_loggers()
         self._wait_for_file_release()
-        elapsed_time = time.time() - start_time
-        self.logger.info("EDB file release time: {0:.2f}ms".format(elapsed_time * 1000.0))
         self._clean_variables()
         return True
 
@@ -1499,6 +1591,7 @@ class Edb(Database):
         warnings.warn("Use new method :func:`save` instead.", DeprecationWarning)
         return self.save()
 
+    @execution_timer("Save Edb file")
     def save(self):
         """Save the EDB file.
 
@@ -1509,11 +1602,8 @@ class Edb(Database):
 
         """
 
-        Database.save(self)
-        start_time = time.time()
+        self._db.Save()
         self._wait_for_file_release()
-        elapsed_time = time.time() - start_time
-        self.logger.info("EDB file save time: {0:.2f}ms".format(elapsed_time * 1000.0))
         return True
 
     def save_edb_as(self, path):
@@ -1537,7 +1627,8 @@ class Edb(Database):
         warnings.warn("Use new property :func:`save_as` instead.", DeprecationWarning)
         return self.save_as(path)
 
-    def save_as(self, path, version=""):
+    @execution_timer("EDB file save")
+    def save_as(self, path):
         """Save the EDB file as another file.
 
         Parameters
@@ -1552,22 +1643,19 @@ class Edb(Database):
 
         """
         origin_name = "pyedb_" + os.path.splitext(os.path.split(self.edbpath)[-1])[0]
-        Database.save_as(self, path)
-        start_time = time.time()
+        self._db.SaveAs(path, "")
         self._wait_for_file_release()
-        elapsed_time = time.time() - start_time
-        self.logger.info("EDB file save time: {0:.2f}ms".format(elapsed_time * 1000.0))
-        self.edbpath = self.directory
+        self.edbpath = self._db.GetDirectory()
         if self.log_name:
-            self._logger.remove_file_logger(os.path.splitext(os.path.split(self.log_name)[-1])[0])
+            self.logger.remove_file_logger(os.path.splitext(os.path.split(self.log_name)[-1])[0])
 
         self.log_name = os.path.join(
             os.path.dirname(path),
             "pyedb_" + os.path.splitext(os.path.split(path)[-1])[0] + ".log",
         )
         if settings.enable_local_log_file:
-            self._logger.add_file_logger(self.log_name, "Edb")
-            self._logger.remove_file_logger(origin_name)
+            self.logger.add_file_logger(self.log_name, "Edb")
+            self.logger.remove_file_logger(origin_name)
         return True
 
     def execute(self, func):
@@ -1585,7 +1673,7 @@ class Edb(Database):
             ``True`` when successful, ``False`` when failed.
 
         """
-        return self.edb_api.utility.utility.Command.Execute(func)
+        return self.core.utility.utility.Command.Execute(func)
 
     def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False):
         """Import a board file and generate an ``edb.def`` file in the working directory.
@@ -1634,7 +1722,7 @@ class Edb(Database):
     ):
         if extent_type in [
             "Conforming",
-            self.edb_api.geometry.extent_type.Conforming,
+            self.core.Geometry.ExtentType.Conforming,
             1,
         ]:
             if use_pyaedt_extent:
@@ -1652,7 +1740,7 @@ class Edb(Database):
             else:
                 _poly = self.layout.expanded_extent(
                     net_signals,
-                    self.edb_api.geometry.extent_type.Conforming,
+                    self.core.Geometry.ExtentType.Conforming,
                     expansion_size,
                     False,
                     use_round_corner,
@@ -1660,12 +1748,12 @@ class Edb(Database):
                 )
         elif extent_type in [
             "Bounding",
-            self.edb_api.geometry.extent_type.BoundingBox,
+            self.core.Geometry.ExtentType.BoundingBox,
             0,
         ]:
             _poly = self.layout.expanded_extent(
                 net_signals,
-                self.edb_api.geometry.extent_type.BoundingBox,
+                self.core.Geometry.ExtentType.BoundingBox,
                 expansion_size,
                 False,
                 use_round_corner,
@@ -1686,14 +1774,14 @@ class Edb(Database):
             else:
                 _poly = self.layout.expanded_extent(
                     net_signals,
-                    self.edb_api.geometry.extent_type.Conforming,
+                    self.core.Geometry.ExtentType.Conforming,
                     expansion_size,
                     False,
                     use_round_corner,
                     1,
                 )
                 _poly_list = convert_py_list_to_net_list([_poly])
-                _poly = self.edb_api.geometry.polygon_data.get_convex_hull_of_polygons(_poly_list)
+                _poly = self.core.geometry.polygon_data.get_convex_hull_of_polygons(_poly_list)
         return _poly
 
     def _create_conformal(
@@ -1768,7 +1856,7 @@ class Edb(Database):
                             pass
                         finally:
                             unite_polys.extend(list(obj_data))
-            _poly_unite = self.edb_api.geometry.polygon_data.unite(unite_polys)
+            _poly_unite = self.core.Geometry.PolygonData.Unite(convert_py_list_to_net_list(unite_polys))
             if len(_poly_unite) == 1:
                 self.logger.info("Correctly computed Extension at first iteration.")
                 return _poly_unite[0]
@@ -1793,20 +1881,20 @@ class Edb(Database):
                 pd = term._edb_object.GetParameters()[1]
                 locations.append([pd.X.ToDouble(), pd.Y.ToDouble()])
         for point in locations:
-            pointA = self.edb_api.geometry.point_data(
+            pointA = self.core.geometry.point_data(
                 self.edb_value(point[0] - expansion_size),
                 self.edb_value(point[1] - expansion_size),
             )
-            pointB = self.edb_api.geometry.point_data(
+            pointB = self.core.geometry.point_data(
                 self.edb_value(point[0] + expansion_size),
                 self.edb_value(point[1] + expansion_size),
             )
 
             points = Tuple[
-                self.edb_api.geometry.geometry.PointData,
-                self.edb_api.geometry.geometry.PointData,
+                self.core.geometry.geometry.PointData,
+                self.core.geometry.geometry.PointData,
             ](pointA, pointB)
-            _polys.append(self.edb_api.geometry.polygon_data.create_from_bbox(points))
+            _polys.append(self.core.geometry.polygon_data.create_from_bbox(points))
         return _polys
 
     def _create_convex_hull(
@@ -1839,7 +1927,7 @@ class Edb(Database):
         if smart_cut:
             objs_data = self._smart_cut(reference_list, expansion_size)
             _polys.extend(objs_data)
-        _poly = self.edb_api.geometry.polygon_data.get_convex_hull_of_polygons(convert_py_list_to_net_list(_polys))
+        _poly = self.core.Geometry.PolygonData.GetConvexHullOfPolygons(convert_py_list_to_net_list(_polys))
         _poly = _poly.Expand(expansion_size, tolerance, round_corner, round_extension)[0]
         return _poly
 
@@ -1960,7 +2048,7 @@ class Edb(Database):
         Examples
         --------
         >>> from pyedb import Edb
-        >>> edb = Edb(r"C:\\test.aedb", edbversion="2022.2")
+        >>> edb = Edb(r'C:\\test.aedb', version="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
         >>> start = time.time()
@@ -1970,12 +2058,12 @@ class Edb(Database):
         >>>           signal_list.append(net)
         >>> power_list = ["PGND"]
         >>> edb.cutout(signal_list=signal_list, reference_list=power_list, extent_type="Conforming")
-        >>> end_time = str((time.time() - start) / 60)
+        >>> end_time = str((time.time() - start)/60)
         >>> edb.logger.info("Total legacy cutout time in min %s", end_time)
         >>> edb.nets.plot(signal_list, None, color_by_net=True)
         >>> edb.nets.plot(power_list, None, color_by_net=True)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
+        >>> edb.save()
+        >>> edb.close()
 
 
         """
@@ -2015,7 +2103,7 @@ class Edb(Database):
             legacy_path = self.edbpath
             if expansion_factor > 0 and not custom_extent:
                 start = time.time()
-                self.save_edb()
+                self.save()
                 dummy_path = self.edbpath.replace(".aedb", "_smart_cutout_temp.aedb")
                 working_cutout = False
                 i = 1
@@ -2047,12 +2135,12 @@ class Edb(Database):
                     )
                     if self.are_port_reference_terminals_connected():
                         if output_aedb_path:
-                            self.save_edb_as(output_aedb_path)
+                            self.save_as(output_aedb_path)
                         else:
-                            self.save_edb_as(legacy_path)
+                            self.save_as(legacy_path)
                         working_cutout = True
                         break
-                    self.close_edb()
+                    self.close()
                     self.edbpath = legacy_path
                     self.open_edb()
                     i += 1
@@ -2087,8 +2175,8 @@ class Edb(Database):
                     inlcude_voids_in_extents=include_voids_in_extents,
                 )
             if result and not open_cutout_at_end and self.edbpath != legacy_path:
-                self.save_edb()
-                self.close_edb()
+                self.save()
+                self.close()
                 self.edbpath = legacy_path
                 self.open_edb()
             return result
@@ -2161,7 +2249,7 @@ class Edb(Database):
         _dbCells = [_cutout]
 
         if output_aedb_path:
-            db2 = self.create(output_aedb_path)
+            db2 = self.core.Database.Create(output_aedb_path)
             _success = db2.Save()
             _dbCells = convert_py_list_to_net_list(_dbCells)
             db2.CopyCells(_dbCells)  # Copies cutout cell/design to db2 project
@@ -2170,7 +2258,7 @@ class Edb(Database):
                     if not net.GetName() in included_nets_list:
                         net.Delete()
                 _success = db2.Save()
-            for c in list(self.active_db.TopCircuitCells):
+            for c in list(self._db.TopCircuitCells):
                 if c.GetName() == _cutout.GetName():
                     c.Delete()
             if open_cutout_at_end:  # pragma: no cover
@@ -2195,7 +2283,7 @@ class Edb(Database):
                         for _cmp in _cmps:
                             _cmp.Delete()
                     except:
-                        self._logger.error("Failed to remove single pin components.")
+                        self.logger.error("Failed to remove single pin components.")
                 db2.Close()
                 source = os.path.join(output_aedb_path, "edb.def.tmp")
                 target = os.path.join(output_aedb_path, "edb.def")
@@ -2300,7 +2388,7 @@ class Edb(Database):
         from concurrent.futures import ThreadPoolExecutor
 
         if output_aedb_path:
-            self.save_edb_as(output_aedb_path)
+            self.save_as(output_aedb_path)
         self.logger.info("Cutout Multithread started.")
         expansion_size = self.edb_value(expansion_size).ToDouble()
 
@@ -2412,7 +2500,7 @@ class Edb(Database):
                 pins_to_preserve=pins_to_preserve,
                 inlcude_voids_in_extents=inlcude_voids_in_extents,
             )
-            if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1]:
+            if extent_type in ["Conforming", self.core.Geometry.ExtentType.Conforming, 1]:
                 if extent_defeature > 0:
                     _poly = _poly.Defeature(extent_defeature)
                 _poly1 = _poly.CreateFromArcs(_poly.GetArcData(), True)
@@ -2423,7 +2511,7 @@ class Edb(Database):
                     self.logger.info(f"Number of voids included:{len(list(_poly1.Holes))}")
                 _poly = _poly1
         if not _poly or _poly.IsNull():
-            self._logger.error("Failed to create Extent.")
+            self.logger.error("Failed to create Extent.")
             return []
         self.logger.info_timer("Extent Creation")
         self.logger.reset_timer()
@@ -2620,7 +2708,7 @@ class Edb(Database):
         Examples
         --------
         >>> from pyedb import Edb
-        >>> edb = Edb(r"C:\\test.aedb", edbversion="2022.2")
+        >>> edb = Edb(r'C:\\test.aedb', version="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
         >>> start = time.time()
@@ -2630,7 +2718,7 @@ class Edb(Database):
         >>>           signal_list.append(net)
         >>> power_list = ["PGND"]
         >>> edb.create_cutout_multithread(signal_list=signal_list, reference_list=power_list, extent_type="Conforming")
-        >>> end_time = str((time.time() - start) / 60)
+        >>> end_time = str((time.time() - start)/60)
         >>> edb.logger.info("Total legacy cutout time in min %s", end_time)
         >>> edb.nets.plot(signal_list, None, color_by_net=True)
         >>> edb.nets.plot(power_list, None, color_by_net=True)
@@ -2677,14 +2765,10 @@ class Edb(Database):
             via.pin.Delete()
         if netlist:
             nets = [net.net_obj for net in temp_edb.layout.nets if net.name in netlist]
-            _poly = temp_edb.layout.expanded_extent(
-                nets, self.edb_api.geometry.extent_type.Conforming, 0.0, True, True, 1
-            )
+            _poly = temp_edb.layout.expanded_extent(nets, self.core.Geometry.ExtentType.Conforming, 0.0, True, True, 1)
         else:
             nets = [net.api_object for net in temp_edb.layout.nets if "gnd" in net.name.lower()]
-            _poly = temp_edb.layout.expanded_extent(
-                nets, self.edb_api.geometry.extent_type.Conforming, 0.0, True, True, 1
-            )
+            _poly = temp_edb.layout.expanded_extent(nets, self.core.Geometry.ExtentType.Conforming, 0.0, True, True, 1)
             temp_edb.close_edb()
         if _poly:
             return _poly
@@ -2785,9 +2869,7 @@ class Edb(Database):
             p_missing = [i for i in pinstance_to_add if i.id not in ids]
             self.logger.info("Added {} padstack instances after cutout".format(len(p_missing)))
             for p in p_missing:
-                position = self.edb_api.geometry.point_data(
-                    self.edb_value(p.position[0]), self.edb_value(p.position[1])
-                )
+                position = self.core.geometry.point_data(self.edb_value(p.position[0]), self.edb_value(p.position[1]))
                 net = self.nets.find_or_create_net(p.net_name)
                 rotation = self.edb_value(p.rotation)
                 sign_layers = list(self.stackup.signal_layers.keys())
@@ -2804,7 +2886,7 @@ class Edb(Database):
                 for pad in list(self.padstacks.definitions.keys()):
                     if pad == p.padstack_definition:
                         padstack = self.padstacks.definitions[pad].edb_padstack
-                        padstack_instance = self.edb_api.cell.primitive.padstack_instance.create(
+                        padstack_instance = self.core.Cell.primitive.padstack_instance.create(
                             _cutout.GetLayout(),
                             net,
                             p.name,
@@ -2827,7 +2909,7 @@ class Edb(Database):
                     center_y,
                     radius,
                 ) = void_circle.primitive_object.GetParameters(0.0, 0.0, 0.0)
-                cloned_circle = self.edb_api.cell.primitive.circle.create(
+                cloned_circle = self.core.Cell.primitive.circle.create(
                     layout,
                     void_circle.layer_name,
                     void_circle.net,
@@ -2837,7 +2919,7 @@ class Edb(Database):
                 )
                 cloned_circle.SetIsNegative(True)
             elif void_circle.type == "Polygon":
-                cloned_polygon = self.edb_api.cell.primitive.polygon.create(
+                cloned_polygon = self.core.Cell.primitive.polygon.create(
                     layout,
                     void_circle.layer_name,
                     void_circle.net,
@@ -2867,7 +2949,7 @@ class Edb(Database):
 
         _dbCells = [_cutout]
         if output_aedb_path:
-            db2 = self.create(output_aedb_path)
+            db2 = self.core.Database.Create(output_aedb_path)
             if not db2.Save():
                 self.logger.error("Failed to create new Edb. Check if the path already exists and remove it.")
                 return []
@@ -2876,7 +2958,7 @@ class Edb(Database):
             cell = list(cell_copied)[0]
             cell.SetName(os.path.basename(output_aedb_path[:-5]))
             db2.Save()
-            for c in list(self.active_db.TopCircuitCells):
+            for c in list(self._db.TopCircuitCells):
                 if c.GetName() == _cutout.GetName():
                     c.Delete()
             if open_cutout_at_end:  # pragma: no cover
@@ -3023,13 +3105,13 @@ class Edb(Database):
         --------
 
         >>> from pyedb import Edb
-        >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2023.2")
+        >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", version="2023.2")
 
-        >>> options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-        >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
-        >>> edb.export_hfss(r"C:\temp")
+        >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
+        >>> edb.write_export3d_option_config_file(r"C:\\temp", options_config)
+        >>> edb.export_hfss(r"C:\\temp")
         """
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
 
     def export_q3d(
@@ -3066,13 +3148,13 @@ class Edb(Database):
         --------
 
         >>> from pyedb import Edb
-        >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
-        >>> options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-        >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
-        >>> edb.export_q3d(r"C:\temp")
+        >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", version="2021.2")
+        >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
+        >>> edb.write_export3d_option_config_file("C:\\temp", options_config)
+        >>> edb.export_q3d("C:\\temp")
         """
 
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad(
             "Q3D",
             path_to_output,
@@ -3117,13 +3199,13 @@ class Edb(Database):
 
         >>> from pyedb import Edb
 
-        >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
+        >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", version="2021.2")
 
-        >>> options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-        >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
-        >>> edb.export_maxwell(r"C:\temp")
+        >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
+        >>> edb.write_export3d_option_config_file("C:\\temp", options_config)
+        >>> edb.export_maxwell("C:\\temp")
         """
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad(
             "Maxwell",
             path_to_output,
@@ -3141,11 +3223,8 @@ class Edb(Database):
         str
             Siwave project path.
         """
-        process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
-        try:
-            self.close()
-        except:
-            pass
+        process = SiwaveSolve(self)
+        self.close()
         process.solve()
         return self.edbpath[:-5] + ".siw"
 
@@ -3192,11 +3271,8 @@ class Edb(Database):
         list
             List of files generated.
         """
-        process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
-        try:
-            self.close()
-        except:
-            pass
+        process = SiwaveSolve(self)
+        self.close()
         return process.export_dc_report(
             siwave_project,
             solution_name,
@@ -3222,7 +3298,7 @@ class Edb(Database):
         """
         if "$" in variable_name:
             if variable_name.index("$") == 0:
-                var_server = self.active_db.GetVariableServer()
+                var_server = self._db.GetVariableServer()
 
             else:
                 var_server = self.active_cell.GetVariableServer()
@@ -3235,6 +3311,17 @@ class Edb(Database):
             return True, var_server
         return False, var_server
 
+    def get_all_variable_names(self):
+        """Method added for compatibility with grpc.
+
+        Returns
+        -------
+        List[Str]
+            List of variables name.
+
+        """
+        return list(self.variable_exists("")[1].GetAllVariableNames())
+
     def get_variable(self, variable_name):
         """Return Variable Value if variable exists.
 
@@ -3246,10 +3333,13 @@ class Edb(Database):
         -------
         :class:`pyedb.dotnet.database.edb_data.edbvalue.EdbValue`
         """
-        var_server = self.variable_exists(variable_name)
-        if var_server[0]:
-            tuple_value = var_server[1].GetVariableValue(variable_name)
-            return EdbValue(tuple_value[1])
+
+        for i, j in self.project_variables.items():
+            if i == variable_name:
+                return j
+        for i, j in self.design_variables.items():
+            if i == variable_name:
+                return j
         self.logger.info("Variable %s doesn't exists.", variable_name)
         return None
 
@@ -3279,8 +3369,8 @@ class Edb(Database):
         >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> boolean_1, ant_length = edb_app.add_project_variable("my_local_variable", "1cm")
-        >>> print(edb_app["$my_local_variable"])  # using getitem
-        >>> edb_app["$my_local_variable"] = "1cm"  # using setitem
+        >>> print(edb_app["$my_local_variable"])    #using getitem
+        >>> edb_app["$my_local_variable"] = "1cm"   #using setitem
 
         """
         if not variable_name.startswith("$"):
@@ -3318,8 +3408,8 @@ class Edb(Database):
         >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> boolean_1, ant_length = edb_app.add_design_variable("my_local_variable", "1cm")
-        >>> print(edb_app["my_local_variable"])  # using getitem
-        >>> edb_app["my_local_variable"] = "1cm"  # using setitem
+        >>> print(edb_app["my_local_variable"])    #using getitem
+        >>> edb_app["my_local_variable"] = "1cm"   #using setitem
         >>> boolean_2, para_length = edb_app.change_design_variable_value("my_parameter", "1m", is_parameter=True
         >>> boolean_3, project_length = edb_app.change_design_variable_value("$my_project_variable", "1m")
 
@@ -3359,7 +3449,7 @@ class Edb(Database):
         >>> edb_app = Edb()
         >>> boolean, ant_length = edb_app.add_design_variable("ant_length", "1cm")
         >>> boolean, ant_length = edb_app.change_design_variable_value("ant_length", "1m")
-        >>> print(edb_app["ant_length"])  # using getitem
+        >>> print(edb_app["ant_length"])    #using getitem
         """
         var_server = self.variable_exists(variable_name)
         if var_server[0]:
@@ -3450,8 +3540,8 @@ class Edb(Database):
                 ):
                     self.logger.info("Cutout processed.")
                     old_cell = self.active_cell.FindByName(
-                        self.db,
-                        self.edb_api.cell.CellType.CircuitCell,
+                        self._db,
+                        self.core.Cell.CellType.CircuitCell,
                         old_cell_name,
                     )
                     if old_cell:
@@ -3689,6 +3779,7 @@ class Edb(Database):
         Dict[str, :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
 
         """
+
         setups = {}
         for i in list(self.active_cell.SimulationSetups):
             if i.GetType().ToString().endswith("kHFSS"):
@@ -3701,6 +3792,18 @@ class Edb(Database):
                 setups[i.GetName()] = RaptorXSimulationSetup(self, i)
             elif i.GetType().ToString().endswith("kHFSSPI"):
                 setups[i.GetName()] = HFSSPISimulationSetup(self, i)
+        try:
+            cpa_setup_name = self.active_cell.GetProductProperty(
+                self._edb.ProductId.SIWave, SIwaveProperties.CPA_SIM_NAME
+            )[-1]
+        except:
+            cpa_setup_name = ""
+        if cpa_setup_name:
+            from pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup import (
+                SIWaveCPASimulationSetup,
+            )
+
+            setups[cpa_setup_name] = SIWaveCPASimulationSetup(self, cpa_setup_name)
         return setups
 
     @property
@@ -3759,7 +3862,7 @@ class Edb(Database):
         elif not name:
             name = generate_unique_name("setup")
         setup = HfssSimulationSetup(self, name=name)
-        setup.set_solution_single_frequency("1GΗz")
+        setup.set_solution_single_frequency("1Ghz")
         return setup
 
     def create_raptorx_setup(self, name=None):
@@ -3778,7 +3881,7 @@ class Edb(Database):
         if name in self.setups:
             self.logger.error("Setup name already used in the layout")
             return False
-        version = self.edbversion.split(".")
+        version = self.version.split(".")
         if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
             setup = RaptorXSimulationSetup(self).create(name)
             return setup
@@ -3803,8 +3906,7 @@ class Edb(Database):
         if name in self.setups:
             self.logger.error("Setup name already used in the layout")
             return False
-        version = self.edbversion.split(".")
-        if float(self.edbversion) < 2024.2:
+        if float(self.version) < 2024.2:
             self.logger.error("HFSSPI simulation only supported with Ansys release 2024R2 and higher")
             return False
         return HFSSPISimulationSetup(self, name=name)
@@ -3826,13 +3928,11 @@ class Edb(Database):
         >>> from pyedb import Edb
         >>> edbapp = Edb()
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
-        >>> setup1.add_frequency_sweep(
-        ...     frequency_sweep=[
-        ...         ["linear count", "0", "1kHz", 1],
-        ...         ["log scale", "1kHz", "0.1GHz", 10],
-        ...         ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-        ...     ]
-        ... )
+        >>> setup1.add_frequency_sweep(frequency_sweep=[
+        ...                           ["linear count", "0", "1kHz", 1],
+        ...                           ["log scale", "1kHz", "0.1GHz", 10],
+        ...                           ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+        ...                           ])
         """
         if not name:
             name = generate_unique_name("Siwave_SYZ")
@@ -3872,6 +3972,7 @@ class Edb(Database):
             setattr(setup, k, v)
         return setup
 
+    @execution_timer("calculate_initial_extent")
     def calculate_initial_extent(self, expansion_factor):
         """Compute a float representing the larger number between the dielectric thickness or trace width
         multiplied by the nW factor. The trace width search is limited to nets with ports attached.
@@ -3961,7 +4062,7 @@ class Edb(Database):
             Dictionary with EDB path as key and EDB PolygonData as value defining the zone region.
             This dictionary is returned from the command copy_zones():
             >>> edb = Edb(edb_file)
-            >>> zone_dict = edb.copy_zones(r"C:\Temp\test")
+            >>> zone_dict = edb.copy_zones("C:/Temp/test")
 
         common_reference_net : str
             the common reference net name. This net name must be provided to provide a valid project.
@@ -3978,7 +4079,7 @@ class Edb(Database):
         defined_ports = {}
         project_connexions = None
         for edb_path, zone_info in zone_dict.items():
-            edb = Edb(edbversion=self.edbversion, edbpath=edb_path)
+            edb = Edb(edbpath=edb_path)
             edb.cutout(
                 use_pyaedt_cutout=True,
                 custom_extent=zone_info[1],
@@ -4020,7 +4121,7 @@ class Edb(Database):
                 dictionary terminals with edb name as key and created ports name on clipped signal nets.
                 Dictionary is generated by the command cutout_multizone_layout:
                 >>> edb = Edb(edb_file)
-                >>> edb_zones = edb.copy_zones(r"C:\Temp\test")
+                >>> edb_zones = edb.copy_zones("C:/Temp/test")
                 >>> defined_ports, terminals_info = edb.cutout_multizone_layout(edb_zones, common_reference_net)
                 >>> project_connexions = get_connected_ports(terminals_info)
 
@@ -4550,10 +4651,9 @@ class Edb(Database):
             ``True`` when succeeded, ``False`` if failed.
         """
         if not temp_directory:
-            self.logger.error("Temp directory must be provided when creating model foe arbitrary wave port")
-            return False
+            raise RuntimeWarning("Temp directory must be provided when creating model foe arbitrary wave port")
         if mounting_side not in ["top", "bottom"]:
-            self.logger.error(
+            raise RuntimeWarning(
                 "Mounting side must be provided and only `top` or `bottom` are supported. Setting to "
                 "`top` will take the top layer from the current design as reference. Setting to `bottom` "
                 "will take the bottom one."
@@ -4586,10 +4686,10 @@ class Edb(Database):
             if poly.layer_name == reference_layer and poly.type == "Polygon" and poly.has_voids
         ]
         if not polys:
-            self.logger.error(
-                f"No polygon found with voids on layer {reference_layer} during model creation for arbitrary wave ports"
+            raise RuntimeWarning(
+                f"No polygon found with voids on layer {reference_layer} during model creation for "
+                f"arbitrary wave ports"
             )
-            return False
         void_padstacks = []
         for poly in polys:
             for void in poly.voids:
@@ -4604,11 +4704,10 @@ class Edb(Database):
                     void_padstacks.append((void, [self.padstacks.instances[edb_id] for edb_id in included_instances]))
 
         if not void_padstacks:
-            self.logger.error(
-                "No padstack instances found inside evaluated voids during model creation for arbitrarywaveports"
+            raise RuntimeWarning(
+                "No padstack instances found inside evaluated voids during model creation for arbitrary" "waveports"
             )
-            return False
-        cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion)
+        cloned_edb = Edb(edbpath=output_edb)
 
         cloned_edb.stackup.add_layer(
             layer_name="ports",
@@ -4662,7 +4761,7 @@ class Edb(Database):
                     net_name=inst.net_name,
                 )
                 if not _temp_circle:
-                    self.logger.error(
+                    raise RuntimeWarning(
                         f"Failed to create circle for terminal during create_model_for_arbitrary_wave_ports"
                     )
         cloned_edb.save_as(output_edb)
@@ -4726,6 +4825,38 @@ class Edb(Database):
     def get_variable_value(self, variable_name):
         """Added to get closer architecture as for grpc."""
         if variable_name in self.variables:
-            return self.variables[variable_name].value
+            return self.variables[variable_name]
         else:
             return False
+
+    def compare(self, input_file, results=""):
+        """Compares current open database with another one.
+
+        Parameters
+        ----------
+        input_file : str
+            Path to the edb file.
+        results: str, optional
+            Path to directory in which results will be saved. If no path is given, a new "_compare_results"
+            directory will be created with the same naming and path as the .aedb folder.
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        if not results:
+            results = self.edbpath[:-5] + "_compare_results"
+            os.mkdir(results)
+        command = os.path.join(self.base_path, "EDBDiff.exe")
+        if is_linux:
+            mono_path = os.path.join(self.base_path, "common/mono/Linux64/bin/mono")
+            cmd_input = [mono_path, command, input_file, self.edbpath, results]
+        else:
+            cmd_input = [command, input_file, self.edbpath, results]
+        p = subprocess.run(cmd_input)
+        if p.returncode == 0:
+            return str(Path(self.base_path).joinpath("EDBDiff.exe"))
+        else:
+            raise RuntimeError(
+                "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
+            )

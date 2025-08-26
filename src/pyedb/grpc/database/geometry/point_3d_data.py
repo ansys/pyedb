@@ -21,7 +21,8 @@
 # SOFTWARE.
 
 from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
-from ansys.edb.core.utility.value import Value as GrpcValue
+
+from pyedb.grpc.database.utility.value import Value
 
 
 class Point3DData(GrpcPoint3DData):
@@ -31,7 +32,7 @@ class Point3DData(GrpcPoint3DData):
         super().__init__(x, y, z)
 
     @property
-    def x(self):
+    def x(self) -> float:
         """X position.
 
         Returns
@@ -40,14 +41,14 @@ class Point3DData(GrpcPoint3DData):
             X position value.
 
         """
-        return self.x.value
+        return Value(self.x)
 
     @x.setter
     def x(self, value):
-        self.x = GrpcValue(value)
+        self.x = Value(value)
 
     @property
-    def y(self):
+    def y(self) -> float:
         """Y position.
 
         Returns
@@ -56,14 +57,14 @@ class Point3DData(GrpcPoint3DData):
             Y position value.
 
         """
-        return self.y.value
+        return Value(self.y)
 
     @y.setter
     def y(self, value):
-        self.y = GrpcValue(value)
+        self.y = Value(value)
 
     @property
-    def z(self):
+    def z(self) -> float:
         """Z position.
 
         Returns
@@ -72,8 +73,8 @@ class Point3DData(GrpcPoint3DData):
             Z position value.
 
         """
-        return self.z.value
+        return Value(self.z)
 
     @z.setter
     def z(self, value):
-        self.z = GrpcValue(value)
+        self.z = Value(value)

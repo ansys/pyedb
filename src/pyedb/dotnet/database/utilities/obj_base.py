@@ -32,9 +32,9 @@ class BBox:
         if edb_object:
             self._edb_object = edb_object
         else:
-            point_1 = PointData(self._pedb, x=point_1[0], y=point_1[1])
-            point_2 = PointData(self._pedb, x=point_2[0], y=point_2[1])
-            self._edb_object = Tuple[self._pedb.edb_api.Geometry.PointData, self._pedb.edb_api.Geometry.PointData](
+            point_1 = PointData.create_from_xy(self._pedb, x=point_1[0], y=point_1[1])
+            point_2 = PointData.create_from_xy(self._pedb, x=point_2[0], y=point_2[1])
+            self._edb_object = Tuple[self._pedb.core.Geometry.PointData, self._pedb.core.Geometry.PointData](
                 point_1._edb_object, point_2._edb_object
             )
 

@@ -22,12 +22,12 @@
 
 
 from ansys.edb.core.primitive.rectangle import (
-    Rectangle as GrpcRectangle,
     RectangleRepresentationType as GrpcRectangleRepresentationType,
 )
-from ansys.edb.core.utility.value import Value as GrpcValue
+from ansys.edb.core.primitive.rectangle import Rectangle as GrpcRectangle
 
 from pyedb.grpc.database.primitive.primitive import Primitive
+from pyedb.grpc.database.utility.value import Value
 
 
 class Rectangle(GrpcRectangle, Primitive):
@@ -54,7 +54,7 @@ class Rectangle(GrpcRectangle, Primitive):
         return self.cast().polygon_data
 
     @property
-    def representation_type(self):
+    def representation_type(self) -> str:
         """Representation type.
 
         Returns
@@ -106,12 +106,12 @@ class Rectangle(GrpcRectangle, Primitive):
         """
         parameters = super().get_parameters()
         representation_type = parameters[0].name.lower()
-        parameter1 = parameters[1].value
-        parameter2 = parameters[2].value
-        parameter3 = parameters[3].value
-        parameter4 = parameters[4].value
-        corner_radius = parameters[5].value
-        rotation = parameters[6].value
+        parameter1 = Value(parameters[1])
+        parameter2 = Value(parameters[2])
+        parameter3 = Value(parameters[3])
+        parameter4 = Value(parameters[4])
+        corner_radius = Value(parameters[5])
+        rotation = Value(parameters[6])
         return representation_type, parameter1, parameter2, parameter3, parameter4, corner_radius, rotation
 
     def set_parameters(self, rep_type, param1, param2, param3, param4, corner_rad, rotation):
@@ -137,10 +137,10 @@ class Rectangle(GrpcRectangle, Primitive):
 
         return super().set_parameters(
             self.representation_type[rep_type],
-            GrpcValue(param1),
-            GrpcValue(param2),
-            GrpcValue(param3),
-            GrpcValue(param4),
-            GrpcValue(corner_rad),
-            GrpcValue(rotation),
+            Value(param1),
+            Value(param2),
+            Value(param3),
+            Value(param4),
+            Value(corner_rad),
+            Value(rotation),
         )

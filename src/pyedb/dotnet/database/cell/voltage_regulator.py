@@ -31,27 +31,6 @@ class VoltageRegulator(Connectable):
         super().__init__(pedb, edb_object)
 
     @property
-    def component(self):
-        """Retrieve voltage regulator component"""
-        if not self._edb_object.GetComponent().IsNull():
-            ref_des = self._edb_object.GetComponent().GetName()
-            if not ref_des:
-                return False
-            return self._pedb.components.instances[ref_des]
-        self._pedb.logger.warning("No voltage regulator component.")
-        return False
-
-    @component.setter
-    def component(self, value):
-        if not isinstance(value, str):
-            self._pedb.logger.error("refdes name must be provided to set vrm component")
-            return
-        if value not in self._pedb.components.instances:
-            self._pedb.logger.error(f"component {value} not found in layout")
-            return
-        self._edb_object.SetGroup(self._pedb.components.instances[value]._edb_object)
-
-    @property
     def load_regulator_current(self):
         """Retrieve load regulator current value"""
         return self._edb_object.GetLoadRegulationCurrent().ToDouble()

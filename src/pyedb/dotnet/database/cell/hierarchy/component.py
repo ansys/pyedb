@@ -44,6 +44,41 @@ except ImportError:
 from pyedb.generic.general_methods import get_filename_without_extension
 
 
+class ICDieProperties:
+    def __init__(self, pedb, edb_object):
+        self._pedb = pedb
+        self._edb_object = edb_object
+
+    @property
+    def die_orientation(self):
+        if str(self._edb_object.GetOrientation()) == "ChipUp":
+            return "chip_up"
+        return "chip_down"
+
+    @die_orientation.setter
+    def die_orientation(self, value):
+        if value == "chip_up" or value == "ChipUp":
+            self._edb_object.SetOrientation(self._pedb.api_class.Definition.DieOrientation.ChipUp)
+        elif value == "chip_down" or value == "ChipDown":
+            self._edb_object.SetOrientation(self._pedb.api_class.Definition.DieOrientation.ChipDown)
+
+    @property
+    def die_type(self):
+        if str(self._edb_object.GetType()) == "NoDie":
+            return "none"
+        elif str(self._edb_object.GetType()) == "FlipChip":
+            return "flip_chip"
+        return "none"
+
+    @property
+    def height(self):
+        return self._edb_object.GetHeight()
+
+    @height.setter
+    def height(self, value):
+        self._edb_object.SetHeight(self._pedb.edb_value(value))
+
+
 class EDBComponent(Group):
     """Manages EDB functionalities for components.
 
@@ -61,6 +96,7 @@ class EDBComponent(Group):
         self.edbcomponent = edb_object
         self._layout_instance = None
         self._comp_instance = None
+        self._ic_die_properties = None
 
     @property
     def name(self):
@@ -148,6 +184,21 @@ class EDBComponent(Group):
         comp_prop = self.component_property
         comp_prop.SetPackageDef(package_def._edb_object)
         self.edbcomponent.SetComponentProperty(comp_prop)
+
+    @property
+    def ic_die_properties(self):
+        """Adding IC properties for grpc compatibility."""
+        if self.type == "IC":
+            if not self._ic_die_properties:
+                self._ic_die_properties = ICDieProperties(self._pedb, self.component_property.GetDieProperty().Clone())
+            return self._ic_die_properties
+        return None
+
+    @ic_die_properties.setter
+    def ic_die_properties(self, value):
+        component_property = self.component_property
+        component_property.SetDieProperties(value)
+        self.component_property = component_property
 
     def create_package_def(self, name="", component_part_name=None):
         """Create a package definition and assign it to the component.
@@ -244,7 +295,7 @@ class EDBComponent(Group):
     @solder_ball_height.setter
     def solder_ball_height(self, value):
         if "GetSolderBallProperty" in dir(self.component_property):
-            sball_height = round(self._edb.utility.Value(value).ToDouble(), 9)
+            sball_height = round(self._pedb.edb_value(value).ToDouble(), 9)
             cmp_property = self.component_property
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
             solder_ball_prop.SetHeight(self._get_edb_value(sball_height))
@@ -257,29 +308,29 @@ class EDBComponent(Group):
         if "GetSolderBallProperty" in dir(self.component_property):
             shape = self.component_property.GetSolderBallProperty().GetShape()
             if shape.value__ == 0:
-                return "None"
+                return "none"
             elif shape.value__ == 1:
-                return "Cylinder"
+                return "cylinder"
             elif shape.value__ == 2:
-                return "Spheroid"
+                return "spheroid"
 
     @solder_ball_shape.setter
     def solder_ball_shape(self, value):
         shape = None
         if isinstance(value, str):
             if value.lower() == "cylinder":
-                shape = self._edb.definition.SolderballShape.Cylinder
+                shape = self._edb.Definition.SolderballShape.Cylinder
             elif value.lower() == "none":
-                shape = self._edb.definition.SolderballShape.NoSolderball
+                shape = self._edb.Definition.SolderballShape.NoSolderball
             elif value.lower() == "spheroid":
-                shape = self._edb.definition.SolderballShape.Spheroid
+                shape = self._edb.Definition.SolderballShape.Spheroid
         if isinstance(value, int):
             if value == 0:
-                shape = self._edb.definition.SolderballShape.NoSolderball
+                shape = self._edb.Definition.SolderballShape.NoSolderball
             elif value == 1:
-                shape = self._edb.definition.SolderballShape.Cylinder
+                shape = self._edb.Definition.SolderballShape.Cylinder
             elif value == 2:
-                shape = self._edb.definition.SolderballShape.Spheroid
+                shape = self._edb.Definition.SolderballShape.Spheroid
         if shape:
             cmp_property = self.component_property
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
@@ -390,11 +441,11 @@ class EDBComponent(Group):
         if isinstance(value, list):  # pragma no cover
             rlc_enabled = [True if i else False for i in value]
             rlc_values = [self._get_edb_value(i) for i in value]
-            model = self._edb.cell.hierarchy._hierarchy.PinPairModel()
+            model = self._edb.Cell.Hierarchy.PinPairModel()
             pin_names = list(self.pins.keys())
             for idx, i in enumerate(np.arange(len(pin_names) // 2)):
-                pin_pair = self._edb.utility.utility.PinPair(pin_names[idx], pin_names[idx + 1])
-                rlc = self._edb.utility.utility.Rlc(
+                pin_pair = self._edb.Utility.PinPair(pin_names[idx], pin_names[idx + 1])
+                rlc = self._edb.Utility.Rlc(
                     rlc_values[0], rlc_enabled[0], rlc_values[1], rlc_enabled[1], rlc_values[2], rlc_enabled[2], False
                 )
                 model.SetPinPairRlc(pin_pair, rlc)
@@ -431,11 +482,11 @@ class EDBComponent(Group):
         rlc_values = [value if i == self.type else 0 for i in ["Resistor", "Inductor", "Capacitor"]]
         rlc_values = [self._get_edb_value(i) for i in rlc_values]
 
-        model = self._edb.cell.hierarchy._hierarchy.PinPairModel()
+        model = self._edb.Cell.Hierarchy.PinPairModel()
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
-            pin_pair = self._edb.utility.utility.PinPair(pin_names[idx], pin_names[idx + 1])
-            rlc = self._edb.utility.utility.Rlc(
+            pin_pair = self._edb.Utility.PinPair(pin_names[idx], pin_names[idx + 1])
+            rlc = self._edb.Utility.Rlc(
                 rlc_values[0], rlc_enabled[0], rlc_values[1], rlc_enabled[1], rlc_values[2], rlc_enabled[2], False
             )
             model.SetPinPairRlc(pin_pair, rlc)
@@ -459,7 +510,7 @@ class EDBComponent(Group):
                 return "0"
             for pinpair in pinpairs:
                 pair = model.GetPinPairRlc(pinpair)
-                return pair.R.ToString()
+                return pair.R.ToDouble()
         return None
 
     @res_value.setter
@@ -488,7 +539,7 @@ class EDBComponent(Group):
                 return "0"
             for pinpair in pinpairs:
                 pair = model.GetPinPairRlc(pinpair)
-                return pair.C.ToString()
+                return pair.C.ToDouble()
         return None
 
     @cap_value.setter
@@ -517,7 +568,7 @@ class EDBComponent(Group):
                 return "0"
             for pinpair in pinpairs:
                 pair = model.GetPinPairRlc(pinpair)
-                return pair.L.ToString()
+                return pair.L.ToDouble()
         return None
 
     @ind_value.setter
@@ -575,7 +626,7 @@ class EDBComponent(Group):
         list
         """
         center = self.component_instance.GetCenter()
-        return [center.X.ToDouble(), center.Y.ToDouble()]
+        return [round(center.X.ToDouble(), 6), round(center.Y.ToDouble(), 6)]
 
     @property
     def bounding_box(self):
@@ -591,7 +642,12 @@ class EDBComponent(Group):
         bbox = self.component_instance.GetBBox()
         pt1 = bbox.Item1
         pt2 = bbox.Item2
-        return [pt1.X.ToDouble(), pt1.Y.ToDouble(), pt2.X.ToDouble(), pt2.Y.ToDouble()]
+        return [
+            round(pt1.X.ToDouble(), 6),
+            round(pt1.Y.ToDouble(), 6),
+            round(pt2.X.ToDouble(), 6),
+            round(pt2.Y.ToDouble(), 6),
+        ]
 
     @property
     def rotation(self):
@@ -601,7 +657,7 @@ class EDBComponent(Group):
         -------
         float
         """
-        return self.edbcomponent.GetTransform().Rotation.ToDouble()
+        return round(self.edbcomponent.GetTransform().Rotation.ToDouble(), 6)
 
     @property
     def pinlist(self):
@@ -615,7 +671,7 @@ class EDBComponent(Group):
         pins = [
             p
             for p in self.edbcomponent.LayoutObjs
-            if p.GetObjType() == self._edb.cell.layout_object_type.PadstackInstance
+            if p.GetObjType() == self._edb.Cell.LayoutObjType.PadstackInstance
             and p.IsLayoutPin()
             and p.GetComponent().GetName() == self.refdes
         ]
@@ -684,17 +740,17 @@ class EDBComponent(Group):
         """
         new_type = new_type.lower()
         if new_type == "resistor":
-            type_id = self._pedb.definition.ComponentType.Resistor
+            type_id = self._pedb.core.Definition.ComponentType.Resistor
         elif new_type == "inductor":
-            type_id = self._pedb.definition.ComponentType.Inductor
+            type_id = self._pedb.core.Definition.ComponentType.Inductor
         elif new_type == "capacitor":
-            type_id = self._pedb.definition.ComponentType.Capacitor
+            type_id = self._pedb.core.Definition.ComponentType.Capacitor
         elif new_type == "ic":
-            type_id = self._pedb.definition.ComponentType.IC
+            type_id = self._pedb.core.Definition.ComponentType.IC
         elif new_type == "io":
-            type_id = self._pedb.definition.ComponentType.IO
+            type_id = self._pedb.core.Definition.ComponentType.IO
         elif new_type == "other":
-            type_id = self._pedb.definition.ComponentType.Other
+            type_id = self._pedb.core.Definition.ComponentType.Other
         else:
             return
         self.edbcomponent.SetComponentType(type_id)
@@ -776,7 +832,7 @@ class EDBComponent(Group):
         float
             Lower elevation of the placement layer.
         """
-        return self.edbcomponent.GetPlacementLayer().Clone().GetLowerElevation()
+        return round(self.edbcomponent.GetPlacementLayer().Clone().GetLowerElevation(), 6)
 
     @property
     def upper_elevation(self):
@@ -788,7 +844,7 @@ class EDBComponent(Group):
             Upper elevation of the placement layer.
 
         """
-        return self.edbcomponent.GetPlacementLayer().Clone().GetUpperElevation()
+        return round(self.edbcomponent.GetPlacementLayer().Clone().GetUpperElevation(), 6)
 
     @property
     def top_bottom_association(self):
@@ -855,7 +911,7 @@ class EDBComponent(Group):
         if not len(pin_names_sp) == self.numpins:  # pragma: no cover
             raise ValueError(f"Pin counts doesn't match component {self.name}.")
 
-        model = self._edb.cell.hierarchy._hierarchy.SPICEModel()
+        model = self._edb.Cell.Hierarchy.SPICEModel()
         model.SetModelPath(file_path)
         model.SetModelName(name)
         if sub_circuit_name:
@@ -893,13 +949,13 @@ class EDBComponent(Group):
             name = get_filename_without_extension(file_path)
 
         edbComponentDef = self.edbcomponent.GetComponentDef()
-        nPortModel = self._edb.definition.NPortComponentModel.FindByName(edbComponentDef, name)
+        nPortModel = self._edb.Definition.NPortComponentModel.FindByName(edbComponentDef, name)
         if nPortModel.IsNull():
-            nPortModel = self._edb.definition.NPortComponentModel.Create(name)
+            nPortModel = self._edb.Definition.NPortComponentModel.Create(name)
             nPortModel.SetReferenceFile(file_path)
             edbComponentDef.AddComponentModel(nPortModel)
 
-        model = self._edb.cell.hierarchy._hierarchy.SParameterModel()
+        model = self._edb.Cell.Hierarchy.SParameterModel()
         model.SetComponentModelName(name)
         if reference_net:
             model.SetReferenceNet(reference_net)
@@ -927,7 +983,7 @@ class EDBComponent(Group):
         >>>comp_def.add_n_port_model("c:GRM32_DC0V_25degC_series.s2p", "GRM32_DC0V_25degC_series")
         >>>edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
         """
-        model = self._edb.cell.hierarchy._hierarchy.SParameterModel()
+        model = self._edb.Cell.Hierarchy.SParameterModel()
         model.SetComponentModelName(name)
         if reference_net:
             model.SetReferenceNet(reference_net)
@@ -957,13 +1013,13 @@ class EDBComponent(Group):
         ind = 0 if ind is None else ind
         cap = 0 if cap is None else cap
         res, ind, cap = self._get_edb_value(res), self._get_edb_value(ind), self._get_edb_value(cap)
-        model = self._edb.cell.hierarchy._hierarchy.PinPairModel()
+        model = self._edb.Cell.Hierarchy.PinPairModel()
 
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
-            pin_pair = self._edb.utility.utility.PinPair(pin_names[idx], pin_names[idx + 1])
+            pin_pair = self._edb.Utility.PinPair(pin_names[idx], pin_names[idx + 1])
 
-            rlc = self._edb.utility.utility.Rlc(res, r_enabled, ind, l_enabled, cap, c_enabled, is_parallel)
+            rlc = self._edb.Utility.Rlc(res, r_enabled, ind, l_enabled, cap, c_enabled, is_parallel)
             model.SetPinPairRlc(pin_pair, rlc)
         return self._set_model(model)
 

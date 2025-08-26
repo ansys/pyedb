@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
 
 from pyedb.dotnet.database.sim_setup_data.data.adaptive_frequency_data import (
     AdaptiveFrequencyData,
@@ -287,6 +288,34 @@ class AdaptiveSettings(object):
         self.adaptive_settings.AdaptiveFrequencyDataList.Clear()
         self.adaptive_settings.AdaptiveFrequencyDataList.Add(low_freq_adapt_data)
         self.adaptive_settings.AdaptiveFrequencyDataList.Add(high_freq_adapt_data)
+        return self._parent._update_setup()
+
+    def add_multi_frequency_adaptive_setup(self, freq_list, max_num_passes=10, max_delta_s=0.02):
+        """Add a setup for frequency data.
+
+        Parameters
+        ----------
+        low_frequency : str, float
+            Frequency with units or float frequency (in Hz).
+        high_frequency : str, float
+            Frequency with units or float frequency (in Hz).
+        max_num_passes : int, optional
+            Maximum number of passes. The default is ``10``.
+        max_delta_s : float, optional
+            Maximum delta S. The default is ``0.02``.
+
+        Returns
+        -------
+        bool
+            ``True`` if method is successful, ``False`` otherwise.
+        """
+        self.adaptive_settings.AdaptiveFrequencyDataList.Clear()
+        for i in freq_list:
+            low_freq_adapt_data = self._parent._pedb.simsetupdata.AdaptiveFrequencyData()
+            low_freq_adapt_data.MaxDelta = self._parent._pedb.edb_value(max_delta_s).ToString()
+            low_freq_adapt_data.MaxPasses = max_num_passes
+            low_freq_adapt_data.AdaptiveFrequency = self._parent._pedb.edb_value(i).ToString()
+            self.adaptive_settings.AdaptiveFrequencyDataList.Add(low_freq_adapt_data)
         return self._parent._update_setup()
 
 
@@ -873,6 +902,24 @@ class HfssSolverSettings(object):
     def enhanced_low_freq_accuracy(self):
         """Whether to enable legacy low-frequency sampling.
 
+        .. deprecated:: pyedb 0.54.0
+            Use :func:`enhanced_low_frequency_accuracy` instead.
+
+        Returns
+        -------
+        bool
+            ``True`` if low frequency accuracy is used, ``False`` otherwise.
+        """
+        warnings.warn(
+            "`enhanced_low_freq_accuracy` is deprecated, use `enhanced_low_frequency_accuracy` instead.",
+            DeprecationWarning,
+        )
+        return self._hfss_solver_settings.EnhancedLowFreqAccuracy
+
+    @property
+    def enhanced_low_frequency_accuracy(self):
+        """Whether to enable legacy low-frequency sampling.
+
         Returns
         -------
         bool
@@ -882,6 +929,11 @@ class HfssSolverSettings(object):
 
     @enhanced_low_freq_accuracy.setter
     def enhanced_low_freq_accuracy(self, value):
+        self._hfss_solver_settings.EnhancedLowFreqAccuracy = value
+        self._parent._update_setup()
+
+    @enhanced_low_frequency_accuracy.setter
+    def enhanced_low_frequency_accuracy(self, value):
         self._hfss_solver_settings.EnhancedLowFreqAccuracy = value
         self._parent._update_setup()
 

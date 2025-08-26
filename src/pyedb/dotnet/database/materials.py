@@ -88,22 +88,22 @@ def get_line_float_value(line):
 class MaterialProperties(BaseModel):
     """Store material properties."""
 
-    conductivity: Optional[PositiveFloat] = None
-    dielectric_loss_tangent: Optional[PositiveFloat] = None
-    magnetic_loss_tangent: Optional[PositiveFloat] = None
-    mass_density: Optional[PositiveFloat] = None
-    permittivity: Optional[PositiveFloat] = None
-    permeability: Optional[PositiveFloat] = None
-    poisson_ratio: Optional[PositiveFloat] = None
-    specific_heat: Optional[PositiveFloat] = None
-    thermal_conductivity: Optional[PositiveFloat] = None
-    youngs_modulus: Optional[PositiveFloat] = None
-    thermal_expansion_coefficient: Optional[PositiveFloat] = None
-    dc_conductivity: Optional[PositiveFloat] = None
-    dc_permittivity: Optional[PositiveFloat] = None
-    dielectric_model_frequency: Optional[PositiveFloat] = None
-    loss_tangent_at_frequency: Optional[PositiveFloat] = None
-    permittivity_at_frequency: Optional[PositiveFloat] = None
+    conductivity: Optional[PositiveFloat] = 0.0
+    dielectric_loss_tangent: Optional[PositiveFloat] = 0.0
+    magnetic_loss_tangent: Optional[PositiveFloat] = 0.0
+    mass_density: Optional[PositiveFloat] = 0.0
+    permittivity: Optional[PositiveFloat] = 0.0
+    permeability: Optional[PositiveFloat] = 0.0
+    poisson_ratio: Optional[PositiveFloat] = 0.0
+    specific_heat: Optional[PositiveFloat] = 0.0
+    thermal_conductivity: Optional[PositiveFloat] = 0.0
+    youngs_modulus: Optional[PositiveFloat] = 0.0
+    thermal_expansion_coefficient: Optional[PositiveFloat] = 0.0
+    dc_conductivity: Optional[PositiveFloat] = 0.0
+    dc_permittivity: Optional[PositiveFloat] = 0.0
+    dielectric_model_frequency: Optional[PositiveFloat] = 0.0
+    loss_tangent_at_frequency: Optional[PositiveFloat] = 0.0
+    permittivity_at_frequency: Optional[PositiveFloat] = 0.0
 
 
 class Material(object):
@@ -111,7 +111,7 @@ class Material(object):
 
     def __init__(self, edb: Edb, material_def):
         self.__edb: Edb = edb
-        self.__edb_definition = edb.edb_api.definition
+        self.__edb_definition = edb.core.Definition
         self.__name: str = material_def.GetName()
         self.__material_def = material_def
         self.__dc_model = material_def.GetDielectricMaterialModel()
@@ -191,12 +191,6 @@ class Material(object):
         )
         return self.dielectric_loss_tangent
 
-    @property
-    def dielectric_loss_tangent(self):
-        """Get material loss tangent."""
-        material_property_id = self.__edb_definition.MaterialPropertyId.DielectricLossTangent
-        return self.__property_value(material_property_id)
-
     @loss_tangent.setter
     def loss_tangent(self, value):
         """Set material loss tangent."""
@@ -205,11 +199,16 @@ class Material(object):
             "Use property dielectric_loss_tangent instead.",
             DeprecationWarning,
         )
-        return self.dielectric_loss_tangent(value)
+        self.dielectric_loss_tangent = value
+
+    @property
+    def dielectric_loss_tangent(self):
+        """Get material loss tangent."""
+        material_property_id = self.__edb_definition.MaterialPropertyId.DielectricLossTangent
+        return self.__property_value(material_property_id)
 
     @dielectric_loss_tangent.setter
     def dielectric_loss_tangent(self, value):
-        """Set material loss tangent."""
         edb_value = self.__edb_value(value)
         material_property_id = self.__edb_definition.MaterialPropertyId.DielectricLossTangent
         self.__material_def.SetProperty(material_property_id, edb_value)
@@ -551,7 +550,7 @@ class Materials(object):
 
     def __init__(self, edb: Edb):
         self.__edb = edb
-        self.__edb_definition = edb.edb_api.definition
+        self.__edb_definition = edb.core.Definition
         self.__syslib = os.path.join(self.__edb.base_path, "syslib")
 
     def __contains__(self, item):
@@ -573,7 +572,7 @@ class Materials(object):
         """Get materials."""
         materials = {
             material_def.GetName(): Material(self.__edb, material_def)
-            for material_def in list(self.__edb.active_db.MaterialDefs)
+            for material_def in list(self.__edb._db.MaterialDefs)
         }
         return materials
 

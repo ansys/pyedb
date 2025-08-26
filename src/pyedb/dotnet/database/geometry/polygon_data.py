@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from typing import Union
+import warnings
 
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.point_data import PointData
@@ -89,14 +90,12 @@ class PolygonData:
     def create_from_points(self, points, closed=True):
         list_of_point_data = []
         for pt in points:
-            list_of_point_data.append(PointData(self._pedb, x=pt[0], y=pt[1])._edb_object)
-        return self._pedb.edb_api.geometry.api_class.PolygonData(
-            convert_py_list_to_net_list(list_of_point_data), closed
-        )
+            list_of_point_data.append(PointData.create_from_xy(self._pedb, x=pt[0], y=pt[1])._edb_object)
+        return self._pedb.core.Geometry.PolygonData(convert_py_list_to_net_list(list_of_point_data), closed)
 
     def create_from_bounding_box(self, points):
         bbox = BBox(self._pedb, point_1=points[0], point_2=points[1])
-        return self._pedb.edb_api.geometry.api_class.PolygonData.CreateFromBBox(bbox._edb_object)
+        return self._pedb.core.Geometry.PolygonData.CreateFromBBox(bbox._edb_object)
 
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
         """Expand the polygon shape by an absolute value in all direction.
@@ -132,9 +131,21 @@ class PolygonData:
         poly = self._edb_object.CreateFromArcs(arcs, flag)
         return PolygonData(self._pedb, poly)
 
-    def point_in_polygon(self, x: Union[str, float], y: Union[str, float]) -> bool:
+    def is_inside(self, x: Union[str, float], y: Union[str, float] = None) -> bool:
         """Determines whether a point is inside the polygon."""
+        if isinstance(x, list) and len(x) == 2:
+            y = x[1]
+            x = x[0]
         return self._edb_object.PointInPolygon(self._pedb.point_data(x, y))
+
+    def point_in_polygon(self, x: Union[str, float], y: Union[str, float] = None) -> bool:
+        """Determines whether a point is inside the polygon.
+
+        ..deprecated:: 0.48.0
+           Use: func:`is_inside` instead.
+        """
+        warnings.warn("Use method is_inside instead", DeprecationWarning)
+        return self.is_inside(x, y)
 
     def get_point(self, index):
         """Gets the point at the index as a PointData object."""

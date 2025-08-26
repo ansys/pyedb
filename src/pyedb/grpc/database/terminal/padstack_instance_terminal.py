@@ -25,7 +25,8 @@ from ansys.edb.core.terminal.padstack_instance_terminal import (
 )
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
-from pyedb.misc.misc import deprecated_property
+from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated_property
 
 
 class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
@@ -37,7 +38,17 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         self._pedb = pedb
 
     @property
-    def position(self):
+    def boundary_type(self) -> str:
+        """Boundary type.
+
+        Returns
+        -------
+        str : boundary type.
+        """
+        return super().boundary_type.name.lower()
+
+    @property
+    def position(self) -> list[float]:
         """Terminal position.
 
         Returns
@@ -45,22 +56,22 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         Position [x,y] : [float, float]
         """
         pos_x, pos_y, rotation = self.padstack_instance.get_position_and_rotation()
-        return [pos_x.value, pos_y.value]
+        return [Value(pos_x), Value(pos_y)]
 
     @property
-    def padstack_instance(self):
+    def padstack_instance(self) -> any:
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
         return PadstackInstance(self._pedb, super().padstack_instance)
 
     @property
-    def component(self):
+    def component(self) -> any:
         from pyedb.grpc.database.hierarchy.component import Component
 
         return Component(self._pedb, super().component)
 
     @property
-    def location(self):
+    def location(self) -> list[float]:
         """Terminal position.
 
         Returns
@@ -69,10 +80,10 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         """
         p_inst, _ = self.params
         pos_x, pos_y, _ = p_inst.get_position_and_rotation()
-        return [pos_x.value, pos_y.value]
+        return [Value(pos_x), Value(pos_y)]
 
     @property
-    def net_name(self):
+    def net_name(self) -> str:
         """Net name.
 
         Returns
@@ -92,7 +103,7 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
             self.net.name = val
 
     @property
-    def magnitude(self):
+    def magnitude(self) -> float:
         """Source amplitude.
 
         Returns
@@ -106,7 +117,7 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         self.source_amplitude = value
 
     @property
-    def phase(self):
+    def phase(self) -> float:
         """Source phase.
 
         Returns
@@ -120,7 +131,7 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         self.source_phase = value
 
     @property
-    def source_amplitude(self):
+    def source_amplitude(self) -> float:
         """Source amplitude.
 
         Returns
@@ -134,35 +145,35 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         super(PadstackInstanceTerminal, self.__class__).source_amplitude.__set__(self, value)
 
     @property
-    def source_phase(self):
+    def source_phase(self) -> float:
         """Source phase.
 
         Returns
         -------
         float : phase value.
         """
-        return super().source_phase.value
+        return Value(super().source_phase)
 
     @source_phase.setter
     def source_phase(self, value):
         super(PadstackInstanceTerminal, self.__class__).source_phase.__set__(self, value)
 
     @property
-    def impedance(self):
+    def impedance(self) -> float:
         """Impdeance value.
 
         Returns
         -------
         float : impedance value.
         """
-        return super().impedance.value
+        return Value(super().impedance)
 
     @impedance.setter
     def impedance(self, value):
         super(PadstackInstanceTerminal, self.__class__).impedance.__set__(self, value)
 
     @property
-    def boundary_type(self):
+    def boundary_type(self) -> str:
         """Boundary type.
 
         Returns
@@ -185,7 +196,7 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         super(PadstackInstanceTerminal, self.__class__).boundary_type.__set__(self, mapping[value.name.lower()])
 
     @property
-    def is_port(self):
+    def is_port(self) -> bool:
         if self.boundary_type == "port":
             return True
         return False
@@ -207,5 +218,5 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
             self.reference_terminal = value
 
     @property
-    def terminal_type(self):
+    def terminal_type(self) -> str:
         return "PadstackInstanceTerminal"

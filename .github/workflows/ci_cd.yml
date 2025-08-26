@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check the title of the pull request
-        uses: ansys/actions/check-pr-title@v8
+        uses: ansys/actions/check-pr-title@1096998b81f7ebdea116b683e11f3a8bda759ca6 # v10.0.14
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           use-upper-case: true
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check documentation style
-        uses: ansys/actions/doc-style@v8
+        uses: ansys/actions/doc-style@1096998b81f7ebdea116b683e11f3a8bda759ca6 # v10.0.14
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -54,31 +54,32 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ['3.8', '3.9', '3.10', '3.11']
-        should-release:
-          - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
+        python-version: ['3.10', '3.11', '3.12']
     steps:
       - name: Build wheelhouse and perform smoke test
-        uses: ansys/actions/build-wheelhouse@v8
+        id: build-wheelhouse
+        uses: ansys/actions/build-wheelhouse@1096998b81f7ebdea116b683e11f3a8bda759ca6 # v10.0.14
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
 
       - name: Import python package
+        shell: bash
         run: |
+          ${{ steps.build-wheelhouse.outputs.activate-venv }}
           python -c "import pyedb; from pyedb import __version__"
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  legacy-tests-windows:
+  system-tests-windows:
     name: Test dotnet (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
@@ -101,7 +102,7 @@ jobs:
           . .venv\Scripts\Activate.ps1
           python -m pip install .[tests]
 
-      - name: "Executing legacy tests"
+      - name: "Executing system tests"
         uses: nick-fields/retry@v3
         with:
           max_attempts: 3
@@ -109,20 +110,20 @@ jobs:
           timeout_minutes: 15
           command: |
             . .venv\Scripts\Activate.ps1
-            pytest tests/legacy -n auto --dist loadfile -v --cov
+            pytest tests/system -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
           . .venv\Scripts\Activate.ps1
-          python -m coverage html -d .cov\legacy-html
-          python -m coverage xml -o .cov\legacy.xml
+          python -m coverage html -d .cov\system-html
+          python -m coverage xml -o .cov\system.xml
 
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          path: .cov\legacy-html
-          name: html-legacy-coverage
+          path: .cov\system-html
+          name: html-system-coverage
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -130,21 +131,84 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          files: .cov/legacy.xml
+          files: .cov/system.xml
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  legacy-tests-linux:
+  unit-tests-windows:
+    name: Unit test dotnet (windows)
+    runs-on: [ Windows, self-hosted, pyedb ]
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v5
+
+      # Revert to previous verison due too setup-python#819
+      - name: "Set up Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+          . .venv\Scripts\Activate.ps1
+
+      - name: "Update pip"
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install -U pip
+
+      - name: "Install Python library and tests dependencies"
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install .[tests]
+
+      - name: "Executing system tests"
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 15
+          command: |
+            . .venv\Scripts\Activate.ps1
+            pytest tests/unit -n auto --dist loadfile -v --cov
+
+      - name: "Create coverage files"
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m coverage html -d .cov\unit-html
+          python -m coverage xml -o .cov\unit.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          path: .cov\unit-html
+          name: html-unit-coverage
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/unit.xml
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  system-tests-linux:
     name: Test dotnet (linux)
-    runs-on: [ Linux, self-hosted, toolkits ]
+    runs-on: [ Linux, self-hosted, pyedb ]
     env:
-      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: "Set up Python"
         uses: actions/setup-python@v5
@@ -170,29 +234,29 @@ jobs:
           . .venv/bin/activate
           python -m pip install .[tests]
 
-      - name: "Executing legacy tests"
+      - name: "Executing system tests"
         uses: nick-fields/retry@v3
         with:
           max_attempts: 3
           retry_on: error
           timeout_minutes: 40
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            xvfb-run pytest tests/legacy -n auto --dist loadfile -v --cov
+            xvfb-run pytest tests/system -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
           . .venv/bin/activate
-          python -m coverage html -d .cov\legacy-html
-          python -m coverage xml -o .cov\legacy.xml
+          python -m coverage html -d .cov\system-html
+          python -m coverage xml -o .cov\system.xml
 
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          path: .cov\legacy-html
-          name: html-legacy-linux-coverage
+          path: .cov\system-html
+          name: html-system-linux-coverage
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -200,7 +264,78 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          files: .cov/legacy.xml
+          files: .cov/system.xml
+
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  unit-tests-linux:
+    name: Unit test dotnet (linux)
+    runs-on: [ Linux, self-hosted, pyedb ]
+    env:
+      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANS_NODEPCHECK: '1'
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v5
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: "Install os packages"
+        run: |
+          sudo apt update
+          sudo apt install libgl1-mesa-glx xvfb -y
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+
+      - name: "Update pip"
+        run: |
+          . .venv/bin/activate
+          python -m pip install -U pip
+
+      - name: "Install Python library and tests dependencies"
+        run: |
+          . .venv/bin/activate
+          python -m pip install .[tests]
+
+      - name: "Executing unit tests"
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            . .venv/bin/activate
+            xvfb-run pytest tests/unit -n auto --dist loadfile -v --cov
+
+      - name: "Create coverage files"
+        run: |
+          . .venv/bin/activate
+          python -m coverage html -d .cov\unit-html
+          python -m coverage xml -o .cov\unit.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          path: .cov\unit-html
+          name: html-unit-linux-coverage
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/unit.xml
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -210,10 +345,10 @@ jobs:
     name: Testing PyAEDT main branch (Windows)
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
-    runs-on: [ self-hosted, Windows, pyaedt ]
+    runs-on: [ self-hosted, Windows, pyedb ]
     steps:
       - name: Install Git and checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -231,7 +366,7 @@ jobs:
           python -m pip install -U pip
 
       - name: Clone PyAEDT on main branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ansys/pyaedt
           path: "external/pyaedt"
@@ -252,7 +387,7 @@ jobs:
           .venv\Scripts\Activate.ps1
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
-          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa
+          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.3.1
 
       - name: Run PyAEDT tests
         uses: nick-fields/retry@v3
@@ -266,6 +401,7 @@ jobs:
             .venv\Scripts\Activate.ps1
             pytest -v external/pyaedt/tests/system/general/test_01_3dlayout_edb.py
             pytest -v external/pyaedt/tests/system/general/test_01_configuration_files.py
+            pytest -v external/pyaedt/tests/system/general/test_21_Circuit.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@v3
@@ -280,6 +416,20 @@ jobs:
             pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
             pytest -v external/pyaedt/tests/system/solvers/test_00_analyze.py
 
+      - name: Run PyAEDT extensions tests
+        uses: nick-fields/retry@v3
+        env:
+          PYTHONMALLOC: malloc
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            .venv\Scripts\Activate.ps1
+            pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
+            pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
+            pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
+
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
@@ -288,13 +438,13 @@ jobs:
     name: Testing PyAEDT main branch (Linux)
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
-    runs-on: [ self-hosted, Linux, pyaedt ]
+    runs-on: [ self-hosted, Linux, pyedb ]
     env:
-      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install OS packages
         run: |
@@ -316,7 +466,7 @@ jobs:
           python -m pip install -U pip
 
       - name: Clone PyAEDT on main branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ansys/pyaedt
           path: "external/pyaedt"
@@ -324,23 +474,23 @@ jobs:
 
       - name: Install PyAEDT main branch version with its test dependencies
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           pip install --no-cache-dir external/pyaedt[tests]
 
       - name: Install PyEDB
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           python -m pip install .
 
       - name: Install CI dependencies (e.g. vtk-osmesa)
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
-          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa
+          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.3.1
 
       - name: Run PyAEDT tests
         uses: nick-fields/retry@v3
@@ -351,10 +501,11 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/general/test_01_3dlayout_edb.py
             pytest -v external/pyaedt/tests/system/general/test_01_configuration_files.py
+            pytest -v external/pyaedt/tests/system/general/test_21_Circuit.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@v3
@@ -365,33 +516,46 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
             pytest -v external/pyaedt/tests/system/solvers/test_00_analyze.py
 
-
+      - name: Run PyAEDT extensions tests
+        uses: nick-fields/retry@v3
+        env:
+          PYTHONMALLOC: malloc
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 50
+          command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            . .venv/bin/activate
+            pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
+            pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
+            pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
 
   docs-build:
     name: Build documentation
     runs-on: ubuntu-latest
     steps:
       - name: Build documentation
-        uses: ansys/actions/doc-build@v8
+        uses: ansys/actions/doc-build@1096998b81f7ebdea116b683e11f3a8bda759ca6 # v10.0.14
         with:
           dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          sphinxopts: '-j auto --color -w build_errors.txt'
+          sphinxopts: '-j 1 --color -w build_errors.txt'
           check-links: false
           needs-quarto: true
 
   package:
     name: Package library
-    needs: [legacy-tests-windows, legacy-tests-linux, docs-build]
+    needs: [system-tests-windows, system-tests-linux,unit-tests-windows, unit-tests-linux, docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
-        uses: ansys/actions/build-library@v8
+        uses: ansys/actions/build-library@1096998b81f7ebdea116b683e11f3a8bda759ca6 # v10.0.14
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -407,14 +571,23 @@ jobs:
       id-token: write
       contents: write
     steps:
-      - name: Release to the public PyPI repository
-        uses: ansys/actions/release-pypi-public@v8
+
+      - name: Download the library artifacts from build-library step
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
-          library-name: ${{ env.PACKAGE_NAME }}
-          use-trusted-publisher: true
+          name: ${{ env.PACKAGE_NAME }}-artifacts
+          path: ${{ env.PACKAGE_NAME }}-artifacts
+
+      - name: Release to PyPI using trusted publisher
+        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
+        with:
+          repository-url: "https://upload.pypi.org/legacy/"
+          print-hash: true
+          packages-dir: ${{ env.PACKAGE_NAME }}-artifacts
+          skip-existing: false
 
       - name: Release to GitHub
-        uses: ansys/actions/release-github@v8
+        uses: ansys/actions/release-github@1096998b81f7ebdea116b683e11f3a8bda759ca6 # v10.0.14
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -426,27 +599,12 @@ jobs:
     needs: [package]
     steps:
       - name: Deploy the latest documentation
-        uses: ansys/actions/doc-deploy-dev@v8
+        uses: ansys/actions/doc-deploy-dev@1096998b81f7ebdea116b683e11f3a8bda759ca6 # v10.0.14
         with:
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
-
-  doc-index-dev:
-    name: "Deploy dev index docs"
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    needs: upload-dev-docs
-    steps:
-      - name: "Deploy the latest documentation index"
-        uses: ansys/actions/doc-deploy-index@v8
-        with:
-          cname: ${{ env.DOCUMENTATION_CNAME }}/version/dev
-          index-name: pyedb-vdev
-          host-url: ${{ env.MEILISEARCH_HOST_URL }}
-          api-key: ${{ env.MEILISEARCH_API_KEY }}
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
   upload-docs-release:
     name: Upload release documentation
@@ -455,39 +613,9 @@ jobs:
     needs: [release]
     steps:
       - name: Deploy the stable documentation
-        uses: ansys/actions/doc-deploy-stable@v8
+        uses: ansys/actions/doc-deploy-stable@1096998b81f7ebdea116b683e11f3a8bda759ca6 # v10.0.14
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
-
-  doc-index-stable:
-    name: "Deploy stable docs index"
-    runs-on: ubuntu-latest
-    needs: upload-docs-release
-    steps:
-      - name: "Install Git and clone project"
-        uses: actions/checkout@v4
-
-      - name: "Install the package requirements"
-        run: pip install -e .
-
-      - name: "Get the version to PyMeilisearch"
-        run: |
-          VERSION=$(python -c "from pyedb import __version__; print('.'.join(__version__.split('.')[:2]))")
-          VERSION_MEILI=$(python -c "from pyedb import __version__; print('-'.join(__version__.split('.')[:2]))")
-          echo "Calculated VERSION: $VERSION"
-          echo "Calculated VERSION_MEILI: $VERSION_MEILI"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "VERSION_MEILI=$VERSION_MEILI" >> $GITHUB_ENV
-
-      - name: "Deploy the latest documentation index"
-        uses: ansys/actions/doc-deploy-index@v8
-        with:
-          cname: ${{ env.DOCUMENTATION_CNAME }}/version/${{ env.VERSION }}
-          index-name: pyedb-v${{ env.VERSION_MEILI }}
-          host-url: ${{ env.MEILISEARCH_HOST_URL }}
-          api-key: ${{ env.MEILISEARCH_API_KEY }}
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-
