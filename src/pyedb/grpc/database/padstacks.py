@@ -24,31 +24,23 @@
 This module contains the `EdbPadstacks` class.
 """
 
-import math
-import warnings
 from collections import defaultdict
+import math
 from typing import Any, Dict, List, Optional, Tuple, Union
+import warnings
 
-import numpy as np
-import rtree
 from ansys.edb.core.definition.padstack_def_data import (
     PadGeometryType as GrpcPadGeometryType,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     PadstackDefData as GrpcPadstackDefData,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     PadstackHoleRange as GrpcPadstackHoleRange,
-)
-from ansys.edb.core.definition.padstack_def_data import PadType as GrpcPadType
-from ansys.edb.core.definition.padstack_def_data import (
+    PadType as GrpcPadType,
     SolderballPlacement as GrpcSolderballPlacement,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     SolderballShape as GrpcSolderballShape,
 )
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+import numpy as np
+import rtree
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.definition.padstack_def import PadstackDef

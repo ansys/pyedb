@@ -26,8 +26,8 @@ import difflib
 import logging
 import os
 import re
-import warnings
 from typing import Optional, Union
+import warnings
 
 from pydantic import BaseModel, confloat
 

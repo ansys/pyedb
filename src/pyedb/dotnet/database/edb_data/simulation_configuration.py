@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from collections import OrderedDict
 import json
 import os
-from collections import OrderedDict
 
 from pyedb.dotnet.clr_module import Dictionary
 from pyedb.dotnet.database.edb_data.sources import Source, SourceType

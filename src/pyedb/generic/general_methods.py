@@ -25,6 +25,7 @@ from __future__ import absolute_import
 
 import ast
 import codecs
+from collections import OrderedDict
 import csv
 import datetime
 import difflib
@@ -41,7 +42,6 @@ import sys
 import tempfile
 import time
 import traceback
-from collections import OrderedDict
 
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.settings import settings

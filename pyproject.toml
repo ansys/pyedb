@@ -143,6 +143,7 @@ ignore = [
     # "E" - pycodestyle, see https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
     "E402", # module-import-not-at-top-of-file
     "E711", # none-comparison
+    "E712", # true-false-comparison
     "E713", # not-in-test
     "E721", # type-comparison
     "E722", # bare-except
@@ -166,6 +167,7 @@ ignore = [
     "N812", # lowercase-imported-as-non-lowercase
     "N813", # camelcase-imported-as-lowercase
     "N815", # mixed-case-variable-in-class-scope
+    "N816", # mixed-case-variable-in-global-scope
     "N817", # camelcase-imported-as-acronym
     "N818", # error-suffix-on-exception-name
     "N999", # invalid-module-name

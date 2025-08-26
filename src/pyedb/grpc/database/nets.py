@@ -22,8 +22,8 @@
 
 from __future__ import absolute_import  # noreorder
 
-import warnings
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
+import warnings
 
 from ansys.edb.core.net.net_class import NetClass as GrpcNetClass
 

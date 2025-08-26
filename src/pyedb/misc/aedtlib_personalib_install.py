@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import xml.etree.ElementTree as ET
 from xml.dom.minidom import parseString
+import xml.etree.ElementTree as ET
 
 
 def write_pretty_xml(root, file_path):

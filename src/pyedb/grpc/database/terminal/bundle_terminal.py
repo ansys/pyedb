@@ -21,8 +21,8 @@
 # SOFTWARE.
 
 from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundleTerminal
-from ansys.edb.core.terminal.terminal import HfssPIType as GrpcHfssPIType
 from ansys.edb.core.terminal.terminal import (
+    HfssPIType as GrpcHfssPIType,
     SourceTermToGroundType as GrpcSourceTermToGroundType,
 )
 

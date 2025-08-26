@@ -26,15 +26,15 @@ import difflib
 import logging
 import os
 import re
-import warnings
 from typing import Optional, Union
+import warnings
 
 from ansys.edb.core.definition.debye_model import DebyeModel as GrpcDebyeModel
 from ansys.edb.core.definition.djordjecvic_sarkar_model import (
     DjordjecvicSarkarModel as GrpcDjordjecvicSarkarModel,
 )
-from ansys.edb.core.definition.material_def import MaterialDef as GrpcMaterialDef
 from ansys.edb.core.definition.material_def import (
+    MaterialDef as GrpcMaterialDef,
     MaterialProperty as GrpcMaterialProperty,
 )
 from ansys.edb.core.definition.multipole_debye_model import (

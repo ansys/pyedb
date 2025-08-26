@@ -221,8 +221,8 @@ class PackageDef(GrpcPackageDef):
         fin_thickness : str, float
             Fin thickness.
         """
-        from ansys.edb.core.utility.heat_sink import HeatSink as GrpcHeatSink
         from ansys.edb.core.utility.heat_sink import (
+            HeatSink as GrpcHeatSink,
             HeatSinkFinOrientation as GrpcHeatSinkFinOrientation,
         )
 

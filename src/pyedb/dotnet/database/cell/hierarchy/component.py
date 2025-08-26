@@ -22,8 +22,8 @@
 
 import logging
 import re
-import warnings
 from typing import Optional
+import warnings
 
 from pyedb.dotnet.database.cell.hierarchy.hierarchy_obj import Group
 from pyedb.dotnet.database.cell.hierarchy.model import PinPairModel, SPICEModel

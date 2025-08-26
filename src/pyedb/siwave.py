@@ -9,14 +9,14 @@ automatically initialized by an app to the latest installed AEDT version.
 from __future__ import absolute_import  # noreorder
 
 import os
+from pathlib import Path
 import pkgutil
 import shutil
 import sys
 import tempfile
 import time
-import warnings
-from pathlib import Path
 from typing import Optional, Union
+import warnings
 
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr

@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import pytest
 from mock import MagicMock, PropertyMock, patch
+import pytest
 
 from pyedb.dotnet.database.stackup import Stackup
 

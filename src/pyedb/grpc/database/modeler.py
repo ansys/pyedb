@@ -29,15 +29,14 @@ from typing import Any, Dict, List, Optional, Union
 
 from ansys.edb.core.geometry.arc_data import ArcData as GrpcArcData
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.geometry.polygon_data import (
+    PolygonData as GrpcPolygonData,
     PolygonSenseType as GrpcPolygonSenseType,
 )
 from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
 from ansys.edb.core.inner.exceptions import InvalidArgumentException
 from ansys.edb.core.primitive.bondwire import BondwireType as GrpcBondwireType
-from ansys.edb.core.primitive.path import PathCornerType as GrpcPathCornerType
-from ansys.edb.core.primitive.path import PathEndCapType as GrpcPathEndCapType
+from ansys.edb.core.primitive.path import PathCornerType as GrpcPathCornerType, PathEndCapType as GrpcPathEndCapType
 from ansys.edb.core.primitive.rectangle import (
     RectangleRepresentationType as GrpcRectangleRepresentationType,
 )

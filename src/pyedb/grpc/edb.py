@@ -56,6 +56,7 @@ Exporting to HFSS:
 >>> edb.export_hfss(r"C:\output_folder")
 """
 
+from itertools import combinations
 import os
 import re
 import shutil
@@ -64,21 +65,20 @@ import sys
 import tempfile
 import time
 import traceback
-import warnings
-from itertools import combinations
 from typing import Dict, List, Union
+import warnings
 from zipfile import ZipFile as zpf
 
-import ansys.edb.core.layout.cell
-import rtree
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.layout_component import (
     LayoutComponent as GrpcLayoutComponent,
 )
+import ansys.edb.core.layout.cell
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
 )
 from ansys.edb.core.utility.value import Value as GrpcValue
+import rtree
 
 from pyedb.configuration.configuration import Configuration
 from pyedb.generic.constants import unit_converter
@@ -654,8 +654,7 @@ class Edb(EdbInit):
         bool
             True if successful, False otherwise.
         """
-        from ansys.edb.core.layout.cell import Cell as GrpcCell
-        from ansys.edb.core.layout.cell import CellType as GrpcCellType
+        from ansys.edb.core.layout.cell import Cell as GrpcCell, CellType as GrpcCellType
 
         self.standalone = self.standalone
         n_try = 10

@@ -24,10 +24,10 @@
 This module contains the `EdbPadstacks` class.
 """
 
-import math
-import warnings
 from collections import defaultdict
+import math
 from typing import Dict, List
+import warnings
 
 import numpy as np
 import rtree

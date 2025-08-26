@@ -1,14 +1,14 @@
 # Configuration file for the PyEDB documentation builder.
 
 import datetime
+from importlib import import_module
 import json
 import os
 import pathlib
+from pprint import pformat
 import shutil
 import sys
 import warnings
-from importlib import import_module
-from pprint import pformat
 
 from ansys_sphinx_theme import (
     ansys_favicon,

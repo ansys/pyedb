@@ -24,11 +24,11 @@
 
 import json
 import os
+from pathlib import Path
 import random
 import shutil
 import string
 import tempfile
-from pathlib import Path
 
 import pytest
 

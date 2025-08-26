@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from collections import OrderedDict
 import math
 import warnings
-from collections import OrderedDict
 
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.database.cell.primitive.primitive import Connectable

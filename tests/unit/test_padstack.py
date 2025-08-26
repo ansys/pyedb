@@ -21,8 +21,8 @@
 # SOFTWARE.
 
 
-import pytest
 from mock import MagicMock, PropertyMock, patch
+import pytest
 
 from pyedb.dotnet.database.padstack import EdbPadstacks
 
