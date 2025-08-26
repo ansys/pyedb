@@ -417,12 +417,14 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(condition=GRPC, reason="Need to implement Configuration support with grpc")
     def test_stackup_load_xml(self, edb_examples):
+        file_path = os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml")
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.stackup.load(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml"))
+        assert edbapp.stackup.load(file_path)
         assert "Inner1" in list(edbapp.stackup.layers.keys())  # Renamed layer
         assert "DE1" not in edbapp.stackup.layers.keys()  # Removed layer
         assert edbapp.stackup.export(os.path.join(self.local_scratch.path, "stackup.xml"))
         assert round(edbapp.stackup.signal_layers["1_Top"].thickness, 6) == 3.5e-5
+        assert edbapp.stackup.load_from_xml(file_path)
         edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_load_layer_renamed(self, edb_examples):
