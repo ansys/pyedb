@@ -1,6 +1,6 @@
-==================
-gRPC API reference
-==================
+=============
+API reference
+=============
 
 This section describes EDB functions, classes, and methods
 for EDB gRPC applications and modules. Use the search feature or click links
