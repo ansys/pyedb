@@ -27,11 +27,11 @@ This module contains the `EdbStackup` class.
 
 from __future__ import absolute_import  # noreorder
 
-from collections import OrderedDict
 import json
 import logging
 import math
 import warnings
+from collections import OrderedDict
 
 from pyedb.dotnet.database.edb_data.layer_data import (
     LayerEdbClass,

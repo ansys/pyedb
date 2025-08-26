@@ -27,8 +27,8 @@ import json
 import math
 import os
 import re
-from typing import List, Set, Union
 import warnings
+from typing import List, Set, Union
 
 from pyedb.component_libraries.ansys_components import (
     ComponentLib,

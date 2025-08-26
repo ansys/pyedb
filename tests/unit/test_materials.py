@@ -23,8 +23,8 @@
 import builtins
 from unittest.mock import mock_open
 
-from mock import MagicMock, PropertyMock, patch
 import pytest
+from mock import MagicMock, PropertyMock, patch
 
 from pyedb.dotnet.database.materials import Materials
 

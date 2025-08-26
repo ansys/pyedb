@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from decimal import Decimal
 import json
 import math
 import random
 import re
 import string
+from decimal import Decimal
 
 from pyedb.generic.general_methods import settings
 

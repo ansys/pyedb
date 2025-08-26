@@ -23,7 +23,11 @@
 
 from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
     BasisFunctionOrder as GrpcBasisFunctionOrder,
+)
+from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
     HFSSSettingsOptions as GrpcHFSSSettingsOptions,
+)
+from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
     SolverType as GrpcSolverType,
 )
 

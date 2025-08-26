@@ -22,12 +22,12 @@
 
 # -*- coding: utf-8 -*-
 import logging
-from logging.handlers import RotatingFileHandler
 import os
 import shutil
 import sys
 import tempfile
 import time
+from logging.handlers import RotatingFileHandler
 
 
 class Msg:

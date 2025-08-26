@@ -20,15 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-"""
+""" """
+
 import json
 import os
-from pathlib import Path
 import random
 import shutil
 import string
 import tempfile
+from pathlib import Path
 
 import pytest
 

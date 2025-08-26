@@ -21,8 +21,8 @@
 # SOFTWARE.
 
 import sys
-from unittest.mock import patch
 import warnings
+from unittest.mock import patch
 
 from pyedb import LATEST_DEPRECATED_PYTHON_VERSION, deprecation_warning
 

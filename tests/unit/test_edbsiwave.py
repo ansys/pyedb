@@ -22,8 +22,8 @@
 
 import os
 
-from mock import Mock
 import pytest
+from mock import Mock
 
 from pyedb.dotnet.database.siwave import EdbSiwave
 

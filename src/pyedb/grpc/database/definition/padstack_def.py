@@ -23,15 +23,18 @@
 import math
 import warnings
 
+import ansys.edb.core.geometry.polygon_data
 from ansys.edb.core.definition.padstack_def import PadstackDef as GrpcPadstackDef
 from ansys.edb.core.definition.padstack_def_data import (
     PadGeometryType as GrpcPadGeometryType,
-    PadstackHoleRange as GrpcPadstackHoleRange,
-    PadType as GrpcPadType,
 )
-import ansys.edb.core.geometry.polygon_data
+from ansys.edb.core.definition.padstack_def_data import (
+    PadstackHoleRange as GrpcPadstackHoleRange,
+)
+from ansys.edb.core.definition.padstack_def_data import PadType as GrpcPadType
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure, Structure3D as GrpcStructure3D
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure
+from ansys.edb.core.hierarchy.structure3d import Structure3D as GrpcStructure3D
 from ansys.edb.core.primitive.circle import Circle as GrpcCircle
 
 from pyedb.generic.general_methods import generate_unique_name
@@ -124,7 +127,7 @@ class PadProperties:
             self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_POLYGON)
         else:
             raise ValueError(
-                f"Unsupported pad shape: {value}. Supported shapes are 'circle', " f"'rectangle', and 'polygon'."
+                f"Unsupported pad shape: {value}. Supported shapes are 'circle', 'rectangle', and 'polygon'."
             )
 
     @property

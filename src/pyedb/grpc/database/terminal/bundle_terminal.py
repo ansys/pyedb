@@ -21,10 +21,10 @@
 # SOFTWARE.
 
 from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundleTerminal
+from ansys.edb.core.terminal.terminal import HfssPIType as GrpcHfssPIType
 from ansys.edb.core.terminal.terminal import (
     SourceTermToGroundType as GrpcSourceTermToGroundType,
 )
-from ansys.edb.core.terminal.terminal import HfssPIType as GrpcHfssPIType
 
 from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.layers.layer import Layer

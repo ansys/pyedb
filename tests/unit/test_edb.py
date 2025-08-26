@@ -23,8 +23,8 @@
 
 import os
 
-from mock import MagicMock, PropertyMock, patch
 import pytest
+from mock import MagicMock, PropertyMock, patch
 
 from pyedb import Edb
 from tests.conftest import desktop_version

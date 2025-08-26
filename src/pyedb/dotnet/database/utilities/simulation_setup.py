@@ -21,8 +21,8 @@
 # SOFTWARE.
 
 
-from enum import Enum
 import warnings
+from enum import Enum
 
 from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInfo
 from pyedb.dotnet.database.sim_setup_data.data.sweep_data import SweepData

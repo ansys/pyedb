@@ -1,8 +1,8 @@
-from copy import deepcopy as copy
 import json
-from pathlib import Path
 import re
 import tempfile
+from copy import deepcopy as copy
+from pathlib import Path
 from typing import Union
 
 import numpy as np

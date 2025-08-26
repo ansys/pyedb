@@ -20,16 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module contains the `Components` class.
+"""This module contains the `Components` class."""
 
-"""
 import codecs
 import json
 import math
 import os
 import re
-from typing import Any, Dict, List, Optional, Tuple, Union
 import warnings
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from ansys.edb.core.definition.die_property import DieOrientation as GrpDieOrientation
 from ansys.edb.core.definition.die_property import DieType as GrpcDieType
@@ -2208,7 +2207,7 @@ class Components(object):
         Examples
         --------
         >>> from pyedb import Edb
-        >>> edb_file = r'C:\my_edb_file.aedb'
+        >>> edb_file = r"C:\my_edb_file.aedb"
         >>> edb = Edb(edb_file)
         >>> for cmp in list(edb.components.instances.keys()):
         >>>     edb.components.deactivate_rlc_component(component=cmp, create_circuit_port=False)

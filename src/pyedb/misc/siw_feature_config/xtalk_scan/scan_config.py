@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from enum import Enum
 import os
 import xml.etree as ET
+from enum import Enum
 
 from pyedb.generic.general_methods import ET
 from pyedb.misc.siw_feature_config.xtalk_scan.fd_xtalk_scan_config import (

@@ -6,7 +6,8 @@
 
 from __future__ import absolute_import
 
-from ansys.edb.core.layer.layer import Layer as GrpcLayer, LayerType as GrpcLayerType
+from ansys.edb.core.layer.layer import Layer as GrpcLayer
+from ansys.edb.core.layer.layer import LayerType as GrpcLayerType
 
 
 class Layer(GrpcLayer):

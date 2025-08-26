@@ -22,8 +22,8 @@
 
 from __future__ import absolute_import  # noreorder
 
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
 import warnings
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 from ansys.edb.core.net.net_class import NetClass as GrpcNetClass
 
@@ -96,15 +96,15 @@ class Nets(CommonNets):
 
     >>> # Generate extended nets (deprecated)
     >>> nets.generate_extended_nets(
-    >>> resistor_below=5,
+    >>> resistor_below = (5,)
     >>>inductor_below=0.5,
-    >>> capacitor_above=0.1
+    >>> capacitor_above = 0.1
     >>> )
 
     >>> # Classify nets
     >>> nets.classify_nets(
-    >>> power_nets=["VDD_CPU", "VDD_MEM"],
-    >>> signal_nets=["PCIe_TX", "ETH_RX"]
+    >>> power_nets = (["VDD_CPU", "VDD_MEM"],)
+    >>> signal_nets = ["PCIe_TX", "ETH_RX"]
     >>> )
 
     >>> # Check power/ground status
@@ -113,15 +113,15 @@ class Nets(CommonNets):
 
     >>> # Get DC-connected nets
     >>> dc_connected = nets.get_dcconnected_net_list(
-    >>> ground_nets=["GND"],
-    >>> res_value=0.002
+    >>> ground_nets = (["GND"],)
+    >>> res_value = 0.002
     >>> )
         print("DC-connected nets:", dc_connected)
 
     >>> # Get power tree
     >>> comp_list, columns, net_group = nets.get_powertree(
-    >>> power_net_name="VDD_CPU",
-    >>> ground_nets=["GND"]
+    >>> power_net_name = ("VDD_CPU",)
+    >>> ground_nets = ["GND"]
     >>> )
     >>> print("Power tree components:", comp_list)
 
@@ -143,8 +143,8 @@ class Nets(CommonNets):
 
     >>> # Find and fix disjoint nets (deprecated)
     >>> fixed_nets = nets.find_and_fix_disjoint_nets(
-    >>> net_list=["PCIe_TX"],
-    >>> clean_disjoints_less_than=1e-6
+    >>> net_list = (["PCIe_TX"],)
+    >>> clean_disjoints_less_than = 1e-6
     >>> )
     >>> print("Fixed nets:", fixed_nets)
 
@@ -422,11 +422,7 @@ class Nets(CommonNets):
 
         Examples
         --------
-        >>> edb_nets.generate_extended_nets(
-        ...     resistor_below=5,
-        ...     inductor_below=0.5,
-        ...     capacitor_above=0.1
-        ... )
+        >>> edb_nets.generate_extended_nets(resistor_below=5, inductor_below=0.5, capacitor_above=0.1)
         """
         warnings.warn("Use new method :func:`edb.extended_nets.generate_extended_nets` instead.", DeprecationWarning)
         self._pedb.extended_nets.generate_extended_nets(
@@ -487,10 +483,7 @@ class Nets(CommonNets):
 
         Examples
         --------
-        >>> edb_nets.classify_nets(
-        ...     power_nets=["VDD_CPU", "VDD_MEM"],
-        ...     signal_nets=["PCIe_TX", "ETH_RX"]
-        ... )
+        >>> edb_nets.classify_nets(power_nets=["VDD_CPU", "VDD_MEM"], signal_nets=["PCIe_TX", "ETH_RX"])
         """
         if isinstance(power_nets, str):
             power_nets = []
@@ -551,10 +544,7 @@ class Nets(CommonNets):
 
         Examples
         --------
-        >>> dc_connected = edb_nets.get_dcconnected_net_list(
-        ...     ground_nets=["GND"],
-        ...     res_value=0.002
-        ... )
+        >>> dc_connected = edb_nets.get_dcconnected_net_list(ground_nets=["GND"], res_value=0.002)
         >>> for net_group in dc_connected:
         ...     print("Connected nets:", net_group)
         """
@@ -611,10 +601,7 @@ class Nets(CommonNets):
 
         Examples
         --------
-        >>> comp_list, columns, net_group = edb_nets.get_powertree(
-        ...     power_net_name="VDD_CPU",
-        ...     ground_nets=["GND"]
-        ... )
+        >>> comp_list, columns, net_group = edb_nets.get_powertree(power_net_name="VDD_CPU", ground_nets=["GND"])
         >>> print("Power tree components:", comp_list)
         """
         flag_in_ng = False
@@ -700,7 +687,7 @@ class Nets(CommonNets):
 
         Examples
         --------
-        >>> deleted_nets = database.nets.delete(["Net1","Net2"])
+        >>> deleted_nets = database.nets.delete(["Net1", "Net2"])
         """
         if isinstance(netlist, str):
             netlist = [netlist]
@@ -858,10 +845,7 @@ class Nets(CommonNets):
 
         Examples
         --------
-        >>> fixed_nets = edb_nets.find_and_fix_disjoint_nets(
-        ...     net_list=["PCIe_TX"],
-        ...     clean_disjoints_less_than=1e-6
-        ... )
+        >>> fixed_nets = edb_nets.find_and_fix_disjoint_nets(net_list=["PCIe_TX"], clean_disjoints_less_than=1e-6)
         >>> print("Fixed nets:", fixed_nets)
         """
 

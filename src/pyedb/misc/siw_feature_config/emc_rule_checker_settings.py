@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from copy import deepcopy as copy
 import json
+from copy import deepcopy as copy
 
 import numpy as np
 

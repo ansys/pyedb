@@ -21,17 +21,17 @@
 # SOFTWARE.
 
 import os
-from random import randint
 import sys
 import time
+from random import randint
 
+import psutil
 from ansys.edb.core.session import launch_session
 from ansys.edb.core.utility.io_manager import (
     IOMangementType,
     end_managing,
     start_managing,
 )
-import psutil
 
 from pyedb import __version__
 from pyedb.generic.general_methods import env_path, env_value, is_linux

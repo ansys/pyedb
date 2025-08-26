@@ -19,8 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from typing import TYPE_CHECKING, Literal, Union, overload
 import warnings
+from typing import TYPE_CHECKING, Literal, Union, overload
 
 from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
 from pyedb.generic.settings import settings
@@ -32,18 +32,15 @@ if TYPE_CHECKING:
 
 
 @overload
-def Edb(*, grpc: Literal[True], **kwargs) -> "EdbGrpc":
-    ...
+def Edb(*, grpc: Literal[True], **kwargs) -> "EdbGrpc": ...
 
 
 @overload
-def Edb(*, grpc: Literal[False] = False, **kwargs) -> "EdbDotnet":
-    ...
+def Edb(*, grpc: Literal[False] = False, **kwargs) -> "EdbDotnet": ...
 
 
 @overload
-def Edb(*, grpc: bool, **kwargs) -> Union["EdbGrpc", "EdbDotnet"]:
-    ...
+def Edb(*, grpc: bool, **kwargs) -> Union["EdbGrpc", "EdbDotnet"]: ...
 
 
 # lazy imports
@@ -156,15 +153,15 @@ def Edb(
 
         # Create SIwave SYZ setup
     >>> syz_setup = edb.create_siwave_syz_setup(
-    >>> name="GHz_Setup",
-    >>> start_freq="1GHz",
-    >>> stop_freq="10GHz"
+    >>> name = ("GHz_Setup",)
+    >>> start_freq = ("1GHz",)
+    >>> stop_freq = "10GHz"
     >>> )
 
         # Create SIwave DC setup
     >>> dc_setup = edb.create_siwave_dc_setup(
-    >>> name="DC_Analysis",
-    >>> use_dc_point=True
+    >>> name = ("DC_Analysis",)
+    >>> use_dc_point = True
     >>> )
 
         # Solve with SIwave
@@ -197,15 +194,15 @@ def Edb(
 
         # Create wave port between two pins
     >>> wave_port = edb.source_excitation.create_port(
-    >>> positive_terminal=pin1,
-    >>> negative_terminal=pin2,
-    >>> port_type="Wave"
+    >>> positive_terminal = (pin1,)
+    >>> negative_terminal = (pin2,)
+    >>> port_type = "Wave"
     >>> )
 
         # Create lumped port
     >>> lumped_port = edb.source_excitation.create_port(
-    >>> positive_terminal=via_terminal,
-    >>> port_type="Lumped"
+    >>> positive_terminal = (via_terminal,)
+    >>> port_type = "Lumped"
     >>> )
 
         8. Component Management
@@ -220,10 +217,10 @@ def Edb(
 
         # Auto-parametrize design elements
     >>> params = edb.auto_parametrize_design(
-    >>> traces=True,
-    >>> pads=True,
-    >>> antipads=True,
-    >>> use_relative_variables=True
+    >>> traces = (True,)
+    >>> pads = (True,)
+    >>> antipads = (True,)
+    >>> use_relative_variables = True
     >>> )
     >>> print("Created parameters:", params)
 
@@ -244,9 +241,9 @@ def Edb(
 
         # Create differential pair
     >>> edb.differential_pairs.create(
-    >>> positive_net="USB_P",
-    >>> negative_net="USB_N",
-    >>> name="USB_DP"
+    >>> positive_net = ("USB_P",)
+    >>> negative_net = ("USB_N",)
+    >>> name = "USB_DP"
     >>> )
 
         13. Workflow Automation

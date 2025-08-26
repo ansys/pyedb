@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from collections import defaultdict
 import math
 import re
 import sys
+from collections import defaultdict
 
 import numpy as np
 

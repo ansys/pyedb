@@ -23,6 +23,7 @@
 """
 This module contains the ``EdbHfss`` class.
 """
+
 import math
 import warnings
 

@@ -144,7 +144,7 @@ class PadstackInstance(GrpcPadstackInstance):
             True if success, False otherwise.
         """
         warnings.warn(
-            "`set_backdrill_top` is deprecated. Use `set_back_drill_by_depth` or " "`set_back_drill_by_layer` instead.",
+            "`set_backdrill_top` is deprecated. Use `set_back_drill_by_depth` or `set_back_drill_by_layer` instead.",
             DeprecationWarning,
         )
         if isinstance(drill_depth, str):
@@ -179,8 +179,7 @@ class PadstackInstance(GrpcPadstackInstance):
             True if success, False otherwise.
         """
         warnings.warn(
-            "`set_backdrill_bottom` is deprecated. Use `set_back_drill_by_depth` or "
-            "`set_back_drill_by_layer` instead.",
+            "`set_backdrill_bottom` is deprecated. Use `set_back_drill_by_depth` or `set_back_drill_by_layer` instead.",
             DeprecationWarning,
         )
         if isinstance(drill_depth, str):
