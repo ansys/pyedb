@@ -334,7 +334,7 @@ class LayoutValidation:
                     new_name = re.sub(pattern, "_", net)
                     val.name = new_name
 
-        self._pedb._logger.info("Found {} illegal net names.".format(len(renamed_nets)))
+        self._pedb.logger.info("Found {} illegal net names.".format(len(renamed_nets)))
         return
 
     def illegal_rlc_values(self, fix: bool = False) -> List[str]:
@@ -358,7 +358,7 @@ class LayoutValidation:
                 temp.append(k)
                 if fix:
                     v.rlc_values = [0, 1, 0]
-        self._pedb._logger.info(f"Found {len(temp)} inductors have no value.")
+        self._pedb.logger.info(f"Found {len(temp)} inductors have no value.")
         return temp
 
     def padstacks_no_name(self, fix: bool = False) -> None:
@@ -389,4 +389,4 @@ class LayoutValidation:
                         obj.set_product_property(
                             GrpcProductIdType.DESIGNER, 11, f"{obj.component.name}-{obj.component_pin}"
                         )
-        self._pedb._logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")
+        self._pedb.logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")

@@ -3,13 +3,6 @@ import os
 import sys
 import warnings
 
-# if os.name == "nt":
-#     os.environ["PYTHONMALLOC"] = "malloc"
-
-# By default we use pyedb legacy implementation
-if "PYEDB_USE_DOTNET" not in os.environ:
-    os.environ["PYEDB_USE_DOTNET"] = "0"
-
 LATEST_DEPRECATED_PYTHON_VERSION = (3, 7)
 
 

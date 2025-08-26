@@ -23,25 +23,21 @@
 
 import pytest
 
+from tests.system.base_test_class import BaseTestClass
+
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
-class TestClass:
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch):
-        pass
-
-    @classmethod
-    @pytest.fixture(scope="class", autouse=True)
-    def teardown_class(cls, request, edb_examples):
-        yield
-        # not elegant way to ensure the EDB grpc is closed after all tests
-        edb = edb_examples.create_empty_edb()
-        edb.close_edb()
-
+class TestClass(BaseTestClass):
     def test_find(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128", net_name=["2V5"])
+        assert edbapp.layout.find_padstack_instances(aedt_name="U7-T7")[0].aedt_name == "U7-T7"
+        assert len(edbapp.layout.find_padstack_instances(component_name="U7"))
+        assert edbapp.layout.find_padstack_instances(component_name="U7", component_pin_name="T7")[0].name == "T7"
+        assert edbapp.layout.find_padstack_instances(component_name="U7", net_name="DDR4_A9")[0].aedt_name == "U7-R7"
+        assert edbapp.layout.find_padstack_instances(aedt_name="U7-R7")[0].aedt_name == "U7-R7"
+        assert edbapp.layout.find_padstack_instances(instance_id=4294967296)[0].id == 4294967296
         edbapp.close(terminate_rpc_session=False)
 
     def test_primitives(self, edb_examples):

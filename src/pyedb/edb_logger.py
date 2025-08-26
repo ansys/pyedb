@@ -29,8 +29,6 @@ import sys
 import tempfile
 import time
 
-from pyedb.generic.settings import settings
-
 
 class Msg:
     (INFO, WARNING, ERROR, FATAL) = range(4)
@@ -91,14 +89,17 @@ class EdbLogger(object):
         Whether to write log messages to stdout. The default is ``False``.
     """
 
-    def __init__(self, level=logging.DEBUG, filename=None, to_stdout=False):
+    log_file = ""
+
+    def __init__(self, level=logging.DEBUG, filename=None, to_stdout=False, settings=None):
+        self.settings = settings
         self._std_out_handler = None
         self._files_handlers = []
         self.level = level
         self.filename = filename or settings.logger_file_path
         settings.logger_file_path = self.filename
 
-        self._global = logging.getLogger("Global")
+        self._global = logging.getLogger("Edb")
         if not settings.enable_logger:
             self._global.addHandler(logging.NullHandler())
             return
@@ -123,6 +124,7 @@ class EdbLogger(object):
                 encoding="utf-8",
                 delay=0,
             )
+            self.log_file = log_file
             my_handler.setFormatter(self.formatter)
             my_handler.setLevel(self.level)
             if not global_handler and settings.global_log_file_name:
@@ -171,11 +173,11 @@ class EdbLogger(object):
 
     @property
     def _log_on_file(self):
-        return settings.enable_file_logs
+        return self.settings.enable_file_logs
 
     @_log_on_file.setter
     def _log_on_file(self, val):
-        settings.enable_file_logs = val
+        self.settings.enable_file_logs = val
 
     @property
     def logger(self):
@@ -334,7 +336,7 @@ class EdbLogger(object):
 
     def info(self, msg, *args, **kwargs):
         """Write an info message to the global logger."""
-        if not settings.enable_logger:
+        if not self.settings.enable_logger:
             return
         if args:
             try:
@@ -348,7 +350,7 @@ class EdbLogger(object):
     def info_timer(self, msg, start_time=None, *args, **kwargs):
         """Write an info message to the global logger with elapsed time.
         Message will have an appendix of type Elapsed time: time."""
-        if not settings.enable_logger:
+        if not self.settings.enable_logger:
             return
         if not start_time:
             start_time = self._timer
@@ -373,7 +375,7 @@ class EdbLogger(object):
 
     def warning(self, msg, *args, **kwargs):
         """Write a warning message to the global logger."""
-        if not settings.enable_logger:
+        if not self.settings.enable_logger:
             return
         if args:
             try:
@@ -397,7 +399,7 @@ class EdbLogger(object):
 
     def debug(self, msg, *args, **kwargs):
         """Write a debug message to the global logger."""
-        if not settings.enable_debug_logger or not settings.enable_logger:
+        if not self.settings.enable_debug_logger or not self.settings.enable_logger:
             return
         if args:
             try:
@@ -413,20 +415,3 @@ class EdbLogger(object):
         """Global logger."""
         self._global = logging.getLogger("Global")
         return self._global
-
-
-logger = logging.getLogger("Global")
-if any("aedt_logger" in str(i) for i in logger.filters):
-    from ansys.aedt.core.generic.settings import settings as pyaedt_settings
-
-    from pyedb.generic.settings import settings as pyaedb_settings
-
-    pyedb_logger = pyaedt_settings.logger
-    pyaedb_settings.use_pyaedt_log = True
-    pyaedb_settings.logger = pyedb_logger
-
-else:
-    pyedb_logger = EdbLogger(to_stdout=settings.enable_screen_logs)
-    from pyedb.generic.settings import settings as pyaedb_settings
-
-    pyaedb_settings.logger = pyedb_logger

@@ -810,17 +810,21 @@ class Components(object):
         elif isinstance(refdes, self._pedb._edb.Cell.Hierarchy.Component):
             refdes = EDBComponent(self._pedb, refdes)
         pins = self._get_pins_for_ports(pins, refdes)
-        if not pins:
-            self._logger.error("No pins found during port creation. Port is not defined.")
-            return False
+        if not pins:  # pragma: no cover
+            raise RuntimeError("No pins found during port creation. Port is not defined.")
         reference_pins = self._get_pins_for_ports(reference_pins, refdes)
         if not reference_pins:
-            self._logger.error("No reference pins found during port creation. Port is not defined.")
-            return False
+            raise RuntimeError("No reference pins found during port creation. Port is not defined.")
+        if not pins:
+            raise RuntimeWarning("No pins found during port creation. Port is not defined.")
+        if reference_pins:
+            reference_pins = self._get_pins_for_ports(reference_pins, refdes)
+            if not reference_pins:
+                raise RuntimeWarning("No reference pins found during port creation. Port is not defined.")
         if refdes and any(refdes.rlc_values):
             return self.deactivate_rlc_component(component=refdes, create_circuit_port=True)
         if not port_name:
-            port_name = f"Port_{pins[0].net_name}_{pins[0].name}".replace("-", "_")
+            port_name = f"Port_{pins[0].net_name}_{pins[0].aedt_name}".replace("-", "_")
 
         if len(pins) > 1 or pingroup_on_single_pin:
             if pec_boundary:
@@ -833,7 +837,7 @@ class Components(object):
             pin_group = self.create_pingroup_from_pins(pins, group_name)
             term = self._create_pin_group_terminal(pingroup=pin_group, term_name=port_name)
         else:
-            term = self._create_terminal(pins[0].primitive_object, term_name=port_name)
+            term = self._create_terminal(pins[0]._edb_object, term_name=port_name)
         term.SetIsCircuitPort(True)
 
         if len(reference_pins) > 1 or pingroup_on_single_pin:
@@ -848,7 +852,7 @@ class Components(object):
             ref_pin_group = self.create_pingroup_from_pins(reference_pins, ref_group_name)
             ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
         else:
-            ref_term = self._create_terminal(reference_pins[0].primitive_object, term_name=port_name + "_ref")
+            ref_term = self._create_terminal(reference_pins[0]._edb_object, term_name=port_name + "_ref")
         ref_term.SetIsCircuitPort(True)
 
         term.SetImpedance(self._edb.Utility.Value(impedance))
@@ -867,7 +871,9 @@ class Components(object):
     def _get_pins_for_ports(
         self, pins: Union[int, str, EDBPadstackInstance, List[Union[int, str, EDBPadstackInstance]]], comp: EDBComponent
     ) -> List[EDBPadstackInstance]:
-        if not isinstance(pins, List):
+        if not pins:
+            raise ValueError("No pins provided for port creation.")
+        elif not isinstance(pins, List):
             pins = [pins]
         result = []
         for pin in pins:
@@ -877,13 +883,15 @@ class Components(object):
                 if comp and pin in comp.pins:
                     result.append(comp.pins[pin])
                 else:
-                    p = [pp for pp in list(self._padstack.instances.values()) if pp.name == pin]
+                    p = [pp for pp in list(self._padstack.instances.values()) if pp.aedt_name == pin]
                     if p:
                         result.append(p[0])
             elif isinstance(pin, EDBPadstackInstance):
                 result.append(pin)
             elif isinstance(pin, self._edb.Cell.Primitive.PadstackInstance):
                 result.append(EDBPadstackInstance(pin, self._pedb))
+        if not result:
+            raise ValueError(f"Failed to find pins for port creation: {pins} on component {comp.name}.")
         return result
 
     def create_port_on_component(

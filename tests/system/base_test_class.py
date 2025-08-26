@@ -20,36 +20,36 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Tests related to Edb extended nets
-"""
-
 import pytest
 
-from tests.system.base_test_class import BaseTestClass
-
-pytestmark = [pytest.mark.system, pytest.mark.legacy]
+pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
-class TestClass(BaseTestClass):
+class BaseTestClass:
+    @classmethod
+    @pytest.fixture(scope="class", autouse=True)
+    def setup_class(cls, request, edb_examples):
+        # Set up the EDB app once per class
+
+        # Finalizer to close the EDB app after all tests
+        def teardown():
+            dummy_edb = edb_examples.create_empty_edb()
+            dummy_edb.close(terminate_rpc_session=True)
+
+        request.addfinalizer(teardown)
+
     @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path2, target_path4):
-        self.local_scratch = local_scratch
-        self.target_path = target_path
-        self.target_path2 = target_path2
-        self.target_path4 = target_path4
+    def init(self, edb_examples):
+        """init runs before each test."""
+        return
 
-    def test_nets_queries(self, edb_examples):
-        """Evaluate nets queries"""
-        # Done
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.extended_nets.auto_identify_signal()
-        assert edbapp.extended_nets.auto_identify_power()
-        extended_net_name, _ = next(iter(edbapp.extended_nets.items.items()))
-        assert edbapp.extended_nets.items[extended_net_name]
-        assert edbapp.extended_nets.items[extended_net_name].nets
-        assert edbapp.extended_nets.items[extended_net_name].components
-        assert edbapp.extended_nets.items[extended_net_name].rlc
-        assert edbapp.extended_nets.items[extended_net_name].serial_rlc
-        assert edbapp.extended_nets.items["1V0"].serial_rlc
-        assert edbapp.extended_nets.create("new_ex_net", "DDR4_A1")
+    @pytest.fixture(autouse=True)
+    def teardown(self, request, edb_examples):
+        """Code after yield runs after each test."""
+        yield
+        return
+
+    def test_dummy_test(self, edb_examples):
+        """Dummy test to initialize Edb the first time."""
+        edbapp = edb_examples.create_empty_edb()
         edbapp.close(terminate_rpc_session=False)

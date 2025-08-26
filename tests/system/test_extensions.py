@@ -25,6 +25,7 @@ import pytest
 
 from pyedb.extensions.via_design_backend import ViaDesignBackend
 from tests.conftest import desktop_version
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
@@ -101,26 +102,7 @@ PADSTACK_DEFS = [
 ]
 
 
-class TestClass:
-    @classmethod
-    @pytest.fixture(scope="class", autouse=True)
-    def setup_class(cls, request, edb_examples):
-        # Set up the EDB app once per class
-        pass
-
-        # Finalizer to close the EDB app after all tests
-        def teardown():
-            cls.edbapp_shared = edb_examples.get_si_verse()
-            cls.edbapp_shared.close(terminate_rpc_session=True)
-
-        request.addfinalizer(teardown)
-
-    @pytest.fixture(autouse=True)
-    def teardown(self, request, edb_examples):
-        """Code after yield runs after each test."""
-        yield
-        return
-
+class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch):
         working_dir = Path(local_scratch.path)

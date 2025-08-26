@@ -34,7 +34,6 @@ import pytest
 
 from pyedb.generic.design_types import Edb
 from pyedb.generic.filesystem import Scratch
-from pyedb.misc.misc import list_installed_ansysem
 
 local_path = os.path.dirname(os.path.realpath(__file__))
 example_models_path = Path(__file__).parent / "example_models"
@@ -43,7 +42,7 @@ example_models_path = Path(__file__).parent / "example_models"
 
 
 config = {
-    "desktopVersion": "2025.1",
+    "desktopVersion": "2025.2",
     "use_grpc": False,
 }
 
@@ -59,10 +58,6 @@ if os.path.exists(local_config_file):
 
 desktop_version = config["desktopVersion"]
 GRPC = config["use_grpc"]
-
-if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_installed_ansysem():
-    desktop_version = list_installed_ansysem()[0][12:].replace(".", "")
-    desktop_version = "20{}.{}".format(desktop_version[:2], desktop_version[-1])
 
 test_subfolder = "TEDB"
 test_project_name = "ANSYS-HSD_V1"
@@ -127,9 +122,7 @@ class EdbExamples:
         dst = self.local_scratch.copyfolder(src, file_folder_name)
         return dst
 
-    def get_si_verse(
-        self, edbapp=True, additional_files_folders="", version=None, source_file_path="TEDB/ANSYS-HSD_V1.aedb"
-    ):
+    def _get_test_board(self, edbapp, additional_files_folders, version, source_file_path):
         """Copy si_verse board file into local folder. A new temporary folder will be created."""
         aedb = self._copy_file_folder_into_local_folder(source_file_path)
         if additional_files_folders:
@@ -148,6 +141,16 @@ class EdbExamples:
             return Edb(aedb, edbversion=version, grpc=self.grpc)
         else:
             return aedb
+
+    def get_si_verse(self, edbapp=True, additional_files_folders="", version=None):
+        return self._get_test_board(
+            edbapp, additional_files_folders, version, source_file_path="si_verse/ANSYS-HSD_V1.aedb"
+        )
+
+    def get_si_verse_sfp(self, edbapp=True, additional_files_folders="", version=None):
+        return self._get_test_board(
+            edbapp, additional_files_folders, version, source_file_path="si_verse/ANSYS_SVP_V1_1_SFP.aedb"
+        )
 
     def get_package(self, edbapp=True, additional_files_folders="", version=None):
         """ "Copy package board file into local folder. A new temporary folder will be created."""
