@@ -23,7 +23,7 @@ You can always check the status and version of the connection from your Python s
 
    edb = Edb(edbpath="/tmp/my_project.aedb", version="2025.2", grpc=True)
 
-If connexion was successful, you should something similar to this in the console:
+If connection was successful, you should something similar to this in the console:
 
 .. code-block:: console
    PyEDB INFO: Using PyEDB with gRPC as Beta until ANSYS 2025R2 official release.
