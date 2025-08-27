@@ -3,7 +3,8 @@
 Communication Protocol: gRPC
 ============================
 
-PyEDB exclusively uses the **gRPC Remote Procedure Calls (gRPC)** protocol to communicate with the ``ansys-edb-core`` service.
+PyEDB exclusively uses the **gRPC Remote Procedure Calls (gRPC)** protocol to communicate with the ``ansys-edb-core``
+service.
 
 This modern framework is the foundation of PyEDB's architecture and offers key benefits:
 
@@ -18,8 +19,12 @@ You can always check the status and version of the connection from your Python s
 
 .. code-block:: python
 
-   import pyedb
+   from pyedb import pyedb
 
-   with pyedb.Edb() as edb:
-       print(f"Connected to server version: {edb.core_server_version}")
-       print(f"Server is running on: {edb.core_server_process}")
+   edb = Edb(edbpath="/tmp/my_project.aedb", version="2025.2", grpc=True)
+
+If connexion was successful, you should something similar to this in the console:
+
+.. code-block:: console
+   PyEDB INFO: Using PyEDB with gRPC as Beta until ANSYS 2025R2 official release.
+   PyEDB INFO: Logger is initialized in EDB.

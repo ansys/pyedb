@@ -32,3 +32,14 @@ They are maintained in the main PyAEDT example gallery and include:
 
 Feel free to open an issue or pull request if you would like to add new PyEDB-focused examples to this collection.
 
+This examples are focused on using PyEDB to create, modify, and analyze PCB/IC packages and RF boards. The basic
+section covers fundamental tasks, while the advanced section demonstrates more complex workflows for Si-PI.
+
+PyEDB basic and advanced examples
+=================================
+
+.. toctree::
+   :maxdepth: 1
+
+   basic/index
+   advanced/index

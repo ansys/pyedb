@@ -3,18 +3,19 @@ Installation
 
 Prerequisites
 -------------
-PyEDB requires the ``ansys-edb-core`` gRPC service to be running.
+PyEDB requires the ``ansys-edb-core`` gRPC client service to be running.
 
 .. admonition:: Looking for the old DotNet API?
    :class: seealso
 
    The legacy ``pyedb.dotnet`` module, which required AEDT, will be deprecated and moved to an `archived branch <https://github.com/ansys/pyedb/tree/archive/dotnet-legacy>`_. All new projects must use the gRPC client described below.
 
-**Option 1: Use AEDT Installation (Windows-Linux)**
+** Use AEDT Installation (Windows-Linux)**
 You must have AEDT installed, the ``ansys-edb-core`` server service is included.
-The PyEDB client is a python package automatically installed with PyEDB and will automatically find and connect to the server.
+The PyEDB client is a python package automatically installed with PyEDB and will automatically find and connect to the
+server.
 
-MAke sure you are running the latest ansys-edb-core client version compatible with your AEDT version.
+Make sure you are running the latest ansys-edb-core client version compatible with your AEDT version.
 
 .. code-block:: bash
 

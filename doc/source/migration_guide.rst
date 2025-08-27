@@ -6,8 +6,7 @@ This guide helps you migrate scripts from the legacy ``pyedb.dotnet`` API to the
 Key Conceptual Changes
 ----------------------
 1.  **Import Structure:** The top-level import is now the gRPC client.
-2.  **No AEDT:** Your script no longer requires AEDT to be running. It connects to the ``ansys-edb-core`` service.
-3.  **Resource Management:** Use a context manager (`with` statement) to ensure connections are properly closed.
+2.  **No AEDT:** Your script does not requires AEDT to be running. It connects to the ``ansys-edb-core`` service.
 
 Side-by-Side Code Comparison
 ----------------------------
@@ -17,29 +16,38 @@ Side-by-Side Code Comparison
 .. code-block:: python
    :caption: Legacy DotNet (Archived)
 
-   # This required AEDT to be installed on Windows
-   import pyedb.dotnet as pyedb_dotnet
+   # This required AEDT to be installed on Windows and Linux
+   from pyedb import Edb
 
    # This would start an AEDT process
-   edb = pyedb_dotnet.Edb(edbpath=edb_path, edbversion="2024.1")
+   edb = Edb(edbpath=edb_path, version="2025.2", grpc=False)
    # ... your code ...
-   edb.save_edb()
-   edb.close_edb() # Mandatory to close AEDT
+   edb.save()
+   edb.close() # Mandatory to close AEDT
 
 .. code-block:: python
    :caption: Modern gRPC (Recommended)
 
    # This connects to the standalone ansys-edb-core service
-   import pyedb
+   from pyedb import Edb
 
-   # Use a context manager for safe connection handling
-   with pyedb.Edb(edbpath=edb_path, edbversion="2024.1") as edb:
-        # ... your code ...
-        edb.save_edb()
-   # Connection closed automatically
+   edb = Edb(edbpath=edb_path, version="2025.2", grpc=True):
+   # ... your code ...
+   edb.save()
+   edb.close()
+   # Connection closed automatically when edb is closed.
+
+ ..Note:: The RPC server can only run on single Python thread but can open multiple EDB instances.
+          However if you close one edb instance, the default behavior is to close the server. Therefore the other EDB
+          instances will be disconnected. To close an EDB instance without closing the server you can use the following code:
+
+.. code-block:: python
+   edb.close(terminate_rpc_session=False)
+
 
 **Common Method Calls**
-The core API (methods on `edb.modeler`, `edb.nets`, `edb.components`) is intentionally very similar to ease migration. Most method names and signatures are unchanged.
+The core API (methods on `edb.modeler`, `edb.nets`, `edb.components`) is intentionally very similar to ease migration.
+Most method names and signatures are unchanged. We recommend checking the :doc:`api` documentation for details.
 
 .. code-block:: python
    :caption: Method calls are largely identical
@@ -56,11 +64,16 @@ The core API (methods on `edb.modeler`, `edb.nets`, `edb.components`) is intenti
 
 Handling Breaking Changes
 -------------------------
-If you encounter a method or property that existed in the `dotnet` API but is not yet implemented in the gRPC client, you have two options:
+If you encounter a method or property that existed in the `dotnet` API but is not yet implemented in the gRPC client,
+you have two options:
 
-1.  **Check for Alternatives:** The new API might have a differently named method or a new, more efficient way to accomplish the same task. Check the :doc:`api` documentation.
-2.  **Report the Gap:** Open an issue on the `PyEDB GitHub repository <https://github.com/ansys/pyedb/issues>`_. This helps the development team prioritize which legacy features to port next.
+1.  **Check for Alternatives:** The new API might have a differently named method or a new, more efficient way to
+accomplish the same task. Check the :doc:`api` documentation.
+2.  **Report the Gap:** Open an issue on the `PyEDB GitHub repository <https://github.com/ansys/pyedb/issues>`_. This
+helps the development team prioritize which legacy features to port next.
 
 Getting Help
 ------------
-If you get stuck during migration, please search for or open a discussion on the `GitHub Discussions <https://github.com/ansys/pyedb/discussions>`_ page. The community and development team can provide guidance.
+If you get stuck during migration, please search for or open a discussion on the
+`GitHub Discussions <https://github.com/ansys/pyedb/discussions>`_ page. The community and development team can
+provide guidance.

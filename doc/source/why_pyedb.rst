@@ -16,12 +16,16 @@ This means you can **run PyEDB on a machine without a graphical user interface (
 *   **Docker containers** for consistent, reproducible environments.
 *   **Cloud platforms** like AWS, Azure, or GCP.
 
-This enables true **CI/CD (Continuous Integration/Continuous Deployment) for PCB design**. You can automate checks, simulations, and reports every time a design change is committed.
+This enables true **CI/CD (Continuous Integration/Continuous Deployment) for PCB design**. You can automate checks,
+simulations, and reports every time a design change is committed.
 
 Performance and Integration
 ---------------------------
-*   **Performance:** The gRPC protocol is fast and efficient, ideal for automating complex tasks and processing large designs.
-*   **Python Ecosystem:** Being a pure Python client, PyEDB integrates seamlessly with the vast Python data science and machine learning stack (NumPy, Pandas, Matplotlib, Scikit-learn, PyTorch, etc.). You can easily post-process simulation results or use AI/ML to guide design decisions.
+*   **Performance:** The gRPC protocol is fast and efficient, ideal for automating complex tasks and processing large
+designs.
+*   **Python Ecosystem:** Being a pure Python client, PyEDB integrates seamlessly with the vast Python data science and
+machine learning stack (NumPy, Pandas, Matplotlib, Scikit-learn, PyTorch, etc.). You can easily post-process simulation
+results or use AI/ML to guide design decisions.
 
 Use Cases
 ---------
