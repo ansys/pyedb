@@ -4707,7 +4707,7 @@ class Edb:
 
         if not void_padstacks:
             raise RuntimeWarning(
-                "No padstack instances found inside evaluated voids during model creation for arbitrarywaveports"
+                "No padstack instances found inside evaluated voids during model creation for arbitrary waveports"
             )
         cloned_edb = Edb(edbpath=output_edb)
 

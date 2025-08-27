@@ -276,7 +276,7 @@ class RaptorXSimulationAdvancedSettings(object):
             self._advanced_settings.UseAccelerateViaExtraction = value
         else:
             self.logger.error(
-                f"RaptorX setup use_accelerate_via_extraction setter input must be boolean.Provided value {value}"
+                f"RaptorX setup use_accelerate_via_extraction setter input must be boolean. Provided value {value}"
             )
 
     @property
