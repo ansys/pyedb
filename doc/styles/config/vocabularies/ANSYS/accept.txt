@@ -117,6 +117,8 @@ Server-Side
 Automation & Headless Operation
 Use Cases
 Getting Started
-(?i)API
-(?i)Documentation
-(?i)Matplotlib
+API
+api
+[Dd]ocumentation
+[Mm]atplotlib
+[Cc]ontributions
