@@ -117,4 +117,4 @@ Getting Started
 [Aa][Pp][Ii]
 [Dd][Oo][Cc][Uu][Mm][Ee][Nn][Tt][Aa][Tt][Ii][Oo][Nn]
 [Mm][Aa][Tt][Pp][Ll][Oo][Tt][Ll][Ii][Ib]
-[Cc]ontributions
+[Cc][Oo][Nn][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn][Ss]
