@@ -107,7 +107,7 @@ Why It Was Replaced
 Contribution Guide
 Development Environment Setup
 Running Tests
-Building Documentation
+Building
 Submission Process
 Code Style
 Contributions
