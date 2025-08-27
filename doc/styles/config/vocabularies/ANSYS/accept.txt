@@ -5,7 +5,6 @@ AEDB
 AEDT
 airbox
 (?i)Ansys
-API
 [Cc]ircuit
 codecov
 [Cc]om
