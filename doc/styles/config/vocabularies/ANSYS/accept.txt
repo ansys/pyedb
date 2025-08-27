@@ -25,7 +25,6 @@ IR
 IronPython
 libssl
 [Ll]ayout
-matplotlib
 Maxwell(?:\s(?:2D|3D|Circuit))?
 [Nn]etlist
 opensslp(?i)PyAnsys
