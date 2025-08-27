@@ -8,6 +8,7 @@ Accessing and Modifying Nets
 .. code-block:: python
 
    from pyedb import Edb
+
    edb = Edb(edbpath=edb_path, version="2025.2", grpc=True)
    # Get a net by name
    net = edb.nets["DDR0_DQ0"]
@@ -39,6 +40,7 @@ Creating a Simple Simulation Setup
 .. code-block:: python
 
    from pyedb import Edb
+
    edb = Edb(edbpath=edb_path, version="2025.2", grpc=True)
    # Create a SIwave DC IR analysis setup
    setup = edb.create_siwave_dc_setup("my_dc_analysis")
@@ -47,8 +49,10 @@ Creating a Simple Simulation Setup
    vrm_components = edb.components.Others["J1"]
    positive_pin = vrm_components.pins["1"]
    negative_pin = vrm_components.pins["2"]
-   edb.source_excitation.create_voltage_source(terminal=positive_pin, ref_terminal=negative_pin, magnitude=3.3, phase=0)
+   edb.source_excitation.create_voltage_source(
+       terminal=positive_pin, ref_terminal=negative_pin, magnitude=3.3, phase=0
+   )
 
    # Save and close EDB
-    edb.save()
-    edb.close()
+   edb.save()
+   edb.close()
