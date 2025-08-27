@@ -78,17 +78,17 @@ vias
 [Cc]onceptual
 [Cc]hanges
 Side-by-Side
-Code
-Comparison
-api
+[Cc]ode
+[Cc]omparison
+[Aa][Pp][Ii]
 [Hh]andling
 [Bb]reaking
 [Cc]hanges
-Getting
-Help
-Common
-Issues
-Solutions
+[Gg]etting
+[Hh]elp
+[Cc]ommon
+[Ii]ssues
+[Ss]olutions
 Page Not Found
 Common Tasks
 Accessing and Modifying Nets
@@ -100,3 +100,6 @@ Checking the Connection
 User Guide
 Core Concepts
 Architecture: Client-Server Model
+[Ii]ssues
+[Ii]nstall the PyEDB Client
+Why It Was Replaced

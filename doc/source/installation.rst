@@ -8,7 +8,7 @@ PyEDB requires the ``ansys-edb-core`` gRPC client service to be running.
 .. admonition:: Looking for the old DotNet API?
    :class: seealso
 
-   The legacy ``pyedb.dotnet`` module, which required AEDT, will be deprecated and moved to an `archived branch <https://github.com/ansys/pyedb/tree/archive/dotnet-legacy>`_. All new projects must use the gRPC client described below.
+   The legacy ``pyedb.dotnet`` module is deprecated and moved to an `archived branch <https://github.com/ansys/pyedb/tree/archive/dotnet-legacy>`_. All new projects must use the gRPC client described below.
 
 ** Use AEDT Installation (Windows-Linux)**
 You must have AEDT installed, the ``ansys-edb-core`` server service is included.

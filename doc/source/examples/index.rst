@@ -4,7 +4,7 @@ Examples
 High-Frequency Layout Examples (PyAEDT + PyEDB)
 -----------------------------------------------
 
-These examples show how PyEDB and PyAEDT work together to create, solve and post-process high-frequency PCB/IC packages and RF boards.
+These examples show how PyEDB and PyAEDT work together to create solve and post-process high-frequency PCB/IC packages and RF boards.
 They are maintained in the main PyAEDT example gallery and include:
 
 * Import and modification of EDB layout
