@@ -6,7 +6,7 @@ Legacy DotNet API (Archived)
 .. danger::
 
    **The ``pyedb.dotnet`` module is deprecated and archived.**
-   Maintenance will be dropped starting Ansys 2026R1 release. All users are **strongly encouraged** to
+   Maintenance is planned to be dropped starting Ansys 2026R1 release. All users are **strongly encouraged** to
 migrate to the modern :ref:`gRPC-based client <comms_protocols>`, which is the future of PyEDB.
 
 What Was the DotNet API?
@@ -39,7 +39,7 @@ to avoid confusion and keep the main branch clean.
 
 .. warning::
 
-   This code is provided **as-is** for reference and migration purposes only. It will not be updated. Do not use it for
+   This code is provided **as-is** for reference and migration purposes only. Do not use it for
 new projects. If you need to maintain an old script that uses the ``dotnet`` API, your goal should be to migrate it to
 the gRPC client.
 

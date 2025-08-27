@@ -98,8 +98,20 @@ Communication Protocol: gRPC
 e.g.
 Checking the Connection
 User Guide
-Core Concepts
+[Cc]ore [Cc]oncepts
 Architecture: Client-Server Model
 [Ii]ssues
 [Ii]nstall the PyEDB Client
 Why It Was Replaced
+Migration Guide
+Contribution Guide
+Development Environment Setup
+Running Tests
+Building Documentation
+Submission Process
+Code Style
+Documentation Contributions
+Server-Side Automation & Headless Operation
+[Mm]atplotlib
+Use Cases
+Getting Started
