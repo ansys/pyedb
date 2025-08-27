@@ -8,7 +8,7 @@ Welcome to PyEDB |version|
 .. admonition:: For users of the legacy `pyedb.dotnet` API
    :class: danger
 
-   The ``dotnet`` module will be **deprecated and archived** with Ansys release 2026R1. Access the archived code and migration guide :ref:`here <archive>`.
+   The ``dotnet`` module is **deprecated and archived** with Ansys release 2026R1. Access the archived code and migration guide :ref:`here <archive>`.
 
 PyEDB is a Python client library that provides a high-level interface to create, modify, and analyze PCB designs by communicating with the ``ansys-edb-core`` gRPC service.
 

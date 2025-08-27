@@ -98,12 +98,14 @@ Communication Protocol: gRPC
 e.g.
 Checking the Connection
 User Guide
-[Cc]ore [Cc]oncepts
+[Cc]ore
+[Cc]oncepts
 Architecture: Client-Server Model
 [Ii]ssues
 [Ii]nstall the PyEDB Client
 Why It Was Replaced
-Migration Guide
+[Mm]igration
+[Gg]uide
 Contribution Guide
 Development Environment Setup
 Running Tests

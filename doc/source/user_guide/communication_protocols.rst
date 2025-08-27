@@ -8,7 +8,7 @@ service.
 
 This modern framework is the foundation of PyEDB's architecture and offers key benefits:
 
-*   **Headless Operation:** Enables operation on servers without a GUI (e.g., Linux, Docker).
+*   **Headless Operation:** Enables operation on servers without a GUI (for example Linux, Docker).
 *   **Performance:** High-speed communication, ideal for processing large, complex designs.
 *   **Reliability:** Robust connection handling and error reporting.
 *   **Decoupled Development:** The Python client and the core service can be updated independently.

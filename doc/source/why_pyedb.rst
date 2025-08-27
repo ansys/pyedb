@@ -31,6 +31,7 @@ Use Cases
 ---------
 *   **Automated Design Rule Checking (DRC):** Script checks for your team's specific design rules.
 *   **Regression Testing:** Ensure a new design change doesn't break SI/PI/thermal performance.
-*   **Parameter Sweeping:** Automatically analyze hundreds of variations of a design (e.g., via spacing, layer thickness).
+*   **Parameter Sweeping:** Automatically analyze hundreds of variations of a design (for example via spacing, layer
+    thickness).
 *   **Batch Processing:** Extract S-parameters from a library of interconnects.
 *   **Report Generation:** Automatically generate standardized PDF/HTML reports with plots and tables.

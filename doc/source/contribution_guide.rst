@@ -1,7 +1,7 @@
 Contribution Guide
 ==================
 
-All contributions to PyEDB are welcome. This guide will help you get started.
+All contributions to PyEDB are welcome. This guide helps you get started.
 
 Development Environment Setup
 -----------------------------
