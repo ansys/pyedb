@@ -47,7 +47,7 @@ Side-by-Side Code Comparison
 
 **Common Method Calls**
 The core API (methods on `edb.modeler`, `edb.nets`, `edb.components`) is intentionally very similar to ease migration.
-Most method names and signatures are unchanged. We recommend checking the :doc:`api` documentation for details.
+Most method names and signatures are unchanged. Check the :doc:`api` documentation for details.
 
 .. code-block:: python
    :caption: Method calls are largely identical

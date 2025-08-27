@@ -74,3 +74,29 @@ vias
 [Rr][Ff]
 [Bb]asic
 [Ll]ibraries
+[Kk]ey
+[Cc]onceptual
+[Cc]hanges
+Side-by-Side
+Code
+Comparison
+api
+[Hh]andling
+[Bb]reaking
+[Cc]hanges
+Getting
+Help
+Common
+Issues
+Solutions
+Page Not Found
+Common Tasks
+Accessing and Modifying Nets
+Creating a Simple Simulation Setup
+Getting Started: Your First Script
+Communication Protocol: gRPC
+e.g.
+Checking the Connection
+User Guide
+Core Concepts
+Architecture: Client-Server Model
