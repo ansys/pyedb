@@ -80,7 +80,6 @@ vias
 Side-by-Side
 [Cc]ode
 [Cc]omparison
-[Aa][Pp][Ii]
 [Hh]andling
 [Bb]reaking
 [Cc]hanges
@@ -112,8 +111,11 @@ Running Tests
 Building Documentation
 Submission Process
 Code Style
-Documentation Contributions
-Server-Side Automation & Headless Operation
-[Mm]atplotlib
+Documentation
+Contributions
+Server-Side
+Automation & Headless Operation
 Use Cases
 Getting Started
+API
+api
