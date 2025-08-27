@@ -110,7 +110,6 @@ Running Tests
 Building Documentation
 Submission Process
 Code Style
-Documentation
 Contributions
 Server-Side
 Automation & Headless Operation
