@@ -36,6 +36,7 @@ from ansys.edb.core.simulation_setup.simulation_setup import (
     FrequencyData as GrpcFrequencyData,
 )
 from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSweepData
+
 from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
     SIWaveCPASimulationSetup,
 )

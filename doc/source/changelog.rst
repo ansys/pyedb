@@ -9,19 +9,19 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ------------
 ### Added
-- 
+-
 
 ### Changed
-- 
+-
 
 ### Deprecated
-- 
+-
 
 ### Fixed
-- 
+-
 
 ### Removed
-- 
+-
 
 [0.9.0] - 2024-XX-YY
 --------------------
