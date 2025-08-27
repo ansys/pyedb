@@ -103,13 +103,13 @@ Architecture: Client-Server Model
 Why It Was Replaced
 [Mm]igration
 [Gg]uide
-Contribution Guide
+[Gg]uide
 Development Environment Setup
 Running Tests
 Building
 Submission Process
 Code Style
-Contributions
+[Cc]ontributions
 Server-Side
 Automation & Headless Operation
 Use Cases
@@ -117,4 +117,3 @@ Getting Started
 [Aa][Pp][Ii]
 [Dd][Oo][Cc][Uu][Mm][Ee][Nn][Tt][Aa][Tt][Ii][Oo][Nn]
 [Mm][Aa][Tt][Pp][Ll][Oo][Tt][Ll][Ii][Ib]
-[Cc][Oo][Nn][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn][Ss]
