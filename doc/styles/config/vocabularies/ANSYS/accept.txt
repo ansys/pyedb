@@ -117,5 +117,7 @@ Server-Side
 Automation & Headless Operation
 Use Cases
 Getting Started
-[Aa][Pp][Ii]
-[Dd]ocumentation
+API
+api
+Documentation
+documentation
