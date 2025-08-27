@@ -370,6 +370,7 @@ html_context = {
     "github_version": BRANCH,
     "doc_path": DOC_PATH,
     "source_path": "src",
+    "pyansys_tags": ["Electronics"],
 }
 
 # specify the location of your github repo
