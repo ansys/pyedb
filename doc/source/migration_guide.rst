@@ -28,14 +28,13 @@ Side-by-Side Code Comparison
 .. code-block:: python
    :caption: Modern gRPC (Recommended)
 
-   # This connects to the standalone ansys-edb-core service
-   from pyedb import Edb
+    # This connects to the standalone ansys-edb-core service
+    from pyedb import Edb
 
-   edb = Edb(edbpath=edb_path, version="2025.2", grpc=True):
-   # ... your code ...
-   edb.save()
-   edb.close()
-   # Connection closed automatically when edb is closed.
+    edb = Edb(edbpath=edb_path, version="2025.2", grpc=True):
+    edb.save()
+    edb.close()
+    # Connection closed automatically when edb is closed.
 
  ..Note:: The RPC server can only run on single Python thread but can open multiple EDB instances.
           However if you close one edb instance, the default behavior is to close the server. Therefore the other EDB
