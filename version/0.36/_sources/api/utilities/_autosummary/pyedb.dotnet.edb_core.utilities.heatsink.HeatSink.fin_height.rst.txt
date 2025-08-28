@@ -1,0 +1,6 @@
+fin\_height
+===========
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.heatsink
+
+.. autoproperty:: HeatSink.fin_height

@@ -1,0 +1,6 @@
+active
+======
+
+.. currentmodule:: pyedb.grpc.database.layout.voltage_regulator
+
+.. autoproperty:: VoltageRegulator.active

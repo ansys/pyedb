@@ -1,0 +1,6 @@
+rms\_surface\_roughness
+=======================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.rms_surface_roughness

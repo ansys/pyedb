@@ -1,0 +1,6 @@
+decouple
+========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. automethod:: BundleWavePort.decouple

@@ -1,0 +1,1250 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta property="og:site_name" content="PyAnsys" />
+    <title>Database &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/ansys-sphinx-theme.css?v=fbf3eb5d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/ansys-sphinx-theme.css?v=fbf3eb5d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../_static/documentation_options.js?v=a48fb057"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'grpc_api/grpc/database/index';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.55';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Components" href="components.html" />
+    <link rel="prev" title="workflow" href="../_autosummary/pyedb.grpc.edb.Edb.workflow.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.55.0" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/grpc_api/grpc/database/index.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../index.html">
+    gRPC API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../dotnet_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../libraries/index.html">
+    PyEDB libraries 0.55.0
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../contributing.html">
+    Contribute
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.55/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../index.html">
+    gRPC API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../dotnet_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../libraries/index.html">
+    PyEDB libraries 0.55.0
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributing.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.55/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">PyEDB</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../edb.html">Edb gRPC main class</a></li>
+<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">Database</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.html">Components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="control_file.html">Control file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="definitions.html">Definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hfss.html">HFSS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="layout_validation.html">Layout validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modeler.html">Modeler &amp; primitives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nets.html">Sources and excitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="padstacks.html">Padstacks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="siwave.html">Siwave</a></li>
+<li class="toctree-l3"><a class="reference internal" href="source_excitations.html">Sources excitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stackup.html">Stackup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/index.html">EDB lib</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../index.html" class="nav-link">gRPC API reference</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../index.html" class="nav-link">PyEDB</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Database</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="database">
+<h1>Database<a class="headerlink" href="#database" title="Link to this heading">#</a></h1>
+<p>This section describes EDB database classes.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.html">Components</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.html#pyedb.grpc.database.components.Components"><code class="docutils literal notranslate"><span class="pre">Components</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.add_port_on_rlc_component.html">add_port_on_rlc_component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.add_rlc_boundary.html">add_rlc_boundary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.create.html">create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.create_pin_group.html">create_pin_group</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.create_pin_group_on_net.html">create_pin_group_on_net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.create_pingroup_from_pins.html">create_pingroup_from_pins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.deactivate_rlc_component.html">deactivate_rlc_component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.delete.html">delete</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.delete_single_pin_rlc.html">delete_single_pin_rlc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.disable_rlc_component.html">disable_rlc_component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.export_bom.html">export_bom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.export_definition.html">export_definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.find_by_reference_designator.html">find_by_reference_designator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.get_aedt_pin_name.html">get_aedt_pin_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.get_component_by_name.html">get_component_by_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.get_component_net_connection_info.html">get_component_net_connection_info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.get_component_placement_vector.html">get_component_placement_vector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.get_components_from_nets.html">get_components_from_nets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.get_nets_from_pin_list.html">get_nets_from_pin_list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.get_pin_from_component.html">get_pin_from_component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.get_pin_position.html">get_pin_position</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.get_pins.html">get_pins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.get_pins_name_from_net.html">get_pins_name_from_net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.get_rats.html">get_rats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.get_solder_ball_height.html">get_solder_ball_height</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.get_through_resistor_list.html">get_through_resistor_list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.get_vendor_libraries.html">get_vendor_libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.import_bom.html">import_bom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.import_definition.html">import_definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.refresh_components.html">refresh_components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.replace_rlc_by_gap_boundaries.html">replace_rlc_by_gap_boundaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.set_component_model.html">set_component_model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.set_component_rlc.html">set_component_rlc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.set_solder_ball.html">set_solder_ball</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.short_component_pins.html">short_component_pins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.update_rlc_from_bom.html">update_rlc_from_bom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.ICs.html">ICs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.IOs.html">IOs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.Others.html">Others</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.capacitors.html">capacitors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.components_by_partname.html">components_by_partname</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.definitions.html">definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.inductors.html">inductors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.instances.html">instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.nport_comp_definition.html">nport_comp_definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.components.Components.resistors.html">resistors</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="control_file.html">Control file</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFile.html">ControlFile</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFile.html#pyedb.grpc.database.control_file.ControlFile"><code class="docutils literal notranslate"><span class="pre">ControlFile</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFile.parse_layer_map.html">parse_layer_map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFile.parse_technology.html">parse_technology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFile.parse_xml.html">parse_xml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFile.write_xml.html">write_xml</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlProperty.html">ControlProperty</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlProperty.html#pyedb.grpc.database.control_file.ControlProperty"><code class="docutils literal notranslate"><span class="pre">ControlProperty</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileMaterial.html">ControlFileMaterial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileMaterial.html#pyedb.grpc.database.control_file.ControlFileMaterial"><code class="docutils literal notranslate"><span class="pre">ControlFileMaterial</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileDielectric.html">ControlFileDielectric</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileDielectric.html#pyedb.grpc.database.control_file.ControlFileDielectric"><code class="docutils literal notranslate"><span class="pre">ControlFileDielectric</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileLayer.html">ControlFileLayer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileLayer.html#pyedb.grpc.database.control_file.ControlFileLayer"><code class="docutils literal notranslate"><span class="pre">ControlFileLayer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileVia.html">ControlFileVia</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileVia.html#pyedb.grpc.database.control_file.ControlFileVia"><code class="docutils literal notranslate"><span class="pre">ControlFileVia</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileStackup.html">ControlFileStackup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileStackup.html#pyedb.grpc.database.control_file.ControlFileStackup"><code class="docutils literal notranslate"><span class="pre">ControlFileStackup</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileStackup.add_dielectric.html">add_dielectric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileStackup.add_layer.html">add_layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileStackup.add_material.html">add_material</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileStackup.add_via.html">add_via</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileStackup.dielectrics.html">dielectrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileStackup.layers.html">layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileStackup.materials.html">materials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileStackup.vias.html">vias</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileImportOptions.html">ControlFileImportOptions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileImportOptions.html#pyedb.grpc.database.control_file.ControlFileImportOptions"><code class="docutils literal notranslate"><span class="pre">ControlFileImportOptions</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlExtent.html">ControlExtent</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlExtent.html#pyedb.grpc.database.control_file.ControlExtent"><code class="docutils literal notranslate"><span class="pre">ControlExtent</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlCircuitPt.html">ControlCircuitPt</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlCircuitPt.html#pyedb.grpc.database.control_file.ControlCircuitPt"><code class="docutils literal notranslate"><span class="pre">ControlCircuitPt</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileComponent.html">ControlFileComponent</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileComponent.html#pyedb.grpc.database.control_file.ControlFileComponent"><code class="docutils literal notranslate"><span class="pre">ControlFileComponent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileComponent.add_pin.html">add_pin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileComponent.add_port.html">add_port</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileComponents.html">ControlFileComponents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileComponents.html#pyedb.grpc.database.control_file.ControlFileComponents"><code class="docutils literal notranslate"><span class="pre">ControlFileComponents</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileComponents.add_component.html">add_component</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileBoundaries.html">ControlFileBoundaries</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileBoundaries.html#pyedb.grpc.database.control_file.ControlFileBoundaries"><code class="docutils literal notranslate"><span class="pre">ControlFileBoundaries</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileBoundaries.add_extent.html">add_extent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileBoundaries.add_port.html">add_port</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileSweep.html">ControlFileSweep</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileSweep.html#pyedb.grpc.database.control_file.ControlFileSweep"><code class="docutils literal notranslate"><span class="pre">ControlFileSweep</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileMeshOp.html">ControlFileMeshOp</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileMeshOp.html#pyedb.grpc.database.control_file.ControlFileMeshOp"><code class="docutils literal notranslate"><span class="pre">ControlFileMeshOp</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileSetup.html">ControlFileSetup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileSetup.html#pyedb.grpc.database.control_file.ControlFileSetup"><code class="docutils literal notranslate"><span class="pre">ControlFileSetup</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileSetup.add_mesh_operation.html">add_mesh_operation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileSetup.add_sweep.html">add_sweep</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileSetups.html">ControlFileSetups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileSetups.html#pyedb.grpc.database.control_file.ControlFileSetups"><code class="docutils literal notranslate"><span class="pre">ControlFileSetups</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.control_file.ControlFileSetups.add_setup.html">add_setup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.definitions.Definitions.html">Definitions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.definitions.Definitions.html#pyedb.grpc.database.definitions.Definitions"><code class="docutils literal notranslate"><span class="pre">Definitions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.definitions.Definitions.add_package_def.html">add_package_def</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.definitions.Definitions.component.html">component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.definitions.Definitions.package.html">package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hfss.html">HFSS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hfss.html#class-managing-hfss-container">Class managing HFSS container</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.hfss.Hfss.html">Hfss</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="layout_validation.html">Layout validation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.layout_validation.LayoutValidation.html">LayoutValidation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.layout_validation.LayoutValidation.html#pyedb.grpc.database.layout_validation.LayoutValidation"><code class="docutils literal notranslate"><span class="pre">LayoutValidation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.layout_validation.LayoutValidation.dc_shorts.html">dc_shorts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.layout_validation.LayoutValidation.disjoint_nets.html">disjoint_nets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.layout_validation.LayoutValidation.fix_self_intersections.html">fix_self_intersections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.layout_validation.LayoutValidation.illegal_net_names.html">illegal_net_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.layout_validation.LayoutValidation.illegal_rlc_values.html">illegal_rlc_values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.layout_validation.LayoutValidation.padstacks_no_name.html">padstacks_no_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modeler.html">Modeler &amp; primitives</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modeler.html#primitives-properties">Primitives properties</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.modeler.Modeler.html">Modeler</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="nets.html">Sources and excitations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.html">Nets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.html#pyedb.grpc.database.nets.Nets"><code class="docutils literal notranslate"><span class="pre">Nets</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.classify_nets.html">classify_nets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.delete.html">delete</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.eligible_power_nets.html">eligible_power_nets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.find_or_create_net.html">find_or_create_net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.get_dcconnected_net_list.html">get_dcconnected_net_list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.get_net_by_name.html">get_net_by_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.get_powertree.html">get_powertree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.is_net_in_component.html">is_net_in_component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.is_power_gound_net.html">is_power_gound_net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.merge_nets_polygons.html">merge_nets_polygons</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.plot.html">plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.components_by_nets.html">components_by_nets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.db.html">db</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.netlist.html">netlist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.nets.html">nets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.nets_by_components.html">nets_by_components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.power.html">power</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.nets.Nets.signal.html">signal</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="padstacks.html">Padstacks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.html">Padstacks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.html#pyedb.grpc.database.padstacks.Padstacks"><code class="docutils literal notranslate"><span class="pre">Padstacks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.check_and_fix_via_plating.html">check_and_fix_via_plating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.create.html">create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.create_circular_padstack.html">create_circular_padstack</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.create_coax_port.html">create_coax_port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.dbscan.html">dbscan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.delete_padstack_instances.html">delete_padstack_instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.duplicate.html">duplicate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.find_instance_by_id.html">find_instance_by_id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.get_instances.html">get_instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.get_pad_parameters.html">get_pad_parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.get_padstack_instances_id_intersecting_polygon.html">get_padstack_instances_id_intersecting_polygon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.get_padstack_instances_intersecting_bounding_box.html">get_padstack_instances_intersecting_bounding_box</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.get_padstack_instances_rtree_index.html">get_padstack_instances_rtree_index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.get_pin_from_component_and_net.html">get_pin_from_component_and_net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.get_pinlist_from_component_and_net.html">get_pinlist_from_component_and_net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.get_reference_pins.html">get_reference_pins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.get_via_instance_from_net.html">get_via_instance_from_net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.int_to_geometry_type.html">int_to_geometry_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.int_to_pad_type.html">int_to_pad_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.merge_via.html">merge_via</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.merge_via_along_lines.html">merge_via_along_lines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.place.html">place</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.reduce_via_in_bounding_box.html">reduce_via_in_bounding_box</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.remove_pads_from_padstack.html">remove_pads_from_padstack</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.set_all_antipad_value.html">set_all_antipad_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.set_pad_property.html">set_pad_property</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.set_solderball.html">set_solderball</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.db.html">db</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.definitions.html">definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.instances.html">instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.instances_by_name.html">instances_by_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.pad_type.html">pad_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.pingroups.html">pingroups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.pins.html">pins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.padstacks.Padstacks.vias.html">vias</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="siwave.html">Siwave</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.siwave.Siwave.html">Siwave</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.siwave.Siwave.html#pyedb.grpc.database.siwave.Siwave"><code class="docutils literal notranslate"><span class="pre">Siwave</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.siwave.Siwave.add_cpa_analysis.html">add_cpa_analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.siwave.Siwave.add_siwave_dc_analysis.html">add_siwave_dc_analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.siwave.Siwave.add_siwave_syz_analysis.html">add_siwave_syz_analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.siwave.Siwave.create_exec_file.html">create_exec_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.siwave.Siwave.create_impedance_crosstalk_scan.html">create_impedance_crosstalk_scan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.siwave.Siwave.excitations.html">excitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.siwave.Siwave.icepak_component_file.html">icepak_component_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.siwave.Siwave.icepak_use_minimal_comp_defaults.html">icepak_use_minimal_comp_defaults</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.siwave.Siwave.pin_groups.html">pin_groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.siwave.Siwave.probes.html">probes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.siwave.Siwave.sources.html">sources</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="source_excitations.html">Sources excitations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.html">SourceExcitation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.html#pyedb.grpc.database.source_excitations.SourceExcitation"><code class="docutils literal notranslate"><span class="pre">SourceExcitation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.add_port_on_rlc_component.html">add_port_on_rlc_component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.add_rlc_boundary.html">add_rlc_boundary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.check_before_terminal_assignement.html">check_before_terminal_assignement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_bundle_wave_port.html">create_bundle_wave_port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_circuit_port_on_net.html">create_circuit_port_on_net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_circuit_port_on_pin.html">create_circuit_port_on_pin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_circuit_port_on_pin_group.html">create_circuit_port_on_pin_group</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_coax_port.html">create_coax_port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_coax_port_on_component.html">create_coax_port_on_component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source.html">create_current_source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source_on_net.html">create_current_source_on_net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source_on_pin.html">create_current_source_on_pin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source_on_pin_group.html">create_current_source_on_pin_group</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_dc_terminal.html">create_dc_terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_differential_wave_port.html">create_differential_wave_port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_edge_port_horizontal.html">create_edge_port_horizontal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_edge_port_on_polygon.html">create_edge_port_on_polygon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_edge_port_vertical.html">create_edge_port_vertical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_hfss_ports_on_padstack.html">create_hfss_ports_on_padstack</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_lumped_port_on_net.html">create_lumped_port_on_net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_pin_group_terminal.html">create_pin_group_terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_port.html">create_port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_port_between_pin_and_layer.html">create_port_between_pin_and_layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_port_on_component.html">create_port_on_component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_port_on_pins.html">create_port_on_pins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_resistor_on_pin.html">create_resistor_on_pin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_rlc_boundary_on_pins.html">create_rlc_boundary_on_pins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_source_on_component.html">create_source_on_component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_vertical_circuit_port_on_clipped_traces.html">create_vertical_circuit_port_on_clipped_traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_probe.html">create_voltage_probe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_probe_on_pin_group.html">create_voltage_probe_on_pin_group</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source.html">create_voltage_source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source_on_net.html">create_voltage_source_on_net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source_on_pin.html">create_voltage_source_on_pin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source_on_pin_group.html">create_voltage_source_on_pin_group</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.create_wave_port.html">create_wave_port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.get_point_terminal.html">get_point_terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.get_ports_number.html">get_ports_number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.place_voltage_probe.html">place_voltage_probe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.excitations.html">excitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.probes.html">probes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.sources.html">sources</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stackup.html">Stackup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.html">LayerCollection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.html#pyedb.grpc.database.stackup.LayerCollection"><code class="docutils literal notranslate"><span class="pre">LayerCollection</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.add_document_layer.html">add_document_layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.add_layer_above.html">add_layer_above</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.add_layer_below.html">add_layer_below</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.add_layer_bottom.html">add_layer_bottom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.add_layer_top.html">add_layer_top</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.add_layers.html">add_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.add_stackup_layer_at_elevation.html">add_stackup_layer_at_elevation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.add_via_layer.html">add_via_layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.add_zone_to_layer.html">add_zone_to_layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.clone.html">clone</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.create.html">create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.find_by_name.html">find_by_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.get_layers.html">get_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.get_product_property.html">get_product_property</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.get_product_property_ids.html">get_product_property_ids</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.get_top_bottom_stackup_layers.html">get_top_bottom_stackup_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.get_zone_name.html">get_zone_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.import_from_control_file.html">import_from_control_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.insert_zone.html">insert_zone</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.is_valid.html">is_valid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.merge_dielectrics.html">merge_dielectrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.remove_zone.html">remove_zone</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.set_product_property.html">set_product_property</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.set_zone_name.html">set_zone_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.simplify_dielectrics_for_phi.html">simplify_dielectrics_for_phi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.update_layout.html">update_layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.all_layers.html">all_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.dielectric_layers.html">dielectric_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.id.html">id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.is_null.html">is_null</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.layers.html">layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.layers_by_id.html">layers_by_id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.mode.html">mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.msg.html">msg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.non_stackup_layers.html">non_stackup_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.signal_layers.html">signal_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.LayerCollection.zone_ids.html">zone_ids</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.html">Stackup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.html#pyedb.grpc.database.stackup.Stackup"><code class="docutils literal notranslate"><span class="pre">Stackup</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.add_document_layer.html">add_document_layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.add_layer.html">add_layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.add_layer_above.html">add_layer_above</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.add_layer_below.html">add_layer_below</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.add_layer_bottom.html">add_layer_bottom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.add_layer_top.html">add_layer_top</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.add_layers.html">add_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.add_outline_layer.html">add_outline_layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.add_stackup_layer_at_elevation.html">add_stackup_layer_at_elevation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.add_via_layer.html">add_via_layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.add_zone_to_layer.html">add_zone_to_layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.adjust_solder_dielectrics.html">adjust_solder_dielectrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.clone.html">clone</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.create.html">create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.create_symmetric_stackup.html">create_symmetric_stackup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.export.html">export</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.find_by_name.html">find_by_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.flip_design.html">flip_design</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.get_layers.html">get_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.get_layout_thickness.html">get_layout_thickness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.get_product_property.html">get_product_property</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.get_product_property_ids.html">get_product_property_ids</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.get_top_bottom_stackup_layers.html">get_top_bottom_stackup_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.get_zone_name.html">get_zone_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.import_from_control_file.html">import_from_control_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.insert_zone.html">insert_zone</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.is_valid.html">is_valid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.limits.html">limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.load.html">load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.merge_dielectrics.html">merge_dielectrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.place_a3dcomp_3d_placement.html">place_a3dcomp_3d_placement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.place_in_layout.html">place_in_layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.place_in_layout_3d_placement.html">place_in_layout_3d_placement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.place_instance.html">place_instance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.plot.html">plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.remove_layer.html">remove_layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.remove_zone.html">remove_zone</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.residual_copper_area_per_layer.html">residual_copper_area_per_layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.set_product_property.html">set_product_property</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.set_zone_name.html">set_zone_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.simplify_dielectrics_for_phi.html">simplify_dielectrics_for_phi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.update_layout.html">update_layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.all_layers.html">all_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.dielectric_layers.html">dielectric_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.id.html">id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.is_null.html">is_null</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.layers.html">layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.layers_by_id.html">layers_by_id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.mode.html">mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.msg.html">msg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.non_stackup_layers.html">non_stackup_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.num_layers.html">num_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.signal_layers.html">signal_layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.thickness.html">thickness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/pyedb.grpc.database.stackup.Stackup.zone_ids.html">zone_ids</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pyedb_lib/index.html">EDB lib</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyedb_lib/definition/index.html">Definition classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/definition/component_def.html">Component Definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/definition/materials.html">Component Definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/definition/package_def.html">Package Definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/definition/padstack_def.html">Padstack Definition</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyedb_lib/geometry/index.html">Geometry classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/geometry/arc_data.html">Arc Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/geometry/point_3d_data.html">Point 3D data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/geometry/point_data.html">Point Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/geometry/polygon_data.html">Polygon Data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyedb_lib/hierarchy/index.html">Hierarchy classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/hierarchy/component.html">Component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/hierarchy/model.html">Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/hierarchy/netlist_model.html">Netlist Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/hierarchy/pin_pair_model.html">Pin Pair Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/hierarchy/pingroup.html">Pingroup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/hierarchy/s_parameter_model.html">S-Parameter model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/hierarchy/spice_model.html">Spice Model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyedb_lib/layers/index.html">Layers classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/layers/layer.html">Layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/layers/stackup_layer.html">Stackup Layer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyedb_lib/layout/index.html">Layout classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/layout/cell.html">Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/layout/layout.html">Layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/layout/voltage_regulator.html">Voltage Regulator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyedb_lib/net/index.html">Net classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/net/differential_pair.html">Differential Pair</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/net/extended_net.html">Extended net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/net/net.html">Net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/net/net_class.html">Net Class</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyedb_lib/ports/index.html">Port classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/ports/ports.html">Ports</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyedb_lib/primitive/index.html">Primitive classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/primitive/bondwire.html">Bondwire</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/primitive/circle.html">Circle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/primitive/padstack_instance.html">Pad-stack Instance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/primitive/path.html">Path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/primitive/polygon.html">Polygon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/primitive/primitive.html">Primitive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/primitive/rectangle.html">Rectangle</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyedb_lib/simulation_setup/index.html">Simulation setup classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/adaptive_frequency.html">Adaptive frequency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/hfss_advanced_meshing_settings.html">HFSS advanced meshing settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/hfss_advanced_settings.html">HFSS advanced settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/hfss_dcr_settings.html">HFSS dcr settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/hfss_general_settings.html">HFSS general settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/hfss_settings_options.html">HFSS settings options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/hfss_simulation_settings.html">HFSS simulation settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/hfss_simulation_setup.html">HFSS simulation setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/hfss_solver_settings.html">HFSS solver settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/raptor_x_advanced_settings.html">Raptor X advanced settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/raptor_x_general_settings.html">Raptor X general settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/raptor_x_simulation_settings.html">Raptor X simulation settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/raptor_x_simulation_setup.html">Raptor X simulation setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/siwave_dcir_simulation_setup.html">Siwave dcir simulation setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/siwave_simulation_setup.html">Siwave simulation setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/siwave_cpa_simulation_setup.html">Siwave CPA simulation setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/simulation_setup/sweep_data.html">Sweep data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyedb_lib/utility/index.html">Utility classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/utility/heat_sink.html">Heat sink</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/utility/hfss_extent_info.html">HFSS extent info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/utility/layout_statistics.html">Layout statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/utility/rlc.html">Rlc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/utility/sources.html">Source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/utility/xml_control_file.html">XML control file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/utility/value.html">Value</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyedb_lib/terminal/index.html">Terminal classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/terminal/bundle_terminal.html">Bundle terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/terminal/edge_terminal.html">Edge terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/terminal/padstack_instance_terminal.html">Padstack instance terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/terminal/pingroup_terminal.html">Pingroup terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/terminal/point_terminal.html">Point terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/terminal/terminal.html">Terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyedb_lib/utility/index.html">Utility classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/utility/heat_sink.html">Heat sink</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/utility/hfss_extent_info.html">HFSS extent info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/utility/layout_statistics.html">Layout statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/utility/rlc.html">Rlc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/utility/sources.html">Source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/utility/xml_control_file.html">XML control file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyedb_lib/utility/value.html">Value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="None">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/grpc_api/grpc/database/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../_static/search.json";
+</script>
+
+
+<script src="../../../_static/js/search.js"></script>
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2025 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.4.5. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

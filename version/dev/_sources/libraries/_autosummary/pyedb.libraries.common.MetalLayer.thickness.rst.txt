@@ -1,0 +1,6 @@
+thickness
+=========
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoproperty:: MetalLayer.thickness

@@ -1,0 +1,6 @@
+maximum\_power
+==============
+
+.. currentmodule:: pyedb.grpc.database.definition.package_def
+
+.. autoproperty:: PackageDef.maximum_power

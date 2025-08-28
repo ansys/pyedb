@@ -1,0 +1,6 @@
+name
+====
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.sim_setup_info
+
+.. autoproperty:: SimSetupInfo.name

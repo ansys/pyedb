@@ -1,0 +1,6 @@
+sim\_setup\_type
+================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.sim_setup_info
+
+.. autoproperty:: SimSetupInfo.sim_setup_type

@@ -1,0 +1,6 @@
+layers\_by\_id
+==============
+
+.. currentmodule:: pyedb.dotnet.edb_core.stackup
+
+.. autoproperty:: Stackup.layers_by_id

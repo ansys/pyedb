@@ -1,0 +1,6 @@
+reference\_layer
+================
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoproperty:: PinGroupTerminal.reference_layer

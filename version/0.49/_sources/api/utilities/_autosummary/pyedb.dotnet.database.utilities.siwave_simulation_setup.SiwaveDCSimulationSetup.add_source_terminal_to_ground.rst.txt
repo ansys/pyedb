@@ -1,0 +1,6 @@
+add\_source\_terminal\_to\_ground
+=================================
+
+.. currentmodule:: pyedb.dotnet.database.utilities.siwave_simulation_setup
+
+.. automethod:: SiwaveDCSimulationSetup.add_source_terminal_to_ground

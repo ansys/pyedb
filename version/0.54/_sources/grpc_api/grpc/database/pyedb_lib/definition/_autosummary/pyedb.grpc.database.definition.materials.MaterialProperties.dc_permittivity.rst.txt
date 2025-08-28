@@ -1,0 +1,6 @@
+dc\_permittivity
+================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoattribute:: MaterialProperties.dc_permittivity

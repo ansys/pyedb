@@ -1,0 +1,32 @@
+﻿RatRace
+=======
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. autoclass:: RatRace
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      RatRace.create
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      RatRace.circumference
+      RatRace.radius
+   
+   

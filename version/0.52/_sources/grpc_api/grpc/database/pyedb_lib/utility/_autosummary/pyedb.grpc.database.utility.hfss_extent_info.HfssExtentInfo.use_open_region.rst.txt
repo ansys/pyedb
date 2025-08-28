@@ -1,0 +1,6 @@
+use\_open\_region
+=================
+
+.. currentmodule:: pyedb.grpc.database.utility.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.use_open_region

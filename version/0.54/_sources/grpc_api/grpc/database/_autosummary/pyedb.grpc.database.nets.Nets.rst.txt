@@ -1,0 +1,67 @@
+﻿Nets
+====
+
+.. currentmodule:: pyedb.grpc.database.nets
+
+.. autoclass:: Nets
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Nets.classify_nets
+      
+      
+      Nets.delete
+      
+      
+      Nets.eligible_power_nets
+      
+      
+      Nets.find_or_create_net
+      
+      
+      Nets.get_dcconnected_net_list
+      
+      
+      Nets.get_net_by_name
+      
+      
+      Nets.get_powertree
+      
+      
+      Nets.is_net_in_component
+      
+      
+      Nets.is_power_gound_net
+      
+      
+      Nets.merge_nets_polygons
+      
+      
+      Nets.plot
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Nets.components_by_nets
+      Nets.db
+      Nets.netlist
+      Nets.nets
+      Nets.nets_by_components
+      Nets.power
+      Nets.signal
+   
+   

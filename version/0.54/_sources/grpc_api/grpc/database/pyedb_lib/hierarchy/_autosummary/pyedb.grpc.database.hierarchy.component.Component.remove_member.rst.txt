@@ -1,0 +1,6 @@
+remove\_member
+==============
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. automethod:: Component.remove_member

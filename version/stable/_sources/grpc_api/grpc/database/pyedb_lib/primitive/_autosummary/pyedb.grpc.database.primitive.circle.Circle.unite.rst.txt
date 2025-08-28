@@ -1,0 +1,6 @@
+unite
+=====
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. automethod:: Circle.unite

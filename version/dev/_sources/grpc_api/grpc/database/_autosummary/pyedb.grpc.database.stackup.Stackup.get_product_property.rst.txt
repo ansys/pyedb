@@ -1,0 +1,6 @@
+get\_product\_property
+======================
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: Stackup.get_product_property
