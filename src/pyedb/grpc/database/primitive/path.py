@@ -22,8 +22,7 @@
 import math
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.primitive.path import Path as GrpcPath
-from ansys.edb.core.primitive.path import PathCornerType as GrpcPatCornerType
+from ansys.edb.core.primitive.path import Path as GrpcPath, PathCornerType as GrpcPatCornerType
 
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value

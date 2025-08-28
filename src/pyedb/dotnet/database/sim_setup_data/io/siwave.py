@@ -349,7 +349,7 @@ class AdvancedSettings(SettingsBase):
             ``True`` if automatic mesh is used, ``False`` otherwise.
         """
         warnings.warn(
-            "`automatic_mesh` is deprecated." "Use `mesh_automatic` instead.",
+            "`automatic_mesh` is deprecated. Use `mesh_automatic` instead.",
             DeprecationWarning,
         )
         return self.sim_setup_info.simulation_settings.AdvancedSettings.MeshAutoMatic

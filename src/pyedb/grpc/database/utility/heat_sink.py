@@ -27,7 +27,6 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 
 
 class HeatSink:
-
     """Heatsink model description.
 
     Parameters

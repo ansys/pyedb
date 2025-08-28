@@ -66,13 +66,7 @@ class RectangularPatch:
     Build a 5.8 GHz patch on a 0.787 mm Rogers RO4350B substrate:
 
     >>> edb = pyedb.Edb()
-    >>> patch = RectangularPatch(
-    ...     edb_cell=edb,
-    ...     freq="5.8GHz",
-    ...     inset="4.2mm",
-    ...     layer="TOP",
-    ...     bottom_layer="GND"
-    ... )
+    >>> patch = RectangularPatch(edb_cell=edb, freq="5.8GHz", inset="4.2mm", layer="TOP", bottom_layer="GND")
     >>> patch.substrate.er = 3.66
     >>> patch.substrate.tand = 0.0037
     >>> patch.substrate.h = 0.000787
@@ -248,13 +242,7 @@ class CircularPatch:
     Build a 5.8 GHz circular patch on a 0.787 mm Rogers RO4350B substrate:
 
     >>> edb = pyedb.Edb()
-    >>> patch = CircularPatch(
-    ...     edb_cell=edb,
-    ...     freq="5.8GHz",
-    ...     probe_offset="6.4mm",
-    ...     layer="TOP",
-    ...     bottom_layer="GND"
-    ... )
+    >>> patch = CircularPatch(edb_cell=edb, freq="5.8GHz", probe_offset="6.4mm", layer="TOP", bottom_layer="GND")
     >>> patch.substrate.er = 3.66
     >>> patch.substrate.tand = 0.0037
     >>> patch.substrate.h = 0.000787
@@ -425,13 +413,7 @@ class TriangularPatch:
     Build a 5.8 GHz triangular patch on a 0.787 mm Rogers RO4350B substrate:
 
     >>> edb = pyedb.Edb()
-    >>> patch = TriangularPatch(
-    ...     edb_cell=edb,
-    ...     freq="5.8GHz",
-    ...     probe_offset="5.6mm",
-    ...     layer="TOP",
-    ...     bottom_layer="GND"
-    ... )
+    >>> patch = TriangularPatch(edb_cell=edb, freq="5.8GHz", probe_offset="5.6mm", layer="TOP", bottom_layer="GND")
     >>> patch.substrate.er = 3.66
     >>> patch.substrate.tand = 0.0037
     >>> patch.substrate.h = 0.000787

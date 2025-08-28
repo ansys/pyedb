@@ -23,9 +23,11 @@
 import re
 
 from ansys.edb.core.terminal.edge_terminal import EdgeType as GrpcEdgeType
-from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
-from ansys.edb.core.terminal.terminal import Terminal as GrpcTerminal
-from ansys.edb.core.terminal.terminal import TerminalType as GrpcTerminalType
+from ansys.edb.core.terminal.terminal import (
+    BoundaryType as GrpcBoundaryType,
+    Terminal as GrpcTerminal,
+    TerminalType as GrpcTerminalType,
+)
 
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.primitive import Primitive

@@ -37,8 +37,8 @@ class EDBNetsData(NetDotNet):
     >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_net = edb.nets.nets["GND"]
-    >>> edb_net.name # Class Property
-    >>> edb_net.name # EDB Object Property
+    >>> edb_net.name  # Class Property
+    >>> edb_net.name  # EDB Object Property
     """
 
     def __init__(self, raw_net, core_app):
@@ -220,7 +220,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
     >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_extended_net = edb.nets.extended_nets["GND"]
-    >>> edb_extended_net.name # Class Property
+    >>> edb_extended_net.name  # Class Property
     """
 
     def __init__(self, core_app, raw_extended_net=None):

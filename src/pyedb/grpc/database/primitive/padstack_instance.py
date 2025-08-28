@@ -28,8 +28,7 @@ from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
-from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure
-from ansys.edb.core.hierarchy.structure3d import Structure3D as GrpcStructure3D
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure, Structure3D as GrpcStructure3D
 from ansys.edb.core.primitive.padstack_instance import (
     PadstackInstance as GrpcPadstackInstance,
 )
@@ -144,7 +143,7 @@ class PadstackInstance(GrpcPadstackInstance):
             True if success, False otherwise.
         """
         warnings.warn(
-            "`set_backdrill_top` is deprecated. Use `set_back_drill_by_depth` or " "`set_back_drill_by_layer` instead.",
+            "`set_backdrill_top` is deprecated. Use `set_back_drill_by_depth` or `set_back_drill_by_layer` instead.",
             DeprecationWarning,
         )
         if isinstance(drill_depth, str):
@@ -179,8 +178,7 @@ class PadstackInstance(GrpcPadstackInstance):
             True if success, False otherwise.
         """
         warnings.warn(
-            "`set_backdrill_bottom` is deprecated. Use `set_back_drill_by_depth` or "
-            "`set_back_drill_by_layer` instead.",
+            "`set_backdrill_bottom` is deprecated. Use `set_back_drill_by_depth` or `set_back_drill_by_layer` instead.",
             DeprecationWarning,
         )
         if isinstance(drill_depth, str):

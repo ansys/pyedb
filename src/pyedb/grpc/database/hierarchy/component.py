@@ -28,14 +28,13 @@ import warnings
 from ansys.edb.core.definition.component_model import (
     NPortComponentModel as GrpcNPortComponentModel,
 )
-from ansys.edb.core.definition.die_property import DieOrientation as GrpcDieOrientation
-from ansys.edb.core.definition.die_property import DieType as GrpcDieType
+from ansys.edb.core.definition.die_property import DieOrientation as GrpcDieOrientation, DieType as GrpcDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.component_group import (
     ComponentGroup as GrpcComponentGroup,
+    ComponentType as GrpcComponentType,
 )
-from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
 from ansys.edb.core.hierarchy.netlist_model import NetlistModel as GrpcNetlistModel
 from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as GrpcPinPairModel
 from ansys.edb.core.hierarchy.sparameter_model import (
@@ -1102,7 +1101,7 @@ class Component(GrpcComponentGroup):
                 return False
         if not reference_net:
             self._pedb.logger.warning(
-                f"No reference net provided for S parameter file {file_path}, net `GND` is " f"assigned by default"
+                f"No reference net provided for S parameter file {file_path}, net `GND` is assigned by default"
             )
             reference_net = "GND"
         n_port_model = GrpcNPortComponentModel.find_by_name(self.component_def, name)
