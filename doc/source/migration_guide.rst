@@ -13,28 +13,30 @@ Side-by-Side Code Comparison
 
 **Initialization and Setup**
 
-.. code-block:: python
-   :caption: Legacy DotNet (Archived)
+   .. code-block:: python
+      :caption: Legacy DotNet (Archived)
 
-   # This required AEDT to be installed on Windows and Linux
-   from pyedb import Edb
+      # This required AEDT to be installed on Windows and Linux
+      from pyedb import Edb
 
-   # This would start an AEDT process
-   edb = Edb(edbpath=edb_path, version="2025.2", grpc=False)
-   # ... your code ...
-   edb.save()
-   edb.close() # Mandatory to close AEDT
+      # This would start an AEDT process
+      edb = Edb(edbpath=edb_path, version="2025.2", grpc=False)
+      # ... your code ...
+      edb.save()
+      edb.close()  # Mandatory to close AEDT
 
-.. code-block:: python
-   :caption: Modern gRPC (Recommended)
 
-    # This connects to the standalone ansys-edb-core service
-    from pyedb import Edb
 
-    edb = Edb(edbpath=edb_path, version="2025.2", grpc=True):
-    edb.save()
-    edb.close()
-    # Connection closed automatically when edb is closed.
+   .. code-block:: python
+      :caption: Modern gRPC (Recommended)
+
+       # This connects to the standalone ansys-edb-core service
+       from pyedb import Edb
+
+       edb = Edb(edbpath=edb_path, version="2025.2", grpc=True)
+       edb.save()
+       edb.close()
+       # Connection closed automatically when edb is closed.
 
  ..Note:: The RPC server can only run on single Python thread but can open multiple EDB instances.
           However if you close one edb instance, the default behavior is to close the server. Therefore the other EDB
@@ -56,9 +58,7 @@ Most method names and signatures are unchanged. Check the :doc:`api` documentati
    net.name = "DDR0_DQ0_NEW"
 
    rect = edb.modeler.create_rectangle(
-       layer_name="TOP",
-       point1=[0, 0],
-       point2=[10e-3, 5e-3]
+       layer_name="TOP", point1=[0, 0], point2=[10e-3, 5e-3]
    )
 
 Handling Breaking Changes
