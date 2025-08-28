@@ -65,14 +65,14 @@ class SourceExcitation:
     >>> # Create voltage source on component pins
     >>> from pyedb.grpc.database.utility.sources import Source, SourceType
     >>> source = Source(
-    >>> source_type = (SourceType.Vsource,)
-    >>> name = ("V1",)
-    >>> positive_node = (("U1", "VCC"),)
-    >>> negative_node = (("U1", "GND"),)
-    >>> amplitude = ("1V",)
-    >>> phase = ("0deg",)
-    >>> impedance = "50ohm"
-    >>> )
+    ...     source_type=SourceType.Vsource,
+    ...     name="V1",
+    ...     positive_node=("U1", "VCC"),
+    ...     negative_node=("U1", "GND"),
+    ...     amplitude="1V",
+    ...     phase="0deg",
+    ...     impedance="50ohm",
+    ... )
     >>> source_excitations.create_source_on_component([source])
 
     >>> # 2. create_port
@@ -84,21 +84,14 @@ class SourceExcitation:
     >>> # 3. create_port_on_pins
     >>> # Create circuit port between component pins
     >>> port_term = source_excitations.create_port_on_pins(
-    >>> refdes = ("U1",)
-    >>> pins = ("Pin1",)
-    >>> reference_pins = (["GND_Pin1", "GND_Pin2"],)
-    >>> impedance = (50,)
-    >>> port_name = "Port1"
-    >>> )
+    ...     refdes="U1", pins="Pin1", reference_pins=["GND_Pin1", "GND_Pin2"], impedance=50, port_name="Port1"
+    ... )
 
     >>> # 4. create_port_on_component
     >>> # Create coaxial ports on component nets
     >>> source_excitations.create_port_on_component(
-    >>>  component="U1",
-    >>> net_list = (["PCIe_RX0", "PCIe_RX1"],)
-    >>> port_type = (SourceType.CoaxPort,)
-    >>> reference_net = "GND"
-    >>> )
+    ...     component="U1", net_list=["PCIe_RX0", "PCIe_RX1"], port_type=SourceType.CoaxPort, reference_net="GND"
+    ... )
 
     >>> # 5. add_port_on_rlc_component
     >>> # Replace RLC component with circuit port
@@ -152,44 +145,26 @@ class SourceExcitation:
     >>> # 16. create_coax_port_on_component
     >>> # Create coaxial ports on component
     >>> ports = source_excitations.create_coax_port_on_component(
-    >>> (["U1", "U2"],)
-    >>> (["PCIe_RX0", "PCIe_TX0"],)
-    >>> delete_existing_terminal = True
-    >>> )
+    ...     ["U1", "U2"], ["PCIe_RX0", "PCIe_TX0"], delete_existing_terminal=True
+    ... )
 
     >>> # 17. create_differential_wave_port
     >>> # Create differential wave port
     >>> pos_prim = edb.modeler.primitives[0]
     >>> neg_prim = edb.modeler.primitives[1]
     >>> port_name, diff_port = source_excitations.create_differential_wave_port(
-    >>> (
-    ...     pos_prim.id,
-    ...     [0, 0],
+    ...     pos_prim.id, [0, 0], neg_prim.id, [0, 0.2], "DiffPort"
     ... )
-    >>> (
-    ...     neg_prim.id,
-    ...     [0, 0.2],
-    ... )
-    >>> "DiffPort"
-    >>> )
 
     >>> # 18. create_wave_port
     >>> # Create wave port
-    >>> port_name, wave_port = source_excitations.create_wave_port(
-    >>> (
-    ...     pos_prim.id,
-    ...     [0, 0],
-    ... )
-    >>> "WavePort"
-    >>> )
+    >>> port_name, wave_port = source_excitations.create_wave_port(pos_prim.id, [0, 0], "WavePort")
 
     >>> # 19. create_bundle_wave_port
     >>> # Create bundle wave port
     >>> port_name, bundle_port = source_excitations.create_bundle_wave_port(
-    >>> ([pos_prim.id, neg_prim.id],)
-    >>> ([[0, 0], [0, 0.2]],)
-    >>> "BundlePort"
-    >>> )
+    ...     [pos_prim.id, neg_prim.id], [[0, 0], [0, 0.2]], "BundlePort"
+    ... )
 
     >>> # 20. create_dc_terminal
     >>> # Create DC terminal
@@ -202,14 +177,8 @@ class SourceExcitation:
     >>> # 22. place_voltage_probe
     >>> # Place voltage probe between points
     >>> source_excitations.place_voltage_probe(
-    >>> ("Probe1",)
-    >>> (
-    ...     "SignalNet",
-    ...     [0, 0],
-    ...     "TopLayer",
+    ...     "Probe1", "SignalNet", [0, 0], "TopLayer", "GND", [0.1, 0.1], "BottomLayer"
     ... )
-    >>> "GND", [0.1, 0.1], "BottomLayer"
-    >>> )
 
     >>> # Save and close EDB
     >>> edb.save()

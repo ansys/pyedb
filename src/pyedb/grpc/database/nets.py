@@ -95,34 +95,21 @@ class Nets(CommonNets):
     >>> print("Eligible power nets:", [net.name for net in eligible_pwr])
 
     >>> # Generate extended nets (deprecated)
-    >>> nets.generate_extended_nets(
-    >>> resistor_below = (5,)
-    >>>inductor_below=0.5,
-    >>> capacitor_above = 0.1
-    >>> )
+    >>> nets.generate_extended_nets(resistor_below=5, inductor_below=0.5, capacitor_above=0.1)
 
     >>> # Classify nets
-    >>> nets.classify_nets(
-    >>> power_nets = (["VDD_CPU", "VDD_MEM"],)
-    >>> signal_nets = ["PCIe_TX", "ETH_RX"]
-    >>> )
+    >>> nets.classify_nets(power_nets=["VDD_CPU", "VDD_MEM"], signal_nets=["PCIe_TX", "ETH_RX"])
 
     >>> # Check power/ground status
     >>> is_power = nets.is_power_gound_net(["VDD_CPU", "PCIe_TX"])
     >>> print("Is power net:", is_power)
 
     >>> # Get DC-connected nets
-    >>> dc_connected = nets.get_dcconnected_net_list(
-    >>> ground_nets = (["GND"],)
-    >>> res_value = 0.002
-    >>> )
+    >>> dc_connected = nets.get_dcconnected_net_list(ground_nets=["GND"], res_value=0.002)
         print("DC-connected nets:", dc_connected)
 
     >>> # Get power tree
-    >>> comp_list, columns, net_group = nets.get_powertree(
-    >>> power_net_name = ("VDD_CPU",)
-    >>> ground_nets = ["GND"]
-    >>> )
+    >>> comp_list, columns, net_group = nets.get_powertree(power_net_name="VDD_CPU", ground_nets=["GND"])
     >>> print("Power tree components:", comp_list)
 
     >>> # Find net by name
@@ -142,10 +129,7 @@ class Nets(CommonNets):
     >>> print("Net in component:", in_component)
 
     >>> # Find and fix disjoint nets (deprecated)
-    >>> fixed_nets = nets.find_and_fix_disjoint_nets(
-    >>> net_list = (["PCIe_TX"],)
-    >>> clean_disjoints_less_than = 1e-6
-    >>> )
+    >>> fixed_nets = nets.find_and_fix_disjoint_nets(net_list=["PCIe_TX"], clean_disjoints_less_than=1e-6)
     >>> print("Fixed nets:", fixed_nets)
 
     >>> # Merge net polygons

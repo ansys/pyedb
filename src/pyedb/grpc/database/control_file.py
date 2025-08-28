@@ -58,40 +58,26 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
         -------
         # Example 1: Converting a technology file to control file
     >>> converted_file = convert_technology_file(
-    >>> tech_file = ("/path/to/tech.t",)
-    >>> edbversion = ("2025.2",)
-    >>> control_file = "/path/to/output.xml"
-    >>> )
+    ...     tech_file="/path/to/tech.t", edbversion="2025.2", control_file="/path/to/output.xml"
+    ... )
     >>> if converted_file:
     >>> print(f"Converted to: {converted_file}")
 
         # Example 2: Creating a material
     >>> from pyedb import ControlFileMaterial
-    >>> material = ControlFileMaterial(
-    >>> ("Copper",)
-    >>> {"Permittivity": 1.0, "Conductivity": 5.8e7}
-    >>> )
+    >>> material = ControlFileMaterial("Copper", {"Permittivity": 1.0, "Conductivity": 5.8e7})
 
         # Example 3: Creating a dielectric layer
     >>> from pyedb import ControlFileDielectric
-    >>> dielectric = ControlFileDielectric(
-    >>> ("Core",)
-    >>> {"Thickness": "0.2mm", "Material": "FR4"}
-    >>> )
+    >>> dielectric = ControlFileDielectric("Core", {"Thickness": "0.2mm", "Material": "FR4"})
 
         # Example 4: Creating a signal layer
     >>> from pyedb import ControlFileLayer
-    >>> signal_layer = ControlFileLayer(
-    >>> ("TopLayer",)
-    >>> {"Type": "signal", "Material": "Copper", "Thickness": "0.035mm"}
-    >>> )
+    >>> signal_layer = ControlFileLayer("TopLayer", {"Type": "signal", "Material": "Copper", "Thickness": "0.035mm"})
 
         # Example 5: Creating a via layer
     >>> from pyedb import ControlFileVia
-    >>> via_layer = ControlFileVia(
-    >>> ("Via1",)
-    >>> {"StartLayer": "TopLayer", "StopLayer": "BottomLayer"}
-    >>> )
+    >>> via_layer = ControlFileVia("Via1", {"StartLayer": "TopLayer", "StopLayer": "BottomLayer"})
     >>> via_layer.create_via_group = True
     >>> via_layer.tolerance = "0.1mm"
 
@@ -111,11 +97,7 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
 
         # Example 8: Setting up simulation extents
     >>> from pyedb import ControlExtent
-    >>> extent = ControlExtent(
-    >>> type = ("Conforming",)
-    >>> diel_hactor = (0.3,)
-    >>> airbox_hfactor = 0.5
-    >>> )
+    >>> extent = ControlExtent(type="Conforming", diel_hactor=0.3, airbox_hfactor=0.5)
 
         # Example 9: Creating circuit ports
     >>> from pyedb import ControlCircuitPt
@@ -142,26 +124,11 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
 
         # Example 13: Frequency sweep configuration
     >>> from pyedb import ControlFileSweep
-    >>> sweep = ControlFileSweep(
-    >>> (
-    ...     "Sweep1",
-    ...     "1GHz",
-    ...     "10GHz",
-    ...     "0.1GHz",
-    ... )
-    >>> "Interpolating", "LinearStep", True
-    >>> )
+    >>> sweep = ControlFileSweep("Sweep1", "1GHz", "10GHz", "0.1GHz", "Interpolating", "LinearStep", True)
 
         # Example 14: Mesh operation setup
     >>> from pyedb import ControlFileMeshOp
-    >>> mesh_op = ControlFileMeshOp(
-    >>> (
-    ...     "FineMesh",
-    ...     "Region1",
-    ...     "MeshOperationSkinDepth",
-    ... )
-    >>> {"Net1": "TopLayer"}
-    >>> )
+    >>> mesh_op = ControlFileMeshOp("FineMesh", "Region1", "MeshOperationSkinDepth", {"Net1": "TopLayer"})
     >>> mesh_op.skin_depth = "1um"
 
         # Example 15: Simulation setup configuration

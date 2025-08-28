@@ -3765,7 +3765,7 @@ class Edb(EdbInit):
 
         if not void_padstacks:
             self.logger.error(
-                "No padstack instances found inside evaluated voids during model creation for arbitrarywaveports"
+                "No padstack instances found inside evaluated voids during model creation for arbitrary waveports"
             )
             return False
         cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion, restart_rpc_server=True)
