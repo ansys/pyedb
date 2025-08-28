@@ -49,7 +49,6 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.grpc.database.utility.value import Value
-from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 import itertools
 
 
@@ -1555,6 +1554,9 @@ class Modeler(object):
         - New objects are post-fixed with ``_i{row}_j{col}`` to avoid name
           collisions.
         """
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+
+
         # -------------------------------------------------------------- #
         # 1. Input validation
         # -------------------------------------------------------------- #
@@ -1580,11 +1582,8 @@ class Modeler(object):
                     "Outline primitive is not a polygon/rectangle. Provide offset_x / offset_y."
                 )
             bbox = outline.polygon_data.bbox()
-            offset_x = float(bbox[1].x - bbox[0].x)
-            offset_y = float(bbox[1].y - bbox[0].y)
-
-        offset_x = float(offset_x)
-        offset_y = float(offset_y)
+            offset_x = self._pedb.value(bbox[1].x - bbox[0].x)
+            offset_y = self._pedb.value(bbox[1].y - bbox[0].y)
 
         # -------------------------------------------------------------- #
         # 3. Bulk-fetch everything once to avoid N×M round-trips
@@ -1600,13 +1599,13 @@ class Modeler(object):
         # -------------------------------------------------------------- #
         # 4. Replicate by translation
         # -------------------------------------------------------------- #
-        self._pedb.info("Starting array replication (%dx%d)", x_number, y_number)
+        self._pedb.logger.info(f"Starting array replication {x_number}x{y_number}")
         for i, j in itertools.product(range(x_number), range(y_number)):
             if i == 0 and j == 0:
                 continue  # original already exists
             element_name = f"cell_({i}, {j})"
             self._pedb.logger.info(f"Creating array element {element_name}")
-            dx, dy = offset_x * i, offset_y * j
+            dx, dy = self._pedb.value(offset_x * i), self._pedb.value(offset_y * j)
 
             # Primitives and voids
             for prim in primitives:
@@ -1621,7 +1620,7 @@ class Modeler(object):
 
             # Paths
             for path in paths:
-                moved_line = path.center_line.move((dx, dy))
+                moved_line = path.cast().center_line.move((dx, dy))
                 self.create_trace(
                     moved_line,
                     width=path.width,
