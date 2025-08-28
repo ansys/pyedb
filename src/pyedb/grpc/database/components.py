@@ -1074,7 +1074,10 @@ class Components(object):
         if not compdef:
             return False
         new_cmp = GrpcComponentGroup.create(self._active_layout, component_name, compdef.name)
-        hosting_component_location = pins[0].component.transform
+        if hasattr(pins[0], "component") and not pins[0].component.is_null:
+            hosting_component_location = pins[0].component.transform
+        else:
+            hosting_component_location = None
         if not len(pins) == len(compdef.component_pins):
             self._pedb.logger.error(
                 f"Number on pins {len(pins)} does not match component definition number "
@@ -1125,7 +1128,8 @@ class Components(object):
             component_property = new_cmp.component_property
             component_property.model = rlc_model
             new_cmp.component_property = component_property
-        new_cmp.transform = hosting_component_location
+        if hosting_component_location:
+            new_cmp.transform = hosting_component_location
         new_edb_comp = Component(self._pedb, new_cmp)
         self._cmp[new_cmp.name] = new_edb_comp
         return new_edb_comp

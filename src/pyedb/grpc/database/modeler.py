@@ -49,6 +49,8 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.grpc.database.utility.value import Value
+from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+import itertools
 
 
 class Modeler(object):
@@ -81,9 +83,9 @@ class Modeler(object):
         """
         for i in self.primitives:
             if (
-                (isinstance(name, str) and i.aedt_name == name)
-                or (isinstance(name, str) and i.aedt_name == name.replace("__", "_"))
-                or (isinstance(name, int) and i.id == name)
+                    (isinstance(name, str) and i.aedt_name == name)
+                    or (isinstance(name, str) and i.aedt_name == name.replace("__", "_"))
+                    or (isinstance(name, int) and i.id == name)
             ):
                 return i
         self._pedb.logger.error("Primitive not found.")
@@ -343,10 +345,10 @@ class Modeler(object):
         return objinst
 
     def get_primitive_by_layer_and_point(
-        self,
-        point: Optional[List[float]] = None,
-        layer: Optional[Union[str, List[str]]] = None,
-        nets: Optional[Union[str, List[str]]] = None,
+            self,
+            point: Optional[List[float]] = None,
+            layer: Optional[Union[str, List[str]]] = None,
+            nets: Optional[Union[str, List[str]]] = None,
     ) -> List[Primitive]:
         """Get primitive at specified point on layer.
 
@@ -544,14 +546,14 @@ class Modeler(object):
         return True
 
     def _create_path(
-        self,
-        points,
-        layer_name,
-        width=1,
-        net_name="",
-        start_cap_style="Round",
-        end_cap_style="Round",
-        corner_style="Round",
+            self,
+            points,
+            layer_name,
+            width=1,
+            net_name="",
+            start_cap_style="Round",
+            end_cap_style="Round",
+            corner_style="Round",
     ):
         """
         Create a path based on a list of points.
@@ -603,17 +605,20 @@ class Modeler(object):
         else:
             corner_style = GrpcPathCornerType.MITER
         _points = []
-        for pt in points:
-            _pt = []
-            for coord in pt:
-                coord = Value(coord, self._pedb.active_cell)
-                _pt.append(coord)
-            _points.append(_pt)
-        points = _points
-
-        width = Value(width, self._pedb.active_cell)
-
-        polygon_data = GrpcPolygonData(points=[GrpcPointData(i) for i in points])
+        if isinstance(points, list):
+            for pt in points:
+                _pt = []
+                for coord in pt:
+                    coord = Value(coord, self._pedb.active_cell)
+                    _pt.append(coord)
+                _points.append(_pt)
+            points = _points
+            width = Value(width, self._pedb.active_cell)
+            polygon_data = GrpcPolygonData(points=[GrpcPointData(i) for i in points])
+        elif isinstance(points, GrpcPolygonData):
+            polygon_data = points
+        else:
+            raise (TypeError("Points must be a list of points or a PolygonData object."))
         path = Path.create(
             layout=self._active_layout,
             layer=layer_name,
@@ -630,14 +635,14 @@ class Modeler(object):
         return Path(self._pedb, path)
 
     def create_trace(
-        self,
-        path_list: List[List[float]],
-        layer_name: str,
-        width: float = 1,
-        net_name: str = "",
-        start_cap_style: str = "Round",
-        end_cap_style: str = "Round",
-        corner_style: str = "Round",
+            self,
+            path_list: Union[List[List[float]], GrpcPolygonData],
+            layer_name: str,
+            width: float = 1,
+            net_name: str = "",
+            start_cap_style: str = "Round",
+            end_cap_style: str = "Round",
+            corner_style: str = "Round",
     ) -> Optional[Primitive]:
         """Create trace path.
 
@@ -677,11 +682,11 @@ class Modeler(object):
         return primitive
 
     def create_polygon(
-        self,
-        points: Union[List[List[float]], GrpcPolygonData],
-        layer_name: str,
-        voids: Optional[List[Any]] = [],
-        net_name: str = "",
+            self,
+            points: Union[List[List[float]], GrpcPolygonData],
+            layer_name: str,
+            voids: Optional[List[Any]] = [],
+            net_name: str = "",
     ) -> Optional[Primitive]:
         """Create polygon primitive.
 
@@ -733,17 +738,17 @@ class Modeler(object):
         return Polygon(self._pedb, polygon)
 
     def create_rectangle(
-        self,
-        layer_name: str,
-        net_name: str = "",
-        lower_left_point: str = "",
-        upper_right_point: str = "",
-        center_point: str = "",
-        width: Union[str, float] = "",
-        height: Union[str, float] = "",
-        representation_type: str = "lower_left_upper_right",
-        corner_radius: str = "0mm",
-        rotation: str = "0deg",
+            self,
+            layer_name: str,
+            net_name: str = "",
+            lower_left_point: str = "",
+            upper_right_point: str = "",
+            center_point: str = "",
+            width: Union[str, float] = "",
+            height: Union[str, float] = "",
+            representation_type: str = "lower_left_upper_right",
+            corner_radius: str = "0mm",
+            rotation: str = "0deg",
     ) -> Optional[Primitive]:
         """Create rectangle primitive.
 
@@ -823,7 +828,8 @@ class Modeler(object):
         return False
 
     def create_circle(
-        self, layer_name: str, x: Union[float, str], y: Union[float, str], radius: Union[float, str], net_name: str = ""
+            self, layer_name: str, x: Union[float, str], y: Union[float, str], radius: Union[float, str],
+            net_name: str = ""
     ) -> Optional[Primitive]:
         """Create circle primitive.
 
@@ -881,11 +887,11 @@ class Modeler(object):
         return True
 
     def get_primitives(
-        self,
-        net_name: Optional[str] = None,
-        layer_name: Optional[str] = None,
-        prim_type: Optional[str] = None,
-        is_void: bool = False,
+            self,
+            net_name: Optional[str] = None,
+            layer_name: Optional[str] = None,
+            prim_type: Optional[str] = None,
+            is_void: bool = False,
     ) -> List[Primitive]:
         """Get primitives with filtering.
 
@@ -1000,11 +1006,11 @@ class Modeler(object):
             endPoint = [Value(i) for i in endPoint]
             if len(endPoint) == 2:
                 is_parametric = (
-                    is_parametric
-                    or startPoint[0].is_parametric
-                    or startPoint[1].is_parametric
-                    or endPoint[0].is_parametric
-                    or endPoint[1].is_parametric
+                        is_parametric
+                        or startPoint[0].is_parametric
+                        or startPoint[1].is_parametric
+                        or endPoint[0].is_parametric
+                        or endPoint[1].is_parametric
                 )
                 arc = GrpcArcData(
                     GrpcPointData([startPoint[0], startPoint[1]]), GrpcPointData([endPoint[0], endPoint[1]])
@@ -1012,12 +1018,12 @@ class Modeler(object):
                 arcs.append(arc)
             elif len(endPoint) == 3:
                 is_parametric = (
-                    is_parametric
-                    or startPoint[0].is_parametric
-                    or startPoint[1].is_parametric
-                    or endPoint[0].is_parametric
-                    or endPoint[1].is_parametric
-                    or endPoint[2].is_parametric
+                        is_parametric
+                        or startPoint[0].is_parametric
+                        or startPoint[1].is_parametric
+                        or endPoint[0].is_parametric
+                        or endPoint[1].is_parametric
+                        or endPoint[2].is_parametric
                 )
                 arc = GrpcArcData(
                     GrpcPointData([startPoint[0], startPoint[1]]),
@@ -1027,13 +1033,13 @@ class Modeler(object):
                 arcs.append(arc)
             elif len(endPoint) == 5:
                 is_parametric = (
-                    is_parametric
-                    or startPoint[0].is_parametric
-                    or startPoint[1].is_parametric
-                    or endPoint[0].is_parametric
-                    or endPoint[1].is_parametric
-                    or endPoint[3].is_parametric
-                    or endPoint[4].is_parametric
+                        is_parametric
+                        or startPoint[0].is_parametric
+                        or startPoint[1].is_parametric
+                        or endPoint[0].is_parametric
+                        or endPoint[1].is_parametric
+                        or endPoint[3].is_parametric
+                        or endPoint[4].is_parametric
                 )
                 if endPoint[2].is_cw:
                     rotationDirection = GrpcPolygonSenseType.SENSE_CW
@@ -1122,11 +1128,11 @@ class Modeler(object):
         pass
 
     def parametrize_trace_width(
-        self,
-        nets_name: Union[str, List[str]],
-        layers_name: Optional[Union[str, List[str]]] = None,
-        parameter_name: str = "trace_width",
-        variable_value: Optional[Union[float, str]] = None,
+            self,
+            nets_name: Union[str, List[str]],
+            layers_name: Optional[Union[str, List[str]]] = None,
+            parameter_name: str = "trace_width",
+            variable_value: Optional[Union[float, str]] = None,
     ) -> bool:
         """Parametrize trace width.
 
@@ -1170,10 +1176,10 @@ class Modeler(object):
         return True
 
     def unite_polygons_on_layer(
-        self,
-        layer_name: Optional[Union[str, List[str]]] = None,
-        delete_padstack_gemometries: bool = False,
-        net_names_list: Optional[List[str]] = None,
+            self,
+            layer_name: Optional[Union[str, List[str]]] = None,
+            delete_padstack_gemometries: bool = False,
+            net_names_list: Optional[List[str]] = None,
     ) -> bool:
         """Unite polygons on layer.
 
@@ -1272,7 +1278,7 @@ class Modeler(object):
         return True
 
     def get_layout_statistics(
-        self, evaluate_area: bool = False, net_list: Optional[List[str]] = None
+            self, evaluate_area: bool = False, net_list: Optional[List[str]] = None
     ) -> LayoutStatistics:
         """Get layout statistics.
 
@@ -1296,7 +1302,7 @@ class Modeler(object):
         bbox = self._pedb._hfss.get_layout_bounding_box(self._active_layout)
         stat_model._layout_size = round(bbox[2] - bbox[0], 6), round(bbox[3] - bbox[1], 6)
         stat_model.num_discrete_components = (
-            len(self._pedb.components.Others) + len(self._pedb.components.ICs) + len(self._pedb.components.IOs)
+                len(self._pedb.components.Others) + len(self._pedb.components.ICs) + len(self._pedb.components.IOs)
         )
         stat_model.num_inductors = len(self._pedb.components.inductors)
         stat_model.num_resistors = len(self._pedb.components.resistors)
@@ -1325,21 +1331,21 @@ class Modeler(object):
         return stat_model
 
     def create_bondwire(
-        self,
-        definition_name: str,
-        placement_layer: str,
-        width: Union[float, str],
-        material: str,
-        start_layer_name: str,
-        start_x: Union[float, str],
-        start_y: Union[float, str],
-        end_layer_name: str,
-        end_x: Union[float, str],
-        end_y: Union[float, str],
-        net: str,
-        start_cell_instance_name: Optional[str] = None,
-        end_cell_instance_name: Optional[str] = None,
-        bondwire_type: str = "jedec4",
+            self,
+            definition_name: str,
+            placement_layer: str,
+            width: Union[float, str],
+            material: str,
+            start_layer_name: str,
+            start_x: Union[float, str],
+            start_y: Union[float, str],
+            end_layer_name: str,
+            end_x: Union[float, str],
+            end_y: Union[float, str],
+            net: str,
+            start_cell_instance_name: Optional[str] = None,
+            end_cell_instance_name: Optional[str] = None,
+            bondwire_type: str = "jedec4",
     ) -> Optional[Primitive]:
         """Create bondwire.
 
@@ -1431,11 +1437,11 @@ class Modeler(object):
         return Bondwire(self._pedb, bw)
 
     def create_pin_group(
-        self,
-        name: str,
-        pins_by_id: Optional[List[int]] = None,
-        pins_by_aedt_name: Optional[List[str]] = None,
-        pins_by_name: Optional[List[str]] = None,
+            self,
+            name: str,
+            pins_by_id: Optional[List[int]] = None,
+            pins_by_aedt_name: Optional[List[str]] = None,
+            pins_by_name: Optional[List[str]] = None,
     ) -> bool:
         """Create pin group.
 
@@ -1499,3 +1505,171 @@ class Modeler(object):
             if net_obj:
                 obj.net = net_obj[0]
         return self._pedb.siwave.pin_groups[name]
+
+    def create_array_from_unit_cell(
+            self,
+            x_number: int = 2,
+            y_number: int = 2,
+            offset_x: Union[int, float] | None = None,
+            offset_y: Union[int, float] | None = None,
+            unit_cell_name: str | None = None,
+    ) -> bool:
+        """
+        Replicate the active unit-cell in an X×Y rectangular array.
+
+        Parameters
+        ----------
+        x_number : int, default 2
+            Number of copies in the X direction (columns).
+        y_number : int, default 2
+            Number of copies in the Y direction (rows).
+        offset_x : int | float | None, optional
+            Horizontal pitch (center-to-center distance) between copies.
+            If *None*, the bounding-box width of an outline primitive on
+            layer ``"Outline"`` is used instead.
+        offset_y : int | float | None, optional
+            Vertical pitch (center-to-center distance) between copies.
+            If *None*, the bounding-box height of an outline primitive on
+            layer ``"Outline"`` is used instead.
+        unit_cell_name : str | None, optional
+            Reserved for future use; currently ignored.
+
+        Returns
+        -------
+        bool
+            ``True`` on successful completion.
+
+        Raises
+        ------
+        ValueError
+            If ``x_number`` or ``y_number`` is not a positive integer.
+        RuntimeError
+            If no outline is found and *offset_x* / *offset_y* are not supplied,
+            or if the outline primitive is not a polygon/rectangle.
+
+        Notes
+        -----
+        - The original unit-cell (0, 0) is skipped; only translated copies are
+          created.
+        - All polygons, paths, stand-alone vias and components are duplicated.
+        - New objects are post-fixed with ``_i{row}_j{col}`` to avoid name
+          collisions.
+        """
+        # -------------------------------------------------------------- #
+        # 1. Input validation
+        # -------------------------------------------------------------- #
+        if x_number <= 0 or y_number <= 0:
+            raise ValueError("x_number and y_number must be positive integers")
+
+        # -------------------------------------------------------------- #
+        # 2. Resolve step size (auto-detect or use provided)
+        # -------------------------------------------------------------- #
+        if offset_x is None or offset_y is None:
+            self._pedb.logger.info("Auto-detecting outline extents")
+            outline_prims = [
+                p for p in self.primitives
+                if p.layer_name.lower() == "outline"
+            ]
+            if not outline_prims:
+                raise RuntimeError(
+                    "No outline found. Provide offset_x / offset_y or add an 'Outline' layer primitive."
+                )
+            outline = outline_prims[0]
+            if outline.type not in {"polygon", "rectangle"}:
+                raise RuntimeError(
+                    "Outline primitive is not a polygon/rectangle. Provide offset_x / offset_y."
+                )
+            bbox = outline.polygon_data.bbox()
+            offset_x = float(bbox[1].x - bbox[0].x)
+            offset_y = float(bbox[1].y - bbox[0].y)
+
+        offset_x = float(offset_x)
+        offset_y = float(offset_y)
+
+        # -------------------------------------------------------------- #
+        # 3. Bulk-fetch everything once to avoid N×M round-trips
+        # -------------------------------------------------------------- #
+        primitives: List = [
+            p for p in self.primitives
+            if p.type in {"polygon", "rectangle", "circle"}
+        ]
+        paths: List = list(self.paths)
+        vias: List = list(self._pedb.padstacks.vias.values())
+        components: List = list(self._pedb.components.instances.values())
+
+        # -------------------------------------------------------------- #
+        # 4. Replicate by translation
+        # -------------------------------------------------------------- #
+        self._pedb.info("Starting array replication (%dx%d)", x_number, y_number)
+        for i, j in itertools.product(range(x_number), range(y_number)):
+            if i == 0 and j == 0:
+                continue  # original already exists
+            element_name = f"cell_({i}, {j})"
+            self._pedb.logger.info(f"Creating array element {element_name}")
+            dx, dy = offset_x * i, offset_y * j
+
+            # Primitives and voids
+            for prim in primitives:
+                moved_pd = prim.polygon_data.move((dx, dy))
+                new_poly = self.create_polygon(
+                    moved_pd,
+                    layer_name=prim.layer.name,
+                    net_name=prim.net.name,
+                )
+                for void in prim.voids:
+                    new_poly.add_void(void.polygon_data.move((dx, dy)))
+
+            # Paths
+            for path in paths:
+                moved_line = path.center_line.move((dx, dy))
+                self.create_trace(
+                    moved_line,
+                    width=path.width,
+                    layer_name=path.layer.name,
+                    net_name=path.net.name,
+                )
+
+            # Stand-alone vias
+            for via in (v for v in vias if not v.component):
+                pos = via.position
+                PadstackInstance.create(
+                    self._pedb.active_layout,
+                    net=via.net,
+                    name=f"{via.name}_i{i}_j{j}",
+                    padstack_def=self._pedb.padstacks.definitions[via.padstack_definition],
+                    position_x=pos[0] + dx,
+                    position_y=pos[1] + dy,
+                    rotation=0.0,
+                    top_layer=self._pedb.stackup.layers[via.start_layer],
+                    bottom_layer=self._pedb.stackup.layers[via.stop_layer],
+                )
+
+            # Components (and their pins)
+            for comp in components:
+                new_pins = []
+                for pin in comp.pins.values():
+                    pos = pin.position
+                    new_pin = PadstackInstance.create(
+                        self._pedb.active_layout,
+                        net=pin.net,
+                        name=f"{pin.name}_i{i}_j{j}",
+                        padstack_def=self._pedb.padstacks.definitions[pin.padstack_definition],
+                        position_x=pos[0] + dx,
+                        position_y=pos[1] + dy,
+                        rotation=0.0,
+                        top_layer=self._pedb.stackup.layers[pin.start_layer],
+                        bottom_layer=self._pedb.stackup.layers[pin.stop_layer],
+                    )
+                    new_pins.append(new_pin)
+                if new_pins:
+                    new_comp = self._pedb.components.create(
+                        pins=new_pins,
+                        component_name=f"{comp.name}_array_{i}_{j}",
+                        placement_layer=comp.placement_layer,
+                        component_part_name=comp.part_name,
+                    )
+                    if hasattr(comp, "component_property") and comp.component_property:
+                        new_comp.component_property = comp.component_property
+
+        self._pedb.logger.info("Array replication finished successfully")
+        return True
