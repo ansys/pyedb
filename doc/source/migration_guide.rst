@@ -40,7 +40,7 @@ Side-by-Side Code Comparison
 
  ..Note:: The RPC server can only run on single Python thread but can open multiple EDB instances.
           However if you close one edb instance, the default behavior is to close the server. Therefore the other EDB
-          instances is disconnected. To close an EDB instance without closing the server you can use the following code:
+          instances are disconnected. To close an EDB instance without closing the server you can use the following code:
 
 .. code-block:: python
    edb.close(terminate_rpc_session=False)
