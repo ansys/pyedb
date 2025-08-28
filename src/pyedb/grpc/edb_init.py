@@ -31,24 +31,17 @@ import time
 import ansys.edb.core.database as database
 
 from pyedb import __version__
-from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import env_path, env_value, is_linux
+from pyedb.generic.settings import settings
 from pyedb.grpc.rpc_session import RpcSession
-from pyedb.misc.misc import list_installed_ansysem
 
 
 class EdbInit(object):
     """Edb Dot Net Class."""
 
     def __init__(self, edbversion):
-        self.logger = pyedb_logger
+        self.logger = settings.logger
         self._db = None
-        if not edbversion:  # pragma: no cover
-            try:
-                edbversion = "20{}.{}".format(list_installed_ansysem()[0][-3:-1], list_installed_ansysem()[0][-1:])
-                self.logger.info("Edb version " + edbversion)
-            except IndexError:
-                raise Exception("No ANSYSEM_ROOTxxx is found.")
         self.edbversion = edbversion
         self.logger.info("Logger is initialized in EDB.")
         self.logger.info("legacy v%s", __version__)
@@ -79,7 +72,7 @@ class EdbInit(object):
 
     @staticmethod
     def _signal_handler(signum=None, frame=None):
-        RpcSession.kill()
+        RpcSession.kill_all_instances()
 
     @property
     def db(self):

@@ -1,7 +1,6 @@
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.utility.value import Value as GrpcValue
 
-import pyedb.siwave_core.cpa.simulation_setup_data_model
 from pyedb.siwave_core.cpa.simulation_setup_data_model import SIwaveCpaSetup, Vrm
 from pyedb.siwave_core.product_properties import SIwaveProperties
 

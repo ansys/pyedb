@@ -663,7 +663,7 @@ class ViaDesignBackend:
         pitch = self.cfg["general"]["pitch"]
 
         board = Board(
-            stackup=self.cfg["stackup"],
+            stackup=self.cfg["stackup"] if isinstance(self.cfg["stackup"], list) else self.cfg["stackup"]["layers"],
             padstack_defs=self.cfg["padstack_defs"],
             outline_extent=outline_extent,
             pitch=pitch,
@@ -673,9 +673,12 @@ class ViaDesignBackend:
         )
         board.populate_config(cfg_json)
 
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        with open(self.output_dir / "config.json", "w") as f:
+            json.dump(cfg_json, f, indent=4)
         self.app = Edb(
             edbpath=str((Path(self.output_dir) / self.cfg["title"]).with_suffix(".aedb")), edbversion=self.version
         )
         self.app.configuration.load(cfg_json, apply_file=True)
-        self.app.save_edb()
-        self.app.close_edb()
+        self.app.save()
+        self.app.close()

@@ -34,26 +34,26 @@ class Terminal(Connectable):
         self._reference_object = None
 
         self._boundary_type_mapping = {
-            "InvalidBoundary": self._pedb.edb_api.cell.terminal.BoundaryType.InvalidBoundary,
-            "PortBoundary": self._pedb.edb_api.cell.terminal.BoundaryType.PortBoundary,
-            "PecBoundary": self._pedb.edb_api.cell.terminal.BoundaryType.PecBoundary,
-            "RlcBoundary": self._pedb.edb_api.cell.terminal.BoundaryType.RlcBoundary,
-            "kCurrentSource": self._pedb.edb_api.cell.terminal.BoundaryType.kCurrentSource,
-            "kVoltageSource": self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageSource,
-            "kNexximGround": self._pedb.edb_api.cell.terminal.BoundaryType.kNexximGround,
-            "kNexximPort": self._pedb.edb_api.cell.terminal.BoundaryType.kNexximPort,
-            "kDcTerminal": self._pedb.edb_api.cell.terminal.BoundaryType.kDcTerminal,
-            "kVoltageProbe": self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageProbe,
+            "InvalidBoundary": self._pedb.core.Cell.Terminal.BoundaryType.InvalidBoundary,
+            "PortBoundary": self._pedb.core.Cell.Terminal.BoundaryType.PortBoundary,
+            "PecBoundary": self._pedb.core.Cell.Terminal.BoundaryType.PecBoundary,
+            "RlcBoundary": self._pedb.core.Cell.Terminal.BoundaryType.RlcBoundary,
+            "kCurrentSource": self._pedb.core.Cell.Terminal.BoundaryType.kCurrentSource,
+            "kVoltageSource": self._pedb.core.Cell.Terminal.BoundaryType.kVoltageSource,
+            "kNexximGround": self._pedb.core.Cell.Terminal.BoundaryType.kNexximGround,
+            "kNexximPort": self._pedb.core.Cell.Terminal.BoundaryType.kNexximPort,
+            "kDcTerminal": self._pedb.core.Cell.Terminal.BoundaryType.kDcTerminal,
+            "kVoltageProbe": self._pedb.core.Cell.Terminal.BoundaryType.kVoltageProbe,
         }
 
         self._terminal_type_mapping = {
-            "InvalidTerminal": self._pedb.edb_api.cell.terminal.TerminalType.InvalidTerminal,
-            "EdgeTerminal": self._pedb.edb_api.cell.terminal.TerminalType.EdgeTerminal,
-            "PointTerminal": self._pedb.edb_api.cell.terminal.TerminalType.PointTerminal,
-            "TerminalInstanceTerminal": self._pedb.edb_api.cell.terminal.TerminalType.TerminalInstanceTerminal,
-            "PadstackInstanceTerminal": self._pedb.edb_api.cell.terminal.TerminalType.PadstackInstanceTerminal,
-            "BundleTerminal": self._pedb.edb_api.cell.terminal.TerminalType.BundleTerminal,
-            "PinGroupTerminal": self._pedb.edb_api.cell.terminal.TerminalType.PinGroupTerminal,
+            "InvalidTerminal": self._pedb.core.Cell.Terminal.TerminalType.InvalidTerminal,
+            "EdgeTerminal": self._pedb.core.Cell.Terminal.TerminalType.EdgeTerminal,
+            "PointTerminal": self._pedb.core.Cell.Terminal.TerminalType.PointTerminal,
+            "TerminalInstanceTerminal": self._pedb.core.Cell.Terminal.TerminalType.TerminalInstanceTerminal,
+            "PadstackInstanceTerminal": self._pedb.core.Cell.Terminal.TerminalType.PadstackInstanceTerminal,
+            "BundleTerminal": self._pedb.core.Cell.Terminal.TerminalType.BundleTerminal,
+            "PinGroupTerminal": self._pedb.core.Cell.Terminal.TerminalType.PinGroupTerminal,
         }
 
     @property
@@ -240,10 +240,10 @@ class Terminal(Connectable):
         if not self._reference_object:
             term = self._edb_object
 
-            if self.terminal_type == self._pedb.edb_api.cell.terminal.TerminalType.EdgeTerminal:
+            if self.terminal_type == self._pedb.core.Cell.Terminal.TerminalType.EdgeTerminal:
                 edges = self._edb_object.GetEdges()
                 edgeType = edges[0].GetEdgeType()
-                if edgeType == self._pedb.edb_api.cell.terminal.EdgeType.PadEdge:
+                if edgeType == self._pedb.core.Cell.Terminal.EdgeType.PadEdge:
                     self._reference_object = self.get_pad_edge_terminal_reference_pin()
                 else:
                     self._reference_object = self.get_edge_terminal_reference_primitive()
@@ -304,16 +304,14 @@ class Terminal(Connectable):
         """
 
         refTerm = self._edb_object.GetReferenceTerminal()
-        if self._edb_object.GetTerminalType() == self._pedb.edb_api.cell.terminal.TerminalType.PinGroupTerminal:
+        if self._edb_object.GetTerminalType() == self._pedb.core.Cell.Terminal.TerminalType.PinGroupTerminal:
             padStackInstance = self._edb_object.GetPinGroup().GetPins()[0]
             pingroup = refTerm.GetPinGroup()
             refPinList = pingroup.GetPins()
             return self._get_closest_pin(padStackInstance, refPinList, gnd_net_name_preference)
-        elif (
-            self._edb_object.GetTerminalType() == self._pedb.edb_api.cell.terminal.TerminalType.PadstackInstanceTerminal
-        ):
+        elif self._edb_object.GetTerminalType() == self._pedb.core.Cell.Terminal.TerminalType.PadstackInstanceTerminal:
             _, padStackInstance, _ = self._edb_object.GetParameters()
-            if refTerm.GetTerminalType() == self._pedb.edb_api.cell.terminal.TerminalType.PinGroupTerminal:
+            if refTerm.GetTerminalType() == self._pedb.core.Cell.Terminal.TerminalType.PinGroupTerminal:
                 pingroup = refTerm.GetPinGroup()
                 refPinList = pingroup.GetPins()
                 return self._get_closest_pin(padStackInstance, refPinList, gnd_net_name_preference)
@@ -339,7 +337,7 @@ class Terminal(Connectable):
         _, _, point_data = edges[0].GetParameters()
         X = point_data.X
         Y = point_data.Y
-        shape_pd = self._pedb.edb_api.geometry.point_data(X, Y)
+        shape_pd = self._pedb.core.geometry.point_data(X, Y)
         layer_name = ref_layer.GetName()
         for primitive in self._pedb.layout.primitives:
             if primitive.GetLayer().GetName() == layer_name or not layer_name:
@@ -361,7 +359,7 @@ class Terminal(Connectable):
         _, point_data, layer = ref_term.GetParameters()
         X = point_data.X
         Y = point_data.Y
-        shape_pd = self._pedb.edb_api.geometry.point_data(X, Y)
+        shape_pd = self._pedb.core.geometry.point_data(X, Y)
         layer_name = layer.GetName()
         for primitive in self._pedb.layout.primitives:
             if primitive.GetLayer().GetName() == layer_name:
@@ -436,7 +434,7 @@ class Terminal(Connectable):
 
     @magnitude.setter
     def magnitude(self, value):
-        self._edb_object.SetSourceAmplitude(self._edb.utility.value(value))
+        self._edb_object.SetSourceAmplitude(self._edb.Utility.Value(value))
 
     @property
     def phase(self):
@@ -445,4 +443,4 @@ class Terminal(Connectable):
 
     @phase.setter
     def phase(self, value):
-        self._edb_object.SetSourcePhase(self._edb.utility.value(value))
+        self._edb_object.SetSourcePhase(self._edb.Utility.Value(value))

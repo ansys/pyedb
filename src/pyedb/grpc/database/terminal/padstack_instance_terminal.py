@@ -25,7 +25,8 @@ from ansys.edb.core.terminal.padstack_instance_terminal import (
 )
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
-from pyedb.misc.misc import deprecated_property
+from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated_property
 
 
 class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
@@ -37,6 +38,16 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         self._pedb = pedb
 
     @property
+    def boundary_type(self) -> str:
+        """Boundary type.
+
+        Returns
+        -------
+        str : boundary type.
+        """
+        return super().boundary_type.name.lower()
+
+    @property
     def position(self) -> list[float]:
         """Terminal position.
 
@@ -45,7 +56,7 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         Position [x,y] : [float, float]
         """
         pos_x, pos_y, rotation = self.padstack_instance.get_position_and_rotation()
-        return [pos_x.value, pos_y.value]
+        return [Value(pos_x), Value(pos_y)]
 
     @property
     def padstack_instance(self) -> any:
@@ -69,7 +80,7 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         """
         p_inst, _ = self.params
         pos_x, pos_y, _ = p_inst.get_position_and_rotation()
-        return [pos_x.value, pos_y.value]
+        return [Value(pos_x), Value(pos_y)]
 
     @property
     def net_name(self) -> str:
@@ -141,7 +152,7 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         -------
         float : phase value.
         """
-        return super().source_phase.value
+        return Value(super().source_phase)
 
     @source_phase.setter
     def source_phase(self, value):
@@ -155,7 +166,7 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         -------
         float : impedance value.
         """
-        return super().impedance.value
+        return Value(super().impedance)
 
     @impedance.setter
     def impedance(self, value):

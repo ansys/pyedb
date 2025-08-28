@@ -51,7 +51,7 @@ class HFSSGeneralSettings(GrpcHFSSGeneralSettings):
     @adaptive_solution_type.setter
     def adaptive_solution_type(self, value):
         if isinstance(value, str):
-            if value.lower() == "singlw":
+            if value.lower() == "single":
                 self.adaptive_solution_type = GrpcAdaptType.SINGLE
             elif value.lower() == "multi_frequencies":
                 self.adaptive_solution_type = GrpcAdaptType.MULTI_FREQUENCIES

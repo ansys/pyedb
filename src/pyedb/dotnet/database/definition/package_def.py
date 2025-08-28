@@ -23,7 +23,6 @@ import warnings
 
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.dotnet.database.utilities.obj_base import ObjBase
-from pyedb.edb_logger import pyedb_logger
 
 
 class PackageDef(ObjBase):
@@ -62,7 +61,7 @@ class PackageDef(ObjBase):
         edb_object: object
             EDB PackageDef Object
         """
-        edb_object = self._pedb.edb_api.definition.PackageDef.Create(self._pedb.active_db, name)
+        edb_object = self._pedb.core.Definition.PackageDef.Create(self._pedb.active_db, name)
         if component_part_name:
             x_pt1, y_pt1, x_pt2, y_pt2 = list(
                 self._pedb.components.definitions[component_part_name].components.values()
@@ -73,7 +72,7 @@ class PackageDef(ObjBase):
         else:
             bbox = extent_bounding_box
         if bbox is None:
-            pyedb_logger.warning(
+            self._pedb.logger.warning(
                 "Package creation uses bounding box but it cannot be inferred. "
                 "Please set argument 'component_part_name' or 'extent_bounding_box'."
             )

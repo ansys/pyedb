@@ -589,7 +589,7 @@ class Siwave(object):
                     f.write('ExportTouchstone "{}"\n'.format(touchstone_file_path))
             f.write("SaveSiw\n")
 
-        return True if os.path.exists(file_name) else False
+        return file_name
 
     def add_cpa_analysis(self, name=None, siwave_cpa_setup_class=None):
         if not name:

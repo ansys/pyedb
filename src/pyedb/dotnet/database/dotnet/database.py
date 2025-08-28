@@ -21,22 +21,9 @@
 # SOFTWARE.
 
 """Database."""
-import os
 import re
-import sys
-import warnings
 
-from pyedb import __version__
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import (
-    env_path,
-    env_path_student,
-    env_value,
-    is_linux,
-    settings,
-)
-from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
-from pyedb.misc.misc import list_installed_ansysem
 
 
 class HierarchyDotNet:
@@ -53,8 +40,8 @@ class HierarchyDotNet:
 
     def __init__(self, app):
         self._app = app
-        self.edb_api = self._app._edb
-        self._hierarchy = self.edb_api.Cell.Hierarchy
+        self.core = self._app._edb
+        self._hierarchy = self.core.Cell.Hierarchy
 
     @property
     def api_class(self):  # pragma: no cover
@@ -91,8 +78,8 @@ class PolygonDataDotNet:  # pragma: no cover
 
     def __init__(self, pedb, api_object=None):
         self._pedb = pedb
-        self.dotnetobj = pedb.edb_api.geometry.api_class.PolygonData
-        self.edb_api = api_object
+        self.dotnetobj = pedb.core.Geometry.PolygonData
+        self.core = api_object
         self._edb_object = api_object
 
     @property
@@ -103,7 +90,7 @@ class PolygonDataDotNet:  # pragma: no cover
     @property
     def arcs(self):  # pragma: no cover
         """List of Edb.Geometry.ArcData."""
-        return list(self.edb_api.GetArcData())
+        return list(self.core.GetArcData())
 
     def add_point(self, x, y, incremental=False):
         """Add a point at the end of the point list of the polygon.
@@ -129,7 +116,7 @@ class PolygonDataDotNet:  # pragma: no cover
             last_point = self.get_points()[-1]
             x = "({})+({})".format(x, last_point[0].ToString())
             y = "({})+({})".format(y, last_point[1].ToString())
-        return self.edb_api.AddPoint(GeometryDotNet(self._pedb).point_data(x, y))
+        return self.core.AddPoint(GeometryDotNet(self._pedb).point_data(x, y))
 
     def get_bbox_of_boxes(self, points):
         """Get the EDB .NET API ``Edb.Geometry.GetBBoxOfBoxes`` database.
@@ -162,9 +149,7 @@ class PolygonDataDotNet:  # pragma: no cover
         from pyedb.dotnet.clr_module import Tuple
 
         if isinstance(points, (tuple, list)):
-            points = Tuple[self._pedb.edb_api.Geometry.PointData, self._pedb.edb_api.Geometry.PointData](
-                points[0], points[1]
-            )
+            points = Tuple[self._pedb.core.Geometry.PointData, self._pedb.core.Geometry.PointData](points[0], points[1])
         return self.dotnetobj.CreateFromBBox(points)
 
     def create_from_arcs(self, arcs, flag):
@@ -212,7 +197,7 @@ class NetDotNet:
     def __init__(self, app, net_obj=None):
         self.net = app._edb.Cell.Net
 
-        self.edb_api = app._edb
+        self.core = app._edb
         self._app = app
         self.net_obj = net_obj
 
@@ -283,7 +268,7 @@ class NetClassDotNet:
     def __init__(self, app, api_object=None):
         self.cell_net_class = app._edb.Cell.NetClass
         self.api_object = api_object
-        self.edb_api = app._edb
+        self.core = app._edb
         self._app = app
 
     @property
@@ -319,7 +304,7 @@ class NetClassDotNet:
         object
         """
         if self.api_object:
-            edb_api_net = self.edb_api.Cell.Net.FindByName(self._app.active_layout, name)
+            edb_api_net = self.core.Cell.Net.FindByName(self._app.active_layout, name)
             return self.api_object.AddNet(edb_api_net)
 
     def delete(self):  # pragma: no cover
@@ -379,8 +364,8 @@ class DifferentialPairDotNet(NetClassDotNet):
         return DifferentialPairDotNet(self._app, self.cell_diff_pair.Create(self._app.active_layout, name))
 
     def _api_set_differential_pair(self, net_name_p, net_name_n):
-        edb_api_net_p = self.edb_api.Cell.Net.FindByName(self._app.active_layout, net_name_p)
-        edb_api_net_n = self.edb_api.Cell.Net.FindByName(self._app.active_layout, net_name_n)
+        edb_api_net_p = self.core.Cell.Net.FindByName(self._app.active_layout, net_name_p)
+        edb_api_net_n = self.core.Cell.Net.FindByName(self._app.active_layout, net_name_n)
         self.api_object.SetDifferentialPair(edb_api_net_p, edb_api_net_n)
 
     @property
@@ -416,8 +401,8 @@ class CellClassDotNet:
 
     def __init__(self, app, active_cell=None):
         self._app = app
-        self.edb_api = app._edb
-        self._cell = self.edb_api.Cell
+        self.core = app._edb
+        self._cell = self.core.Cell
         self._active_cell = active_cell
 
     @property
@@ -519,7 +504,7 @@ class UtilityDotNet:
     def __init__(self, app):
         self._app = app
         self.utility = app._edb.Utility
-        self.edb_api = app._edb
+        self.core = app._edb
         self.active_db = app._db
         self.active_cell = app._active_cell
 
@@ -567,7 +552,7 @@ class GeometryDotNet:
     def __init__(self, app):
         self._app = app
         self.geometry = self._app._edb.Geometry
-        self.edb_api = self._app._edb
+        self.core = self._app._edb
 
     @property
     def api_class(self):
@@ -648,29 +633,24 @@ class CellDotNet:
             return super().__getattribute__(key)
         except AttributeError:
             try:
-                return getattr(self.edb_api, key)
+                return getattr(self.core, key)
             except AttributeError:
                 raise AttributeError("Attribute not present")
 
     def __init__(self, app):
         self._app = app
-        self.edb_api = app._edb
-
-    @property
-    def api_class(self):
-        """Return Ansys.Ansoft.Edb class object."""
-        return self.edb_api
+        self.core = app._edb
 
     @property
     def definition(self):
         """Edb Dotnet Api Definition."""
 
-        return self.edb_api.Definition
+        return self.core.Definition
 
     @property
     def database(self):
         """Edb Dotnet Api Database."""
-        return self.edb_api.Database
+        return self.core.Database
 
     @property
     def cell(self):
@@ -701,189 +681,18 @@ class CellDotNet:
         return GeometryDotNet(self._app)
 
 
-class EdbDotNet(object):
-    """Edb Dot Net Class."""
-
-    def __init__(self, edbversion, student_version=False):
-        if not edbversion:  # pragma: no cover
-            try:
-                edbversion = "20{}.{}".format(list_installed_ansysem()[0][-3:-1], list_installed_ansysem()[0][-1:])
-                self._logger.info("Edb version " + edbversion)
-            except IndexError:
-                raise Exception("No ANSYSEM_ROOTxxx is found.")
-        self.edbversion = edbversion
-        if float(self.edbversion) >= 2025.2:
-            warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
-        self.student_version = student_version
-        """Initialize DLLs."""
-        from pyedb.dotnet.clr_module import _clr, edb_initialized
-
-        if not settings.use_pyaedt_log:
-            if settings.enable_screen_logs:
-                self._logger.enable_stdout_log()
-            else:  # pragma: no cover
-                self._logger.disable_stdout_log()
-        if not edb_initialized:  # pragma: no cover
-            self._logger.error("Failed to initialize Dlls.")
-            return
-        self._logger.info("Logger is initialized in EDB.")
-        self._logger.info("legacy v%s", __version__)
-        self._logger.info("Python version %s", sys.version)
-        if is_linux:  # pragma: no cover
-            if env_value(self.edbversion) in os.environ or settings.edb_dll_path:
-                if settings.edb_dll_path:
-                    self.base_path = settings.edb_dll_path
-                else:
-                    self.base_path = env_path(self.edbversion)
-                sys.path.append(self.base_path)
-            else:
-                main = sys.modules["__main__"]
-                if "oDesktop" in dir(main):
-                    self.base_path = main.oDesktop.GetExeDir()
-                    sys.path.append(main.oDesktop.GetExeDir())
-                    os.environ[env_value(self.edbversion)] = self.base_path
-                else:
-                    edb_path = os.getenv("PYAEDT_SERVER_AEDT_PATH")
-                    if edb_path:
-                        self.base_path = edb_path
-                        sys.path.append(edb_path)
-                        os.environ[env_value(self.edbversion)] = self.base_path
-
-            _clr.AddReference("Ansys.Ansoft.Edb")
-            _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
-            _clr.AddReference("Ansys.Ansoft.SimSetupData")
-        else:
-            if settings.edb_dll_path:
-                self.base_path = settings.edb_dll_path
-            elif self.student_version:
-                self.base_path = env_path_student(self.edbversion)
-            else:
-                self.base_path = env_path(self.edbversion)
-            sys.path.append(self.base_path)
-            _clr.AddReference("Ansys.Ansoft.Edb")
-            _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
-            _clr.AddReference("Ansys.Ansoft.SimSetupData")
-        os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = self.base_path
-        oaDirectory = os.path.join(self.base_path, "common", "oa")
-        os.environ["ANSYS_OADIR"] = oaDirectory
-        os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
-        edb = __import__("Ansys.Ansoft.Edb")
-        self._edb = edb.Ansoft.Edb
-        edbbuilder = __import__("Ansys.Ansoft.EdbBuilderUtils")
-        self.edbutils = edbbuilder.Ansoft.EdbBuilderUtils
-        self.simSetup = __import__("Ansys.Ansoft.SimSetupData")
-        self.simsetupdata = self.simSetup.Ansoft.SimSetupData.Data
-
-    @property
-    def student_version(self):
-        """Set the student version flag."""
-        return self._student_version
-
-    @student_version.setter
-    def student_version(self, value):
-        self._student_version = value
-
-    @property
-    def logger(self):
-        """Logger for EDB.
-
-        Returns
-        -------
-        :class:`pyedb.edb_logger.EDBLogger`
-        """
-        return self._logger
-
-    @property
-    def edb_api(self):
-        """Edb Dotnet Api class.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.dotnet.database.CellDotNet`
-        """
-        return CellDotNet(self)
+class Database:
+    """Class representing a database object."""
 
     @property
     def database(self):
         """Edb Dotnet Api Database."""
-        return self.edb_api.database
+        return self.core.database
 
     @property
     def definition(self):
         """Edb Dotnet Api Database `Edb.Definition`."""
-        return self.edb_api.Definition
-
-
-class Database(EdbDotNet):
-    """Class representing a database object."""
-
-    def __init__(self, edbversion, student_version=False):
-        """Initialize a new Database."""
-        EdbDotNet.__init__(self, edbversion=edbversion, student_version=student_version)
-        self._db = None
-
-    @property
-    def api_class(self):
-        """Return Ansys.Ansoft.Edb class object."""
-        return self._edb
-
-    @property
-    def api_object(self):
-        """Return Ansys.Ansoft.Edb object."""
-        return self._db
-
-    @property
-    def db(self):
-        """Active database object."""
-        return self._db
-
-    def run_as_standalone(self, flag):
-        """Set if Edb is run as standalone or embedded in AEDT.
-
-        Parameters
-        ----------
-        flag : bool
-            Whether if Edb is run as standalone or embedded in AEDT.
-        """
-        self.edb_api.database.SetRunAsStandAlone(flag)
-
-    def create(self, db_path):
-        """Create a Database at the specified file location.
-
-        Parameters
-        ----------
-        db_path : str
-            Path to top-level database folder
-
-        Returns
-        -------
-        Database
-        """
-        self._db = self.edb_api.database.Create(db_path)
-        return self._db
-
-    def open(self, db_path, read_only):
-        """Open an existing Database at the specified file location.
-
-        Parameters
-        ----------
-        db_path : str
-            Path to top-level Database folder.
-        read_only : bool
-            Obtain read-only access.
-
-        Returns
-        -------
-        Database or None
-            The opened Database object, or None if not found.
-        """
-        self._db = self.edb_api.database.Open(
-            db_path,
-            read_only,
-        )
-        if self._db.IsNull():
-            raise AttributeError(f"Failed to open edb file {db_path}")
-        return self._db
+        return self.core.Definition
 
     def delete(self, db_path):
         """Delete a database at the specified file location.
@@ -893,7 +702,7 @@ class Database(EdbDotNet):
         db_path : str
             Path to top-level database folder.
         """
-        return self.edb_api.database.Delete(db_path)
+        return self.core.database.Delete(db_path)
 
     def save(self):
         """Save any changes into a file."""
@@ -972,7 +781,7 @@ class Database(EdbDotNet):
         Database
             The Database or Null on failure.
         """
-        self.edb_api.database.FindById(db_id)
+        self.core.database.FindById(db_id)
 
     def save_as(self, path, version=""):
         """Save this Database to a new location and older EDB version.
@@ -1232,5 +1041,5 @@ class Database(EdbDotNet):
         from pyedb.dotnet.clr_module import Convert
 
         hdl = Convert.ToUInt64(hdb)
-        self._db = self.edb_api.database.Attach(hdl)
+        self._db = self.core.database.Attach(hdl)
         return self._db

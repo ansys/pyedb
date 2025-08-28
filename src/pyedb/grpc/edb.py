@@ -65,7 +65,7 @@ import sys
 import tempfile
 import time
 import traceback
-from typing import Union
+from typing import Dict, List, Union
 import warnings
 from zipfile import ZipFile as zpf
 
@@ -99,8 +99,7 @@ from pyedb.grpc.database.layout_validation import LayoutValidation
 from pyedb.grpc.database.modeler import Modeler
 from pyedb.grpc.database.net.differential_pair import DifferentialPairs
 from pyedb.grpc.database.net.extended_net import ExtendedNets
-from pyedb.grpc.database.net.net_class import NetClass
-from pyedb.grpc.database.nets import Nets
+from pyedb.grpc.database.nets import NetClasses, Nets
 from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.ports.ports import BundleWavePort, CoaxPort, GapPort, WavePort
 from pyedb.grpc.database.primitive.circle import Circle
@@ -131,10 +130,13 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
 )
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.constants import get_terminal_supported_boundary_types
+from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
+
+os.environ["no_proxy"] = "localhost,127.0.0.1"
 
 
 class Edb(EdbInit):
@@ -202,13 +204,11 @@ class Edb(EdbInit):
         edbversion: str = None,
         isaedtowned: bool = False,
         oproject=None,
-        student_version: bool = False,
         use_ppe: bool = False,
         control_file: str = None,
         map_file: str = None,
         technology_file: str = None,
         layer_filter: str = None,
-        remove_existing_aedt: bool = False,
         restart_rpc_server=False,
     ):
         edbversion = get_string_version(edbversion)
@@ -291,13 +291,13 @@ class Edb(EdbInit):
                 return False
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
-            self.open_edb(restart_rpc_server=restart_rpc_server)
+            self.open(restart_rpc_server=restart_rpc_server)
         elif not os.path.exists(os.path.join(self.edbpath, "edb.def")):
-            self.create_edb(restart_rpc_server=restart_rpc_server)
+            self.create(restart_rpc_server=restart_rpc_server)
             self.logger.info("EDB %s created correctly.", self.edbpath)
         elif ".aedb" in edbpath:
             self.edbpath = edbpath
-            self.open_edb(restart_rpc_server=restart_rpc_server)
+            self.open(restart_rpc_server=restart_rpc_server)
         if self.active_cell:
             self.logger.info("EDB initialized.")
         else:
@@ -366,6 +366,11 @@ class Edb(EdbInit):
         if description:  # Add the variable description if a two-item list is passed for variable_value.
             self.__getitem__(variable_name).description = description
 
+    @property
+    def core(self) -> ansys.edb.core:
+        """Ansys Edb Core module."""
+        return ansys.edb.core
+
     def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         files = [aedt_file, aedt_file + ".lock"]
@@ -397,8 +402,16 @@ class Edb(EdbInit):
         self._differential_pairs = DifferentialPairs(self)
         self._extended_nets = ExtendedNets(self)
 
+    def value(self, val) -> float:
+        """Convert a value into a pyedb value."""
+        if isinstance(val, GrpcValue):
+            return Value(val)
+        else:
+            context = self.active_cell if not str(val).startswith("$") else self.active_db
+            return Value(GrpcValue(val, context), context)
+
     @property
-    def cell_names(self) -> [str]:
+    def cell_names(self) -> List[str]:
         """List of all cell names in the database.
 
         Returns
@@ -409,7 +422,7 @@ class Edb(EdbInit):
         return [cell.name for cell in self.active_db.top_circuit_cells]
 
     @property
-    def design_variables(self) -> dict[str, float]:
+    def design_variables(self) -> Dict[str, float]:
         """All design variables in active cell.
 
         Returns
@@ -417,10 +430,10 @@ class Edb(EdbInit):
         dict[str, float]
             Variable names and values.
         """
-        return {i: self.active_cell.get_variable_value(i).value for i in self.active_cell.get_all_variable_names()}
+        return {i: Value(self.active_cell.get_variable_value(i)) for i in self.active_cell.get_all_variable_names()}
 
     @property
-    def project_variables(self) -> dict[str, float]:
+    def project_variables(self) -> Dict[str, float]:
         """All project variables in database.
 
         Returns
@@ -428,7 +441,7 @@ class Edb(EdbInit):
         dict[str, float]
             Variable names and values.
         """
-        return {i: self.active_db.get_variable_value(i).value for i in self.active_db.get_all_variable_names()}
+        return {i: Value(self.active_db.get_variable_value(i)) for i in self.active_db.get_all_variable_names()}
 
     @property
     def layout_validation(self) -> LayoutValidation:
@@ -442,7 +455,7 @@ class Edb(EdbInit):
         return LayoutValidation(self)
 
     @property
-    def variables(self) -> dict[str, float]:
+    def variables(self) -> Dict[str, float]:
         """All variables (project + design) in database.
 
         Returns
@@ -458,7 +471,7 @@ class Edb(EdbInit):
         return all_vars
 
     @property
-    def terminals(self) -> dict[str, Terminal]:
+    def terminals(self) -> Dict[str, Terminal]:
         """Terminals in active layout.
 
         Returns
@@ -469,7 +482,7 @@ class Edb(EdbInit):
         return {i.name: i for i in self.layout.terminals}
 
     @property
-    def excitations(self) -> dict[str, GapPort]:
+    def excitations(self) -> Dict[str, GapPort]:
         """All layout excitations.
 
         Returns
@@ -487,7 +500,7 @@ class Edb(EdbInit):
         return temp
 
     @property
-    def ports(self) -> dict[str, GapPort]:
+    def ports(self) -> Dict[str, GapPort]:
         """All ports in design.
 
         Returns
@@ -520,7 +533,7 @@ class Edb(EdbInit):
         return ports
 
     @property
-    def excitations_nets(self) -> [str]:
+    def excitations_nets(self) -> List[str]:
         """Nets with excitations defined.
 
         Returns
@@ -531,7 +544,7 @@ class Edb(EdbInit):
         return list(set([i.net.name for i in self.layout.terminals if not i.is_reference_terminal]))
 
     @property
-    def sources(self) -> dict[str, Terminal]:
+    def sources(self) -> Dict[str, Terminal]:
         """All layout sources.
 
         Returns
@@ -539,7 +552,11 @@ class Edb(EdbInit):
         dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Source names and objects.
         """
-        return self.terminals
+        return {
+            k: i
+            for k, i in self.terminals.items()
+            if "source" in i.boundary_type or "terminal" in i.boundary_type or i.is_reference_terminal
+        }
 
     @property
     def voltage_regulator_modules(self):
@@ -557,7 +574,7 @@ class Edb(EdbInit):
         return _vrms
 
     @property
-    def probes(self) -> dict[str, Terminal]:
+    def probes(self) -> Dict[str, Terminal]:
         """All layout probes.
 
         Returns
@@ -565,7 +582,7 @@ class Edb(EdbInit):
         dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Probe names and objects.
         """
-        terms = [term for term in self.layout.terminals if term.boundary_type.value == 8]
+        terms = [term for term in self.layout.terminals if term.boundary_type == "voltage_probe"]
         return {ter.name: ter for ter in terms}
 
     def open(self, restart_rpc_server=False) -> bool:
@@ -924,6 +941,7 @@ class Edb(EdbInit):
         ValueError
             If cell not found in database.
         """
+        self._layout = None
         if isinstance(value, str):
             _cell = [cell for cell in self.circuit_cells if cell.name == value]
             if _cell:
@@ -1043,16 +1061,16 @@ class Edb(EdbInit):
         return self._nets
 
     @property
-    def net_classes(self) -> NetClass:
+    def net_classes(self) -> NetClasses:
         """Net class management.
 
         Returns
         -------
-        dict[str, :class:`NetClass <pyedb.grpc.database.net.net_class.NetClass>`]
-            Net class names and objects.
+        :class:`NetClass <pyedb.grpc.database.nets.NetClasses>`
+            Net classes objects.
         """
         if self.active_db:
-            return {net.name: NetClass(self, net) for net in self.active_layout.net_classes}
+            return NetClasses(self)
 
     @property
     def extended_nets(self) -> ExtendedNets:
@@ -1102,7 +1120,10 @@ class Edb(EdbInit):
         :class:`Layout <pyedb.grpc.database.layout.layout.Layout>`
             Layout manipulation tools.
         """
-        return Layout(self)
+        if self._layout:
+            return self._layout
+        self._layout = Layout(self)
+        return self._layout
 
     @property
     def active_layout(self) -> Layout:
@@ -1285,7 +1306,7 @@ class Edb(EdbInit):
         func : str
             Command to execute.
         """
-        # return self.edb_api.utility.utility.Command.Execute(func)
+        # return self.core.utility.utility.Command.Execute(func)
         pass
 
     def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False) -> bool:
@@ -1384,7 +1405,7 @@ class Edb(EdbInit):
             print(command)
             temp_inputGDS = inputGDS.split(".gds")[0]
             self.edbpath = temp_inputGDS + ".aedb"
-            return self.open_edb()
+            return self.open()
 
     def _create_extent(
         self,
@@ -1403,6 +1424,7 @@ class Edb(EdbInit):
 
         if extent_type in [
             "Conforming",
+            "Conformal",
             GrpcExtentType.CONFORMING,
             1,
         ]:
@@ -1504,13 +1526,26 @@ class Edb(EdbInit):
             unite_polys = []
             for i in _polys:
                 if "PolygonData" not in str(i):
-                    obj_data = i.polygon_data.expand(expansion_size, tolerance, round_corner, round_extension)
+                    obj_data = i.polygon_data.expand(
+                        expansion_size,
+                        round_corner,
+                        round_extension,
+                        tolerance,
+                    )
                 else:
-                    obj_data = i.expand(expansion_size, tolerance, round_corner, round_extension)
+                    obj_data = i.expand(
+                        expansion_size,
+                        round_corner,
+                        round_extension,
+                        tolerance,
+                    )
                 if inlcude_voids_in_extents and "PolygonData" not in str(i) and i.has_voids and obj_data:
                     for void in i.voids:
                         void_data = void.polygon_data.expand(
-                            -1 * expansion_size, tolerance, round_corner, round_extension
+                            -1 * expansion_size,
+                            round_corner,
+                            round_extension,
+                            tolerance,
                         )
                         if void_data:
                             for v in list(void_data):
@@ -1559,7 +1594,7 @@ class Edb(EdbInit):
         for term in terms:
             if term.type == "PointTerminal" and term.net.name in reference_list:
                 pd = term.get_parameters()[1]
-                locations.append([pd.x.value, pd.y.value])
+                locations.append([Value(pd.x), Value(pd.y)])
         for point in locations:
             pointA = GrpcPointData([point[0] - expansion_size, point[1] - expansion_size])
             pointB = GrpcPointData([point[0] + expansion_size, point[1] + expansion_size])
@@ -1827,7 +1862,7 @@ class Edb(EdbInit):
         include_pingroups=True,
         inlcude_voids_in_extents=False,
     ):
-        expansion_size = GrpcValue(expansion_size).value
+        expansion_size = Value(expansion_size)
 
         # validate nets in layout
         net_signals = [net for net in self.layout.nets if net.name in signal_list]
@@ -1910,7 +1945,7 @@ class Edb(EdbInit):
                 self.components.delete_single_pin_rlc()
                 self.logger.info_timer("Single Pins components deleted")
                 self.components.refresh_components()
-        return [[pt.x.value, pt.y.value] for pt in _poly.without_arcs().points]
+        return [[Value(pt.x), Value(pt.y)] for pt in _poly.without_arcs().points]
 
     def _create_cutout_multithread(
         self,
@@ -1939,7 +1974,7 @@ class Edb(EdbInit):
         if output_aedb_path:
             self.save_edb_as(output_aedb_path)
         self.logger.info("Cutout Multithread started.")
-        expansion_size = GrpcValue(expansion_size).value
+        expansion_size = Value(expansion_size)
 
         timer_start = self.logger.reset_timer()
         if custom_extent:
@@ -1975,25 +2010,32 @@ class Edb(EdbInit):
                 if isinstance(term, PadstackInstanceTerminal):
                     if term.net.name in reference_list:
                         pins_to_preserve.append(term.edb_uid)
+        delete_list = []
 
         for i in self.nets.nets.values():
             name = i.name
             if name not in all_list and name not in nets_to_preserve:
-                i.delete()
+                delete_list.append(i)
+                # i.delete()
+        for i in delete_list:
+            i.delete()
         reference_pinsts = []
         reference_prims = []
         reference_paths = []
+        delete_list = []
         for i in self.padstacks.instances.values():
             net_name = i.net_name
             id = i.id
             if net_name not in all_list and id not in pins_to_preserve:
-                i.delete()
+                delete_list.append(i)
+                # i.delete()
             elif net_name in reference_list and id not in pins_to_preserve:
                 reference_pinsts.append(i)
         for i in self.modeler.primitives:
             if not i.is_null and not i.net.is_null:
                 if i.net.name not in all_list:
-                    i.delete()
+                    # i.delete()
+                    delete_list.append(i)
                 elif i.net.name in reference_list and not i.is_void:
                     if keep_lines_as_path and isinstance(i, Path):
                         reference_paths.append(i)
@@ -2001,7 +2043,8 @@ class Edb(EdbInit):
                         reference_prims.append(i)
         self.logger.info_timer("Net clean up")
         self.logger.reset_timer()
-
+        for i in delete_list:
+            i.delete()
         if custom_extent and isinstance(custom_extent, list):
             if custom_extent[0] != custom_extent[-1]:
                 custom_extent.append(custom_extent[0])
@@ -2033,7 +2076,7 @@ class Edb(EdbInit):
                 ExtentType as GrpcExtentType,
             )
 
-            if extent_type in ["Conforming", GrpcExtentType.CONFORMING, 1]:
+            if extent_type in ["Conformal", "Conforming", GrpcExtentType.CONFORMING, 1]:
                 if extent_defeature > 0:
                     _poly = _poly.defeature(extent_defeature)
                 _poly1 = GrpcPolygonData(arcs=_poly.arc_data, closed=True)
@@ -2156,7 +2199,7 @@ class Edb(EdbInit):
             self.save_edb()
         self.logger.info_timer("Cutout completed.", timer_start)
         self.logger.reset_timer()
-        return [[pt.x.value, pt.y.value] for pt in _poly.without_arcs().points]
+        return [[Value(pt.x), Value(pt.y)] for pt in _poly.without_arcs().points]
 
     def get_conformal_polygon_from_netlist(self, netlist=None) -> Union[bool, Polygon]:
         """Returns conformal polygon data based on a netlist.
@@ -2282,7 +2325,7 @@ class Edb(EdbInit):
             for p in p_missing:
                 position = GrpcPointData(p.position)
                 net = self.nets.find_or_create_net(p.net_name)
-                rotation = GrpcValue(p.rotation)
+                rotation = Value(p.rotation)
                 sign_layers = list(self.stackup.signal_layers.keys())
                 if not p.start_layer:  # pragma: no cover
                     fromlayer = self.stackup.signal_layers[sign_layers[0]]
@@ -2374,7 +2417,7 @@ class Edb(EdbInit):
                         self.logger.warning("aedb def file manually created.")
                     except:
                         pass
-        return [[pt.x.value, pt.y.value] for pt in polygon_data.without_arcs().points]
+        return [[Value(pt.x), Value(pt.y)] for pt in polygon_data.without_arcs().points]
 
     @staticmethod
     def write_export3d_option_config_file(path_to_output, config_dictionaries=None):
@@ -2447,7 +2490,7 @@ class Edb(EdbInit):
         >>> # Export to HFSS project:
         >>> edb.export_hfss(r"C:/output", net_list=["SignalNet"])
         """
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self.edbpath)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
 
     def export_q3d(
@@ -2549,7 +2592,7 @@ class Edb(EdbInit):
         >>> # Solve with SIwave:
         >>> edb.solve_siwave()
         """
-        process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
+        process = SiwaveSolve(self.edbpath)
         try:
             self.close()
         except:
@@ -2666,6 +2709,30 @@ class Edb(EdbInit):
         self.logger.info(f"Variable {variable_name} doesn't exists.")
         return False
 
+    def get_variable_value(self, variable_name):
+        """
+        Deprecated method to get the value of a variable.
+
+        .. deprecated:: pyedb 0.55.0
+           Use :func:`get_variable` instead.
+        """
+        warnings.warn(
+            "`get_variable_value` is deprecated use `get_variable` instead.",
+            DeprecationWarning,
+        )
+        return self.get_variable(variable_name)
+
+    def get_all_variable_names(self) -> List[str]:
+        """Method added for compatibility with grpc.
+
+        Returns
+        -------
+        List[str]
+            List of variable names.
+
+        """
+        return list(self.active_cell.get_all_variable_names())
+
     def add_project_variable(self, variable_name, variable_value, description=None) -> bool:
         """Add project variable.
 
@@ -2736,11 +2803,11 @@ class Edb(EdbInit):
         """
         if self.variable_exists(variable_name):
             if variable_name in self.db.get_all_variable_names():
-                self.db.set_variable_value(variable_name, GrpcValue(variable_value))
+                self.db.set_variable_value(variable_name, Value(variable_value))
             elif variable_name in self.active_cell.get_all_variable_names():
-                self.active_cell.set_variable_value(variable_name, GrpcValue(variable_value))
+                self.active_cell.set_variable_value(variable_name, Value(variable_value))
 
-    def get_bounding_box(self) -> list[list[float, float], list[float, float]]:
+    def get_bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         """Get layout bounding box.
 
         Returns
@@ -2750,7 +2817,7 @@ class Edb(EdbInit):
         """
         lay_inst_polygon_data = [obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()]
         layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
-        return [[layout_bbox[0].x.value, layout_bbox[0].y.value], [layout_bbox[1].x.value, layout_bbox[1].y.value]]
+        return ((Value(layout_bbox[0].x), Value(layout_bbox[0].y)), (Value(layout_bbox[1].x), Value(layout_bbox[1].y)))
 
     def get_statistics(self, compute_area=False):
         """Get layout statistics.
@@ -3437,7 +3504,7 @@ class Edb(EdbInit):
                 _layers = {k: v for k, v in self.stackup.layers.items() if k in layer_filter}
             for layer_name, layer in _layers.items():
                 var, val = _apply_variable(f"${layer_name}", layer.thickness)
-                layer.thickness = GrpcValue(var, self.active_db)
+                layer.thickness = Value(var, self.active_db)
                 parameters.append(val)
         if materials:
             if not material_filter:
@@ -3447,14 +3514,14 @@ class Edb(EdbInit):
             for mat_name, material in _materials.items():
                 if not material.conductivity or material.conductivity < 1e4:
                     var, val = _apply_variable(f"$epsr_{mat_name}", material.permittivity)
-                    material.permittivity = GrpcValue(var, self.active_db)
+                    material.permittivity = Value(var, self.active_db)
                     parameters.append(val)
                     var, val = _apply_variable(f"$loss_tangent_{mat_name}", material.dielectric_loss_tangent)
-                    material.dielectric_loss_tangent = GrpcValue(var, self.active_db)
+                    material.dielectric_loss_tangent = Value(var, self.active_db)
                     parameters.append(val)
                 else:
                     var, val = _apply_variable(f"$sigma_{mat_name}", material.conductivity)
-                    material.conductivity = GrpcValue(var, self.active_db)
+                    material.conductivity = Value(var, self.active_db)
                     parameters.append(val)
         if traces:
             if not trace_net_filter:
@@ -3470,7 +3537,7 @@ class Edb(EdbInit):
                 else:
                     trace_width_variable = f"{path.aedt_name}"
                 var, val = _apply_variable(trace_width_variable, path.width)
-                path.width = GrpcValue(var, self.active_cell)
+                path.width = Value(var, self.active_cell)
                 parameters.append(val)
         if not padstack_definition_filter:
             if trace_net_filter:
@@ -3497,7 +3564,7 @@ class Edb(EdbInit):
                         hole_variable = f"${def_name}_hole_diameter"
                     if padstack_def.hole_diameter:
                         var, val = _apply_variable(hole_variable, padstack_def.hole_diameter)
-                        padstack_def.hole_properties = GrpcValue(var, self.active_db)
+                        padstack_def.hole_properties = Value(var, self.active_db)
                         parameters.append(val)
             if pads:
                 for layer, pad in padstack_def.pad_by_layer.items():
@@ -3712,7 +3779,7 @@ class Edb(EdbInit):
             material="pec",
         )
         if launching_box_thickness:
-            launching_box_thickness = str(GrpcValue(launching_box_thickness))
+            launching_box_thickness = str(Value(launching_box_thickness))
         cloned_edb.stackup.add_layer(
             layer_name="ref",
             layer_type="signal",
@@ -3747,7 +3814,7 @@ class Edb(EdbInit):
                         .parameters_values
                     )
                 else:
-                    pad_diameter = GrpcValue(terminal_diameter).value
+                    pad_diameter = Value(terminal_diameter)
                 _temp_circle = cloned_edb.modeler.create_circle(
                     layer_name="ports",
                     x=inst.position[0],

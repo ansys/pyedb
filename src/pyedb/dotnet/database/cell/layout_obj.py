@@ -38,7 +38,7 @@ class LayoutObj(ObjBase):
         -------
         Ansys.Ansoft.Edb
         """
-        return self._pedb.edb_api
+        return self._pedb.core
 
     @property
     def _layout_obj_instance(self):
@@ -48,12 +48,12 @@ class LayoutObj(ObjBase):
 
     @property
     def _edb_properties(self):
-        p = self._edb_object.GetProductSolverOption(self._edb.edb_api.ProductId.Designer, "HFSS")
+        p = self._edb_object.GetProductSolverOption(self._edb.ProductId.Designer, "HFSS")
         return p
 
     @_edb_properties.setter
     def _edb_properties(self, value):
-        self._edb_object.SetProductSolverOption(self._edb.edb_api.ProductId.Designer, "HFSS", value)
+        self._edb_object.SetProductSolverOption(self._edb.ProductId.Designer, "HFSS", value)
 
     @property
     def _obj_type(self):

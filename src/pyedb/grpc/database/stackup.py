@@ -50,11 +50,11 @@ from ansys.edb.core.layer.layer_collection import LayerCollection as GrpcLayerCo
 from ansys.edb.core.layer.layer_collection import LayerTypeSet as GrpcLayerTypeSet
 from ansys.edb.core.layer.stackup_layer import StackupLayer as GrpcStackupLayer
 from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
+from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 
 colors = None
@@ -131,10 +131,10 @@ class LayerCollection(GrpcLayerCollection):
         >>> top_layer = edb.stackup.add_layer_top("NewTopLayer", layer_type="signal", thickness="0.1mm",
         ... material="copper")
         """
-        thickness = GrpcValue(0.0)
+        thickness = Value(0.0)
         if "thickness" in kwargs:
-            thickness = GrpcValue(kwargs["thickness"])
-        elevation = GrpcValue(0.0)
+            thickness = Value(kwargs["thickness"])
+        elevation = Value(0.0)
         _layer_type = GrpcLayerType.SIGNAL_LAYER
         if layer_type.lower() == "dielectric":
             _layer_type = GrpcLayerType.DIELECTRIC_LAYER
@@ -170,11 +170,11 @@ class LayerCollection(GrpcLayerCollection):
         >>> bot_layer = edb.stackup.add_layer_bottom("NewBottomLayer", layer_type="signal", thickness="0.1mm",
         ... material="copper")
         """
-        thickness = GrpcValue(0.0)
+        thickness = Value(0.0)
         layer_type_map = {"dielectric": GrpcLayerType.DIELECTRIC_LAYER, "signal": GrpcLayerType.SIGNAL_LAYER}
         if "thickness" in kwargs:
-            thickness = GrpcValue(kwargs["thickness"])
-        elevation = GrpcValue(0.0)
+            thickness = Value(kwargs["thickness"])
+        elevation = Value(0.0)
         if "type" in kwargs:
             _layer_type = layer_type_map[kwargs["type"]]
         else:
@@ -219,10 +219,10 @@ class LayerCollection(GrpcLayerCollection):
         >>> edb = Edb()
         >>> new_layer = edb.stackup.add_layer_below("NewLayer", "TopLayer", layer_type="dielectric", thickness="0.05mm")
         """
-        thickness = GrpcValue(0.0)
+        thickness = Value(0.0)
         if "thickness" in kwargs:
-            thickness = GrpcValue(kwargs["thickness"])
-        elevation = GrpcValue(0.0)
+            thickness = Value(kwargs["thickness"])
+        elevation = Value(0.0)
         if "type" in kwargs:
             _l_map = {"signal": GrpcLayerType.SIGNAL_LAYER, "dielectric": GrpcLayerType.DIELECTRIC_LAYER}
             _layer_type = _l_map[kwargs["type"]]
@@ -268,10 +268,10 @@ class LayerCollection(GrpcLayerCollection):
         >>> edb = Edb()
         >>> new_layer = edb.stackup.add_layer_above("NewLayer", "BottomLayer", layer_type="signal", thickness="0.05mm")
         """
-        thickness = GrpcValue(0.0)
+        thickness = Value(0.0)
         if "thickness" in kwargs:
-            thickness = GrpcValue(kwargs["thickness"])
-        elevation = GrpcValue(0.0)
+            thickness = Value(kwargs["thickness"])
+        elevation = Value(0.0)
         _layer_type = GrpcLayerType.SIGNAL_LAYER
         if layer_type.lower() == "dielectric":
             _layer_type = GrpcLayerType.DIELECTRIC_LAYER
@@ -527,13 +527,12 @@ class Stackup(LayerCollection):
     def create_symmetric_stackup(
         self,
         layer_count: int,
-        diel_material: str = "FR4_epoxy",
-        cond_material: str = "copper",
-        diel_thickness: Union[str, float] = "0.2mm",
-        cond_thickness: Union[str, float] = "0.035mm",
+        inner_layer_thickness: str = "17um",
+        outer_layer_thickness: str = "50um",
+        dielectric_thickness: str = "100um",
+        dielectric_material: str = "FR4_epoxy",
         soldermask: bool = True,
-        sm_material: str = "SolderMask",
-        sm_thickness: Union[str, float] = "0.05mm",
+        soldermask_thickness: str = "20um",
     ) -> bool:
         """Create a symmetric stackup.
 
@@ -754,12 +753,12 @@ class Stackup(LayerCollection):
         else:
             _layer_type = GrpcLayerType.DIELECTRIC_LAYER
             material = "FR4_epoxy"
-        thickness = GrpcValue(thickness, self._pedb.active_db)
+        thickness = Value(thickness, self._pedb.active_db)
         layer = StackupLayer.create(
             name=layer_name,
             layer_type=_layer_type,
             thickness=thickness,
-            elevation=GrpcValue(0),
+            elevation=Value(0),
             material=material,
         )
         return layer
@@ -916,7 +915,7 @@ class Stackup(LayerCollection):
             new_layer.negative = is_negative
             l1 = len(self.layers)
             if method == "add_at_elevation" and elevation:
-                new_layer.lower_elevation = GrpcValue(elevation)
+                new_layer.lower_elevation = Value(elevation)
             if etch_factor:
                 new_layer.etch_factor = etch_factor
             if enable_roughness:
@@ -1136,8 +1135,8 @@ class Stackup(LayerCollection):
             max_elevation = 0.0
             for layer in lc.get_layers(GrpcLayerTypeSet.STACKUP_LAYER_SET):
                 if "RadBox" not in layer.name:  # Ignore RadBox
-                    lower_elevation = layer.clone().lower_elevation.value * 1.0e6
-                    upper_elevation = layer.Clone().upper_elevation.value * 1.0e6
+                    lower_elevation = Value(layer.clone().lower_elevation) * 1.0e6
+                    upper_elevation = Value(layer.Clone().upper_elevation) * 1.0e6
                     max_elevation = max([max_elevation, lower_elevation, upper_elevation])
 
             non_stackup_layers = []
@@ -1147,9 +1146,9 @@ class Stackup(LayerCollection):
                     non_stackup_layers.append(cloned_layer)
                     continue
                 if "RadBox" not in cloned_layer.name and not cloned_layer.is_via_layer:
-                    upper_elevation = cloned_layer.upper_elevation.value * 1.0e6
+                    upper_elevation = Value(cloned_layer.upper_elevation) * 1.0e6
                     updated_lower_el = max_elevation - upper_elevation
-                    val = GrpcValue(f"{updated_lower_el}um")
+                    val = Value(f"{updated_lower_el}um")
                     cloned_layer.lower_elevation = val
                     if cloned_layer.top_bottom_association == GrpcTopBottomAssociation.TOP_ASSOCIATED:
                         cloned_layer.top_bottom_association = GrpcTopBottomAssociation.BOTTOM_ASSOCIATED
@@ -1247,7 +1246,7 @@ class Stackup(LayerCollection):
                 comp_prop = val.component_property
                 port_property = comp_prop.port_property
                 port_property.reference_size_auto = False
-                port_property.reference_size = (GrpcValue(0.0), GrpcValue(0.0))
+                port_property.reference_size = (Value(0.0), Value(0.0))
                 comp_prop.port_property = port_property
                 val.component_property = comp_prop
 
@@ -1351,12 +1350,12 @@ class Stackup(LayerCollection):
         elif flipped_stackup:
             self.flip_design()
         edb_cell = edb.active_cell
-        _angle = GrpcValue(angle * math.pi / 180.0)
-        _offset_x = GrpcValue(offset_x)
-        _offset_y = GrpcValue(offset_y)
+        _angle = Value(angle * math.pi / 180.0)
+        _offset_x = Value(offset_x)
+        _offset_y = Value(offset_y)
 
         if edb_cell.name not in self._pedb.cell_names:
-            list_cells = self._pedb.copy_cells([edb_cell.api_object])
+            list_cells = self._pedb.copy_cells([edb_cell])
             edb_cell = list_cells[0]
         self._pedb.layout.cell.is_blackbox = True
         cell_inst2 = GrpcCellInstance.create(
@@ -1449,13 +1448,13 @@ class Stackup(LayerCollection):
                     solder_height = max(lay_solder_height, solder_height)
                     self._remove_solder_pec(lay.name)
 
-        rotation = GrpcValue(0.0)
+        rotation = Value(0.0)
         if flipped_stackup:
-            rotation = GrpcValue(math.pi)
+            rotation = Value(math.pi)
 
         edb_cell = edb.active_cell
-        _offset_x = GrpcValue(offset_x)
-        _offset_y = GrpcValue(offset_y)
+        _offset_x = Value(offset_x)
+        _offset_y = Value(offset_y)
 
         if edb_cell.name not in self._pedb.cell_names:
             list_cells = self._pedb.copy_cells(edb_cell)
@@ -1491,10 +1490,10 @@ class Stackup(LayerCollection):
             elevation = target_bottom_elevation - source_stack_top_elevation
             solder_height = -solder_height
 
-        h_stackup = GrpcValue(elevation + solder_height)
+        h_stackup = Value(elevation + solder_height)
 
-        zero_data = GrpcValue(0.0)
-        one_data = GrpcValue(1.0)
+        zero_data = Value(0.0)
+        one_data = Value(1.0)
         point3d_t = GrpcPoint3DData(_offset_x, _offset_y, h_stackup)
         point_loc = GrpcPoint3DData(zero_data, zero_data, zero_data)
         point_from = GrpcPoint3DData(one_data, zero_data, zero_data)
@@ -1575,8 +1574,8 @@ class Stackup(LayerCollection):
                     solder_height = max(lay_solder_height, solder_height)
                     component_edb.stackup._remove_solder_pec(lay.name)
         edb_cell = component_edb.active_cell
-        _offset_x = GrpcValue(offset_x)
-        _offset_y = GrpcValue(offset_y)
+        _offset_x = Value(offset_x)
+        _offset_y = Value(offset_y)
 
         if edb_cell.name not in self._pedb.cell_names:
             list_cells = self._pedb.copy_cells(edb_cell)
@@ -1586,12 +1585,12 @@ class Stackup(LayerCollection):
                 edb_cell = cell
         # Keep Cell Independent
         edb_cell.is_black_box = True
-        rotation = GrpcValue(0.0)
+        rotation = Value(0.0)
         if flipped_stackup:
-            rotation = GrpcValue(math.pi)
+            rotation = Value(math.pi)
 
-        _offset_x = GrpcValue(offset_x)
-        _offset_y = GrpcValue(offset_y)
+        _offset_x = Value(offset_x)
+        _offset_y = Value(offset_y)
 
         instance_name = generate_unique_name(edb_cell.name, n=2)
 
@@ -1625,8 +1624,8 @@ class Stackup(LayerCollection):
 
         h_stackup = elevation + solder_height
 
-        zero_data = GrpcValue(0.0)
-        one_data = GrpcValue(1.0)
+        zero_data = Value(0.0)
+        one_data = Value(1.0)
         point3d_t = GrpcPoint3DData(_offset_x, _offset_y, h_stackup)
         point_loc = GrpcPoint3DData(zero_data, zero_data, zero_data)
         point_from = GrpcPoint3DData(one_data, zero_data, zero_data)
@@ -1691,13 +1690,13 @@ class Stackup(LayerCollection):
         res = stackup_target.get_top_bottom_stackup_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
         target_top_elevation = res[1]
         target_bottom_elevation = res[3]
-        flip_angle = GrpcValue("0deg")
+        flip_angle = Value("0deg")
         if place_on_top:
             elevation = target_top_elevation + offset_z
         else:
-            flip_angle = GrpcValue("180deg")
+            flip_angle = Value("180deg")
             elevation = target_bottom_elevation - offset_z
-        h_stackup = GrpcValue(elevation)
+        h_stackup = Value(elevation)
         location = GrpcPoint3DData(offset_x, offset_y, h_stackup)
         mcad_model = GrpcMcadModel.create_3d_comp(layout=self._pedb.active_layout, filename=a3dcomp_path)
         if mcad_model.is_null:  # pragma: no cover
@@ -1710,7 +1709,7 @@ class Stackup(LayerCollection):
 
         mcad_model.cell_instance.placement_3d = True
         transform_rotation = mcad_model.cell_instance.transform3d.create_from_axis_and_angle(
-            axis=rotation_axis_from, angle=flip_angle.value
+            axis=rotation_axis_from, angle=Value(flip_angle)
         )
         mcad_model.cell_instance.transform3d = transform_rotation
         transform_translation = mcad_model.cell_instance.transform3d.create_from_offset(offset=location)
@@ -2134,27 +2133,27 @@ class Stackup(LayerCollection):
                 roughness_models[name] = {}
                 model = val.get_roughness_model("top")
                 if model.type.name.endswith("GroissRoughnessModel"):
-                    roughness_models[name]["GroissSurfaceRoughness"] = {"Roughness": model.get_Roughness.value}
+                    roughness_models[name]["GroissSurfaceRoughness"] = {"Roughness": Value(model.get_Roughness)}
                 else:
                     roughness_models[name]["HuraySurfaceRoughness"] = {
-                        "HallHuraySurfaceRatio": model.get_nodule_radius().value,
-                        "NoduleRadius": model.get_surface_ratio().value,
+                        "HallHuraySurfaceRatio": Value(model.get_nodule_radius()),
+                        "NoduleRadius": Value(model.get_surface_ratio()),
                     }
                 model = val.get_roughness_model("bottom")
                 if model.type.name.endswith("GroissRoughnessModel"):
-                    roughness_models[name]["GroissBottomSurfaceRoughness"] = {"Roughness": model.get_roughness().value}
+                    roughness_models[name]["GroissBottomSurfaceRoughness"] = {"Roughness": Value(model.get_roughness())}
                 else:
                     roughness_models[name]["HurayBottomSurfaceRoughness"] = {
-                        "HallHuraySurfaceRatio": model.get_nodule_radius().value,
-                        "NoduleRadius": model.get_surface_ratio().value,
+                        "HallHuraySurfaceRatio": Value(model.get_nodule_radius()),
+                        "NoduleRadius": Value(model.get_surface_ratio()),
                     }
                 model = val.get_roughness_model("side")
                 if model.ToString().endswith("GroissRoughnessModel"):
-                    roughness_models[name]["GroissSideSurfaceRoughness"] = {"Roughness": model.get_roughness().value}
+                    roughness_models[name]["GroissSideSurfaceRoughness"] = {"Roughness": Value(model.get_roughness())}
                 else:
                     roughness_models[name]["HuraySideSurfaceRoughness"] = {
-                        "HallHuraySurfaceRatio": model.get_nodule_radius().value,
-                        "NoduleRadius": model.get_surface_ratio().value,
+                        "HallHuraySurfaceRatio": Value(model.get_nodule_radius()),
+                        "NoduleRadius": Value(model.get_surface_ratio()),
                     }
 
         non_stackup_layers = OrderedDict()

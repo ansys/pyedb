@@ -22,9 +22,9 @@
 
 
 from ansys.edb.core.primitive.circle import Circle as GrpcCircle
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.primitive.primitive import Primitive
+from pyedb.grpc.database.utility.value import Value
 
 
 class Circle(GrpcCircle, Primitive):
@@ -33,7 +33,7 @@ class Circle(GrpcCircle, Primitive):
         Primitive.__init__(self, pedb, edb_object)
         self._pedb = pedb
 
-    def get_parameters(self):
+    def get_parameters(self) -> tuple[float, float, float]:
         """Returns parameters.
 
         Returns
@@ -57,7 +57,7 @@ class Circle(GrpcCircle, Primitive):
 
         """
         params = super().get_parameters()
-        return params[0].value, params[1].value, params[2].value
+        return Value(params[0]), Value(params[1]), Value(params[2])
 
     def set_parameters(self, center_x, center_y, radius):
         """Set parameters.
@@ -72,4 +72,4 @@ class Circle(GrpcCircle, Primitive):
             Circle radius.
 
         """
-        super().set_parameters(GrpcValue(center_x), GrpcValue(center_y), GrpcValue(radius))
+        super().set_parameters(Value(center_x), Value(center_y), Value(radius))

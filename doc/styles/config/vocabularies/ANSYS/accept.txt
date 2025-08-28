@@ -5,7 +5,6 @@ AEDB
 AEDT
 airbox
 (?i)Ansys
-API
 [Cc]ircuit
 codecov
 [Cc]om
@@ -25,7 +24,6 @@ IR
 IronPython
 libssl
 [Ll]ayout
-matplotlib
 Maxwell(?:\s(?:2D|3D|Circuit))?
 [Nn]etlist
 opensslp(?i)PyAnsys
@@ -71,3 +69,51 @@ vias
 [Rr]egulator
 [Cc]onnectable
 [Cc][Pp][Aa]
+[Rr][Ff]
+[Bb]asic
+[Ll]ibraries
+[Kk]ey
+[Cc]onceptual
+[Cc]hanges
+Side-by-Side
+[Cc]ode
+[Cc]omparison
+[Hh]andling
+[Bb]reaking
+[Cc]hanges
+[Gg]etting
+[Hh]elp
+[Cc]ommon
+[Ii]ssues
+[Ss]olutions
+Page Not Found
+Common Tasks
+Accessing and Modifying Nets
+Creating a Simple Simulation Setup
+Getting Started: Your First Script
+Communication Protocol: gRPC
+e.g.
+Checking the Connection
+User Guide
+[Cc]ore
+[Cc]oncepts
+Architecture: Client-Server Model
+[Ii]ssues
+[Ii]nstall the PyEDB Client
+Why It Was Replaced
+[Mm]igration
+[Gg]uide
+[Gg]uide
+Development Environment Setup
+Running Tests
+Building
+Submission Process
+Code Style
+[Cc]ontributions
+Server-Side
+Automation & Headless Operation
+Use Cases
+Getting Started
+[Aa][Pp][Ii]
+[Dd][Oo][Cc][Uu][Mm][Ee][Nn][Tt][Aa][Tt][Ii][Oo][Nn]
+[Mm][Aa][Tt][Pp][Ll][Oo][Tt][Ll][Ii][Ib]

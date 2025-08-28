@@ -29,7 +29,6 @@ from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTermin
 from ansys.edb.core.terminal.edge_terminal import PrimitiveEdge as GrpcPrimitiveEdge
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.components import Component
@@ -47,6 +46,7 @@ from pyedb.grpc.database.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.sources import Source, SourceType
+from pyedb.grpc.database.utility.value import Value
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -280,12 +280,12 @@ class SourceExcitation:
                 term_name = source.name
                 positive_pin_group_term.SetName(term_name)
                 negative_pin_group_term.SetName("{}_ref".format(term_name))
-                positive_pin_group_term.source_amplitude = GrpcValue(source.amplitude)
-                negative_pin_group_term.source_amplitude = GrpcValue(source.amplitude)
-                positive_pin_group_term.source_phase = GrpcValue(source.phase)
-                negative_pin_group_term.source_phase = GrpcValue(source.phase)
-                positive_pin_group_term.impedance = GrpcValue(source.impedance)
-                negative_pin_group_term.impedance = GrpcValue(source.impedance)
+                positive_pin_group_term.source_amplitude = Value(source.amplitude)
+                negative_pin_group_term.source_amplitude = Value(source.amplitude)
+                positive_pin_group_term.source_phase = Value(source.phase)
+                negative_pin_group_term.source_phase = Value(source.phase)
+                positive_pin_group_term.impedance = Value(source.impedance)
+                negative_pin_group_term.impedance = Value(source.impedance)
                 positive_pin_group_term.reference_terminal = negative_pin_group_term
             elif source.source_type == SourceType.Isource:  # pragma: no cover
                 positive_pin_group_term = self._pedb.components._create_pin_group_terminal(
@@ -298,12 +298,12 @@ class SourceExcitation:
                 negative_pin_group_term.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
                 positive_pin_group_term.name = source.name
                 negative_pin_group_term.name = "{}_ref".format(source.name)
-                positive_pin_group_term.source_amplitude = GrpcValue(source.amplitude)
-                negative_pin_group_term.source_amplitude = GrpcValue(source.amplitude)
-                positive_pin_group_term.source_phase = GrpcValue(source.phase)
-                negative_pin_group_term.source_phase = GrpcValue(source.phase)
-                positive_pin_group_term.impedance = GrpcValue(source.impedance)
-                negative_pin_group_term.impedance = GrpcValue(source.impedance)
+                positive_pin_group_term.source_amplitude = Value(source.amplitude)
+                negative_pin_group_term.source_amplitude = Value(source.amplitude)
+                positive_pin_group_term.source_phase = Value(source.phase)
+                negative_pin_group_term.source_phase = Value(source.phase)
+                positive_pin_group_term.impedance = Value(source.impedance)
+                negative_pin_group_term.impedance = Value(source.impedance)
                 positive_pin_group_term.reference_terminal = negative_pin_group_term
             elif source.source_type == SourceType.Rlc:  # pragma: no cover
                 self._pedb.components.create(
@@ -371,13 +371,14 @@ class SourceExcitation:
 
     def create_port_on_pins(
         self,
-        refdes: str,
-        pins: Union[str, List[str]],
-        reference_pins: Optional[List[str]] = None,
+        refdes: Union[str, Component],
+        pins: Union[int, str, PadstackInstance, List[Union[int, str, PadstackInstance]]],
+        reference_pins: Union[int, str, PadstackInstance, List[Union[int, str, PadstackInstance]]] = None,
+        impedance: Union[str, float] = "50ohm",
         port_name: Optional[str] = None,
-        port_type: Optional[str] = None,
-        impedance: Union[int, float] = 50,
-    ) -> Optional[str]:
+        pec_boundary: bool = False,
+        pingroup_on_single_pin: bool = False,
+    ) -> PadstackInstanceTerminal:
         """Create circuit port between pins and reference ones.
 
         Parameters
@@ -430,12 +431,10 @@ class SourceExcitation:
             refdes = Component(self._pedb, refdes)
         pins = self._get_pins_for_ports(pins, refdes)
         if not pins:
-            self._logger.error("No pins found during port creation. Port is not defined.")
-            return False
+            raise RuntimeWarning("No pins found during port creation. Port is not defined.")
         reference_pins = self._get_pins_for_ports(reference_pins, refdes)
         if not reference_pins:
-            self._logger.error("No reference pins found during port creation. Port is not defined.")
-            return False
+            raise RuntimeWarning("No reference pins found during port creation. Port is not defined.")
         if refdes and any(refdes.rlc_values):
             return self._pedb.components.deactivate_rlc_component(component=refdes, create_circuit_port=True)
         if not port_name:
@@ -468,7 +467,7 @@ class SourceExcitation:
             ref_term = self._create_terminal(reference_pins[0], term_name=port_name + "_ref")
         ref_term.is_circuit_port = True
 
-        term.impedance = GrpcValue(impedance)
+        term.impedance = Value(impedance)
         term.reference_terminal = ref_term
         if pec_boundary:
             term.is_circuit_port = False
@@ -509,10 +508,13 @@ class SourceExcitation:
         component: Union[str, List[str]],
         net_list: Union[str, List[str]],
         port_type: SourceType,
+        do_pingroup: Optional[bool] = True,
         reference_net: Optional[str] = None,
-        port_names: Optional[List[str]] = None,
-        impedance: Union[int, float] = 50,
-        delete_existing_terminal: bool = False,
+        port_name: Optional[List[str]] = None,
+        solder_balls_height: Optional[float] = None,
+        solder_balls_size: Optional[float] = None,
+        solder_balls_mid_size: Optional[float] = None,
+        extend_reference_pins_outside_component: Optional[bool] = False,
     ) -> List[str]:
         """Create ports on a component.
 
@@ -529,7 +531,7 @@ class SourceExcitation:
         do_pingroup : bool
             True activate pingroup during port creation (only used with combination of CircPort),
             False will take the closest reference pin and generate one port per signal pin.
-        refnet : string or list of string.
+        reference_net : string or list of string.
             list of the reference net.
         port_name : str
             Port name for overwriting the default port-naming convention,
@@ -560,7 +562,7 @@ class SourceExcitation:
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> net_list = ["M_DQ<1>", "M_DQ<2>", "M_DQ<3>", "M_DQ<4>", "M_DQ<5>"]
-        >>> edbapp.components.create_port_on_component(cmp="U2A5", net_list=net_list,
+        >>> edbapp.excitations.create_port_on_component(cmp="U2A5", net_list=net_list,
         >>> port_type=SourceType.CoaxPort, do_pingroup=False, refnet="GND")
 
         """
@@ -617,7 +619,7 @@ class SourceExcitation:
             pad_params = self._pedb.padstacks.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
             if not pad_params[0] == 7:
                 if not solder_balls_size:  # pragma no cover
-                    sball_diam = min([GrpcValue(val).value for val in pad_params[1]])
+                    sball_diam = min([Value(val) for val in pad_params[1]])
                     sball_mid_diam = sball_diam
                 else:  # pragma no cover
                     sball_diam = solder_balls_size
@@ -911,13 +913,13 @@ class SourceExcitation:
             rlc = GrpcRlc()
             if rlc_values[0]:
                 rlc.r_enabled = True
-                rlc.r = GrpcValue(rlc_values[0])
+                rlc.r = Value(rlc_values[0])
             if rlc_values[1]:
                 rlc.l_enabled = True
-                rlc.l = GrpcValue(rlc_values[1])
+                rlc.l = Value(rlc_values[1])
             if rlc_values[2]:
                 rlc.c_enabled = True
-                rlc.c = GrpcValue(rlc_values[2])
+                rlc.c = Value(rlc_values[2])
             rlc.is_parallel = component.is_parallel_rlc
             pos_pin_term.rlc_boundary = rlc
             self._logger.info("Component {} has been replaced by port".format(component.refdes))
@@ -1099,7 +1101,7 @@ class SourceExcitation:
         pos_pin: Union[str, PadstackInstance],
         neg_pin: Union[str, PadstackInstance],
         impedance: Union[int, float] = 50,
-        name: Optional[str] = None,
+        port_name: Optional[str] = None,
     ) -> Optional[str]:
         """Create a circuit port on a pin.
 
@@ -1205,7 +1207,7 @@ class SourceExcitation:
         if source_type in ["circuit_port", "lumped_port"]:
             pos_terminal.boundary_type = GrpcBoundaryType.PORT
             neg_terminal.boundary_type = GrpcBoundaryType.PORT
-            pos_terminal.impedance = GrpcValue(impedance)
+            pos_terminal.impedance = Value(impedance)
             if source_type == "lumped_port":
                 pos_terminal.is_circuit_port = False
                 neg_terminal.is_circuit_port = False
@@ -1218,18 +1220,18 @@ class SourceExcitation:
         elif source_type == "current_source":
             pos_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
             neg_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
-            pos_terminal.source_amplitude = GrpcValue(magnitude)
-            pos_terminal.source_phase = GrpcValue(phase)
-            pos_terminal.impedance = GrpcValue(impedance)
+            pos_terminal.source_amplitude = Value(magnitude)
+            pos_terminal.source_phase = Value(phase)
+            pos_terminal.impedance = Value(impedance)
             pos_terminal.reference_terminal = neg_terminal
             pos_terminal.name = name
 
         elif source_type == "voltage_source":
             pos_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
             neg_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
-            pos_terminal.source_amplitude = GrpcValue(magnitude)
-            pos_terminal.impedance = GrpcValue(impedance)
-            pos_terminal.source_phase = GrpcValue(phase)
+            pos_terminal.source_amplitude = Value(magnitude)
+            pos_terminal.impedance = Value(impedance)
+            pos_terminal.source_phase = Value(phase)
             pos_terminal.reference_terminal = neg_terminal
             pos_terminal.name = name
 
@@ -1241,9 +1243,9 @@ class SourceExcitation:
             rlc.r_enabled = bool(r)
             rlc.l_enabled = bool(l)
             rlc.c_enabled = bool(c)
-            rlc.r = GrpcValue(r)
-            rlc.l = GrpcValue(l)
-            rlc.c = GrpcValue(c)
+            rlc.r = Value(r)
+            rlc.l = Value(l)
+            rlc.c = Value(c)
             pos_terminal.rlc_boundary_parameters = rlc
             pos_terminal.name = name
 
@@ -1395,11 +1397,11 @@ class SourceExcitation:
 
     def create_circuit_port_on_net(
         self,
-        component_name: str,
-        net_name: str,
-        reference_component_name: str,
-        reference_net_name: str,
-        impedance: Union[int, float] = 50,
+        positive_component_name: str,
+        positive_net_name: str,
+        negative_component_name: str,
+        negative_net_name: Optional[str] = None,
+        impedance_value: Union[int, float] = 50,
         port_name: Optional[str] = None,
     ) -> Optional[str]:
         """Create a circuit port on a NET.
@@ -1466,7 +1468,7 @@ class SourceExcitation:
             positive_pins=positive_pins,
             negatives_pins=negative_pins,
             name=port_name,
-            impedance=impedance,
+            impedance=impedance_value,
             source_type="circuit_port",
         )
 
@@ -1542,7 +1544,7 @@ class SourceExcitation:
             )
         if source_type in ["circuit_port", "lumped_port"]:
             pos_pingroup_terminal.boundary_type = GrpcBoundaryType.PORT
-            pos_pingroup_terminal.impedance = GrpcValue(impedance)
+            pos_pingroup_terminal.impedance = Value(impedance)
             if len(positive_pins) > 1 and len(negatives_pins) > 1:
                 if source_type == "lumped_port":
                     source_type = "circuit_port"
@@ -1558,16 +1560,16 @@ class SourceExcitation:
         elif source_type == "current_source":
             pos_pingroup_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
             neg_pingroup_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
-            pos_pingroup_terminal.source_amplitude = GrpcValue(magnitude)
-            pos_pingroup_terminal.source_phase = GrpcValue(phase)
+            pos_pingroup_terminal.source_amplitude = Value(magnitude)
+            pos_pingroup_terminal.source_phase = Value(phase)
             pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
             pos_pingroup_terminal.name = name
 
         elif source_type == "voltage_source":
             pos_pingroup_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
             neg_pingroup_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
-            pos_pingroup_terminal.source_amplitude = GrpcValue(magnitude)
-            pos_pingroup_terminal.source_phase = GrpcValue(phase)
+            pos_pingroup_terminal.source_amplitude = Value(magnitude)
+            pos_pingroup_terminal.source_phase = Value(phase)
             pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
             pos_pingroup_terminal.name = name
 
@@ -1579,9 +1581,9 @@ class SourceExcitation:
             Rlc.r_enabled = bool(r)
             Rlc.l_enabled = bool(l)
             Rlc.c_enabled = bool(c)
-            Rlc.r = GrpcValue(r)
-            Rlc.l = GrpcValue(l)
-            Rlc.c = GrpcValue(c)
+            Rlc.r = Value(r)
+            Rlc.l = Value(l)
+            Rlc.c = Value(c)
             pos_pingroup_terminal.rlc_boundary_parameters = Rlc
 
         elif source_type == "dc_terminal":
@@ -1606,10 +1608,10 @@ class SourceExcitation:
 
     def create_voltage_source_on_net(
         self,
-        component_name: str,
-        net_name: str,
-        reference_component_name: str,
-        reference_net_name: str,
+        positive_component_name: str,
+        positive_net_name: str,
+        negative_component_name: Optional[str] = None,
+        negative_net_name: Optional[str] = None,
         voltage_value: Union[int, float] = 0,
         phase_value: Union[int, float] = 0,
         source_name: Optional[str] = None,
@@ -1669,10 +1671,10 @@ class SourceExcitation:
 
     def create_current_source_on_net(
         self,
-        component_name: str,
-        net_name: str,
-        reference_component_name: str,
-        reference_net_name: str,
+        positive_component_name: str,
+        positive_net_name: str,
+        negative_component_name: Optional[str] = None,
+        negative_net_name: Optional[str] = None,
         current_value: Union[int, float] = 0,
         phase_value: Union[int, float] = 0,
         source_name: Optional[str] = None,
@@ -1945,7 +1947,7 @@ class SourceExcitation:
         if isinstance(prim_id, Primitive):
             prim_id = prim_id.edb_uid
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
-        pos_edge_term.impedance = GrpcValue(impedance)
+        pos_edge_term.impedance = Value(impedance)
         wave_port = WavePort(self._pedb, pos_edge_term)
         wave_port.horizontal_extent_factor = horizontal_extent_factor
         wave_port.vertical_extent_factor = vertical_extent_factor
@@ -2010,7 +2012,7 @@ class SourceExcitation:
         if not port_name:
             port_name = generate_unique_name("Terminal_")
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
-        pos_edge_term.impedance = GrpcValue(impedance)
+        pos_edge_term.impedance = Value(impedance)
         if reference_layer:
             reference_layer = self._pedb.stackup.signal_layers[reference_layer]
             pos_edge_term.reference_layer = reference_layer
@@ -2082,7 +2084,7 @@ class SourceExcitation:
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
         neg_edge_term = self._create_edge_terminal(ref_prim_id, point_on_ref_edge, port_name + "_ref", is_ref=True)
 
-        pos_edge_term.impedance = GrpcValue(impedance)
+        pos_edge_term.impedance = Value(impedance)
         pos_edge_term.reference_terminal = neg_edge_term
         if not layer_alignment == "Upper":
             layer_alignment = "Lower"
@@ -2157,11 +2159,11 @@ class SourceExcitation:
             layout_extent_segments = [pt for pt in list(layout_bbox.arc_data) if pt.is_segment]
             first_pt = layout_extent_segments[0]
             layout_extent_points = [
-                [first_pt.start.x.value, first_pt.end.x.value],
-                [first_pt.Start.y.value, first_pt.end.y.value],
+                [Value(first_pt.start.x), Value(first_pt.end.x)],
+                [Value(first_pt.Start.y), Value(first_pt.end.y)],
             ]
             for segment in layout_extent_segments[1:]:
-                end_point = (segment.end.x.value, segment.end.y.value)
+                end_point = (Value(segment.end.x), Value(segment.end.y))
                 layout_extent_points[0].append(end_point[0])
                 layout_extent_points[1].append(end_point[1])
             for net in nets:
@@ -2172,8 +2174,8 @@ class SourceExcitation:
                     port_name = f"{net.name}_{path.id}"
                     for pt in trace_path_pts:
                         _pt = [
-                            round(pt.x.value, digit_resolution),
-                            round(pt.y.value, digit_resolution),
+                            round(Value(pt.x), digit_resolution),
+                            round(Value(pt.y), digit_resolution),
                         ]
                         if at_bounding_box:
                             if GeometryOperators.point_in_polygon(_pt, layout_extent_points) == 0:
@@ -2196,7 +2198,7 @@ class SourceExcitation:
                     for segment in poly_segment:
                         if (
                             GeometryOperators.point_in_polygon(
-                                [segment.mid_point.x.value, segment.mid_point.y.value], layout_extent_points
+                                [Value(segment.mid_point.x), Value(segment.mid_point.y)], layout_extent_points
                             )
                             == 0
                         ):
@@ -2261,15 +2263,15 @@ class SourceExcitation:
                     _x = []
                     _y = []
                     for pt in _points:
-                        if pt.x.value < 1e100 and pt.y.value < 1e100:
-                            _x.append(pt.x.value)
-                            _y.append(pt.y.value)
+                        if Value(pt.x) < 1e100 and Value(pt.y) < 1e100:
+                            _x.append(Value(pt.x))
+                            _y.append(Value(pt.y))
                     user_defined_extent = [_x, _y]
             terminal_info = []
             for net in nets:
                 net_polygons = [prim for prim in self._pedb.modeler.primitives if prim.type in ["polygon", "rectangle"]]
                 for poly in net_polygons:
-                    mid_points = [[arc.midpoint.x.value, arc.midpoint.y.value] for arc in poly.arcs]
+                    mid_points = [[Value(arc.midpoint.x), Value(arc.midpoint.y)] for arc in poly.arcs]
                     for mid_point in mid_points:
                         if GeometryOperators.point_in_polygon(mid_point, user_defined_extent) == 0:
                             port_name = generate_unique_name(f"{poly.net_name}_{poly.id}")
@@ -2507,9 +2509,9 @@ class SourceExcitation:
             rlc.r_enabled = True
             rlc.l_enabled = True
             rlc.c_enabled = True
-            rlc.r = GrpcValue(rvalue)
-            rlc.l = GrpcValue(lvalue)
-            rlc.c = GrpcValue(cvalue)
+            rlc.r = Value(rvalue)
+            rlc.l = Value(lvalue)
+            rlc.c = Value(cvalue)
             positive_pin_term.rlc_boundary_parameters = rlc
             term_name = f"{positive_pin.component.name}_{positive_pin.net.name}_{positive_pin.name}"
             positive_pin_term.name = term_name
@@ -2597,7 +2599,7 @@ class SourceExcitation:
             edge_term.is_circuit_port = False
 
         if port_impedance:
-            edge_term.impedance = GrpcValue(port_impedance)
+            edge_term.impedance = Value(port_impedance)
         edge_term.name = port_name
         if reference_polygon and reference_point:
             ref_edge = GrpcPrimitiveEdge.create(reference_polygon, reference_point)
@@ -2617,7 +2619,7 @@ class SourceExcitation:
                 ref_edge_term.is_circuit_port = False
 
             if port_impedance:
-                ref_edge_term.impedance = GrpcValue(port_impedance)
+                ref_edge_term.impedance = Value(port_impedance)
             edge_term.reference_terminal = ref_edge_term
         return True
 
@@ -2684,7 +2686,7 @@ class SourceExcitation:
                             layout=pin.layout, net=pin.net, padstack_instance=pin, name=term_name, layer=start_layer
                         )
                         positive_terminal.boundary_type = GrpcBoundaryType.PORT
-                        positive_terminal.impedance = GrpcValue(impedance)
+                        positive_terminal.impedance = Value(impedance)
                         positive_terminal.Is_circuit_port = True
                         position = GrpcPointData(self._pedb.components.get_pin_position(pin))
                         negative_terminal = PointTerminal.create(
@@ -2695,7 +2697,7 @@ class SourceExcitation:
                             point=position,
                         )
                         negative_terminal.boundary_type = GrpcBoundaryType.PORT
-                        negative_terminal.impedance = GrpcValue(impedance)
+                        negative_terminal.impedance = Value(impedance)
                         negative_terminal.is_circuit_port = True
                         positive_terminal.reference_terminal = negative_terminal
                         self._logger.info("Port {} successfully created".format(term_name))
@@ -2797,11 +2799,15 @@ class SourceExcitation:
         self,
         terminal: Union[PadstackInstanceTerminal, EdgeTerminal],
         ref_terminal: Union[PadstackInstanceTerminal, EdgeTerminal],
+        magnitude: Union[int, float] = 1,
+        phase: Union[int, float] = 0,
     ) -> bool:
         """Create a voltage source.
 
         Parameters
         ----------
+        name : str, optional
+            Voltage source name
         terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
             :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
             :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
@@ -2812,6 +2818,10 @@ class SourceExcitation:
             :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
             :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
             Negative terminal of the source.
+        magnitude : int, float, optional
+            Magnitude of the source.
+        phase : int, float, optional
+            Phase of the source
 
         Returns
         -------
@@ -2830,7 +2840,8 @@ class SourceExcitation:
 
         ref_term = Terminal(self._pedb, ref_terminal)
         ref_term.boundary_type = "voltage_source"
-
+        term.magnitude = self._pedb.value(magnitude)
+        term.phase = self._pedb.value(phase)
         term.ref_terminal = ref_terminal
         return term
 
@@ -2957,7 +2968,7 @@ class SourceExcitation:
         return not pos_terminal.is_null
 
     def create_dc_terminal(
-        self, component_name: str, net_name: str, terminal_name: Optional[str] = None
+        self, component_name: str, net_name: str, source_name: Optional[str] = None
     ) -> Optional[str]:
         """Create a dc terminal.
 
@@ -2967,7 +2978,6 @@ class SourceExcitation:
             Name of the positive component.
         net_name : str
             Name of the positive net.
-
         source_name : str, optional
             Name of the source. The default is ``""``.
 
