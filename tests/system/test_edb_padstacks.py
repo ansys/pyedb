@@ -571,13 +571,15 @@ class TestClass(BaseTestClass):
         all_vias = {id_: i.position for id_, i in inst.items()}
         clusters = edbapp.padstacks.dbscan(all_vias, max_distance=2e-3, min_samples=3)
 
-        kept_2mm, _ = edbapp.padstacks.reduce_via_by_density(clusters[0], cell_size_x=2e-3, cell_size_y=2e-3)
-        kept_5mm, _ = edbapp.padstacks.reduce_via_by_density(clusters[0], cell_size_x=5e-3, cell_size_y=5e-3)
+        kept_2mm, grid_2mm = edbapp.padstacks.reduce_via_by_density(clusters[0], cell_size_x=2e-3, cell_size_y=2e-3)
+        kept_5mm, grid_5mm = edbapp.padstacks.reduce_via_by_density(clusters[0], cell_size_x=5e-3, cell_size_y=5e-3)
+        assert len(kept_2mm) == 8
+        assert len(grid_2mm) == 8
+        assert len(kept_5mm) == 1
+        assert len(grid_5mm) == 1
 
         _, _ = edbapp.padstacks.reduce_via_by_density(clusters[0], cell_size_x=5e-3, cell_size_y=5e-3, delete=True)
         _, _ = edbapp.padstacks.reduce_via_by_density(clusters[1], cell_size_x=5e-3, cell_size_y=5e-3, delete=True)
-        assert len(kept_2mm) == 8
-        assert len(kept_5mm) == 1
         assert len(edbapp.padstacks.instances) == 2
         edbapp.close(terminate_rpc_session=False)
 
