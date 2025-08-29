@@ -36,8 +36,8 @@ def create_array_from_unit_cell(
     edb: Edb,
     x_number: int = 2,
     y_number: int = 2,
-    offset_x: Union[int, float] | None = None,
-    offset_y: Union[int, float] | None = None,
+    offset_x: Optional[Union[int, float]] = None,
+    offset_y: Optional[Union[int, float]] = None,
 ) -> bool:
     """
     Create a 2-D rectangular array from the current EDB unit cell.
