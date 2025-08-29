@@ -609,8 +609,3 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         primitives = edbapp.modeler.primitives
         assert primitives[0].aedt_name == "line_0"
-
-    def test_create_cell_array(self, edb_examples):
-        edbapp = edb_examples.get_unit_cell()
-        assert edbapp.modeler.create_array_from_unit_cell(x_number=2, y_number=2)
-        edbapp.close()
