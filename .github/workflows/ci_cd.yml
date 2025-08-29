@@ -140,7 +140,7 @@ jobs:
 # =================================================================================================
 
   system-tests-windows-grpc:
-    name: Test dotnet (windows)
+    name: Test grpc (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     env:
       USE_GRPC: '1'
@@ -270,7 +270,7 @@ jobs:
 # =================================================================================================
 
   unit-tests-windows-grpc:
-    name: Unit test dotnet (windows)
+    name: Unit test grpc (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     env:
       USE_GRPC: '1'
