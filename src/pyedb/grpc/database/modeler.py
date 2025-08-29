@@ -1511,10 +1511,9 @@ class Modeler(object):
             y_number: int = 2,
             offset_x: Union[int, float] | None = None,
             offset_y: Union[int, float] | None = None,
-            unit_cell_name: str | None = None,
     ) -> bool:
         """
-        Replicate the active unit-cell in an X×Y rectangular array.
+        Replicate the current active cell as unit-cell in an X×Y rectangular array.
 
         Parameters
         ----------
@@ -1530,8 +1529,6 @@ class Modeler(object):
             Vertical pitch (center-to-center distance) between copies.
             If *None*, the bounding-box height of an outline primitive on
             layer ``"Outline"`` is used instead.
-        unit_cell_name : str | None, optional
-            Reserved for future use; currently ignored.
 
         Returns
         -------
@@ -1557,15 +1554,8 @@ class Modeler(object):
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
 
-        # -------------------------------------------------------------- #
-        # 1. Input validation
-        # -------------------------------------------------------------- #
         if x_number <= 0 or y_number <= 0:
             raise ValueError("x_number and y_number must be positive integers")
-
-        # -------------------------------------------------------------- #
-        # 2. Resolve step size (auto-detect or use provided)
-        # -------------------------------------------------------------- #
         if offset_x is None or offset_y is None:
             self._pedb.logger.info("Auto-detecting outline extents")
             outline_prims = [
@@ -1585,9 +1575,6 @@ class Modeler(object):
             offset_x = self._pedb.value(bbox[1].x - bbox[0].x)
             offset_y = self._pedb.value(bbox[1].y - bbox[0].y)
 
-        # -------------------------------------------------------------- #
-        # 3. Bulk-fetch everything once to avoid N×M round-trips
-        # -------------------------------------------------------------- #
         primitives: List = [
             p for p in self.primitives
             if p.type in {"polygon", "rectangle", "circle"}
@@ -1596,9 +1583,6 @@ class Modeler(object):
         vias: List = list(self._pedb.padstacks.vias.values())
         components: List = list(self._pedb.components.instances.values())
 
-        # -------------------------------------------------------------- #
-        # 4. Replicate by translation
-        # -------------------------------------------------------------- #
         self._pedb.logger.info(f"Starting array replication {x_number}x{y_number}")
         for i, j in itertools.product(range(x_number), range(y_number)):
             if i == 0 and j == 0:
