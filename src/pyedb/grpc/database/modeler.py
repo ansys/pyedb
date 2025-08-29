@@ -617,7 +617,7 @@ class Modeler(object):
         elif isinstance(points, GrpcPolygonData):
             polygon_data = points
         else:
-            raise (TypeError("Points must be a list of points or a PolygonData object."))
+            raise TypeError("Points must be a list of points or a PolygonData object.")
         path = Path.create(
             layout=self._active_layout,
             layer=layer_name,
