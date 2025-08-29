@@ -1511,11 +1511,6 @@ class Modeler(object):
         offset_x: Union[int, float] | None = None,
         offset_y: Union[int, float] | None = None,
         unit_cell_name: str | None = None,
-            self,
-            x_number: int = 2,
-            y_number: int = 2,
-            offset_x: Union[int, float] | None = None,
-            offset_y: Union[int, float] | None = None,
     ) -> bool:
         """
         Replicate the active unit-cell in an X×Y rectangular array.
