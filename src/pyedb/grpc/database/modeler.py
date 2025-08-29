@@ -1557,27 +1557,17 @@ class Modeler(object):
             raise ValueError("x_number and y_number must be positive integers")
         if offset_x is None or offset_y is None:
             self._pedb.logger.info("Auto-detecting outline extents")
-            outline_prims = [
-                p for p in self.primitives
-                if p.layer_name.lower() == "outline"
-            ]
+            outline_prims = [p for p in self.primitives if p.layer_name.lower() == "outline"]
             if not outline_prims:
-                raise RuntimeError(
-                    "No outline found. Provide offset_x / offset_y or add an 'Outline' layer primitive."
-                )
+                raise RuntimeError("No outline found. Provide offset_x / offset_y or add an 'Outline' layer primitive.")
             outline = outline_prims[0]
             if outline.type not in {"polygon", "rectangle"}:
-                raise RuntimeError(
-                    "Outline primitive is not a polygon/rectangle. Provide offset_x / offset_y."
-                )
+                raise RuntimeError("Outline primitive is not a polygon/rectangle. Provide offset_x / offset_y.")
             bbox = outline.polygon_data.bbox()
             offset_x = self._pedb.value(bbox[1].x - bbox[0].x)
             offset_y = self._pedb.value(bbox[1].y - bbox[0].y)
 
-        primitives: List = [
-            p for p in self.primitives
-            if p.type in {"polygon", "rectangle", "circle"}
-        ]
+        primitives: List = [p for p in self.primitives if p.type in {"polygon", "rectangle", "circle"}]
         paths: List = list(self.paths)
         vias: List = list(self._pedb.padstacks.vias.values())
         components: List = list(self._pedb.components.instances.values())
@@ -1660,7 +1650,7 @@ class Modeler(object):
                         component_part_name=comp.part_name,
                         r_value=res_value,
                         l_value=ind_value,
-                        c_value=cap_value
+                        c_value=cap_value,
                     )
                     if hasattr(comp, "component_property") and comp.component_property:
                         new_comp.component_property = comp.component_property
