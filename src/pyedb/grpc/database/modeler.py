@@ -1553,7 +1553,6 @@ class Modeler(object):
         """
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
-
         if x_number <= 0 or y_number <= 0:
             raise ValueError("x_number and y_number must be positive integers")
         if offset_x is None or offset_y is None:
