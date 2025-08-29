@@ -44,7 +44,7 @@ def create_array_from_unit_cell(
 
     The function duplicates every primitive (polygon, rectangle, circle), path,
     padstack via, and component found in the active layout and places copies on
-    a regular grid defined by *offset_x* and *offset_y*.  If the offsets are
+    a regular grid defined by *offset_x* and *offset_y*. If the offsets are
     omitted they are automatically derived from the bounding box of the first
     primitive found on the layer called **outline** (case-insensitive).
 
