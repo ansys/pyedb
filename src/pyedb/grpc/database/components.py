@@ -1095,7 +1095,18 @@ class Components(object):
         if new_cmp_layer_name in self._pedb.stackup.signal_layers:
             new_cmp_placement_layer = self._pedb.stackup.signal_layers[new_cmp_layer_name]
             new_cmp.placement_layer = new_cmp_placement_layer
-        new_cmp.component_type = GrpcComponentType.OTHER
+        if r_value:
+            new_cmp.component_type = GrpcComponentType.RESISTOR
+            is_rlc = True
+        elif c_value:
+            new_cmp.component_type = GrpcComponentType.CAPACITOR
+            is_rlc = True
+        elif l_value:
+            new_cmp.component_type = GrpcComponentType.INDUCTOR
+            is_rlc = True
+        else:
+            new_cmp.component_type = GrpcComponentType.OTHER
+            is_rlc = False
         if is_rlc and len(pins) == 2:
             rlc = GrpcRlc()
             rlc.is_parallel = is_parallel

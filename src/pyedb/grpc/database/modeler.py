@@ -1644,11 +1644,23 @@ class Modeler(object):
                     )
                     new_pins.append(new_pin)
                 if new_pins:
+                    res_value = None
+                    cap_value = None
+                    ind_value = None
+                    if hasattr(comp, "res_value") and comp.res_value:
+                        res_value = self._pedb.value(comp.res_value)
+                    if hasattr(comp, "cap_value") and comp.cap_value:
+                        cap_value = self._pedb.value(comp.cap_value)
+                    if hasattr(comp, "ind_value") and comp.ind_value:
+                        ind_value = self._pedb.value(comp.ind_value)
                     new_comp = self._pedb.components.create(
                         pins=new_pins,
                         component_name=f"{comp.name}_array_{i}_{j}",
                         placement_layer=comp.placement_layer,
                         component_part_name=comp.part_name,
+                        r_value=res_value,
+                        l_value=ind_value,
+                        c_value=cap_value
                     )
                     if hasattr(comp, "component_property") and comp.component_property:
                         new_comp.component_property = comp.component_property
