@@ -29,9 +29,9 @@ from typing import Optional, Union
 from pyedb import Edb
 
 
-# ------------------------------------------------------------------
-# Public façade (unchanged signature)
-# ------------------------------------------------------------------
+# ----------------------
+# Public façade function
+# ----------------------
 def create_array_from_unit_cell(
     edb: Edb,
     x_number: int = 2,
@@ -39,6 +39,56 @@ def create_array_from_unit_cell(
     offset_x: Union[int, float] | None = None,
     offset_y: Union[int, float] | None = None,
 ) -> bool:
+    """
+    Create a 2-D rectangular array from the current EDB unit cell.
+
+    The function duplicates every primitive (polygon, rectangle, circle), path,
+    padstack via, and component found in the active layout and places copies on
+    a regular grid defined by *offset_x* and *offset_y*.  If the offsets are
+    omitted they are automatically derived from the bounding box of the first
+    primitive found on the layer called **outline** (case-insensitive).
+
+    Parameters
+    ----------
+    edb : pyedb.Edb
+        An open Edb instance whose active layout is used as the unit cell.
+    x_number : int, optional
+        Number of columns (X-direction). Must be > 0.  Defaults to 2.
+    y_number : int, optional
+        Number of rows (Y-direction). Must be > 0.  Defaults to 2.
+    offset_x : int | float | None, optional
+        Horizontal pitch (distance between cell origins).  When *None* the
+        value is derived from the outline geometry.
+    offset_y : int | float | None, optional
+        Vertical pitch (distance between cell origins).  When *None* the
+        value is derived from the outline geometry.
+
+    Returns
+    -------
+    bool
+        ``True`` if the operation completed successfully.
+
+    Raises
+    ------
+    ValueError
+        If *x_number* or *y_number* are non-positive.
+    RuntimeError
+        If no outline is found and the offsets were not supplied, or if the
+        outline is not a supported type (polygon/rectangle).
+
+    Notes
+    -----
+    The routine is technology-agnostic; it delegates all EDB-specific calls to
+    small adapter classes that handle either the **gRPC** or **.NET** back-end
+    transparently.
+
+    Examples
+    --------
+    >>> from pyedb import Edb
+    >>> edb = Edb("unit_cell.aedb")
+    >>> create_array_from_unit_cell(edb, x_number=4, y_number=3)
+    True
+    """
     if edb.grpc:
         adapter = _GrpcAdapter(edb)
     else:
@@ -57,8 +107,29 @@ def __create_array_from_unit_cell_impl(
     offset_x: Optional[Union[int, float]],
     offset_y: Optional[Union[int, float]],
 ) -> bool:
-    """Inner worker that is completely independent of gRPC/DotNet."""
+    """
+    Inner worker that performs the actual replication.
 
+    Parameters
+    ----------
+    edb : pyedb.Edb
+        Edb instance (already validated by the façade).
+    adapter : _BaseAdapter
+        Technology-specific adapter (gRPC or .NET).
+    x_number : int
+        Number of columns.
+    y_number : int
+        Number of rows.
+    offset_x : float
+        Absolute pitch in X (always resolved by the caller).
+    offset_y : float
+        Absolute pitch in Y (always resolved by the caller).
+
+    Returns
+    -------
+    bool
+        ``True`` when finished.
+    """
     # ---------- Sanity & auto-pitch detection ----------
     if x_number <= 0 or y_number <= 0:
         raise ValueError("x_number and y_number must be positive integers")
@@ -121,32 +192,49 @@ class _BaseAdapter:
 
     # ---- Outline helpers ----
     def is_supported_outline(self, outline) -> bool:
+        """Return True when *outline* is a primitive type from which pitch can be inferred."""
         raise NotImplementedError
 
     def pitch_from_outline(self, outline) -> tuple[float, float]:
+        """
+        Compute the (offset_x, offset_y) pitch from the bounding box of *outline*.
+
+        Returns
+        -------
+        tuple[float, float]
+            (width, height) of the outline primitive in database units.
+        """
         raise NotImplementedError
 
     # ---- Duplication helpers ----
     def is_primitive_to_copy(self, prim) -> bool:
+        """Return True when *prim* is a primitive that must be duplicated."""
         raise NotImplementedError
 
     def duplicate_primitive(self, prim, dx, dy, i, j):
+        """Return a new primitive translated by (dx, dy)."""
         raise NotImplementedError
 
     def duplicate_void(self, new_poly, void, dx, dy):
+        """Add a translated copy of *void* to *new_poly*."""
         raise NotImplementedError
 
     def duplicate_path(self, path, dx, dy, i, j):
+        """Create a translated copy of *path*."""
         raise NotImplementedError
 
     def duplicate_standalone_via(self, via, dx, dy, i, j):
+        """Create a translated copy of a stand-alone via."""
         raise NotImplementedError
 
     def duplicate_component(self, comp, dx, dy, i, j):
+        """Create a translated copy of *comp* (including its pins)."""
         raise NotImplementedError
 
 
 class _GrpcAdapter(_BaseAdapter):
+    """Adapter for the gRPC-based EDB back-end."""
+
     def is_supported_outline(self, outline) -> bool:
         return outline.type in {"polygon", "rectangle"}
 
@@ -230,6 +318,8 @@ class _GrpcAdapter(_BaseAdapter):
 
 
 class _DotNetAdapter(_BaseAdapter):
+    """Adapter for the legacy .NET-based EDB back-end."""
+
     def is_supported_outline(self, outline) -> bool:
         return outline.type.lower() in {"polygon", "rectangle"}
 
