@@ -614,4 +614,3 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_unit_cell()
         assert edbapp.modeler.create_array_from_unit_cell(x_number=2, y_number=2)
         edbapp.close()
-        

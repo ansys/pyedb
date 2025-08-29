@@ -1571,7 +1571,6 @@ class Modeler(object):
         - New objects are post-fixed with ``_i{row}_j{col}`` to avoid name
           collisions.
         """
-        from pyedb.dotnet.database.dotnet.primitive import PadstackInstanceDotNet
         from pyedb.dotnet.database.geometry.point_data import PointData
 
         if x_number <= 0 or y_number <= 0:
