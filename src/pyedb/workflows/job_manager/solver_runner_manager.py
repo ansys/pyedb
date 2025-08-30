@@ -14,6 +14,7 @@ from pyedb.workflows.job_manager.data_model import (
     SimulationStatus,
     SimulationTask,
 )
+from pyedb.workflows.job_manager.html_template import HTML_TEMPLATE
 from pyedb.workflows.job_manager.logger import logger
 from pyedb.workflows.job_manager.priority_queue import PriorityQueue
 from pyedb.workflows.job_manager.pyedb_integration import PyEDBIntegration
@@ -103,6 +104,9 @@ class SolverRunnerManager:
         self.web_interface = None
         self.web_port = web_port
         if web_interface:
+            # Save the HTML template to a file
+            with open("solver_dashboard.html", "w") as f:
+                f.write(HTML_TEMPLATE)
             self._start_web_interface()
 
         # Statistics
