@@ -5,7 +5,14 @@ from pyedb.workflows.job_manager.data_model import SimulationTask
 
 
 class PriorityQueue:
-    """A priority queue that allows removing specific items"""
+    """
+    Thread-safe priority queue with O(log n) insertion/removal
+    and the ability to delete arbitrary items by `task_id`.
+
+    Priorities are **higher-is-better** (10 before 1).
+
+    All operations are **re-entrant** and **lock protected**.
+    """
 
     def __init__(self):
         self.queue = []

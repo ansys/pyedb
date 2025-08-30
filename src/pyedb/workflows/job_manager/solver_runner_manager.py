@@ -21,7 +21,34 @@ from pyedb.workflows.job_manager.system_resource_monitor import SystemResourceMo
 
 
 class SolverRunnerManager:
-    """Manages simulation queues and tracks simulation status on the local machine"""
+    """
+    # PyEDB Solver Manager
+
+    A **lightweight, production-ready task queue** for running Ansys Electronics Desktop
+    (PyEDB) or any other solver processes **locally** with:
+
+    * **Resource-aware scheduling** (CPU cores, RAM)
+    * **Priority queue**
+    * **Persistent state** (auto-restore after restarts)
+    * **REST-style web dashboard**
+    * **Thread-safe** design
+
+    ## Quick start
+
+    ```python
+    from solver_manager import SolverRunnerManager, ResourceRequirements
+
+    with SolverRunnerManager(max_workers=2, persistence_file="state.json") as mgr:
+        mgr.submit_task(
+            task_id="antenna_1",
+            project_name="5G_Antenna",
+            solver_type="hfss",
+            solver_config={"freq": "28 GHz"},
+            resource_reqs=ResourceRequirements(min_cores=4, min_memory_gb=16),
+            priority=10
+        )
+    Open http://localhost:5000 in your browser to monitor tasks.
+    """
 
     def __init__(
         self,
@@ -31,13 +58,30 @@ class SolverRunnerManager:
         web_port: int = 5000,
     ):
         """
-        Initialize the solver runner manager
+        Central orchestrator that **owns** the queues, workers, web UI
+        and persistence layer.
 
-        Args:
-            max_workers: Maximum number of concurrent simulations
-            persistence_file: File path to persist queue state (optional)
-            web_interface: Whether to start a web interface for monitoring
-            web_port: Port for the web interface
+        Context-manager safe (`__enter__`, `__exit__`) – resources are
+        gracefully released on exit.
+
+        Parameters
+        ----------
+        max_workers : int, default 1
+            Number of **concurrent** solver threads (not processes) to run.
+        persistence_file : str | None, optional
+            Path to a JSON file for crash-recovery. Directory is auto-created.
+        web_interface : bool, default True
+            Spawn Flask dashboard on `http://0.0.0.0:<web_port>`.
+        web_port : int, default 5000
+            Port for the dashboard.
+
+        Example
+        -------
+        ```python
+        with SolverRunnerManager(max_workers=4, persistence_file="state.json") as mgr:
+            mgr.submit_task(...)
+            # Web UI automatically opens in default browser
+        ```
         """
         self.max_workers = max_workers
         self.persistence_file = persistence_file
@@ -89,19 +133,27 @@ class SolverRunnerManager:
         callback: Optional[Callable] = None,
     ) -> str:
         """
-        Submit a new simulation task to the queue
+        Enqueue a new simulation task.
 
-        Args:
-            task_id: Unique identifier for the task
-            project_name: Name of the project to simulate
-            solver_config: Configuration for the solver
-            resource_reqs: Resource requirements for the task
-            solver_type: Type of solver (hfss, mechanical, etc.)
-            priority: Priority of the task (1-10, with 10 being highest)
-            callback: Optional callback function to be called when task completes
+        Duplicate `task_id` or impossible resource requests raise
+        `ValueError` **synchronously**.
 
-        Returns:
-            The task ID
+        Parameters
+        ----------
+        task_id : str
+            Must be unique across the lifetime of the persistence file.
+        project_name : str
+        solver_config : dict
+        resource_reqs : ResourceRequirements
+        solver_type : str, default "hfss"
+        priority : int, 1-10
+        callback : callable, optional
+            Signature `callback(task_id, result, error)` invoked on the worker thread.
+
+        Returns
+        -------
+        str
+            The same `task_id` passed in (for fluent chaining).
         """
         with self.lock:
             # Check if task ID already exists
@@ -144,15 +196,7 @@ class SolverRunnerManager:
             return task_id
 
     def get_task_status(self, task_id: str) -> Optional[SimulationStatus]:
-        """
-        Get the status of a task
-
-        Args:
-            task_id: ID of the task to check
-
-        Returns:
-            The status of the task or None if not found
-        """
+        """Return the current `SimulationStatus` or `None` if unknown."""
         with self.lock:
             # Check running tasks
             if task_id in self.running_tasks:
@@ -169,15 +213,7 @@ class SolverRunnerManager:
             return None
 
     def get_task_info(self, task_id: str) -> Optional[Dict]:
-        """
-        Get complete information about a task
-
-        Args:
-            task_id: ID of the task to get information for
-
-        Returns:
-            Dictionary with task information or None if not found
-        """
+        """Full JSON serialisation of the requested task."""
         with self.lock:
             # Check running tasks
             if task_id in self.running_tasks:
@@ -195,15 +231,7 @@ class SolverRunnerManager:
             return None
 
     def get_task_result(self, task_id: str) -> Optional[Any]:
-        """
-        Get the result of a completed task
-
-        Args:
-            task_id: ID of the task to get results for
-
-        Returns:
-            The result of the task or None if not found or not completed
-        """
+        """Return the `result` payload if task is COMPLETED, otherwise `None`."""
         with self.lock:
             if task_id in self.completed_tasks:
                 return self.completed_tasks[task_id].result
@@ -211,13 +239,12 @@ class SolverRunnerManager:
 
     def cancel_task(self, task_id: str) -> bool:
         """
-        Cancel a pending or running task
+        Attempt to cancel a **PENDING** or **RUNNING** task.
 
-        Args:
-            task_id: ID of the task to cancel
-
-        Returns:
-            True if task was cancelled, False otherwise
+        Returns
+        -------
+        bool
+            `True` if task was successfully moved to CANCELLED state.
         """
         with self.lock:
             # Check if task is running
@@ -278,14 +305,12 @@ class SolverRunnerManager:
 
     def set_task_priority(self, task_id: str, priority: int) -> bool:
         """
-        Set the priority of a pending task
+        Re-prioritise a **PENDING** task.
 
-        Args:
-            task_id: ID of the task to modify
-            priority: New priority (1-10, with 10 being highest)
-
-        Returns:
-            True if priority was set, False otherwise
+        Returns
+        -------
+        bool
+            `True` if the task was found and updated.
         """
         with self.lock:
             # Only pending tasks can have their priority changed
@@ -307,13 +332,17 @@ class SolverRunnerManager:
 
     def list_tasks(self, status_filter: Optional[SimulationStatus] = None) -> List[Dict]:
         """
-        List all tasks, optionally filtered by status
+        List **all** tasks (pending, running, completed).
 
-        Args:
-            status_filter: Optional status to filter by
+        Parameters
+        ----------
+        status_filter : SimulationStatus | None
+            If provided, return only tasks in that state.
 
-        Returns:
-            List of task information dictionaries
+        Returns
+        -------
+        list[dict]
+            List of `task.to_dict()` objects.
         """
         with self.lock:
             tasks = []
@@ -337,10 +366,16 @@ class SolverRunnerManager:
 
     def get_stats(self) -> Dict:
         """
-        Get statistics about the solver manager
+        Aggregated metrics and live resource usage.
 
-        Returns:
-            Dictionary with statistics
+        Returns
+        -------
+        dict
+            tasks_completed, tasks_failed, tasks_cancelled,
+            total_cpu_time, total_memory_hours,
+            pending_tasks, running_tasks, completed_tasks,
+            total_cores, total_memory_gb, available_memory_gb,
+            allocated_cores, allocated_memory_gb, ...
         """
         with self.lock:
             stats = self.stats.copy()
@@ -376,7 +411,10 @@ class SolverRunnerManager:
             return stats
 
     def start(self) -> None:
-        """Start the worker threads"""
+        """
+        Idempotent start of the worker threads.
+        Automatically called during `__init__`.
+        """
         with self.lock:
             if self.is_running:
                 return
@@ -391,10 +429,13 @@ class SolverRunnerManager:
 
     def stop(self, wait: bool = True) -> None:
         """
-        Stop the worker threads
+        Gracefully shut down the manager.
 
-        Args:
-            wait: Whether to wait for running tasks to complete
+        Parameters
+        ----------
+        wait : bool, default True
+            - `True`: block until running tasks finish naturally.
+            - `False`: cancel all running and pending tasks immediately.
         """
         with self.lock:
             if not self.is_running:

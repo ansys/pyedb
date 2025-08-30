@@ -5,7 +5,22 @@ from typing import Any, Callable, Dict, Optional
 
 
 class SimulationStatus(Enum):
-    """Enumeration of possible simulation states"""
+    """
+    Canonical simulation life-cycle states.
+
+    Members
+    -------
+    PENDING : `str`
+        Task is waiting in the priority queue.
+    RUNNING : `str`
+        Task is currently being executed.
+    COMPLETED : `str`
+        Task finished successfully.
+    FAILED : `str`
+        Task finished with an error.
+    CANCELLED : `str`
+        Task was explicitly cancelled by the user.
+    """
 
     PENDING = "Pending"
     RUNNING = "Running"
@@ -16,7 +31,22 @@ class SimulationStatus(Enum):
 
 @dataclass
 class ResourceRequirements:
-    """Resource requirements for a simulation task"""
+    """
+    Immutable specification of the resources a simulation task needs.
+
+    Attributes
+    ----------
+    min_cores : int, default 1
+        Minimum physical CPU cores required to start the task.
+    max_cores : int, default 1
+        Upper limit of cores the solver may scale up to (currently not enforced).
+    min_memory_gb : int, default 4
+        Minimum RAM (in GiB) required to start the task.
+    estimated_memory_gb : int, default 8
+        Expected peak memory usage for scheduling heuristics.
+    estimated_duration_min : int, default 30
+        Expected wall-time (in minutes) used for ETA calculations.
+    """
 
     min_cores: int = 1
     max_cores: int = 1
@@ -27,7 +57,55 @@ class ResourceRequirements:
 
 @dataclass
 class SimulationTask:
-    """Represents a simulation task with its properties and status"""
+    """
+    A single simulation job managed by the queue.
+
+    Attributes
+    ----------
+    task_id : str
+        Globally unique identifier.
+    project_name : str
+        Human-readable project or design name.
+    solver_config : Dict[str, Any]
+        Arbitrary JSON-serialisable solver parameters.
+    resource_reqs : ResourceRequirements
+        Resource constraints and hints.
+    priority : int, range 1-10, default 1
+        10 = highest priority.
+    status : SimulationStatus, default PENDING
+        Current life-cycle stage.
+    start_time : datetime | None
+        UTC timestamp when the task entered RUNNING state.
+    end_time : datetime | None
+        UTC timestamp when the task finished (any terminal state).
+    result : Any | None
+        JSON-serialisable return value produced by the solver.
+    error_message : str | None
+        Populated when `status == FAILED`.
+    callback : Callable[[str, Any, BaseException | None], None] | None
+        Optional user callback invoked on completion/failure.
+    process_id : int | None
+        PID of the external solver process (if applicable).
+    progress : float, 0-100
+        Percentage reported by the solver.
+    estimated_time_remaining : float | None
+        Seconds left, computed from linear extrapolation.
+    created_time : datetime
+        UTC timestamp when the task was submitted.
+    actual_cores_used : int | None
+        Cores really granted by the scheduler.
+    peak_memory_used_gb : float | None
+        Maximum RSS observed during execution (GiB).
+    solver_type : str, default "hfss"
+        Identifier for the solver flavour (e.g. "hfss", "mechanical", "q3d").
+
+    Methods
+    -------
+    to_dict() -> Dict[str, Any]
+        Serialise task to a JSON-compatible dict.
+    from_dict(data) -> SimulationTask
+        Re-create task from dict (inverse of `to_dict`).
+    """
 
     task_id: str
     project_name: str

@@ -7,7 +7,14 @@ from pyedb.workflows.job_manager.data_model import SimulationTask
 
 
 class SystemResourceMonitor:
-    """Monitors system resources and checks availability"""
+    """
+    Live view of **host-level** CPU and memory usage.
+
+    Uses `psutil` to cache current metrics and provides the
+    scheduling predicate `can_run_task`.
+
+    Thread-safe (uses `threading.RLock`).
+    """
 
     def __init__(self):
         self.lock = threading.RLock()
@@ -21,7 +28,16 @@ class SystemResourceMonitor:
             self.available_memory_gb = psutil.virtual_memory().available / (1024**3)
 
     def get_current_usage(self):
-        """Get current system resource usage"""
+        """
+        Returns
+        -------
+        dict
+            total_cores : int
+            total_memory_gb : float
+            available_memory_gb : float
+            memory_percent_used : float
+            cpu_percent : float
+        """
         with self.lock:
             self.update_resources()
             return {
@@ -36,14 +52,20 @@ class SystemResourceMonitor:
 
     def can_run_task(self, task: SimulationTask, running_tasks: Dict[str, SimulationTask]) -> Tuple[bool, str]:
         """
-        Check if there are enough resources to run a task
+        Decide whether the host can accommodate *one more* task.
 
-        Args:
-            task: The task to check
-            running_tasks: Currently running tasks
+        Parameters
+        ----------
+        task : SimulationTask
+            The candidate task.
+        running_tasks : dict[str, SimulationTask]
+            Snapshot of currently running tasks (values contain allocated cores/memory).
 
-        Returns:
-            Tuple of (can_run, reason)
+        Returns
+        -------
+        (can_run, reason): tuple[bool, str]
+            `can_run` is `True` only if both core and memory constraints are met;
+            `reason` is a human-readable explanation otherwise.
         """
         with self.lock:
             self.update_resources()
