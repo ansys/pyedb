@@ -22,59 +22,10 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
 from typing import Any, Callable, Dict, Optional
 
-
-class SimulationStatus(Enum):
-    """
-    Canonical simulation life-cycle states.
-
-    Members
-    -------
-    PENDING : `str`
-        Task is waiting in the priority queue.
-    RUNNING : `str`
-        Task is currently being executed.
-    COMPLETED : `str`
-        Task finished successfully.
-    FAILED : `str`
-        Task finished with an error.
-    CANCELLED : `str`
-        Task was explicitly cancelled by the user.
-    """
-
-    PENDING = "Pending"
-    RUNNING = "Running"
-    COMPLETED = "Completed"
-    FAILED = "Failed"
-    CANCELLED = "Cancelled"
-
-
-@dataclass
-class ResourceRequirements:
-    """
-    Immutable specification of the resources a simulation task needs.
-
-    Attributes
-    ----------
-    min_cores : int, default 1
-        Minimum physical CPU cores required to start the task.
-    max_cores : int, default 1
-        Upper limit of cores the solver may scale up to (currently not enforced).
-    min_memory_gb : int, default 4
-        Minimum RAM (in GiB) required to start the task.
-    estimated_memory_gb : int, default 8
-        Expected peak memory usage for scheduling heuristics.
-    estimated_duration_min : int, default 30
-        Expected wall-time (in minutes) used for ETA calculations.
-    """
-
-    min_cores: int = 1
-    max_cores: int = 1
-    min_memory_gb: int = 4
-    estimated_memory_gb: int = 8
-    estimated_duration_min: int = 30
+from pyedb.workflows.job_manager.resource_requirements import ResourceRequirements
+from pyedb.workflows.job_manager.simulation_status import SimulationStatus
 
 
 @dataclass

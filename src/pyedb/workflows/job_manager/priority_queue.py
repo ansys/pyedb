@@ -23,7 +23,7 @@
 import threading
 from typing import List
 
-from pyedb.workflows.job_manager.data_model import SimulationTask
+from pyedb.workflows.job_manager.simulation_task import SimulationTask
 
 
 class PriorityQueue:

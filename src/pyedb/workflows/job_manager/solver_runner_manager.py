@@ -31,15 +31,13 @@ import webbrowser
 from flask import Flask, jsonify, render_template, request
 import psutil
 
-from pyedb.workflows.job_manager.data_model import (
-    ResourceRequirements,
-    SimulationStatus,
-    SimulationTask,
-)
 from pyedb.workflows.job_manager.html_template import HTML_TEMPLATE
 from pyedb.workflows.job_manager.logger import logger
 from pyedb.workflows.job_manager.priority_queue import PriorityQueue
 from pyedb.workflows.job_manager.pyedb_integration import PyEDBIntegration
+from pyedb.workflows.job_manager.resource_requirements import ResourceRequirements
+from pyedb.workflows.job_manager.simulation_status import SimulationStatus
+from pyedb.workflows.job_manager.simulation_task import SimulationTask
 from pyedb.workflows.job_manager.system_resource_monitor import SystemResourceMonitor
 
 

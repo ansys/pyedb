@@ -23,7 +23,7 @@
 import time
 from typing import Callable, Dict
 
-from pyedb.workflows.job_manager.data_model import SimulationTask
+from pyedb.workflows.job_manager.simulation_task import SimulationTask
 
 
 class PyEDBIntegration:
