@@ -97,7 +97,7 @@ class SimulationTask:
     created_time: datetime = field(default_factory=datetime.now)
     actual_cores_used: Optional[int] = None
     peak_memory_used_gb: Optional[float] = None
-    solver_type: str = "hfss"  # hfss, mechanical, etc.
+    solver_type: str = "Hfss3DLayout"  # Siwave, etc.
 
     def to_dict(self) -> Dict:
         """Convert task to dictionary for serialization"""
