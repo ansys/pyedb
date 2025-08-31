@@ -25,7 +25,7 @@ from typing import Dict, Tuple
 
 import psutil
 
-from pyedb.workflows.job_manager.data_model import SimulationTask
+from pyedb.workflows.job_manager.simulation_task import SimulationTask
 
 
 class SystemResourceMonitor:
