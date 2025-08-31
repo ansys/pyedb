@@ -31,7 +31,7 @@ class SchedulerType(enum.Enum):
     Each scheduler type corresponds to specific enterprise-grade job management systems.
 
     Attributes:
-        NONE: Direct execution without scheduler (for development and testing)
+        NONE: Direct execution without scheduler (using local resources)
         LSF: IBM Platform LSF scheduler - Enterprise workload manager
         SLURM: Simple Linux Utility for Resource Management - Academic and research HPC
         PBS: Portable Batch System (Torque/PBS Pro) - Cross-platform batch system
