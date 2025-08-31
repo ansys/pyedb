@@ -23,6 +23,7 @@
 * [Kathy Pippert](https://github.com/PipKat)
 * [Massimo Capodiferro](https://github.com/maxcapodi78)
 * [Maxime Rey](https://github.com/MaxJPRey)
+* [Nefeli Metallidou](https://github.com/nefelimet)
 * [Revathy Venugopal](https://github.com/Revathyvenugopal162)
 * [Roberto Pastor Muela](https://github.com/RobPasMue)
 * [Samuel Lopez](https://github.com/Samuelopez-ansys)
