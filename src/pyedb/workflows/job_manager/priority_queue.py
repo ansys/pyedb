@@ -30,6 +30,7 @@ class PriorityQueue:
     """
     Thread-safe priority queue with O(log n) insertion/removal
     and the ability to delete arbitrary items by `task_id`.
+    Used only when No scheduler is active (Using local resources).
 
     Priorities are **higher-is-better** (10 before 1).
 
