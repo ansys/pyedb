@@ -24,7 +24,6 @@ import time
 from typing import Callable, Dict
 
 from pyedb.workflows.job_manager.data_model import SimulationTask
-from pyedb.workflows.job_manager.logger import logger
 
 
 class PyEDBIntegration:
@@ -48,13 +47,13 @@ class PyEDBIntegration:
         # This is where the actual PyEDB integration would go
         # For demonstration, we'll simulate the behavior
 
-        try:
-            # Import pyedb (commented out for demonstration)
-            # import pyedb
-            pass
-        except ImportError:
-            logger.warning("PyEDB not available, using simulation mode")
-            return PyEDBIntegration._simulate_solver(task, callback)
+        # try:
+        #     # Import pyedb (commented out for demonstration)
+        #     # import pyedb
+        #     pass
+        # except ImportError:
+        #   logger.warning("PyEDB not available, using simulation mode")
+        #   return PyEDBIntegration._simulate_solver(task, callback)
 
         # Actual PyEDB integration would go here
         # For now, we'll use the simulation

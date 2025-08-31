@@ -79,6 +79,7 @@ class SolverRunnerManager:
         persistence_file: Optional[str] = None,
         web_interface: bool = True,
         web_port: int = 5000,
+        working_directory: str = None,
     ):
         """
         Central orchestrator that **owns** the queues, workers, web UI
@@ -97,6 +98,8 @@ class SolverRunnerManager:
             Spawn Flask dashboard on `http://0.0.0.0:<web_port>`.
         web_port : int, default 5000
             Port for the dashboard.
+        working_directory : str, optional
+            Directory where all solver tasks are run. Defaults to current working directory.
 
         Example
         -------
@@ -108,6 +111,7 @@ class SolverRunnerManager:
         """
         self.max_workers = max_workers
         self.persistence_file = persistence_file
+        self.working_directory = working_directory or os.getcwd()
 
         # Task queues
         self.pending_queue = PriorityQueue()
@@ -127,7 +131,7 @@ class SolverRunnerManager:
         self.web_port = web_port
         if web_interface:
             # Save the HTML template to a file
-            with open("solver_dashboard.html", "w") as f:
+            with open(os.path.join(self.working_directory, "solver_dashboard.html"), "w") as f:
                 f.write(HTML_TEMPLATE)
             self._start_web_interface()
 
@@ -657,7 +661,7 @@ class SolverRunnerManager:
 
     def _start_web_interface(self) -> None:
         """Start the web interface for monitoring"""
-        app = Flask(__name__, template_folder=os.path.dirname(os.path.abspath(__file__)))
+        app = Flask(__name__, template_folder=self.working_directory)
 
         @app.route("/")
         def index():

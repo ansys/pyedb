@@ -21,11 +21,19 @@
 # SOFTWARE.
 
 import logging
+import os
+
+working_directory = ""
+if working_directory:
+    os.makedirs(working_directory, exist_ok=True)
+    log_file = os.path.join(working_directory, "solver_manager.log")
+else:
+    log_file = "solver_manager.log"
 
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("solver_manager.log"), logging.StreamHandler()],
+    handlers=[logging.FileHandler(log_file), logging.StreamHandler()],
 )
 logger = logging.getLogger("SolverManager")
