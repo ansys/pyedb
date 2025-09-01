@@ -373,7 +373,7 @@ class LayoutValidation:
         >>> # Automatically assign names to unnamed padstacks
         >>> edb.layout_validation.padstacks_no_name(fix=True)
         """
-        pds = self._pedb.layout.padstack_instances
+        pds = list(self._pedb.layout.padstack_instances.values())
         counts = 0
         via_count = 1
         for obj in pds:
