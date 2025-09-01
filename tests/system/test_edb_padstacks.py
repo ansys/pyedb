@@ -175,8 +175,8 @@ class TestClass(BaseTestClass):
             assert abs(pad.hole_properties[0] - hole_pad) < tol
         else:
             assert abs(pad.hole_properties - hole_pad) < tol
-        offset_x = 7
-        offset_y = 1
+        offset_x = 7.0
+        offset_y = 1.0
         pad.pad_by_layer[pad.via_stop_layer].shape = "Circle"
         pad.pad_by_layer[pad.via_stop_layer].parameters = 7.0
         pad.pad_by_layer[pad.via_stop_layer].offset_x = offset_x
