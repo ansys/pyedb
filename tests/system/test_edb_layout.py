@@ -34,10 +34,16 @@ class TestClass(BaseTestClass):
         assert edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128", net_name=["2V5"])
         assert edbapp.layout.find_padstack_instances(aedt_name="U7-T7")[0].aedt_name == "U7-T7"
         assert len(edbapp.layout.find_padstack_instances(component_name="U7"))
-        assert edbapp.layout.find_padstack_instances(component_name="U7", component_pin_name="T7")[0].name == "T7"
-        assert edbapp.layout.find_padstack_instances(component_name="U7", net_name="DDR4_A9")[0].aedt_name == "U7-R7"
-        assert edbapp.layout.find_padstack_instances(aedt_name="U7-R7")[0].aedt_name == "U7-R7"
-        assert edbapp.layout.find_padstack_instances(instance_id=4294967296)[0].id == 4294967296
+        found_instances = edbapp.layout.find_padstack_instances(component_name="U7", component_pin_name="T7")
+        assert [pin for pin in found_instances if pin.name == "T7"]
+        found_instances = edbapp.layout.find_padstack_instances(component_name="U7", net_name="DDR4_A9")
+        assert [pin for pin in found_instances if pin.aedt_name == "U7-R7"]
+        found_instances = edbapp.layout.find_padstack_instances(aedt_name="U7-R7")
+        assert [pin for pin in found_instances if pin.aedt_name == "U7-R7"]
+        if edbapp.grpc:
+            assert edbapp.layout.find_padstack_instances(instance_id=4294967296)[0].edb_uid == 4294967296
+        else:
+            assert edbapp.layout.find_padstack_instances(instance_id=4294967296)[0].id == 4294967296
         edbapp.close(terminate_rpc_session=False)
 
     def test_primitives(self, edb_examples):
