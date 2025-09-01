@@ -418,6 +418,9 @@ class PadstackInstance(GrpcPadstackInstance):
             Whether to include partial intersecting instances. The default is ``True``.
         simple_check : bool, optional
             Whether to perform a single check based on the padstack center or check the padstack bounding box.
+        arbitrary_extent_value : float, optional
+            When ``include_partial`` is ``True``, an arbitrary value is used to create a bounding box for the padstack
+            instance to check for intersection and save computation time during the cutout. The default is ``300e-6``.
 
         Returns
         -------
