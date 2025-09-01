@@ -73,7 +73,7 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  system-tests-windows:
+  system-tests-windows-dotnet:
     name: Test dotnet (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     env:
@@ -138,7 +138,7 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  system-tests-windows:
+  system-tests-windows-grpc:
     name: Test grpc (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     env:
@@ -203,7 +203,7 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  unit-tests-windows:
+  unit-tests-windows-dotnet:
     name: Unit test dotnet (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     env:
@@ -268,7 +268,7 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  unit-tests-windows:
+  unit-tests-windows-grpc:
     name: Unit test grpc (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     env:
@@ -333,7 +333,7 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  system-tests-linux:
+  system-tests-linux-dotnet:
     name: Test dotnet (linux)
     runs-on: [ Linux, self-hosted, pyedb ]
     env:
@@ -404,7 +404,7 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  system-tests-linux:
+  system-tests-linux-grpc:
     name: Test grpc (linux)
     runs-on: [ Linux, self-hosted, pyedb ]
     env:
@@ -475,7 +475,7 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  unit-tests-linux:
+  unit-tests-linux-dotnet:
     name: Unit test dotnet (linux)
     runs-on: [ Linux, self-hosted, pyedb ]
     env:
@@ -546,7 +546,7 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  unit-tests-linux:
+  unit-tests-linux-grpc:
     name: Unit test grpc (linux)
     runs-on: [ Linux, self-hosted, pyedb ]
     env:
