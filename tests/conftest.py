@@ -167,6 +167,10 @@ class EdbExamples:
         aedb = self._copy_file_folder_into_local_folder("multi_zone_project.aedb")
         return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
 
+    def get_unit_cell(self):
+        aedb = self._copy_file_folder_into_local_folder("TEDB/unitcell.aedb")
+        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
+
     def get_no_ref_pins_component(self):
         aedb = self._copy_file_folder_into_local_folder("TEDB/component_no_ref_pins.aedb")
         return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)

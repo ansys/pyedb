@@ -2799,11 +2799,15 @@ class SourceExcitation:
         self,
         terminal: Union[PadstackInstanceTerminal, EdgeTerminal],
         ref_terminal: Union[PadstackInstanceTerminal, EdgeTerminal],
+        magnitude: Union[int, float] = 1,
+        phase: Union[int, float] = 0,
     ) -> bool:
         """Create a voltage source.
 
         Parameters
         ----------
+        name : str, optional
+            Voltage source name
         terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
             :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
             :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
@@ -2814,6 +2818,10 @@ class SourceExcitation:
             :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
             :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
             Negative terminal of the source.
+        magnitude : int, float, optional
+            Magnitude of the source.
+        phase : int, float, optional
+            Phase of the source
 
         Returns
         -------
@@ -2832,7 +2840,8 @@ class SourceExcitation:
 
         ref_term = Terminal(self._pedb, ref_terminal)
         ref_term.boundary_type = "voltage_source"
-
+        term.magnitude = self._pedb.value(magnitude)
+        term.phase = self._pedb.value(phase)
         term.ref_terminal = ref_terminal
         return term
 
