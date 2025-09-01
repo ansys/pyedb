@@ -2596,7 +2596,7 @@ class Edb(EdbInit):
         >>> # Solve with SIwave:
         >>> edb.solve_siwave()
         """
-        process = SiwaveSolve(self.edbpath)
+        process = SiwaveSolve(self)
         try:
             self.close()
         except:
@@ -2647,7 +2647,7 @@ class Edb(EdbInit):
         list[str]
             Generated report files.
         """
-        process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
+        process = SiwaveSolve(self)
         try:
             self.close()
         except:
