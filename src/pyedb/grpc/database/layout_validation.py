@@ -354,7 +354,7 @@ class LayoutValidation:
         temp = []
         for k, v in inductors.items():
             model = v.component_property.model
-            if not len(model.pin_pairs):  # pragma: no cover
+            if not len(model.pin_pairs()):  # pragma: no cover
                 temp.append(k)
                 if fix:
                     v.rlc_values = [0, 1, 0]
