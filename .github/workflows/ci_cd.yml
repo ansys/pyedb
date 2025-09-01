@@ -828,7 +828,15 @@ jobs:
 
   package:
     name: Package library
-    needs: [system-tests-windows, system-tests-linux,unit-tests-windows, unit-tests-linux, docs-build]
+    needs: [system-tests-windows-dotnet,
+            system-tests-windows-grpc,
+            system-tests-linux-dotnet,
+            system-tests-linux-grpc,
+            unit-tests-windows-dotnet,
+            unit-tests-windows-grpc,
+            unit-tests-linux-dotnet,
+            unit-tests-linux-grpc,
+            docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
