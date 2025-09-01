@@ -37,7 +37,7 @@ class CfgCutout(BaseModel):
     signal_list: Optional[List[str]] = None
     reference_list: Optional[List[str]] = None
     extent_type: Optional[str] = "ConvexHull"
-    expansion_size: Optional[float] = 0.002
+    expansion_size: Optional[float, str] = 0.002
     number_of_threads: Optional[int] = 1
     custom_extent: Optional[Any] = None
     custom_extent_units: str = Field(default="meter")
