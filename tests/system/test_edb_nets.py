@@ -177,7 +177,7 @@ class TestClass(BaseTestClass):
             open_aedb_at_end=False,
         )
         assert "$1_Top_value" in parameters
-        edbapp.close_edb(terminate_rpc_session=False)
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_1(self, edb_examples):
         # Done
@@ -208,16 +208,16 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_3(self, edb_examples):
-        # Done
+        # TODO check grpc test is slow.
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=True, via_holes=False, pads=False, antipads=False, traces=False
         )
         assert len(list(edbapp.variables.values())) == 13
-        edbapp.close_edb(terminate_rpc_session=False)
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_4(self, edb_examples):
-        # Done
+        # TODO check grpc test is slow.
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=True, pads=False, antipads=False, traces=False
@@ -232,7 +232,7 @@ class TestClass(BaseTestClass):
             layers=False, materials=False, via_holes=False, pads=True, antipads=False, traces=False
         )
         assert len(list(edbapp.variables.values())) == 5
-        edbapp.close_edb(terminate_rpc_session=False)
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_6(self, edb_examples):
         # Done
@@ -241,7 +241,7 @@ class TestClass(BaseTestClass):
             layers=False, materials=False, via_holes=False, pads=False, antipads=True, traces=False
         )
         assert len(list(edbapp.variables.values())) == 2
-        edbapp.close_edb(terminate_rpc_session=False)
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_7(self, edb_examples):
         # Done
@@ -256,4 +256,4 @@ class TestClass(BaseTestClass):
             trace_net_filter=["SFPA_Tx_Fault", "SFPA_Tx_Disable", "SFPA_SDA", "SFPA_SCL", "SFPA_Rx_LOS"],
         )
         assert len(list(edbapp.variables.keys())) == 3
-        edbapp.close_edb(terminate_rpc_session=False)
+        edbapp.close(terminate_rpc_session=False)

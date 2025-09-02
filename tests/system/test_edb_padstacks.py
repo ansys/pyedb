@@ -183,10 +183,12 @@ class TestClass(BaseTestClass):
         pad.pad_by_layer[pad.via_stop_layer].offset_y = offset_y
         if edbapp.grpc:
             assert pad.pad_by_layer[pad.via_stop_layer].parameters == 7.0
+            assert pad.pad_by_layer[pad.via_stop_layer].offset_x == offset_x
+            assert pad.pad_by_layer[pad.via_stop_layer].offset_y == offset_y
         else:
             assert pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"].tofloat == 7.0
-        assert str(pad.pad_by_layer[pad.via_stop_layer].offset_x) == str(offset_x)
-        assert str(pad.pad_by_layer[pad.via_stop_layer].offset_y) == str(offset_y)
+            assert float(pad.pad_by_layer[pad.via_stop_layer].offset_x) == offset_x
+            assert float(pad.pad_by_layer[pad.via_stop_layer].offset_y) == offset_y
         if edbapp.grpc:
             pad.pad_by_layer[pad.via_stop_layer].parameters = 8.0
         else:
@@ -521,6 +523,7 @@ class TestClass(BaseTestClass):
         edbapp.close_edb()
 
     def test_via_merge(self, edb_examples):
+        # TODO check this test is slow with grpc
         edbapp = edb_examples.get_si_verse()
         polygon = [[[118e-3, 60e-3], [125e-3, 60e-3], [124e-3, 56e-3], [118e-3, 56e-3]]]
         result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")

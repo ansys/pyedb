@@ -112,7 +112,7 @@ class TestClass(BaseTestClass):
         assert len(edb.modeler.polygons[0].arcs) == 356
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=ON_CI, reason="Fails on CI")
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
     def test_interdigited_capacitor(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
