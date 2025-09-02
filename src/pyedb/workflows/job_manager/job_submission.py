@@ -20,7 +20,7 @@ Key Features:
 - Email notifications and job priority management
 
 Example:
-    >>> from pyedb.workflows.job_manager.hfss_jobs import (HFSSSimulationConfig, MachineNode,
+    >>> from pyedb.workflows.job_manager.job_submission import (HFSSSimulationConfig, MachineNode,
     ...                             SchedulerType, SchedulerOptions)
     >>> # Windows HPC configuration
     >>> config = HFSSSimulationConfig(
@@ -39,9 +39,6 @@ Example:
     >>> job_id = config.run_simulation()
     >>> print(f"Job submitted with ID: {job_id}")
 
-Version: 1.0.0
-Maintainer: Engineering Simulation Team
-License: Proprietary
 """
 
 from dataclasses import asdict, dataclass, field
@@ -247,7 +244,7 @@ class MachineNode:
 
 
 @dataclass
-class HFSS3DLayoutOptions:
+class HFSS3DLayoutBatchOptions:
     """
     HFSS 3D Layout specific simulation options and configuration.
 
@@ -273,7 +270,7 @@ class HFSS3DLayoutOptions:
         ValueError: If any parameter fails validation.
 
     Example:
-        >>> options = HFSS3DLayoutOptions(
+        >>> options = HFSS3DLayoutBatchOptions(
         ...     enable_gpu=True,
         ...     temp_directory="/scratch/hfss_temp",
         ...     mpi_vendor="Intel"
@@ -281,15 +278,15 @@ class HFSS3DLayoutOptions:
         >>> options.validate()
     """
 
-    create_starting_mesh: bool = True
+    create_starting_mesh: bool = False
     default_process_priority: str = "Normal"
     enable_gpu: bool = False
     mpi_vendor: str = field(default_factory=lambda: "Intel" if platform.system() == "Windows" else "OpenMPI")
     mpi_version: str = "Default"
     remote_spawn_command: str = field(default_factory=lambda: "SSH" if platform.system() == "Windows" else "ssh")
-    solve_adaptive_only: bool = True
-    validate_only: bool = True
-    temp_directory: str = field(default_factory=lambda: "/tmp" if platform.system() != "Windows" else "D:\\Temp")
+    solve_adaptive_only: bool = False
+    validate_only: bool = False
+    temp_directory: str = field(default_factory=lambda: "/tmp" if platform.system() != "Windows" else "C:\\Temp")
 
     def __post_init__(self):
         """Automatically validate options after initialization."""
@@ -297,7 +294,7 @@ class HFSS3DLayoutOptions:
 
     def validate(self) -> None:
         """
-        Validate all HFSS layout options for correctness.
+        Validate all HFSS 3D layout options for correctness.
 
         Performs comprehensive validation of HFSS-specific parameters including
         priority levels, MPI vendors, and directory paths.
@@ -329,7 +326,7 @@ class HFSS3DLayoutOptions:
             Dict[str, str]: Dictionary of HFSS batch options in key-value format.
 
         Example:
-            >>> options = HFSS3DLayoutOptions(enable_gpu=True)
+            >>> options = HFSS3DLayoutBatchOptions(enable_gpu=True)
             >>> batch_dict = options.to_batch_options_dict()
             >>> print(batch_dict['HFSS 3D Layout Design/EnableGPU'])
             '1'
@@ -363,7 +360,7 @@ class HFSSSimulationConfig:
         auto (bool): Enable auto mode. Default: True
         non_graphical (bool): Enable non-graphical mode. Default: True
         monitor (bool): Enable job monitoring. Default: True
-        layout_options (HFSS3DLayoutOptions): HFSS-specific simulation options.
+        layout_options (HFSS3DLayoutBatchOptions): HFSS-specific simulation options.
         project_path (str): Path to .aedt project file.
         design_name (str): Design name within project. Default: "main"
         design_mode (str): Design mode. Default: "Nominal"
@@ -390,22 +387,23 @@ class HFSSSimulationConfig:
         >>> result = config.run_simulation()
     """
 
+    ansysedt_path: str = None
     solver: str = "Hfss3DLayout"
-    jobid: str = field(default_factory=lambda: f"RSM_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+    jobid: str = field(default_factory=lambda: f"LOCAL_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
     distributed: bool = True
     machine_nodes: List[MachineNode] = field(default_factory=lambda: [MachineNode()])
     auto: bool = True
     non_graphical: bool = True
     monitor: bool = True
-    layout_options: HFSS3DLayoutOptions = field(default_factory=HFSS3DLayoutOptions)
+    layout_options: HFSS3DLayoutBatchOptions = field(default_factory=HFSS3DLayoutBatchOptions)
     project_path: str = field(
         default_factory=lambda: "/tmp/simulation.aedt"
         if platform.system() != "Windows"
         else "D:\\Temp\\simulation.aedt"
     )
-    design_name: str = "main"
-    design_mode: str = "Nominal"
-    setup_name: str = "Setup1"
+    design_name: str = ""
+    design_mode: str = ""
+    setup_name: str = ""
     scheduler_type: SchedulerType = SchedulerType.NONE
     scheduler_options: SchedulerOptions = field(default_factory=SchedulerOptions)
 
@@ -434,17 +432,11 @@ class HFSSSimulationConfig:
         if not re.match(r"^[a-zA-Z0-9_-]+$", self.jobid):
             raise ValueError("Job ID can only contain letters, numbers, underscores, and hyphens")
 
-        if not self.project_path.endswith(".aedt"):
-            raise ValueError("Project path must be a .aedt file")
+        if not self.project_path.lower().endswith((".aedt", ".aedb")):
+            raise ValueError("Project path must be a .aedt or .aedb file")
 
         if not os.path.exists(self.project_path):
             raise FileNotFoundError(f"Project file not found: {self.project_path}")
-
-        if not self.design_name:
-            raise ValueError("Design name cannot be empty")
-
-        if not self.setup_name:
-            raise ValueError("Setup name cannot be empty")
 
         # Platform-scheduler compatibility validation
         if self.scheduler_type == SchedulerType.WINDOWS_HPC and platform.system() != "Windows":
@@ -452,64 +444,6 @@ class HFSSSimulationConfig:
 
         # Validate scheduler options
         self.scheduler_options.validate()
-
-    def get_ansysedt_path(self) -> str:
-        """
-        Locate and validate the ANSYS EDT executable path.
-
-        Searches for ansysedt executable using environment variables and standard
-        installation paths. Supports both Windows and Linux platforms.
-
-        Returns:
-            str: Full path to validated ansysedt executable.
-
-        Raises:
-            ValueError: If ANSYSEM_ROOT environment variable is not set.
-            FileNotFoundError: If ansysedt executable is not found.
-            OSError: If unsupported operating system detected.
-
-        Example:
-            >>> path = config.get_ansysedt_path()
-            >>> print(f"ANSYS executable: {path}")
-        """
-        system = platform.system()
-
-        if system == "Windows":
-            ansys_root = os.environ.get("ANSYSEM_ROOT")
-            if not ansys_root:
-                raise ValueError("ANSYSEM_ROOT environment variable not set")
-            ansysedt_path = os.path.join(ansys_root, "ansysedt.exe")
-
-        elif system == "Linux":
-            # Comprehensive Linux installation path search
-            possible_paths = [
-                os.environ.get("ANSYSEM_ROOT", ""),
-                "/usr/ansys_inc/v232/AnsysEM",
-                "/opt/ansys_inc/v232/AnsysEM",
-                "/apps/ansys_inc/v232/AnsysEM",
-                os.environ.get("HOME", "") + "/ansys_inc/v232/AnsysEM",
-                "/usr/local/ansys_inc/v232/AnsysEM",
-            ]
-
-            ansysedt_path = None
-            for path in possible_paths:
-                if path and os.path.exists(os.path.join(path, "ansysedt")):
-                    ansysedt_path = os.path.join(path, "ansysedt")
-                    break
-
-            if not ansysedt_path:
-                raise FileNotFoundError(
-                    "ansysedt not found. Check ANSYS installation on Linux. "
-                    "Set ANSYSEM_ROOT environment variable or install in standard locations."
-                )
-
-        else:
-            raise OSError(f"Unsupported operating system: {system}")
-
-        if not os.path.exists(ansysedt_path):
-            raise FileNotFoundError(f"ansysedt not found at: {ansysedt_path}")
-
-        return ansysedt_path
 
     def generate_machinelist_string(self) -> str:
         """
@@ -885,7 +819,7 @@ class HFSSSimulationConfig:
         parts = []
 
         # ANSYS executable with proper quoting
-        ansysedt_path = self.get_ansysedt_path()
+        ansysedt_path = self.ansysedt_path
         if platform.system() == "Windows":
             parts.append(f'"{ansysedt_path}"')
         else:
@@ -1260,7 +1194,7 @@ class HFSSSimulationConfig:
             >>> config = HFSSSimulationConfig.from_dict(data)
         """
         machine_nodes = [MachineNode(**node_data) for node_data in data.get("machine_nodes", [])]
-        layout_options = HFSS3DLayoutOptions(**data.get("layout_options", {}))
+        layout_options = HFSS3DLayoutBatchOptions(**data.get("layout_options", {}))
         scheduler_options = SchedulerOptions(**data.get("scheduler_options", {}))
 
         return cls(
@@ -1293,8 +1227,8 @@ class HFSSSimulationConfig:
 def create_hfss_config(
     jobid: str,
     project_path: str,
-    design_name: str = "main",
-    setup_name: str = "Setup1",
+    design_name: str = "",
+    setup_name: str = "",
     machine_nodes: Optional[List[MachineNode]] = None,
     scheduler_type: SchedulerType = SchedulerType.NONE,
     scheduler_options: Optional[SchedulerOptions] = None,
