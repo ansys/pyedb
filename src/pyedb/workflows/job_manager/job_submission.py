@@ -278,7 +278,7 @@ class HFSS3DLayoutBatchOptions:
         >>> options.validate()
     """
 
-    create_starting_mesh: bool = False
+    create_starting_mesh: bool = True
     default_process_priority: str = "Normal"
     enable_gpu: bool = False
     mpi_vendor: str = field(default_factory=lambda: "Intel" if platform.system() == "Windows" else "OpenMPI")
@@ -286,7 +286,7 @@ class HFSS3DLayoutBatchOptions:
     remote_spawn_command: str = field(default_factory=lambda: "SSH" if platform.system() == "Windows" else "ssh")
     solve_adaptive_only: bool = False
     validate_only: bool = False
-    temp_directory: str = field(default_factory=lambda: "/tmp" if platform.system() != "Windows" else "C:\\Temp")
+    temp_directory: str = field(default_factory=lambda: "/tmp" if platform.system() != "Windows" else "D:\\Temp")
 
     def __post_init__(self):
         """Automatically validate options after initialization."""
@@ -340,7 +340,6 @@ class HFSS3DLayoutBatchOptions:
             "HFSS 3D Layout Design/RemoteSpawnCommand": self.remote_spawn_command,
             "HFSS 3D Layout Design/SolveAdaptiveOnly": "1" if self.solve_adaptive_only else "0",
             "HFSS 3D Layout Design/ValidateOnly": "1" if self.validate_only else "0",
-            "tempdirectory": self.temp_directory,
         }
 
 
@@ -858,7 +857,10 @@ class HFSSSimulationConfig:
         else:
             project_path_quoted = shlex.quote(self.project_path)
 
-        parts.append(f"-batchsolve {design_string} {project_path_quoted}")
+        if self.design_name:
+            parts.append(f"-batchsolve {design_string} {project_path_quoted}")
+        else:
+            parts.append(f"-batchsolve {project_path_quoted}")
 
         return " ".join(parts)
 
@@ -1277,66 +1279,3 @@ def create_hfss_config(
         scheduler_options=scheduler_options,
         **kwargs,
     )
-
-
-# Example usage and demonstration
-if __name__ == "__main__":
-    """
-    Demonstration module for HFSS simulation configuration system.
-
-    This module can be executed directly to demonstrate various configuration
-    scenarios and validate functionality.
-    """
-
-    print("=== HFSS Simulation Configuration System Demo ===\n")
-
-    # Example 1: Windows HPC configuration
-    print("1. Windows HPC Enterprise Configuration:")
-    hpc_config = create_hfss_config(
-        jobid="enterprise_sim_001",
-        project_path="C:\\Projects\\antenna_design.aedt",
-        scheduler_type=SchedulerType.WINDOWS_HPC,
-        scheduler_options=SchedulerOptions(
-            queue="computeNodes",
-            time="3.00:00:00",  # 3 days
-            nodes=8,
-            memory="128GB",
-            priority="High",
-            email_notification="engineering@company.com",
-            run_as_administrator=True,
-        ),
-    )
-
-    print(f"   Job ID: {hpc_config.jobid}")
-    print(f"   Scheduler: {hpc_config.scheduler_type.value}")
-    print(f"   Nodes: {hpc_config.scheduler_options.nodes}")
-    print(f"   Memory: {hpc_config.scheduler_options.memory}\n")
-
-    # Example 2: SLURM academic configuration
-    print("2. SLURM Academic Configuration:")
-    slurm_config = create_hfss_config(
-        jobid="research_sim_002",
-        project_path="/shared/projects/design.aedt",
-        scheduler_type=SchedulerType.SLURM,
-        scheduler_options=SchedulerOptions(
-            queue="gpu", time="48:00:00", nodes=4, gpus=8, memory="64GB", account="research_project_123"
-        ),
-    )
-
-    # Example 3: Direct execution for development
-    print("3. Direct Execution (Development):")
-    direct_config = create_hfss_config(
-        jobid="dev_test_003", project_path="/tmp/test_design.aedt", scheduler_type=SchedulerType.NONE
-    )
-
-    print(f"   Command: {direct_config.generate_command_string()[:80]}...\n")
-
-    # Demonstration of serialization
-    print("4. Configuration Serialization:")
-    config_dict = direct_config.to_dict()
-    print(f"   Serialized keys: {list(config_dict.keys())}")
-    print(f"   Configuration version: {config_dict.get('version', 'unknown')}\n")
-
-    print("=== Demo Complete ===\n")
-    print("This configuration system is ready for production use!")
-    print("Features: Cross-platform, Enterprise schedulers, Validation, Serialization")
