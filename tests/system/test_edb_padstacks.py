@@ -564,6 +564,7 @@ class TestClass(BaseTestClass):
         assert len(clusters1[0]) == 20
         assert len(clusters2) == 2
         assert len(clusters2[1]) == 21
+        edbapp.close(terminate_rpc_session=False)
 
 
 def _get_padstack_polygon_data(edb, padstack_instance: EDBPadstackInstance, layer_name: str) -> PolygonData:
