@@ -25,7 +25,7 @@
 import json
 import os
 from pathlib import Path
-import random
+import secrets
 import shutil
 import string
 import tempfile
@@ -66,7 +66,8 @@ bom_example = "bom_example.csv"
 
 def generate_random_string(length):
     characters = string.ascii_letters + string.digits
-    random_string = "".join(random.sample(characters, length))
+    generator = secrets.SystemRandom()
+    random_string = "".join(secrets.SystemRandom.sample(generator, characters, length))
     return random_string
 
 
