@@ -29,7 +29,8 @@ import pytest
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.dotnet.database.padstack import EDBPadstackInstance
-from tests.conftest import GRPC, local_path, test_subfolder
+from pyedb.generic.general_methods import is_windows
+from tests.conftest import GRPC, config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -546,6 +547,7 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.instances[merged_via[0]].stop_layer == "layer2"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_dbscan(self, edb_examples):
         source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
         edbapp = edb_examples.load_edb(source_path)
