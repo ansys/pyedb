@@ -263,7 +263,6 @@ def Edb(
     if grpc is False and settings.edb_dll_path is not None:
         # Check if the user specified a .dll path
         settings.logger.info(f"Force to use .dll from {settings.edb_dll_path} defined in settings.")
-        settings.specified_version = "unknown"
     elif version is None:
         if settings.specified_version is not None:
             settings.logger.info(f"Use {settings.specified_version} defined in settings.")

@@ -25,6 +25,7 @@ import re
 import sys
 import time
 import warnings
+from pathlib import Path
 
 
 class Settings(object):
@@ -248,6 +249,9 @@ class Settings(object):
     @edb_dll_path.setter
     def edb_dll_path(self, value):
         if os.path.exists(value):
+            ver = Path(value).parts[-2]
+            version, release = ver[-3:-1], ver[-1]
+            self.specified_version = f"20{version}.{release}"
             self._edb_dll_path = value
 
     @property
