@@ -386,7 +386,7 @@ class HFSSSimulationConfig:
         >>> result = config.run_simulation()
     """
 
-    ansysedt_path: str = None
+    ansysedt_path: str = ""
     solver: str = "Hfss3DLayout"
     jobid: str = field(default_factory=lambda: f"LOCAL_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
     distributed: bool = True
@@ -1161,6 +1161,7 @@ class HFSSSimulationConfig:
         """
         return {
             "solver": self.solver,
+            "ansysedt_path": self.ansysedt_path,
             "jobid": self.jobid,
             "distributed": self.distributed,
             "machine_nodes": [asdict(node) for node in self.machine_nodes],
@@ -1201,6 +1202,7 @@ class HFSSSimulationConfig:
 
         return cls(
             solver=data.get("solver", "Hfss3DLayout"),
+            ansysedt_path=data.get("ansysedt_path", ""),
             jobid=data.get("jobid", f"RSM_{datetime.now().strftime('%Y%m%d_%H%M%S')}"),
             distributed=data.get("distributed", True),
             machine_nodes=machine_nodes,
@@ -1227,6 +1229,7 @@ class HFSSSimulationConfig:
 
 
 def create_hfss_config(
+    asysedt_path: str,
     jobid: str,
     project_path: str,
     design_name: str = "",
@@ -1243,6 +1246,7 @@ def create_hfss_config(
     configurations with sensible defaults and reduced boilerplate.
 
     Args:
+        aedsedt_path (str): Path to ANSYS Electronics Desktop executable.
         jobid (str): Unique job identifier.
         project_path (str): Path to .aedt project file.
         design_name (str): Design name within project. Default: "main"
@@ -1270,6 +1274,7 @@ def create_hfss_config(
         scheduler_options = SchedulerOptions()
 
     return HFSSSimulationConfig(
+        ansysedt_path=asysedt_path,
         jobid=jobid,
         project_path=project_path,
         design_name=design_name,
