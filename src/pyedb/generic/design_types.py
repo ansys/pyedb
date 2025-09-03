@@ -32,18 +32,15 @@ if TYPE_CHECKING:
 
 
 @overload
-def Edb(*, grpc: Literal[True], **kwargs) -> "EdbGrpc":
-    ...
+def Edb(*, grpc: Literal[True], **kwargs) -> "EdbGrpc": ...
 
 
 @overload
-def Edb(*, grpc: Literal[False] = False, **kwargs) -> "EdbDotnet":
-    ...
+def Edb(*, grpc: Literal[False] = False, **kwargs) -> "EdbDotnet": ...
 
 
 @overload
-def Edb(*, grpc: bool, **kwargs) -> Union["EdbGrpc", "EdbDotnet"]:
-    ...
+def Edb(*, grpc: bool, **kwargs) -> Union["EdbGrpc", "EdbDotnet"]: ...
 
 
 # lazy imports
@@ -167,17 +164,10 @@ def Edb(
         4. Simulation Setup
 
         # Create SIwave SYZ setup
-    >>> syz_setup = edb.create_siwave_syz_setup(
-    >>> name="GHz_Setup",
-    >>> start_freq="1GHz",
-    >>> stop_freq="10GHz"
-    >>> )
+    >>> syz_setup = edb.create_siwave_syz_setup(name="GHz_Setup", start_freq="1GHz", stop_freq="10GHz")
 
         # Create SIwave DC setup
-    >>> dc_setup = edb.create_siwave_dc_setup(
-    >>> name="DC_Analysis",
-    >>> use_dc_point=True
-    >>> )
+    >>> dc_setup = edb.create_siwave_dc_setup(name="DC_Analysis", use_dc_point=True)
 
         # Solve with SIwave
     >>> edb.solve_siwave()
@@ -208,17 +198,10 @@ def Edb(
         7. Port Creation
 
         # Create wave port between two pins
-    >>> wave_port = edb.source_excitation.create_port(
-    >>> positive_terminal=pin1,
-    >>> negative_terminal=pin2,
-    >>> port_type="Wave"
-    >>> )
+    >>> wave_port = edb.source_excitation.create_port(positive_terminal=pin1, negative_terminal=pin2, port_type="Wave")
 
         # Create lumped port
-    >>> lumped_port = edb.source_excitation.create_port(
-    >>> positive_terminal=via_terminal,
-    >>> port_type="Lumped"
-    >>> )
+    >>> lumped_port = edb.source_excitation.create_port(positive_terminal=via_terminal, port_type="Lumped")
 
         8. Component Management
 
@@ -231,12 +214,7 @@ def Edb(
         9. Parametrization
 
         # Auto-parametrize design elements
-    >>> params = edb.auto_parametrize_design(
-    >>> traces=True,
-    >>> pads=True,
-    >>> antipads=True,
-    >>> use_relative_variables=True
-    >>> )
+    >>> params = edb.auto_parametrize_design(traces=True, pads=True, antipads=True, use_relative_variables=True)
     >>> print("Created parameters:", params)
 
         10. Design Statistics
@@ -255,11 +233,7 @@ def Edb(
         12. Differential Pairs
 
         # Create differential pair
-    >>> edb.differential_pairs.create(
-    >>> positive_net="USB_P",
-    >>> negative_net="USB_N",
-    >>> name="USB_DP"
-    >>> )
+    >>> edb.differential_pairs.create(positive_net="USB_P", negative_net="USB_N", name="USB_DP")
 
         13. Workflow Automation
 

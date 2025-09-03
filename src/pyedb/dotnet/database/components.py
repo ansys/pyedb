@@ -20,9 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module contains the `Components` class.
+"""This module contains the `Components` class."""
 
-"""
 import codecs
 import json
 import math
@@ -541,16 +540,17 @@ class Components(object):
 
         Examples
         --------
-        >>> edb1 = Edb(edbpath=targetfile1,  edbversion="2021.2")
+        >>> edb1 = Edb(edbpath=targetfile1, edbversion="2021.2")
         >>> hosting_cmp = edb1.components.get_component_by_name("U100")
         >>> mounted_cmp = edb2.components.get_component_by_name("BGA")
         >>> vector, rotation, solder_ball_height = edb1.components.get_component_placement_vector(
-        ...                                             mounted_component=mounted_cmp,
-        ...                                             hosting_component=hosting_cmp,
-        ...                                             mounted_component_pin1="A12",
-        ...                                             mounted_component_pin2="A14",
-        ...                                             hosting_component_pin1="A12",
-        ...                                             hosting_component_pin2="A14")
+        ...     mounted_component=mounted_cmp,
+        ...     hosting_component=hosting_cmp,
+        ...     mounted_component_pin1="A12",
+        ...     mounted_component_pin2="A14",
+        ...     hosting_component_pin1="A12",
+        ...     hosting_component_pin2="A14",
+        ... )
         """
         m_pin1_pos = [0.0, 0.0]
         m_pin2_pos = [0.0, 0.0]
@@ -1270,7 +1270,7 @@ class Components(object):
         Examples
         --------
         >>> from pyedb import Edb
-        >>> edb_file = r'C:\my_edb_file.aedb'
+        >>> edb_file = r"C:\my_edb_file.aedb"
         >>> edb = Edb(edb_file)
         >>> for cmp in list(edb.components.instances.keys()):
         >>>     edb.components.deactivate_rlc_component(component=cmp, create_circuit_port=False)
@@ -1750,9 +1750,9 @@ class Components(object):
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.set_component_model("A1", model_type="Spice",
-        ...                                            modelpath="pathtospfile",
-        ...                                            modelname="spicemodelname")
+        >>> edbapp.components.set_component_model(
+        ...     "A1", model_type="Spice", modelpath="pathtospfile", modelname="spicemodelname"
+        ... )
 
         """
         if not modelname:
@@ -2152,9 +2152,7 @@ class Components(object):
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.set_component_rlc(
-        ...     "R1", res_value=50, ind_value=1e-9, cap_value=1e-12, isparallel=False
-        ... )
+        >>> edbapp.components.set_component_rlc("R1", res_value=50, ind_value=1e-9, cap_value=1e-12, isparallel=False)
 
         """
         if res_value is None and ind_value is None and cap_value is None:

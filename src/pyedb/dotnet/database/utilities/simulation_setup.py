@@ -371,11 +371,13 @@ class SimulationSetup(object):
         Examples
         --------
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
-        >>> setup1.add_frequency_sweep(frequency_sweep=[
-        ...     ["linear count", "0", "1kHz", 1],
-        ...     ["log scale", "1kHz", "0.1GHz", 10],
-        ...     ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-        ...     ])
+        >>> setup1.add_frequency_sweep(
+        ...     frequency_sweep=[
+        ...         ["linear count", "0", "1kHz", 1],
+        ...         ["log scale", "1kHz", "0.1GHz", 10],
+        ...         ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+        ...     ]
+        ... )
         """
         warnings.warn("`add_frequency_sweep` is deprecated. Use `add_sweep` method instead.", DeprecationWarning)
         return self.add_sweep(name, frequency_sweep)
