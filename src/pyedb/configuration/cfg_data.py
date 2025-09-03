@@ -31,7 +31,8 @@ from pyedb.configuration.cfg_operations import CfgOperations
 from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
 from pyedb.configuration.cfg_padstacks import CfgPadstacks
 from pyedb.configuration.cfg_pin_groups import CfgPinGroups
-from pyedb.configuration.cfg_ports_sources import CfgPorts, CfgProbes, CfgSources
+from pyedb.configuration.cfg_ports_sources_2 import CfgPorts
+from pyedb.configuration.cfg_ports_sources import CfgProbes, CfgSources
 from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
 from pyedb.configuration.cfg_setup import CfgSetups
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
@@ -59,7 +60,13 @@ class CfgData(object):
 
         self.pin_groups = CfgPinGroups(self._pedb, pingroup_data=kwargs.get("pin_groups", []))
 
-        self.ports = CfgPorts(self._pedb, ports_data=kwargs.get("ports", []))
+        for p in kwargs.get("ports", []):
+            self.ports = CfgPorts()
+            self.ports._pedb = self._pedb
+            if p["type"] == "circuit":
+                self.ports.add_circuit_port(p["name"], p["positive_terminal"], p["negative_terminal"])
+            elif p["type"] in ["coax"]:
+                self.ports.add_coax_port(p["name"], p["positive_terminal"])
 
         self.sources = CfgSources(self._pedb, sources_data=kwargs.get("sources", []))
 

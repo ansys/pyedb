@@ -530,6 +530,9 @@ class Configuration:
                 signal_list=signal_list,
             )
 
+    def apply_ports(self):
+        pass
+
     def export(
         self,
         file_path,
