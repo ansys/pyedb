@@ -25,6 +25,7 @@
 
 import pytest
 
+from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -38,9 +39,9 @@ class TestClass(BaseTestClass):
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
+    @pytest.mark.skipif(condition=not config["use_grpc"], reason="Test hanging on windows with grpc")
     def test_nets_queries(self, edb_examples):
         """Evaluate nets queries"""
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.extended_nets.auto_identify_signal()
         assert edbapp.extended_nets.auto_identify_power()
