@@ -21,11 +21,11 @@
 # SOFTWARE.
 
 import os
+from pathlib import Path
 import re
 import sys
 import time
 import warnings
-from pathlib import Path
 
 
 class Settings(object):
