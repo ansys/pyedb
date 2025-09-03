@@ -27,7 +27,8 @@ import os
 
 import pytest
 
-from tests.conftest import local_path, test_subfolder
+from pyedb.generic.general_methods import is_windows
+from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -207,6 +208,7 @@ class TestClass(BaseTestClass):
         assert "$sigma_copper_delta" in edbapp.variables
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_layout_auto_parametrization_3(self, edb_examples):
         # TODO check grpc test is slow.
         edbapp = edb_examples.get_si_verse()
@@ -216,6 +218,7 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.values())) == 13
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_layout_auto_parametrization_4(self, edb_examples):
         # TODO check grpc test is slow.
         edbapp = edb_examples.get_si_verse()
