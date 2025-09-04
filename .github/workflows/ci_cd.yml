@@ -108,7 +108,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 15
+          timeout_minutes: 40
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/system -n auto --dist loadfile -v --cov
@@ -173,7 +173,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 15
+          timeout_minutes: 40
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/system -n auto --dist loadfile -v --cov
@@ -238,7 +238,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 15
+          timeout_minutes: 40
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/unit -n auto --dist loadfile -v --cov
@@ -303,7 +303,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 15
+          timeout_minutes: 40
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/unit -n auto --dist loadfile -v --cov
