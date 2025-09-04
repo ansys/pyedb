@@ -38,6 +38,7 @@ dependencies = [
     "scikit-rf",
     "ansys-edb-core>=0.2.0",
     "psutil",
+    "defusedxml>=0.7,<8.0",
 ]
 
 [project.optional-dependencies]

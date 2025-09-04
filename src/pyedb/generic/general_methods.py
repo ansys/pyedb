@@ -52,7 +52,7 @@ _pythonver = sys.version_info[0]
 
 
 try:
-    import xml.etree.cElementTree as ET
+    import xml.etree.cElementTree as ET  # nosec B405
 
     ET.VERSION
 except ImportError:
