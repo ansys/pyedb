@@ -101,6 +101,7 @@ from pyedb.misc.decorators import execution_timer
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflow import Workflow
+from pyedb.workflows.job_manager.job_manager_handler import JobManagerHandler
 
 
 class Edb:
@@ -427,10 +428,22 @@ class Edb:
         self._core_primitives = Modeler(self)
         self._stackup2 = self._stackup
         self._materials = Materials(self)
+        self._job_manager = JobManagerHandler(self)
 
     @property
     def pedb_class(self):
         return pyedb.dotnet
+
+    @property
+    def job_manager(self):
+        """Job manager for handling simulation tasks.
+
+        Returns
+        -------
+        :class:`JobManagerHandler <pyedb.workflows.job_manager.job_manager_handler.JobManagerHandler>`
+            Job manager instance for submitting and managing simulation jobs.
+        """
+        return self._job_manager
 
     def value(self, val):
         """Convert a value into a pyedb value."""
