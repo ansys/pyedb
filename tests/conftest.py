@@ -178,6 +178,12 @@ class EdbExamples:
             aedb = edb_path
         return Edb(edbpath=aedb, edbversion=desktop_version, grpc=self.grpc, **kwargs)
 
+    def copy_project_for_job_manager(self, local_scratch):
+        example_project = os.path.join(example_models_path, "test_project_for_job_manager.aedb")
+        target_path = os.path.join(local_scratch.path, "project.aedb")
+        local_scratch.copyfolder(example_project, target_path)
+        return target_path
+
 
 @pytest.fixture(scope="class", autouse=True)
 def target_path(local_scratch):
