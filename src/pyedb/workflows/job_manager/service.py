@@ -317,6 +317,22 @@ class JobManager:
         except Exception as e:
             return web.json_response({"success": False, "error": str(e)}, status=400)
 
+    async def wait_until_all_done(self) -> None:
+        """
+        Block until every known job is in a terminal state.
+        Useful for batch / CLI usage.
+        """
+        while True:
+            # All jobs that are NOT in a terminal state
+            active = [
+                j
+                for j in self.jobs.values()
+                if j.status not in {JobStatus.COMPLETED, JobStatus.FAILED, JobStatus.CANCELLED}
+            ]
+            if not active:
+                return
+            await asyncio.sleep(1)  # be nice to the event-loop
+
     async def submit_job(self, config: HFSSSimulationConfig, priority: int = 0) -> str:
         """Submit a job to the pool with optional priority."""
         job_id = config.jobid
