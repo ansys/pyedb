@@ -1,44 +1,45 @@
 """
-HFSS Simulation Configuration Parser and Runner with Enterprise Scheduler Support
+``job_submission`` --- Cross-platform HFSS simulation runner with enterprise scheduler support
+==============================================================================================
 
-This module provides a comprehensive, production-ready solution for configuring,
-validating, and executing ANSYS HFSS simulations across Windows and Linux platforms
-with support for all major enterprise job schedulers including Windows HPC Server,
-SLURM, LSF, and PBS.
+The module provides a **single entry point**, :func:`create_hfss_config`, that
+builds a validated, JSON-serialisable configuration object and submits it to:
 
-The module is designed for industrial and academic HPC environments with features
-for resource management, job tracking, error handling, and automation.
+* Local subprocess (default)
+* SLURM
+* LSF (IBM Platform)
+* PBS / Torque
+* Windows HPC Server
 
-Key Features:
-- Cross-platform support (Windows & Linux)
-- Enterprise scheduler integration (Windows HPC, SLURM, LSF, PBS)
-- Comprehensive input validation and error handling
-- JSON serialization/deserialization for configuration persistence
-- Built-in subprocess execution with timeout management
-- Production-ready logging and monitoring capabilities
-- GPU and resource management support
-- Email notifications and job priority management
+The configuration is **immutable** (dataclass), **validated** on creation, and
+can be **round-tripped** through JSON for persistence or REST transmission.
 
-Example:
-    >>> from pyedb.workflows.job_manager.job_submission import (HFSSSimulationConfig, MachineNode,
-    ...                             SchedulerType, SchedulerOptions)
-    >>> # Windows HPC configuration
-    >>> config = HFSSSimulationConfig(
-    ...     jobid="production_simulation_001",
-    ...     project_path="C:\\Projects\\antenna_design.aedt",
-    ...     scheduler_type=SchedulerType.WINDOWS_HPC,
+Examples
+--------
+Local simulation::
+
+    >>> cfg = create_hfss_config(
+    ...     ansys_edt_path="/ansys/v241/Linux64/ansysedt",
+    ...     jobid="patch_antenna",
+    ...     project_path="/home/antenna.aedt")
+    >>> result = cfg.run_simulation(timeout=3600)
+    >>> result.returncode
+    0
+
+SLURM cluster::
+
+    >>> cfg = create_hfss_config(
+    ...     jobid="array_001",
+    ...     project_path="/shared/array.aedt",
+    ...     scheduler_type=SchedulerType.SLURM,
     ...     scheduler_options=SchedulerOptions(
-    ...         queue="gpuNodes",
-    ...         time="3.00:00:00",
+    ...         queue="compute",
     ...         nodes=4,
     ...         memory="64GB",
-    ...         priority="High"
-    ...     )
-    ... )
-    >>> # Submit to scheduler
-    >>> job_id = config.run_simulation()
-    >>> print(f"Job submitted with ID: {job_id}")
-
+    ...         time="08:00:00"))
+    >>> job_id = cfg.run_simulation()
+    >>> print(job_id)
+    slurm_job_12345
 """
 
 from dataclasses import asdict, dataclass, field
@@ -55,22 +56,20 @@ import xml.etree.ElementTree as ET
 
 class SchedulerType(enum.Enum):
     """
-    Enumeration of supported enterprise job schedulers.
+    Supported enterprise job schedulers.
 
-    This enum defines all supported job scheduler types for industrial HPC environments.
-    Each scheduler type corresponds to specific enterprise-grade job management systems.
-
-    Attributes:
-        NONE: Direct execution without scheduler (for development and testing)
-        LSF: IBM Platform LSF scheduler - Enterprise workload manager
-        SLURM: Simple Linux Utility for Resource Management - Academic and research HPC
-        PBS: Portable Batch System (Torque/PBS Pro) - Cross-platform batch system
-        WINDOWS_HPC: Microsoft Windows HPC Server - Enterprise Windows scheduler
-
-    Example:
-        >>> scheduler = SchedulerType.WINDOWS_HPC
-        >>> print(f"Using scheduler: {scheduler.value}")
-        Using scheduler: windows_hpc
+    Members
+    -------
+    NONE : str
+        Direct subprocess execution (default).
+    SLURM : str
+        Simple Linux Utility for Resource Management.
+    LSF : str
+        IBM Platform Load Sharing Facility.
+    PBS : str
+        Portable Batch System (Torque / PBS Pro).
+    WINDOWS_HPC : str
+        Microsoft Windows HPC Server.
     """
 
     NONE = "none"
@@ -83,44 +82,50 @@ class SchedulerType(enum.Enum):
 @dataclass
 class SchedulerOptions:
     """
-    Comprehensive configuration options for enterprise job schedulers.
+    Resource requirements and scheduler-specific directives.
 
-    This class encapsulates all scheduler-specific parameters for resource allocation,
-    job prioritization, and execution constraints across different scheduler platforms.
+    All attributes are validated by :meth:`validate` which is automatically
+    called after instantiation.
 
-    Attributes:
-        queue (str): Queue/partition name for job placement. Default: "default"
-        time (str): Maximum walltime in format HH:MM:SS or days.hours:minutes:seconds.
-                   Default: "24:00:00" (24 hours)
-        nodes (int): Number of compute nodes to request. Default: 1
-        tasks_per_node (int): Number of tasks/processes per node. Default: 1
-        memory (str): Memory requirement with units (e.g., "4GB", "8G"). Default: "4GB"
-        account (Optional[str]): Account/project to charge for resource usage.
-        reservation (Optional[str]): Reservation name for guaranteed resources.
-        qos (Optional[str]): Quality of Service level for priority scheduling.
-        constraints (Optional[str]): Node constraints (e.g., "gpu", "skylake", "ib").
-        exclusive (bool): Request exclusive node access. Default: False
-        gpus (int): Number of GPUs to request. Default: 0
-        gpu_type (Optional[str]): Specific GPU type (e.g., "a100", "v100", "rtx4090").
-        priority (str): Job priority level. Valid values: "Low", "BelowNormal", "Normal",
-                       "AboveNormal", "High". Default: "Normal"
-        email_notification (Optional[str]): Email address for job status notifications.
-        run_as_administrator (bool): Run with elevated privileges (Windows HPC). Default: False
+    Parameters
+    ----------
+    queue : str, optional
+        Partition or queue name.  Default ``"default"``.
+    time : str, optional
+        Wall-time limit in ``HH:MM:SS`` or ``D.HH:MM:SS``.  Default
+        ``"24:00:00"``.
+    nodes : int, optional
+        Number of compute nodes.  Default ``1``.
+    tasks_per_node : int, optional
+        Processes per node.  Default ``1``.
+    memory : str, optional
+        Memory per node, e.g. ``"4GB"``.  Default ``"4GB"``.
+    account : str, optional
+        Account / project to charge.
+    reservation : str, optional
+        Advance reservation name.
+    qos : str, optional
+        Quality-of-service level.
+    constraints : str, optional
+        Node features, e.g. ``"gpu"``.
+    exclusive : bool, optional
+        Request whole nodes.  Default ``False``.
+    gpus : int, optional
+        Number of GPUs.  Default ``0``.
+    gpu_type : str, optional
+        GPU model, e.g. ``"a100"``.
+    priority : str, optional
+        Job priority: ``Low``, ``BelowNormal``, ``Normal``, ``AboveNormal``,
+        ``High``.  Default ``"Normal"``.
+    email_notification : str, optional
+        Address for status mails.
+    run_as_administrator : bool, optional
+        Elevated privileges (Windows HPC only).  Default ``False``.
 
-    Raises:
-        ValueError: If any parameter fails validation checks.
-
-    Example:
-        >>> opts = SchedulerOptions(
-        ...     queue="gpuPartition",
-        ...     time="48:00:00",
-        ...     nodes=2,
-        ...     gpus=4,
-        ...     memory="64GB",
-        ...     priority="High",
-        ...     email_notification="user@company.com"
-        ... )
-        >>> opts.validate()
+    Raises
+    ------
+    ValueError
+        On any validation failure.
     """
 
     queue: str = "default"
@@ -180,27 +185,23 @@ class SchedulerOptions:
 @dataclass
 class MachineNode:
     """
-    Represents a computational node for distributed HFSS simulations.
+    Compute-node descriptor for distributed HFSS runs.
 
-    This class models individual compute nodes in a distributed simulation environment,
-    including resource allocation and utilization parameters.
+    Parameters
+    ----------
+    hostname : str, optional
+        DNS name or IP.  Default ``"localhost"``.
+    cores : int, optional
+        Logical cores to use.  ``-1`` means *all*.  Default ``-1``.
+    max_cores : int, optional
+        Physical cores available.  Default ``20``.
+    utilization : int, optional
+        CPU percentage to utilize (1-100).  Default ``90``.
 
-    Attributes:
-        hostname (str): Network hostname or IP address of the compute node.
-                       Default: "localhost"
-        cores (int): Number of CPU cores to use. -1 indicates all available cores.
-                    Default: -1
-        max_cores (int): Maximum number of cores that can be used on this node.
-                        Default: 20
-        utilization (int): CPU utilization percentage (1-100). Default: 90
-
-    Raises:
-        ValueError: If parameters fail validation checks.
-
-    Example:
-        >>> node = MachineNode("compute-node-1", 16, 32, 80)
-        >>> print(node)
-        compute-node-1:16:32:80%
+    Raises
+    ------
+    ValueError
+        If ``utilization`` or ``max_cores`` is out of range.
     """
 
     hostname: str = "localhost"
@@ -246,36 +247,30 @@ class MachineNode:
 @dataclass
 class HFSS3DLayoutBatchOptions:
     """
-    HFSS 3D Layout specific simulation options and configuration.
+    HFSS-specific solver flags and environment settings.
 
-    This class encapsulates all HFSS-specific simulation parameters including
-    mesh generation, solver settings, MPI configuration, and resource management.
+    Defaults are **platform aware** (Windows vs Linux).
 
-    Attributes:
-        create_starting_mesh (bool): Enable creation of starting mesh. Default: True
-        default_process_priority (str): Process priority level. Valid values:
-                                       "Normal", "Low", "High", "Idle". Default: "Normal"
-        enable_gpu (bool): Enable GPU acceleration for solver. Default: False
-        mpi_vendor (str): MPI implementation vendor. Platform-specific defaults:
-                         Windows: "Intel", Linux: "OpenMPI". Default: Platform-specific
-        mpi_version (str): MPI version specification. Default: "Default"
-        remote_spawn_command (str): Remote process spawn command. Platform-specific:
-                                   Windows: "SSH", Linux: "ssh". Default: Platform-specific
-        solve_adaptive_only (bool): Solve adaptive passes only. Default: True
-        validate_only (bool): Validate setup without solving. Default: True
-        temp_directory (str): Temporary directory for simulation files.
-                             Windows: "D:\\Temp", Linux: "/tmp". Default: Platform-specific
-
-    Raises:
-        ValueError: If any parameter fails validation.
-
-    Example:
-        >>> options = HFSS3DLayoutBatchOptions(
-        ...     enable_gpu=True,
-        ...     temp_directory="/scratch/hfss_temp",
-        ...     mpi_vendor="Intel"
-        ... )
-        >>> options.validate()
+    Parameters
+    ----------
+    create_starting_mesh : bool, optional
+        Generate initial mesh.  Default ``True``.
+    default_process_priority : str, optional
+        OS process priority.  Default ``"Normal"``.
+    enable_gpu : bool, optional
+        GPU acceleration.  Default ``False``.
+    mpi_vendor : str, optional
+        MPI implementation.  Auto-detected.
+    mpi_version : str, optional
+        Version string.  Default ``"Default"``.
+    remote_spawn_command : str, optional
+        Remote shell command.  Auto-detected.
+    solve_adaptive_only : bool, optional
+        Skip frequency sweep.  Default ``False``.
+    validate_only : bool, optional
+        Check setup only.  Default ``False``.
+    temp_directory : str, optional
+        Scratch path.  Auto-detected.
     """
 
     create_starting_mesh: bool = True
@@ -346,47 +341,53 @@ class HFSS3DLayoutBatchOptions:
 @dataclass
 class HFSSSimulationConfig:
     """
-    Main configuration class for ANSYS HFSS simulations with enterprise scheduler support.
+    Complete, validated simulation configuration.
 
-    This comprehensive class manages all aspects of HFSS simulation configuration,
-    validation, and execution across multiple platforms and scheduler environments.
+    The class is a **frozen** dataclass (after ``__post_init__``) and can be
+    serialised to/from JSON via :meth:`to_dict` / :meth:`from_dict`.
 
-    Attributes:
-        solver (str): Solver type. Default: "Hfss3DLayout"
-        jobid (str): Unique job identifier with auto-generated timestamp.
-        distributed (bool): Enable distributed computing. Default: True
-        machine_nodes (List[MachineNode]): List of compute nodes for distribution.
-        auto (bool): Enable auto mode. Default: True
-        non_graphical (bool): Enable non-graphical mode. Default: True
-        monitor (bool): Enable job monitoring. Default: True
-        layout_options (HFSS3DLayoutBatchOptions): HFSS-specific simulation options.
-        project_path (str): Path to .aedt project file.
-        design_name (str): Design name within project. Default: "main"
-        design_mode (str): Design mode. Default: "Nominal"
-        setup_name (str): Setup name. Default: "Setup1"
-        scheduler_type (SchedulerType): Job scheduler type. Default: SchedulerType.NONE
-        scheduler_options (SchedulerOptions): Scheduler-specific configuration options.
+    Parameters
+    ----------
+    ansys_edt_path : str
+        Path to ``ansysedt`` executable.
+    solver : str, optional
+        Solver name.  Default ``"Hfss3DLayout"``.
+    jobid : str, optional
+        Unique identifier.  Auto-generated with timestamp if omitted.
+    distributed : bool, optional
+        Enable MPI distribution.  Default ``True``.
+    machine_nodes : list[MachineNode], optional
+        Compute nodes.  Default ``[MachineNode()]``.
+    auto : bool, optional
+        Non-interactive mode.  Default ``True``.
+    non_graphical : bool, optional
+        Hide GUI.  Default ``True``.
+    monitor : bool, optional
+        Stream solver log.  Default ``True``.
+    layout_options : HFSS3DLayoutBatchOptions, optional
+        Solver flags.  Default instance.
+    project_path : str, optional
+        ``.aedt`` or ``.aedb`` file.  Default platform temp.
+    design_name : str, optional
+        Design inside project.  Default ``""`` (use active).
+    design_mode : str, optional
+        Variation name.  Default ``""``.
+    setup_name : str, optional
+        Setup to solve.  Default ``""``.
+    scheduler_type : SchedulerType, optional
+        External scheduler.  Default ``SchedulerType.NONE``.
+    scheduler_options : SchedulerOptions, optional
+        Scheduler directives.  Default instance.
 
-    Raises:
-        ValueError: If configuration parameters are invalid.
-        FileNotFoundError: If project file or ANSYS executable not found.
-        OSError: If unsupported operating system detected.
-
-    Example:
-        >>> config = HFSSSimulationConfig(
-        ...     jobid="production_sim_001",
-        ...     project_path="C:\\Projects\\design.aedt",
-        ...     scheduler_type=SchedulerType.WINDOWS_HPC,
-        ...     scheduler_options=SchedulerOptions(
-        ...         nodes=4,
-        ...         memory="64GB",
-        ...         priority="High"
-        ...     )
-        ... )
-        >>> result = config.run_simulation()
+    Raises
+    ------
+    ValueError
+        On validation failure.
+    FileNotFoundError
+        If *project_path* does not exist.
     """
 
-    ansysedt_path: str = ""
+    ansys_edt_path: str = ""
     solver: str = "Hfss3DLayout"
     jobid: str = field(default_factory=lambda: f"LOCAL_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
     distributed: bool = True
@@ -412,18 +413,8 @@ class HFSSSimulationConfig:
 
     def validate(self) -> None:
         """
-        Validate complete simulation configuration for production readiness.
-
-        Performs comprehensive validation of all configuration parameters including:
-        - Job ID format and uniqueness requirements
-        - Project file existence and format validation
-        - Design and setup name validation
-        - Platform-scheduler compatibility checks
-        - Scheduler option validation
-
-        Raises:
-            ValueError: If any configuration parameter is invalid.
-            FileNotFoundError: If project file does not exist.
+        Validate all options and raise ``ValueError`` on violation.
+        Checks ranges, formats, and scheduler-specific rules.
         """
         if not self.jobid:
             raise ValueError("Job ID cannot be empty")
@@ -445,19 +436,13 @@ class HFSSSimulationConfig:
         self.scheduler_options.validate()
 
     def generate_machinelist_string(self) -> str:
-        """
-        Generate machinelist string for distributed computing configuration.
+        """ "
+        Return HFSS ``-machinelist`` argument.
 
-        Converts the list of MachineNode objects into HFSS-compatible machinelist format.
-
-        Returns:
-            str: Machinelist string in format "list=node1:cores:max_cores:util%,node2:..."
-
-        Example:
-            >>> config.machine_nodes = [MachineNode("node1", 8, 16, 80), MachineNode("node2", 8, 16, 80)]
-            >>> machinelist = config.generate_machinelist_string()
-            >>> print(machinelist)
-            list=node1:8:16:80%,node2:8:16:80%
+        Returns
+        -------
+        str
+            Format: ``list=host1:cores:max:util%,host2:...``
         """
         if not self.machine_nodes:
             return ""
@@ -499,18 +484,12 @@ class HFSSSimulationConfig:
 
     def generate_slurm_script(self) -> str:
         """
-        Generate SLURM batch script for job submission.
+        Return SLURM batch script (**not** written to disk).
 
-        Creates a complete SLURM batch script with all necessary directives
-        and environment setup for HFSS simulation.
-
-        Returns:
-            str: Complete SLURM batch script as multi-line string.
-
-        Example:
-            >>> slurm_script = config.generate_slurm_script()
-            >>> with open("job.slurm", "w") as f:
-            ...     f.write(slurm_script)
+        Returns
+        -------
+        str
+            Multi-line string starting with ``#!/bin/bash``.
         """
         opts = self.scheduler_options
         script = [
@@ -562,13 +541,12 @@ class HFSSSimulationConfig:
 
     def generate_lsf_script(self) -> str:
         """
-        Generate LSF batch script for IBM Platform LSF.
+        Return LSF batch script.
 
-        Creates a complete LSF batch script with all necessary directives
-        for enterprise workload management.
-
-        Returns:
-            str: Complete LSF batch script as multi-line string.
+        Returns
+        -------
+        str
+            Multi-line string starting with ``#!/bin/bash``.
         """
         opts = self.scheduler_options
         script = [
@@ -605,12 +583,12 @@ class HFSSSimulationConfig:
 
     def generate_pbs_script(self) -> str:
         """
-        Generate PBS/Torque batch script for job submission.
+        Return PBS/Torque batch script.
 
-        Creates a complete PBS batch script for portable batch system environments.
-
-        Returns:
-            str: Complete PBS batch script as multi-line string.
+        Returns
+        -------
+        str
+            Multi-line string starting with ``#!/bin/bash``.
         """
         opts = self.scheduler_options
         script = [
@@ -645,13 +623,12 @@ class HFSSSimulationConfig:
 
     def generate_windows_hpc_script(self) -> str:
         """
-        Generate Windows HPC PowerShell script for job submission.
+        Return PowerShell script for Windows HPC.
 
-        Creates a PowerShell script that handles Windows HPC job submission,
-        monitoring, and cleanup using HPC PowerShell cmdlets.
-
-        Returns:
-            str: Complete PowerShell script for Windows HPC.
+        Returns
+        -------
+        str
+            PowerShell code that submits via ``Submit-HpcJob``.
         """
         opts = self.scheduler_options
 
@@ -728,18 +705,13 @@ class HFSSSimulationConfig:
 
     def generate_windows_hpc_xml(self) -> str:
         """
-        Generate Windows HPC Job XML configuration file.
+        Return Windows HPC **job XML** definition.
 
-        Creates a properly formatted XML job definition file for Windows HPC Server
-        with all necessary parameters for resource allocation and job management.
-
-        Returns:
-            str: XML content for HPC job submission.
-
-        Example:
-            >>> xml_content = config.generate_windows_hpc_xml()
-            >>> with open("hpc_job.xml", "w") as f:
-            ...     f.write(xml_content)
+        Returns
+        -------
+        str
+            Valid XML document that can be saved to ``*.xml`` and submitted
+            with ``Submit-HpcJob -File``.
         """
         opts = self.scheduler_options
 
@@ -782,13 +754,18 @@ class HFSSSimulationConfig:
 
     def generate_scheduler_script(self) -> str:
         """
-        Generate appropriate scheduler script based on configured scheduler type.
+        Delegate to the correct generator based on
+        :attr:`scheduler_type`.
 
-        Returns:
-            str: Complete batch script for the configured scheduler.
+        Returns
+        -------
+        str
+            Batch script or PowerShell code.
 
-        Raises:
-            ValueError: If unsupported scheduler type is specified.
+        Raises
+        ------
+        ValueError
+            If *scheduler_type* is unsupported.
         """
         if self.scheduler_type == SchedulerType.SLURM:
             return self.generate_slurm_script()
@@ -803,22 +780,17 @@ class HFSSSimulationConfig:
 
     def generate_command_string(self) -> str:
         """
-        Generate complete HFSS command string for execution.
+        Complete quoted command line ready for ``subprocess``.
 
-        Constructs the full ANSYS HFSS command line with all options, parameters,
-        and proper quoting for cross-platform compatibility.
-
-        Returns:
-            str: Complete HFSS command string ready for execution.
-
-        Example:
-            >>> command = config.generate_command_string()
-            >>> print(f"Executing: {command}")
+        Returns
+        -------
+        str
+            Platform-escaped string.
         """
         parts = []
 
         # ANSYS executable with proper quoting
-        ansysedt_path = self.ansysedt_path
+        ansysedt_path = self.ansys_edt_path
         if platform.system() == "Windows":
             parts.append(f'"{ansysedt_path}"')
         else:
@@ -866,23 +838,25 @@ class HFSSSimulationConfig:
 
     def submit_to_scheduler(self, script_path: Optional[str] = None) -> subprocess.CompletedProcess:
         """
-        Submit job to configured scheduler with proper error handling.
+        Write the batch script (if *script_path* given) and submit to the
+        configured scheduler.
 
-        Args:
-            script_path: Optional path to save the generated batch script.
-                        If None, uses auto-generated filename.
+        Parameters
+        ----------
+        script_path : str, optional
+            Destination file name.  Auto-generated if omitted.
 
-        Returns:
-            subprocess.CompletedProcess: Result of the scheduler submission command.
+        Returns
+        -------
+        subprocess.CompletedProcess
+            Result of ``sbatch`` / ``bsub`` / ``qsub`` / PowerShell.
 
-        Raises:
-            ValueError: If no scheduler is configured or invalid parameters.
-            Exception: If scheduler submission fails.
-
-        Example:
-            >>> result = config.submit_to_scheduler()
-            >>> if result.returncode == 0:
-            ...     print("Job submitted successfully")
+        Raises
+        ------
+        ValueError
+            If *scheduler_type* is :attr:`SchedulerType.NONE`.
+        subprocess.TimeoutExpired
+            If submission takes longer than 30 s.
         """
         if self.scheduler_type == SchedulerType.NONE:
             raise ValueError("No scheduler configured")
@@ -933,17 +907,17 @@ class HFSSSimulationConfig:
 
     def submit_to_windows_hpc(self) -> subprocess.CompletedProcess:
         """
-        Submit job to Windows HPC Server using PowerShell.
+        Specialised Windows HPC submission using **HPC PowerShell cmdlets**.
 
-        Specialized method for Windows HPC job submission using XML job definitions
-        and HPC PowerShell cmdlets.
+        Returns
+        -------
+        subprocess.CompletedProcess
+            PowerShell console output.
 
-        Returns:
-            subprocess.CompletedProcess: Result of PowerShell submission command.
-
-        Raises:
-            ValueError: If not running on Windows platform.
-            Exception: If HPC submission fails.
+        Raises
+        ------
+        ValueError
+            If not running on Windows.
         """
         if platform.system() != "Windows":
             raise ValueError("Windows HPC is only available on Windows platforms")
@@ -989,32 +963,27 @@ class HFSSSimulationConfig:
 
     def run_simulation(self, **subprocess_kwargs) -> Union[subprocess.CompletedProcess, str]:
         """
-        Execute HFSS simulation using appropriate method based on configuration.
+        **Main entry point** — run the simulation **either**
 
-        This is the primary method for simulation execution. It handles:
-        - Scheduler submission (returns job ID)
-        - Direct execution (returns subprocess result)
-        - Comprehensive error handling and logging
+        * locally (subprocess), or
+        * by submitting to an external scheduler.
 
-        Args:
-            **subprocess_kwargs: Additional arguments for subprocess.run() in direct mode.
+        Parameters
+        ----------
+        **subprocess_kwargs
+            Forwarded to ``subprocess.run`` for local execution.
 
-        Returns:
-            Union[subprocess.CompletedProcess, str]:
-                - For scheduler submission: Job ID string
-                - For direct execution: subprocess.CompletedProcess object
+        Returns
+        -------
+        subprocess.CompletedProcess
+            For local runs (contains ``stdout``, ``stderr``, ``returncode``).
+        str
+            For scheduler runs — external job ID such as ``"slurm_job_12345"``.
 
-        Raises:
-            Exception: If simulation execution fails with detailed error information.
-
-        Example:
-            >>> # Scheduler submission
-            >>> job_id = config.run_simulation()
-            >>> print(f"Job ID: {job_id}")
-            >>>
-            >>> # Direct execution
-            >>> result = config.run_simulation(timeout=3600)
-            >>> print(f"Return code: {result.returncode}")
+        Raises
+        ------
+        Exception
+            On any failure (solver not found, submission error, timeout, …).
         """
         if self.scheduler_type != SchedulerType.NONE:
             # Submit to configured scheduler
@@ -1078,13 +1047,17 @@ class HFSSSimulationConfig:
 
     def _extract_job_id(self, output: str) -> Optional[str]:
         """
-        Extract job ID from scheduler submission output.
+        Parse scheduler stdout and extract the **external** job ID.
 
-        Args:
-            output (str): Scheduler command output text.
+        Parameters
+        ----------
+        output : str
+            Raw stdout of ``sbatch``, ``bsub``, ``qsub``, or PowerShell.
 
-        Returns:
-            Optional[str]: Extracted job ID or None if not found.
+        Returns
+        -------
+        str or None
+            Job ID if found, otherwise ``None``.
         """
         if self.scheduler_type == SchedulerType.SLURM:
             # sbatch output: "Submitted batch job 12345"
@@ -1109,13 +1082,13 @@ class HFSSSimulationConfig:
 
     def generate_command_list(self) -> List[str]:
         """
-        Generate command as list for subprocess execution without shell.
+        Same as :meth:`generate_command_string` but returned as a **list**
+        suitable for ``subprocess.run(..., shell=False)`` on **Linux**.
 
-        Returns:
-            List[str]: Command as list of arguments for subprocess.run().
-
-        Note:
-            Preferred for Linux execution for better security and control.
+        Returns
+        -------
+        list[str]
+            Already shell-escaped arguments.
         """
         ansysedt_path = self.get_ansysedt_path()
 
@@ -1149,19 +1122,16 @@ class HFSSSimulationConfig:
 
     def to_dict(self) -> Dict[str, Any]:
         """
-        Convert configuration to dictionary for serialization and persistence.
+        Serialize the **complete** configuration to a JSON-safe dictionary.
 
-        Returns:
-            Dict[str, Any]: Dictionary representation of the complete configuration.
-
-        Example:
-            >>> config_dict = config.to_dict()
-            >>> with open('config.json', 'w') as f:
-            ...     json.dump(config_dict, f, indent=2)
+        Returns
+        -------
+        dict
+            Contains all fields including nested dataclasses and enums.
         """
         return {
             "solver": self.solver,
-            "ansysedt_path": self.ansysedt_path,
+            "ansys_edt_path": self.ansys_edt_path,
             "jobid": self.jobid,
             "distributed": self.distributed,
             "machine_nodes": [asdict(node) for node in self.machine_nodes],
@@ -1183,18 +1153,17 @@ class HFSSSimulationConfig:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "HFSSSimulationConfig":
         """
-        Create configuration instance from dictionary representation.
+        Deserialize a dictionary produced by :meth:`to_dict`.
 
-        Args:
-            data (Dict[str, Any]): Dictionary containing serialized configuration data.
+        Parameters
+        ----------
+        data : dict
+            Dictionary obtained via ``json.load`` or equivalent.
 
-        Returns:
-            HFSSSimulationConfig: New configuration instance.
-
-        Example:
-            >>> with open('config.json', 'r') as f:
-            ...     data = json.load(f)
-            >>> config = HFSSSimulationConfig.from_dict(data)
+        Returns
+        -------
+        HFSSSimulationConfig
+            New validated instance.
         """
         machine_nodes = [MachineNode(**node_data) for node_data in data.get("machine_nodes", [])]
         layout_options = HFSS3DLayoutBatchOptions(**data.get("layout_options", {}))
@@ -1202,7 +1171,7 @@ class HFSSSimulationConfig:
 
         return cls(
             solver=data.get("solver", "Hfss3DLayout"),
-            ansysedt_path=data.get("ansysedt_path", ""),
+            ansys_edt_path=data.get("ansys_edt_path", ""),
             jobid=data.get("jobid", f"RSM_{datetime.now().strftime('%Y%m%d_%H%M%S')}"),
             distributed=data.get("distributed", True),
             machine_nodes=machine_nodes,
@@ -1229,7 +1198,7 @@ class HFSSSimulationConfig:
 
 
 def create_hfss_config(
-    asysedt_path: str,
+    ansys_edt_path: str,
     jobid: str,
     project_path: str,
     design_name: str = "",
@@ -1240,32 +1209,44 @@ def create_hfss_config(
     **kwargs,
 ) -> HFSSSimulationConfig:
     """
-    Helper function for quick creation of HFSS simulation configurations.
+    **Convenience factory** that hides all boilerplate and produces a
+    **validated** configuration in a single call.
 
-    This factory function provides a convenient way to create HFSS simulation
-    configurations with sensible defaults and reduced boilerplate.
+    Parameters
+    ----------
+    ansys_edt_path : str
+        Absolute path to ``ansysedt`` executable.
+    jobid : str
+        Unique job identifier (letters, digits, ``_``, ``-`` only).
+    project_path : str
+        Absolute path to ``.aedt`` or ``.aedb`` project.
+    design_name : str, optional
+        Design inside project.  Default ``""`` (active design).
+    setup_name : str, optional
+        Setup name.  Default ``""`` (first setup).
+    machine_nodes : list[MachineNode], optional
+        Compute nodes for MPI.  Default ``[MachineNode()]``.
+    scheduler_type : SchedulerType, optional
+        External scheduler.  Default :attr:`SchedulerType.NONE`.
+    scheduler_options : SchedulerOptions, optional
+        Scheduler directives.  Default instance.
+    **kwargs
+        Additional fields passed directly to ``HFSSSimulationConfig``.
 
-    Args:
-        aedsedt_path (str): Path to ANSYS Electronics Desktop executable.
-        jobid (str): Unique job identifier.
-        project_path (str): Path to .aedt project file.
-        design_name (str): Design name within project. Default: "main"
-        setup_name (str): Setup name. Default: "Setup1"
-        machine_nodes (Optional[List[MachineNode]]): List of compute nodes.
-        scheduler_type (SchedulerType): Job scheduler type. Default: SchedulerType.NONE
-        scheduler_options (Optional[SchedulerOptions]): Scheduler configuration options.
-        **kwargs: Additional arguments for HFSSSimulationConfig.
+    Returns
+    -------
+    HFSSSimulationConfig
+        Ready-to-run configuration.
 
-    Returns:
-        HFSSSimulationConfig: Configured simulation instance.
-
-    Example:
-        >>> config = create_hfss_config(
-        ...     jobid="quick_sim",
-        ...     project_path="design.aedt",
-        ...     scheduler_type=SchedulerType.SLURM,
-        ...     scheduler_options=SchedulerOptions(nodes=2, memory="8GB")
-        ... )
+    Examples
+    --------
+    >>> cfg = create_hfss_config(
+    ...     ansys_edt_path="/ansys/v241/Linux64/ansysedt",
+    ...     jobid="patch",
+    ...     project_path="/shared/patch.aedt",
+    ...     scheduler_type=SchedulerType.SLURM,
+    ...     scheduler_options=SchedulerOptions(nodes=4, memory="32GB"))
+    >>> job = cfg.run_simulation()
     """
     if machine_nodes is None:
         machine_nodes = [MachineNode()]
@@ -1274,7 +1255,7 @@ def create_hfss_config(
         scheduler_options = SchedulerOptions()
 
     return HFSSSimulationConfig(
-        ansysedt_path=asysedt_path,
+        ansys_edt_path=ansys_edt_path,
         jobid=jobid,
         project_path=project_path,
         design_name=design_name,

@@ -135,6 +135,7 @@ from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
+from pyedb.workflows.job_manager.job_manager_handler import JobManagerHandler
 
 os.environ["no_proxy"] = "localhost,127.0.0.1"
 
@@ -401,6 +402,7 @@ class Edb(EdbInit):
         self._source_excitation = SourceExcitation(self)
         self._differential_pairs = DifferentialPairs(self)
         self._extended_nets = ExtendedNets(self)
+        self._job_manager = JobManagerHandler(self)
 
     def value(self, val) -> float:
         """Convert a value into a pyedb value."""
@@ -409,6 +411,17 @@ class Edb(EdbInit):
         else:
             context = self.active_cell if not str(val).startswith("$") else self.active_db
             return Value(GrpcValue(val, context), context)
+
+    @property
+    def job_manager(self):
+        """Job manager for handling simulation tasks.
+
+        Returns
+        -------
+        :class:`JobManagerHandler <pyedb.workflows.job_manager.job_manager_handler.JobManagerHandler>`
+            Job manager instance for submitting and managing simulation jobs.
+        """
+        return self._job_manager
 
     @property
     def cell_names(self) -> List[str]:
