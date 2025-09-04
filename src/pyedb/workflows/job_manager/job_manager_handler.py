@@ -160,11 +160,6 @@ class JobManagerHandler:
             await self.runner.cleanup()
         self.started = False
 
-    import asyncio
-    from asyncio import run_coroutine_threadsafe
-    import concurrent.futures
-    import warnings
-
     class JobManagerHandler:
         ...
 
