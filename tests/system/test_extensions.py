@@ -625,3 +625,10 @@ class TestClass(BaseTestClass):
         edb_model = os.path.join(edb_examples.test_folder, "wave_ports.aedb")
         assert os.path.isdir(edb_model)
         edbapp.close(terminate_rpc_session=False)
+
+    def test_create_cell_array(self, edb_examples):
+        from pyedb.extensions.create_cell_array import create_array_from_unit_cell
+
+        edbapp = edb_examples.get_unit_cell()
+        assert create_array_from_unit_cell(edbapp, x_number=2, y_number=2)
+        edbapp.close()
