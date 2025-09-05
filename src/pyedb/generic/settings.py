@@ -21,11 +21,24 @@
 # SOFTWARE.
 
 import os
+from pathlib import Path
+import re
+import sys
 import time
+import warnings
 
 
 class Settings(object):
     """Manages all PyEDB environment variables and global settings."""
+
+    INSTALLED_VERSIONS = None
+    INSTALLED_STUDENT_VERSIONS = None
+    INSTALLED_CLIENT_VERSIONS = None
+    LATEST_VERSION = None
+    LATEST_STUDENT_VERSION = None
+
+    specified_version = None
+    is_student_version = False
 
     def __init__(self):
         self.remote_rpc_session = False
@@ -58,27 +71,12 @@ class Settings(object):
         self._global_log_file_size = 10
         self._lsf_queue = None
         self._edb_environment_variables = {}
-        self._use_pyaedt_log = False
-        self._logger = None
+        self.logger = None
+        self.log_file = None
         self._aedt_version = None
 
-    @property
-    def logger(self):
-        """Active logger."""
-        return self._logger
-
-    @logger.setter
-    def logger(self, val):
-        self._logger = val
-
-    @property
-    def use_pyaedt_log(self):
-        """Flag that disable Edb log when PyAEDT is used."""
-        return self._use_pyaedt_log
-
-    @use_pyaedt_log.setter
-    def use_pyaedt_log(self, value):
-        self._use_pyaedt_log = value
+        self.__get_version_information()
+        self.__init_logger()
 
     @property
     def edb_environment_variables(self):
@@ -251,6 +249,9 @@ class Settings(object):
     @edb_dll_path.setter
     def edb_dll_path(self, value):
         if os.path.exists(value):
+            ver = Path(value).parts[-2]
+            version, release = ver[-3:-1], ver[-1]
+            self.specified_version = f"20{version}.{release}"
             self._edb_dll_path = value
 
     @property
@@ -261,6 +262,64 @@ class Settings(object):
     @retry_n_times_time_interval.setter
     def retry_n_times_time_interval(self, value):
         self._retry_n_times_time_interval = float(value)
+
+    def __get_version_information(self):
+        """Get the installed AEDT versions.
+
+        This method returns a dictionary, with the version as the key and the installation path
+        as the value."""
+        version_pattern = re.compile(r"^(ANSYSEM_ROOT|ANSYSEM_PY_CLIENT_ROOT|ANSYSEMSV_ROOT)\d{3}$")
+        env_list = sorted([x for x in os.environ if version_pattern.match(x)], reverse=True)
+        if not env_list:  # pragma: no cover
+            warnings.warn("No installed versions of AEDT are found in the system environment variables.")
+            return
+
+        aedt_system_env_variables = {i: os.environ[i] for i in env_list}
+
+        standard_versions = {}
+        client_versions = {}
+        student_versions = {}
+        # version_list is ordered: first normal versions, then client versions, finally student versions
+        for var_name, aedt_path in aedt_system_env_variables.items():
+            version_id = var_name[-3:]
+            version, release = version_id[0:2], version_id[2]
+            version_name = f"20{version}.{release}"
+            if "ANSYSEM_ROOT" in var_name:
+                standard_versions[version_name] = aedt_path
+            elif "ANSYSEM_PY_CLIENT_ROOT" in var_name:
+                client_versions[version_name] = aedt_path
+            else:
+                student_versions[version_name] = aedt_path
+        self.INSTALLED_VERSIONS = standard_versions
+        self.INSTALLED_STUDENT_VERSIONS = student_versions
+        self.INSTALLED_CLIENT_VERSIONS = client_versions
+
+        if len(self.INSTALLED_VERSIONS):
+            self.LATEST_VERSION = max(standard_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
+        if len(self.INSTALLED_STUDENT_VERSIONS):
+            self.LATEST_STUDENT_VERSION = max(student_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
+
+    @property
+    def aedt_installation_path(self):
+        if self.edb_dll_path:
+            return self.edb_dll_path
+        elif self.is_student_version:
+            return self.INSTALLED_STUDENT_VERSIONS[self.specified_version]
+        elif self.specified_version in self.INSTALLED_VERSIONS.keys():
+            return self.INSTALLED_VERSIONS[self.specified_version]
+        elif os.name == "posix":
+            main = sys.modules["__main__"]
+            if "oDesktop" in dir(main):
+                return main.oDesktop.GetExeDir()
+            else:
+                raise RuntimeError(f"Version {self.specified_version} is not installed on the system. ")
+        else:
+            raise RuntimeError(f"Version {self.specified_version} is not installed on the system. ")
+
+    def __init_logger(self):
+        from pyedb.edb_logger import EdbLogger
+
+        self.logger = EdbLogger(to_stdout=self.enable_screen_logs, settings=self)
 
 
 settings = Settings()

@@ -431,12 +431,10 @@ class SourceExcitation:
             refdes = Component(self._pedb, refdes)
         pins = self._get_pins_for_ports(pins, refdes)
         if not pins:
-            self._logger.error("No pins found during port creation. Port is not defined.")
-            return False
+            raise RuntimeWarning("No pins found during port creation. Port is not defined.")
         reference_pins = self._get_pins_for_ports(reference_pins, refdes)
         if not reference_pins:
-            self._logger.error("No reference pins found during port creation. Port is not defined.")
-            return False
+            raise RuntimeWarning("No reference pins found during port creation. Port is not defined.")
         if refdes and any(refdes.rlc_values):
             return self._pedb.components.deactivate_rlc_component(component=refdes, create_circuit_port=True)
         if not port_name:
@@ -2801,11 +2799,15 @@ class SourceExcitation:
         self,
         terminal: Union[PadstackInstanceTerminal, EdgeTerminal],
         ref_terminal: Union[PadstackInstanceTerminal, EdgeTerminal],
+        magnitude: Union[int, float] = 1,
+        phase: Union[int, float] = 0,
     ) -> bool:
         """Create a voltage source.
 
         Parameters
         ----------
+        name : str, optional
+            Voltage source name
         terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
             :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
             :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
@@ -2816,6 +2818,10 @@ class SourceExcitation:
             :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
             :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
             Negative terminal of the source.
+        magnitude : int, float, optional
+            Magnitude of the source.
+        phase : int, float, optional
+            Phase of the source
 
         Returns
         -------
@@ -2834,7 +2840,8 @@ class SourceExcitation:
 
         ref_term = Terminal(self._pedb, ref_terminal)
         ref_term.boundary_type = "voltage_source"
-
+        term.magnitude = self._pedb.value(magnitude)
+        term.phase = self._pedb.value(phase)
         term.ref_terminal = ref_terminal
         return term
 

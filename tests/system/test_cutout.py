@@ -25,40 +25,12 @@ from pathlib import Path
 import pytest
 
 from tests.conftest import local_path, test_subfolder
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
-class TestClass:
-    @classmethod
-    @pytest.fixture(scope="class", autouse=True)
-    def setup_class(cls, request, edb_examples):
-        # Set up the EDB app once per class
-        pass
-
-        # Finalizer to close the EDB app after all tests
-        def teardown():
-            cls.edbapp_shared = edb_examples.get_si_verse()
-            cls.edbapp_shared.close(terminate_rpc_session=True)
-
-        request.addfinalizer(teardown)
-
-    @pytest.fixture(autouse=True)
-    def init(self, edb_examples):
-        """init runs before each test."""
-        return
-
-    @pytest.fixture(autouse=True)
-    def teardown(self, request, edb_examples):
-        """Code after yield runs after each test."""
-        yield
-        return
-
-    def test_dummy_test(self, edb_examples):
-        """Dummy test to initialize Edb the first time."""
-        edbapp = edb_examples.create_empty_edb()
-        edbapp.close(terminate_rpc_session=False)
-
+class TestClass(BaseTestClass):
     def test_create_custom_cutout_0(self, edb_examples):
         """Create custom cutout 0."""
         # Done

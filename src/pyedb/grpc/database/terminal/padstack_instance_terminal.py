@@ -26,7 +26,7 @@ from ansys.edb.core.terminal.padstack_instance_terminal import (
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.misc import deprecated_property
+from pyedb.misc.decorators import deprecated_property
 
 
 class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):

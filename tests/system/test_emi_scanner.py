@@ -31,17 +31,17 @@ from pyedb.misc.siw_feature_config.emc_rule_checker_settings import (
     EMCRuleCheckerSettings,
 )
 from tests.conftest import local_path
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
-class TestClass:
+class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
         self.local_scratch = local_scratch
         self.local_temp_dir = Path(self.local_scratch.path)
         self.fdir_model = Path(local_path) / "example_models" / "TEDB"
-        print(self.local_temp_dir)
 
     def test_001_read_write_xml(self):
         emi_scanner = EMCRuleCheckerSettings()

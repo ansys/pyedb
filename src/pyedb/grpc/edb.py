@@ -135,6 +135,7 @@ from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
+from pyedb.workflows.job_manager.job_manager_handler import JobManagerHandler
 
 os.environ["no_proxy"] = "localhost,127.0.0.1"
 
@@ -210,7 +211,6 @@ class Edb(EdbInit):
         technology_file: str = None,
         layer_filter: str = None,
         restart_rpc_server=False,
-        **kwargs,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
@@ -372,6 +372,10 @@ class Edb(EdbInit):
         """Ansys Edb Core module."""
         return ansys.edb.core
 
+    @property
+    def ansys_em_path(self):
+        return self.base_path
+
     def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         files = [aedt_file, aedt_file + ".lock"]
@@ -402,6 +406,7 @@ class Edb(EdbInit):
         self._source_excitation = SourceExcitation(self)
         self._differential_pairs = DifferentialPairs(self)
         self._extended_nets = ExtendedNets(self)
+        self._job_manager = JobManagerHandler(self)
 
     def value(self, val) -> float:
         """Convert a value into a pyedb value."""
@@ -410,6 +415,17 @@ class Edb(EdbInit):
         else:
             context = self.active_cell if not str(val).startswith("$") else self.active_db
             return Value(GrpcValue(val, context), context)
+
+    @property
+    def job_manager(self):
+        """Job manager for handling simulation tasks.
+
+        Returns
+        -------
+        :class:`JobManagerHandler <pyedb.workflows.job_manager.job_manager_handler.JobManagerHandler>`
+            Job manager instance for submitting and managing simulation jobs.
+        """
+        return self._job_manager
 
     @property
     def cell_names(self) -> List[str]:
@@ -2491,7 +2507,7 @@ class Edb(EdbInit):
         >>> # Export to HFSS project:
         >>> edb.export_hfss(r"C:/output", net_list=["SignalNet"])
         """
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
 
     def export_q3d(
@@ -2527,7 +2543,7 @@ class Edb(EdbInit):
         >>> # Export to Q3D project:
         >>> edb.export_q3d(r"C:/output")
         """
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad(
             "Q3D",
             path_to_output,
@@ -2570,7 +2586,7 @@ class Edb(EdbInit):
         >>> # Export to Maxwell project:
         >>> edb.export_maxwell(r"C:/output")
         """
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad(
             "Maxwell",
             path_to_output,
@@ -2593,7 +2609,7 @@ class Edb(EdbInit):
         >>> # Solve with SIwave:
         >>> edb.solve_siwave()
         """
-        process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
+        process = SiwaveSolve(self)
         try:
             self.close()
         except:
@@ -2644,7 +2660,7 @@ class Edb(EdbInit):
         list[str]
             Generated report files.
         """
-        process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
+        process = SiwaveSolve(self)
         try:
             self.close()
         except:

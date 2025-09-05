@@ -35,15 +35,14 @@ import itertools
 import logging
 import math
 import os
-import random
 import re
+import secrets
 import string
 import sys
 import tempfile
 import time
 import traceback
 
-from pyedb.exceptions import MaterialModelException
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.settings import settings
 
@@ -141,82 +140,6 @@ def _exception(ex_info, func, args, kwargs, message="Type Error"):
         )
 
 
-def _function_handler_wrapper(user_function):  # pragma: no cover
-    def wrapper(*args, **kwargs):  # pragma: no cover
-        if not settings.enable_error_handler:
-            result = user_function(*args, **kwargs)
-            return result
-        else:
-            try:
-                settings.time_tick = time.time()
-                out = user_function(*args, **kwargs)
-                if settings.enable_debug_logger or settings.enable_debug_edb_logger:
-                    _log_method(user_function, args, kwargs)
-                return out
-            except TypeError:
-                _exception(sys.exc_info(), user_function, args, kwargs, "Type Error")
-                return False
-            except ValueError:
-                _exception(sys.exc_info(), user_function, args, kwargs, "Value Error")
-                return False
-            except AttributeError:
-                _exception(sys.exc_info(), user_function, args, kwargs, "Attribute Error")
-                return False
-            except KeyError:
-                _exception(sys.exc_info(), user_function, args, kwargs, "Key Error")
-                return False
-            except IndexError:
-                _exception(sys.exc_info(), user_function, args, kwargs, "Index Error")
-                return False
-            except AssertionError:
-                _exception(sys.exc_info(), user_function, args, kwargs, "Assertion Error")
-                return False
-            except NameError:
-                _exception(sys.exc_info(), user_function, args, kwargs, "Name Error")
-                return False
-            except IOError:
-                _exception(sys.exc_info(), user_function, args, kwargs, "IO Error")
-                return False
-            except MaterialModelException:
-                _exception(sys.exc_info(), user_function, args, kwargs, "Material Model")
-                return False
-
-    return wrapper
-
-
-import functools
-import warnings
-
-
-def deprecate_argument_name(argument_map):
-    """Decorator to deprecate certain argument names in favor of new ones."""
-
-    def decorator(func):
-        """Decorator that wraps the function to handle deprecated arguments."""
-
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            """Wrapper function that checks for deprecated arguments."""
-            func_name = func.__name__
-            for old_arg, new_arg in argument_map.items():
-                if old_arg in kwargs:
-                    warnings.warn(
-                        f"Argument `{old_arg}` is deprecated for method `{func_name}`; use `{new_arg}` instead.",
-                        DeprecationWarning,
-                        stacklevel=2,
-                    )
-                    # NOTE: Use old argument if new argument is not provided
-                    if new_arg not in kwargs:
-                        kwargs[new_arg] = kwargs.pop(old_arg)
-                    else:
-                        kwargs.pop(old_arg)
-            return func(*args, **kwargs)
-
-        return wrapper
-
-    return decorator
-
-
 def get_filename_without_extension(path):
     """Get the filename without its extension.
 
@@ -240,49 +163,6 @@ def _write_mes(mes_text):
     parts = [mes_text[i : i + 250] for i in range(0, len(mes_text), 250)]
     for el in parts:
         settings.logger.error(el)
-
-
-def _log_method(func, new_args, new_kwargs):  # pragma: no cover
-    if not settings.enable_debug_internal_methods_logger and str(func.__name__)[0] == "_":
-        return
-    if not settings.enable_debug_geometry_operator_logger and "GeometryOperators" in str(func):
-        return
-    if (
-        not settings.enable_debug_edb_logger
-        and "Edb" in str(func) + str(new_args)
-        or "database" in str(func) + str(new_args)
-    ):
-        return
-    line_begin = "ARGUMENTS: "
-    message = []
-    delta = time.time() - settings.time_tick
-    m, s = divmod(delta, 60)
-    h, m = divmod(m, 60)
-    d, h = divmod(h, 24)
-    msec = (s - int(s)) * 1000
-    if d > 0:
-        time_msg = " {}days {}h {}m {}sec.".format(d, h, m, int(s))
-    elif h > 0:
-        time_msg = " {}h {}m {}sec.".format(h, m, int(s))
-    else:
-        time_msg = "  {}m {}sec {}msec.".format(m, int(s), int(msec))
-    if settings.enable_debug_methods_argument_logger:
-        args_dict = _get_args_dicts(func, new_args, new_kwargs)
-        id = 0
-        if new_args:
-            object_name = str([new_args[0]])[1:-1]
-            id = object_name.find(" object at ")
-        if id > 0:
-            object_name = object_name[1:id]
-            message.append("'{}' was run in {}".format(object_name + "." + str(func.__name__), time_msg))
-        else:
-            message.append("'{}' was run in {}".format(str(func.__name__), time_msg))
-        message.append(line_begin)
-        for k, v in args_dict.items():
-            if k != "self":
-                message.append("    {} = {}".format(k, v))
-    for m in message:
-        settings.logger.debug(m)
 
 
 def _get_args_dicts(func, args, kwargs):
@@ -374,7 +254,7 @@ def generate_unique_name(rootname, suffix="", n=6):
 
     """
     char_set = string.ascii_uppercase + string.digits
-    uName = "".join(random.choice(char_set) for _ in range(n))
+    uName = "".join(secrets.choice(char_set) for _ in range(n))
     unique_name = rootname + "_" + uName
     if suffix:
         unique_name += "_" + suffix
@@ -1421,19 +1301,3 @@ class Help:  # pragma: no cover
 # property = Property
 
 online_help = Help()
-
-
-def execution_timer(custom_text):
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            start_time = time.time()
-            result = func(*args, **kwargs)
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            settings.logger.info(f"{custom_text} completed in {elapsed_time:.4f} seconds.")
-            return result
-
-        return wrapper
-
-    return decorator

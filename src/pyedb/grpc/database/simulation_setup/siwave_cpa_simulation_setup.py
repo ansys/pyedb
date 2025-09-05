@@ -1,7 +1,6 @@
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.utility.value import Value as GrpcValue
 
-import pyedb.siwave_core.cpa.simulation_setup_data_model
 from pyedb.siwave_core.cpa.simulation_setup_data_model import SIwaveCpaSetup, Vrm
 from pyedb.siwave_core.product_properties import SIwaveProperties
 
@@ -190,11 +189,13 @@ class ChannelSetup:
         Raises:
             ValueError: If the input is not a list.
         """
+        from pyedb.siwave_core.cpa.simulation_setup_data_model import Vrm
+
         if not isinstance(value, list):
             raise ValueError("vrm setter must have list as input.")
         vrm_str = ""
         for vrm in value:
-            if isinstance(vrm, pyedb.siwave_core.cpa.simulation_setup_data_model.Vrm):
+            if isinstance(vrm, Vrm):
                 if vrm_str:
                     vrm_str += "*"
                 vrm_str += vrm.name

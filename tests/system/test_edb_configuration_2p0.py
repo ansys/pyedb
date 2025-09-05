@@ -27,6 +27,7 @@ import pytest
 
 from pyedb.generic.general_methods import is_linux
 from tests.conftest import config
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
@@ -60,31 +61,7 @@ def _assert_final_ic_die_properties(component: dict):
     assert component["solder_ball_properties"]["diameter"] == "244um"
 
 
-class TestClass:
-    @classmethod
-    @pytest.fixture(scope="class", autouse=True)
-    def setup_class(cls, request, edb_examples):
-        # Set up the EDB app once per class
-        pass
-
-        # Finalizer to close the EDB app after all tests
-        def teardown():
-            cls.edbapp_shared = edb_examples.get_si_verse()
-            cls.edbapp_shared.close(terminate_rpc_session=True)
-
-        request.addfinalizer(teardown)
-
-    @pytest.fixture(autouse=True)
-    def init(self, edb_examples):
-        """init runs before each test."""
-        pass
-
-    @pytest.fixture(autouse=True)
-    def teardown(self, request, edb_examples):
-        """Code after yield runs after each teste."""
-        yield
-        pass
-
+class TestClass(BaseTestClass):
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_13b_stackup_materials(self, edb_examples):
         data = {
@@ -311,6 +288,7 @@ class TestClass:
                     "name": "CIRCUIT_C375_1_2",
                     "reference_designator": "C375",
                     "type": "circuit",
+                    "impedance": "1ohm",
                     "positive_terminal": {"pin": "1"},
                     "negative_terminal": {"pin": "2"},
                 },
@@ -349,6 +327,7 @@ class TestClass:
         assert "CIRCUIT_C376_1_2" in edbapp.ports
         assert "CIRCUIT_X1_B8_GND" in edbapp.ports
         assert "CIRCUIT_U7_VDD_DDR_GND" in edbapp.ports
+        assert edbapp.ports["CIRCUIT_C375_1_2"].impedance == pytest.approx(1)
         data_from_db = edbapp.configuration.get_data_from_db(ports=True, pin_groups=True)
         assert data_from_db["ports"]
         edbapp.close(terminate_rpc_session=False)
@@ -645,6 +624,15 @@ class TestClass:
                     "positive_terminal": {"pin": "AP18"},
                 }
             ],
+            "sources": [
+                {
+                    "name": "VSOURCE_1",
+                    "reference_designator": "U1",
+                    "type": "voltage",
+                    "positive_terminal": {"pin": "AH23"},
+                    "negative_terminal": {"net": "GND"},
+                },
+            ],
             "operations": {
                 "cutout": {
                     "auto_identify_nets": {
@@ -660,7 +648,7 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        assert {"PCIe_Gen4_TX3_CAP_P", "PCIe_Gen4_TX3_P"}.issubset(edbapp.nets.nets.keys())
+        assert {"PCIe_Gen4_TX3_CAP_P", "PCIe_Gen4_TX3_P", "PCIe_Gen4_RX3_N"}.issubset(edbapp.nets.nets.keys())
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
@@ -1061,6 +1049,7 @@ class TestClass:
                 "name": "VSOURCE_U2_1V0_GND",
                 "reference_designator": "U2",
                 "type": "voltage",
+                "impedance": 1,
                 "magnitude": 1,
                 "distributed": False,
                 "positive_terminal": {"net": "1V0"},
@@ -1075,6 +1064,7 @@ class TestClass:
         src_from_db = edbapp.configuration.cfg_data.sources.export_properties()
         assert src_from_db[0]["name"] == "VSOURCE_U2_1V0_GND"
         assert src_from_db[0]["type"] == "voltage"
+        assert src_from_db[0]["impedance"] == 1
         assert src_from_db[0]["magnitude"] == 1
         assert src_from_db[0]["positive_terminal"] == {"pin_group": "pg_VSOURCE_U2_1V0_GND_U2"}
         assert src_from_db[0]["negative_terminal"] == {"pin_group": "pg_VSOURCE_U2_1V0_GND_U2_ref"}

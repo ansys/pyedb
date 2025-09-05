@@ -20,8 +20,8 @@ import warnings
 
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
-from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import _pythonver, generate_unique_name, is_windows
+from pyedb.generic.settings import settings
 from pyedb.misc.misc import list_installed_ansysem
 from pyedb.siwave_core.icepak import Icepak
 
@@ -110,7 +110,7 @@ class Siwave(object):  # pragma no cover
         return self.version_keys[0]
 
     def __init__(self, specified_version=None):
-        self._logger = pyedb_logger
+        self._logger = settings.logger
         if is_windows:  # pragma: no cover
             modules = [tup[1] for tup in pkgutil.iter_modules()]
             if _clr:
@@ -129,17 +129,15 @@ class Siwave(object):  # pragma no cover
             self._main.AEDTVersion = self._main.oSiwave.GetVersion()[0:6]
             self._main.oSiwave.RestoreWindow()
             specified_version = self.current_version
-            assert specified_version in self.version_keys, "Specified version {} is not known.".format(
-                specified_version
-            )
+            if specified_version not in self.version_keys:
+                raise ValueError("Specified version {} is not known.".format(specified_version))
             version_key = specified_version
             base_path = os.getenv(self._version_ids[specified_version])
             self._main.sDesktopinstallDirectory = base_path
         else:
             if specified_version:
-                assert specified_version in self.version_keys, "Specified version {} is not known.".format(
-                    specified_version
-                )
+                if specified_version not in self.version_keys:
+                    raise ValueError("Specified version {} is not known.".format(specified_version))
                 version_key = specified_version
             else:
                 version_key = self.current_version

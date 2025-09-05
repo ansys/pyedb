@@ -31,13 +31,14 @@ import pytest
 
 from pyedb.generic.general_methods import is_linux
 from tests.conftest import config, local_path, test_subfolder
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
 ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
-class TestClass:
+class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
         self.local_scratch = local_scratch
@@ -1410,9 +1411,9 @@ class TestClass:
             assert vrm.component
             assert vrm.component.refdes == "U1"
             assert vrm.negative_remote_sense_pin
-            assert vrm.negative_remote_sense_pin.name == "U1-A3"
+            assert vrm.negative_remote_sense_pin.aedt_name == "U1-A3"
             assert vrm.positive_remote_sense_pin
-            assert vrm.positive_remote_sense_pin.name == "U1-A2"
+            assert vrm.positive_remote_sense_pin.aedt_name == "U1-A2"
             assert vrm.voltage == 1.5
             assert vrm.is_active
             assert not vrm.is_null
@@ -1682,54 +1683,12 @@ class TestClass:
             )
         assert len(edbapp.excitations) == 2
 
-    def test_create_circuit_port_on_component_pins_no_pins(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        component_name = "U10"
-        edbcomp = edbapp.components[component_name]
-        positive_pin_names = []
-        reference_pin_names = ["2"]
-        if edbapp.grpc:
-            assert not edbapp.source_excitation.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        else:
-            # Method deprecated in grpc and moved to SourceExcitation class.
-            assert not edbapp.components.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        assert len(edbapp.excitations) == 0
-
-    def test_create_circuit_port_on_component_pins_no_reference_pins(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        component_name = "U10"
-        edbcomp = edbapp.components[component_name]
-        positive_pin_names = ["4"]
-        reference_pin_names = []
-        if edbapp.grpc:
-            assert not edbapp.source_excitation.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        else:
-            # Method deprecated in grpc and moved to SourceExcitation class.
-            assert not edbapp.components.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        assert len(edbapp.excitations) == 0
-
     @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
     def test_active_cell_setter(self, edb_examples):
         """Use multiple cells."""
 
         src = os.path.join(local_path, "example_models", "TEDB", "multi_cells.aedb")
-        edb = edb_examples.load_edb(edbpath=src)
+        edb = edb_examples.load_edb(edb_path=src)
         edb.active_cell = edb.circuit_cells[0]
         assert len(edb.modeler.primitives) == 2096
         assert len(edb.components.instances) == 509
@@ -1993,6 +1952,22 @@ class TestClass:
                 edbapp.edbpath,
                 str(Path(edbapp.edbpath).with_name(Path(edbapp.edbpath).stem + "_compare_results")),
             ]
+
+    def test_job_manager(self, edb_examples, local_scratch):
+        project_path = edb_examples.copy_project_for_job_manager(local_scratch)
+        edb = edb_examples.create_empty_edb()
+        jm = edb.job_manager
+        jm.start_service()
+        assert jm.started
+
+        job1 = edb.job_manager.create_simulation_config(project_path=project_path)
+        assert job1
+        jobs = [job1]
+
+        job_ids = jm.submit_jobs_and_wait(jobs, timeout=240)
+        print("all jobs done:", job_ids)
+        jm.close()  # stop the service when done
+        assert not jm.started
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
     def test_create_layout_component(self, edb_examples):

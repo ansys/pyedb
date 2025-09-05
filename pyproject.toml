@@ -37,10 +37,10 @@ dependencies = [
     "shapely",
     "scikit-rf",
     "ansys-edb-core>=0.2.0",
-    "ansys-api-edb>=0.2.0",
     "psutil",
-    "scipy",
-    ]
+    "aiohttp>=3.8",
+    "python-socketio>=5.10",
+]
 
 [project.optional-dependencies]
 tests = [
