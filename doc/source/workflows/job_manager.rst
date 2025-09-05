@@ -312,26 +312,115 @@ directives.
    job_id = handler.submit_jobs([cfg])[0]
    print("Job submitted to SLURM", job_id)
 
+-----------------
+Troubleshooting
+-----------------
 
-Job manager API references
-==========================
+Service fails to bind port
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+* **Symptom**: ``RuntimeError: Job-Manager service failed to start within 10 s``
+* **Cause**: Port already in use or insufficient privileges.
+* **Fix**: Choose another port or stop the conflicting process:
+
+.. code-block:: bash
+
+   lsof -ti:8080 | xargs kill -9
+
+Scheduler submission returns 127
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* **Symptom**: ``sbatch: command not found``
+* **Cause**: ANSYS environment module not loaded or scheduler client not installed.
+* **Fix**: Ensure the scheduler client is in ``$PATH`` or load the module:
+
+.. code-block:: bash
+
+   module load slurm
+
+Jobs stuck in “queued” state
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* **Symptom**: Jobs never start despite idle CPUs.
+* **Cause**: Resource limits too strict (``max_cpu_percent`` too low).
+* **Fix**: Relax limits in :class:`ResourceLimits` or disable throttling:
+
+.. code-block:: python
+
+   ResourceLimits(max_cpu_percent=100)
+
+-----------------------
+Security Considerations
+-----------------------
+
+* **Bind address**: never expose ``--host 0.0.0.0`` on public networks
+  without a firewall or reverse proxy.
+* **Input validation**: all JSON payloads are validated against strict
+  dataclass fields; arbitrary code execution is not possible.
+* **File paths**: the service does **not** perform path traversal checks;
+  run inside a container with read-only project mounts if untrusted users
+  submit jobs.
+* **Secrets**: scheduler passwords or API tokens should be injected via
+  environment variables, not checked into YAML files.
+
+-----------------
+Performance Tuning
+-----------------
+
+High-throughput scenarios
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Increase ``max_concurrent_jobs`` only after verifying CPU **and** I/O
+  head-room.
+* Place the **temporary directory** (`HFSS3DLayoutBatchOptions.temp_directory`)
+  on a **local NVMe** disk to avoid network latency.
+* Disable **real-time log streaming** (`monitor=False`) if stdout is
+  voluminous.
+* Use **priority queues** to keep short exploratory jobs from starving
+  long-running production jobs.
+
+-----------------
+FAQ
+-----------------
+
+**Q**: Can I submit jobs from MATLAB or C#?
+**A**: Yes—send JSON to ``/jobs/submit``; see :ref:`OpenAPI Schema`.
+
+**Q**: Does the manager restart failed jobs automatically?
+**A**: No; clients must re-submit after inspecting the error field.
+
+**Q**: Can I change the ANSYS version per job?
+**A**: Yes—provide the full path in ``ansys_edt_path`` inside each
+:class:`HFSSSimulationConfig`.
+
+**Q**: Is there a Helm chart for Kubernetes?
+**A**: Not yet; track `issue #42 <https://github.com/ansys/pyedb/issues/42>`_.
+
+--------------------------
+Complete API description
+--------------------------
+
 .. currentmodule:: pyedb.workflows.job_manager
 
 .. autosummary::
    :toctree: _autosummary
+   :template: custom-class-template.rst
    :nosignatures:
 
    job_manager_handler.JobManagerHandler
-   job_submission.SchedulerType
-   job_submission.SchedulerOptions
    job_submission.HFSSSimulationConfig
+   job_submission.SchedulerOptions
    job_submission.MachineNode
    job_submission.HFSS3DLayoutBatchOptions
-   job_manager_handler.create_hfss_simulation_config
-   service.JobStatus
+   job_submission.SchedulerType
+   service.JobManager
    service.ResourceLimits
+   service.JobStatus
    service.JobInfo
    service.ResourceMonitor
    service.JobPoolManager
-   service.JobManager
-   service.submit_job_to_manager
+
+-----------------
+See also
+-----------------
+
+* :ref:`pyedb` - PyEDB documentation
+* :ref:`aiohttp` - aiohttp documentation
+* :ref:`socketio` - Socket.IO documentation
