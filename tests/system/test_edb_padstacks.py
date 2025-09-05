@@ -567,7 +567,6 @@ class TestClass(BaseTestClass):
         assert len(clusters2) == 2
         assert len(clusters2[1]) == 21
         edbapp.close(terminate_rpc_session=False)
-        edbapp.close(terminate_rpc_session=False)
 
     def test_reduce_via_by_density(self, edb_examples):
         source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"

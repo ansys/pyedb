@@ -42,7 +42,6 @@ example_models_path = Path(__file__).parent / "example_models"
 
 use_grpc = os.getenv("USE_GRPC") in {"1", True}
 
-
 config = {
     "desktopVersion": "2025.2",
     "use_grpc": use_grpc,
@@ -157,7 +156,7 @@ class EdbExamples:
 
     def get_package(self, edbapp=True, additional_files_folders="", version=None):
         """ "Copy package board file into local folder. A new temporary folder will be created."""
-        return self.get_si_verse(
+        return self._get_test_board(
             edbapp, additional_files_folders, version, source_file_path="TEDB/example_package.aedb"
         )
 
