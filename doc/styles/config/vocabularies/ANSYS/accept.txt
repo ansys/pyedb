@@ -126,4 +126,4 @@ NVMe
 stdout
 REST/Socket.IO
 asyncio.TimeoutError
-Socket.IO
+Socket-IO

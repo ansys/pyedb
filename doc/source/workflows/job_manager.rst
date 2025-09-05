@@ -18,7 +18,7 @@ The *Job Manager* is a **thread-safe, production-grade** façade around an
 * launch HFSS / HFSS-3D-Layout simulations **locally** (sub-process) or
   on **enterprise clusters** (SLURM, LSF, PBS, Windows-HPC),
 * enforce **host resource limits** (CPU, memory, disk, concurrency),
-* expose a **REST/Socket.IO** micro-service API,
+* expose a **REST/Socket-IO** micro-service API,
 * guarantee **exactly once** execution and **graceful draining** on shutdown.
 
 Two integration levels are provided:
@@ -217,7 +217,7 @@ The service exposes the following **self-documenting** endpoints:
      - ``/jobs/{job_id}/priority``
      - Change priority and re-queue
 
-Socket.IO events (all ``async``) are emitted for every state transition:
+Socket-IO events (all ``async``) are emitted for every state transition:
 
 * ``job_queued``
 * ``job_started``
@@ -383,7 +383,7 @@ FAQ
 **Q**: Does the manager restart failed jobs automatically?
 **A**: No; clients must re-submit after inspecting the error field.
 
-**Q**: Can I change the ANSYS version per job?
+**Q**: Can we change the ANSYS version per job?
 **A**: Yes—provide the full path in ``ansys_edt_path`` inside each
 :class:`HFSSSimulationConfig`.
 
@@ -417,4 +417,4 @@ See also
 
 * :ref:`pyedb` - PyEDB documentation
 * :ref:`aiohttp` - aiohttp documentation
-* :ref:`socketio` - Socket.IO documentation
+* :ref:`socketio` - Socket-IO documentation
