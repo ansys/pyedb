@@ -117,3 +117,11 @@ Getting Started
 [Aa][Pp][Ii]
 [Dd][Oo][Cc][Uu][Mm][Ee][Nn][Tt][Aa][Tt][Ii][Oo][Nn]
 [Mm][Aa][Tt][Pp][Ll][Oo][Tt][Ll][Ii][Ib]
+[Aa]sync
+[Ss]ocket.[Ii][Oo]
+configs
+subprocess
+[Cg][Pp][Uu]s
+untrusted
+NVMe
+stdout

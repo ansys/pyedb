@@ -19,18 +19,18 @@ The *Job Manager* is a **thread-safe, production-grade** façade around an
   on **enterprise clusters** (SLURM, LSF, PBS, Windows-HPC),
 * enforce **host resource limits** (CPU, memory, disk, concurrency),
 * expose a **REST/Socket.IO** micro-service API,
-* guarantee **exactly-once** execution and **graceful draining** on shutdown.
+* guarantee **exactly once** execution and **graceful draining** on shutdown.
 
 Two integration levels are provided:
 
-1. **Zero-conf embedded mode** – import :class:`JobManagerHandler`, hand it a
+1. **Zero-conf embedded mode** import :class:`JobManagerHandler`, hand it a
    PyEDB ``Edb`` object, and call :meth:`submit_jobs_and_wait` from an
    interactive script or Jupyter.
-2. **Stand-alone service** – run ``python -m pyedb.workflows.job_manager.service``
+2. **Stand-alone service** run ``python -m pyedb.workflows.job_manager.service``
    (or a Docker container) and submit jobs via HTTP/JSON from any language.
 
 The public surface is intentionally tiny: three factory helpers, two submission
-methods, and a handful of data containers.  Everything else is **private**
+methods, and a handful of data containers. Everything else is **private**
 implementation detail that can evolve without breaking user code.
 
 --------
@@ -380,18 +380,12 @@ High-throughput scenarios
 FAQ
 -----------------
 
-**Q**: Can I submit jobs from MATLAB or C#?
-**A**: Yes—send JSON to ``/jobs/submit``; see :ref:`OpenAPI Schema`.
-
 **Q**: Does the manager restart failed jobs automatically?
 **A**: No; clients must re-submit after inspecting the error field.
 
 **Q**: Can I change the ANSYS version per job?
 **A**: Yes—provide the full path in ``ansys_edt_path`` inside each
 :class:`HFSSSimulationConfig`.
-
-**Q**: Is there a Helm chart for Kubernetes?
-**A**: Not yet; track `issue #42 <https://github.com/ansys/pyedb/issues/42>`_.
 
 --------------------------
 Complete API description
