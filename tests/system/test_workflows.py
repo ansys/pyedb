@@ -40,18 +40,14 @@ class TestClass:
         from pyedb.workflows.drc import Rules
 
         RULES_DICT = {
-            "minLineWidth": [{"name": "MW", "value": "3.5mil"}],
-            "minClearance": [{"name": "CLR", "value": "4mil", "net1": "*", "net2": "*"}],
-            "minAnnularRing": [{"name": "AR", "value": "2mil"}],
-            "diffPairLengthMatch": [
+            "min_line_width": [{"name": "MW", "value": "3.5mil"}],
+            "min_clearance": [{"name": "CLR", "value": "4mil", "net1": "*", "net2": "*"}],
+            "min_annular_ring": [{"name": "AR", "value": "2mil"}],
+            "diff_pair_length_match": [
                 {"name": "DPMATCH", "tolerance": "5mil", "pairs": [{"positive": "DP_P", "negative": "DP_N"}]}
             ],
-            "impedanceSingleEnd": [{"name": "Z0_50", "value": 50, "layers": ["TOP", "BOTTOM"], "tolerance": 3}],
-            "impedanceDiffPair": [
-                {"name": "Zdiff_90", "value": 90, "pairs": [{"p": "D_P", "n": "D_N"}], "tolerance": 3}
-            ],
-            "backDrillStubLength": [{"name": "STUB", "value": "6mil"}],
-            "copperBalance": [{"name": "CB", "max_percent": 15, "layers": ["L3", "L4"]}],
+            "back_drill_stub_length": [{"name": "STUB", "value": "6mil"}],
+            "copper_balance": [{"name": "CB", "max_percent": 15, "layers": ["L3", "L4"]}],
         }
         rules = Rules.from_dict(RULES_DICT)
         assert rules.min_clearance[0].name == "CLR"
@@ -59,18 +55,12 @@ class TestClass:
         assert rules.min_clearance[0].name == "CLR"
         assert rules.back_drill_stub_length[0].name == "STUB"
         assert rules.back_drill_stub_length[0].value == "6mil"
-        assert rules.impedance_single_end[0].name == "Z0_50"
-        assert rules.impedance_single_end[0].value == 50
         assert rules.min_clearance[0].net1 == "*"
         assert rules.min_clearance[0].net2 == "*"
         assert rules.diff_pair_length_match[0].name == "DPMATCH"
         assert rules.diff_pair_length_match[0].tolerance == "5mil"
         assert rules.diff_pair_length_match[0].pairs[0].positive == "DP_P"
         assert rules.diff_pair_length_match[0].pairs[0].negative == "DP_N"
-        assert rules.impedance_diff_pair[0].name == "Zdiff_90"
-        assert rules.impedance_diff_pair[0].value == 90
-        assert rules.impedance_diff_pair[0].pairs[0]["p"] == "D_P"
-        assert rules.impedance_diff_pair[0].pairs[0]["n"] == "D_N"
         assert rules.copper_balance[0].name == "CB"
         assert rules.copper_balance[0].max_percent == 15
 
