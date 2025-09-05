@@ -38,6 +38,8 @@ dependencies = [
     "scikit-rf",
     "ansys-edb-core>=0.2.0",
     "psutil",
+    "aiohttp>=3.8",
+    "python-socketio>=5.10",
 ]
 
 [project.optional-dependencies]
