@@ -57,9 +57,11 @@ def Edb(
     oproject=None,
     student_version=False,
     use_ppe=False,
+    map_file=None,
     technology_file=None,
     grpc=False,
     control_file=None,
+    layer_filter=None,
 ):
     """Provides the EDB application interface.
 
@@ -78,7 +80,7 @@ def Edb(
         isreadonly : bool, optional
             Whether to open EBD in read-only mode when it is
             owned by HFSS 3D Layout. The default is ``False``.
-        edbversion : str, optional
+        version : str, optional
             Version of EDB to use. The default is ``"2021.2"``.
         isaedtowned : bool, optional
             Whether to launch EDB from HFSS 3D Layout. The
@@ -87,10 +89,20 @@ def Edb(
             Reference to the AEDT project object.
         student_version : bool, optional
             Whether to open the AEDT student version. The default is ``False.``
+        use_ppe : bool, optional
+            Whether to use PPE license. The default is ``False``.
         technology_file : str, optional
             Full path to technology file to be converted to xml before importing or xml. Supported by GDS format only.
         grpc : bool, optional
             Whether to enable gRPC. Default value is ``False``.
+        layer_filter: str,optional
+            Layer filter .txt file.
+        map_file : str, optional
+            Layer map .map file.
+        control_file : str, optional
+            Path to the XML file. The default is ``None``, in which case an attempt is made to find
+            the XML file in the same directory as the board file. To succeed, the XML file and board file
+            must have the same name. Only the extension differs.
 
         Returns
         -------
@@ -263,7 +275,6 @@ def Edb(
     if grpc is False and settings.edb_dll_path is not None:
         # Check if the user specified a .dll path
         settings.logger.info(f"Force to use .dll from {settings.edb_dll_path} defined in settings.")
-        settings.specified_version = "unknown"
     elif version is None:
         if settings.specified_version is not None:
             settings.logger.info(f"Use {settings.specified_version} defined in settings.")
@@ -324,8 +335,10 @@ def Edb(
             isaedtowned=isaedtowned,
             oproject=oproject,
             use_ppe=use_ppe,
-            technology_file=technology_file,
             control_file=control_file,
+            map_file=map_file,
+            technology_file=technology_file,
+            layer_filter=layer_filter,
         )
 
 

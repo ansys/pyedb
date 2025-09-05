@@ -603,17 +603,20 @@ class Modeler(object):
         else:
             corner_style = GrpcPathCornerType.MITER
         _points = []
-        for pt in points:
-            _pt = []
-            for coord in pt:
-                coord = Value(coord, self._pedb.active_cell)
-                _pt.append(coord)
-            _points.append(_pt)
-        points = _points
-
-        width = Value(width, self._pedb.active_cell)
-
-        polygon_data = GrpcPolygonData(points=[GrpcPointData(i) for i in points])
+        if isinstance(points, list):
+            for pt in points:
+                _pt = []
+                for coord in pt:
+                    coord = Value(coord, self._pedb.active_cell)
+                    _pt.append(coord)
+                _points.append(_pt)
+            points = _points
+            width = Value(width, self._pedb.active_cell)
+            polygon_data = GrpcPolygonData(points)
+        elif isinstance(points, GrpcPolygonData):
+            polygon_data = points
+        else:
+            raise TypeError("Points must be a list of points or a PolygonData object.")
         path = Path.create(
             layout=self._active_layout,
             layer=layer_name,
@@ -631,7 +634,7 @@ class Modeler(object):
 
     def create_trace(
         self,
-        path_list: List[List[float]],
+        path_list: Union[List[List[float]], GrpcPolygonData],
         layer_name: str,
         width: float = 1,
         net_name: str = "",

@@ -278,7 +278,7 @@ class CfgCircuitElement(CfgBase):
         self._pedb = pedb
         self.name = kwargs["name"]
         self.type = kwargs["type"]
-        self.impedance = kwargs.get("impedance", 50)
+        self.impedance = kwargs.get("impedance", None)
         self.reference_designator = kwargs.get("reference_designator", None)
         self.distributed = kwargs.get("distributed", False)
         self._elem_num = 1
