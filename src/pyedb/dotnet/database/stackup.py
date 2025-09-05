@@ -33,6 +33,8 @@ import logging
 import math
 import warnings
 
+from defusedxml.ElementTree import parse as defused_parse
+
 from pyedb.dotnet.database.edb_data.layer_data import (
     LayerEdbClass,
     StackupLayerEdbClass,
@@ -2245,7 +2247,7 @@ class Stackup(LayerCollection):
         if not colors:
             self._pedb.logger.error("Matplotlib is needed. Please, install it first.")
             return False
-        tree = ET.parse(file_path)
+        tree = defused_parse(file_path)
         root = tree.getroot()
         stackup = root.find("Stackup")
         stackup_dict = {}
