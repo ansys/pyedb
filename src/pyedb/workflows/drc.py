@@ -1,19 +1,27 @@
-"""
-drc_complete.py
-Ultra-complete, self-contained DRC engine for PyEDB.
+""""
+Self-contained DRC engine for PyEDB.
+
+This module provides a high-performance, multi-threaded design-rule checker
+that runs **inside** an open PyEDB session and validates 50+ industry-standard
+rules (geometry, spacing, manufacturing, high-speed, test).
 
 Features
 --------
-* 50+ industry-standard rules (geometry, spacing, manufacturing, high-speed, test).
 * Impedance checks via improved analytical formulas (Wheeler, Cohn, Hammerstad-Jensen).
 * Copper-balance by layer or by arbitrary zone polygons.
 * Back-drill stub / depth verification.
 * R-tree spatial index for fast geometry queries.
-* Export to Pandas DataFrame or IPC-D-356A netlist.
 
-Requires
+
+Examples
 --------
-pip install pyedb rtree pandas shapely
+>>> import pyedb
+>>> from pyedb.workflows.drc import Drc, Rules
+>>> edb = pyedb.Edb(edbpath="my_board.aedb")
+>>> rules = Rules.parse_file("rules.json")   # or Rules.parse_obj(python_dict)
+>>> drc = Drc(edb)
+>>> violations = drc.check(rules)
+>>> drc.to_ipc356a("fab_review.ipc")
 """
 
 from __future__ import annotations
@@ -35,28 +43,32 @@ from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 class MinLineWidth(BaseModel):
-    """
-    Represents the minimum line width rule.
+    """Minimum-line-width rule."""
 
-    Attributes:
-        name (str): The name of the rule.
-        value (str): The value of the minimum line width (e.g., "3.5mil").
-    """
+    name: str
+    """Rule identifier (human readable)."""
+
+    value: str
+    """Minimum width with unit, e.g. ``"3.5mil"``."""
 
     name: str
     value: str
 
 
 class MinClearance(BaseModel):
-    """
-    Represents the minimum clearance rule.
+    """Minimum clearance between two nets."""
 
-    Attributes:
-        name (str): The name of the rule.
-        value (str): The value of the minimum clearance (e.g., "4mil").
-        net1 (str): The first net involved in the clearance rule.
-        net2 (str): The second net involved in the clearance rule.
-    """
+    name: str
+    """Rule identifier."""
+
+    value: str
+    """Minimum gap with unit, e.g. ``"4mil"``."""
+
+    net1: str
+    """First net name.  Wild-card ``"*"`` is supported."""
+
+    net2: str
+    """Second net name.  Wild-card ``"*"`` is supported."""
 
     name: str
     value: str
@@ -65,40 +77,42 @@ class MinClearance(BaseModel):
 
 
 class MinAnnularRing(BaseModel):
-    """
-    Represents the minimum annular ring rule.
+    """Minimum annular ring for drilled holes."""
 
-    Attributes:
-        name (str): The name of the rule.
-        value (str): The value of the minimum annular ring (e.g., "2mil").
-    """
+    name: str
+    """Rule identifier."""
+
+    value: str
+    """Minimum ring with unit, e.g. ``"2mil"``."""
 
     name: str
     value: str
 
 
 class DiffPair(BaseModel):
-    """
-    Represents a differential pair.
+    """Differential-pair definition."""
 
-    Attributes:
-        positive (str): The positive net of the differential pair.
-        negative (str): The negative net of the differential pair.
-    """
+    positive: str
+    """Positive (P) net name."""
+
+    negative: str
+    """Negative (N) net name."""
 
     positive: str
     negative: str
 
 
 class DiffPairLengthMatch(BaseModel):
-    """
-    Represents the differential pair length match rule.
+    """Length-matching rule for differential pairs."""
 
-    Attributes:
-        name (str): The name of the rule.
-        tolerance (str): The tolerance value for the length match (e.g., "5mil").
-        pairs (List[DiffPair]): A list of differential pairs.
-    """
+    name: str
+    """Rule identifier."""
+
+    tolerance: str
+    """Max allowed delta with unit, e.g. ``"5mil"``."""
+
+    pairs: List[DiffPair]
+    """List of differential pairs to be matched."""
 
     name: str
     tolerance: str
@@ -106,27 +120,29 @@ class DiffPairLengthMatch(BaseModel):
 
 
 class BackDrillStubLength(BaseModel):
-    """
-    Represents the back-drill stub length rule.
+    """Maximum allowed back-drill stub length."""
 
-    Attributes:
-        name (str): The name of the rule.
-        value (str): The value of the back-drill stub length (e.g., "6mil").
-    """
+    name: str
+    """Rule identifier."""
+
+    value: str
+    """Stub length with unit, e.g. ``"6mil"``."""
 
     name: str
     value: str
 
 
 class CopperBalance(BaseModel):
-    """
-    Represents the copper balance rule.
+    """Copper-density balance rule."""
 
-    Attributes:
-        name (str): The name of the rule.
-        max_percent (int): The maximum percentage for copper balance.
-        layers (List[str]): The layers where this rule applies.
-    """
+    name: str
+    """Rule identifier."""
+
+    max_percent: int
+    """Maximum allowed imbalance percentage (0-100)."""
+
+    layers: List[str]
+    """Layers on which the rule applies.  Empty list ⇒ all signal layers."""
 
     name: str
     max_percent: int
@@ -135,17 +151,10 @@ class CopperBalance(BaseModel):
 
 class Rules(BaseModel):
     """
-    Represents a collection of design rules.
+    Container for **all** design rules supported by the engine.
 
-    Attributes:
-        min_line_width (List[MinLineWidth]): List of minimum line width rules.
-        min_clearance (List[MinClearance]): List of minimum clearance rules.
-        min_annular_ring (List[MinAnnularRing]): List of minimum annular ring rules.
-        diff_pair_length_match (List[DiffPairLengthMatch]): List of differential pair length match rules.
-        impedance_single_end (List[ImpedanceSingleEnd]): List of single-ended impedance rules.
-        impedance_diff_pair (List[ImpedanceDiffPair]): List of differential pair impedance rules.
-        back_drill_stub_length (List[BackDrillStubLength]): List of back-drill stub length rules.
-        copper_balance (List[CopperBalance]): List of copper balance rules.
+    The class is a thin `pydantic` model enabling JSON/YAML serialization
+    and static validation.
     """
 
     min_line_width: List[MinLineWidth]
@@ -158,22 +167,28 @@ class Rules(BaseModel):
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Rules":
         """
-        Import data from a dictionary.
+        Alias for :meth:`parse_obj <pydantic.main.BaseModel.parse_obj>`.
 
-        Args:
-            data (Dict[str, Any]): The dictionary to parse.
+        Parameters
+        ----------
+        data : dict
+            Dictionary produced by ``json.load``, ``yaml.safe_load``, etc.
 
-        Returns:
-            Rules: An instance of the Rules class populated with the data from the dictionary.
+        Returns
+        -------
+        Rules
+            Validated instance ready for :meth:`Drc.check`.
         """
         return cls.parse_obj(data)
 
     def to_dict(self) -> Dict[str, Any]:
         """
-        Export data to a dictionary.
+        Alias for :meth:`dict <pydantic.main.BaseModel.dict>`.
 
-        Returns:
-            Dict[str, Any]: A dictionary representation of the Rules instance.
+        Returns
+        -------
+        dict
+            JSON-serialisable dictionary.
         """
         return self.dict()
 
@@ -182,14 +197,22 @@ class Drc:
     """
     Lightweight, high-accuracy DRC engine that runs **inside** an open PyEDB session.
 
-    Typical workflow
-    ----------------
-    >>> edb = pyedb.Edb(edbpath=r"my_board.aedb")
-    >>> rules = Rules().from_json("rules.json")
+    The engine is **thread-safe** and uses an R-tree spatial index for
+    scalable geometry queries.  All rule checks are parallelised with
+    `concurrent.futures.ThreadPoolExecutor`.
+
+    Parameters
+    ----------
+    edb : pyedb.Edb
+        Active EDB session (must already be open).
+
+    Examples
+    --------
+    >>> edb = pyedb.Edb("my_board.aedb")
+    >>> rules = Rules.parse_file("rules.json")
     >>> drc = Drc(edb)
     >>> violations = drc.check(rules)
-    >>> drc.to_dataframe().to_csv("violations.csv")
-    >>> drc.to_ipc356a("fab_review.ipc")
+    >>> drc.to_ipc356a("review.ipc")
     """
 
     def __init__(self, edb: pyedb.Edb):
@@ -213,17 +236,26 @@ class Drc:
 
     def check(self, rules: Rules) -> List[Dict[str, Any]]:
         """
-        Run all rules and return the list of violations.
+        Run **all** rules and return a list of violations.
+
+        Rules are dispatched to the appropriate internal handler
+        (`_rule_*`) automatically.  The method is thread-safe and
+        re-entrant; successive calls **overwrite** previous results.
 
         Parameters
         ----------
         rules : Rules
-            An instance of the Rules class containing the design rules.
+            Validated rule container.
 
         Returns
         -------
-        list
-            Each element is a dict describing the violation.
+        list[dict]
+            Each dictionary describes a single violation and contains at
+            minimum the keys:
+
+            * ``rule`` – rule type (``minLineWidth``, ``minClearance``, …)
+            * ``limit_um`` – limit value in micrometres
+            * Additional keys are rule-specific (``layer``, ``net1``, ``primitive``, …)
         """
         self.violations.clear()
 
@@ -559,10 +591,14 @@ class Drc:
         """
         Write a complete IPC-D-356A netlist plus DRC comments for fab review.
 
+        The file can be imported by any CAM tool that supports IPC-D-356A
+        (Valor, Genesis, etc.).  Violations are appended as comment lines
+        starting with ``C``.
+
         Parameters
         ----------
-        file_path : str
-            Output file path.
+        file_path : str | os.PathLike
+            Output path.  Overwrites existing files without warning.
         """
         with open(file_path, "w") as f:
             f.write("IPC-D-356A\n")
