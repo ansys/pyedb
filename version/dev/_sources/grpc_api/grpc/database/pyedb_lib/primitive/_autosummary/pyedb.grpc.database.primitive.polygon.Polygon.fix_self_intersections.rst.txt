@@ -1,0 +1,6 @@
+fix\_self\_intersections
+========================
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. automethod:: Polygon.fix_self_intersections

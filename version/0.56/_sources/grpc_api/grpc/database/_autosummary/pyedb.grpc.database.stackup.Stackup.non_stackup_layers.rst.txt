@@ -1,0 +1,6 @@
+non\_stackup\_layers
+====================
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. autoproperty:: Stackup.non_stackup_layers

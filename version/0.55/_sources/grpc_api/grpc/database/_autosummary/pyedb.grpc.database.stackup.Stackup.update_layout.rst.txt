@@ -1,0 +1,6 @@
+update\_layout
+==============
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: Stackup.update_layout

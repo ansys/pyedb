@@ -1,0 +1,6 @@
+type
+====
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.primitives_data
+
+.. autoproperty:: EdbPolygon.type

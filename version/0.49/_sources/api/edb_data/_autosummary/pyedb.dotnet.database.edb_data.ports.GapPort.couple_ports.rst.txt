@@ -1,0 +1,6 @@
+couple\_ports
+=============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. automethod:: GapPort.couple_ports

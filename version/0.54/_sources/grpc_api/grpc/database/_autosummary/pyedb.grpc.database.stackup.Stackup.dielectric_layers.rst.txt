@@ -1,0 +1,6 @@
+dielectric\_layers
+==================
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. autoproperty:: Stackup.dielectric_layers

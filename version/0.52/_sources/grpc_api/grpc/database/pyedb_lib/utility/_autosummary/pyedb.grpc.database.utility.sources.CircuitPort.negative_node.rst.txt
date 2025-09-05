@@ -1,0 +1,6 @@
+negative\_node
+==============
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoproperty:: CircuitPort.negative_node

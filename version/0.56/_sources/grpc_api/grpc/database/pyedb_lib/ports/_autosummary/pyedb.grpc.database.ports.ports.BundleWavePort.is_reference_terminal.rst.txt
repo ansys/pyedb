@@ -1,0 +1,6 @@
+is\_reference\_terminal
+=======================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: BundleWavePort.is_reference_terminal

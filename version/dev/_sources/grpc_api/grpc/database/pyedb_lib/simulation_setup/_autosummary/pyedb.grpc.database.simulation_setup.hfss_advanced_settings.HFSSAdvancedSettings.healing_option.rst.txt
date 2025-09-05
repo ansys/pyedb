@@ -1,0 +1,6 @@
+healing\_option
+===============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_advanced_settings
+
+.. autoproperty:: HFSSAdvancedSettings.healing_option

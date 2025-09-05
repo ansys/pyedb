@@ -1,0 +1,32 @@
+﻿Definitions
+===========
+
+.. currentmodule:: pyedb.grpc.database.definitions
+
+.. autoclass:: Definitions
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Definitions.add_package_def
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Definitions.component
+      Definitions.package
+   
+   

@@ -1,0 +1,15 @@
+﻿ControlFileSweep
+================
+
+.. currentmodule:: pyedb.grpc.database.control_file
+
+.. autoclass:: ControlFileSweep
+
+   
+
+   
+   
+
+   
+   
+   

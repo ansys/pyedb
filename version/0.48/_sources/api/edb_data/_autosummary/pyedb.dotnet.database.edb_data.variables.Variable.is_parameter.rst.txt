@@ -1,0 +1,6 @@
+is\_parameter
+=============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.variables
+
+.. autoproperty:: Variable.is_parameter

@@ -1,0 +1,6 @@
+percent\_error
+==============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_dcr_settings
+
+.. autoproperty:: HFSSDCRSettings.percent_error

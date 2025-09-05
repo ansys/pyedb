@@ -1,0 +1,171 @@
+
+
+.. _sphx_glr_examples_legacy_standalone:
+
+Standalone
+~~~~~~~~~~
+The following examples illustrate the use of the legacy PyEDB API as a standalone package.
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="EDB: geometry creation">
+
+.. only:: html
+
+  .. image:: /examples/legacy_standalone/images/thumb/sphx_glr_00_EDB_Create_VIA_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_legacy_standalone_00_EDB_Create_VIA.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">EDB: geometry creation</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="EDB: Siwave analysis from EDB setup">
+
+.. only:: html
+
+  .. image:: /examples/legacy_standalone/images/thumb/sphx_glr_01_edb_example_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_legacy_standalone_01_edb_example.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">EDB: Siwave analysis from EDB setup</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="EDB: IPC2581 export">
+
+.. only:: html
+
+  .. image:: /examples/legacy_standalone/images/thumb/sphx_glr_02_edb_to_ipc2581_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_legacy_standalone_02_edb_to_ipc2581.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">EDB: IPC2581 export</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="EDB: plot nets with Matplotlib">
+
+.. only:: html
+
+  .. image:: /examples/legacy_standalone/images/thumb/sphx_glr_05_Plot_nets_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_legacy_standalone_05_Plot_nets.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">EDB: plot nets with Matplotlib</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="EDB: parametric via creation">
+
+.. only:: html
+
+  .. image:: /examples/legacy_standalone/images/thumb/sphx_glr_06_Advanced_EDB_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_legacy_standalone_06_Advanced_EDB.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">EDB: parametric via creation</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="EDB: fully parametrized CPWG design">
+
+.. only:: html
+
+  .. image:: /examples/legacy_standalone/images/thumb/sphx_glr_08_CPWG_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_legacy_standalone_08_CPWG.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">EDB: fully parametrized CPWG design</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="EDB: Edit Control File and import gds">
+
+.. only:: html
+
+  .. image:: /examples/legacy_standalone/images/thumb/sphx_glr_10_GDS_workflow_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_legacy_standalone_10_GDS_workflow.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">EDB: Edit Control File and import gds</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="EDB: post-layout parameterization">
+
+.. only:: html
+
+  .. image:: /examples/legacy_standalone/images/thumb/sphx_glr_11_post_layout_parameterization_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_legacy_standalone_11_post_layout_parameterization.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">EDB: post-layout parameterization</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/legacy_standalone/00_EDB_Create_VIA
+   /examples/legacy_standalone/01_edb_example
+   /examples/legacy_standalone/02_edb_to_ipc2581
+   /examples/legacy_standalone/05_Plot_nets
+   /examples/legacy_standalone/06_Advanced_EDB
+   /examples/legacy_standalone/08_CPWG
+   /examples/legacy_standalone/10_GDS_workflow
+   /examples/legacy_standalone/11_post_layout_parameterization
+

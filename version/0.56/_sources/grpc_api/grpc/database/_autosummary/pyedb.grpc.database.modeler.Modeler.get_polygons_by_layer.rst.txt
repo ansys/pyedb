@@ -1,0 +1,6 @@
+get\_polygons\_by\_layer
+========================
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. automethod:: Modeler.get_polygons_by_layer

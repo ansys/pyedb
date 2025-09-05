@@ -1,0 +1,6 @@
+create\_port
+============
+
+.. currentmodule:: pyedb.grpc.database.source_excitations
+
+.. automethod:: SourceExcitation.create_port

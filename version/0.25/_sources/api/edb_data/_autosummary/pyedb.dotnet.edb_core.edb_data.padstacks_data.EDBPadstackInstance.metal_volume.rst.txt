@@ -1,0 +1,6 @@
+metal\_volume
+=============
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstackInstance.metal_volume

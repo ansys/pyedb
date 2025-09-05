@@ -1,0 +1,6 @@
+closest\_point
+==============
+
+.. currentmodule:: pyedb.grpc.database.geometry.polygon_data
+
+.. automethod:: PolygonData.closest_point

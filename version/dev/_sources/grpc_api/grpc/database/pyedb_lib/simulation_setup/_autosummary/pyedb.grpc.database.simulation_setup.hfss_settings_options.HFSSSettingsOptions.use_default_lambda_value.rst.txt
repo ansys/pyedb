@@ -1,0 +1,6 @@
+use\_default\_lambda\_value
+===========================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_settings_options
+
+.. autoproperty:: HFSSSettingsOptions.use_default_lambda_value

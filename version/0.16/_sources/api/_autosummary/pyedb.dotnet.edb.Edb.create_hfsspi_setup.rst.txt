@@ -1,0 +1,6 @@
+create\_hfsspi\_setup
+=====================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.create_hfsspi_setup

@@ -1,0 +1,6 @@
+project\_name
+=============
+
+.. currentmodule:: pyedb.siwave
+
+.. autoproperty:: Siwave.project_name

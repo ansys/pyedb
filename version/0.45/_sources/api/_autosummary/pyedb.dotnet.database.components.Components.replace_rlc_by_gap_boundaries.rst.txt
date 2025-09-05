@@ -1,0 +1,6 @@
+replace\_rlc\_by\_gap\_boundaries
+=================================
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.replace_rlc_by_gap_boundaries

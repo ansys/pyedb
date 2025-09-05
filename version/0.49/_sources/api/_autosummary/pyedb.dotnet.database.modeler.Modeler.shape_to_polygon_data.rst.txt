@@ -1,0 +1,6 @@
+shape\_to\_polygon\_data
+========================
+
+.. currentmodule:: pyedb.dotnet.database.modeler
+
+.. automethod:: Modeler.shape_to_polygon_data

@@ -1,0 +1,6 @@
+find\_dc\_short
+===============
+
+.. currentmodule:: pyedb.grpc.database.net.net
+
+.. automethod:: Net.find_dc_short

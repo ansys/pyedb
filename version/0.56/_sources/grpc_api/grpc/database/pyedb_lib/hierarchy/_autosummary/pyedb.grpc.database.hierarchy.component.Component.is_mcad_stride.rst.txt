@@ -1,0 +1,6 @@
+is\_mcad\_stride
+================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoproperty:: Component.is_mcad_stride

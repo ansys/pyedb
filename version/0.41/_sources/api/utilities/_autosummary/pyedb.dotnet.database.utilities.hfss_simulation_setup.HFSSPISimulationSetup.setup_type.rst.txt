@@ -1,0 +1,6 @@
+setup\_type
+===========
+
+.. currentmodule:: pyedb.dotnet.database.utilities.hfss_simulation_setup
+
+.. autoproperty:: HFSSPISimulationSetup.setup_type

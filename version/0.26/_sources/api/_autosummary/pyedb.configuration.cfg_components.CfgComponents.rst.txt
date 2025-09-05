@@ -1,0 +1,27 @@
+﻿CfgComponents
+=============
+
+.. currentmodule:: pyedb.configuration.cfg_components
+
+.. autoclass:: CfgComponents
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgComponents.apply
+      
+      
+      CfgComponents.get_data_from_db
+      
+   
+   
+
+   
+   
+   

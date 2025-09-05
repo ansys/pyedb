@@ -1,0 +1,6 @@
+definition\_type
+================
+
+.. currentmodule:: pyedb.grpc.database.definition.package_def
+
+.. autoproperty:: PackageDef.definition_type

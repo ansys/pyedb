@@ -1,0 +1,6 @@
+is\_voltage\_source
+===================
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. autoproperty:: Terminal.is_voltage_source

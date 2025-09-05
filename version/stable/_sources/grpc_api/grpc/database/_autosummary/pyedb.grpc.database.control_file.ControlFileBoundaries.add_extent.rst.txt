@@ -1,0 +1,6 @@
+add\_extent
+===========
+
+.. currentmodule:: pyedb.grpc.database.control_file
+
+.. automethod:: ControlFileBoundaries.add_extent

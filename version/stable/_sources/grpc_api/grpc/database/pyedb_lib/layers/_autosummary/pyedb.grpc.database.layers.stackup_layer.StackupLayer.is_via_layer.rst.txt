@@ -1,0 +1,6 @@
+is\_via\_layer
+==============
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoproperty:: StackupLayer.is_via_layer

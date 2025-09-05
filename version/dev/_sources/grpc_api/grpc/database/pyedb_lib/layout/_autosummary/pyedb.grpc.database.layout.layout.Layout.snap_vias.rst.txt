@@ -1,0 +1,6 @@
+snap\_vias
+==========
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.snap_vias

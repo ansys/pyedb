@@ -1,0 +1,6 @@
+mesh\_region
+============
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.mesh_operation
+
+.. autoproperty:: LengthMeshOperation.mesh_region

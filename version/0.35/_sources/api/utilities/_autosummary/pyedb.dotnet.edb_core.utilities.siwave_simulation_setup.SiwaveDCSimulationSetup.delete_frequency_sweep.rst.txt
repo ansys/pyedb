@@ -1,0 +1,6 @@
+delete\_frequency\_sweep
+========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.siwave_simulation_setup
+
+.. automethod:: SiwaveDCSimulationSetup.delete_frequency_sweep
