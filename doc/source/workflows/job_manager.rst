@@ -184,7 +184,7 @@ Internal state enumerations & resource-limit containers
    :undoc-members:
 
 ---------------------
-REST / Socket.IO API
+REST / Socket-IO API
 ---------------------
 
 The service exposes the following **self-documenting** endpoints:
@@ -383,7 +383,7 @@ FAQ
 **Q**: Does the manager restart failed jobs automatically?
 **A**: No; clients must re-submit after inspecting the error field.
 
-**Q**: Can we change the ANSYS version per job?
+**Q**: Can ANSYS version be different per job?
 **A**: Yes—provide the full path in ``ansys_edt_path`` inside each
 :class:`HFSSSimulationConfig`.
 

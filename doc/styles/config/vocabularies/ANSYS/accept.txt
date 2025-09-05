@@ -127,3 +127,4 @@ stdout
 REST/Socket.IO
 asyncio.TimeoutError
 Socket-IO
+asyncio.TimeoutError
