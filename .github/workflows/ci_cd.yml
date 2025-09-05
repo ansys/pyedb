@@ -124,7 +124,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: .cov\system-html
-          name: html-system-coverage
+          name: html-system-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -189,7 +189,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: .cov\system-html
-          name: html-system-coverage
+          name: html-system-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -254,7 +254,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: .cov\unit-html
-          name: html-unit-coverage
+          name: html-unit-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -319,7 +319,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: .cov\unit-html
-          name: html-unit-coverage
+          name: html-unit-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -390,7 +390,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: .cov\system-html
-          name: html-system-linux-coverage
+          name: html-system-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -461,7 +461,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: .cov\system-html
-          name: html-system-linux-coverage
+          name: html-system-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -532,7 +532,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: .cov\unit-html
-          name: html-unit-linux-coverage
+          name: html-unit-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -603,7 +603,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: .cov\unit-html
-          name: html-unit-linux-coverage
+          name: html-unit-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
       - name: Upload coverage to Codecov

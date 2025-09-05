@@ -238,7 +238,7 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.values())) == 3
         edbapp.close()
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Test slow on windows with grpc")
     def test_layout_auto_parametrization_6(self, edb_examples):
         # Done
         edbapp = edb_examples.get_package()
