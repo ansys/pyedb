@@ -125,3 +125,4 @@ subprocess
 untrusted
 NVMe
 stdout
+REST/Socket.IO
