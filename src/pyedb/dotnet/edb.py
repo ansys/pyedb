@@ -4034,7 +4034,7 @@ class Edb:
         edb_zones = {}
         if not self.setups:
             self.siwave.add_siwave_syz_analysis()
-            self.save_edb()
+            self.save()
         for zone_primitive in zone_primitives:
             edb_zone_path = os.path.join(
                 working_directory,
@@ -4042,7 +4042,7 @@ class Edb:
             )
             shutil.copytree(self.edbpath, edb_zone_path)
             poly_data = zone_primitive.GetPolygonData()
-            if self.version[0] >= 10:
+            if self._db.GetVersion()[0] >= 10:
                 edb_zones[edb_zone_path] = (zone_primitive.GetZoneId(), poly_data)
             elif len(zone_primitives) == len(zone_ids):
                 edb_zones[edb_zone_path] = (zone_ids[0], poly_data)

@@ -615,7 +615,7 @@ class Modeler(object):
                 _points.append(_pt)
             points = _points
             width = Value(width, self._pedb.active_cell)
-            polygon_data = GrpcPolygonData(points=[GrpcPointData(i) for i in points])
+            polygon_data = GrpcPolygonData(points)
         elif isinstance(points, GrpcPolygonData):
             polygon_data = points
         else:

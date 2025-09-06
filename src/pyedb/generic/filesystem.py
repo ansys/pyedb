@@ -1,5 +1,5 @@
 import os
-import random
+import secrets
 import shutil
 import string
 
@@ -44,7 +44,10 @@ class Scratch:
         self._volatile = volatile
         self._cleaned = True
         char_set = string.ascii_uppercase + string.digits
-        self._scratch_path = os.path.normpath(os.path.join(local_path, "scratch" + "".join(random.sample(char_set, 6))))
+        generator = secrets.SystemRandom()
+        self._scratch_path = os.path.normpath(
+            os.path.join(local_path, "scratch" + "".join(secrets.SystemRandom.sample(generator, char_set, 6)))
+        )
         if os.path.exists(self._scratch_path):
             try:
                 self.remove()

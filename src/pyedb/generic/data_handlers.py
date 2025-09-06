@@ -2,8 +2,8 @@
 from decimal import Decimal
 import json
 import math
-import random
 import re
+import secrets
 import string
 
 from pyedb.generic.general_methods import settings
@@ -54,7 +54,7 @@ def random_string(length=6, only_digits=False, char_set=None):  # pragma: no cov
             char_set = string.digits
         else:
             char_set = string.ascii_uppercase + string.digits
-    random_str = "".join(random.choice(char_set) for _ in range(int(length)))
+    random_str = "".join(secrets.choice(char_set) for _ in range(int(length)))
     return random_str
 
 
@@ -85,9 +85,8 @@ def unique_string_list(element_list, only_string=True):  # pragma: no cover
                 pass
             raise Exception(error_message)
 
-        if only_string:
-            non_string_entries = [x for x in element_list if type(x) is not str]
-            assert not non_string_entries, "Invalid list entries {} are not a string!".format(non_string_entries)
+        if only_string and any(not isinstance(x, str) for x in element_list):
+            raise TypeError("Invalid list entries, some elements are not of type string.")
 
     return element_list
 
@@ -104,10 +103,10 @@ def string_list(element_list):  # pragma: no cover
     -------
 
     """
+    if not isinstance(element_list, (str, list)):
+        raise TypeError("Input must be a list or a string")
     if isinstance(element_list, str):
         element_list = [element_list]
-    else:
-        assert isinstance(element_list, str), "Input must be a list or a string"
     return element_list
 
 

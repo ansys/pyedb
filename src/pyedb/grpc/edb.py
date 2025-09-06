@@ -370,6 +370,10 @@ class Edb(EdbInit):
         """Ansys Edb Core module."""
         return ansys.edb.core
 
+    @property
+    def ansys_em_path(self):
+        return self.base_path
+
     def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         files = [aedt_file, aedt_file + ".lock"]
@@ -1499,7 +1503,7 @@ class Edb(EdbInit):
         >>> # Export to HFSS project:
         >>> edb.export_hfss(r"C:/output", net_list=["SignalNet"])
         """
-        siwave_s = SiwaveSolve(self.edbpath)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
 
     def export_q3d(
@@ -1535,7 +1539,7 @@ class Edb(EdbInit):
         >>> # Export to Q3D project:
         >>> edb.export_q3d(r"C:/output")
         """
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad(
             "Q3D",
             path_to_output,
@@ -1578,7 +1582,7 @@ class Edb(EdbInit):
         >>> # Export to Maxwell project:
         >>> edb.export_maxwell(r"C:/output")
         """
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad(
             "Maxwell",
             path_to_output,
@@ -1601,7 +1605,7 @@ class Edb(EdbInit):
         >>> # Solve with SIwave:
         >>> edb.solve_siwave()
         """
-        process = SiwaveSolve(self.edbpath)
+        process = SiwaveSolve(self)
         try:
             self.close()
         except:
@@ -1652,7 +1656,7 @@ class Edb(EdbInit):
         list[str]
             Generated report files.
         """
-        process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
+        process = SiwaveSolve(self)
         try:
             self.close()
         except:

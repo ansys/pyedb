@@ -35,8 +35,8 @@ import itertools
 import logging
 import math
 import os
-import random
 import re
+import secrets
 import string
 import sys
 import tempfile
@@ -254,7 +254,7 @@ def generate_unique_name(rootname, suffix="", n=6):
 
     """
     char_set = string.ascii_uppercase + string.digits
-    uName = "".join(random.choice(char_set) for _ in range(n))
+    uName = "".join(secrets.choice(char_set) for _ in range(n))
     unique_name = rootname + "_" + uName
     if suffix:
         unique_name += "_" + suffix

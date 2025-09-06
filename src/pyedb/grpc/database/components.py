@@ -1065,6 +1065,9 @@ class Components(object):
             ComponentGroup as GrpcComponentGroup,
         )
 
+        if not pins:
+            raise ValueError("Pins must be a list of PadstackInstance objects.")
+
         if not component_name:
             component_name = generate_unique_name("Comp_")
         if component_part_name:
@@ -1074,7 +1077,7 @@ class Components(object):
         if not compdef:
             return False
         new_cmp = GrpcComponentGroup.create(self._active_layout, component_name, compdef.name)
-        if hasattr(pins[0], "component") and not pins[0].component.is_null:
+        if hasattr(pins[0], "component") and pins[0].component:
             hosting_component_location = pins[0].component.transform
         else:
             hosting_component_location = None
@@ -1684,7 +1687,9 @@ class Components(object):
                     if comp.partname == part_name:
                         pass
                     else:
-                        pinlist = self._pedb.padstacks.get_instances(refdes)
+                        pinlist = list(self.instances[refdes].pins.values())
+                        if not pinlist:
+                            continue
                         if not part_name in self.definitions:
                             comp_def = ComponentDef.create(self._db, part_name, None)
                             # for pin in range(len(pinlist)):
