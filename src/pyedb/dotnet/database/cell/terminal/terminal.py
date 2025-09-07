@@ -56,6 +56,12 @@ class Terminal(Connectable):
             "PinGroupTerminal": self._pedb.core.Cell.Terminal.TerminalType.PinGroupTerminal,
         }
 
+        self._source_term_to_ground_mapping = {
+            "kNoGround": self._pedb.core.Cell.Terminal.SourceTermToGround.kNoGround,
+            "kNegative": self._pedb.core.Cell.Terminal.SourceTermToGround.kNegative,
+            "kPositive": self._pedb.core.Cell.Terminal.SourceTermToGround.kPositive,
+        }
+
     @property
     def _hfss_port_property(self):
         """HFSS port property."""
@@ -444,3 +450,36 @@ class Terminal(Connectable):
     @phase.setter
     def phase(self, value):
         self._edb_object.SetSourcePhase(self._edb.Utility.Value(value))
+
+    @property
+    def amplitude(self):
+        """Property added for grpc compatibility"""
+        return self.magnitude
+
+    @property
+    def source_amplitude(self):
+        """Property added for grpc compatibility"""
+        return self.magnitude
+
+    @source_amplitude.setter
+    def source_amplitude(self, value):
+        self.magnitude = value
+
+    @property
+    def source_phase(self):
+        """Property added for grpc compatibility"""
+        return self.phase
+
+    @source_phase.setter
+    def source_phase(self, value):
+        self.phase = value
+
+    @property
+    def terminal_to_ground(self):
+        return self._edb_object.GetTerminalToGround().ToString()
+
+
+    @terminal_to_ground.setter
+    def terminal_to_ground(self, value):
+        obj = self._source_term_to_ground_mapping[value]
+        self._edb_object.SetTerminalToGround(obj)
