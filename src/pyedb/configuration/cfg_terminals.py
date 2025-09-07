@@ -63,14 +63,10 @@ class CfgEdgeTerminal(CfgTerminal):
     pec_launch_width: Union[int, str]
 
 
-class CfgBundleTerminal(CfgTerminal):
+class CfgBundleTerminal(CfgBase):
     terminal_type: str = "bundle"
     terminals: List[str]
-    reference_terminal: Optional[str] = None
-    is_reference_terminal: bool = False
-
-
-CfgTerminal.model_rebuild()
+    name: str
 
 
 class CfgTerminals(CfgBase):
@@ -92,7 +88,7 @@ class CfgTerminals(CfgBase):
                 manager.add_edge_terminal(**i)
             elif terminal_type == "bundle":
                 manager.add_bundle_terminal(**i)
-            else:
+            else:  # pragma: no cover
                 raise
         return manager
 
@@ -198,8 +194,7 @@ class CfgTerminals(CfgBase):
             reference_terminal=None,
             amplitude=1,
             phase=0,
-            terminal_to_ground=False,
-            is_reference_terminal=False,
+            terminal_to_ground="kNoGround",
     ):
         terminal = CfgEdgeTerminal(
             name=name,
@@ -210,37 +205,23 @@ class CfgTerminals(CfgBase):
             amplitude=amplitude,
             phase=phase,
             terminal_to_ground=terminal_to_ground,
-            is_reference_terminal=is_reference_terminal,
             primitive=primitive,
             point_on_edge_x=point_on_edge_x,
             point_on_edge_y=point_on_edge_y,
             horizontal_extent_factor=horizontal_extent_factor,
             vertical_extent_factor=vertical_extent_factor,
-            pec_launch_width=pec_launch_width
+            pec_launch_width=pec_launch_width,
+            hfss_type="Wave"
         )
         self.terminals.append(terminal)
 
     def add_bundle_terminal(
             self,
-            terminals: List[Union[CfgPadstackInstanceTerminal, CfgPinGroupTerminal, CfgPointTerminal, CfgEdgeTerminal]],
+            terminals,
             name,
-            impedance,
-            is_circuit_port,
-            boundary_type,
-            reference_terminal=None,
-            amplitude=1,
-            phase=0,
-            terminal_to_ground=False,
     ):
         terminal = CfgBundleTerminal(
             terminals=terminals,
             name=name,
-            impedance=impedance,
-            is_circuit_port=is_circuit_port,
-            boundary_type=boundary_type,
-            reference_terminal=reference_terminal,
-            amplitude=amplitude,
-            phase=phase,
-            terminal_to_ground=terminal_to_ground
         )
         self.terminals.append(terminal)

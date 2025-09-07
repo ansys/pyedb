@@ -585,9 +585,9 @@ class Configuration:
                     isRef=False,
                 )
                 terminal = self._pedb.pedb_class.database.cell.terminal.edge_terminal.EdgeTerminal(self._pedb, _terminal)
-                terminal.horizontal_extent_factor = _terminal.horizontal_extent_factor
-                terminal.vertical_extent_factor = _terminal.vertical_extent_factor
-                terminal.pec_launch_width = _terminal.pec_launch_width
+                terminal.horizontal_extent_factor = terminal.horizontal_extent_factor
+                terminal.vertical_extent_factor = terminal.vertical_extent_factor
+                terminal.pec_launch_width = terminal.pec_launch_width
                 terminal.do_renormalize = True
                 edge_terminals[cfg_terminal.name] = terminal
             elif cfg_terminal.terminal_type == "bundle":
@@ -612,10 +612,14 @@ class Configuration:
                 obj.reference_terminal = terminals_dict[cfg.reference_terminal][1]
 
         for i in bungle_terminals:
-            edge_list = convert_py_list_to_net_list([edge_terminals[b] for b in i.terminals])
-            _edb_boundle_terminal = self._pedb.core.Cell.Terminal.BundleTerminal.Create(edge_list)
-            _edb_boundle_terminal.SetName(i.name)
-            self._pedb.pedb_class.database.cell.terminal.bundle_terminal.BundleTerminal(self._pedb, _edb_boundle_terminal)
+            boundle_terminal = self._pedb.pedb_class.database.cell.terminal.bundle_terminal.BundleTerminal.create(
+                self._pedb,
+                i.name,
+                i.terminals
+            )
+            bundle_term = boundle_terminal.terminals
+            bundle_term[0].name = i.name + ":T1"
+            bundle_term[1].mame = i.name + ":T2"
 
     @execution_timer("Retrieving terminal information")
     def get_terminals(self):
