@@ -478,7 +478,6 @@ class Terminal(Connectable):
     def terminal_to_ground(self):
         return self._edb_object.GetTerminalToGround().ToString()
 
-
     @terminal_to_ground.setter
     def terminal_to_ground(self, value):
         obj = self._source_term_to_ground_mapping[value]

@@ -34,9 +34,9 @@ from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 from pyedb.configuration.cfg_ports_sources import CfgPorts, CfgProbes, CfgSources
 from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
 from pyedb.configuration.cfg_setup import CfgSetups
-from pyedb.configuration.cfg_terminals import CfgTerminals
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
 from pyedb.configuration.cfg_stackup import CfgStackup
+from pyedb.configuration.cfg_terminals import CfgTerminals
 
 
 class CfgData(object):

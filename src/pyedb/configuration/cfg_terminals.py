@@ -1,11 +1,13 @@
-from typing import Union, Optional, Dict, List, Literal
+from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import BaseModel
 
 
 class CfgBase(BaseModel):
-    model_config = {"populate_by_name": True,
-                    "extra": "forbid", }
+    model_config = {
+        "populate_by_name": True,
+        "extra": "forbid",
+    }
 
 
 class CfgTerminal(CfgBase):
@@ -71,7 +73,10 @@ class CfgBundleTerminal(CfgBase):
 
 class CfgTerminals(CfgBase):
     terminals: List[
-        Union[CfgPadstackInstanceTerminal, CfgPinGroupTerminal, CfgPointTerminal, CfgEdgeTerminal, CfgBundleTerminal, dict]]
+        Union[
+            CfgPadstackInstanceTerminal, CfgPinGroupTerminal, CfgPointTerminal, CfgEdgeTerminal, CfgBundleTerminal, dict
+        ]
+    ]
 
     @classmethod
     def create(cls, terminals: List[dict]):
@@ -93,19 +98,19 @@ class CfgTerminals(CfgBase):
         return manager
 
     def add_padstack_instance_terminal(
-            self,
-            padstack_instance,
-            name,
-            impedance,
-            is_circuit_port,
-            boundary_type,
-            hfss_type,
-            reference_terminal=None,
-            amplitude=1,
-            phase=0,
-            terminal_to_ground="kNoGround",
-            padstack_instance_id=None,
-            layer=None,
+        self,
+        padstack_instance,
+        name,
+        impedance,
+        is_circuit_port,
+        boundary_type,
+        hfss_type,
+        reference_terminal=None,
+        amplitude=1,
+        phase=0,
+        terminal_to_ground="kNoGround",
+        padstack_instance_id=None,
+        layer=None,
     ):
         terminal = CfgPadstackInstanceTerminal(
             padstack_instance=padstack_instance,
@@ -119,20 +124,20 @@ class CfgTerminals(CfgBase):
             terminal_to_ground=terminal_to_ground,
             layer=layer,
             hfss_type=hfss_type,
-            padstack_instance_id=padstack_instance_id
+            padstack_instance_id=padstack_instance_id,
         )
         self.terminals.append(terminal)
 
     def add_pin_group_terminal(
-            self,
-            pin_group,
-            name,
-            impedance,
-            boundary_type,
-            reference_terminal=None,
-            amplitude=1,
-            phase=0,
-            terminal_to_ground="kNoGround",
+        self,
+        pin_group,
+        name,
+        impedance,
+        boundary_type,
+        reference_terminal=None,
+        amplitude=1,
+        phase=0,
+        terminal_to_ground="kNoGround",
     ):
         terminal = CfgPinGroupTerminal(
             pin_group=pin_group,
@@ -144,23 +149,23 @@ class CfgTerminals(CfgBase):
             amplitude=amplitude,
             phase=phase,
             terminal_to_ground=terminal_to_ground,
-            hfss_type=None
+            hfss_type=None,
         )
         self.terminals.append(terminal)
 
     def add_point_terminal(
-            self,
-            x,
-            y,
-            layer,
-            name,
-            impedance,
-            boundary_type,
-            net,
-            reference_terminal=None,
-            amplitude=1,
-            phase=0,
-            terminal_to_ground="kNoGround",
+        self,
+        x,
+        y,
+        layer,
+        name,
+        impedance,
+        boundary_type,
+        net,
+        reference_terminal=None,
+        amplitude=1,
+        phase=0,
+        terminal_to_ground="kNoGround",
     ):
         terminal = CfgPointTerminal(
             x=x,
@@ -180,21 +185,21 @@ class CfgTerminals(CfgBase):
         self.terminals.append(terminal)
 
     def add_edge_terminal(
-            self,
-            name,
-            impedance,
-            is_circuit_port,
-            boundary_type,
-            primitive,
-            point_on_edge_x,
-            point_on_edge_y,
-            horizontal_extent_factor=6,
-            vertical_extent_factor=8,
-            pec_launch_width="0.02mm",
-            reference_terminal=None,
-            amplitude=1,
-            phase=0,
-            terminal_to_ground="kNoGround",
+        self,
+        name,
+        impedance,
+        is_circuit_port,
+        boundary_type,
+        primitive,
+        point_on_edge_x,
+        point_on_edge_y,
+        horizontal_extent_factor=6,
+        vertical_extent_factor=8,
+        pec_launch_width="0.02mm",
+        reference_terminal=None,
+        amplitude=1,
+        phase=0,
+        terminal_to_ground="kNoGround",
     ):
         terminal = CfgEdgeTerminal(
             name=name,
@@ -211,14 +216,14 @@ class CfgTerminals(CfgBase):
             horizontal_extent_factor=horizontal_extent_factor,
             vertical_extent_factor=vertical_extent_factor,
             pec_launch_width=pec_launch_width,
-            hfss_type="Wave"
+            hfss_type="Wave",
         )
         self.terminals.append(terminal)
 
     def add_bundle_terminal(
-            self,
-            terminals,
-            name,
+        self,
+        terminals,
+        name,
     ):
         terminal = CfgBundleTerminal(
             terminals=terminals,
