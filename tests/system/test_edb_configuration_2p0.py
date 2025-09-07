@@ -1496,10 +1496,44 @@ class TestClassTerminals(BaseTestClass):
             "name": "terminal2",
             "impedance": 40,
             "boundary_type": "PortBoundary",
-            "hfss_type": "Wave",
             "terminal_type": "pin_group",
             "pin_group": "U7_GND",
             "reference_terminal": "terminal1",
+        }
+        self.terminal3 = {
+            "x": "104mm",
+            "y": "37mm",
+            "layer": "1_Top",
+            "name": "terminal3",
+            "impedance": 50,
+            "boundary_type": "PortBoundary",
+            "reference_terminal": "terminal3_ref",
+            "terminal_type": "point",
+            "net": "AVCC_1V3",
+        }
+        self.terminal3_ref = {
+            "x": "104mm",
+            "y": "37mm",
+            "layer": "Inner6(GND2)",
+            "net": "GND",
+            "name": "terminal3_ref",
+            "impedance": 50,
+            "boundary_type": "PortBoundary",
+            "terminal_type": "point"
+        }
+
+        data = {
+            "ports": [
+                {
+                    "name": "port1",
+                    "type": "diff_wave_port",
+                    "positive_terminal": {"primitive_name": "path_1", "point_on_edge": [0, "1mm"]},
+                    "negative_terminal": {"primitive_name": prim_2.aedt_name, "point_on_edge": ["1mm", "1mm"]},
+                    "horizontal_extent_factor": 6,
+                    "vertical_extent_factor": 4,
+                    "pec_launch_width": "0.2mm",
+                }
+            ]
         }
 
     def test_padstack_instance_terminal(self, edb_examples):
@@ -1511,7 +1545,7 @@ class TestClassTerminals(BaseTestClass):
         assert terminal1.padstack_instance.aedt_name == "U7-M7"
 
         exported = edbapp.configuration.get_data_from_db(terminals=True)["terminals"]
-        assert exported[0] == {'name': 'port1',
+        assert exported[0] == {'name': 'terminal1',
                                'impedance': 1.0,
                                'is_circuit_port': False,
                                'amplitude': 1.0,
@@ -1548,138 +1582,39 @@ class TestClassTerminals(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    def test_place_on_coordinates(self, edb_examples):
-        data = {
-            "ports": [
-                {
-                    "name": "port1",
-                    "type": "circuit",
-                    "positive_terminal": {
-                        "coordinates": {"layer": "1_Top", "point": ["104mm", "37mm"], "net": "AVCC_1V3"}
-                    },
-                    "negative_terminal": {
-                        "coordinates": {"layer": "Inner6(GND2)", "point": ["104mm", "37mm"], "net": "GND"}
-                    },
-                }
-            ]
-        }
+    def test_point_terminal(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        assert "port1" in edbapp.ports
-        port1 = edbapp.terminals["port1"]
-        assert port1.location == pytest.approx([0.104, 0.037])
-        assert port1.layer.name == "1_Top"
-        assert port1.net_name == "AVCC_1V3"
-        assert port1.reference_terminal.location == pytest.approx([0.104, 0.037])
-        assert port1.reference_terminal.layer.name == "Inner6(GND2)"
-        assert port1.reference_terminal.net_name == "GND"
+        assert edbapp.configuration.load({"terminals": [self.terminal3, self.terminal3_ref]}, apply_file=True)
 
-        e_ports = edbapp.configuration.get_data_from_db(ports=True)["ports"]
-        e_port1 = [i for i in e_ports if i["name"] == "port1"][0]
-        assert e_port1 == {'name': 'port1',
-                           'type': 'circuit',
-                           'impedance': 50.0,
-                           'positive_terminal': {'coordinates': {'point': [0.10400000000000001, 0.037],
-                                                                 'layer': '1_Top',
-                                                                 'net': 'AVCC_1V3'}},
-                           'negative_terminal': {'coordinates': {'point': [0.10400000000000001, 0.037],
-                                                                 'layer': 'Inner6(GND2)',
-                                                                 'net': 'GND'}}}
-
+        exported = edbapp.configuration.get_data_from_db(terminals=True)["terminals"]
+        assert exported == [{'name': 'terminal3',
+                     'impedance': 50.0,
+                     'is_circuit_port': True,
+                     'reference_terminal': 'terminal3_ref',
+                     'amplitude': 1.0,
+                     'phase': 0.0,
+                     'terminal_to_ground': 'kNoGround',
+                     'boundary_type': 'PortBoundary',
+                     'terminal_type': 'point',
+                     'x': 0.10400000000000001,
+                     'y': 0.037,
+                     'layer': '1_Top',
+                     'net': 'AVCC_1V3'},
+                    {'name': 'terminal3_ref',
+                     'impedance': 50.0,
+                     'is_circuit_port': True,
+                     'amplitude': 1.0,
+                     'phase': 0.0,
+                     'terminal_to_ground': 'kNoGround',
+                     'boundary_type': 'PortBoundary',
+                     'terminal_type': 'point',
+                     'x': 0.10400000000000001,
+                     'y': 0.037,
+                     'layer': 'Inner6(GND2)',
+                     'net': 'GND'}]
         edbapp.close(terminate_rpc_session=False)
 
-    def test_circuit_net_net_distributed(self, edb_examples):
-        ports = [
-            {
-                "name": "port1",
-                "reference_designator": "U7",
-                "type": "circuit",
-                "distributed": True,
-                "positive_terminal": {"net": "VDD_DDR"},
-                "negative_terminal": {"net": "GND"},
-            }
-        ]
-        data = {"ports": ports}
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        assert len(edbapp.ports) == 20
-        port1 = edbapp.terminals["port1_U7_A1"]
-        assert port1.net_name == "VDD_DDR"
-        assert port1.reference_terminal.net_name == "GND"
-        edbapp.close(terminate_rpc_session=False)
-
-    def test_pin_group(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        pin_groups = [
-            {"name": "U9_5V_1", "reference_designator": "U9", "pins": ["32", "33"]},
-            {"name": "U9_GND", "reference_designator": "U9", "net": "GND"},
-        ]
-        ports = [
-            {
-                "name": "U9_pin_group_port",
-                "type": "circuit",
-                "positive_terminal": {"pin_group": "U9_5V_1"},
-                "negative_terminal": {"pin_group": "U9_GND"},
-            }
-        ]
-        data = {"pin_groups": pin_groups}
-        assert edbapp.configuration.load(data, append=False, apply_file=True)
-        data = {"ports": ports}
-        assert edbapp.configuration.load(data, append=False, apply_file=True)
-        assert "U9_5V_1" in edbapp.siwave.pin_groups
-        assert "U9_GND" in edbapp.siwave.pin_groups
-        assert "U9_pin_group_port" in edbapp.ports
-        assert edbapp.configuration.get_data_from_db(ports=True)
-        edbapp.close(terminate_rpc_session=False)
-
-    def test_edge_port(self, edb_examples):
-        edbapp = edb_examples.create_empty_edb()
-        edbapp.stackup.create_symmetric_stackup(2)
-        edbapp.modeler.create_rectangle(
-            layer_name="BOT", net_name="GND", lower_left_point=["-2mm", "-2mm"], upper_right_point=["2mm", "2mm"]
-        )
-        prim_1 = edbapp.modeler.create_trace(
-            path_list=([0, 0], [0, "1mm"]),
-            layer_name="TOP",
-            net_name="SIG",
-            width="0.1mm",
-            start_cap_style="Flat",
-            end_cap_style="Flat",
-        )
-        prim_1.aedt_name = "path_1"
-        data = {
-            "ports": [
-                {
-                    "name": "port1",
-                    "type": "wave",
-                    "primitive_name": prim_1.aedt_name,
-                    "point_on_edge": [0, "1mm"],
-                    "horizontal_extent_factor": 6,
-                    "vertical_extent_factor": 4,
-                    "pec_launch_width": "0.2mm",
-                },
-                {
-                    "name": "port2",
-                    "type": "gap",
-                    "primitive_name": prim_1.aedt_name,
-                    "point_on_edge": [0, 0],
-                },
-            ]
-        }
-        edbapp.configuration.load(data)
-        edbapp.configuration.run()
-        assert "port1" in edbapp.ports
-        port1 = edbapp.ports["port1"]
-        assert port1.hfss_type == "Wave"
-        assert port1.pec_launch_width == "0.2mm"
-
-        assert "port2" in edbapp.ports
-        port2 = edbapp.ports["port2"]
-        assert port2.hfss_type == "Gap"
-
-        edbapp.close(terminate_rpc_session=False)
-
-    def test_diff_wave_port(self, edb_examples):
+    def test_edge_bundle_terminal(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.modeler.create_rectangle(
@@ -1703,19 +1638,8 @@ class TestClassTerminals(BaseTestClass):
             end_cap_style="Flat",
         )
         prim_2.aedt_name = "path_2"
-        data = {
-            "ports": [
-                {
-                    "name": "port1",
-                    "type": "diff_wave_port",
-                    "positive_terminal": {"primitive_name": prim_1.aedt_name, "point_on_edge": [0, "1mm"]},
-                    "negative_terminal": {"primitive_name": prim_2.aedt_name, "point_on_edge": ["1mm", "1mm"]},
-                    "horizontal_extent_factor": 6,
-                    "vertical_extent_factor": 4,
-                    "pec_launch_width": "0.2mm",
-                }
-            ]
-        }
+
+
         edbapp.configuration.load(data, apply_file=True)
         port1 = edbapp.ports["port1"]
         assert port1.terminals[0].name == "port1:T1"

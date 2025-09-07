@@ -648,7 +648,19 @@ class Configuration:
                     terminal_to_ground=i.terminal_to_ground,
                 )
             elif i.terminal_type == "PointTerminal":
-                pass
+                manager.add_point_terminal(
+                    x=i.location[0],
+                    y=i.location[1],
+                    layer=i.layer.name,
+                    name=i.name,
+                    impedance=i.impedance,
+                    boundary_type=i.boundary_type,
+                    reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
+                    amplitude=i.source_amplitude,
+                    phase=i.source_phase,
+                    terminal_to_ground=i.terminal_to_ground,
+                    net=i.net_name
+                )
             elif i.terminal_type == "EdgeTerminal":
                 pass
             elif i.terminal_type == "BundleTerminal":

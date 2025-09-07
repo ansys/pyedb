@@ -79,26 +79,22 @@ class CfgTerminals(CfgBase):
 
     @classmethod
     def create(cls, terminals: List[dict]):
-        terminal_list = []
+        manager = cls(terminals=[])
         for i in terminals:
             terminal_type = i.pop("terminal_type")
             if terminal_type == "padstack_instance":
-                temp = CfgPadstackInstanceTerminal(**i)
-                terminal_list.append(temp)
+                manager.add_padstack_instance_terminal(**i)
             elif terminal_type == "pin_group":
-                temp = CfgPinGroupTerminal(**i)
-                terminal_list.append(temp)
+                manager.add_pin_group_terminal(**i)
             elif terminal_type == "point":
-                temp = CfgPointTerminal(**i)
-                terminal_list.append(temp)
+                manager.add_point_terminal(**i)
             elif terminal_type == "edge":
-                temp = CfgEdgeTerminal(**i)
-                terminal_list.append(temp)
+                manager.add_edge_terminal(**i)
             elif terminal_type == "bundle":
-                temp = CfgBundleTerminal(**i)
-                terminal_list.append(temp)
-
-        return cls(terminals=terminal_list)
+                manager.add_bundle_terminal(**i)
+            else:
+                raise
+        return manager
 
     def add_padstack_instance_terminal(
             self,
@@ -112,7 +108,8 @@ class CfgTerminals(CfgBase):
             amplitude=1,
             phase=0,
             terminal_to_ground="kNoGround",
-            padstack_instance_id=None
+            padstack_instance_id=None,
+            layer=None,
     ):
         terminal = CfgPadstackInstanceTerminal(
             padstack_instance=padstack_instance,
@@ -124,7 +121,7 @@ class CfgTerminals(CfgBase):
             amplitude=amplitude,
             phase=phase,
             terminal_to_ground=terminal_to_ground,
-            layer=None,
+            layer=layer,
             hfss_type=hfss_type,
             padstack_instance_id=padstack_instance_id
         )
@@ -139,7 +136,7 @@ class CfgTerminals(CfgBase):
             reference_terminal=None,
             amplitude=1,
             phase=0,
-            terminal_to_ground=False,
+            terminal_to_ground="kNoGround",
     ):
         terminal = CfgPinGroupTerminal(
             pin_group=pin_group,
@@ -162,13 +159,12 @@ class CfgTerminals(CfgBase):
             layer,
             name,
             impedance,
-            is_circuit_port,
             boundary_type,
+            net,
             reference_terminal=None,
             amplitude=1,
             phase=0,
-            terminal_to_ground=False,
-            is_reference_terminal=False,
+            terminal_to_ground="kNoGround",
     ):
         terminal = CfgPointTerminal(
             x=x,
@@ -176,13 +172,14 @@ class CfgTerminals(CfgBase):
             layer=layer,
             name=name,
             impedance=impedance,
-            is_circuit_port=is_circuit_port,
+            is_circuit_port=True,
             boundary_type=boundary_type,
             reference_terminal=reference_terminal,
             amplitude=amplitude,
             phase=phase,
+            net=net,
             terminal_to_ground=terminal_to_ground,
-            is_reference_terminal=is_reference_terminal
+            hfss_type=None,
         )
         self.terminals.append(terminal)
 
