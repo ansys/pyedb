@@ -23,6 +23,7 @@
 """
 This module contains the array building feature from unit cell.
 """
+
 import itertools
 from typing import Optional, Union
 

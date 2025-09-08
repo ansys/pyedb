@@ -22,6 +22,7 @@
 
 from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
 from pyedb.dotnet.database.cell.terminal.terminal import Terminal
+from pyedb.dotnet.database.general import convert_py_list_to_net_list
 
 
 class BundleTerminal(Terminal):
@@ -46,3 +47,14 @@ class BundleTerminal(Terminal):
     def decouple(self):
         """Ungroup a bundle of terminals."""
         return self._edb_object.Ungroup()
+
+    @classmethod
+    def create(cls, pedb, name, terminals):
+        terminal_list = [pedb.terminals[i]._edb_object for i in terminals]
+        edb_list = convert_py_list_to_net_list(terminal_list, pedb._edb.Cell.Terminal.Terminal)
+        _edb_boundle_terminal = pedb._edb.Cell.Terminal.BundleTerminal.Create(edb_list)
+        _edb_boundle_terminal.SetName(name)
+        pos, neg = list(_edb_boundle_terminal.GetTerminals())
+        pos.SetName(name + ":T1")
+        neg.SetName(name + ":T2")
+        return pedb.terminals[name]
