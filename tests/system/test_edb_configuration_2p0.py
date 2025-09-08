@@ -1476,7 +1476,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassTerminals(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, edb_examples):

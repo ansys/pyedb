@@ -686,6 +686,7 @@ class Configuration:
         padstacks=True,
         general=True,
         variables=True,
+        terminals=False,
     ):
         """Export the configuration data from layout to a file.
 
@@ -700,9 +701,9 @@ class Configuration:
         setups : bool
             Whether to export setups or not.
         sources : bool
-            Whether to export sources or not.
+            Whether to export sources or not. Alternative to terminals.
         ports : bool
-            Whether to export ports or not.
+            Whether to export ports or not. Alternative to terminals.
         nets : bool
             Whether to export nets.
         pin_groups : bool
@@ -721,6 +722,8 @@ class Configuration:
             Whether to export general information.
         variables : bool
             Whether to export variable.
+        terminals : bool
+            Whether to export terminals. Alternative to ports and sources.
         Returns
         -------
         bool
@@ -740,6 +743,7 @@ class Configuration:
             padstacks=padstacks,
             general=general,
             variables=variables,
+            terminals=terminals
         )
 
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)
