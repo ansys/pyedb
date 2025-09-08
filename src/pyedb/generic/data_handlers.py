@@ -85,9 +85,8 @@ def unique_string_list(element_list, only_string=True):  # pragma: no cover
                 pass
             raise Exception(error_message)
 
-        if only_string:
-            non_string_entries = [x for x in element_list if type(x) is not str]
-            assert not non_string_entries, "Invalid list entries {} are not a string!".format(non_string_entries)
+        if only_string and any(not isinstance(x, str) for x in element_list):
+            raise TypeError("Invalid list entries, some elements are not of type string.")
 
     return element_list
 
@@ -104,10 +103,10 @@ def string_list(element_list):  # pragma: no cover
     -------
 
     """
+    if not isinstance(element_list, (str, list)):
+        raise TypeError("Input must be a list or a string")
     if isinstance(element_list, str):
         element_list = [element_list]
-    else:
-        assert isinstance(element_list, str), "Input must be a list or a string"
     return element_list
 
 
