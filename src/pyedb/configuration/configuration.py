@@ -605,7 +605,7 @@ class Configuration:
 
             terminals_dict[cfg_terminal.name] = cfg_terminal, terminal
 
-        for name, obj in terminals_dict.items():
+        for _, obj in terminals_dict.items():
             cfg, obj = obj
             if cfg.reference_terminal:
                 obj.reference_terminal = terminals_dict[cfg.reference_terminal][1]
@@ -666,8 +666,8 @@ class Configuration:
                 pass
             elif i.terminal_type == "BundleTerminal":
                 pass
-            else:
-                raise
+            else:  # pragma: no cover
+                raise RuntimeError(f"Terminal type {i.terminal_type} not supported.")
 
     def export(
         self,

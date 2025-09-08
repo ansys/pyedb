@@ -94,7 +94,7 @@ class CfgTerminals(CfgBase):
             elif terminal_type == "bundle":
                 manager.add_bundle_terminal(**i)
             else:  # pragma: no cover
-                raise
+                raise ValueError(f"Unknown terminal type: {terminal_type}")
         return manager
 
     def add_padstack_instance_terminal(
