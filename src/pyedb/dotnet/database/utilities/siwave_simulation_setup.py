@@ -296,7 +296,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         return DCAdvancedSettings(self)
 
 
-class SiwaveDCSimulationSetup(SiwaveSimulationSetup):
+class SiwaveDCSimulationSetup(SimulationSetup):
     """Manages EDB methods for SIwave DC simulation setup."""
 
     def __init__(self, pedb, edb_object=None, name: str = None):
