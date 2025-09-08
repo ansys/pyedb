@@ -189,11 +189,13 @@ class ChannelSetup:
         Raises:
             ValueError: If the input is not a list.
         """
+        from pyedb.siwave_core.cpa.simulation_setup_data_model import Vrm
+
         if not isinstance(value, list):
             raise ValueError("vrm setter must have list as input.")
         vrm_str = ""
         for vrm in value:
-            if isinstance(vrm, pyedb.siwave_core.cpa.simulation_setup_data_model.Vrm):
+            if isinstance(vrm, Vrm):
                 if vrm_str:
                     vrm_str += "*"
                 vrm_str += vrm.name
