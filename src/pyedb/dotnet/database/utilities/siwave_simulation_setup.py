@@ -296,7 +296,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         return DCAdvancedSettings(self)
 
 
-class SiwaveDCSimulationSetup(SimulationSetup):
+class SiwaveDCSimulationSetup(SiwaveSimulationSetup):
     """Manages EDB methods for SIwave DC simulation setup."""
 
     def __init__(self, pedb, edb_object=None, name: str = None):
@@ -357,6 +357,46 @@ class SiwaveDCSimulationSetup(SimulationSetup):
             "dc_settings": self.dc_settings.get_configurations(),
             "dc_advanced_settings": self.dc_advanced_settings.get_configurations(),
         }
+
+    def enabled(self):
+        """Flag indicating if the setup is enabled."""
+        return self.sim_setup_info.simulation_settings.Enabled
+
+    @enabled.setter
+    def enabled(self, value: bool):
+        self.sim_setup_info.simulation_settings.Enabled = value
+
+    @property
+    def pi_slider_position(self):
+        """PI solider position. Values are from ``1`` to ``3``."""
+        return self.get_sim_setup_info.simulation_settings.PISliderPos
+
+    @pi_slider_position.setter
+    def pi_slider_position(self, value):
+        edb_setup_info = self.get_sim_setup_info
+        edb_setup_info.simulation_settings.PISliderPos = value
+        self._edb_object = self._set_edb_setup_info(edb_setup_info)
+        self._update_setup()
+
+        self.use_si_settings = False
+        self.use_custom_settings = False
+        self.advanced_settings.set_pi_slider(value)
+
+    @property
+    def si_slider_position(self):
+        """SI slider position. Values are from ``1`` to ``3``."""
+        return self.get_sim_setup_info.simulation_settings.SISliderPos
+
+    @si_slider_position.setter
+    def si_slider_position(self, value):
+        edb_setup_info = self.get_sim_setup_info
+        edb_setup_info.simulation_settings.SISliderPos = value
+        self._edb_object = self._set_edb_setup_info(edb_setup_info)
+        self._update_setup()
+
+        self.use_si_settings = True
+        self.use_custom_settings = False
+        self.advanced_settings.set_si_slider(value)
 
     def set_dc_slider(self, value):
         """Set DC simulation accuracy level.
