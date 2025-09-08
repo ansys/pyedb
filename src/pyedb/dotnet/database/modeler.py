@@ -23,6 +23,7 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
+
 import math
 import warnings
 
@@ -383,7 +384,7 @@ class Modeler(object):
         --------
 
         >>> poly = database.modeler.get_polygons_by_layer("GND")
-        >>> points  = database.modeler.get_polygon_points(poly[0])
+        >>> points = database.modeler.get_polygon_points(poly[0])
 
         """
         points = []

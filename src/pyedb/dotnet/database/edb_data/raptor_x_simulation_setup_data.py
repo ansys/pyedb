@@ -85,11 +85,13 @@ class RaptorXSimulationSetup(SimulationSetup):
         Examples
         --------
         >>> setup1 = edbapp.create_hfss_setup("setup1")
-        >>> setup1.add_frequency_sweep(frequency_sweep=[
-        ...                           ["linear count", "0", "1kHz", 1],
-        ...                           ["log scale", "1kHz", "0.1GHz", 10],
-        ...                           ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-        ...                           ])
+        >>> setup1.add_frequency_sweep(
+        ...     frequency_sweep=[
+        ...         ["linear count", "0", "1kHz", 1],
+        ...         ["log scale", "1kHz", "0.1GHz", 10],
+        ...         ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+        ...     ]
+        ... )
         """
         if name in self.frequency_sweeps:
             return False
@@ -234,9 +236,7 @@ class RaptorXSimulationAdvancedSettings(object):
         if isinstance(value, list):
             self._advanced_settings.NetSettingsOptions = convert_py_list_to_net_list(value)
         else:
-            self.logger.error(
-                f"RaptorX setup net_settings_options input setter must be a list. " f"Provided value {value}"
-            )
+            self.logger.error(f"RaptorX setup net_settings_options input setter must be a list. Provided value {value}")
 
     @property
     def override_shrink_fac(self):
@@ -276,7 +276,7 @@ class RaptorXSimulationAdvancedSettings(object):
             self._advanced_settings.UseAccelerateViaExtraction = value
         else:
             self.logger.error(
-                "RaptorX setup use_accelerate_via_extraction setter input must be boolean." f"Provided value {value}"
+                f"RaptorX setup use_accelerate_via_extraction setter input must be boolean. Provided value {value}"
             )
 
     @property
@@ -290,7 +290,7 @@ class RaptorXSimulationAdvancedSettings(object):
             self._advanced_settings.UseAutoRemovalSliverPoly = value
         else:
             self.logger.error(
-                f"RaptorX setup use_auto_removal_sliver_poly setter must be a boolean. " f"Provided value {value}"
+                f"RaptorX setup use_auto_removal_sliver_poly setter must be a boolean. Provided value {value}"
             )
 
     @property
@@ -334,7 +334,7 @@ class RaptorXSimulationAdvancedSettings(object):
             self._advanced_settings.UseEliminateSlitPerHoles = value
         else:
             self.logger.error(
-                f"RaptorX setup use_eliminate_slit_per_holes setter must be a boolean. " f"Provided value {value}"
+                f"RaptorX setup use_eliminate_slit_per_holes setter must be a boolean. Provided value {value}"
             )
 
     @property
@@ -350,7 +350,7 @@ class RaptorXSimulationAdvancedSettings(object):
             self._advanced_settings.UseEnableAdvancedCapEffects = value
         else:
             self.logger.error(
-                f"RaptorX setup use_enable_advanced_cap_effects setter must be a boolean. " f"Provided value {value}"
+                f"RaptorX setup use_enable_advanced_cap_effects setter must be a boolean. Provided value {value}"
             )
 
     @property
@@ -366,7 +366,7 @@ class RaptorXSimulationAdvancedSettings(object):
             self._advanced_settings.UseEnableEtchTransform = value
         else:
             self.logger.error(
-                f"RaptorX setup use_enable_etch_transform setter must be a boolean. " f"Provided value {value}"
+                f"RaptorX setup use_enable_etch_transform setter must be a boolean. Provided value {value}"
             )
 
     @property
@@ -382,7 +382,7 @@ class RaptorXSimulationAdvancedSettings(object):
             self._advanced_settings.UseEnableHybridExtraction = value
         else:
             self.logger.error(
-                f"RaptorX setup use_enable_hybrid_extraction setter must be a boolean. " f"Provided value {value}"
+                f"RaptorX setup use_enable_hybrid_extraction setter must be a boolean. Provided value {value}"
             )
 
     @property
@@ -414,7 +414,7 @@ class RaptorXSimulationAdvancedSettings(object):
             self._advanced_settings.UseExtractFloatingMetalsDummy = value
         else:
             self.logger.error(
-                f"RaptorX setup use_extract_floating_metals_dummy setter must be a boolean. " f"Provided value {value}"
+                f"RaptorX setup use_extract_floating_metals_dummy setter must be a boolean. Provided value {value}"
             )
 
     @property
@@ -430,8 +430,7 @@ class RaptorXSimulationAdvancedSettings(object):
             self._advanced_settings.UseExtractFloatingMetalsFloating = value
         else:
             self.logger.error(
-                f"RaptorX setup use_extract_floating_metals_floating setter must be a boolean. "
-                f"Provided value {value}"
+                f"RaptorX setup use_extract_floating_metals_floating setter must be a boolean. Provided value {value}"
             )
 
     @property
@@ -493,7 +492,7 @@ class RaptorXSimulationAdvancedSettings(object):
             self._advanced_settings.UsePlaneProjectionFactor = value
         else:
             self.logger.error(
-                f"RaptorX setup use_plane_projection_factor setter must be a boolean. " f"Provided value {value}"
+                f"RaptorX setup use_plane_projection_factor setter must be a boolean. Provided value {value}"
             )
 
     @property
@@ -506,4 +505,4 @@ class RaptorXSimulationAdvancedSettings(object):
         if isinstance(value, bool):
             self._advanced_settings.UseRelaxedZAxis = value
         else:
-            self.logger.error(f"RaptorX setup use_relaxed_z_axis setter must be a boolean. " f"Provided value {value}")
+            self.logger.error(f"RaptorX setup use_relaxed_z_axis setter must be a boolean. Provided value {value}")
