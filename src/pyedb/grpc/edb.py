@@ -671,8 +671,7 @@ class Edb(EdbInit):
         bool
             True if successful, False otherwise.
         """
-        from ansys.edb.core.layout.cell import Cell as GrpcCell
-        from ansys.edb.core.layout.cell import CellType as GrpcCellType
+        from ansys.edb.core.layout.cell import Cell as GrpcCell, CellType as GrpcCellType
 
         self.standalone = self.standalone
         n_try = 10
@@ -1204,7 +1203,7 @@ class Edb(EdbInit):
                         continue
         except:
             self.logger.warning(
-                f"Failed to find connected objects on layout_obj " f"{layout_object_instance.layout_obj.id}, skipping."
+                f"Failed to find connected objects on layout_obj {layout_object_instance.layout_obj.id}, skipping."
             )
             pass
         return temp
@@ -1412,7 +1411,7 @@ class Edb(EdbInit):
                 command = [
                     anstranslator_full_path,
                     inputGDS,
-                    f'-o="{control_file_temp}"' f'-t="{tech_file}"',
+                    f'-o="{control_file_temp}"-t="{tech_file}"',
                     f'-g="{map_file}"',
                     f'-f="{layer_filter}"',
                 ]
@@ -1747,7 +1746,7 @@ class Edb(EdbInit):
         >>> # Create a basic cutout:
         >>> edb.cutout(signal_list=["Net1"], reference_list=["GND"])
         >>> # Create cutout with custom polygon:
-        >>> custom_poly = [[0,0], [10e-3,0], [10e-3,10e-3], [0,10e-3]]
+        >>> custom_poly = [[0, 0], [10e-3, 0], [10e-3, 10e-3], [0, 10e-3]]
         >>> edb.cutout(custom_extent=custom_poly)
         """
         if expansion_factor > 0:
@@ -3022,7 +3021,7 @@ class Edb(EdbInit):
         Use :func:`pyedb.grpc.core.hfss.add_setup` instead.
         """
         warnings.warn(
-            "`create_hfss_setup` is deprecated and is now located here " "`pyedb.grpc.core.hfss.add_setup` instead.",
+            "`create_hfss_setup` is deprecated and is now located here `pyedb.grpc.core.hfss.add_setup` instead.",
             DeprecationWarning,
         )
         return self._hfss.add_setup(
@@ -3770,8 +3769,7 @@ class Edb(EdbInit):
         ]
         if not polys:
             self.logger.error(
-                f"No polygon found with voids on layer {reference_layer} during model creation for "
-                f"arbitrary wave ports"
+                f"No polygon found with voids on layer {reference_layer} during model creation for arbitrary wave ports"
             )
             return False
         void_padstacks = []
@@ -3784,7 +3782,7 @@ class Edb(EdbInit):
 
         if not void_padstacks:
             self.logger.error(
-                "No padstack instances found inside evaluated voids during model creation for arbitrary" "waveports"
+                "No padstack instances found inside evaluated voids during model creation for arbitrary waveports"
             )
             return False
         cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion, restart_rpc_server=True)

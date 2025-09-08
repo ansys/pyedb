@@ -51,8 +51,7 @@ if is_linux:  # pragma: no cover
         # TODO: Fall backing to dotnetcore2 should be removed in a near future.
         except Exception:
             warnings.warn(
-                "Unable to set .NET root and locate the runtime configuration file. "
-                "Falling back to using dotnetcore2."
+                "Unable to set .NET root and locate the runtime configuration file. Falling back to using dotnetcore2."
             )
             warnings.warn(LINUX_WARNING)
 
