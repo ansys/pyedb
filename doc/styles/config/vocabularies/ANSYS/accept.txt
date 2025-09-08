@@ -117,3 +117,15 @@ Getting Started
 [Aa][Pp][Ii]
 [Dd][Oo][Cc][Uu][Mm][Ee][Nn][Tt][Aa][Tt][Ii][Oo][Nn]
 [Mm][Aa][Tt][Pp][Ll][Oo][Tt][Ll][Ii][Ib]
+[Aa]sync
+configs
+subprocess
+[Cg][Pp][Uu]s
+untrusted
+NVMe
+stdout
+REST/Socket.IO
+asyncio.TimeoutError
+Socket-IO
+asyncio.TimeoutError
+o.T
