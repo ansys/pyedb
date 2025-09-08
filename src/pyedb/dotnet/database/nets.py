@@ -311,20 +311,26 @@ class EdbNets(CommonNets):
                 elif val_type == "Inductor":
                     if val_value[1] is None:
                         continue
-                    elif not self._pedb.edb_value(val_value[1]).ToDouble() <= self._pedb.edb_value(
-                            inductor_below).ToDouble():
+                    elif (
+                        not self._pedb.edb_value(val_value[1]).ToDouble()
+                        <= self._pedb.edb_value(inductor_below).ToDouble()
+                    ):
                         continue
                 elif val_type == "Resistor":
                     if val_value[0] is None:
                         continue
-                    elif not self._pedb.edb_value(val_value[0]).ToDouble() <= self._pedb.edb_value(
-                            resistor_below).ToDouble():
+                    elif (
+                        not self._pedb.edb_value(val_value[0]).ToDouble()
+                        <= self._pedb.edb_value(resistor_below).ToDouble()
+                    ):
                         continue
                 elif val_type == "Capacitor":
                     if val_value[2] is None:
                         continue
-                    elif not self._pedb.edb_value(val_value[2]).ToDouble() >= self._pedb.edb_value(
-                            capacitor_above).ToDouble():
+                    elif (
+                        not self._pedb.edb_value(val_value[2]).ToDouble()
+                        >= self._pedb.edb_value(capacitor_above).ToDouble()
+                    ):
                         continue
                 else:
                     continue
