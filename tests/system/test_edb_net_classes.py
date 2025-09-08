@@ -39,4 +39,4 @@ class TestClass(BaseTestClass):
         assert edbapp.net_classes["DDR4_ADD"].nets
         edbapp.net_classes["DDR4_ADD"].name = "DDR4_ADD_RENAMED"
         assert not edbapp.net_classes["DDR4_ADD_RENAMED"].is_null
-        edbapp.close(terminate_rpc_session=False)
+        edbapp.close()
