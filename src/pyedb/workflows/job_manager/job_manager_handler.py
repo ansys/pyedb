@@ -24,12 +24,9 @@ Minimal usage inside a PyEDB script::
 
     edb = Edb("my_board.aedb")
     handler = JobManagerHandler(edb, host="0.0.0.0", port=8080)
-    handler.start_service()          # returns immediately
+    handler.start_service()  # returns immediately
 
-    cfg = handler.create_simulation_config(
-        project_path="/ansys/antenna.aedt",
-        scheduler_type="slurm",
-        jobid="prod_001")
+    cfg = handler.create_simulation_config(project_path="/ansys/antenna.aedt", scheduler_type="slurm", jobid="prod_001")
 
     job_id = handler.submit_jobs_and_wait([cfg], timeout=3600)
     print("Finished", job_id)
@@ -88,8 +85,8 @@ class JobManagerHandler:
     Examples
     --------
     >>> handler = JobManagerHandler(edb, host="0.0.0.0", port=8080)
-    >>> handler.start_service()          # returns immediately
-    >>> handler.close()                  # idempotent graceful shutdown
+    >>> handler.start_service()  # returns immediately
+    >>> handler.close()  # idempotent graceful shutdown
     """
 
     def __init__(self, edb, host="localhost", port=8080):
@@ -160,8 +157,7 @@ class JobManagerHandler:
             await self.runner.cleanup()
         self.started = False
 
-    class JobManagerHandler:
-        ...
+    class JobManagerHandler: ...
 
     def close(self) -> None:
         """

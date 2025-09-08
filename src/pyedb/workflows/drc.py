@@ -1,4 +1,4 @@
-""""
+""" "
 Self-contained DRC engine for PyEDB.
 
 This module provides a high-performance, multi-threaded design-rule checker
@@ -18,7 +18,7 @@ Examples
 >>> import pyedb
 >>> from pyedb.workflows.drc import Drc, Rules
 >>> edb = pyedb.Edb(edbpath="my_board.aedb")
->>> rules = Rules.parse_file("rules.json")   # or Rules.parse_obj(python_dict)
+>>> rules = Rules.parse_file("rules.json")  # or Rules.parse_obj(python_dict)
 >>> drc = Drc(edb)
 >>> violations = drc.check(rules)
 >>> drc.to_ipc356a("fab_review.ipc")

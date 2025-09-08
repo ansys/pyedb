@@ -23,6 +23,7 @@ Stand-alone REST server::
 Embedded inside PyEDB::
 
     from pyedb.workflows.job_manager.service import JobManager, ResourceLimits
+
     manager = JobManager(ResourceLimits(max_concurrent_jobs=4))
     await manager.submit_job(config, priority=10)
 
@@ -476,7 +477,7 @@ class JobManager:
         success = await self.cancel_job(job_id)
 
         return web.json_response(
-            {"success": success, "message": f'Job {job_id} cancellation {"initiated" if success else "failed"}'}
+            {"success": success, "message": f"Job {job_id} cancellation {'initiated' if success else 'failed'}"}
         )
 
     async def handle_get_jobs(self, request):
@@ -509,10 +510,10 @@ class JobManager:
         Example::
 
             {
-              "cpu_percent": 45.2,
-              "memory_free_gb": 12.3,
-              "disk_free_gb": 234.5,
-              "timestamp": "2025-09-04T14:23:45.123456"
+                "cpu_percent": 45.2,
+                "memory_free_gb": 12.3,
+                "disk_free_gb": 234.5,
+                "timestamp": "2025-09-04T14:23:45.123456",
             }
         """
         return web.json_response(self.resource_monitor.current_usage)
@@ -531,7 +532,7 @@ class JobManager:
 
         Payload::
 
-            { "priority": 10 }
+            {"priority": 10}
 
         Returns
         -------
