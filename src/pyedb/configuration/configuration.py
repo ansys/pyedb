@@ -743,7 +743,7 @@ class Configuration:
             padstacks=padstacks,
             general=general,
             variables=variables,
-            terminals=terminals
+            terminals=terminals,
         )
 
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)
