@@ -387,29 +387,6 @@ FAQ
 **A**: Yes—provide the full path in ``ansys_edt_path`` inside each
 :class:`HFSSSimulationConfig`.
 
---------------------------
-Complete API description
---------------------------
-
-.. currentmodule:: pyedb.workflows.job_manager
-
-.. autosummary::
-   :toctree: _autosummary
-   :template: custom-class-template.rst
-   :nosignatures:
-
-   job_manager_handler.JobManagerHandler
-   job_submission.HFSSSimulationConfig
-   job_submission.SchedulerOptions
-   job_submission.MachineNode
-   job_submission.HFSS3DLayoutBatchOptions
-   job_submission.SchedulerType
-   service.JobManager
-   service.ResourceLimits
-   service.JobStatus
-   service.JobInfo
-   service.ResourceMonitor
-   service.JobPoolManager
 
 -----------------
 See also
