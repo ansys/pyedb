@@ -1653,7 +1653,7 @@ class Padstacks(object):
         net_filter: Optional[Union[str, List[str]]] = None,
         start_layer: Optional[str] = None,
         stop_layer: Optional[str] = None,
-    ) -> bool:
+    ) -> List[str]:
         """Evaluate pad-stack instances included on the provided point list and replace all by single instance.
 
         Parameters
