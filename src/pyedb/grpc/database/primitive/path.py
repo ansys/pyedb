@@ -20,10 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import math
+from typing import Union
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.primitive.path import Path as GrpcPath, PathCornerType as GrpcPatCornerType
+from ansys.edb.core.primitive.path import (
+    Path as GrpcPath,
+    PathCornerType as GrpcPatCornerType,
+    PathEndCapType as GrpcPathEndCapType,
+)
 
+from pyedb.grpc.database.layers.layer import Layer
+from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
@@ -70,6 +77,94 @@ class Path(GrpcPath, Primitive):
             if not end_cap_style[1].value == 1:
                 path_length += self.width / 2
         return round(path_length, 9)
+
+    def create(
+        self,
+        layout=None,
+        layer: Union[str, Layer] = None,
+        net: Union[str, Net] = None,
+        width: float = 100e-6,
+        end_cap1: str = "flat",
+        end_cap2: str = "flat",
+        corner_style: str = "sharp",
+        points: Union[list, GrpcPolygonData] = None,
+    ):
+        """
+        Create a path in the specified layout, layer, and net with the given parameters.
+
+        Parameters
+        ----------
+        layout : Layout, optional
+            The layout in which the path will be created. If not provided, the active layout of the `pedb` instance
+            will be used.
+        layer : Union[str, Layer], optional
+            The layer in which the path will be created. This parameter is required and must be specified.
+        net : Union[str, Net], optional
+            The net to which the path will belong. If not provided, the path will not be associated with a net.
+        width : float, optional
+            The width of the path in meters. The default value is `100e-6`.
+        end_cap1 : str, optional
+            The style of the first end cap. Options are `"flat"`, `"round"`, `"extended"`, and `"clipped"`.
+            The default value is `"flat"`.
+        end_cap2 : str, optional
+            The style of the second end cap. Options are `"flat"`, `"round"`, `"extended"`, and `"clipped"`.
+            The default value is `"flat"`.
+        corner_style : str, optional
+            The style of the path corners. Options are `"sharp"`, `"round"`, and `"mitter"`.
+            The default value is `"sharp"`.
+        points : Union[list, GrpcPolygonData], optional
+            The points defining the path. This can be a list of points or an instance of `GrpcPolygonData`.
+            This parameter is required and must be specified.
+
+        Raises
+        ------
+        ValueError
+            If the `points` parameter is not provided.
+
+        Notes
+        -----
+        - If `points` is provided as a list, it will be converted to a `GrpcPolygonData` object.
+        - The created path is added to the modeler primitives of the `pedb` instance.
+
+        """
+        if layout is None:
+            layout = self._pedb.active_layout
+        end_cap_mapping = {
+            "flat": GrpcPathEndCapType.FLAT,
+            "round": GrpcPathEndCapType.ROUND,
+            "extended": GrpcPathEndCapType.EXTENDED,
+            "clipped": GrpcPathEndCapType.CLIPPED,
+        }
+        corner_style_mapping = {
+            "round": GrpcPatCornerType.ROUND,
+            "mitter": GrpcPatCornerType.MITER,
+            "sharp": GrpcPatCornerType.SHARP,
+        }
+        end_cap1 = end_cap_mapping[end_cap1.lower()]
+        end_cap2 = end_cap_mapping[end_cap2.lower()]
+        corner_style = corner_style_mapping[corner_style.lower()]
+        if not points:
+            raise ValueError("Points are required to create a path.")
+        if isinstance(points, list):
+            points = GrpcPolygonData(points=points)
+        path = super().create(
+            layout=layout,
+            layer=layer,
+            net=net,
+            width=Value(width),
+            end_cap1=end_cap1,
+            end_cap2=end_cap2,
+            corner_style=corner_style,
+            points=points,
+        )
+        # keeping cache synced
+        self._pedb.modeler._add_primitive(path)
+
+    def delete(self):
+        """Delete the path object."""
+        # keeping cache synced
+        self._pedb.modeler._remove_primitive(self)
+        super().delete()
 
     def add_point(self, x, y, incremental=True) -> bool:
         """Add a point at the end of the path.

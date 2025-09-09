@@ -61,7 +61,7 @@ class Modeler(object):
     >>> edb_layout = edbapp.modeler
     """
 
-    def __getitem__(self, name: Union[str, int]) -> Optional[Primitive]:
+    def __getitem__(self, name: Union[str, int]) -> Primitive:
         """Get a primitive by name or ID.
 
         Parameters
@@ -71,7 +71,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent` or None
+        :class:`pyedb.grpc.database.primitive.primitive.Primitive`
             Primitive instance if found, None otherwise.
 
         Raises
@@ -79,21 +79,92 @@ class Modeler(object):
         TypeError
             If name is not str or int.
         """
-        for i in self.primitives:
-            if (
-                (isinstance(name, str) and i.aedt_name == name)
-                or (isinstance(name, str) and i.aedt_name == name.replace("__", "_"))
-                or (isinstance(name, int) and i.id == name)
-            ):
-                return i
-        self._pedb.logger.error("Primitive not found.")
-        return
+
+        if isinstance(name, int):
+            return self._primitives.get(name)
+        return self.primitives_by_name.get(name)
 
     def __init__(self, p_edb) -> None:
         """Initialize Modeler instance."""
         self._pedb = p_edb
-        self.__primitives = []
-        self.__primitives_by_layer = {}
+        # Core cache
+        self._primitives: dict[str, Primitive] = {}
+
+        # Lazy indexes
+        self._primitives_by_name: dict[str, Primitive] | None = None
+        self._primitives_by_net: dict[str, list[Primitive]] | None = None
+        self._primitives_by_layer: dict[str, list[Primitive]] | None = None
+
+    # ============================================================
+    # Cache management
+    # ============================================================
+
+    def _reload_all(self):
+        """Force reload of all primitives and reset indexes."""
+        self._primitives = {p.edb_uid: p for p in self._pedb.layout.primitives}
+        self._primitives_by_name = None
+        self._primitives_by_net = None
+        self._primitives_by_layer = None
+
+    def _add_primitive(self, prim: Any):
+        """Add primitive wrapper to caches."""
+        self._primitives[prim.edb_uid] = prim
+        if self._primitives_by_name is not None:
+            self._primitives_by_name[prim.aedt_name] = prim
+        if self._primitives_by_net is not None and prim.net:
+            self._primitives_by_net.setdefault(prim.net, []).append(prim)
+        if self._primitives_by_layer is not None and prim.layer.name:
+            self._primitives_by_layer.setdefault(prim.layer.name, []).append(prim)
+
+    def _remove_primitive(self, prim: Primitive):
+        """Remove primitive wrapper from caches."""
+        self._primitives.pop(prim.edb_uid, None)
+        if self._primitives_by_name is not None:
+            self._primitives_by_name.pop(prim.aedt_name, None)
+        if self._primitives_by_net is not None and hasattr(prim, "net"):
+            lst = self._primitives_by_net.get(prim.net.name, [])
+            if prim in lst:
+                lst.remove(prim)
+                if not lst:
+                    self._primitives_by_net.pop(prim.net.name, None)
+        if self._primitives_by_layer is not None and hasattr(prim, "layer"):
+            lst = self._primitives_by_layer.get(prim.layer.name, [])
+            if prim in lst:
+                lst.remove(prim)
+                if not lst:
+                    self._primitives_by_layer.pop(prim.layer.name, None)
+
+    @property
+    def primitives(self) -> list[Primitive]:
+        if not self._primitives:
+            self._reload_all()
+        return list(self._primitives.values())
+
+    @property
+    def primitives_by_name(self):
+        if self._primitives_by_name is None:
+            self._primitives_by_name = {p.aedt_name: p for p in self.primitives}
+        return self._primitives_by_name
+
+    @property
+    def primitives_by_net(self):
+        if self._primitives_by_net is None:
+            d = {}
+            for p in self.primitives:
+                if hasattr(p, "net"):
+                    d.setdefault(p.net.name, []).append(p)
+            self._primitives_by_net = d
+        return self._primitives_by_net
+
+    @property
+    def primitives_by_layer(self):
+        if self._primitives_by_layer is None:
+            d = {}
+            for p in self.primitives:
+                if p.layer:
+                    d.setdefault(p.layer, []).append(p)
+            self._primitives_by_layer = d
+        return self._primitives_by_layer
 
     @property
     def _edb(self) -> Any:
@@ -211,16 +282,16 @@ class Modeler(object):
         else:
             return False
 
-    @property
-    def primitives(self) -> List[Primitive]:
-        """All primitives in the layout.
-
-        Returns
-        -------
-        list
-            List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` objects.
-        """
-        return self._pedb.layout.primitives
+    # @property
+    # def primitives(self) -> List[Primitive]:
+    #     """All primitives in the layout.
+    #
+    #     Returns
+    #     -------
+    #     list
+    #         List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` objects.
+    #     """
+    #     return self._pedb.layout.primitives
 
     @property
     def polygons_by_layer(self) -> Dict[str, List[Primitive]]:
@@ -231,47 +302,10 @@ class Modeler(object):
         dict
             Dictionary where keys are layer names and values are lists of polygons.
         """
-        _primitives_by_layer = {}
+        polygon_by_layer = {}
         for lay in self.layers:
-            _primitives_by_layer[lay] = self.get_polygons_by_layer(lay)
-        return _primitives_by_layer
-
-    @property
-    def primitives_by_net(self) -> Dict[str, List[Primitive]]:
-        """Primitives organized by net names.
-
-        Returns
-        -------
-        dict
-            Dictionary where keys are net names and values are lists of primitives.
-        """
-        _prim_by_net = {}
-        for net, net_obj in self._pedb.nets.nets.items():
-            _prim_by_net[net] = [i for i in net_obj.primitives]
-        return _prim_by_net
-
-    @property
-    def primitives_by_layer(self) -> Dict[str, List[Primitive]]:
-        """Primitives organized by layer names.
-
-        Returns
-        -------
-        dict
-            Dictionary where keys are layer names and values are lists of primitives.
-        """
-        _primitives_by_layer = {}
-        for lay in self.layers:
-            _primitives_by_layer[lay] = []
-        for lay in self._pedb.stackup.non_stackup_layers:
-            _primitives_by_layer[lay] = []
-        for i in self._layout.primitives:
-            try:
-                lay = i.layer.name
-                if lay in _primitives_by_layer:
-                    _primitives_by_layer[lay].append(i)
-            except (InvalidArgumentException, AttributeError):
-                pass
-        return _primitives_by_layer
+            polygon_by_layer[lay] = [prim for prim in self.primitives_by_layer[lay] if prim.primitive_type == "polygon"]
+        return polygon_by_layer
 
     @property
     def rectangles(self) -> List[Rectangle]:
@@ -332,15 +366,10 @@ class Modeler(object):
         list
             List of polygon objects.
         """
-        objinst = []
-        for el in self.polygons:
-            if el.layer.name == layer_name:
-                if not el.net.is_null:
-                    if net_list and el.net.name in net_list:
-                        objinst.append(el)
-                    else:
-                        objinst.append(el)
-        return objinst
+        polygons = self.polygons_by_layer.get(layer_name, [])
+        if net_list:
+            polygons = [p for p in polygons if p.net_name in net_list]
+        return polygons
 
     def get_primitive_by_layer_and_point(
         self,
@@ -676,7 +705,7 @@ class Modeler(object):
             end_cap_style=end_cap_style,
             corner_style=corner_style,
         )
-
+        self._add_primitive(primitive)  # update cache
         return primitive
 
     def create_polygon(
@@ -733,6 +762,7 @@ class Modeler(object):
         if polygon.is_null or polygon_data is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
+        self._add_primitive(Polygon)
         return Polygon(self._pedb, polygon)
 
     def create_rectangle(
@@ -822,6 +852,7 @@ class Modeler(object):
                 rotation=Value(rotation),
             )
         if not rect.is_null:
+            self._add_primitive(rect)
             return Rectangle(self._pedb, rect)
         return False
 
@@ -859,7 +890,9 @@ class Modeler(object):
             radius=Value(radius),
         )
         if not circle.is_null:
-            return Circle(self._pedb, circle)
+            circle = Circle(self._pedb, circle)
+            self._add_primitive(circle)
+            return circle
         return False
 
     def delete_primitives(self, net_names: Union[str, List[str]]) -> bool:
@@ -952,120 +985,6 @@ class Modeler(object):
                 void_circle.delete()
         return True
 
-    @staticmethod
-    @staticmethod
-    def add_void(shape: "Primitive", void_shape: Union["Primitive", List["Primitive"]]) -> bool:
-        """Add void to shape.
-
-        Parameters
-        ----------
-        shape : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            Main shape.
-        void_shape : list or :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            Void shape(s).
-
-        Returns
-        -------
-        bool
-            True if successful, False otherwise.
-        """
-        if not isinstance(void_shape, list):
-            void_shape = [void_shape]
-        for void in void_shape:
-            if isinstance(void, Primitive):
-                shape._edb_object.add_void(void)
-                flag = True
-            else:
-                shape._edb_object.add_void(void)
-                flag = True
-            if not flag:
-                return flag
-        return True
-
-    def _createPolygonDataFromPolygon(self, shape):
-        points = shape.points
-        if not self._validatePoint(points[0]):
-            self._logger.error("Error validating point.")
-            return None
-        arcs = []
-        is_parametric = False
-        for i in range(len(points) - 1):
-            if i == 0:
-                startPoint = points[-1]
-                endPoint = points[i]
-            else:
-                startPoint = points[i - 1]
-                endPoint = points[i]
-
-            if not self._validatePoint(endPoint):
-                return None
-            startPoint = [Value(i) for i in startPoint]
-            endPoint = [Value(i) for i in endPoint]
-            if len(endPoint) == 2:
-                is_parametric = (
-                    is_parametric
-                    or startPoint[0].is_parametric
-                    or startPoint[1].is_parametric
-                    or endPoint[0].is_parametric
-                    or endPoint[1].is_parametric
-                )
-                arc = GrpcArcData(
-                    GrpcPointData([startPoint[0], startPoint[1]]), GrpcPointData([endPoint[0], endPoint[1]])
-                )
-                arcs.append(arc)
-            elif len(endPoint) == 3:
-                is_parametric = (
-                    is_parametric
-                    or startPoint[0].is_parametric
-                    or startPoint[1].is_parametric
-                    or endPoint[0].is_parametric
-                    or endPoint[1].is_parametric
-                    or endPoint[2].is_parametric
-                )
-                arc = GrpcArcData(
-                    GrpcPointData([startPoint[0], startPoint[1]]),
-                    GrpcPointData([endPoint[0], endPoint[1]]),
-                    kwarg={"height": endPoint[2]},
-                )
-                arcs.append(arc)
-            elif len(endPoint) == 5:
-                is_parametric = (
-                    is_parametric
-                    or startPoint[0].is_parametric
-                    or startPoint[1].is_parametric
-                    or endPoint[0].is_parametric
-                    or endPoint[1].is_parametric
-                    or endPoint[3].is_parametric
-                    or endPoint[4].is_parametric
-                )
-                if endPoint[2].is_cw:
-                    rotationDirection = GrpcPolygonSenseType.SENSE_CW
-                elif endPoint[2].is_ccw:
-                    rotationDirection = GrpcPolygonSenseType.SENSE_CCW
-                else:
-                    self._logger.error("Invalid rotation direction %s is specified.", endPoint[2])
-                    return None
-                arc = GrpcArcData(
-                    GrpcPointData(startPoint),
-                    GrpcPointData(endPoint),
-                )
-                # arc.direction = rotationDirection,
-                # arc.center = GrpcPointData([endPoint[3], endPoint[4]]),
-                arcs.append(arc)
-        polygon = GrpcPolygonData(arcs=arcs)
-        if not is_parametric:
-            return polygon
-        else:
-            k = 0
-            for pt in points:
-                point = [Value(i) for i in pt]
-                new_points = GrpcPointData(point)
-                if len(point) > 2:
-                    k += 1
-                polygon.set_point(k, new_points)
-                k += 1
-        return polygon
-
     def _validatePoint(self, point, allowArcs=True):
         if len(point) == 2:
             if not isinstance(point[0], (int, float, str)):
@@ -1112,17 +1031,6 @@ class Modeler(object):
         else:  # pragma: no cover
             self._logger.error("Arc point descriptor has incorrect number of elements (%s)", len(point))
             return False
-
-    def _createPolygonDataFromRectangle(self, shape):
-        # if not self._validatePoint(shape.pointA, False) or not self._validatePoint(shape.pointB, False):
-        #     return None
-        # pointA = GrpcPointData(pointA[0]), self._get_edb_value(shape.pointA[1])
-        # )
-        # pointB = self._edb.Geometry.PointData(
-        #     self._get_edb_value(shape.pointB[0]), self._get_edb_value(shape.pointB[1])
-        # )
-        # return self._edb.geometry.polygon_data.create_from_bbox((pointA, pointB))
-        pass
 
     def parametrize_trace_width(
         self,
@@ -1431,7 +1339,9 @@ class Modeler(object):
             end_context=end_cell_inst,
             start_context=start_cell_inst,
         )
-        return Bondwire(self._pedb, bw)
+        bondwire = Bondwire(self._pedb, bw)
+        self._add_primitive(bondwire)
+        return bondwire
 
     def create_pin_group(
         self,
