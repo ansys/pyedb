@@ -1,18 +1,19 @@
+# ruff: noqa: E501  (line-length checked by doc-style, not linter)
 """
 ``job_submission`` --- Cross-platform HFSS simulation runner with enterprise scheduler support
 ==============================================================================================
 
-The module provides a **single entry point**, :func:`create_hfss_config`, that
-builds a validated, JSON-serialisable configuration object and submits it to:
+This module provides a single entry point, :func:`create_hfss_config`, that
+builds a validated, JSON-serialisable configuration object and submits it to
 
-* Local subprocess (default)
+* local subprocess (default)
 * SLURM
 * LSF (IBM Platform)
 * PBS / Torque
 * Windows HPC Server
 
-The configuration is **immutable** (dataclass), **validated** on creation, and
-can be **round-tripped** through JSON for persistence or REST transmission.
+The configuration is **immutable** (dataclass), **validated** on creation and
+can be round-tripped through JSON for persistence or REST transmission.
 
 Examples
 --------
@@ -40,7 +41,7 @@ SLURM cluster::
     >>> job_id = cfg.run_simulation()
     >>> print(job_id)
     slurm_job_12345
-"""
+"""  # noqa: D205,D400 (summary line is intentionally long)
 
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
@@ -84,22 +85,22 @@ class SchedulerOptions:
     """
     Resource requirements and scheduler-specific directives.
 
-    All attributes are validated by :meth:`validate` which is automatically
+    All attributes are validated by :meth:`validate`, which is automatically
     called after instantiation.
 
     Parameters
     ----------
     queue : str, optional
-        Partition or queue name.  Default ``"default"``.
+        Partition or queue name.  Defaults to ``"default"``.
     time : str, optional
-        Wall-time limit in ``HH:MM:SS`` or ``D.HH:MM:SS``.  Default
+        Wall-time limit in ``HH:MM:SS`` or ``D.HH:MM:SS``.  Defaults to
         ``"24:00:00"``.
     nodes : int, optional
-        Number of compute nodes.  Default ``1``.
+        Number of compute nodes.  Defaults to ``1``.
     tasks_per_node : int, optional
-        Processes per node.  Default ``1``.
+        Processes per node.  Defaults to ``1``.
     memory : str, optional
-        Memory per node, e.g. ``"4GB"``.  Default ``"4GB"``.
+        Memory per node, e.g. ``"4GB"``.  Defaults to ``"4GB"``.
     account : str, optional
         Account / project to charge.
     reservation : str, optional
@@ -109,18 +110,18 @@ class SchedulerOptions:
     constraints : str, optional
         Node features, e.g. ``"gpu"``.
     exclusive : bool, optional
-        Request whole nodes.  Default ``False``.
+        Request whole nodes.  Defaults to ``False``.
     gpus : int, optional
-        Number of GPUs.  Default ``0``.
+        Number of GPUs.  Defaults to ``0``.
     gpu_type : str, optional
         GPU model, e.g. ``"a100"``.
     priority : str, optional
         Job priority: ``Low``, ``BelowNormal``, ``Normal``, ``AboveNormal``,
-        ``High``.  Default ``"Normal"``.
+        ``High``.  Defaults to ``"Normal"``.
     email_notification : str, optional
         Address for status mails.
     run_as_administrator : bool, optional
-        Elevated privileges (Windows HPC only).  Default ``False``.
+        Elevated privileges (Windows HPC only).  Defaults to ``False``.
 
     Raises
     ------
@@ -148,16 +149,10 @@ class SchedulerOptions:
         """
         Validate all scheduler options for correctness and consistency.
 
-        Performs comprehensive validation of all scheduler parameters including
-        value ranges, format compliance, and platform-specific constraints.
-
-        Raises:
-            ValueError: If any parameter is invalid or out of range.
-
-        Example:
-            >>> opts = SchedulerOptions(nodes=0, time="invalid")
-            >>> opts.validate()
-            ValueError: Number of nodes must be at least 1
+        Raises
+        ------
+        ValueError
+            If any parameter is invalid or out of range.
         """
         if self.nodes < 1:
             raise ValueError("Number of nodes must be at least 1")
@@ -190,13 +185,13 @@ class MachineNode:
     Parameters
     ----------
     hostname : str, optional
-        DNS name or IP.  Default ``"localhost"``.
+        DNS name or IP. Defaults to ``"localhost"``.
     cores : int, optional
-        Logical cores to use.  ``-1`` means *all*.  Default ``-1``.
+        Logical cores to use.  ``-1`` means *all*.  Defaults to ``-1``.
     max_cores : int, optional
-        Physical cores available.  Default ``20``.
+        Physical cores available.  Defaults to ``20``.
     utilization : int, optional
-        CPU percentage to utilize (1-100).  Default ``90``.
+        CPU percentage to utilize (1–100).  Defaults to ``90``.
 
     Raises
     ------
@@ -233,13 +228,10 @@ class MachineNode:
         """
         Return string representation in HFSS machinelist format.
 
-        Returns:
-            str: Node configuration in format "hostname:cores:max_cores:utilization%"
-
-        Example:
-            >>> node = MachineNode("node1", 8, 16, 80)
-            >>> str(node)
-            'node1:8:16:80%'
+        Returns
+        -------
+        str
+            Node configuration in format ``hostname:cores:max_cores:util%``.
         """
         return f"{self.hostname}:{self.cores}:{self.max_cores}:{self.utilization}%"
 
@@ -254,21 +246,21 @@ class HFSS3DLayoutBatchOptions:
     Parameters
     ----------
     create_starting_mesh : bool, optional
-        Generate initial mesh.  Default ``True``.
+        Generate initial mesh.  Defaults to ``True``.
     default_process_priority : str, optional
-        OS process priority.  Default ``"Normal"``.
+        OS process priority.  Defaults to ``"Normal"``.
     enable_gpu : bool, optional
-        GPU acceleration.  Default ``False``.
+        GPU acceleration.  Defaults to ``False``.
     mpi_vendor : str, optional
         MPI implementation.  Auto-detected.
     mpi_version : str, optional
-        Version string.  Default ``"Default"``.
+        Version string.  Defaults to ``"Default"``.
     remote_spawn_command : str, optional
         Remote shell command.  Auto-detected.
     solve_adaptive_only : bool, optional
-        Skip frequency sweep.  Default ``False``.
+        Skip frequency sweep.  Defaults to ``False``.
     validate_only : bool, optional
-        Check setup only.  Default ``False``.
+        Check setup only.  Defaults to ``False``.
     temp_directory : str, optional
         Scratch path.  Auto-detected.
     """
@@ -294,8 +286,10 @@ class HFSS3DLayoutBatchOptions:
         Performs comprehensive validation of HFSS-specific parameters including
         priority levels, MPI vendors, and directory paths.
 
-        Raises:
-            ValueError: If any parameter is invalid or unsupported.
+        Raises
+        ------
+        ValueError
+            If any parameter is invalid or unsupported.
         """
         valid_priorities = ["Normal", "Low", "High", "Idle"]
         if self.default_process_priority not in valid_priorities:
@@ -317,14 +311,10 @@ class HFSS3DLayoutBatchOptions:
         """
         Convert options to HFSS batch options dictionary format.
 
-        Returns:
-            Dict[str, str]: Dictionary of HFSS batch options in key-value format.
-
-        Example:
-            >>> options = HFSS3DLayoutBatchOptions(enable_gpu=True)
-            >>> batch_dict = options.to_batch_options_dict()
-            >>> print(batch_dict["HFSS 3D Layout Design/EnableGPU"])
-            '1'
+        Returns
+        -------
+        Dict[str, str]
+            Key-value pairs suitable for the ``-batchoptions`` switch.
         """
         return {
             "HFSS 3D Layout Design/CreateStartingMesh": "1" if self.create_starting_mesh else "0",
@@ -351,33 +341,33 @@ class HFSSSimulationConfig:
     ansys_edt_path : str
         Path to ``ansysedt`` executable.
     solver : str, optional
-        Solver name.  Default ``"Hfss3DLayout"``.
+        Solver name.  Defaults to ``"Hfss3DLayout"``.
     jobid : str, optional
         Unique identifier.  Auto-generated with timestamp if omitted.
     distributed : bool, optional
-        Enable MPI distribution.  Default ``True``.
+        Enable MPI distribution.  Defaults to ``True``.
     machine_nodes : list[MachineNode], optional
-        Compute nodes.  Default ``[MachineNode()]``.
+        Compute nodes.  Defaults to ``[MachineNode()]``.
     auto : bool, optional
-        Non-interactive mode.  Default ``True``.
+        Non-interactive mode.  Defaults to ``True``.
     non_graphical : bool, optional
-        Hide GUI.  Default ``True``.
+        Hide GUI.  Defaults to ``True``.
     monitor : bool, optional
-        Stream solver log.  Default ``True``.
+        Stream solver log.  Defaults to ``True``.
     layout_options : HFSS3DLayoutBatchOptions, optional
-        Solver flags.  Default instance.
+        Solver flags.  Defaults to a new instance.
     project_path : str, optional
-        ``.aedt`` or ``.aedb`` file.  Default platform temp.
+        ``.aedt`` or ``.aedb`` file.  Defaults to platform temp.
     design_name : str, optional
-        Design inside project.  Default ``""`` (use active).
+        Design inside project.  Defaults to ``""`` (use active).
     design_mode : str, optional
-        Variation name.  Default ``""``.
+        Variation name.  Defaults to ``""``.
     setup_name : str, optional
-        Setup to solve.  Default ``""``.
+        Setup to solve.  Defaults to ``""``.
     scheduler_type : SchedulerType, optional
-        External scheduler.  Default ``SchedulerType.NONE``.
+        External scheduler.  Defaults to :attr:`SchedulerType.NONE`.
     scheduler_options : SchedulerOptions, optional
-        Scheduler directives.  Default instance.
+        Scheduler directives.  Defaults to a new instance.
 
     Raises
     ------
@@ -436,13 +426,13 @@ class HFSSSimulationConfig:
         self.scheduler_options.validate()
 
     def generate_machinelist_string(self) -> str:
-        """ "
+        """
         Return HFSS ``-machinelist`` argument.
 
         Returns
         -------
         str
-            Format: ``list=host1:cores:max:util%,host2:...``
+            Machine list string.
         """
         if not self.machine_nodes:
             return ""
@@ -453,16 +443,13 @@ class HFSSSimulationConfig:
     def generate_batch_options_string(self) -> str:
         """
         Generate HFSS batch options string from layout options.
-
         Converts HFSS3DLayoutOptions to command-line batch options format.
 
-        Returns:
-            str: Batch options string with quoted key-value pairs.
+        Returns
+        -------
+        str
+            Batch options string with quoted key-value pairs.
 
-        Example:
-            >>> options_str = config.generate_batch_options_string()
-            >>> print(options_str)
-            'HFSS 3D Layout Design/CreateStartingMesh'='1' ... 'tempdirectory'='/tmp'
         """
         options_dict = self.layout_options.to_batch_options_dict()
         options_list = [f"'{k}'='{v}'" for k, v in options_dict.items()]
@@ -472,13 +459,10 @@ class HFSSSimulationConfig:
         """
         Generate design specification string for HFSS command.
 
-        Returns:
-            str: Design string in format "design_name:design_mode:setup_name".
-
-        Example:
-            >>> design_str = config.generate_design_string()
-            >>> print(design_str)
-            main:Nominal:Setup1
+        Returns
+        -------
+        str
+            Design string.
         """
         return f"{self.design_name}:{self.design_mode}:{self.setup_name}"
 
@@ -489,7 +473,7 @@ class HFSSSimulationConfig:
         Returns
         -------
         str
-            Multi-line string starting with ``#!/bin/bash``.
+            Multi-line string.
         """
         opts = self.scheduler_options
         script = [
@@ -546,7 +530,7 @@ class HFSSSimulationConfig:
         Returns
         -------
         str
-            Multi-line string starting with ``#!/bin/bash``.
+            Multi-line string.
         """
         opts = self.scheduler_options
         script = [
@@ -588,7 +572,7 @@ class HFSSSimulationConfig:
         Returns
         -------
         str
-            Multi-line string starting with ``#!/bin/bash``.
+            Multi-line string.
         """
         opts = self.scheduler_options
         script = [
@@ -628,7 +612,7 @@ class HFSSSimulationConfig:
         Returns
         -------
         str
-            PowerShell code that submits via ``Submit-HpcJob``.
+            PowerShell code that submits job.
         """
         opts = self.scheduler_options
 
@@ -710,8 +694,7 @@ class HFSSSimulationConfig:
         Returns
         -------
         str
-            Valid XML document that can be saved to ``*.xml`` and submitted
-            with ``Submit-HpcJob -File``.
+            Valid XML document that can be saved to ``*.xml`` and submitted with ``Submit-HpcJob -File``.
         """
         opts = self.scheduler_options
 
@@ -779,8 +762,7 @@ class HFSSSimulationConfig:
             raise ValueError(f"Unsupported scheduler type: {self.scheduler_type}")
 
     def generate_command_string(self) -> str:
-        """
-        Complete quoted command line ready for ``subprocess``.
+        """Complete quoted command line ready for ``subprocess``.
 
         Returns
         -------
@@ -854,9 +836,8 @@ class HFSSSimulationConfig:
         Raises
         ------
         ValueError
-            If *scheduler_type* is :attr:`SchedulerType.NONE`.
-        subprocess.TimeoutExpired
-            If submission takes longer than 30 s.
+            If *scheduler_type* is :attr:`SchedulerType.NONE`. subprocess.TimeoutExpired If submission takes longer
+            than 30 s.
         """
         if self.scheduler_type == SchedulerType.NONE:
             raise ValueError("No scheduler configured")
@@ -1191,8 +1172,10 @@ class HFSSSimulationConfig:
         """
         String representation of the complete HFSS command.
 
-        Returns:
-            str: Complete HFSS command string.
+        Returns
+        -------
+        str
+            Complete HFSS command string.
         """
         return self.generate_command_string()
 

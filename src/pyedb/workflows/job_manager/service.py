@@ -506,15 +506,6 @@ class JobManager:
     async def handle_get_resources(self, request):
         """
         GET ``/resources`` — real-time host telemetry (JSON).
-
-        Example::
-
-            {
-                "cpu_percent": 45.2,
-                "memory_free_gb": 12.3,
-                "disk_free_gb": 234.5,
-                "timestamp": "2025-09-04T14:23:45.123456",
-            }
         """
         return web.json_response(self.resource_monitor.current_usage)
 
@@ -529,10 +520,6 @@ class JobManager:
     async def handle_set_priority(self, request):
         """
         POST ``/jobs/{job_id}/priority`` — change priority and **re-queue**.
-
-        Payload::
-
-            {"priority": 10}
 
         Returns
         -------
@@ -758,10 +745,7 @@ class JobManager:
 
         return False
 
-    # ... (other methods remain similar but use the new pool system)
 
-
-# Enhanced PyEDB integration with priority support
 async def submit_job_to_manager(
     config: HFSSSimulationConfig, priority: int = 0, manager_url: str = "http://localhost:8080"
 ) -> str:
