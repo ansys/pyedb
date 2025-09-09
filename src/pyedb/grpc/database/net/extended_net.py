@@ -204,12 +204,21 @@ class ExtendedNets:
                 val_value = cmp.rlc_values
                 if refdes in exception_list:
                     pass
-                elif cmp.type == "inductor" and val_value[1] < inductor_below:
-                    pass
-                elif cmp.type == "resistor" and val_value[0] < resistor_below:
-                    pass
-                elif cmp.type == "capacitor" and val_value[2] > capacitor_above:
-                    pass
+                elif cmp.type == "inductor":
+                    if val_value[1] is None:
+                        continue
+                    elif not val_value[1] < inductor_below:
+                        continue
+                elif cmp.type == "resistor":
+                    if val_value[0] is None:
+                        continue
+                    elif not val_value[0] < resistor_below:
+                        continue
+                elif cmp.type == "capacitor":
+                    if val_value[2] is None:
+                        continue
+                    elif not val_value[2] > capacitor_above:
+                        continue
                 else:
                     continue
                 for net in comp_dict[refdes]:

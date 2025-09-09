@@ -39,8 +39,8 @@ class Primitive(GrpcPrimitive):
     >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_prim = edb.modeler.primitives[0]
-    >>> edb_prim.is_void # Class Property
-    >>> edb_prim.IsVoid() # EDB Object Property
+    >>> edb_prim.is_void  # Class Property
+    >>> edb_prim.IsVoid()  # EDB Object Property
     """
 
     def __init__(self, pedb, edb_object):

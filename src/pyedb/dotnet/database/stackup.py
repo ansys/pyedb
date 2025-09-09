@@ -1139,7 +1139,7 @@ class Stackup(LayerCollection):
 
         Examples
         --------
-        >>> edb = Edb(edbpath=targetfile,  edbversion="2021.2")
+        >>> edb = Edb(edbpath=targetfile, edbversion="2021.2")
         >>> edb.stackup.flip_design()
         >>> edb.save()
         >>> edb.close_edb()
@@ -1358,22 +1358,28 @@ class Stackup(LayerCollection):
 
         Examples
         --------
-        >>> edb1 = Edb(edbpath=targetfile1,  edbversion="2021.2")
+        >>> edb1 = Edb(edbpath=targetfile1, edbversion="2021.2")
         >>> edb2 = Edb(edbpath=targetfile2, edbversion="2021.2")
 
         >>> hosting_cmp = edb1.components.get_component_by_name("U100")
         >>> mounted_cmp = edb2.components.get_component_by_name("BGA")
 
         >>> vector, rotation, solder_ball_height = edb1.components.get_component_placement_vector(
-        ...                                                     mounted_component=mounted_cmp,
-        ...                                                     hosting_component=hosting_cmp,
-        ...                                                     mounted_component_pin1="A12",
-        ...                                                     mounted_component_pin2="A14",
-        ...                                                     hosting_component_pin1="A12",
-        ...                                                     hosting_component_pin2="A14")
-        >>> edb2.stackup.place_in_layout(edb1.active_cell, angle=0.0, offset_x=vector[0],
-        ...                              offset_y=vector[1], flipped_stackup=False, place_on_top=True,
-        ...                              )
+        ...     mounted_component=mounted_cmp,
+        ...     hosting_component=hosting_cmp,
+        ...     mounted_component_pin1="A12",
+        ...     mounted_component_pin2="A14",
+        ...     hosting_component_pin1="A12",
+        ...     hosting_component_pin2="A14",
+        ... )
+        >>> edb2.stackup.place_in_layout(
+        ...     edb1.active_cell,
+        ...     angle=0.0,
+        ...     offset_x=vector[0],
+        ...     offset_y=vector[1],
+        ...     flipped_stackup=False,
+        ...     place_on_top=True,
+        ... )
         """
         # if flipped_stackup and place_on_top or (not flipped_stackup and not place_on_top):
         self.adjust_solder_dielectrics()
@@ -1455,13 +1461,18 @@ class Stackup(LayerCollection):
 
         Examples
         --------
-        >>> edb1 = Edb(edbpath=targetfile1,  edbversion="2021.2")
+        >>> edb1 = Edb(edbpath=targetfile1, edbversion="2021.2")
         >>> edb2 = Edb(edbpath=targetfile2, edbversion="2021.2")
         >>> hosting_cmp = edb1.components.get_component_by_name("U100")
         >>> mounted_cmp = edb2.components.get_component_by_name("BGA")
-        >>> edb2.stackup.place_in_layout(edb1.active_cell, angle=0.0, offset_x="1mm",
-        ...                                   offset_y="2mm", flipped_stackup=False, place_on_top=True,
-        ...                                   )
+        >>> edb2.stackup.place_in_layout(
+        ...     edb1.active_cell,
+        ...     angle=0.0,
+        ...     offset_x="1mm",
+        ...     offset_y="2mm",
+        ...     flipped_stackup=False,
+        ...     place_on_top=True,
+        ... )
         """
         _angle = angle * math.pi / 180.0
 
@@ -1594,13 +1605,18 @@ class Stackup(LayerCollection):
 
         Examples
         --------
-        >>> edb1 = Edb(edbpath=targetfile1,  edbversion="2021.2")
+        >>> edb1 = Edb(edbpath=targetfile1, edbversion="2021.2")
         >>> edb2 = Edb(edbpath=targetfile2, edbversion="2021.2")
         >>> hosting_cmp = edb1.components.get_component_by_name("U100")
         >>> mounted_cmp = edb2.components.get_component_by_name("BGA")
-        >>> edb1.stackup.place_instance(edb2, angle=0.0, offset_x="1mm",
-        ...                                   offset_y="2mm", flipped_stackup=False, place_on_top=True,
-        ...                                   )
+        >>> edb1.stackup.place_instance(
+        ...     edb2,
+        ...     angle=0.0,
+        ...     offset_x="1mm",
+        ...     offset_y="2mm",
+        ...     flipped_stackup=False,
+        ...     place_on_top=True,
+        ... )
         """
         _angle = angle * math.pi / 180.0
 
@@ -1738,11 +1754,16 @@ class Stackup(LayerCollection):
 
         Examples
         --------
-        >>> edb1 = Edb(edbpath=targetfile1,  edbversion="2021.2")
+        >>> edb1 = Edb(edbpath=targetfile1, edbversion="2021.2")
         >>> a3dcomp_path = "connector.a3dcomp"
-        >>> edb1.stackup.place_a3dcomp_3d_placement(a3dcomp_path, angle=0.0, offset_x="1mm",
-        ...                                   offset_y="2mm", flipped_stackup=False, place_on_top=True,
-        ...                                   )
+        >>> edb1.stackup.place_a3dcomp_3d_placement(
+        ...     a3dcomp_path,
+        ...     angle=0.0,
+        ...     offset_x="1mm",
+        ...     offset_y="2mm",
+        ...     flipped_stackup=False,
+        ...     place_on_top=True,
+        ... )
         """
         zero_data = self._edb_value(0.0)
         one_data = self._edb_value(1.0)
@@ -1797,7 +1818,7 @@ class Stackup(LayerCollection):
 
         Examples
         --------
-        >>> edb = Edb(edbpath=targetfile1,  edbversion="2021.2")
+        >>> edb = Edb(edbpath=targetfile1, edbversion="2021.2")
         >>> edb.stackup.residual_copper_area_per_layer()
         """
         temp_data = {name: 0 for name, _ in self.signal_layers.items()}

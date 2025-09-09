@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """Database."""
+
 import re
 
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
