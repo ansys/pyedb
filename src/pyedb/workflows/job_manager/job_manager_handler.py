@@ -24,7 +24,7 @@ Minimal usage inside a PyEDB script::
 
     edb = Edb("my_board.aedb")
     handler = JobManagerHandler(edb, host="0.0.0.0", port=8080)
-    handler.start_service()          # returns immediately
+    handler.start_service()  # returns immediately
 
     cfg = handler.create_simulation_config(
         project_path="/ansys/antenna.aedt",
@@ -36,10 +36,6 @@ Minimal usage inside a PyEDB script::
 
 The same code works **unchanged** on Windows and Linux.
 
-Attributes
-----------
-__version__ : str
-    Module version string (PEP 440).  Imported by ``__init__.py``.
 """
 
 import asyncio
@@ -159,9 +155,6 @@ class JobManagerHandler:
         if self.runner:
             await self.runner.cleanup()
         self.started = False
-
-    class JobManagerHandler:
-        ...
 
     def close(self) -> None:
         """
