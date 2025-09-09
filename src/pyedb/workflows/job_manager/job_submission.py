@@ -323,7 +323,7 @@ class HFSS3DLayoutBatchOptions:
         Example:
             >>> options = HFSS3DLayoutBatchOptions(enable_gpu=True)
             >>> batch_dict = options.to_batch_options_dict()
-            >>> print(batch_dict['HFSS 3D Layout Design/EnableGPU'])
+            >>> print(batch_dict["HFSS 3D Layout Design/EnableGPU"])
             '1'
         """
         return {
@@ -1245,7 +1245,8 @@ def create_hfss_config(
     ...     jobid="patch",
     ...     project_path="/shared/patch.aedt",
     ...     scheduler_type=SchedulerType.SLURM,
-    ...     scheduler_options=SchedulerOptions(nodes=4, memory="32GB"))
+    ...     scheduler_options=SchedulerOptions(nodes=4, memory="32GB"),
+    ... )
     >>> job = cfg.run_simulation()
     """
     if machine_nodes is None:
