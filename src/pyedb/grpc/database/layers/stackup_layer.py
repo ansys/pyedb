@@ -23,8 +23,7 @@
 from __future__ import absolute_import
 
 from ansys.edb.core.layer.layer import LayerType as GrpcLayerType
-from ansys.edb.core.layer.stackup_layer import RoughnessRegion as GrpcRoughnessRegion
-from ansys.edb.core.layer.stackup_layer import StackupLayer as GrpcStackupLayer
+from ansys.edb.core.layer.stackup_layer import RoughnessRegion as GrpcRoughnessRegion, StackupLayer as GrpcStackupLayer
 
 from pyedb.grpc.database.utility.value import Value
 

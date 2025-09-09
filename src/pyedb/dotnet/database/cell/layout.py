@@ -23,6 +23,7 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
+
 from typing import List, Union
 
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
@@ -406,6 +407,7 @@ class Layout(ObjBase):
         """
         candidates = self.padstack_instances
         if instance_id is not None:
+            instance_id = int(instance_id)
             value = instance_id if isinstance(instance_id, list) else [instance_id]
             candidates = [i for i in candidates if i.id in value]
 
