@@ -25,6 +25,7 @@ from ansys.edb.core.terminal.pin_group_terminal import (
 )
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
+from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecated_property
 
@@ -141,7 +142,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         super(PinGroupTerminal, self.__class__).impedance.__set__(self, Value(value))
 
     @property
-    def net(self) -> "Net":
+    def net(self) -> Net:
         """Terminal net.
 
         Returns
@@ -150,7 +151,6 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
             Terminal Net object.
 
         """
-        from pyedb.grpc.database.net.net import Net
 
         return Net(self._pedb, super().net)
 

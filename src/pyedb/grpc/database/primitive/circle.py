@@ -48,7 +48,7 @@ class Circle(GrpcCircle, Primitive):
         radius: float = 0.0,
     ):
         if not layout:
-            layout = self._pedb.layout
+            layout = self._pedb.active_layout
         if not layer:
             raise ValueError("Layer must be provided to create a circle.")
         if center_x is None or center_y is None:
