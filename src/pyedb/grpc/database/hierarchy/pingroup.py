@@ -27,6 +27,9 @@ from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.grpc.database.hierarchy.component import Component
+from pyedb.grpc.database.net.net import Net
+from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.grpc.database.utility.value import Value
 
@@ -52,7 +55,7 @@ class PinGroup(GrpcPinGroup):
         return self._pedb.active_layout
 
     @property
-    def component(self) -> "Component":
+    def component(self) -> Component:
         """Component.
 
         Return
@@ -60,7 +63,6 @@ class PinGroup(GrpcPinGroup):
         :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`
             Pin group component.
         """
-        from pyedb.grpc.database.hierarchy.component import Component
 
         return Component(self._pedb, super().component)
 
@@ -72,26 +74,24 @@ class PinGroup(GrpcPinGroup):
             super(PinGroup, self.__class__).component.__set__(self, value)
 
     @property
-    def pins(self) -> dict[str, "PadstackInstance"]:
+    def pins(self) -> dict[str, PadstackInstance]:
         """Pin group pins.
 
         Returns
         -------
         Dict[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`].
         """
-        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
         return {i.name: PadstackInstance(self._pedb, i) for i in super().pins}
 
     @property
-    def net(self) -> "Net":
+    def net(self) -> Net:
         """Net.
 
         Returns
         -------
         :class:`Net <ansys.edb.core.net.net.Net>`.
         """
-        from pyedb.grpc.database.net.net import Net
 
         return Net(self._pedb, super().net)
 
