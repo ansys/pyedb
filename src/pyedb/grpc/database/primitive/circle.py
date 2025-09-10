@@ -51,7 +51,7 @@ class Circle(GrpcCircle, Primitive):
             layout = self._pedb.layout
         if not layer:
             raise ValueError("Layer must be provided to create a circle.")
-        if not center_x or not center_y:
+        if center_x is None or center_y is None:
             raise ValueError("Center x and y values must be provided to create a circle.")
         edb_object = super().create(
             layout=layout,
