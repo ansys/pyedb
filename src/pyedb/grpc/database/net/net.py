@@ -26,6 +26,8 @@ from ansys.edb.core.net.net import Net as GrpcNet
 from ansys.edb.core.primitive.primitive import PrimitiveType as GrpcPrimitiveType
 
 from pyedb.grpc.database.primitive.bondwire import Bondwire
+from pyedb.grpc.database.primitive.circle import Circle
+from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.path import Path
 from pyedb.grpc.database.primitive.polygon import Polygon
 from pyedb.grpc.database.primitive.rectangle import Rectangle
@@ -61,7 +63,7 @@ class Net(GrpcNet):
         self.__primitives = []
 
     @property
-    def primitives(self) -> list[Union[Path, Polygon, "Circle", Rectangle, Bondwire]]:
+    def primitives(self) -> list[Union[Path, Polygon, Circle, Rectangle, Bondwire]]:
         """All primitives belonging to this net.
 
         Returns
@@ -74,7 +76,6 @@ class Net(GrpcNet):
             - :class:`Rectangle <pyedb.grpc.database.primitive.rectangle.Rectangle>`
             - :class:`Bondwire <pyedb.grpc.database.primitive.bondwire.Bondwire>`
         """
-        from pyedb.grpc.database.primitive.circle import Circle
 
         primitives = super().primitives
         if not len(self.__primitives) == len(primitives):
@@ -92,7 +93,7 @@ class Net(GrpcNet):
         return self.__primitives
 
     @property
-    def padstack_instances(self) -> list["PadstackInstance"]:
+    def padstack_instances(self) -> list[PadstackInstance]:
         """All padstack instances belonging to this net.
 
         Returns
@@ -100,7 +101,6 @@ class Net(GrpcNet):
         list of :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
             Padstack instances associated with the net.
         """
-        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
         return [PadstackInstance(self._pedb, i) for i in super().padstack_instances]
 

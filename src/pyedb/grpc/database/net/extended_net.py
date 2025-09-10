@@ -22,6 +22,8 @@
 
 from ansys.edb.core.net.extended_net import ExtendedNet as GrpcExtendedNet
 
+from pyedb.grpc.database.net.net import Net
+
 
 class ExtendedNets:
     def __init__(self, pedb):
@@ -270,7 +272,7 @@ class ExtendedNet(GrpcExtendedNet):
         self._pedb = pedb
 
     @property
-    def nets(self):
+    def nets(self) -> dict[str, Net]:
         """Nets dictionary.
 
         Returns
@@ -278,7 +280,6 @@ class ExtendedNet(GrpcExtendedNet):
         Dict[str, :class:`Net <pyedb.grpc.database.net.net.Net>`]
             Dict[net name, Net object].
         """
-        from pyedb.grpc.database.net.net import Net
 
         return {net.name: Net(self._pedb, net) for net in super().nets}
 
