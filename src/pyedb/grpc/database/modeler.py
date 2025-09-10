@@ -790,7 +790,7 @@ class Modeler(object):
         if polygon.is_null or polygon_data is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
-        self._add_primitive(Polygon)
+        self._add_primitive(polygon)
         return Polygon(self._pedb, polygon)
 
     def create_rectangle(
