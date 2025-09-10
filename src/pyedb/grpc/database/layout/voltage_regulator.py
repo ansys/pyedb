@@ -103,7 +103,7 @@ class VoltageRegulator(GrpcVoltageRegulator):
 
     @negative_remote_sense_pin.setter
     def negative_remote_sense_pin(self, value):
-        from pyedb.grpc.database.padstacks import PadstackInstance
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
         if isinstance(value, int):
             if value in self._pedb.padsatcks.instances:
