@@ -94,8 +94,10 @@ class Modeler(object):
         self._primitives_by_name: dict[str, Primitive] | None = None
         self._primitives_by_net: dict[str, list[Primitive]] | None = None
         self._primitives_by_layer: dict[str, list[Primitive]] | None = None
+        self._primitives_by_layer_and_net: Dict[str, Dict[str, List[Primitive]]] | None = None
 
-    # ============================================================
+        # ============================================================
+
     # Cache management
     # ============================================================
 
@@ -105,16 +107,18 @@ class Modeler(object):
         self._primitives_by_name = None
         self._primitives_by_net = None
         self._primitives_by_layer = None
+        self._primitives_by_layer_and_net = None
 
     def _add_primitive(self, prim: Any):
         """Add primitive wrapper to caches."""
         self._primitives[prim.edb_uid] = prim
         if self._primitives_by_name is not None:
             self._primitives_by_name[prim.aedt_name] = prim
-        if self._primitives_by_net is not None and prim.net:
+        if self._primitives_by_net is not None and hasattr(prim, "net"):
             self._primitives_by_net.setdefault(prim.net, []).append(prim)
-        if self._primitives_by_layer is not None and prim.layer.name:
-            self._primitives_by_layer.setdefault(prim.layer.name, []).append(prim)
+        if hasattr(prim, "layer"):
+            if self._primitives_by_layer is not None and prim.layer_name:
+                self._primitives_by_layer.setdefault(prim.layer_name, []).append(prim)
 
     def _remove_primitive(self, prim: Primitive):
         """Remove primitive wrapper from caches."""
@@ -133,6 +137,16 @@ class Modeler(object):
                 lst.remove(prim)
                 if not lst:
                     self._primitives_by_layer.pop(prim.layer.name, None)
+        if self._primitives_by_layer_and_net is not None and hasattr(prim, "layer") and hasattr(prim, "net"):
+            layer_dict = self._primitives_by_layer_and_net.get(prim.layer.name)
+            if layer_dict:
+                net_list = layer_dict.get(prim.net.name)
+                if net_list and prim in net_list:
+                    net_list.remove(prim)
+                    if not net_list:  # clean empty net entry
+                        layer_dict.pop(prim.net.name, None)
+                    if not layer_dict:  # clean empty layer entry
+                        self._primitives_by_layer_and_net.pop(prim.layer.name, None)
 
     @property
     def primitives(self) -> list[Primitive]:
@@ -165,6 +179,26 @@ class Modeler(object):
                     d.setdefault(p.layer_name, []).append(p)
             self._primitives_by_layer = d
         return self._primitives_by_layer
+
+    @property
+    def primitives_by_layer_and_net(self) -> Dict[str, Dict[str, List[Primitive]]]:
+        """Return all primitives indexed first by layer, then by net.
+
+        Returns
+        -------
+        dict
+            Nested dictionary:  layer -> net -> list[Primitive]
+        """
+        if self._primitives_by_layer_and_net is None:
+            idx: Dict[str, Dict[str, List[Primitive]]] = {}
+            for prim in self.primitives:
+                if not prim.layer_name or not hasattr(prim, "net") or prim.net.is_null:
+                    continue
+                layer = prim.layer_name
+                net = prim.net.name
+                idx.setdefault(layer, {}).setdefault(net, []).append(prim)
+            self._primitives_by_layer_and_net = idx
+        return self._primitives_by_layer_and_net
 
     @property
     def _edb(self) -> Any:
@@ -1107,23 +1141,17 @@ class Modeler(object):
             all_voids = []
             list_polygon_data = []
             delete_list = []
-            if lay in list(self.polygons_by_layer.keys()):
-                for poly in self.polygons_by_layer[lay]:
-                    poly = poly
-                    if not poly.net.name in list(poly_by_nets.keys()):
-                        if poly.net.name:
-                            poly_by_nets[poly.net.name] = [poly]
-                    else:
-                        if poly.net.name:
-                            poly_by_nets[poly.net.name].append(poly)
-            for net in poly_by_nets:
+            for poly in self.polygons_by_layer.get(lay, []):
+                if poly.net_name:
+                    poly_by_nets.setdefault(poly.net_name, []).append(poly)
+            for net, polys in poly_by_nets.items():
                 if net in net_names_list or not net_names_list:
-                    for i in poly_by_nets[net]:
-                        list_polygon_data.append(i.polygon_data)
-                        delete_list.append(i)
-                        all_voids.append(i.voids)
-            a = GrpcPolygonData.unite(list_polygon_data)
-            for item in a:
+                    for p in polys:
+                        list_polygon_data.append(p.polygon_data)
+                        delete_list.append(p)
+                        all_voids.extend(p.voids)
+            united = GrpcPolygonData.unite(list_polygon_data)
+            for item in united:
                 for v in all_voids:
                     for void in v:
                         if item.intersection_type(void.polygon_data) == 2:
