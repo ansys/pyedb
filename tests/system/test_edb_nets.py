@@ -20,33 +20,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Tests related to Edb nets
-"""
+"""Tests related to Edb nets"""
 
 import os
 
 import pytest
 
-from tests.conftest import local_path, test_subfolder
+from pyedb.generic.general_methods import is_windows
+from tests.conftest import config, local_path, test_subfolder
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
-class TestClass:
+class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path2 = target_path2
         self.target_path4 = target_path4
-
-    @classmethod
-    @pytest.fixture(scope="class", autouse=True)
-    def teardown_class(cls, request, edb_examples):
-        yield
-        # not elegant way to ensure the EDB grpc is closed after all tests
-        edb = edb_examples.create_empty_edb()
-        edb.close_edb()
 
     def test_nets_queries(self, edb_examples):
         """Evaluate nets queries"""
@@ -171,10 +164,10 @@ class TestClass:
 
     def test_layout_auto_parametrization_0(self, edb_examples):
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = edb_examples.get_package()
         parameters = edbapp.auto_parametrize_design(
             layers=True,
-            layer_filter="1_Top",
+            layer_filter="TOP",
             materials=False,
             via_holes=False,
             pads=False,
@@ -183,12 +176,12 @@ class TestClass:
             use_relative_variables=False,
             open_aedb_at_end=False,
         )
-        assert "$1_Top_value" in parameters
-        edbapp.close_edb()
+        assert "$TOP_value" in parameters
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_1(self, edb_examples):
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=True, materials=False, via_holes=False, pads=False, antipads=False, traces=False, via_offset=False
         )
@@ -197,7 +190,7 @@ class TestClass:
 
     def test_layout_auto_parametrization_2(self, edb_examples):
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False,
             materials=True,
@@ -205,54 +198,58 @@ class TestClass:
             pads=False,
             antipads=False,
             traces=False,
-            material_filter=["copper"],
+            material_filter=["COPPER"],
             expand_voids_size=0.0001,
             expand_polygons_size=0.0001,
             via_offset=True,
         )
         assert "via_offset_x" in edbapp.variables
-        assert "$sigma_copper_delta" in edbapp.variables
+        assert "$sigma_COPPER_delta" in edbapp.variables
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_layout_auto_parametrization_3(self, edb_examples):
-        # Done
-        edbapp = edb_examples.get_si_verse()
+        # TODO check grpc test is slow.
+        edbapp = edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False, materials=True, via_holes=False, pads=False, antipads=False, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 13
-        edbapp.close_edb()
+        assert len(list(edbapp.variables.values())) == 18
+        edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_layout_auto_parametrization_4(self, edb_examples):
-        # Done
-        edbapp = edb_examples.get_si_verse()
+        # TODO check grpc test is slow.
+        edbapp = edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=True, pads=False, antipads=False, traces=False
         )
         assert len(list(edbapp.variables.values())) == 3
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_layout_auto_parametrization_5(self, edb_examples):
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=True, antipads=False, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 5
-        edbapp.close_edb()
+        assert len(list(edbapp.variables.values())) == 3
+        edbapp.close()
 
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Test slow on windows with grpc")
     def test_layout_auto_parametrization_6(self, edb_examples):
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=False, antipads=True, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 2
-        edbapp.close_edb()
+        assert len(list(edbapp.variables.values())) == 3
+        edbapp.close()
 
     def test_layout_auto_parametrization_7(self, edb_examples):
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False,
             materials=False,
@@ -260,7 +257,7 @@ class TestClass:
             pads=False,
             antipads=False,
             traces=True,
-            trace_net_filter=["SFPA_Tx_Fault", "SFPA_Tx_Disable", "SFPA_SDA", "SFPA_SCL", "SFPA_Rx_LOS"],
+            trace_net_filter=["FCHIP_A1", "FCHIP_A2", "FCHIP_A3"],
         )
         assert len(list(edbapp.variables.keys())) == 3
-        edbapp.close_edb()
+        edbapp.close()

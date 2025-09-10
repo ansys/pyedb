@@ -34,9 +34,9 @@ from ansys.edb.core.definition.djordjecvic_sarkar_model import (
     DjordjecvicSarkarModel as GrpcDjordjecvicSarkarModel,
 )
 from ansys.edb.core.definition.material_def import (
+    MaterialDef as GrpcMaterialDef,
     MaterialProperty as GrpcMaterialProperty,
 )
-from ansys.edb.core.definition.material_def import MaterialDef as GrpcMaterialDef
 from ansys.edb.core.definition.multipole_debye_model import (
     MultipoleDebyeModel as GrpcMultipoleDebyeModel,
 )
@@ -378,7 +378,7 @@ class Material(GrpcMaterialDef):
             "Use property dielectric_loss_tangent instead.",
             DeprecationWarning,
         )
-        self.dielectric_loss_tangent(value)
+        self.dielectric_loss_tangent = value
 
     @dielectric_loss_tangent.setter
     def dielectric_loss_tangent(self, value):

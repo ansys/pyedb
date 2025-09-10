@@ -10,7 +10,6 @@ on:
 
 env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
-  PYEDB_USE_DOTNET: '1'
   PYEDB_CI_NO_DISPLAY: '1'
   MAIN_PYTHON_VERSION: '3.10'
   PACKAGE_NAME: 'pyedb'
@@ -33,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check the title of the pull request
-        uses: ansys/actions/check-pr-title@5dc39c7838f50142138f7ac518ff3e4dca065d97 # v9.0.12
+        uses: ansys/actions/check-pr-title@f044c670f4ade6e0cc77202c2b1c81f1f7acec2a # v10.0.16
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           use-upper-case: true
@@ -43,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check documentation style
-        uses: ansys/actions/doc-style@5dc39c7838f50142138f7ac518ff3e4dca065d97 # v9.0.12
+        uses: ansys/actions/doc-style@f044c670f4ade6e0cc77202c2b1c81f1f7acec2a # v10.0.16
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -57,30 +56,35 @@ jobs:
         python-version: ['3.10', '3.11', '3.12']
     steps:
       - name: Build wheelhouse and perform smoke test
-        uses: ansys/actions/build-wheelhouse@5dc39c7838f50142138f7ac518ff3e4dca065d97 # v9.0.12
+        id: build-wheelhouse
+        uses: ansys/actions/build-wheelhouse@f044c670f4ade6e0cc77202c2b1c81f1f7acec2a # v10.0.16
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
 
       - name: Import python package
+        shell: bash
         run: |
+          ${{ steps.build-wheelhouse.outputs.activate-venv }}
           python -c "import pyedb; from pyedb import __version__"
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  system-tests-windows:
+  system-tests-windows-dotnet:
     name: Test dotnet (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
+    env:
+      USE_GRPC: '0'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -104,7 +108,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 15
+          timeout_minutes: 40
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/system -n auto --dist loadfile -v --cov
@@ -120,7 +124,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: .cov\system-html
-          name: html-system-coverage
+          name: html-system-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -134,16 +138,18 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  unit-tests-windows:
-    name: Test dotnet (windows)
+  system-tests-windows-grpc:
+    name: Test grpc (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
+    env:
+      USE_GRPC: '1'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -167,7 +173,72 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 15
+          timeout_minutes: 40
+          command: |
+            . .venv\Scripts\Activate.ps1
+            pytest tests/system -n auto --dist loadfile -v --cov
+
+      - name: "Create coverage files"
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m coverage html -d .cov\system-html
+          python -m coverage xml -o .cov\system.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          path: .cov\system-html
+          name: html-system-coverage-${{ github.job }}-${{ github.run_attempt }}
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/system.xml
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  unit-tests-windows-dotnet:
+    name: Unit test dotnet (windows)
+    runs-on: [ Windows, self-hosted, pyedb ]
+    env:
+      USE_GRPC: '0'
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v5
+
+      # Revert to previous verison due too setup-python#819
+      - name: "Set up Python"
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+          . .venv\Scripts\Activate.ps1
+
+      - name: "Update pip"
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install -U pip
+
+      - name: "Install Python library and tests dependencies"
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install .[tests]
+
+      - name: "Executing system tests"
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/unit -n auto --dist loadfile -v --cov
@@ -183,7 +254,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: .cov\unit-html
-          name: html-unit-coverage
+          name: html-unit-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -197,18 +268,84 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  system-tests-linux:
-    name: Test dotnet (linux)
-    runs-on: [ Linux, self-hosted, toolkits ]
+  unit-tests-windows-grpc:
+    name: Unit test grpc (windows)
+    runs-on: [ Windows, self-hosted, pyedb ]
     env:
-      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
-      ANS_NODEPCHECK: '1'
+      USE_GRPC: '1'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      # Revert to previous verison due too setup-python#819
+      - name: "Set up Python"
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+          . .venv\Scripts\Activate.ps1
+
+      - name: "Update pip"
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install -U pip
+
+      - name: "Install Python library and tests dependencies"
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install .[tests]
+
+      - name: "Executing system tests"
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            . .venv\Scripts\Activate.ps1
+            pytest tests/unit -n auto --dist loadfile -v --cov
+
+      - name: "Create coverage files"
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m coverage html -d .cov\unit-html
+          python -m coverage xml -o .cov\unit.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          path: .cov\unit-html
+          name: html-unit-coverage-${{ github.job }}-${{ github.run_attempt }}
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/unit.xml
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  system-tests-linux-dotnet:
+    name: Test dotnet (linux)
+    runs-on: [ Linux, self-hosted, pyedb ]
+    env:
+      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANS_NODEPCHECK: '1'
+      USE_GRPC: '0'
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v5
 
       - name: "Set up Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -238,7 +375,7 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             xvfb-run pytest tests/system -n auto --dist loadfile -v --cov
 
@@ -253,7 +390,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: .cov\system-html
-          name: html-system-linux-coverage
+          name: html-system-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -263,23 +400,94 @@ jobs:
         with:
           files: .cov/system.xml
 
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  system-tests-linux-grpc:
+    name: Test grpc (linux)
+    runs-on: [ Linux, self-hosted, pyedb ]
+    env:
+      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANS_NODEPCHECK: '1'
+      USE_GRPC: '1'
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v5
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: "Install os packages"
+        run: |
+          sudo apt update
+          sudo apt install libgl1-mesa-glx xvfb -y
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+
+      - name: "Update pip"
+        run: |
+          . .venv/bin/activate
+          python -m pip install -U pip
+
+      - name: "Install Python library and tests dependencies"
+        run: |
+          . .venv/bin/activate
+          python -m pip install .[tests]
+
+      - name: "Executing system tests"
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            . .venv/bin/activate
+            xvfb-run pytest tests/system -n auto --dist loadfile -v --cov
+
+      - name: "Create coverage files"
+        run: |
+          . .venv/bin/activate
+          python -m coverage html -d .cov\system-html
+          python -m coverage xml -o .cov\system.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          path: .cov\system-html
+          name: html-system-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/system.xml
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  unit-tests-linux:
-    name: Test dotnet (linux)
-    runs-on: [ Linux, self-hosted, toolkits ]
+  unit-tests-linux-dotnet:
+    name: Unit test dotnet (linux)
+    runs-on: [ Linux, self-hosted, pyedb ]
     env:
-      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
       ANS_NODEPCHECK: '1'
+      USE_GRPC: '0'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: "Set up Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -309,7 +517,7 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             xvfb-run pytest tests/unit -n auto --dist loadfile -v --cov
 
@@ -324,7 +532,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: .cov\unit-html
-          name: html-unit-linux-coverage
+          name: html-unit-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -338,17 +546,89 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
+  unit-tests-linux-grpc:
+    name: Unit test grpc (linux)
+    runs-on: [ Linux, self-hosted, pyedb ]
+    env:
+      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANS_NODEPCHECK: '1'
+      USE_GRPC: '1'
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v5
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: "Install os packages"
+        run: |
+          sudo apt update
+          sudo apt install libgl1-mesa-glx xvfb -y
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+
+      - name: "Update pip"
+        run: |
+          . .venv/bin/activate
+          python -m pip install -U pip
+
+      - name: "Install Python library and tests dependencies"
+        run: |
+          . .venv/bin/activate
+          python -m pip install .[tests]
+
+      - name: "Executing unit tests"
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            . .venv/bin/activate
+            xvfb-run pytest tests/unit -n auto --dist loadfile -v --cov
+
+      - name: "Create coverage files"
+        run: |
+          . .venv/bin/activate
+          python -m coverage html -d .cov\unit-html
+          python -m coverage xml -o .cov\unit.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          path: .cov\unit-html
+          name: html-unit-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/unit.xml
+
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
   test-pyaedt-main-windows:
     name: Testing PyAEDT main branch (Windows)
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
-    runs-on: [ self-hosted, Windows, pyaedt ]
+    runs-on: [ self-hosted, Windows, pyedb ]
     steps:
       - name: Install Git and checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -363,7 +643,7 @@ jobs:
           python -m pip install -U pip
 
       - name: Clone PyAEDT on main branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ansys/pyaedt
           path: "external/pyaedt"
@@ -384,7 +664,7 @@ jobs:
           .venv\Scripts\Activate.ps1
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
-          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa
+          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.3.1
 
       - name: Run PyAEDT tests
         uses: nick-fields/retry@v3
@@ -435,13 +715,13 @@ jobs:
     name: Testing PyAEDT main branch (Linux)
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
-    runs-on: [ self-hosted, Linux, pyaedt ]
+    runs-on: [ self-hosted, Linux, pyedb ]
     env:
-      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install OS packages
         run: |
@@ -449,7 +729,7 @@ jobs:
           sudo apt-get install tk -y
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -463,7 +743,7 @@ jobs:
           python -m pip install -U pip
 
       - name: Clone PyAEDT on main branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ansys/pyaedt
           path: "external/pyaedt"
@@ -471,23 +751,23 @@ jobs:
 
       - name: Install PyAEDT main branch version with its test dependencies
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           pip install --no-cache-dir external/pyaedt[tests]
 
       - name: Install PyEDB
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           python -m pip install .
 
       - name: Install CI dependencies (e.g. vtk-osmesa)
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
-          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa
+          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.3.1
 
       - name: Run PyAEDT tests
         uses: nick-fields/retry@v3
@@ -498,7 +778,7 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/general/test_01_3dlayout_edb.py
             pytest -v external/pyaedt/tests/system/general/test_01_configuration_files.py
@@ -513,7 +793,7 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
             pytest -v external/pyaedt/tests/system/solvers/test_00_analyze.py
@@ -527,7 +807,7 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
             pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
@@ -538,7 +818,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build documentation
-        uses: ansys/actions/doc-build@8d3e4946f36c2a7d447b92e34b1022a5c9dc77a7 # v10.0.12
+        uses: ansys/actions/doc-build@f044c670f4ade6e0cc77202c2b1c81f1f7acec2a # v10.0.16
         with:
           dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -548,11 +828,19 @@ jobs:
 
   package:
     name: Package library
-    needs: [system-tests-windows, system-tests-linux,unit-tests-windows, unit-tests-linux, docs-build]
+    needs: [system-tests-windows-dotnet,
+            system-tests-windows-grpc,
+            system-tests-linux-dotnet,
+            system-tests-linux-grpc,
+            unit-tests-windows-dotnet,
+            unit-tests-windows-grpc,
+            unit-tests-linux-dotnet,
+            unit-tests-linux-grpc,
+            docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
-        uses: ansys/actions/build-library@5dc39c7838f50142138f7ac518ff3e4dca065d97 # v9.0.12
+        uses: ansys/actions/build-library@f044c670f4ade6e0cc77202c2b1c81f1f7acec2a # v10.0.16
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -570,7 +858,7 @@ jobs:
     steps:
 
       - name: Download the library artifacts from build-library step
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
           name: ${{ env.PACKAGE_NAME }}-artifacts
           path: ${{ env.PACKAGE_NAME }}-artifacts
@@ -584,7 +872,7 @@ jobs:
           skip-existing: false
 
       - name: Release to GitHub
-        uses: ansys/actions/release-github@5dc39c7838f50142138f7ac518ff3e4dca065d97 # v9.0.12
+        uses: ansys/actions/release-github@f044c670f4ade6e0cc77202c2b1c81f1f7acec2a # v10.0.16
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -596,7 +884,7 @@ jobs:
     needs: [package]
     steps:
       - name: Deploy the latest documentation
-        uses: ansys/actions/doc-deploy-dev@5dc39c7838f50142138f7ac518ff3e4dca065d97 # v9.0.12
+        uses: ansys/actions/doc-deploy-dev@f044c670f4ade6e0cc77202c2b1c81f1f7acec2a # v10.0.16
         with:
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
@@ -610,7 +898,7 @@ jobs:
     needs: [release]
     steps:
       - name: Deploy the stable documentation
-        uses: ansys/actions/doc-deploy-stable@5dc39c7838f50142138f7ac518ff3e4dca065d97 # v9.0.12
+        uses: ansys/actions/doc-deploy-stable@f044c670f4ade6e0cc77202c2b1c81f1f7acec2a # v10.0.16
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}

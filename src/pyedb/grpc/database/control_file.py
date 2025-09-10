@@ -27,8 +27,8 @@ import subprocess
 import sys
 from typing import Any, Dict, List, Optional, Union
 
-from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import ET, env_path, env_value, is_linux
+from pyedb.generic.settings import settings
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 from pyedb.misc.misc import list_installed_ansysem
 
@@ -58,40 +58,26 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
         -------
         # Example 1: Converting a technology file to control file
     >>> converted_file = convert_technology_file(
-    >>> tech_file="/path/to/tech.t",
-    >>> edbversion="2025.2",
-    >>> control_file="/path/to/output.xml"
-    >>> )
+    ...     tech_file="/path/to/tech.t", edbversion="2025.2", control_file="/path/to/output.xml"
+    ... )
     >>> if converted_file:
     >>> print(f"Converted to: {converted_file}")
 
         # Example 2: Creating a material
     >>> from pyedb import ControlFileMaterial
-    >>> material = ControlFileMaterial(
-    >>> "Copper",
-    >>> {"Permittivity": 1.0, "Conductivity": 5.8e7}
-    >>> )
+    >>> material = ControlFileMaterial("Copper", {"Permittivity": 1.0, "Conductivity": 5.8e7})
 
         # Example 3: Creating a dielectric layer
     >>> from pyedb import ControlFileDielectric
-    >>> dielectric = ControlFileDielectric(
-    >>> "Core",
-    >>> {"Thickness": "0.2mm", "Material": "FR4"}
-    >>> )
+    >>> dielectric = ControlFileDielectric("Core", {"Thickness": "0.2mm", "Material": "FR4"})
 
         # Example 4: Creating a signal layer
     >>> from pyedb import ControlFileLayer
-    >>> signal_layer = ControlFileLayer(
-    >>> "TopLayer",
-    >>> {"Type": "signal", "Material": "Copper", "Thickness": "0.035mm"}
-    >>> )
+    >>> signal_layer = ControlFileLayer("TopLayer", {"Type": "signal", "Material": "Copper", "Thickness": "0.035mm"})
 
         # Example 5: Creating a via layer
     >>> from pyedb import ControlFileVia
-    >>> via_layer = ControlFileVia(
-    >>> "Via1",
-    >>> {"StartLayer": "TopLayer", "StopLayer": "BottomLayer"}
-    >>> )
+    >>> via_layer = ControlFileVia("Via1", {"StartLayer": "TopLayer", "StopLayer": "BottomLayer"})
     >>> via_layer.create_via_group = True
     >>> via_layer.tolerance = "0.1mm"
 
@@ -111,11 +97,7 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
 
         # Example 8: Setting up simulation extents
     >>> from pyedb import ControlExtent
-    >>> extent = ControlExtent(
-    >>> type="Conforming",
-    >>> diel_hactor=0.3,
-    >>> airbox_hfactor=0.5
-    >>> )
+    >>> extent = ControlExtent(type="Conforming", diel_hactor=0.3, airbox_hfactor=0.5)
 
         # Example 9: Creating circuit ports
     >>> from pyedb import ControlCircuitPt
@@ -142,17 +124,11 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
 
         # Example 13: Frequency sweep configuration
     >>> from pyedb import ControlFileSweep
-    >>> sweep = ControlFileSweep(
-    >>> "Sweep1", "1GHz", "10GHz", "0.1GHz",
-    >>> "Interpolating", "LinearStep", True
-    >>> )
+    >>> sweep = ControlFileSweep("Sweep1", "1GHz", "10GHz", "0.1GHz", "Interpolating", "LinearStep", True)
 
         # Example 14: Mesh operation setup
     >>> from pyedb import ControlFileMeshOp
-    >>> mesh_op = ControlFileMeshOp(
-    >>> "FineMesh", "Region1", "MeshOperationSkinDepth",
-    >>> {"Net1": "TopLayer"}
-    >>> )
+    >>> mesh_op = ControlFileMeshOp("FineMesh", "Region1", "MeshOperationSkinDepth", {"Net1": "TopLayer"})
     >>> mesh_op.skin_depth = "1um"
 
         # Example 15: Simulation setup configuration
@@ -194,7 +170,7 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
             base_path = env_path(edbversion)
             sys.path.append(base_path)
         else:
-            pyedb_logger.error("No EDB installation found. Check environment variables")
+            settings.logger.error("No EDB installation found. Check environment variables")
             return False
         os.environ["HELIC_ROOT"] = os.path.join(base_path, "helic")
         if os.getenv("ANSYSLMD_LICENCE_FILE", None) is None:
@@ -207,7 +183,7 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
                             os.environ["ANSYSLMD_LICENSE_FILE"] = line.split("=")[1]
                             break
             else:
-                pyedb_logger.error("ANSYSLMD_LICENSE_FILE is not defined.")
+                settings.logger.error("ANSYSLMD_LICENSE_FILE is not defined.")
         vlc_file_name = os.path.splitext(tech_file)[0]
         if not control_file:
             control_file = vlc_file_name + ".xml"
@@ -241,9 +217,9 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
             p = subprocess.Popen(command, env=my_env)
             p.wait()
         if os.path.exists(control_file):
-            pyedb_logger.info("XML file created.")
+            settings.logger.info("XML file created.")
             return control_file
-    pyedb_logger.error("Technology files are supported only in Linux. Use control file instead.")
+    settings.logger.error("Technology files are supported only in Linux. Use control file instead.")
     return False
 
 

@@ -23,20 +23,20 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
+
 import math
 from typing import Any, Dict, List, Optional, Union
 
 from ansys.edb.core.geometry.arc_data import ArcData as GrpcArcData
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import (
+    PolygonData as GrpcPolygonData,
     PolygonSenseType as GrpcPolygonSenseType,
 )
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
 from ansys.edb.core.inner.exceptions import InvalidArgumentException
 from ansys.edb.core.primitive.bondwire import BondwireType as GrpcBondwireType
-from ansys.edb.core.primitive.path import PathCornerType as GrpcPathCornerType
-from ansys.edb.core.primitive.path import PathEndCapType as GrpcPathEndCapType
+from ansys.edb.core.primitive.path import PathCornerType as GrpcPathCornerType, PathEndCapType as GrpcPathEndCapType
 from ansys.edb.core.primitive.rectangle import (
     RectangleRepresentationType as GrpcRectangleRepresentationType,
 )
@@ -603,17 +603,20 @@ class Modeler(object):
         else:
             corner_style = GrpcPathCornerType.MITER
         _points = []
-        for pt in points:
-            _pt = []
-            for coord in pt:
-                coord = Value(coord, self._pedb.active_cell)
-                _pt.append(coord)
-            _points.append(_pt)
-        points = _points
-
-        width = Value(width, self._pedb.active_cell)
-
-        polygon_data = GrpcPolygonData(points=[GrpcPointData(i) for i in points])
+        if isinstance(points, list):
+            for pt in points:
+                _pt = []
+                for coord in pt:
+                    coord = Value(coord, self._pedb.active_cell)
+                    _pt.append(coord)
+                _points.append(_pt)
+            points = _points
+            width = Value(width, self._pedb.active_cell)
+            polygon_data = GrpcPolygonData(points)
+        elif isinstance(points, GrpcPolygonData):
+            polygon_data = points
+        else:
+            raise TypeError("Points must be a list of points or a PolygonData object.")
         path = Path.create(
             layout=self._active_layout,
             layer=layer_name,
@@ -631,7 +634,7 @@ class Modeler(object):
 
     def create_trace(
         self,
-        path_list: List[List[float]],
+        path_list: Union[List[List[float]], GrpcPolygonData],
         layer_name: str,
         width: float = 1,
         net_name: str = "",
@@ -1115,7 +1118,7 @@ class Modeler(object):
         #     return None
         # pointA = GrpcPointData(pointA[0]), self._get_edb_value(shape.pointA[1])
         # )
-        # pointB = self._edb.geometry.point_data(
+        # pointB = self._edb.Geometry.PointData(
         #     self._get_edb_value(shape.pointB[0]), self._get_edb_value(shape.pointB[1])
         # )
         # return self._edb.geometry.polygon_data.create_from_bbox((pointA, pointB))
@@ -1265,7 +1268,7 @@ class Modeler(object):
         new_poly = poly.polygon_data.defeature(tol=tolerance)
         if not new_poly.points:
             self._pedb.logger.error(
-                f"Defeaturing on polygon {poly.id} returned empty polygon, tolerance threshold " f"might too large. "
+                f"Defeaturing on polygon {poly.id} returned empty polygon, tolerance threshold might too large. "
             )
             return False
         poly.polygon_data = new_poly

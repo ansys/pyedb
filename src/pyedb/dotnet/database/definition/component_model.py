@@ -28,7 +28,7 @@ class ComponentModel(ObjBase):
 
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
-        self._model_type_mapping = {"PinPairModel": self._pedb.core.cell}
+        self._model_type_mapping = {"PinPairModel": self._pedb.core.Cell}
 
 
 class NPortComponentModel(ComponentModel):

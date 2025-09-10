@@ -20,15 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Tests related to Edb net classes
-"""
+"""Tests related to Edb net classes"""
 
 import pytest
+
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
-class TestClass:
+class TestClass(BaseTestClass):
     def test_net_classes_queries(self, edb_examples):
         """Evaluate net classes queries"""
         edbapp = edb_examples.get_si_verse()
@@ -38,4 +39,4 @@ class TestClass:
         assert edbapp.net_classes["DDR4_ADD"].nets
         edbapp.net_classes["DDR4_ADD"].name = "DDR4_ADD_RENAMED"
         assert not edbapp.net_classes["DDR4_ADD_RENAMED"].is_null
-        edbapp.close(terminate_rpc_session=False)
+        edbapp.close()

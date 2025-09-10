@@ -21,21 +21,10 @@
 # SOFTWARE.
 
 """Database."""
-import os
-import re
-import sys
-import warnings
 
-from pyedb import __version__
+import re
+
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import (
-    env_path,
-    env_path_student,
-    env_value,
-    is_linux,
-    settings,
-)
-from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
 
 
 class HierarchyDotNet:
@@ -90,7 +79,7 @@ class PolygonDataDotNet:  # pragma: no cover
 
     def __init__(self, pedb, api_object=None):
         self._pedb = pedb
-        self.dotnetobj = pedb.core.geometry.api_class.PolygonData
+        self.dotnetobj = pedb.core.Geometry.PolygonData
         self.core = api_object
         self._edb_object = api_object
 
@@ -654,11 +643,6 @@ class CellDotNet:
         self.core = app._edb
 
     @property
-    def api_class(self):
-        """Return Ansys.Ansoft.Edb class object."""
-        return self.core
-
-    @property
     def definition(self):
         """Edb Dotnet Api Definition."""
 
@@ -698,115 +682,8 @@ class CellDotNet:
         return GeometryDotNet(self._app)
 
 
-class EdbDotNet(object):
-    """Edb Dot Net Class."""
-
-    def __init__(self, edbversion, student_version=False):
-        self._logger.info(f"Edb version {edbversion}")
-        self.edbversion = edbversion
-        if float(self.edbversion) >= 2025.2:
-            warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
-        self.student_version = student_version
-        """Initialize DLLs."""
-        from pyedb.dotnet.clr_module import _clr, edb_initialized
-
-        if not settings.use_pyaedt_log:
-            if settings.enable_screen_logs:
-                self._logger.enable_stdout_log()
-            else:  # pragma: no cover
-                self._logger.disable_stdout_log()
-        if not edb_initialized:  # pragma: no cover
-            self._logger.error("Failed to initialize Dlls.")
-            return
-        self._logger.info("Logger is initialized in EDB.")
-        self._logger.info("legacy v%s", __version__)
-        self._logger.info("Python version %s", sys.version)
-        if is_linux:  # pragma: no cover
-            if env_value(self.edbversion) in os.environ or settings.edb_dll_path:
-                if settings.edb_dll_path:
-                    self.base_path = settings.edb_dll_path
-                else:
-                    self.base_path = env_path(self.edbversion)
-                sys.path.append(self.base_path)
-            else:
-                main = sys.modules["__main__"]
-                if "oDesktop" in dir(main):
-                    self.base_path = main.oDesktop.GetExeDir()
-                    sys.path.append(main.oDesktop.GetExeDir())
-                    os.environ[env_value(self.edbversion)] = self.base_path
-                else:
-                    edb_path = os.getenv("PYAEDT_SERVER_AEDT_PATH")
-                    if edb_path:
-                        self.base_path = edb_path
-                        sys.path.append(edb_path)
-                        os.environ[env_value(self.edbversion)] = self.base_path
-
-            _clr.AddReference("Ansys.Ansoft.Edb")
-            _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
-            _clr.AddReference("Ansys.Ansoft.SimSetupData")
-        else:
-            if settings.edb_dll_path:
-                self.base_path = settings.edb_dll_path
-            elif self.student_version:
-                self.base_path = env_path_student(self.edbversion)
-            else:
-                self.base_path = env_path(self.edbversion)
-            sys.path.append(self.base_path)
-            _clr.AddReference("Ansys.Ansoft.Edb")
-            _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
-            _clr.AddReference("Ansys.Ansoft.SimSetupData")
-        os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = self.base_path
-        oaDirectory = os.path.join(self.base_path, "common", "oa")
-        os.environ["ANSYS_OADIR"] = oaDirectory
-        os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
-        edb = __import__("Ansys.Ansoft.Edb")
-        self._edb = edb.Ansoft.Edb
-        edbbuilder = __import__("Ansys.Ansoft.EdbBuilderUtils")
-        self.edbutils = edbbuilder.Ansoft.EdbBuilderUtils
-        self.simSetup = __import__("Ansys.Ansoft.SimSetupData")
-        self.simsetupdata = self.simSetup.Ansoft.SimSetupData.Data
-
-    @property
-    def student_version(self):
-        """Set the student version flag."""
-        return self._student_version
-
-    @student_version.setter
-    def student_version(self, value):
-        self._student_version = value
-
-    @property
-    def logger(self):
-        """Logger for EDB.
-
-        Returns
-        -------
-        :class:`pyedb.edb_logger.EDBLogger`
-        """
-        return self._logger
-
-    @property
-    def edb_api(self):
-        """Edb Dotnet Api class.
-
-        .. deprecated:: 0.54.0
-            Use :func:core` instead.
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.dotnet.database.CellDotNet`
-        """
-        warnings.warn("`edb_api` is deprecated, use `core` instead.", DeprecationWarning)
-        return CellDotNet(self)
-
-    @property
-    def core(self):
-        """Edb Dotnet Api class.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.dotnet.database.CellDotNet`
-        """
-        return CellDotNet(self)
+class Database:
+    """Class representing a database object."""
 
     @property
     def database(self):
@@ -817,78 +694,6 @@ class EdbDotNet(object):
     def definition(self):
         """Edb Dotnet Api Database `Edb.Definition`."""
         return self.core.Definition
-
-
-class Database(EdbDotNet):
-    """Class representing a database object."""
-
-    def __init__(self, edbversion, student_version=False):
-        """Initialize a new Database."""
-        EdbDotNet.__init__(self, edbversion=edbversion, student_version=student_version)
-        self._db = None
-
-    @property
-    def api_class(self):
-        """Return Ansys.Ansoft.Edb class object."""
-        return self._edb
-
-    @property
-    def api_object(self):
-        """Return Ansys.Ansoft.Edb object."""
-        return self._db
-
-    @property
-    def db(self):
-        """Active database object."""
-        return self._db
-
-    def run_as_standalone(self, flag):
-        """Set if Edb is run as standalone or embedded in AEDT.
-
-        Parameters
-        ----------
-        flag : bool
-            Whether if Edb is run as standalone or embedded in AEDT.
-        """
-        self.core.database.SetRunAsStandAlone(flag)
-
-    def create(self, db_path):
-        """Create a Database at the specified file location.
-
-        Parameters
-        ----------
-        db_path : str
-            Path to top-level database folder
-
-        Returns
-        -------
-        Database
-        """
-        self._db = self.core.database.Create(db_path)
-        return self._db
-
-    def open(self, db_path, read_only):
-        """Open an existing Database at the specified file location.
-
-        Parameters
-        ----------
-        db_path : str
-            Path to top-level Database folder.
-        read_only : bool
-            Obtain read-only access.
-
-        Returns
-        -------
-        Database or None
-            The opened Database object, or None if not found.
-        """
-        self._db = self.core.database.Open(
-            db_path,
-            read_only,
-        )
-        if self._db.IsNull():
-            raise AttributeError(f"Failed to open edb file {db_path}")
-        return self._db
 
     def delete(self, db_path):
         """Delete a database at the specified file location.

@@ -36,6 +36,7 @@ from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
 from pyedb.configuration.cfg_setup import CfgSetups
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
 from pyedb.configuration.cfg_stackup import CfgStackup
+from pyedb.configuration.cfg_terminals import CfgTerminals
 
 
 class CfgData(object):
@@ -48,7 +49,9 @@ class CfgData(object):
         self.boundaries = CfgBoundaries(self._pedb, kwargs.get("boundaries", {}))
 
         self.nets = CfgNets(
-            self, kwargs.get("nets", {}).get("signal_nets", []), kwargs.get("nets", {}).get("power_ground_nets", [])
+            self._pedb,
+            kwargs.get("nets", {}).get("signal_nets", []),
+            kwargs.get("nets", {}).get("power_ground_nets", []),
         )
 
         self.components = CfgComponents(self._pedb, components_data=kwargs.get("components", []))
@@ -56,6 +59,8 @@ class CfgData(object):
         self.padstacks = CfgPadstacks(self._pedb, kwargs.get("padstacks", None))
 
         self.pin_groups = CfgPinGroups(self._pedb, pingroup_data=kwargs.get("pin_groups", []))
+
+        self.terminals = CfgTerminals.create(terminals=kwargs.get("terminals", []))
 
         self.ports = CfgPorts(self._pedb, ports_data=kwargs.get("ports", []))
 
@@ -73,7 +78,7 @@ class CfgData(object):
         ]
 
         self.package_definitions = CfgPackageDefinitions(self._pedb, data=kwargs.get("package_definitions", []))
-        self.operations = CfgOperations(self._pedb, data=kwargs.get("operations", {}))
+        self.operations = CfgOperations(**kwargs.get("operations", {}))
 
         self.modeler = CfgModeler(self._pedb, data=kwargs.get("modeler", {}))
 

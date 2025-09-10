@@ -25,6 +25,7 @@ import re
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.primitives_data import Primitive
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.misc.decorators import execution_timer
 
 
 class LayoutValidation:
@@ -33,6 +34,7 @@ class LayoutValidation:
     def __init__(self, pedb):
         self._pedb = pedb
 
+    @execution_timer("dc_shorts")
     def dc_shorts(self, net_list=None, fix=False):
         """Find DC shorts on layout.
 
@@ -120,6 +122,7 @@ class LayoutValidation:
                         # i.net = temp_name
         return dc_shorts
 
+    @execution_timer("disjoint_nets")
     def disjoint_nets(
         self,
         net_list=None,
@@ -152,12 +155,11 @@ class LayoutValidation:
         Examples
         --------
 
-        >>> renamed_nets = edb.layout_validation.disjoint_nets(["GND","Net2"])
+        >>> renamed_nets = edb.layout_validation.disjoint_nets(["GND", "Net2"])
         """
-        timer_start = self._pedb._logger.reset_timer()
 
         if not net_list:
-            net_list = list(self._pedb.nets.keys())
+            net_list = list(self._pedb.nets.nets.keys())
         elif isinstance(net_list, str):
             net_list = [net_list]
         _objects_list = {}
@@ -176,7 +178,6 @@ class LayoutValidation:
                 _padstacks_list[n_name] = [pad]
         new_nets = []
         disjoints_objects = []
-        self._pedb._logger.reset_timer()
         for net in net_list:
             net_groups = []
             obj_dict = {}
@@ -253,11 +254,10 @@ class LayoutValidation:
                                 except KeyError:
                                     pass
                             disjoints_objects.extend(disjoints)
-        self._pedb._logger.info("Found {} objects in {} new nets.".format(len(disjoints_objects), len(new_nets)))
-        self._pedb._logger.info_timer("Disjoint Cleanup Completed.", timer_start)
-
+        self._pedb.logger.info("Found {} objects in {} new nets.".format(len(disjoints_objects), len(new_nets)))
         return new_nets
 
+    @execution_timer("self_intersections")
     def fix_self_intersections(self, net_list=None):
         """Find and fix self intersections from a given netlist.
 
@@ -279,11 +279,12 @@ class LayoutValidation:
             if prim.net_name in net_list:
                 new_prims.extend(prim.fix_self_intersections())
         if new_prims:
-            self._pedb._logger.info("Self-intersections detected and removed.")
+            self._pedb.logger.info("Self-intersections detected and removed.")
         else:
-            self._pedb._logger.info("Self-intersection not found.")
+            self._pedb.logger.info("Self-intersection not found.")
         return True
 
+    @execution_timer("illegal_net_names")
     def illegal_net_names(self, fix=False):
         """Find and fix illegal net names."""
         pattern = r"[\(\)\\\/:;*?<>\'\"|`~$]"
@@ -298,9 +299,10 @@ class LayoutValidation:
                     new_name = re.sub(pattern, "_", net)
                     val.name = new_name
 
-        self._pedb._logger.info("Found {} illegal net names.".format(len(renamed_nets)))
+        self._pedb.logger.info("Found {} illegal net names.".format(len(renamed_nets)))
         return
 
+    @execution_timer("illegal_rlc_values")
     def illegal_rlc_values(self, fix=False):
         """Find and fix RLC illegal values."""
 
@@ -320,9 +322,10 @@ class LayoutValidation:
                     if fix:
                         v.rlc_values = [0, 1, 0]
 
-            self._pedb._logger.info(f"Found {len(temp)} {name} have no value.")
+            self._pedb.logger.info(f"Found {len(temp)} {name} have no value.")
         return
 
+    @execution_timer("padstacks_no_name")
     def padstacks_no_name(self, fix=False):
         """Find and fix padstacks without aedt_name."""
         pds = self._pedb.layout.padstack_instances
@@ -332,4 +335,4 @@ class LayoutValidation:
                 counts += 1
                 if fix:
                     obj.aedt_name = f"via_{obj.id}"
-        self._pedb._logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")
+        self._pedb.logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")

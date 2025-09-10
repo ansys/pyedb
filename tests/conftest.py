@@ -20,12 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-"""
+""" """
+
 import json
 import os
 from pathlib import Path
-import random
+import secrets
 import shutil
 import string
 import tempfile
@@ -34,17 +34,17 @@ import pytest
 
 from pyedb.generic.design_types import Edb
 from pyedb.generic.filesystem import Scratch
-from pyedb.misc.misc import list_installed_ansysem
 
 local_path = os.path.dirname(os.path.realpath(__file__))
 example_models_path = Path(__file__).parent / "example_models"
 
 # Initialize default desktop configuration
 
+use_grpc = os.getenv("USE_GRPC") in {"1", True}
 
 config = {
-    "desktopVersion": "2025.1",
-    "use_grpc": False,
+    "desktopVersion": "2025.2",
+    "use_grpc": use_grpc,
 }
 
 # Check for the local config file, override defaults if found
@@ -60,10 +60,6 @@ if os.path.exists(local_config_file):
 desktop_version = config["desktopVersion"]
 GRPC = config["use_grpc"]
 
-if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_installed_ansysem():
-    desktop_version = list_installed_ansysem()[0][12:].replace(".", "")
-    desktop_version = "20{}.{}".format(desktop_version[:2], desktop_version[-1])
-
 test_subfolder = "TEDB"
 test_project_name = "ANSYS-HSD_V1"
 bom_example = "bom_example.csv"
@@ -71,7 +67,8 @@ bom_example = "bom_example.csv"
 
 def generate_random_string(length):
     characters = string.ascii_letters + string.digits
-    random_string = "".join(random.sample(characters, length))
+    generator = secrets.SystemRandom()
+    random_string = "".join(secrets.SystemRandom.sample(generator, characters, length))
     return random_string
 
 
@@ -127,9 +124,7 @@ class EdbExamples:
         dst = self.local_scratch.copyfolder(src, file_folder_name)
         return dst
 
-    def get_si_verse(
-        self, edbapp=True, additional_files_folders="", version=None, source_file_path="TEDB/ANSYS-HSD_V1.aedb"
-    ):
+    def _get_test_board(self, edbapp, additional_files_folders, version, source_file_path):
         """Copy si_verse board file into local folder. A new temporary folder will be created."""
         aedb = self._copy_file_folder_into_local_folder(source_file_path)
         if additional_files_folders:
@@ -149,9 +144,19 @@ class EdbExamples:
         else:
             return aedb
 
+    def get_si_verse(self, edbapp=True, additional_files_folders="", version=None):
+        return self._get_test_board(
+            edbapp, additional_files_folders, version, source_file_path="si_verse/ANSYS-HSD_V1.aedb"
+        )
+
+    def get_si_verse_sfp(self, edbapp=True, additional_files_folders="", version=None):
+        return self._get_test_board(
+            edbapp, additional_files_folders, version, source_file_path="si_verse/ANSYS_SVP_V1_1_SFP.aedb"
+        )
+
     def get_package(self, edbapp=True, additional_files_folders="", version=None):
         """ "Copy package board file into local folder. A new temporary folder will be created."""
-        return self.get_si_verse(
+        return self._get_test_board(
             edbapp, additional_files_folders, version, source_file_path="TEDB/example_package.aedb"
         )
 
@@ -162,6 +167,10 @@ class EdbExamples:
 
     def get_multizone_pcb(self):
         aedb = self._copy_file_folder_into_local_folder("multi_zone_project.aedb")
+        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
+
+    def get_unit_cell(self):
+        aedb = self._copy_file_folder_into_local_folder("TEDB/unitcell.aedb")
         return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
 
     def get_no_ref_pins_component(self):

@@ -20,15 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Tests related to Edb extended nets
-"""
+"""Tests related to Edb extended nets"""
 
 import pytest
+
+from pyedb.generic.general_methods import is_windows
+from tests.conftest import config
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
-class TestClass:
+class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
         self.local_scratch = local_scratch
@@ -36,17 +39,9 @@ class TestClass:
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
-    @classmethod
-    @pytest.fixture(scope="class", autouse=True)
-    def teardown_class(cls, request, edb_examples):
-        yield
-        # not elegant way to ensure the EDB grpc is closed after all tests
-        edb = edb_examples.create_empty_edb()
-        edb.close_edb()
-
+    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_nets_queries(self, edb_examples):
         """Evaluate nets queries"""
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.extended_nets.auto_identify_signal()
         assert edbapp.extended_nets.auto_identify_power()

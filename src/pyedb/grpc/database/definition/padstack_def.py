@@ -21,19 +21,17 @@
 # SOFTWARE.
 
 import math
+import warnings
 
 from ansys.edb.core.definition.padstack_def import PadstackDef as GrpcPadstackDef
 from ansys.edb.core.definition.padstack_def_data import (
     PadGeometryType as GrpcPadGeometryType,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     PadstackHoleRange as GrpcPadstackHoleRange,
+    PadType as GrpcPadType,
 )
-from ansys.edb.core.definition.padstack_def_data import PadType as GrpcPadType
 import ansys.edb.core.geometry.polygon_data
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure
-from ansys.edb.core.hierarchy.structure3d import Structure3D as GrpcStructure3D
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure, Structure3D as GrpcStructure3D
 from ansys.edb.core.primitive.circle import Circle as GrpcCircle
 
 from pyedb.generic.general_methods import generate_unique_name
@@ -108,6 +106,26 @@ class PadProperties:
             pad shape.
         """
         return self._pad_parameter_value[0].name.split("_")[-1].lower()
+
+    @shape.setter
+    def shape(self, value: str):
+        """Set pad shape.
+
+        Parameters
+        ----------
+        value : str
+            Pad shape.
+        """
+        if value.lower() == "circle":
+            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_CIRCLE)
+        elif value.lower() == "rectangle":
+            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE)
+        elif value.lower() == "polygon":
+            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_POLYGON)
+        else:
+            raise ValueError(
+                f"Unsupported pad shape: {value}. Supported shapes are 'circle', 'rectangle', and 'polygon'."
+            )
 
     @property
     def parameters_values(self):
@@ -301,6 +319,22 @@ class PadstackDef(GrpcPadstackDef):
         return self.layers[0]
 
     @property
+    def via_start_layer(self):
+        """Via starting layer.
+
+        .deprecated
+        Use: :method:`start_layer <pyedb.grpc.database.definition.padstack_def.PadstackDef.start_layer>`
+        instead.
+
+        Returns
+        -------
+        str
+            Name of the via starting layer.
+        """
+        warnings.warn("via_start_layer is deprecated. Use start_layer instead.", DeprecationWarning)
+        return self.start_layer
+
+    @property
     def stop_layer(self):
         """Stopping layer.
 
@@ -310,6 +344,22 @@ class PadstackDef(GrpcPadstackDef):
             Name of the stopping layer.
         """
         return self.layers[-1]
+
+    @property
+    def via_stop_layer(self):
+        """Via stop layer.
+
+        .deprecated
+        Use :method:`stop_layer <pyedb.grpc.database.definition.padstack_def.PadstackDef.stop_layer>`
+        instead.
+
+        Returns
+        -------
+        str
+            Name of the via stop layer.
+        """
+        warnings.warn("via_stop_layer is deprecated. Use stop_layer instead.", DeprecationWarning)
+        return self.stop_layer
 
     @property
     def hole_diameter(self) -> float:
@@ -718,7 +768,7 @@ class PadstackDef(GrpcPadstackDef):
                         s3d.add_member(cloned_circle2)
                         if not self.data.material.value:
                             self._pedb.logger.warning(
-                                f"Padstack definution {self.name} has no material defined." f"Defaulting to copper"
+                                f"Padstack definution {self.name} has no material defined.Defaulting to copper"
                             )
                             self.data.material = "copper"
                         s3d.set_material(self.data.material.value)

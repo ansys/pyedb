@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """Miscellaneous Methods for PyEDB."""
+
 import os
 import warnings
 
@@ -87,16 +88,3 @@ def current_student_version():
         if "SV" in version_key:
             return version_key
     return ""
-
-
-def deprecated_property(func):
-    """
-    This decorator marks a property as deprecated.
-    It will emit a warning when the property is accessed.
-    """
-
-    def wrapper(*args, **kwargs):
-        warnings.warn(f"Access to deprecated property {func.__name__}.", category=DeprecationWarning, stacklevel=2)
-        return func(*args, **kwargs)
-
-    return wrapper

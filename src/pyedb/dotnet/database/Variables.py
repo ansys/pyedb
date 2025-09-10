@@ -35,8 +35,10 @@ Examples
 
 """
 
-from __future__ import absolute_import  # noreorder
-from __future__ import division
+from __future__ import (
+    absolute_import,  # noreorder
+    division,
+)
 
 import os
 import re
@@ -181,13 +183,15 @@ class CSVDataset:
                 if variable in key_string:
                     found_variable = True
                     break
-            assert found_variable, "Input string {} is not a key of the data dictionary.".format(variable)
+            if not found_variable:
+                raise KeyError(f"Input string {variable} is not a key of the data dictionary.")
             data_out._data[variable] = self._data[key_string]
             data_out._header.append(variable)
         return data_out
 
     def __add__(self, other):  # pragma: no cover
-        assert self.number_of_columns == other.number_of_columns, "Inconsistent number of columns"
+        if self.number_of_columns != other.number_of_columns:
+            raise ValueError("Number of columns is inconsistent.")
         # Create a new object to return, avoiding changing the original inputs
         new_dataset = CSVDataset()
         # Add empty columns to new_dataset
@@ -222,7 +226,8 @@ class CSVDataset:
             for column in other.data:
                 self._data[column] = []
 
-        assert self.number_of_columns == other.number_of_columns, "Inconsistent number of columns"
+        if self.number_of_columns != other.number_of_columns:
+            raise ValueError("Number of columns is inconsistent.")
 
         # Append the data from 'other'
         for column, row_data in other.data.items():
@@ -490,13 +495,13 @@ class VariableManager(object):
         --------
         >>> hfss = Hfss()
         >>> print(hfss.variable_manager.decompose("5mm"))
-        >>> (5.0, 'mm')
+        >>> (5.0, "mm")
         >>> hfss["v1"] = "3N"
         >>> print(hfss.variable_manager.decompose("v1"))
-        >>> (3.0, 'N')
+        >>> (3.0, "N")
         >>> hfss["v2"] = "2*v1"
         >>> print(hfss.variable_manager.decompose("v2"))
-        >>> (6.0, 'N')
+        >>> (6.0, "N")
         """
         if variable_value in self.independent_variable_names:
             val, unit = decompose_variable_value(self[variable_value].expression)
@@ -1006,8 +1011,13 @@ class VariableManager(object):
         creating the property if it does not already exist. Also make
         it read-only and hidden and add a description.
 
-        >>> aedtapp.variable_manager.set_variable(variable_name="p2", expression="10mm", readonly=True, hidden=True,
-        ...                                       description="This is the description of this variable.")
+        >>> aedtapp.variable_manager.set_variable(
+        ...     variable_name="p2",
+        ...     expression="10mm",
+        ...     readonly=True,
+        ...     hidden=True,
+        ...     description="This is the description of this variable.",
+        ... )
 
         Set the value of the project variable ``$p1`` to ``"30mm"``,
         creating the variable if it does not exist.
@@ -1341,9 +1351,10 @@ class Variable(object):
             self._value = self._calculated_value
         # If units have been specified, check for a conflict and otherwise use the specified unit system
         if units:
-            assert not self._units, "The unit specification {} is inconsistent with the identified units {}.".format(
-                specified_units, self._units
-            )
+            if self._units and self._units != specified_units:
+                raise RuntimeError(
+                    f"The unit specification {specified_units} is inconsistent with the identified units {self._units}."
+                )
             self._units = specified_units
 
         if not si_value and is_number(self._value):
@@ -1704,7 +1715,7 @@ class Variable(object):
         >>> hfss = Hfss()
         >>> hfss["v1"] = "3N"
         >>> print(hfss.variable_manager["v1"].decompose("v1"))
-        >>> (3.0, 'N')
+        >>> (3.0, "N")
 
         """
         return decompose_variable_value(self.evaluated_value)
@@ -1730,9 +1741,10 @@ class Variable(object):
 
         """
         new_unit_system = unit_system(units)
-        assert (
-            new_unit_system == self.unit_system
-        ), "New unit system {0} is inconsistent with the current unit system {1}."
+        if new_unit_system != self.unit_system:
+            raise ValueError(
+                f"New unit system {new_unit_system} is inconsistent with the current unit system {self.unit_system}."
+            )
         self._units = units
         return self
 
@@ -1755,9 +1767,9 @@ class Variable(object):
         >>> from pyedb.dotnet.database.Variables import Variable
 
         >>> v = Variable("10W")
-        >>> assert v.format("f") == '10.000000W'
-        >>> assert v.format("06.2f") == '010.00W'
-        >>> assert v.format("6.2f") == ' 10.00W'
+        >>> assert v.format("f") == "10.000000W"
+        >>> assert v.format("06.2f") == "010.00W"
+        >>> assert v.format("6.2f") == " 10.00W"
 
         """
         return ("{0:" + format + "}{1}").format(self.numeric_value, self._units)
@@ -1803,7 +1815,8 @@ class Variable(object):
         >>> assert result_3.unit_system == "Power"
 
         """
-        assert is_number(other) or isinstance(other, Variable), "Multiplier must be a scalar quantity or a variable."
+        if not is_number(other) and not isinstance(other, Variable):
+            raise ValueError("Multiplier must be a scalar quantity or a variable.")
         if is_number(other):
             result_value = self.numeric_value * other
             result_units = self.units
@@ -1847,10 +1860,10 @@ class Variable(object):
         >>> assert result.unit_system == "Current"
 
         """
-        assert isinstance(other, Variable), "You can only add a variable with another variable."
-        assert (
-            self.unit_system == other.unit_system
-        ), "Only ``Variable`` objects with the same unit system can be added."
+        if not isinstance(other, Variable):
+            raise ValueError("You can only add a variable with another variable.")
+        if self.unit_system != other.unit_system:
+            raise ValueError("Only Variable objects with the same unit system can be added.")
         result_value = self.value + other.value
         result_units = SI_UNITS[self.unit_system]
         # If the units of the two operands are different, return SI-Units
@@ -1888,10 +1901,10 @@ class Variable(object):
         >>> assert result_2.unit_system == "Current"
 
         """
-        assert isinstance(other, Variable), "You can only subtract a variable from another variable."
-        assert (
-            self.unit_system == other.unit_system
-        ), "Only ``Variable`` objects with the same unit system can be subtracted."
+        if not isinstance(other, Variable):
+            raise ValueError("You can only subtract a variable from another variable.")
+        if self.unit_system != other.unit_system:
+            raise ValueError("Only Variable objects with the same unit system can be subtracted.")
         result_value = self.value - other.value
         result_units = SI_UNITS[self.unit_system]
         # If the units of the two operands are different, return SI-Units
@@ -1933,7 +1946,8 @@ class Variable(object):
         >>> assert result_1.unit_system == "Current"
 
         """
-        assert is_number(other) or isinstance(other, Variable), "Divisor must be a scalar quantity or a variable."
+        if not is_number(other) and not isinstance(other, Variable):
+            raise ValueError("Divisor must be a scalar quantity or a variable.")
         if is_number(other):
             result_value = self.numeric_value / other
             result_units = self.units

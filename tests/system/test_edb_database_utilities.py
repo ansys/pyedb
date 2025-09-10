@@ -24,30 +24,19 @@
 import pytest
 
 from tests import conftest
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
-class TestDatabaseUtilities:
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch):
-        pass
-
-    @classmethod
-    @pytest.fixture(scope="class", autouse=True)
-    def teardown_class(cls, request, edb_examples):
-        yield
-        # not elegant way to ensure the EDB grpc is closed after all tests
-        edb = edb_examples.create_empty_edb()
-        edb.close_edb()
-
+class TestDatabaseUtilities(BaseTestClass):
     def test_value(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
         if conftest.config["use_grpc"]:
             edb_value = edbapp.core.utility.value.Value
 
         else:
-            edb_value = edbapp.core.utility.value
+            edb_value = edbapp.core.Utility.Value
 
         value = edbapp.value("1mm")
         value2 = edbapp.value(edb_value("1mm"))

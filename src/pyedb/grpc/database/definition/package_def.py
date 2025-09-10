@@ -23,10 +23,10 @@
 from ansys.edb.core.definition.package_def import PackageDef as GrpcPackageDef
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 
-from pyedb.edb_logger import pyedb_logger
+from pyedb.generic.settings import settings
 from pyedb.grpc.database.utility.heat_sink import HeatSink
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.misc import deprecated_property
+from pyedb.misc.decorators import deprecated_property
 
 
 class PackageDef(GrpcPackageDef):
@@ -82,7 +82,7 @@ class PackageDef(GrpcPackageDef):
         else:
             bbox = extent_bounding_box
         if bbox is None:
-            pyedb_logger.warning(
+            settings.logger.warning(
                 "Package creation uses bounding box but it cannot be inferred. "
                 "Please set argument 'component_part_name' or 'extent_bounding_box'."
             )
@@ -222,9 +222,9 @@ class PackageDef(GrpcPackageDef):
             Fin thickness.
         """
         from ansys.edb.core.utility.heat_sink import (
+            HeatSink as GrpcHeatSink,
             HeatSinkFinOrientation as GrpcHeatSinkFinOrientation,
         )
-        from ansys.edb.core.utility.heat_sink import HeatSink as GrpcHeatSink
 
         if fin_orientation == "x_oriented":
             fin_orientation = GrpcHeatSinkFinOrientation.X_ORIENTED

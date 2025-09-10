@@ -23,7 +23,8 @@ from typing import TYPE_CHECKING, Literal, Union, overload
 import warnings
 
 from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
-from pyedb.misc.misc import list_installed_ansysem
+from pyedb.generic.settings import settings
+from pyedb.misc.decorators import deprecate_argument_name
 
 if TYPE_CHECKING:
     from pyedb.dotnet.edb import Edb as EdbDotnet
@@ -31,33 +32,33 @@ if TYPE_CHECKING:
 
 
 @overload
-def Edb(*, grpc: Literal[True], **kwargs) -> "EdbGrpc":
-    ...
+def Edb(*, grpc: Literal[True], **kwargs) -> "EdbGrpc": ...
 
 
 @overload
-def Edb(*, grpc: Literal[False] = False, **kwargs) -> "EdbDotnet":
-    ...
+def Edb(*, grpc: Literal[False] = False, **kwargs) -> "EdbDotnet": ...
 
 
 @overload
-def Edb(*, grpc: bool, **kwargs) -> Union["EdbGrpc", "EdbDotnet"]:
-    ...
+def Edb(*, grpc: bool, **kwargs) -> Union["EdbGrpc", "EdbDotnet"]: ...
 
 
 # lazy imports
+@deprecate_argument_name({"edbversion": "version"})
 def Edb(
     edbpath=None,
     cellname=None,
     isreadonly=False,
-    edbversion=None,
+    version=None,
     isaedtowned=False,
     oproject=None,
     student_version=False,
     use_ppe=False,
+    map_file=None,
     technology_file=None,
     grpc=False,
     control_file=None,
+    layer_filter=None,
 ):
     """Provides the EDB application interface.
 
@@ -76,7 +77,7 @@ def Edb(
         isreadonly : bool, optional
             Whether to open EBD in read-only mode when it is
             owned by HFSS 3D Layout. The default is ``False``.
-        edbversion : str, optional
+        version : str, optional
             Version of EDB to use. The default is ``"2021.2"``.
         isaedtowned : bool, optional
             Whether to launch EDB from HFSS 3D Layout. The
@@ -85,10 +86,20 @@ def Edb(
             Reference to the AEDT project object.
         student_version : bool, optional
             Whether to open the AEDT student version. The default is ``False.``
+        use_ppe : bool, optional
+            Whether to use PPE license. The default is ``False``.
         technology_file : str, optional
             Full path to technology file to be converted to xml before importing or xml. Supported by GDS format only.
         grpc : bool, optional
             Whether to enable gRPC. Default value is ``False``.
+        layer_filter: str,optional
+            Layer filter .txt file.
+        map_file : str, optional
+            Layer map .map file.
+        control_file : str, optional
+            Path to the XML file. The default is ``None``, in which case an attempt is made to find
+            the XML file in the same directory as the board file. To succeed, the XML file and board file
+            must have the same name. Only the extension differs.
 
         Returns
         -------
@@ -153,17 +164,10 @@ def Edb(
         4. Simulation Setup
 
         # Create SIwave SYZ setup
-    >>> syz_setup = edb.create_siwave_syz_setup(
-    >>> name="GHz_Setup",
-    >>> start_freq="1GHz",
-    >>> stop_freq="10GHz"
-    >>> )
+    >>> syz_setup = edb.create_siwave_syz_setup(name="GHz_Setup", start_freq="1GHz", stop_freq="10GHz")
 
         # Create SIwave DC setup
-    >>> dc_setup = edb.create_siwave_dc_setup(
-    >>> name="DC_Analysis",
-    >>> use_dc_point=True
-    >>> )
+    >>> dc_setup = edb.create_siwave_dc_setup(name="DC_Analysis", use_dc_point=True)
 
         # Solve with SIwave
     >>> edb.solve_siwave()
@@ -194,17 +198,10 @@ def Edb(
         7. Port Creation
 
         # Create wave port between two pins
-    >>> wave_port = edb.source_excitation.create_port(
-    >>> positive_terminal=pin1,
-    >>> negative_terminal=pin2,
-    >>> port_type="Wave"
-    >>> )
+    >>> wave_port = edb.source_excitation.create_port(positive_terminal=pin1, negative_terminal=pin2, port_type="Wave")
 
         # Create lumped port
-    >>> lumped_port = edb.source_excitation.create_port(
-    >>> positive_terminal=via_terminal,
-    >>> port_type="Lumped"
-    >>> )
+    >>> lumped_port = edb.source_excitation.create_port(positive_terminal=via_terminal, port_type="Lumped")
 
         8. Component Management
 
@@ -217,12 +214,7 @@ def Edb(
         9. Parametrization
 
         # Auto-parametrize design elements
-    >>> params = edb.auto_parametrize_design(
-    >>> traces=True,
-    >>> pads=True,
-    >>> antipads=True,
-    >>> use_relative_variables=True
-    >>> )
+    >>> params = edb.auto_parametrize_design(traces=True, pads=True, antipads=True, use_relative_variables=True)
     >>> print("Created parameters:", params)
 
         10. Design Statistics
@@ -241,11 +233,7 @@ def Edb(
         12. Differential Pairs
 
         # Create differential pair
-    >>> edb.differential_pairs.create(
-    >>> positive_net="USB_P",
-    >>> negative_net="USB_N",
-    >>> name="USB_DP"
-    >>> )
+    >>> edb.differential_pairs.create(positive_net="USB_P", negative_net="USB_N", name="USB_DP")
 
         13. Workflow Automation
 
@@ -257,38 +245,75 @@ def Edb(
     >>> workflow.run()
 
     """
-
-    if not edbversion:  # pragma: no cover
-        try:
-            version = "20{}.{}".format(list_installed_ansysem()[0][-3:-1], list_installed_ansysem()[0][-1:])
-        except IndexError:
-            raise Exception("No ANSYSEM_ROOTxxx is found.")
+    settings.is_student_version = student_version
+    if grpc is False and settings.edb_dll_path is not None:
+        # Check if the user specified a .dll path
+        settings.logger.info(f"Force to use .dll from {settings.edb_dll_path} defined in settings.")
+    elif version is None:
+        if settings.specified_version is not None:
+            settings.logger.info(f"Use {settings.specified_version} defined in settings.")
+            # Use the latest version
+        elif student_version:
+            if settings.LATEST_STUDENT_VERSION is None:
+                raise RuntimeWarning("AEDT is not properly installed.")
+            else:
+                settings.specified_version = settings.LATEST_STUDENT_VERSION
+        else:
+            if settings.LATEST_VERSION is None:
+                raise RuntimeWarning("AEDT is not properly installed.")
+            else:
+                settings.specified_version = settings.LATEST_VERSION
     else:
-        version = edbversion
+        # Version is specified
+        version = str(version)
+        if student_version:
+            if version not in settings.INSTALLED_STUDENT_VERSIONS:
+                raise RuntimeWarning(f"AEDT student version {version} is not properly installed.")
+            else:
+                settings.specified_version = version
+        else:
+            if version not in settings.INSTALLED_VERSIONS:
+                raise RuntimeWarning(f"AEDT version {version} is not properly installed.")
+            else:
+                settings.specified_version = version
 
-    # Use EDB legacy (default choice)
-    if float(version) >= 2025.2:
-        if not grpc:
-            warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
-    else:
-        if grpc:
-            raise ValueError(f"gRPC flag was enabled however your ANSYS AEDT version {version} is not compatible")
     if grpc:
+        if float(settings.specified_version) < 2025.2:
+            raise ValueError(
+                f"gRPC flag was enabled however your ANSYS AEDT version {settings.specified_version} is not compatible"
+            )
+
         from pyedb.grpc.edb import Edb as app
+
+        return app(
+            edbpath=edbpath,
+            cellname=cellname,
+            isreadonly=isreadonly,
+            edbversion=version,
+            isaedtowned=isaedtowned,
+            oproject=oproject,
+            use_ppe=use_ppe,
+            technology_file=technology_file,
+            control_file=control_file,
+        )
     else:
-        from pyedb.dotnet.edb import Edb as app
-    return app(
-        edbpath=edbpath,
-        cellname=cellname,
-        isreadonly=isreadonly,
-        edbversion=version,
-        isaedtowned=isaedtowned,
-        oproject=oproject,
-        student_version=student_version,
-        use_ppe=use_ppe,
-        technology_file=technology_file,
-        control_file=control_file,
-    )
+        if float(settings.specified_version) >= 2025.2:
+            warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
+
+        from pyedb.dotnet.edb import Edb
+
+        return Edb(
+            edbpath=edbpath,
+            cellname=cellname,
+            isreadonly=isreadonly,
+            isaedtowned=isaedtowned,
+            oproject=oproject,
+            use_ppe=use_ppe,
+            control_file=control_file,
+            map_file=map_file,
+            technology_file=technology_file,
+            layer_filter=layer_filter,
+        )
 
 
 def Siwave(

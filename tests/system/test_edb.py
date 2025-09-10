@@ -23,20 +23,22 @@
 """Tests related to Edb"""
 
 import os
+from pathlib import Path
 from typing import Sequence
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from pyedb.generic.general_methods import is_linux
-import tests.conftest
 from tests.conftest import config, local_path, test_subfolder
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
 ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
-class TestClass:
+class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
         self.local_scratch = local_scratch
@@ -209,12 +211,12 @@ class TestClass:
         """Add design and project variables."""
         edbapp = edb_examples.get_si_verse()
         edbapp.add_design_variable("my_variable", "1mm")
-        assert "my_variable" in edbapp.active_cell.get_all_variable_names()
+        assert "my_variable" in edbapp.get_all_variable_names()
         assert edbapp.modeler.parametrize_trace_width("DDR4_DQ25")
         assert edbapp.modeler.parametrize_trace_width("DDR4_A2")
         edbapp.add_design_variable("my_parameter", "2mm", True)
-        assert "my_parameter" in edbapp.active_cell.get_all_variable_names()
-        variable_value = edbapp.active_cell.get_variable_value("my_parameter")
+        assert "my_parameter" in edbapp.get_all_variable_names()
+        variable_value = edbapp.get_variable_value("my_parameter")
         assert variable_value == 2e-3
         if edbapp.grpc:
             assert not edbapp.add_design_variable("my_parameter", "2mm", True)
@@ -237,176 +239,9 @@ class TestClass:
     def test_save_edb_as(self, edb_examples):
         """Save edb as some file."""
         # Done
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.save_edb_as(os.path.join(self.local_scratch.path, "si_verse_new.aedb"))
+        edbapp = edb_examples.create_empty_edb()
+        assert edbapp.save_as(os.path.join(self.local_scratch.path, "si_verse_new.aedb"))
         assert os.path.exists(os.path.join(self.local_scratch.path, "si_verse_new.aedb", "edb.def"))
-        edbapp.close(terminate_rpc_session=False)
-
-    def test_create_custom_cutout_0(self, edb_examples):
-        """Create custom cutout 0."""
-        # Done
-        edbapp = edb_examples.get_si_verse()
-        output = os.path.join(self.local_scratch.path, "cutout.aedb")
-        assert edbapp.cutout(
-            ["DDR4_DQS0_P", "DDR4_DQS0_N"],
-            ["GND"],
-            output_aedb_path=output,
-            open_cutout_at_end=False,
-            use_pyaedt_extent_computing=True,
-            use_pyaedt_cutout=False,
-        )
-        assert os.path.exists(os.path.join(output, "edb.def"))
-        bounding = edbapp.get_bounding_box()
-        assert bounding
-
-        cutout_line_x = 41
-        cutout_line_y = 30
-        points = [[bounding[0][0], bounding[0][1]]]
-        points.append([cutout_line_x, bounding[0][1]])
-        points.append([cutout_line_x, cutout_line_y])
-        points.append([bounding[0][0], cutout_line_y])
-        points.append([bounding[0][0], bounding[0][1]])
-
-        output = os.path.join(self.local_scratch.path, "cutout2.aedb")
-
-        assert edbapp.cutout(
-            custom_extent=points,
-            signal_list=["GND", "1V0"],
-            output_aedb_path=output,
-            open_cutout_at_end=False,
-            include_partial_instances=True,
-            use_pyaedt_cutout=False,
-        )
-        assert os.path.exists(os.path.join(output, "edb.def"))
-        edbapp.close(terminate_rpc_session=False)
-
-    def test_create_custom_cutout_1(self, edb_examples):
-        """Create custom cutout 1."""
-        # Done
-        edbapp = edb_examples.get_si_verse()
-        spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
-        assert edbapp.components.instances["R8"].assign_spice_model(spice_path)
-        assert edbapp.nets.nets
-        assert edbapp.cutout(
-            signal_list=["1V0"],
-            reference_list=[
-                "GND",
-                "LVDS_CH08_N",
-                "LVDS_CH08_P",
-                "LVDS_CH10_N",
-                "LVDS_CH10_P",
-                "LVDS_CH04_P",
-                "LVDS_CH04_N",
-            ],
-            extent_type="Bounding",
-            extent_defeature=0.001,
-            preserve_components_with_model=True,
-            keep_lines_as_path=True,
-        )
-        assert "A0_N" not in edbapp.nets.nets
-        # assert isinstance(edbapp.layout_validation.disjoint_nets("GND", order_by_area=True), list)
-        # assert isinstance(edbapp.layout_validation.disjoint_nets("GND", keep_only_main_net=True), list)
-        # assert isinstance(edbapp.layout_validation.disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
-        assert edbapp.layout_validation.fix_self_intersections("PGND")
-        assert edbapp.layout_validation.fix_self_intersections()
-        edbapp.close(terminate_rpc_session=False)
-
-    def test_create_custom_cutout_2(self, edb_examples):
-        """Create custom cutout 2."""
-        # Done
-        edbapp = edb_examples.get_si_verse()
-        bounding = edbapp.get_bounding_box()
-        assert bounding
-        cutout_line_x = 41
-        cutout_line_y = 30
-        points = [[bounding[0][0], bounding[0][1]]]
-        points.append([cutout_line_x, bounding[0][1]])
-        points.append([cutout_line_x, cutout_line_y])
-        points.append([bounding[0][0], cutout_line_y])
-        points.append([bounding[0][0], bounding[0][1]])
-
-        assert edbapp.cutout(
-            signal_list=["1V0"],
-            reference_list=["GND"],
-            extent_type="ConvexHull",
-            custom_extent=points,
-            simple_pad_check=False,
-        )
-        edbapp.close(terminate_rpc_session=False)
-
-    def test_create_custom_cutout_3(self, edb_examples):
-        """Create custom cutout 3."""
-        # Done
-        edbapp = edb_examples.get_si_verse()
-        edbapp.components.create_port_on_component(
-            "U1",
-            ["5V"],
-            reference_net="GND",
-            port_type="circuit_port",
-        )
-        edbapp.components.create_port_on_component("U2", ["5V"], reference_net="GND")
-        edbapp.hfss.create_voltage_source_on_net("U4", "5V", "U4", "GND")
-        legacy_name = edbapp.edbpath
-        assert edbapp.cutout(
-            signal_list=["5V"],
-            reference_list=["GND"],
-            extent_type="ConvexHull",
-            use_pyaedt_extent_computing=True,
-            check_terminals=True,
-        )
-        assert edbapp.edbpath == legacy_name
-        # assert edbapp.are_port_reference_terminals_connected(common_reference="GND")
-
-        edbapp.close(terminate_rpc_session=False)
-
-    def test_create_custom_cutout_4(self, edb_examples):
-        """Create custom cutout 4."""
-        # Done
-        edbapp = edb_examples.get_si_verse()
-        edbapp.components.create_pingroup_from_pins(
-            [i for i in list(edbapp.components.instances["U1"].pins.values()) if i.net_name == "GND"]
-        )
-
-        assert edbapp.cutout(
-            signal_list=["DDR4_DQS0_P", "DDR4_DQS0_N"],
-            reference_list=["GND"],
-            extent_type="ConvexHull",
-            use_pyaedt_extent_computing=True,
-            include_pingroups=True,
-            check_terminals=True,
-            expansion_factor=4,
-        )
-        edbapp.close(terminate_rpc_session=False)
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "MicrostripSpliGnd.aedb")
-        target_path = os.path.join(self.local_scratch.path, "MicrostripSpliGnd.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-
-        edbapp = edb_examples.load_edb(target_path, copy_to_temp=False)
-
-        assert edbapp.cutout(
-            signal_list=["trace_n"],
-            reference_list=["ground"],
-            extent_type="Conformal",
-            use_pyaedt_extent_computing=True,
-            check_terminals=True,
-            expansion_factor=2,
-            include_voids_in_extents=True,
-        )
-        edbapp.close(terminate_rpc_session=False)
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "Multizone_GroundVoids.aedb")
-        target_path = os.path.join(self.local_scratch.path, "Multizone_GroundVoids.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-
-        edbapp = edb_examples.load_edb(target_path, copy_to_temp=False)
-
-        assert edbapp.cutout(
-            signal_list=["DIFF_N", "DIFF_P"],
-            reference_list=["GND"],
-            extent_type="Conformal",
-            use_pyaedt_extent_computing=True,
-            check_terminals=True,
-            expansion_factor=3,
-        )
         edbapp.close(terminate_rpc_session=False)
 
     # def test_create_EdbLegacy(self):
@@ -416,57 +251,52 @@ class TestClass:
     #     assert edb.active_layout
     #     edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        is_linux and ON_CI,
-        reason="Test is slow due to software rendering fallback and lack of GPU acceleration.",
-    )
-    def test_export_to_hfss(self, edb_examples):
+    def test_export_3d(self, edb_examples):
         """Export EDB to HFSS."""
         # Done
-        edb = edb_examples.load_edb(
-            edb_path=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
-        )
+
+        mock_process = MagicMock()
+
+        edb = edb_examples.create_empty_edb()
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
-        assert os.path.exists(out)
-        out = edb.export_hfss(self.local_scratch.path)
-        assert os.path.exists(out)
-        edb.close(terminate_rpc_session=False)
+        out = edb.write_export3d_option_config_file(edb_examples.test_folder, options_config)
+        assert Path(out).exists()
+        with patch("subprocess.run", return_value=mock_process) as mock_run:
+            executable = "siwave" if is_linux else "siwave.exe"
 
-    @pytest.mark.skipif(
-        is_linux and ON_CI,
-        reason="Test is slow due to software rendering fallback and lack of GPU acceleration.",
-    )
-    def test_export_to_q3d(self, edb_examples):
-        """Export EDB to Q3D."""
-        # Done
-        edb = edb_examples.load_edb(
-            edb_path=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
-        )
-        options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
-        assert os.path.exists(out)
-        out = edb.export_q3d(self.local_scratch.path, net_list=["ANALOG_A0", "ANALOG_A1", "ANALOG_A2"], hidden=True)
-        assert os.path.exists(out)
-        edb.close(terminate_rpc_session=False)
+            edb.export_hfss(None)
+            popen_args, _ = mock_run.call_args
+            input_cmd = popen_args[0]
 
-    @pytest.mark.skipif(
-        is_linux and ON_CI,
-        reason="Test is slow due to software rendering fallback and lack of GPU acceleration.",
-    )
-    def test_074_export_to_maxwell(self, edb_examples):
-        """Export EDB to Maxwell 3D."""
+            input_cmd_ = [
+                str(Path(edb.ansys_em_path) / executable),
+                "-RunScriptAndExit",
+                str(Path(edb.edbpath).parent / "export_cad.py"),
+            ]
+            assert input_cmd == input_cmd_  # if is_linux else " ".join(input_cmd_)
 
-        # Done
+            edb.export_q3d(None)
+            popen_args, _ = mock_run.call_args
+            input_cmd = popen_args[0]
 
-        edb = edb_examples.load_edb(
-            edb_path=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
-        )
-        options_config = {"UNITE_NETS": 1, "LAUNCH_MAXWELL": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
-        assert os.path.exists(out)
-        out = edb.export_maxwell(self.local_scratch.path, num_cores=6)
-        assert os.path.exists(out)
+            input_cmd_ = [
+                str(Path(edb.ansys_em_path) / executable),
+                "-RunScriptAndExit",
+                str(Path(edb.edbpath).parent / "export_cad.py"),
+            ]
+            assert input_cmd == input_cmd_  #  if is_linux else " ".join(input_cmd_)
+
+            edb.export_maxwell(None)
+            popen_args, _ = mock_run.call_args
+            input_cmd = popen_args[0]
+
+            input_cmd_ = [
+                str(Path(edb.ansys_em_path) / executable),
+                "-RunScriptAndExit",
+                str(Path(edb.edbpath).parent / "export_cad.py"),
+            ]
+            assert input_cmd == input_cmd_  # if is_linux else " ".join(input_cmd_)
+
         edb.close(terminate_rpc_session=False)
 
     def test_create_edge_port_on_polygon(self, edb_examples):
@@ -620,11 +450,11 @@ class TestClass:
         """Configure HFSS analysis setup."""
         # Done
         edb = edb_examples.get_si_verse()
-        assert len(edb.active_cell.simulation_setups) == 0
+        assert len(edb.setups) == 0
         edb.hfss.add_setup()
         assert edb.hfss_setups
-        assert len(edb.active_cell.simulation_setups) == 1
-        assert list(edb.active_cell.simulation_setups)[0]
+        assert len(edb.setups) == 1
+        assert list(edb.setups)[0]
         setup = list(edb.hfss_setups.values())[0]
         setup.add_sweep()
         assert len(setup.sweep_data) == 1
@@ -1249,20 +1079,21 @@ class TestClass:
         assert "B1" in edb.components.instances
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(True, reason="Not implemented with grpc")  # todo config["use_grpc"],
     def test_database_properties(self, edb_examples):
         """Evaluate database properties."""
         # Done
         edb = edb_examples.get_si_verse()
-        assert isinstance(edb.dataset_defs, list)
-        assert isinstance(edb.material_defs, list)
-        assert isinstance(edb.component_defs, list)
-        assert isinstance(edb.package_defs, list)
-        assert isinstance(edb.padstack_defs, list)
-        assert isinstance(edb.jedec5_bondwire_defs, list)
-        assert isinstance(edb.jedec4_bondwire_defs, list)
-        assert isinstance(edb.apd_bondwire_defs, list)
-        assert isinstance(edb.version, tuple)
-        assert isinstance(edb.footprint_cells, list)
+        assert isinstance(edb.active_db.dataset_defs, list)
+        assert isinstance(edb.active_db.material_defs, list)
+        assert isinstance(edb.active_db.component_defs, list)
+        assert isinstance(edb.active_db.package_defs, list)
+        assert isinstance(edb.active_db.padstack_defs, list)
+        assert isinstance(edb.active_db.jedec5_bondwire_defs, list)
+        assert isinstance(edb.active_db.jedec4_bondwire_defs, list)
+        assert isinstance(edb.active_db.apd_bondwire_defs, list)
+        assert isinstance(edb.active_db.version, tuple)
+        assert isinstance(edb.active_db.footprint_cells, list)
         edb.close(terminate_rpc_session=False)
 
     def test_backdrill_via_with_offset(self, edb_examples):
@@ -1369,18 +1200,42 @@ class TestClass:
         ]
         edb3.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(is_linux, reason="Not supported in IPY")
     def test_solve_siwave(self, edb_examples):
         """Solve EDB with Siwave."""
-        target_path = os.path.join(local_path, "example_models", "T40", "ANSYS-HSD_V1_DCIR.aedb")
-        out_edb = os.path.join(self.local_scratch.path, "to_be_solved.aedb")
-        self.local_scratch.copyfolder(target_path, out_edb)
-        edbapp = edb_examples.load_edb(out_edb, copy_to_temp=False)
-        edbapp.siwave.create_exec_file(add_dc=True)
-        out = edbapp.solve_siwave()
-        res = edbapp.export_siwave_dc_results(out, "SIwaveDCIR1")
-        for i in res:
-            assert os.path.exists(i)
+        mock_process = MagicMock()
+
+        edbapp = edb_examples.create_empty_edb()
+        exec_path = edbapp.siwave.create_exec_file(add_dc=True)
+        assert Path(exec_path).exists()
+        executable = "siwave_ng" if is_linux else "siwave_ng.exe"
+        with patch("subprocess.Popen", return_value=mock_process) as mock_popen:
+            siw_path = edbapp.solve_siwave()
+            popen_args, _ = mock_popen.call_args
+            input_cmd = popen_args[0]
+
+        input_cmd_ = [
+            str(Path(edbapp.ansys_em_path) / executable),
+            edbapp.edbpath,
+            str(Path(edbapp.edbpath).with_suffix(".exec")),
+            "-formatOutput -useSubdir",
+        ]
+
+        assert input_cmd == input_cmd_ if is_linux else " ".join(input_cmd_)
+
+        executable = "siwave" if is_linux else "siwave.exe"
+        with patch("subprocess.Popen", return_value=mock_process) as mock_popen:
+            edbapp.export_siwave_dc_results(siw_path, "SIwaveDCIR1")
+            popen_args, _ = mock_popen.call_args
+            input_cmd = popen_args[0]
+
+        input_cmd_ = [
+            str(Path(edbapp.ansys_em_path) / executable),
+            "-embedding",
+            "-RunScriptAndExit",
+            str(Path(edbapp.edbpath).parent / "export_results.py"),
+        ]
+
+        assert input_cmd == input_cmd_  # if is_linux else " ".join(input_cmd_)
 
     def test_cutout_return_clipping_extent(self, edb_examples):
         """"""
@@ -1503,24 +1358,6 @@ class TestClass:
             assert setup.dc_ir_settings.source_terms_to_ground
         edbapp.close(terminate_rpc_session=False)
 
-    def test_arbitrary_wave_ports(self):
-        # TODO check later when sever instances is improved.
-        from pyedb import Edb
-
-        example_folder = os.path.join(local_path, "example_models", test_subfolder)
-        source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
-        target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
-        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = Edb(target_path_edb)
-        assert edbapp.create_model_for_arbitrary_wave_ports(
-            temp_directory=self.local_scratch.path,
-            output_edb=os.path.join(self.local_scratch.path, "wave_ports.aedb"),
-            mounting_side="top",
-        )
-        edb_model = os.path.join(self.local_scratch.path, "wave_ports.aedb")
-        assert os.path.isdir(edb_model)
-        edbapp.close(terminate_rpc_session=False)
-
     def test_bondwire(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         bondwire_1 = edbapp.modeler.create_bondwire(
@@ -1574,9 +1411,9 @@ class TestClass:
             assert vrm.component
             assert vrm.component.refdes == "U1"
             assert vrm.negative_remote_sense_pin
-            assert vrm.negative_remote_sense_pin.name == "U1-A3"
+            assert vrm.negative_remote_sense_pin.aedt_name == "U1-A3"
             assert vrm.positive_remote_sense_pin
-            assert vrm.positive_remote_sense_pin.name == "U1-A2"
+            assert vrm.positive_remote_sense_pin.aedt_name == "U1-A2"
             assert vrm.voltage == 1.5
             assert vrm.is_active
             assert not vrm.is_null
@@ -1585,7 +1422,7 @@ class TestClass:
             assert "test" in edbapp.voltage_regulator_modules
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=tests.conftest.GRPC, reason="Not implemented with grpc")
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_workflow(self, edb_examples):
         # TODO check with config file 2.0
         from pathlib import Path
@@ -1846,54 +1683,12 @@ class TestClass:
             )
         assert len(edbapp.excitations) == 2
 
-    def test_create_circuit_port_on_component_pins_no_pins(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        component_name = "U10"
-        edbcomp = edbapp.components[component_name]
-        positive_pin_names = []
-        reference_pin_names = ["2"]
-        if edbapp.grpc:
-            assert not edbapp.source_excitation.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        else:
-            # Method deprecated in grpc and moved to SourceExcitation class.
-            assert not edbapp.components.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        assert len(edbapp.excitations) == 0
-
-    def test_create_circuit_port_on_component_pins_no_reference_pins(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        component_name = "U10"
-        edbcomp = edbapp.components[component_name]
-        positive_pin_names = ["4"]
-        reference_pin_names = []
-        if edbapp.grpc:
-            assert not edbapp.source_excitation.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        else:
-            # Method deprecated in grpc and moved to SourceExcitation class.
-            assert not edbapp.components.create_port_on_pins(
-                refdes=edbcomp,
-                pins=positive_pin_names,
-                reference_pins=reference_pin_names,
-            )
-        assert len(edbapp.excitations) == 0
-
-    def test_active_cell_setter(self):
+    @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
+    def test_active_cell_setter(self, edb_examples):
         """Use multiple cells."""
-        from pyedb import Edb
 
         src = os.path.join(local_path, "example_models", "TEDB", "multi_cells.aedb")
-        edb = Edb(edbpath=src)
+        edb = edb_examples.load_edb(edb_path=src)
         edb.active_cell = edb.circuit_cells[0]
         assert len(edb.modeler.primitives) == 2096
         assert len(edb.components.instances) == 509
@@ -2132,11 +1927,32 @@ class TestClass:
         edbapp.close(terminate_rpc_session=False)
 
     def test_compare_edbs(self, edb_examples):
+        mock_process = MagicMock()
+        mock_process.returncode = 0
+
         edbapp = edb_examples.get_si_verse()
         edb_base = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1.aedb")
-        assert edbapp.compare(edb_base)
-        folder = edbapp.edbpath[:-5] + "_compare_results"
-        assert os.path.exists(folder)
+
+        with patch("subprocess.run", return_value=mock_process) as mock_run:
+            edbapp.compare(edb_base)
+            popen_args, _ = mock_run.call_args
+            input_cmd = popen_args[0]
+
+        if is_linux:
+            assert input_cmd == [
+                os.path.join(edbapp.base_path, "common/mono/Linux64/bin/mono"),
+                os.path.join(edbapp.base_path, "EDBDiff.exe"),
+                edb_base,
+                edbapp.edbpath,
+                str(Path(edbapp.edbpath).with_name(Path(edbapp.edbpath).stem + "_compare_results")),
+            ]
+        else:
+            assert input_cmd == [
+                os.path.join(edbapp.base_path, "EDBDiff.exe"),
+                edb_base,
+                edbapp.edbpath,
+                str(Path(edbapp.edbpath).with_name(Path(edbapp.edbpath).stem + "_compare_results")),
+            ]
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
     def test_create_layout_component(self, edb_examples):
