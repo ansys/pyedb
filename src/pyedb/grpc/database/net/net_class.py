@@ -69,13 +69,19 @@ class NetClass(GrpcNetClass):
             return True
         return False
 
-    def contains_net(self, net):
-        """Determine if a net exists in the net class.
+    def contains_net(self, net) -> bool:
+        """
+        Determine if a net exists in the net class.
 
-        returns
+        Parameters
+        ----------
+        net : str or Net
+            The net to check. This can be a string representing the net name or a `Net` object.
+
+        Returns
         -------
-        List[:class:`Net <pyedb.grpc.database.net.net.Net>`].
-            List of Net object.
+        bool
+            True if the net exists in the net class, False otherwise.
 
         """
 
