@@ -35,13 +35,18 @@ import ansys.edb.core.primitive.polygon
 import ansys.edb.core.primitive.primitive
 import ansys.edb.core.primitive.rectangle
 
+from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
 from pyedb.grpc.database.net.differential_pair import DifferentialPair
 from pyedb.grpc.database.net.extended_net import ExtendedNet
+from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.net.net_class import NetClass
 from pyedb.grpc.database.primitive.bondwire import Bondwire
+from pyedb.grpc.database.primitive.circle import Circle
+from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.path import Path
+from pyedb.grpc.database.primitive.polygon import Polygon
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
@@ -71,10 +76,6 @@ class Layout(GrpcLayout):
 
     @property
     def primitives(self) -> list[any]:
-        from pyedb.grpc.database.primitive.circle import Circle
-        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-        from pyedb.grpc.database.primitive.polygon import Polygon
-
         primitives = super().primitives
         self.__primitives = []
         for prim in primitives:
@@ -116,7 +117,7 @@ class Layout(GrpcLayout):
         return temp
 
     @property
-    def nets(self) -> list["Net"]:
+    def nets(self) -> list[Net]:
         """Nets.
 
         Returns
@@ -124,7 +125,6 @@ class Layout(GrpcLayout):
         List[:class:`Net <pyedb.grpc.database.net.net.Net>`]
             List of Net.
         """
-        from pyedb.grpc.database.net.net import Net
 
         return [Net(self._pedb, net) for net in super().nets]
 
@@ -140,7 +140,7 @@ class Layout(GrpcLayout):
         return [i for i in self.primitives if i.primitive_type == "bondwire"]
 
     @property
-    def groups(self) -> list["Component"]:
+    def groups(self) -> list[Component]:
         """Groups
 
         Returns
@@ -149,7 +149,6 @@ class Layout(GrpcLayout):
             List of Component.
 
         """
-        from pyedb.grpc.database.hierarchy.component import Component
 
         return [Component(self._pedb, g) for g in self._pedb.active_cell.layout.groups]
 
@@ -202,9 +201,8 @@ class Layout(GrpcLayout):
         return [DifferentialPair(self._pedb, i) for i in self._pedb.active_cell.layout.differential_pairs]
 
     @property
-    def padstack_instances(self) -> Dict[int, "PadstackInstance"]:
+    def padstack_instances(self) -> Dict[int, PadstackInstance]:
         """Get all padstack instances in a list."""
-        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
         pad_stack_inst = super().padstack_instances
         self.__padstack_instances = {i.edb_uid: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
