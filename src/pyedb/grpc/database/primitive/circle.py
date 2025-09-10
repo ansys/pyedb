@@ -32,9 +32,10 @@ from pyedb.grpc.database.utility.value import Value
 
 
 class Circle(GrpcCircle, Primitive):
-    def __init__(self, pedb, edb_object):
-        GrpcCircle.__init__(self, edb_object.msg)
-        Primitive.__init__(self, pedb, edb_object)
+    def __init__(self, pedb, edb_object=None):
+        if edb_object:
+            GrpcCircle.__init__(self, edb_object.msg)
+            Primitive.__init__(self, pedb, edb_object)
         self._pedb = pedb
 
     def create(
@@ -52,7 +53,7 @@ class Circle(GrpcCircle, Primitive):
             raise ValueError("Layer must be provided to create a circle.")
         if not center_x or not center_y:
             raise ValueError("Center x and y values must be provided to create a circle.")
-        circle = super().create(
+        edb_object = super().create(
             layout=layout,
             layer=layer,
             net=net,
@@ -60,8 +61,11 @@ class Circle(GrpcCircle, Primitive):
             center_y=Value(center_y),
             radius=Value(radius),
         )
-        self._pedb.modeler._add_primitive(circle)
-        return circle
+        new_circle = Circle(self._pedb, edb_object)
+        GrpcCircle.__init__(self, edb_object.msg)
+        Primitive.__init__(self, self._pedb, edb_object)
+        self._pedb.modeler._add_primitive(new_circle)
+        return new_circle
 
     def delete(self):
         """Delete the circle from the layout."""

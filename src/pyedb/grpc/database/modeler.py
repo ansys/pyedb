@@ -161,8 +161,8 @@ class Modeler(object):
         if self._primitives_by_layer is None:
             d = {}
             for p in self.primitives:
-                if p.layer:
-                    d.setdefault(p.layer, []).append(p)
+                if p.layer_name:
+                    d.setdefault(p.layer_name, []).append(p)
             self._primitives_by_layer = d
         return self._primitives_by_layer
 
@@ -282,17 +282,6 @@ class Modeler(object):
         else:
             return False
 
-    # @property
-    # def primitives(self) -> List[Primitive]:
-    #     """All primitives in the layout.
-    #
-    #     Returns
-    #     -------
-    #     list
-    #         List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` objects.
-    #     """
-    #     return self._pedb.layout.primitives
-
     @property
     def polygons_by_layer(self) -> Dict[str, List[Primitive]]:
         """Primitives organized by layer names.
@@ -304,7 +293,10 @@ class Modeler(object):
         """
         polygon_by_layer = {}
         for lay in self.layers:
-            polygon_by_layer[lay] = [prim for prim in self.primitives_by_layer[lay] if prim.primitive_type == "polygon"]
+            if lay in self.primitives_by_layer:
+                polygon_by_layer[lay] = [prim for prim in self.primitives_by_layer[lay] if prim.type == "polygon"]
+            else:
+                polygon_by_layer[lay] = []
         return polygon_by_layer
 
     @property
@@ -646,7 +638,7 @@ class Modeler(object):
             polygon_data = points
         else:
             raise TypeError("Points must be a list of points or a PolygonData object.")
-        path = Path.create(
+        path = Path(self._pedb).create(
             layout=self._active_layout,
             layer=layer_name,
             net=net,
@@ -758,7 +750,9 @@ class Modeler(object):
                 self._logger.error("Failed to create void polygon data")
                 return False
             polygon_data.holes.append(void_polygon_data)
-        polygon = Polygon.create(layout=self._active_layout, layer=layer_name, net=net, polygon_data=polygon_data)
+        polygon = Polygon(self._pedb, None).create(
+            layout=self._active_layout, layer=layer_name, net=net, polygon_data=polygon_data
+        )
         if polygon.is_null or polygon_data is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
@@ -810,12 +804,11 @@ class Modeler(object):
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "lower_left_upper_right":
-            rep_type = GrpcRectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT
-            rect = Rectangle.create(
+            rect = Rectangle(self._pedb).create(
                 layout=self._active_layout,
                 layer=layer_name,
                 net=edb_net,
-                rep_type=rep_type,
+                rep_type=representation_type,
                 param1=Value(lower_left_point[0]),
                 param2=Value(lower_left_point[1]),
                 param3=Value(upper_right_point[0]),
@@ -839,7 +832,7 @@ class Modeler(object):
                     height = Value(width)
             else:
                 height = Value(width)
-            rect = Rectangle.create(
+            rect = Rectangle(self._pedb).create(
                 layout=self._active_layout,
                 layer=layer_name,
                 net=edb_net,
@@ -853,7 +846,7 @@ class Modeler(object):
             )
         if not rect.is_null:
             self._add_primitive(rect)
-            return Rectangle(self._pedb, rect)
+            return rect
         return False
 
     def create_circle(
@@ -881,7 +874,7 @@ class Modeler(object):
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
 
-        circle = Circle.create(
+        circle = Circle(self._pedb).create(
             layout=self._active_layout,
             layer=layer_name,
             net=edb_net,
@@ -890,7 +883,6 @@ class Modeler(object):
             radius=Value(radius),
         )
         if not circle.is_null:
-            circle = Circle(self._pedb, circle)
             self._add_primitive(circle)
             return circle
         return False
@@ -1412,3 +1404,32 @@ class Modeler(object):
             if net_obj:
                 obj.net = net_obj[0]
         return self._pedb.siwave.pin_groups[name]
+
+    @staticmethod
+    def add_void(shape: "Primitive", void_shape: Union["Primitive", List["Primitive"]]) -> bool:
+        """Add void to shape.
+
+        Parameters
+        ----------
+        shape : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            Main shape.
+        void_shape : list or :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            Void shape(s).
+
+        Returns
+        -------
+        bool
+            True if successful, False otherwise.
+        """
+        if not isinstance(void_shape, list):
+            void_shape = [void_shape]
+        for void in void_shape:
+            if isinstance(void, Primitive):
+                shape._edb_object.add_void(void)
+                flag = True
+            else:
+                shape._edb_object.add_void(void)
+                flag = True
+            if not flag:
+                return flag
+        return True

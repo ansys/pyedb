@@ -29,7 +29,6 @@ from ansys.edb.core.terminal.terminal import (
     TerminalType as GrpcTerminalType,
 )
 
-from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
@@ -291,7 +290,7 @@ class Terminal(GrpcTerminal):
 
         return ""
 
-    def get_padstack_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance:
+    def get_padstack_terminal_reference_pin(self, gnd_net_name_preference=None) -> "PadstackInstance":
         """Get a list of pad stacks instances and serves Coax wave ports,
         pingroup terminals, PadEdge terminals.
 
@@ -313,7 +312,7 @@ class Terminal(GrpcTerminal):
         pins = self._pedb.components.get_pin_from_component(self.component.name)
         return self._get_closest_pin(padStackInstance, pins, gnd_net_name_preference)
 
-    def get_pin_group_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance:
+    def get_pin_group_terminal_reference_pin(self, gnd_net_name_preference=None) -> "PadstackInstance":
         """Return a list of pins and serves terminals connected to pingroups.
 
         Parameters
@@ -325,6 +324,7 @@ class Terminal(GrpcTerminal):
         -------
         :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
         """
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
         refTerm = self.reference_terminal
         if self.type == GrpcTerminalType.PIN_GROUP:
@@ -394,7 +394,7 @@ class Terminal(GrpcTerminal):
                     return vias
         return False
 
-    def get_pad_edge_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance:
+    def get_pad_edge_terminal_reference_pin(self, gnd_net_name_preference=None) -> "PadstackInstance":
         """Get the closest pin padstack instances and serves any edge terminal connected to a pad.
 
         Parameters
@@ -413,6 +413,8 @@ class Terminal(GrpcTerminal):
         return self._get_closest_pin(pad_edge_pstack_inst, pins, gnd_net_name_preference)
 
     def _get_closest_pin(self, ref_pin, pin_list, gnd_net=None):
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+
         _, pad_stack_inst_point, _ = ref_pin.position_and_rotation  # get the xy of the padstack
         if gnd_net is not None:
             power_ground_net_names = [gnd_net]

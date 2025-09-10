@@ -30,15 +30,15 @@ from ansys.edb.core.primitive.path import (
 )
 
 from pyedb.grpc.database.layers.layer import Layer
-from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
 
 class Path(GrpcPath, Primitive):
-    def __init__(self, pedb, edb_object):
-        GrpcPath.__init__(self, edb_object.msg)
-        Primitive.__init__(self, pedb, edb_object)
+    def __init__(self, pedb, edb_object=None):
+        if edb_object:
+            GrpcPath.__init__(self, edb_object.msg)
+            Primitive.__init__(self, pedb, edb_object)
         self._edb_object = edb_object
         self._pedb = pedb
 
@@ -82,7 +82,7 @@ class Path(GrpcPath, Primitive):
         self,
         layout=None,
         layer: Union[str, Layer] = None,
-        net: Union[str, Net] = None,
+        net: Union[str, "Net"] = None,
         width: float = 100e-6,
         end_cap1: str = "flat",
         end_cap2: str = "flat",
@@ -116,6 +116,11 @@ class Path(GrpcPath, Primitive):
             The points defining the path. This can be a list of points or an instance of `GrpcPolygonData`.
             This parameter is required and must be specified.
 
+        Returns
+        -------
+        :class:`Path <pyedb.grpc.database.primitive.path.Path>`
+            The created path object.
+
         Raises
         ------
         ValueError
@@ -140,14 +145,17 @@ class Path(GrpcPath, Primitive):
             "mitter": GrpcPatCornerType.MITER,
             "sharp": GrpcPatCornerType.SHARP,
         }
-        end_cap1 = end_cap_mapping[end_cap1.lower()]
-        end_cap2 = end_cap_mapping[end_cap2.lower()]
-        corner_style = corner_style_mapping[corner_style.lower()]
+        if isinstance(end_cap1, str):
+            end_cap1 = end_cap_mapping[end_cap1.lower()]
+        if isinstance(end_cap2, str):
+            end_cap2 = end_cap_mapping[end_cap2.lower()]
+        if isinstance(corner_style, str):
+            corner_style = corner_style_mapping[corner_style.lower()]
         if not points:
             raise ValueError("Points are required to create a path.")
         if isinstance(points, list):
             points = GrpcPolygonData(points=points)
-        path = super().create(
+        self._edb_object = super().create(
             layout=layout,
             layer=layer,
             net=net,
@@ -157,8 +165,13 @@ class Path(GrpcPath, Primitive):
             corner_style=corner_style,
             points=points,
         )
+
         # keeping cache synced
-        self._pedb.modeler._add_primitive(path)
+        new_path = Path(self._pedb, self._edb_object)
+        GrpcPath.__init__(self, self._edb_object.msg)
+        Primitive.__init__(self, self._pedb, self._edb_object)
+        self._pedb.modeler._add_primitive(new_path)
+        return new_path
 
     def delete(self):
         """Delete the path object."""

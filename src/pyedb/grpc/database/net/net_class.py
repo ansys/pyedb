@@ -22,8 +22,6 @@
 
 from ansys.edb.core.net.net_class import NetClass as GrpcNetClass
 
-from pyedb.grpc.database.net.net import Net
-
 
 class NetClass(GrpcNetClass):
     """Manages EDB functionalities for a primitives.
@@ -49,6 +47,8 @@ class NetClass(GrpcNetClass):
         List[:class:`Net <pyedb.grpc.database.net.net.Net>`].
             List of Net object.
         """
+        from pyedb.grpc.database.net.net import Net
+
         return [Net(self._pedb, i) for i in super().nets]
 
     def add_net(self, net):
@@ -59,6 +59,8 @@ class NetClass(GrpcNetClass):
         bool
         """
         if isinstance(net, str):
+            from pyedb.grpc.database.net.net import Net
+
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         if isinstance(net, Net) and not net.is_null:
             self.add_net(net)
@@ -74,6 +76,8 @@ class NetClass(GrpcNetClass):
             List of Net object.
 
         """
+        from pyedb.grpc.database.net.net import Net
+
         if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         return super().contains_net(net)
@@ -85,9 +89,11 @@ class NetClass(GrpcNetClass):
         -------
         bool
         """
+        from pyedb.grpc.database.net.net import Net
+
         if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         if isinstance(net, Net) and not net.is_null:
-            self.remove(net)
+            self.remove_net(net)
             return True
         return False

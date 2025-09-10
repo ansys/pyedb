@@ -30,15 +30,15 @@ from ansys.edb.core.primitive.polygon import Polygon as GrpcPolygon
 
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.layout.layout import Layout
-from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
 
 class Polygon(GrpcPolygon, Primitive):
-    def __init__(self, pedb, edb_object):
-        GrpcPolygon.__init__(self, edb_object.msg)
-        Primitive.__init__(self, pedb, edb_object)
+    def __init__(self, pedb, edb_object=None):
+        if edb_object:
+            GrpcPolygon.__init__(self, edb_object.msg)
+            Primitive.__init__(self, pedb, edb_object)
         self._pedb = pedb
 
     @property
@@ -64,7 +64,7 @@ class Polygon(GrpcPolygon, Primitive):
         return self.polygon_data.has_self_intersections()
 
     def create(
-        self, layout: Layout = None, layer: Union[str, Layer] = None, net: Union[str, Net] = None, polygon_data=None
+        self, layout: Layout = None, layer: Union[str, Layer] = None, net: Union[str, "Net"] = None, polygon_data=None
     ):
         """
         Create a polygon in the specified layout, layer, and net using the provided polygon data.
@@ -82,6 +82,11 @@ class Polygon(GrpcPolygon, Primitive):
         polygon_data : list or GrpcPolygonData, optional
             The data defining the polygon. This can be a list of points or an instance of `GrpcPolygonData`.
             This parameter is required and must be specified.
+
+        Returns
+        -------
+        :class:`Polygon <ansys.edb.core.primitive.polygon.Polygon>`
+            The created polygon object.
 
         Raises
         ------
@@ -105,9 +110,18 @@ class Polygon(GrpcPolygon, Primitive):
         if isinstance(polygon_data, list):
             polygon_data = GrpcPolygonData(polygon_data)
 
-        # keeping cache in sync
-        self._pedb.modeler._add_primitive(self)
-        super().create(layout=layout, layer=layer, net=net, polygon_data=polygon_data)
+        # call into the gRPC layer to actually create the polygon
+        edb_object = super().create(layout=layout, layer=layer, net=net, polygon_data=polygon_data)
+        GrpcPolygon.__init__(self, edb_object.msg)
+
+        # wrap the raw edb_object into our Polygon wrapper
+        new_polygon = Polygon(self._pedb, edb_object)
+        Primitive.__init__(self, self._pedb, edb_object)
+
+        # keep modeler cache in sync
+        self._pedb.modeler._add_primitive(new_polygon)
+
+        return new_polygon
 
     def delete(self):
         """Delete polygon from layout."""
@@ -145,12 +159,15 @@ class Polygon(GrpcPolygon, Primitive):
 
         """
         polygon_data = self.polygon_data
-        duplicated_polygon = self.create(
+        duplicated_polygon = GrpcPolygon.create(
             layout=self._pedb.active_layout, layer=self.layer, net=self.net, polygon_data=polygon_data
         )
         for void in self.voids:
             duplicated_polygon.add_void(void)
-        return duplicated_polygon
+        # keep cache in sync
+        cloned_polygon = Polygon(self._pedb, duplicated_polygon)
+        self._pedb.modeler._add_primitive(cloned_polygon)
+        return cloned_polygon
 
     def duplicate_across_layers(self, layers) -> bool:
         """Duplicate across layer a primitive object.

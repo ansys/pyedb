@@ -29,7 +29,6 @@ from ansys.edb.core.primitive.rectangle import (
 )
 
 from pyedb.grpc.database.layers.layer import Layer
-from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
@@ -37,9 +36,10 @@ from pyedb.grpc.database.utility.value import Value
 class Rectangle(GrpcRectangle, Primitive):
     """Class representing a rectangle object."""
 
-    def __init__(self, pedb, edb_object):
-        Primitive.__init__(self, pedb, edb_object)
-        GrpcRectangle.__init__(self, edb_object.msg)
+    def __init__(self, pedb, edb_object=None):
+        if edb_object:
+            Primitive.__init__(self, pedb, edb_object)
+            GrpcRectangle.__init__(self, edb_object.msg)
         self._pedb = pedb
         self._mapping_representation_type = {
             "center_width_height": GrpcRectangleRepresentationType.CENTER_WIDTH_HEIGHT,
@@ -79,7 +79,7 @@ class Rectangle(GrpcRectangle, Primitive):
         self,
         layout=None,
         layer: Union[str, Layer] = None,
-        net: Union[str, Net] = None,
+        net: Union[str, "Net"] = None,
         rep_type: str = "center_width_height",
         param1: float = None,
         param2: float = None,
@@ -149,7 +149,7 @@ class Rectangle(GrpcRectangle, Primitive):
             "lower_left_upper_right": GrpcRectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT,
         }
         rep_type = rep_type_mapping.get(rep_type, GrpcRectangleRepresentationType.INVALID_RECT_TYPE)
-        rect = super().create(
+        edb_object = super().create(
             layout=layout,
             layer=layer,
             net=net,
@@ -162,8 +162,9 @@ class Rectangle(GrpcRectangle, Primitive):
             rotation=Value(rotation),
         )
         # keep cache synced
-        self._pedb.modeler._add_primitive(rect)
-        return rect
+        new_rect = Rectangle(self._pedb, edb_object)
+        self._pedb.modeler._add_primitive(new_rect)
+        return new_rect
 
     def delete(self):
         """Delete the rectangle primitive from the layout."""

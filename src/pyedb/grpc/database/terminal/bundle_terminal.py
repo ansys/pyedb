@@ -26,9 +26,7 @@ from ansys.edb.core.terminal.terminal import (
     SourceTermToGroundType as GrpcSourceTermToGroundType,
 )
 
-from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.layers.layer import Layer
-from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.rlc import Rlc
 from pyedb.grpc.database.utility.value import Value
@@ -70,13 +68,15 @@ class BundleTerminal(GrpcBundleTerminal):
         return self.ungroup()
 
     @property
-    def component(self) -> Component:
+    def component(self) -> "Component":
         """Component.
 
         Returns
         -------
         :class:`Component <pyedb.grpc.database.hierarchy.component.Component`
         """
+        from pyedb.grpc.database.hierarchy.component import Component
+
         return Component(self._pedb, self.component)
 
     @property
@@ -95,13 +95,15 @@ class BundleTerminal(GrpcBundleTerminal):
         self.impedance = Value(value)
 
     @property
-    def net(self) -> Net:
+    def net(self) -> "Net":
         """Returns Net object.
 
         Returns
         -------
         :class:`Net <pyedb.grpc.database.net.net.Net>`
         """
+        from pyedb.grpc.database.net.net import Net
+
         return Net(self._pedb, self.net)
 
     @property

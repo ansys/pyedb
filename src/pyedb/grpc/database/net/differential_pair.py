@@ -27,8 +27,6 @@ from ansys.edb.core.net.differential_pair import (
     DifferentialPair as GrpcDifferentialPair,
 )
 
-from pyedb.grpc.database.net.net import Net
-
 
 class DifferentialPairs:
     def __init__(self, pedb):
@@ -129,11 +127,15 @@ class DifferentialPair(GrpcDifferentialPair):
         self._pedb = pedb
 
     @property
-    def positive_net(self) -> Net:
+    def positive_net(self) -> "Net":
         """Positive Net."""
+        from pyedb.grpc.database.net.net import Net
+
         return Net(self._pedb, super().positive_net)
 
     @property
-    def negative_net(self) -> Net:
+    def negative_net(self) -> "Net":
         """Negative Net."""
+        from pyedb.grpc.database.net.net import Net
+
         return Net(self._pedb, super().negative_net)
