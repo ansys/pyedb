@@ -159,14 +159,11 @@ class Polygon(GrpcPolygon, Primitive):
 
         """
         polygon_data = self.polygon_data
-        duplicated_polygon = GrpcPolygon.create(
+        cloned_polygon = self.create(
             layout=self._pedb.active_layout, layer=self.layer, net=self.net, polygon_data=polygon_data
         )
         for void in self.voids:
-            duplicated_polygon.add_void(void)
-        # keep cache in sync
-        cloned_polygon = Polygon(self._pedb, duplicated_polygon)
-        self._pedb.modeler._add_primitive(cloned_polygon)
+            cloned_polygon.add_void(void)
         return cloned_polygon
 
     def duplicate_across_layers(self, layers) -> bool:
