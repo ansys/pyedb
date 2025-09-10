@@ -94,6 +94,6 @@ class NetClass(GrpcNetClass):
         if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         if isinstance(net, Net) and not net.is_null:
-            self.remove_net(net)
+            super().remove_net(net)
             return True
         return False
