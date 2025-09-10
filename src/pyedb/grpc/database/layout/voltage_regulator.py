@@ -24,6 +24,7 @@ from ansys.edb.core.layout.voltage_regulator import (
     VoltageRegulator as GrpcVoltageRegulator,
 )
 
+from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.utility.value import Value
 
 
@@ -91,7 +92,7 @@ class VoltageRegulator(GrpcVoltageRegulator):
         self.load_regulation_percent = Value(value)
 
     @property
-    def negative_remote_sense_pin(self) -> "PadstackInstance":
+    def negative_remote_sense_pin(self) -> PadstackInstance:
         """Retrieve negative remote sense pin.
 
         Returns
@@ -103,8 +104,6 @@ class VoltageRegulator(GrpcVoltageRegulator):
 
     @negative_remote_sense_pin.setter
     def negative_remote_sense_pin(self, value):
-        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-
         if isinstance(value, int):
             if value in self._pedb.padsatcks.instances:
                 self.neg_remote_sense_pin = self._pedb.padsatcks.instances[value]
@@ -112,7 +111,7 @@ class VoltageRegulator(GrpcVoltageRegulator):
             self.neg_remote_sense_pin = value
 
     @property
-    def positive_remote_sense_pin(self) -> "PadstackInstance":
+    def positive_remote_sense_pin(self) -> PadstackInstance:
         """Retrieve positive remote sense pin.
 
         Returns
@@ -124,8 +123,6 @@ class VoltageRegulator(GrpcVoltageRegulator):
 
     @positive_remote_sense_pin.setter
     def positive_remote_sense_pin(self, value):
-        from pyedb.grpc.database.padstacks import PadstackInstance
-
         if isinstance(value, int):
             if value in self._pedb.padsatcks.instances:
                 self.positive_remote_sense_pin = self._pedb.padsatcks.instances[value]
