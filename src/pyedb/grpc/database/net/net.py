@@ -104,6 +104,7 @@ class Net(GrpcNet):
         list of :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
             Padstack instances associated with the net.
         """
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
         return [PadstackInstance(self._pedb, i) for i in super().padstack_instances]
 

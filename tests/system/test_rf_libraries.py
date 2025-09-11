@@ -61,6 +61,7 @@ class TestClass(BaseTestClass):
         assert stackup.top_metal.material.conductivity == 5.8e7
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
     def test_cpw(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)

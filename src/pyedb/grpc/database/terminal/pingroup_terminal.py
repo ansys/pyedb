@@ -156,6 +156,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
             Terminal Net object.
 
         """
+        from pyedb.grpc.database.net.net import Net
 
         return Net(self._pedb, super().net)
 

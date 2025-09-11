@@ -134,11 +134,13 @@ class DifferentialPair(GrpcDifferentialPair):
     @property
     def positive_net(self) -> Net:
         """Positive Net."""
+        from pyedb.grpc.database.net.net import Net
 
         return Net(self._pedb, super().positive_net)
 
     @property
     def negative_net(self) -> Net:
         """Negative Net."""
+        from pyedb.grpc.database.net.net import Net
 
         return Net(self._pedb, super().negative_net)
