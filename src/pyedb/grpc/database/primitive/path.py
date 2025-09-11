@@ -168,8 +168,6 @@ class Path(GrpcPath, Primitive):
 
         # keeping cache synced
         new_path = Path(self._pedb, self._edb_object)
-        GrpcPath.__init__(self, self._edb_object.msg)
-        Primitive.__init__(self, self._pedb, self._edb_object)
         self._pedb.modeler._add_primitive(new_path)
         return new_path
 

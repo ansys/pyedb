@@ -422,8 +422,6 @@ class Terminal(GrpcTerminal):
         return self._get_closest_pin(pad_edge_pstack_inst, pins, gnd_net_name_preference)
 
     def _get_closest_pin(self, ref_pin, pin_list, gnd_net=None):
-        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-
         _, pad_stack_inst_point, _ = ref_pin.position_and_rotation  # get the xy of the padstack
         if gnd_net is not None:
             power_ground_net_names = [gnd_net]

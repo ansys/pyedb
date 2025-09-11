@@ -112,12 +112,7 @@ class Polygon(GrpcPolygon, Primitive):
 
         # call into the gRPC layer to actually create the polygon
         edb_object = super().create(layout=layout, layer=layer, net=net, polygon_data=polygon_data)
-        GrpcPolygon.__init__(self, edb_object.msg)
-
-        # wrap the raw edb_object into our Polygon wrapper
         new_polygon = Polygon(self._pedb, edb_object)
-        Primitive.__init__(self, self._pedb, edb_object)
-
         # keep modeler cache in sync
         self._pedb.modeler._add_primitive(new_polygon)
 
