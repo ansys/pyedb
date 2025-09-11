@@ -20,6 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 import re
 
 from ansys.edb.core.terminal.edge_terminal import EdgeType as GrpcEdgeType
@@ -29,7 +35,6 @@ from ansys.edb.core.terminal.terminal import (
     TerminalType as GrpcTerminalType,
 )
 
-from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 

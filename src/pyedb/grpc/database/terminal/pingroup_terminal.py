@@ -20,12 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.net.net import Net
 from ansys.edb.core.terminal.pin_group_terminal import (
     PinGroupTerminal as GrpcPinGroupTerminal,
 )
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
-from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecated_property
 

@@ -20,9 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from ansys.edb.core.net.net_class import NetClass as GrpcNetClass
 
-from pyedb.grpc.database.net.net import Net
+if TYPE_CHECKING:
+    from pyedb.grpc.database.net.net import Net
 
 
 class NetClass(GrpcNetClass):

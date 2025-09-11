@@ -20,15 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.hierarchy.component import Component
+    from pyedb.grpc.database.net.net import Net
 from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundleTerminal
 from ansys.edb.core.terminal.terminal import (
     HfssPIType as GrpcHfssPIType,
     SourceTermToGroundType as GrpcSourceTermToGroundType,
 )
 
-from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.layers.layer import Layer
-from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.rlc import Rlc
 from pyedb.grpc.database.utility.value import Value
