@@ -898,16 +898,24 @@ class Edb(EdbInit):
         if not working_dir:
             working_dir = os.path.dirname(vlctech_file)
         command = os.path.join(self.base_path, "helic", "tools", "raptorh", "bin", "make-edb.exe")
-        cmd_make_edb = [
-            command,
-            "-t",
-            "{}".format(vlctech_file),
-            "-o",
-            "{}".format(os.path.join(working_dir, "vlctech")),
-        ]
         if is_linux:
             mono_path = os.path.join(self.base_path, "common/mono/Linux64/bin/mono")
-            cmd_make_edb.insert(0, mono_path)
+            cmd_make_edb = [
+                mono_path,
+                command,
+                "-t",
+                "{}".format(vlctech_file),
+                "-o",
+                "{}".format(os.path.join(working_dir, "vlctech")),
+            ]
+        else:
+            cmd_make_edb = [
+                command,
+                "-t",
+                "{}".format(vlctech_file),
+                "-o",
+                "{}".format(os.path.join(working_dir, "vlctech")),
+            ]
         if export_xml:
             cmd_make_edb.extend(["-x", "{}".format(export_xml)])
         subprocess.run(cmd_make_edb)
