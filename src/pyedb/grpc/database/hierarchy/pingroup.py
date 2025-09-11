@@ -85,6 +85,7 @@ class PinGroup(GrpcPinGroup):
         -------
         Dict[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`].
         """
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
         return {i.name: PadstackInstance(self._pedb, i) for i in super().pins}
 
@@ -96,6 +97,7 @@ class PinGroup(GrpcPinGroup):
         -------
         :class:`Net <ansys.edb.core.net.net.Net>`.
         """
+        from pyedb.grpc.database.net.net import Net
 
         return Net(self._pedb, super().net)
 
