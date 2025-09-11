@@ -135,7 +135,7 @@ def __create_array_from_unit_cell_impl(
     if x_number <= 0 or y_number <= 0:
         raise ValueError("x_number and y_number must be positive integers")
 
-    if offset_x is None or offset_y is None:
+    if offset_x is None and offset_y is None:
         edb.logger.info("Auto-detecting outline extents")
         outline_prims = [p for p in edb.modeler.primitives if p.layer_name.lower() == "outline"]
         if not outline_prims:
@@ -144,6 +144,9 @@ def __create_array_from_unit_cell_impl(
         if not adapter.is_supported_outline(outline):
             raise RuntimeError("Outline primitive is not a polygon/rectangle. Provide offset_x / offset_y.")
         offset_x, offset_y = adapter.pitch_from_outline(outline)
+    else:
+        offset_x = edb.value(offset_x)
+        offset_y = edb.value(offset_y)
 
     # ---------- Collect everything we have to replicate ----------
     primitives = [p for p in edb.modeler.primitives if adapter.is_primitive_to_copy(p)]

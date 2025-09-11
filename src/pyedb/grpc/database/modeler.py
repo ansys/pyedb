@@ -121,32 +121,57 @@ class Modeler(object):
                 self._primitives_by_layer.setdefault(prim.layer_name, []).append(prim)
 
     def _remove_primitive(self, prim: Primitive):
-        """Remove primitive wrapper from caches."""
-        self._primitives.pop(prim.edb_uid, None)
+        """Remove primitive wrapper from all caches efficiently and safely."""
+        uid = prim.edb_uid
+
+        # 1. Remove from primary cache
+        self._primitives.pop(uid, None)
+
+        # 2. Remove from name cache if initialized
         if self._primitives_by_name is not None:
             self._primitives_by_name.pop(prim.aedt_name, None)
-        if self._primitives_by_net is not None and hasattr(prim, "net"):
-            lst = self._primitives_by_net.get(prim.net.name, [])
-            if prim in lst:
-                lst.remove(prim)
-                if not lst:
-                    self._primitives_by_net.pop(prim.net.name, None)
-        if self._primitives_by_layer is not None and hasattr(prim, "layer"):
-            lst = self._primitives_by_layer.get(prim.layer.name, [])
-            if prim in lst:
-                lst.remove(prim)
-                if not lst:
-                    self._primitives_by_layer.pop(prim.layer.name, None)
-        if self._primitives_by_layer_and_net is not None and hasattr(prim, "layer") and hasattr(prim, "net"):
-            layer_dict = self._primitives_by_layer_and_net.get(prim.layer.name)
-            if layer_dict:
-                net_list = layer_dict.get(prim.net.name)
-                if net_list and prim in net_list:
-                    net_list.remove(prim)
-                    if not net_list:  # clean empty net entry
-                        layer_dict.pop(prim.net.name, None)
-                    if not layer_dict:  # clean empty layer entry
-                        self._primitives_by_layer_and_net.pop(prim.layer.name, None)
+
+        # 3. Remove from net cache if initialized
+        if self._primitives_by_net is not None and hasattr(prim, "net") and not prim.net.is_null:
+            net_name = prim.net.name
+            net_prims = self._primitives_by_net.get(net_name)
+            if net_prims:
+                try:
+                    net_prims.remove(prim)
+                except ValueError:
+                    pass  # Not found, skip
+                if not net_prims:
+                    self._primitives_by_net.pop(net_name, None)
+
+        # 4. Remove from layer cache if initialized
+        if self._primitives_by_layer is not None and hasattr(prim, "layer") and prim.layer_name:
+            layer_name = prim.layer.name
+            layer_prims = self._primitives_by_layer.get(layer_name)
+            if layer_prims:
+                try:
+                    layer_prims.remove(prim)
+                except ValueError:
+                    pass
+                if not layer_prims:
+                    self._primitives_by_layer.pop(layer_name, None)
+
+        # 5. Remove from layer+net cache if initialized
+        if self._primitives_by_layer_and_net is not None:
+            if hasattr(prim, "layer") and hasattr(prim, "net") and not prim.net.is_null:
+                layer_name = prim.layer.name
+                net_name = prim.net.name
+                layer_dict = self._primitives_by_layer_and_net.get(layer_name)
+                if layer_dict:
+                    net_list = layer_dict.get(net_name)
+                    if net_list:
+                        try:
+                            net_list.remove(prim)
+                        except ValueError:
+                            pass
+                        if not net_list:
+                            layer_dict.pop(net_name, None)
+                        if not layer_dict:
+                            self._primitives_by_layer_and_net.pop(layer_name, None)
 
     @property
     def primitives(self) -> list[Primitive]:
@@ -1167,7 +1192,7 @@ class Modeler(object):
                                 id = -1
                             if id >= 0:
                                 delete_list.pop(id)
-            for poly in delete_list:
+            for poly in list(set(delete_list)):
                 poly.delete()
 
         if delete_padstack_gemometries:

@@ -158,11 +158,12 @@ class Polygon(GrpcPolygon, Primitive):
             Cloned polygon.
 
         """
+        voids = self.voids
         polygon_data = self.polygon_data
         cloned_polygon = self.create(
             layout=self._pedb.active_layout, layer=self.layer, net=self.net, polygon_data=polygon_data
         )
-        for void in self.voids:
+        for void in voids:
             cloned_polygon.add_void(void)
         return cloned_polygon
 
