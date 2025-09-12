@@ -37,8 +37,8 @@ def create_array_from_unit_cell(
     edb: Edb,
     x_number: int = 2,
     y_number: int = 2,
-    offset_x: Optional[Union[int, float]] = None,
-    offset_y: Optional[Union[int, float]] = None,
+    offset_x: Optional[Union[int, float, str]] = None,
+    offset_y: Optional[Union[int, float, str]] = None,
 ) -> bool:
     """
     Create a 2-D rectangular array from the current EDB unit cell.
@@ -57,10 +57,10 @@ def create_array_from_unit_cell(
         Number of columns (X-direction). Must be > 0.  Defaults to 2.
     y_number : int, optional
         Number of rows (Y-direction). Must be > 0.  Defaults to 2.
-    offset_x : int | float | None, optional
+    offset_x : int | float | str, None, optional
         Horizontal pitch (distance between cell origins).  When *None* the
         value is derived from the outline geometry.
-    offset_y : int | float | None, optional
+    offset_y : int | float | str, None, optional
         Vertical pitch (distance between cell origins).  When *None* the
         value is derived from the outline geometry.
 
@@ -134,8 +134,12 @@ def __create_array_from_unit_cell_impl(
     # ---------- Sanity & auto-pitch detection ----------
     if x_number <= 0 or y_number <= 0:
         raise ValueError("x_number and y_number must be positive integers")
+    if offset_x and not offset_y:
+        raise ValueError("If offset_x is provided, offset_y must be provided as well")
+    if offset_y and not offset_x:
+        raise ValueError("If offset_y is provided, offset_x must be provided as well")
 
-    if offset_x is None or offset_y is None:
+    if not offset_x and not offset_y:
         edb.logger.info("Auto-detecting outline extents")
         outline_prims = [p for p in edb.modeler.primitives if p.layer_name.lower() == "outline"]
         if not outline_prims:
@@ -144,6 +148,8 @@ def __create_array_from_unit_cell_impl(
         if not adapter.is_supported_outline(outline):
             raise RuntimeError("Outline primitive is not a polygon/rectangle. Provide offset_x / offset_y.")
         offset_x, offset_y = adapter.pitch_from_outline(outline)
+    offset_x = edb.value(offset_x)
+    offset_y = edb.value(offset_y)
 
     # ---------- Collect everything we have to replicate ----------
     primitives = [p for p in edb.modeler.primitives if adapter.is_primitive_to_copy(p)]
