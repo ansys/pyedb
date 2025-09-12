@@ -1177,21 +1177,19 @@ class Modeler(object):
                         all_voids.extend(p.voids)
             united = GrpcPolygonData.unite(list_polygon_data)
             for item in united:
-                for v in all_voids:
-                    for void in v:
-                        if item.intersection_type(void.polygon_data) == 2:
-                            item.add_hole(void.polygon_data)
+                for void in all_voids:
+                    if item.intersection_type(void.polygon_data) == 2:
+                        item.add_hole(void.polygon_data)
                 self.create_polygon(item, layer_name=lay, voids=[], net_name=net)
-            for v in all_voids:
-                for void in v:
-                    for poly in poly_by_nets[net]:  # pragma no cover
-                        if void.polygon_data.intersection_type(poly.polygon_data).value >= 2:
-                            try:
-                                id = delete_list.index(poly)
-                            except ValueError:
-                                id = -1
-                            if id >= 0:
-                                delete_list.pop(id)
+            for void in all_voids:
+                for poly in poly_by_nets[net]:  # pragma no cover
+                    if void.polygon_data.intersection_type(poly.polygon_data).value >= 2:
+                        try:
+                            id = delete_list.index(poly)
+                        except ValueError:
+                            id = -1
+                        if id >= 0:
+                            delete_list.pop(id)
             for poly in list(set(delete_list)):
                 poly.delete()
 

@@ -53,7 +53,7 @@ class Circle(GrpcCircle, Primitive):
             raise ValueError("Layer must be provided to create a circle.")
         if center_x is None or center_y is None:
             raise ValueError("Center x and y values must be provided to create a circle.")
-        edb_object = super().create(
+        edb_object = GrpcCircle.create(
             layout=layout,
             layer=layer,
             net=net,
