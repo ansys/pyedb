@@ -824,21 +824,21 @@ class PadstackInstance(GrpcPadstackInstance):
             rad_l = rad_large
 
         layout = self._pedb.active_layout
-        cloned_circle = Circle.create(
-            layout,
-            self.start_layer,
-            self.net,
-            Value(self.position[0]),
-            Value(self.position[1]),
-            Value(rad_u),
+        cloned_circle = Circle(self._pedb).create(
+            layout=layout,
+            layer=self.start_layer,
+            net=self.net,
+            center_x=Value(self.position[0]),
+            center_y=Value(self.position[1]),
+            radius=Value(rad_u),
         )
-        cloned_circle2 = Circle.create(
-            layout,
-            self.stop_layer,
-            self.net,
-            Value(self.position[0]),
-            Value(self.position[1]),
-            Value(rad_l),
+        cloned_circle2 = Circle(self._pedb).create(
+            layout=layout,
+            layer=self.stop_layer,
+            net=self.net,
+            center_x=Value(self.position[0]),
+            center_y=Value(self.position[1]),
+            radius=Value(rad_l),
         )
 
         s3d = GrpcStructure3D.create(layout, generate_unique_name("via3d_" + self.aedt_name.replace("via_", ""), n=3))
