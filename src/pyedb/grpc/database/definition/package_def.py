@@ -193,7 +193,11 @@ class PackageDef(GrpcPackageDef):
         """
         try:
             return HeatSink(self._pedb, super().heat_sink)
-        except:
+        except Exception as e:
+            settings.logger.error(
+                f"A(n) {type(e).__name__} error occurred while attempting to access 'heatsink' "
+                f"property for object {self}: {str(e)}"
+            )
             pass
 
     @property

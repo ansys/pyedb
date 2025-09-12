@@ -124,8 +124,11 @@ class Net(GrpcNet):
             if component:
                 try:
                     components[component.name] = component
-                except:
-                    pass
+                except Exception as e:
+                    self._pedb.logger.error(
+                        f"A(n) {type(e).__name__} error occurred while attempting to access "
+                        f"'components' property for object {self} - Empty dict is returned: {str(e)}"
+                    )
         return components
 
     def find_dc_short(self, fix=False) -> list[list[str, str]]:

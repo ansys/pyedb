@@ -72,23 +72,13 @@ def unique_string_list(element_list, only_string=True):  # pragma: no cover
     -------
 
     """
-    if element_list:
-        if isinstance(element_list, list):
-            element_list = set(element_list)
-        elif isinstance(element_list, str):
-            element_list = [element_list]
-        else:
-            error_message = "Invalid list data"
-            try:
-                error_message += " {}".format(element_list)
-            except:
-                pass
-            raise Exception(error_message)
+    if isinstance(element_list, str):
+        element_list = [element_list]
 
-        if only_string and any(not isinstance(x, str) for x in element_list):
-            raise TypeError("Invalid list entries, some elements are not of type string.")
+    if only_string and any(not isinstance(x, str) for x in element_list):
+        raise TypeError("Invalid list entries, some elements are not of type string.")
 
-    return element_list
+    return list(set(element_list))
 
 
 def string_list(element_list):  # pragma: no cover

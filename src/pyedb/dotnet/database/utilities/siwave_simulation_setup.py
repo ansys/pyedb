@@ -15,6 +15,7 @@ from pyedb.dotnet.database.sim_setup_data.io.siwave import (
 )
 from pyedb.dotnet.database.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import is_linux
+from pyedb.generic.settings import settings
 
 
 def _parse_value(v):
@@ -79,8 +80,10 @@ def clone_edb_sim_setup_info(source, target):
             except TypeError:
                 try:
                     setter.__setattr__(k, str(value))
-                except:
-                    pass
+                except Exception as e:
+                    settings.logger.warning(
+                        f"Failed to update attribute {k} with value {value} - {type(e).__name__}: {str(e)}"
+                    )
 
 
 class SiwaveSimulationSetup(SimulationSetup):

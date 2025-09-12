@@ -1190,8 +1190,11 @@ class Stackup(LayerCollection):
                         sball_prop = cmp_prop.solder_ball_property
                         sball_prop.placement = GrpcSolderballPlacement.ABOVE_PADSTACK
                         cmp_prop.solder_ball_property = sball_prop
-                except:
-                    pass
+                except Exception as e:
+                    self._logger.warning(
+                        f"A(n) {type(e).__name__} error occurred while attempting to update "
+                        f"solder_ball_property for component {cmp}: {str(e)}"
+                    )
                 if cmp_type == GrpcComponentType.IC:
                     die_prop = cmp_prop.die_property
                     chip_orientation = die_prop.die_orientation
@@ -1237,8 +1240,11 @@ class Stackup(LayerCollection):
             try:
                 if val.solder_ball_height and val.placement_layer == layer_name:
                     height = val.solder_ball_height
-            except:
-                pass
+            except Exception as e:
+                self._logger.error(
+                    f"A(n) {type(e).__name__} error occurred while attempting to retrieve solder_height "
+                    f"for layer {layer_name} - Default value of 0.0 is returned: {str(e)}"
+                )
         return height
 
     def _remove_solder_pec(self, layer_name):

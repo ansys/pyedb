@@ -1853,8 +1853,11 @@ class Edb:
                                         convert_py_list_to_net_list(list(obj_data)),
                                         convert_py_list_to_net_list(voids_poly),
                                     )
-                        except:
-                            pass
+                        except Exception as e:
+                            self.logger.error(
+                                f"A(n) {type(e).__name__} error occurred in method _create_conformal of "
+                                f"class Edb at iteration {k} for data {i}: {str(e)}"
+                            )
                         finally:
                             unite_polys.extend(list(obj_data))
             _poly_unite = self.core.Geometry.PolygonData.Unite(convert_py_list_to_net_list(unite_polys))
@@ -2292,8 +2295,8 @@ class Edb:
                 if os.path.exists(source) and not os.path.exists(target):
                     try:
                         shutil.copy(source, target)
-                    except:
-                        pass
+                    except Exception as e:
+                        self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         elif open_cutout_at_end:
             self._active_cell = _cutout
             self._init_objects()
@@ -2978,8 +2981,8 @@ class Edb:
                     try:
                         shutil.copy(source, target)
                         self.logger.warning("aedb def file manually created.")
-                    except:
-                        pass
+                    except Exception as e:
+                        self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(polygonData.GetPolygonWithoutArcs().Points)]
 
     def create_cutout_on_point_list(
