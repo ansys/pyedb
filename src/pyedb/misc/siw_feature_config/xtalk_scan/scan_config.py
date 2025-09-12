@@ -22,7 +22,6 @@
 
 from enum import Enum
 import os
-import xml.etree as ET
 
 from pyedb.generic.general_methods import ET
 from pyedb.misc.siw_feature_config.xtalk_scan.fd_xtalk_scan_config import (
