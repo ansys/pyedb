@@ -40,6 +40,7 @@ from __future__ import (
     division,
 )
 
+import ast
 import os
 import re
 import types
@@ -1649,7 +1650,7 @@ class Variable(object):
     def numeric_value(self):  # pragma: no cover
         """Numeric part of the expression as a float value."""
         if is_array(self._value):
-            return list(eval(self._value))
+            return list(ast.literal_eval(self._value))
         try:
             var_obj = self._aedt_obj.GetChildObject("Variables").GetChildObject(self._variable_name)
             val, _ = decompose_variable_value(var_obj.GetPropEvaluatedValue("EvaluatedValue"))
