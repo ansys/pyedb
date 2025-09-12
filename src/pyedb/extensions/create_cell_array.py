@@ -270,6 +270,9 @@ class _GrpcAdapter(_BaseAdapter):
             width=path.width,
             layer_name=path.layer.name,
             net_name=path.net.name,
+            corner_style=path.corner_style,
+            start_cap_style=path.end_cap1,
+            end_cap_style=path.end_cap2,
         )
 
     def duplicate_standalone_via(self, via, dx, dy, i, j):
@@ -364,11 +367,15 @@ class _DotNetAdapter(_BaseAdapter):
         moved_path = path._edb_object.GetCenterLine()
         moved_path.Move(vector._edb_object)
         moved_path = [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(moved_path.Points)]
+        end_caps = path._edb_object.GetEndCapStyle()
+
         self.edb.modeler.create_trace(
             path_list=list(moved_path),
             width=path.width,
             layer_name=path.layer.name,
             net_name=path.net.name,
+            start_cap_style=str(end_caps[1]),
+            end_cap_style=str(end_caps[2]),
         )
 
     def duplicate_standalone_via(self, via, dx, dy, i, j):
