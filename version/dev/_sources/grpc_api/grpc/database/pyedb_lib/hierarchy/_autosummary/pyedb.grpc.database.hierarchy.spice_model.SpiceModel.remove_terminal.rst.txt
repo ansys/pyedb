@@ -1,0 +1,6 @@
+remove\_terminal
+================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.spice_model
+
+.. automethod:: SpiceModel.remove_terminal

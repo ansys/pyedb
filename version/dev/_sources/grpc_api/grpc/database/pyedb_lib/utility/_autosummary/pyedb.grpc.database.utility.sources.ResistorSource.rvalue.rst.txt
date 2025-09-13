@@ -1,0 +1,6 @@
+rvalue
+======
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoproperty:: ResistorSource.rvalue

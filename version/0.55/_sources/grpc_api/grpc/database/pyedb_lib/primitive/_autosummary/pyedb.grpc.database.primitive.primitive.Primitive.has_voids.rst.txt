@@ -1,0 +1,6 @@
+has\_voids
+==========
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. autoproperty:: Primitive.has_voids

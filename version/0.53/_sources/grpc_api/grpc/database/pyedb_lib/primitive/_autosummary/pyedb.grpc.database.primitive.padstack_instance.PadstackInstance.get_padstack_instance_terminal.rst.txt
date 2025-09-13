@@ -1,0 +1,6 @@
+get\_padstack\_instance\_terminal
+=================================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. automethod:: PadstackInstance.get_padstack_instance_terminal

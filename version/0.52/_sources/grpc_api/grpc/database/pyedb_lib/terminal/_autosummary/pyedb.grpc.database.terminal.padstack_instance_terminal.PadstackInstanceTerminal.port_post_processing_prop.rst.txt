@@ -1,0 +1,6 @@
+port\_post\_processing\_prop
+============================
+
+.. currentmodule:: pyedb.grpc.database.terminal.padstack_instance_terminal
+
+.. autoproperty:: PadstackInstanceTerminal.port_post_processing_prop

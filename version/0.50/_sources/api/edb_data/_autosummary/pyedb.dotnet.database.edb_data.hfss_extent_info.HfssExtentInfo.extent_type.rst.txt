@@ -1,0 +1,6 @@
+extent\_type
+============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.extent_type

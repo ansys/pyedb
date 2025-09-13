@@ -1,0 +1,6 @@
+msg
+===
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_solver_settings
+
+.. autoproperty:: HFSSSolverSettings.msg

@@ -1,0 +1,6 @@
+add\_member
+===========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. automethod:: Component.add_member

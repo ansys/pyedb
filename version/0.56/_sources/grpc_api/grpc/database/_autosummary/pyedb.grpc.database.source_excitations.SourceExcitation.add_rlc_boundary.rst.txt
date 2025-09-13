@@ -1,0 +1,6 @@
+add\_rlc\_boundary
+==================
+
+.. currentmodule:: pyedb.grpc.database.source_excitations
+
+.. automethod:: SourceExcitation.add_rlc_boundary

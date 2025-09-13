@@ -1,0 +1,6 @@
+get\_product\_property\_ids
+===========================
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. automethod:: Rectangle.get_product_property_ids

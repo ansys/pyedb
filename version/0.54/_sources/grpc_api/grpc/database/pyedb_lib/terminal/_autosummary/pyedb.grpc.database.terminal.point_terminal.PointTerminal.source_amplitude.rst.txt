@@ -1,0 +1,6 @@
+source\_amplitude
+=================
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. autoproperty:: PointTerminal.source_amplitude

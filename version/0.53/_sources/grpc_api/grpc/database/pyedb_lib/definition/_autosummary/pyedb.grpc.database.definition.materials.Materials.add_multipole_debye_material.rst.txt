@@ -1,0 +1,6 @@
+add\_multipole\_debye\_material
+===============================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Materials.add_multipole_debye_material

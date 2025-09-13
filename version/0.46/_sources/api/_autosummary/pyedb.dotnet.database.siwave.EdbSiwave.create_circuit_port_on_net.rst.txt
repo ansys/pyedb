@@ -1,0 +1,6 @@
+create\_circuit\_port\_on\_net
+==============================
+
+.. currentmodule:: pyedb.dotnet.database.siwave
+
+.. automethod:: EdbSiwave.create_circuit_port_on_net

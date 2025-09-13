@@ -1,0 +1,6 @@
+component
+=========
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. autoproperty:: Circle.component

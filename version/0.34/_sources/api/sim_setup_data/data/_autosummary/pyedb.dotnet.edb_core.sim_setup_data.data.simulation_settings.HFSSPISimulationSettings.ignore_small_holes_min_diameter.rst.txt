@@ -1,0 +1,6 @@
+ignore\_small\_holes\_min\_diameter
+===================================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.ignore_small_holes_min_diameter

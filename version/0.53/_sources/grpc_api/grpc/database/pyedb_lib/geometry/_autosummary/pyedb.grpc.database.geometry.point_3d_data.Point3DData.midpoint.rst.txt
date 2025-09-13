@@ -1,0 +1,6 @@
+midpoint
+========
+
+.. currentmodule:: pyedb.grpc.database.geometry.point_3d_data
+
+.. automethod:: Point3DData.midpoint

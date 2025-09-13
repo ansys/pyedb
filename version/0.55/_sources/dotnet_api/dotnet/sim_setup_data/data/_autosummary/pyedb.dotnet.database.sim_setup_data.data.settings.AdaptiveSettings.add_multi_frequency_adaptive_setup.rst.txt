@@ -1,0 +1,6 @@
+add\_multi\_frequency\_adaptive\_setup
+======================================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+.. automethod:: AdaptiveSettings.add_multi_frequency_adaptive_setup

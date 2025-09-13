@@ -1,0 +1,6 @@
+boundary\_type
+==============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: GapPort.boundary_type

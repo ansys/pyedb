@@ -1,0 +1,24 @@
+﻿Dielectric
+==========
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoclass:: Dielectric
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Dielectric.loss_tg
+      Dielectric.name
+      Dielectric.permittivity
+   
+   

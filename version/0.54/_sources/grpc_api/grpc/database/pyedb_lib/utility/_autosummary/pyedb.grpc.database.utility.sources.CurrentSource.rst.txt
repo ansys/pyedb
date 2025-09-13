@@ -1,0 +1,33 @@
+﻿CurrentSource
+=============
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoclass:: CurrentSource
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CurrentSource.amplitude
+      CurrentSource.c_value
+      CurrentSource.create_physical_resistor
+      CurrentSource.impedance
+      CurrentSource.l_value
+      CurrentSource.magnitude
+      CurrentSource.name
+      CurrentSource.negative_node
+      CurrentSource.phase
+      CurrentSource.positive_node
+      CurrentSource.r_value
+      CurrentSource.source_type
+   
+   

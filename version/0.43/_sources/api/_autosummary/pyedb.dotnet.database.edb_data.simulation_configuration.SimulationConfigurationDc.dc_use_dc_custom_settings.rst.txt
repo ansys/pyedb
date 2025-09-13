@@ -1,0 +1,6 @@
+dc\_use\_dc\_custom\_settings
+=============================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationDc.dc_use_dc_custom_settings
