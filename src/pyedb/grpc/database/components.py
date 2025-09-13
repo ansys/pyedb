@@ -1075,7 +1075,9 @@ class Components(object):
             return False
         new_cmp = GrpcComponentGroup.create(self._active_layout, component_name, compdef.name)
         if hasattr(pins[0], "component") and pins[0].component:
-            hosting_component_location = pins[0].component.transform
+            hosting_component_location = None
+            if not pins[0].component.is_null:
+                hosting_component_location = pins[0].component.transform
         else:
             hosting_component_location = None
         if not len(pins) == len(compdef.component_pins):

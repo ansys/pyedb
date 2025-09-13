@@ -56,6 +56,8 @@ from pyedb.dotnet.database.utilities.obj_base import ObjBase
 
 
 def primitive_cast(pedb, edb_object):
+    if not hasattr(edb_object, "GetPrimitiveType"):
+        return
     if edb_object.GetPrimitiveType().ToString() == "Rectangle":
         return EdbRectangle(edb_object, pedb)
     elif edb_object.GetPrimitiveType().ToString() == "Circle":
@@ -235,7 +237,7 @@ class Layout(ObjBase):
         primitives = list(self._edb_object.Primitives)
         if len(primitives) != len(self._primitives):
             self._primitives = [primitive_cast(self._pedb, p) for p in primitives]
-        return self._primitives
+        return [p for p in self._primitives if p is not None]  # non stackup primitives are None
 
     @property
     def primitives_by_aedt_name(self) -> dict:

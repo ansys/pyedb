@@ -449,3 +449,47 @@ class Path(GrpcPath, Primitive):
                 "sharp": GrpcPatCornerType.SHARP,
             }
             self.corner_style = mapping[corner_type]
+
+    @property
+    def end_cap1(self) -> str:
+        """Path's start style as string.
+
+        Returns
+        -------
+        str
+            Values supported for the setter `"flat"`, `"round"`, `"extended"`
+
+        """
+        return self.get_end_cap_style()[0].name.lower()
+
+    @end_cap1.setter
+    def end_cap1(self, end_cap_style):
+        if isinstance(end_cap_style, str):
+            mapping = {
+                "flat": GrpcPathEndCapType.FLAT,
+                "round": GrpcPathEndCapType.ROUND,
+                "extended": GrpcPathEndCapType.EXTENDED,
+            }
+            self.set_end_cap_style(mapping[end_cap_style], self.get_end_cap_style()[1].value)
+
+    @property
+    def end_cap2(self) -> str:
+        """Path's end style as string.
+
+        Returns
+        -------
+        str
+            Values supported for the setter `"flat"`, `"round"`, `"extended"`
+
+        """
+        return self.get_end_cap_style()[1].name.lower()
+
+    @end_cap2.setter
+    def end_cap2(self, end_cap_style):
+        if isinstance(end_cap_style, str):
+            mapping = {
+                "flat": GrpcPathEndCapType.FLAT,
+                "round": GrpcPathEndCapType.ROUND,
+                "extended": GrpcPathEndCapType.EXTENDED,
+            }
+            self.set_end_cap_style(self.get_end_cap_style()[0].value, mapping[end_cap_style])
