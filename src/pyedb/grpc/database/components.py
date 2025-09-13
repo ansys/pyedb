@@ -1336,8 +1336,6 @@ class Components(object):
                     else:
                         val.edbcomponent.delete()
                         deleted_comps.append(comp)
-            else:
-                self._pedb.logger.warning(f"Component {comp}: does not have pins attribute.")
         if not deactivate_only:
             self.refresh_components()
         self._pedb.logger.info("Deleted {} components".format(len(deleted_comps)))

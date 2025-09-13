@@ -27,12 +27,10 @@ from functools import lru_cache
 from typing import Any, Sequence, Tuple
 import warnings
 
-from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType, PolygonData as GrpcPolygonData
 import numpy as np
 from shapely import contains_xy as _contains_xy
-from shapely.geometry import Point as ShapelyPoint
-from shapely.geometry import Polygon as ShapelyPolygon
+from shapely.geometry import Point as ShapelyPoint, Polygon as ShapelyPolygon
 
 from pyedb.misc.decorators import execution_timer
 
@@ -66,8 +64,7 @@ def extent_from_nets(edb, signal_nets, expansion, extent_type, **kw):
 
     if extent_type.lower() in ["conforming", "conformal"]:
         warnings.warn(
-            "'Conforming' extent type is not recommended and CPU expensive. "
-            "Use 'convex_hull' or 'bounding_box instead."
+            "'Conforming' extent type is not recommended and CPU expensive. Use 'convex_hull' or 'bounding_box instead."
         )
         poly = edb.layout.expanded_extent(
             nets=nets,
@@ -94,9 +91,7 @@ def extent_from_nets(edb, signal_nets, expansion, extent_type, **kw):
             ((bbox[0].x - edb.value(expansion)).value, (bbox[1].y + edb.value(expansion)).value),
         ]
     else:
-        raise ValueError(
-            f"Unknown extent type: {extent_type}. " "Supported: 'Conforming', 'ConvexHull', 'BoundingBox'."
-        )
+        raise ValueError(f"Unknown extent type: {extent_type}. Supported: 'Conforming', 'ConvexHull', 'BoundingBox'.")
 
 
 def classify_intersection(poly1_pts, poly2_pts) -> Tuple[bool, str]:
@@ -168,9 +163,10 @@ def _cached_pin_array(edb):
 
 @execution_timer("primitive_cache")
 @lru_cache(maxsize=1)
-def _cached_primitive_array(edb):
+def _cached_primitive_array(preloaded_primitives):
+    preloaded_primitives = list(preloaded_primitives)
     handles, nets, pts_per_prim = [], [], []
-    for p in edb.modeler.primitives:
+    for p in preloaded_primitives:
         net_name = _safe_net_name(p)
         poly_data = getattr(p, "polygon_data", None)
         pts = [(pt.x.value, pt.y.value) for pt in poly_data.points] if poly_data else None
@@ -193,11 +189,11 @@ def classify_primitives_batch(
     ext_poly = ShapelyPolygon(extent_pts)
 
     for handle, net_name, pts in zip(handles, net_arr, pts_per_prim):
-        if net_name is None or net_name not in keep_nets:
-            prims_del.append(handle)
-            if getattr(handle, "has_void", None) is not None:
-                prims_del.append(handle.voids)
-            continue
+        # if net_name is None or net_name not in keep_nets:
+        #    prims_del.append(handle)
+        #     if getattr(handle, "has_void", None) is not None:
+        #       prims_del.append(handle.voids)
+        #    continue
         if pts is None or len(pts) < 3:
             prims_del.append(handle)
             continue
@@ -240,7 +236,10 @@ def cutout_worker(
         fut_pins = pool.submit(pick_pins, pin_handles, pin_nets, pin_xy, keep_nets, extent_points)
 
         # primitives
-        prim_handles, prim_nets, pts_per_prim = _cached_primitive_array(edb)
+        preloaded_primitives = []
+        for net_name in keep_nets:
+            preloaded_primitives.extend(edb.modeler.primitives_by_net.get(net_name, []))
+        prim_handles, prim_nets, pts_per_prim = _cached_primitive_array(tuple(preloaded_primitives))
         fut_prims = pool.submit(
             classify_primitives_batch,
             prim_handles,
@@ -254,6 +253,7 @@ def cutout_worker(
         # wait for both
         pins_del = fut_pins.result()
         prims_del, prims_clip = fut_prims.result()
+        prims_del.extend(v for k, vs in edb.modeler.primitives_by_net.items() if k not in keep_nets for v in vs)
 
     # ------------------------------------------------------------------
     # Single-threaded WRITE phase
@@ -264,9 +264,12 @@ def cutout_worker(
         n.delete()
     for p in pins_del:
         p.delete()
-    for p in prims_del:
-        p.delete()
+    import time
 
+    start = time.time()
+    print("starting batch deleting primitive")
+    edb.modeler.delete_batch_primitives(prims_del)
+    print(f"deleting primitive took {time.time() - start:.2f} seconds")
     extent = GrpcPolygonData(points=[[edb.value(pt[0]), edb.value(pt[1])] for pt in extent_points])
     for prim in prims_clip:
         clipped_polys = GrpcPolygonData.intersect(extent, prim[0].polygon_data)
