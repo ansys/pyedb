@@ -565,8 +565,11 @@ class SourceExcitation:
                     net_name = net.name
                     if net_name:
                         net_list.append(net_name)
-                except:
-                    pass
+                except Exception as e:
+                    self._logger.warning(
+                        f"A(n) {type(e).__name__} error occurred while attempting to append 'name' "
+                        f"of net {net} to list of nets {net_list}: {str(e)}"
+                    )
         if isinstance(reference_net, str) or isinstance(reference_net, Net):
             reference_net = [reference_net]
         _reference_net = [ref.name for ref in reference_net if isinstance(ref, Net)]
