@@ -25,20 +25,18 @@ This module contains these classes: `EdbLayout` and `Shape`.
 """
 
 import math
-from typing import Any, Dict, List, Optional, Tuple, Union
-import warnings
+from typing import Any, Dict, List, Optional, Union
 
 from ansys.edb.core.geometry.arc_data import ArcData as GrpcArcData
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import (
+    PolygonData as GrpcPolygonData,
     PolygonSenseType as GrpcPolygonSenseType,
 )
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
 from ansys.edb.core.inner.exceptions import InvalidArgumentException
 from ansys.edb.core.primitive.bondwire import BondwireType as GrpcBondwireType
-from ansys.edb.core.primitive.path import PathCornerType as GrpcPathCornerType
-from ansys.edb.core.primitive.path import PathEndCapType as GrpcPathEndCapType
+from ansys.edb.core.primitive.path import PathCornerType as GrpcPathCornerType, PathEndCapType as GrpcPathEndCapType
 from ansys.edb.core.primitive.rectangle import (
     RectangleRepresentationType as GrpcRectangleRepresentationType,
 )
@@ -64,7 +62,7 @@ class Modeler(object):
     >>> edb_layout = edbapp.modeler
     """
 
-    def __getitem__(self, name: Union[str, int]) -> Optional[Primitive]:
+    def __getitem__(self, name: Union[str, int]) -> Primitive:
         """Get a primitive by name or ID.
 
         Parameters
@@ -74,7 +72,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent` or None
+        :class:`pyedb.grpc.database.primitive.primitive.Primitive`
             Primitive instance if found, None otherwise.
 
         Raises
@@ -82,21 +80,151 @@ class Modeler(object):
         TypeError
             If name is not str or int.
         """
-        for i in self.primitives:
-            if (
-                (isinstance(name, str) and i.aedt_name == name)
-                or (isinstance(name, str) and i.aedt_name == name.replace("__", "_"))
-                or (isinstance(name, int) and i.id == name)
-            ):
-                return i
-        self._pedb.logger.error("Primitive not found.")
-        return
+
+        if isinstance(name, int):
+            return self._primitives.get(name)
+        return self.primitives_by_name.get(name)
 
     def __init__(self, p_edb) -> None:
         """Initialize Modeler instance."""
         self._pedb = p_edb
-        self.__primitives = []
-        self.__primitives_by_layer = {}
+        # Core cache
+        self._primitives: dict[str, Primitive] = {}
+
+        # Lazy indexes
+        self._primitives_by_name: dict[str, Primitive] | None = None
+        self._primitives_by_net: dict[str, list[Primitive]] | None = None
+        self._primitives_by_layer: dict[str, list[Primitive]] | None = None
+        self._primitives_by_layer_and_net: Dict[str, Dict[str, List[Primitive]]] | None = None
+
+        # ============================================================
+
+    # Cache management
+    # ============================================================
+
+    def _reload_all(self):
+        """Force reload of all primitives and reset indexes."""
+        self._primitives = {p.edb_uid: p for p in self._pedb.layout.primitives}
+        self._primitives_by_name = None
+        self._primitives_by_net = None
+        self._primitives_by_layer = None
+        self._primitives_by_layer_and_net = None
+
+    def _add_primitive(self, prim: Any):
+        """Add primitive wrapper to caches."""
+        self._primitives[prim.edb_uid] = prim
+        if self._primitives_by_name is not None:
+            self._primitives_by_name[prim.aedt_name] = prim
+        if self._primitives_by_net is not None and hasattr(prim, "net"):
+            self._primitives_by_net.setdefault(prim.net, []).append(prim)
+        if hasattr(prim, "layer"):
+            if self._primitives_by_layer is not None and prim.layer_name:
+                self._primitives_by_layer.setdefault(prim.layer_name, []).append(prim)
+
+    def _remove_primitive(self, prim: Primitive):
+        """Remove primitive wrapper from all caches efficiently and safely."""
+        uid = prim.edb_uid
+
+        # 1. Remove from primary cache
+        self._primitives.pop(uid, None)
+
+        # 2. Remove from name cache if initialized
+        if self._primitives_by_name is not None:
+            self._primitives_by_name.pop(prim.aedt_name, None)
+
+        # 3. Remove from net cache if initialized
+        if self._primitives_by_net is not None and hasattr(prim, "net") and not prim.net.is_null:
+            net_name = prim.net.name
+            net_prims = self._primitives_by_net.get(net_name)
+            if net_prims:
+                try:
+                    net_prims.remove(prim)
+                except ValueError:
+                    pass  # Not found, skip
+                if not net_prims:
+                    self._primitives_by_net.pop(net_name, None)
+
+        # 4. Remove from layer cache if initialized
+        if self._primitives_by_layer is not None and hasattr(prim, "layer") and prim.layer_name:
+            layer_name = prim.layer.name
+            layer_prims = self._primitives_by_layer.get(layer_name)
+            if layer_prims:
+                try:
+                    layer_prims.remove(prim)
+                except ValueError:
+                    pass
+                if not layer_prims:
+                    self._primitives_by_layer.pop(layer_name, None)
+
+        # 5. Remove from layer+net cache if initialized
+        if self._primitives_by_layer_and_net is not None:
+            if hasattr(prim, "layer") and hasattr(prim, "net") and not prim.net.is_null:
+                layer_name = prim.layer.name
+                net_name = prim.net.name
+                layer_dict = self._primitives_by_layer_and_net.get(layer_name)
+                if layer_dict:
+                    net_list = layer_dict.get(net_name)
+                    if net_list:
+                        try:
+                            net_list.remove(prim)
+                        except ValueError:
+                            pass
+                        if not net_list:
+                            layer_dict.pop(net_name, None)
+                        if not layer_dict:
+                            self._primitives_by_layer_and_net.pop(layer_name, None)
+
+    @property
+    def primitives(self) -> list[Primitive]:
+        if not self._primitives:
+            self._reload_all()
+        return list(self._primitives.values())
+
+    @property
+    def primitives_by_name(self):
+        if self._primitives_by_name is None:
+            self._primitives_by_name = {p.aedt_name: p for p in self.primitives}
+        return self._primitives_by_name
+
+    @property
+    def primitives_by_net(self):
+        if self._primitives_by_net is None:
+            d = {}
+            for p in self.primitives:
+                if hasattr(p, "net"):
+                    d.setdefault(p.net.name, []).append(p)
+            self._primitives_by_net = d
+        return self._primitives_by_net
+
+    @property
+    def primitives_by_layer(self):
+        if self._primitives_by_layer is None:
+            d = {}
+            for p in self.primitives:
+                if p.layer_name:
+                    d.setdefault(p.layer_name, []).append(p)
+            self._primitives_by_layer = d
+        return self._primitives_by_layer
+
+    @property
+    def primitives_by_layer_and_net(self) -> Dict[str, Dict[str, List[Primitive]]]:
+        """Return all primitives indexed first by layer, then by net.
+
+        Returns
+        -------
+        dict
+            Nested dictionary:  layer -> net -> list[Primitive]
+        """
+        if self._primitives_by_layer_and_net is None:
+            idx: Dict[str, Dict[str, List[Primitive]]] = {}
+            for prim in self.primitives:
+                if not prim.layer_name or not hasattr(prim, "net") or prim.net.is_null:
+                    continue
+                layer = prim.layer_name
+                net = prim.net.name
+                idx.setdefault(layer, {}).setdefault(net, []).append(prim)
+            self._primitives_by_layer_and_net = idx
+        return self._primitives_by_layer_and_net
 
     @property
     def _edb(self) -> Any:
@@ -215,17 +343,6 @@ class Modeler(object):
             return False
 
     @property
-    def primitives(self) -> List[Primitive]:
-        """All primitives in the layout.
-
-        Returns
-        -------
-        list
-            List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` objects.
-        """
-        return self._pedb.layout.primitives
-
-    @property
     def polygons_by_layer(self) -> Dict[str, List[Primitive]]:
         """Primitives organized by layer names.
 
@@ -234,47 +351,13 @@ class Modeler(object):
         dict
             Dictionary where keys are layer names and values are lists of polygons.
         """
-        _primitives_by_layer = {}
+        polygon_by_layer = {}
         for lay in self.layers:
-            _primitives_by_layer[lay] = self.get_polygons_by_layer(lay)
-        return _primitives_by_layer
-
-    @property
-    def primitives_by_net(self) -> Dict[str, List[Primitive]]:
-        """Primitives organized by net names.
-
-        Returns
-        -------
-        dict
-            Dictionary where keys are net names and values are lists of primitives.
-        """
-        _prim_by_net = {}
-        for net, net_obj in self._pedb.nets.nets.items():
-            _prim_by_net[net] = [i for i in net_obj.primitives]
-        return _prim_by_net
-
-    @property
-    def primitives_by_layer(self) -> Dict[str, List[Primitive]]:
-        """Primitives organized by layer names.
-
-        Returns
-        -------
-        dict
-            Dictionary where keys are layer names and values are lists of primitives.
-        """
-        _primitives_by_layer = {}
-        for lay in self.layers:
-            _primitives_by_layer[lay] = []
-        for lay in self._pedb.stackup.non_stackup_layers:
-            _primitives_by_layer[lay] = []
-        for i in self._layout.primitives:
-            try:
-                lay = i.layer.name
-                if lay in _primitives_by_layer:
-                    _primitives_by_layer[lay].append(i)
-            except (InvalidArgumentException, AttributeError):
-                pass
-        return _primitives_by_layer
+            if lay in self.primitives_by_layer:
+                polygon_by_layer[lay] = [prim for prim in self.primitives_by_layer[lay] if prim.type == "polygon"]
+            else:
+                polygon_by_layer[lay] = []
+        return polygon_by_layer
 
     @property
     def rectangles(self) -> List[Rectangle]:
@@ -335,15 +418,10 @@ class Modeler(object):
         list
             List of polygon objects.
         """
-        objinst = []
-        for el in self.polygons:
-            if el.layer.name == layer_name:
-                if not el.net.is_null:
-                    if net_list and el.net.name in net_list:
-                        objinst.append(el)
-                    else:
-                        objinst.append(el)
-        return objinst
+        polygons = self.polygons_by_layer.get(layer_name, [])
+        if net_list:
+            polygons = [p for p in polygons if p.net_name in net_list]
+        return polygons
 
     def get_primitive_by_layer_and_point(
         self,
@@ -620,7 +698,7 @@ class Modeler(object):
             polygon_data = points
         else:
             raise TypeError("Points must be a list of points or a PolygonData object.")
-        path = Path.create(
+        path = Path(self._pedb).create(
             layout=self._active_layout,
             layer=layer_name,
             net=net,
@@ -679,7 +757,7 @@ class Modeler(object):
             end_cap_style=end_cap_style,
             corner_style=corner_style,
         )
-
+        self._add_primitive(primitive)  # update cache
         return primitive
 
     def create_polygon(
@@ -709,7 +787,12 @@ class Modeler(object):
         """
         net = self._pedb.nets.find_or_create_net(net_name)
         if isinstance(points, list):
-            polygon_data = GrpcPolygonData(points=points)
+            new_points = []
+            for idx, i in enumerate(points):
+                new_points.append(
+                    GrpcPointData([Value(i[0], self._pedb.active_cell), Value(i[1], self._pedb.active_cell)])
+                )
+            polygon_data = GrpcPolygonData(points=new_points)
 
         elif isinstance(points, GrpcPolygonData):
             polygon_data = points
@@ -727,10 +810,13 @@ class Modeler(object):
                 self._logger.error("Failed to create void polygon data")
                 return False
             polygon_data.holes.append(void_polygon_data)
-        polygon = Polygon.create(layout=self._active_layout, layer=layer_name, net=net, polygon_data=polygon_data)
+        polygon = Polygon(self._pedb, None).create(
+            layout=self._active_layout, layer=layer_name, net=net, polygon_data=polygon_data
+        )
         if polygon.is_null or polygon_data is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
+        self._add_primitive(polygon)
         return Polygon(self._pedb, polygon)
 
     def create_rectangle(
@@ -778,12 +864,11 @@ class Modeler(object):
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "lower_left_upper_right":
-            rep_type = GrpcRectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT
-            rect = Rectangle.create(
+            rect = Rectangle(self._pedb).create(
                 layout=self._active_layout,
                 layer=layer_name,
                 net=edb_net,
-                rep_type=rep_type,
+                rep_type=representation_type,
                 param1=Value(lower_left_point[0]),
                 param2=Value(lower_left_point[1]),
                 param3=Value(upper_right_point[0]),
@@ -807,7 +892,7 @@ class Modeler(object):
                     height = Value(width)
             else:
                 height = Value(width)
-            rect = Rectangle.create(
+            rect = Rectangle(self._pedb).create(
                 layout=self._active_layout,
                 layer=layer_name,
                 net=edb_net,
@@ -820,7 +905,8 @@ class Modeler(object):
                 rotation=Value(rotation),
             )
         if not rect.is_null:
-            return Rectangle(self._pedb, rect)
+            self._add_primitive(rect)
+            return rect
         return False
 
     def create_circle(
@@ -848,7 +934,7 @@ class Modeler(object):
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
 
-        circle = Circle.create(
+        circle = Circle(self._pedb).create(
             layout=self._active_layout,
             layer=layer_name,
             net=edb_net,
@@ -857,7 +943,8 @@ class Modeler(object):
             radius=Value(radius),
         )
         if not circle.is_null:
-            return Circle(self._pedb, circle)
+            self._add_primitive(circle)
+            return circle
         return False
 
     def delete_primitives(self, net_names: Union[str, List[str]]) -> bool:
@@ -950,120 +1037,6 @@ class Modeler(object):
                 void_circle.delete()
         return True
 
-    @staticmethod
-    @staticmethod
-    def add_void(shape: "Primitive", void_shape: Union["Primitive", List["Primitive"]]) -> bool:
-        """Add void to shape.
-
-        Parameters
-        ----------
-        shape : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            Main shape.
-        void_shape : list or :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            Void shape(s).
-
-        Returns
-        -------
-        bool
-            True if successful, False otherwise.
-        """
-        if not isinstance(void_shape, list):
-            void_shape = [void_shape]
-        for void in void_shape:
-            if isinstance(void, Primitive):
-                shape._edb_object.add_void(void)
-                flag = True
-            else:
-                shape._edb_object.add_void(void)
-                flag = True
-            if not flag:
-                return flag
-        return True
-
-    def _createPolygonDataFromPolygon(self, shape):
-        points = shape.points
-        if not self._validatePoint(points[0]):
-            self._logger.error("Error validating point.")
-            return None
-        arcs = []
-        is_parametric = False
-        for i in range(len(points) - 1):
-            if i == 0:
-                startPoint = points[-1]
-                endPoint = points[i]
-            else:
-                startPoint = points[i - 1]
-                endPoint = points[i]
-
-            if not self._validatePoint(endPoint):
-                return None
-            startPoint = [Value(i) for i in startPoint]
-            endPoint = [Value(i) for i in endPoint]
-            if len(endPoint) == 2:
-                is_parametric = (
-                    is_parametric
-                    or startPoint[0].is_parametric
-                    or startPoint[1].is_parametric
-                    or endPoint[0].is_parametric
-                    or endPoint[1].is_parametric
-                )
-                arc = GrpcArcData(
-                    GrpcPointData([startPoint[0], startPoint[1]]), GrpcPointData([endPoint[0], endPoint[1]])
-                )
-                arcs.append(arc)
-            elif len(endPoint) == 3:
-                is_parametric = (
-                    is_parametric
-                    or startPoint[0].is_parametric
-                    or startPoint[1].is_parametric
-                    or endPoint[0].is_parametric
-                    or endPoint[1].is_parametric
-                    or endPoint[2].is_parametric
-                )
-                arc = GrpcArcData(
-                    GrpcPointData([startPoint[0], startPoint[1]]),
-                    GrpcPointData([endPoint[0], endPoint[1]]),
-                    kwarg={"height": endPoint[2]},
-                )
-                arcs.append(arc)
-            elif len(endPoint) == 5:
-                is_parametric = (
-                    is_parametric
-                    or startPoint[0].is_parametric
-                    or startPoint[1].is_parametric
-                    or endPoint[0].is_parametric
-                    or endPoint[1].is_parametric
-                    or endPoint[3].is_parametric
-                    or endPoint[4].is_parametric
-                )
-                if endPoint[2].is_cw:
-                    rotationDirection = GrpcPolygonSenseType.SENSE_CW
-                elif endPoint[2].is_ccw:
-                    rotationDirection = GrpcPolygonSenseType.SENSE_CCW
-                else:
-                    self._logger.error("Invalid rotation direction %s is specified.", endPoint[2])
-                    return None
-                arc = GrpcArcData(
-                    GrpcPointData(startPoint),
-                    GrpcPointData(endPoint),
-                )
-                # arc.direction = rotationDirection,
-                # arc.center = GrpcPointData([endPoint[3], endPoint[4]]),
-                arcs.append(arc)
-        polygon = GrpcPolygonData(arcs=arcs)
-        if not is_parametric:
-            return polygon
-        else:
-            k = 0
-            for pt in points:
-                point = [Value(i) for i in pt]
-                new_points = GrpcPointData(point)
-                if len(point) > 2:
-                    k += 1
-                polygon.set_point(k, new_points)
-                k += 1
-        return polygon
-
     def _validatePoint(self, point, allowArcs=True):
         if len(point) == 2:
             if not isinstance(point[0], (int, float, str)):
@@ -1110,17 +1083,6 @@ class Modeler(object):
         else:  # pragma: no cover
             self._logger.error("Arc point descriptor has incorrect number of elements (%s)", len(point))
             return False
-
-    def _createPolygonDataFromRectangle(self, shape):
-        # if not self._validatePoint(shape.pointA, False) or not self._validatePoint(shape.pointB, False):
-        #     return None
-        # pointA = GrpcPointData(pointA[0]), self._get_edb_value(shape.pointA[1])
-        # )
-        # pointB = self._edb.Geometry.PointData(
-        #     self._get_edb_value(shape.pointB[0]), self._get_edb_value(shape.pointB[1])
-        # )
-        # return self._edb.geometry.polygon_data.create_from_bbox((pointA, pointB))
-        pass
 
     def parametrize_trace_width(
         self,
@@ -1205,39 +1167,31 @@ class Modeler(object):
             all_voids = []
             list_polygon_data = []
             delete_list = []
-            if lay in list(self.polygons_by_layer.keys()):
-                for poly in self.polygons_by_layer[lay]:
-                    poly = poly
-                    if not poly.net.name in list(poly_by_nets.keys()):
-                        if poly.net.name:
-                            poly_by_nets[poly.net.name] = [poly]
-                    else:
-                        if poly.net.name:
-                            poly_by_nets[poly.net.name].append(poly)
-            for net in poly_by_nets:
+            for poly in self.polygons_by_layer.get(lay, []):
+                if poly.net_name:
+                    poly_by_nets.setdefault(poly.net_name, []).append(poly)
+            for net, polys in poly_by_nets.items():
                 if net in net_names_list or not net_names_list:
-                    for i in poly_by_nets[net]:
-                        list_polygon_data.append(i.polygon_data)
-                        delete_list.append(i)
-                        all_voids.append(i.voids)
-            a = GrpcPolygonData.unite(list_polygon_data)
-            for item in a:
-                for v in all_voids:
-                    for void in v:
-                        if item.intersection_type(void.polygon_data) == 2:
-                            item.add_hole(void.polygon_data)
+                    for p in polys:
+                        list_polygon_data.append(p.polygon_data)
+                        delete_list.append(p)
+                        all_voids.extend(p.voids)
+            united = GrpcPolygonData.unite(list_polygon_data)
+            for item in united:
+                for void in all_voids:
+                    if item.intersection_type(void.polygon_data) == 2:
+                        item.add_hole(void.polygon_data)
                 self.create_polygon(item, layer_name=lay, voids=[], net_name=net)
-            for v in all_voids:
-                for void in v:
-                    for poly in poly_by_nets[net]:  # pragma no cover
-                        if void.polygon_data.intersection_type(poly.polygon_data).value >= 2:
-                            try:
-                                id = delete_list.index(poly)
-                            except ValueError:
-                                id = -1
-                            if id >= 0:
-                                delete_list.pop(id)
-            for poly in delete_list:
+            for void in all_voids:
+                for poly in poly_by_nets[net]:  # pragma no cover
+                    if void.polygon_data.intersection_type(poly.polygon_data).value >= 2:
+                        try:
+                            id = delete_list.index(poly)
+                        except ValueError:
+                            id = -1
+                        if id >= 0:
+                            delete_list.pop(id)
+            for poly in list(set(delete_list)):
                 poly.delete()
 
         if delete_padstack_gemometries:
@@ -1266,7 +1220,7 @@ class Modeler(object):
         new_poly = poly.polygon_data.defeature(tol=tolerance)
         if not new_poly.points:
             self._pedb.logger.error(
-                f"Defeaturing on polygon {poly.id} returned empty polygon, tolerance threshold " f"might too large. "
+                f"Defeaturing on polygon {poly.id} returned empty polygon, tolerance threshold might too large. "
             )
             return False
         poly.polygon_data = new_poly
@@ -1429,7 +1383,9 @@ class Modeler(object):
             end_context=end_cell_inst,
             start_context=start_cell_inst,
         )
-        return Bondwire(self._pedb, bw)
+        bondwire = Bondwire(self._pedb, bw)
+        self._add_primitive(bondwire)
+        return bondwire
 
     def create_pin_group(
         self,
@@ -1501,185 +1457,31 @@ class Modeler(object):
                 obj.net = net_obj[0]
         return self._pedb.siwave.pin_groups[name]
 
-    @deprecate_argument_name(
-        {
-            "signal_list": "signal_nets",
-            "reference_list": "reference_nets",
-            "expansion_size": "expansion",
-            "point_list": "extent_points",
-        }
-    )
-    def cutout(
-        self,
-        signal_net: "list[str] | None" = None,
-        reference_nets: "list[str] | None" = None,
-        extent_points: List[Tuple[float, float]] = None,
-        expansion: Union[float, str] = "2mm",
-        extent_type: str = "bounding_box",
-        number_of_threads: int = None,
-        custom_extent_units: str = "mm",
-        include_partial_instances: bool = False,
-        check_terminals: bool = False,
-        preserve_components_with_model: bool = False,
-        simple_pad_check: bool = True,
-        keep_lines_as_paths: bool = False,
-        **kw,
-    ) -> "list[Tuple[float, float]]":
-        """
-        Create an EDB cutout and return the polygon that defines the resulting extent.
-
-        Two mutually exclusive modes are available:
-
-        1. Net-driven mode
-           Automatically derives the cutout polygon from the geometries that belong to
-           the requested nets.
-           Example:
-           >>> edb.cutout(
-           ...     signal_net=["DDR4_D0", "DDR4_D1"],
-           ...     reference_nets=["GND", "VDD"],
-           ...     expansion=1e-3,
-           ...     extent_type="convex_hull",
-           ... )
-
-        2. Polygon-driven mode
-           Uses an explicitly supplied polygon.
-           Example:
-           >>> edb.cutout(
-           ...     point_list=[(0, 0), (5e-3, 0), (5e-3, 5e-3), ([0, 5e-3)]],
-           ...     expansion=0,
-           ... )
+    @staticmethod
+    def add_void(shape: "Primitive", void_shape: Union["Primitive", List["Primitive"]]) -> bool:
+        """Add void to shape.
 
         Parameters
         ----------
-        signal_net : list[str] | None, default None
-            Nets to be kept inside the cutout.  Must be provided in net-driven mode.
-        reference_nets : list[str] | None, default None
-            Additional reference nets that are required for a meaningful cutout
-            (e.g., ground or supply nets).  Ignored in polygon-driven mode.
-        extent_points : List[Tuple[float, float]] | None, default None
-            Sequence of (x, y) coordinates (in meters) that define the user-supplied
-            polygon.  Must be provided in polygon-driven mode.
-        expansion : float or str default "2mm"
-            Extra margin (in meters) to enlarge the automatically computed bounding
-            polygon.
-        extent_type: {"bounding_box", "convex_hull", "conforming"}, default "bounding_box"
-            Strategy used to compute the extent when operating in net-driven mode. 'conforming' raises a warning
-            as it is not the recommended way to compute the extent and increase computational time.
-        number_of_threads : int | None, default None
-            Number of parallel threads to use while computing the cutout.  If *None*,
-            the implementation chooses the maximum number of threads available but will be limited by python GIL.
-            Therefore, cpu usage does not go above 25 percent if you have multiple cores.
-        custom_extent_units : str, default "mm"
-            Unit string used when interpreting legacy ``custom_extent`` arguments
-            supplied through ``**kw``.
-        include_partial_instances : bool, default False
-            If *True*, any component or via that intersects the extent polygon—even
-            partially—is retained; otherwise only fully contained instances are kept.
-        check_terminals : bool, default False
-            If *True*, the routine verifies that every signal net terminal is still
-            connected after the cutout is performed and raises a warning if not.
-        preserve_components_with_model : bool, default False
-            If *True*, components that have a 3-D model are always preserved,
-            regardless of their location relative to the extent.
-        simple_pad_check : bool, default True
-            Use the faster, less accurate pad/via geometry check when deciding which
-            objects lie inside the cutout.
-        keep_lines_as_paths : bool, default False
-            If *True*, trace geometries remain as path objects instead of being
-            converted to polygons.  This can reduce memory usage at the cost of
-            slightly increased geometric complexity.
-        **kw : dict
-            Legacy keyword arguments (deprecated): ``use_pyaedt_cutout``,
-            ``remove_single_pin_components``, ``custom_extent``, ``keep_voids``,
-            ``output_aedb_path``, etc. A warning is emitted for every legacy key
-            that is encountered.
+        shape : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            Main shape.
+        void_shape : list or :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            Void shape(s).
 
         Returns
         -------
-        list[Tuple[float, float]]
-            The final polygon that defines the cutout extent, represented as a list
-            of (x, y) coordinates in meters.
-
-        Raises
-        ------
-        ValueError
-            If neither ``signal_net`` nor ``point_list`` is provided, or if both are
-            provided simultaneously.
-
-        Examples
-        --------
-        Net-driven cutout with a 1 mm expansion around the convex hull of all
-        geometries belonging to the differential pair nets:
-
-        >>> extent = edb.cutout(
-        ...     signal_net=["USB_DP", "USB_DN"],
-        ...     reference_nets=["GND"],
-        ...     expansion="1mm",
-        ...     extent_type="convex_hull",
-        ... )
-
-        Polygon-driven cutout using an L-shaped boundary:
-
-        >>> outline = [(0, 0), (5e-3, 0), (5e-3, 2e-3), (2e-3, 2e-3),
-        ...            (2e-3, 5e-3), (0, 5e-3])]
-        >>> extent = edb.cutout(point_list=outline)
+        bool
+            True if successful, False otherwise.
         """
-        # TODO add support for include_partial_instances,
-        # TODO add support for check_terminals
-        # TODO add support for preserve_components_with_model
-        # TODO add support for simple_pad_check
-        # TODO add support for keep_lines_as_paths
-
-        from pyedb.grpc.database.utility.cutout import cutout_worker, extent_from_nets
-
-        if getattr(kw, "use_round_corner", None):
-            warnings.warn("Argument `use_round_corner` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "use_pyaedt_cutout", None):
-            warnings.warn("Argument `use_pyaedt_cutout` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "use_pyaedt_extent_computing", None):
-            warnings.warn("Argument `use_pyaedt_extent_computing` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "extent_defeature", None):
-            warnings.warn("Argument `extent_defeature` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "remove_single_pin_components", None):
-            warnings.warn("Argument `remove_single_pin_components` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "custom_extent", None):
-            warnings.warn("Argument `custom_extent` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "keep_voids", None):
-            warnings.warn("Argument `keep_voids` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "include_pingroups", None):
-            warnings.warn("Argument `include_pingroups` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "expansion_factor", None):
-            warnings.warn("Argument `expansion_factor` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "maximum_iterations", None):
-            warnings.warn("Argument `maximum_iterations` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "include_voids_in_extents", None):
-            warnings.warn("Argument `include_voids_in_extents` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "output_aedb_path", None):
-            warnings.warn("Argument `output_aedb_path` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "open_cutout_at_end", None):
-            warnings.warn("Argument `open_cutout_at_end` is deprecated. ", DeprecationWarning)
-
-        if extent_points:
-            if custom_extent_units:
-                for pt in extent_points:
-                    if not isinstance(pt, list) or len(pt) != 2:
-                        raise ValueError(f"Invalid point {pt} in point_list. Expected a list of [x, y] coordinates.")
-                extent_points = [
-                    [Value(f"{pt[0]}{custom_extent_units}"), Value(f"{pt[1]}{custom_extent_units}")]
-                    for pt in extent_points
-                ]
+        if not isinstance(void_shape, list):
+            void_shape = [void_shape]
+        for void in void_shape:
+            if isinstance(void, Primitive):
+                shape._edb_object.add_void(void)
+                flag = True
             else:
-                warnings.warn("No custom_extent_units provided, using default 'meter'.", UserWarning)
-
-            warnings.warn("Using polygon driven cutout mode.", UserWarning)
-        else:
-            if signal_net and reference_nets:
-                extent_points = extent_from_nets(
-                    self._pedb,
-                    signal_net or [],
-                    expansion,
-                    extent_type,
-                    **kw,
-                )
-        cutout_worker(self._pedb, extent_points, signal_net, reference_nets, number_of_threads, **kw)
-        return extent_points
+                shape._edb_object.add_void(void)
+                flag = True
+            if not flag:
+                return flag
+        return True

@@ -155,7 +155,7 @@ class LayoutValidation:
         Examples
         --------
 
-        >>> renamed_nets = edb.layout_validation.disjoint_nets(["GND","Net2"])
+        >>> renamed_nets = edb.layout_validation.disjoint_nets(["GND", "Net2"])
         """
 
         if not net_list:
