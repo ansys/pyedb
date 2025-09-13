@@ -129,7 +129,7 @@ def _exception(ex_info, func, args, kwargs, message="Type Error"):
                     first_time_log = False
                 _write_mes("    {} = {} ".format(el, args_dict[el]))
     except Exception:
-        settings.logger.error("An error occurred while parsing and logging an error with method {}.")
+        settings.logger.error(f"An error occurred while parsing and logging an error with method {func.__name__}.")
 
     if not func.__name__.startswith("_"):
         _write_mes(
