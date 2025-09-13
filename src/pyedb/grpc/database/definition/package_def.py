@@ -198,7 +198,6 @@ class PackageDef(GrpcPackageDef):
                 f"A(n) {type(e).__name__} error occurred while attempting to access 'heatsink' "
                 f"property for object {self}: {str(e)}"
             )
-            pass
 
     @property
     @deprecated_property
