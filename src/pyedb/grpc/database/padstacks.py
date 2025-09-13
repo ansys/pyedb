@@ -48,6 +48,29 @@ from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.utility.value import Value
 from pyedb.modeler.geometry_operators import GeometryOperators
 
+GEOMETRY_MAP = {
+    0: GrpcPadGeometryType.PADGEOMTYPE_NO_GEOMETRY,
+    1: GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
+    2: GrpcPadGeometryType.PADGEOMTYPE_SQUARE,
+    3: GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE,
+    4: GrpcPadGeometryType.PADGEOMTYPE_OVAL,
+    5: GrpcPadGeometryType.PADGEOMTYPE_BULLET,
+    6: GrpcPadGeometryType.PADGEOMTYPE_NSIDED_POLYGON,
+    7: GrpcPadGeometryType.PADGEOMTYPE_POLYGON,
+    8: GrpcPadGeometryType.PADGEOMTYPE_ROUND45,
+    9: GrpcPadGeometryType.PADGEOMTYPE_ROUND90,
+    10: GrpcPadGeometryType.PADGEOMTYPE_SQUARE45,
+    11: GrpcPadGeometryType.PADGEOMTYPE_SQUARE90,
+}
+
+PAD_TYPE_MAP = {
+    0: GrpcPadType.REGULAR_PAD,
+    1: GrpcPadType.ANTI_PAD,
+    2: GrpcPadType.THERMAL_PAD,
+    3: GrpcPadType.HOLE,
+    4: GrpcPadType.UNKNOWN_GEOM_TYPE,
+}
+
 
 class Padstacks(object):
     """Manages EDB methods for padstacks accessible from `Edb.padstacks` property.
@@ -113,7 +136,8 @@ class Padstacks(object):
         """ """
         return self._pedb.stackup.layers
 
-    def int_to_pad_type(self, val=0) -> GrpcPadType:
+    @staticmethod
+    def int_to_pad_type(val=0) -> GrpcPadType:
         """Convert an integer to an EDB.PadGeometryType.
 
         Parameters
@@ -131,20 +155,10 @@ class Padstacks(object):
         >>> pad_type = edb_padstacks.int_to_pad_type(1)  # Returns ANTI_PAD
         """
 
-        if val == 0:
-            return GrpcPadType.REGULAR_PAD
-        elif val == 1:
-            return GrpcPadType.ANTI_PAD
-        elif val == 2:
-            return GrpcPadType.THERMAL_PAD
-        elif val == 3:
-            return GrpcPadType.HOLE
-        elif val == 4:
-            return GrpcPadType.UNKNOWN_GEOM_TYPE
-        else:
-            return val
+        return PAD_TYPE_MAP.get(val, val)
 
-    def int_to_geometry_type(self, val: int = 0) -> GrpcPadGeometryType:
+    @staticmethod
+    def int_to_geometry_type(val: int = 0) -> GrpcPadGeometryType:
         """Convert an integer to an EDB.PadGeometryType.
 
         Parameters
@@ -161,32 +175,7 @@ class Padstacks(object):
         >>> geom_type = edb_padstacks.int_to_geometry_type(1)  # Returns CIRCLE
         >>> geom_type = edb_padstacks.int_to_geometry_type(2)  # Returns SQUARE
         """
-        if val == 0:
-            return GrpcPadGeometryType.PADGEOMTYPE_NO_GEOMETRY
-        elif val == 1:
-            return GrpcPadGeometryType.PADGEOMTYPE_CIRCLE
-        elif val == 2:
-            return GrpcPadGeometryType.PADGEOMTYPE_SQUARE
-        elif val == 3:
-            return GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE
-        elif val == 4:
-            return GrpcPadGeometryType.PADGEOMTYPE_OVAL
-        elif val == 5:
-            return GrpcPadGeometryType.PADGEOMTYPE_BULLET
-        elif val == 6:
-            return GrpcPadGeometryType.PADGEOMTYPE_NSIDED_POLYGON
-        elif val == 7:
-            return GrpcPadGeometryType.PADGEOMTYPE_POLYGON
-        elif val == 8:
-            return GrpcPadGeometryType.PADGEOMTYPE_ROUND45
-        elif val == 9:
-            return GrpcPadGeometryType.PADGEOMTYPE_ROUND90
-        elif val == 10:
-            return GrpcPadGeometryType.PADGEOMTYPE_SQUARE45
-        elif val == 11:
-            return GrpcPadGeometryType.PADGEOMTYPE_SQUARE90
-        else:
-            return val
+        return GEOMETRY_MAP.get(val, val)
 
     @property
     def definitions(self) -> Dict[str, PadstackDef]:
