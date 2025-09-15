@@ -329,7 +329,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
     def enabled(self):
         """Flag indicating if the setup is enabled.
 
-        ..deprecated:: 0.57.0
+        .. deprecated:: 0.57.0
             Use :property:`settings.enabled` property instead.
 
         Returns
