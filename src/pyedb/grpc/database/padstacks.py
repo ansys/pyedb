@@ -1285,7 +1285,6 @@ class Padstacks(object):
         self.definitions[padstack_name].data = new_padstack_def
         return True
 
-    @lru_cache(maxsize=None)
     def get_padstack_instance_by_net_name(self, net: str):
         """Get padstack instances by net name.
 
