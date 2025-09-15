@@ -35,6 +35,7 @@ from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure,
 from ansys.edb.core.primitive.circle import Circle as GrpcCircle
 
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.grpc.database.primitive.circle import Circle
 from pyedb.grpc.database.utility.value import Value
 
 
@@ -294,7 +295,11 @@ class PadstackDef(GrpcPadstackDef):
         List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             List of PadstackInstance objects.
         """
-        return [i for i in list(self._pedb.padstacks.instances.values()) if i.padstack_def.name == self.name]
+        return [
+            i
+            for i in list(self._pedb.padstacks.instances.values())
+            if not i.is_null and i.padstack_def.name == self.name
+        ]
 
     @property
     def layers(self) -> list[str]:
@@ -717,7 +722,7 @@ class PadstackDef(GrpcPadstackDef):
                         net_name=via.net_name,
                     )
                 else:
-                    GrpcCircle.create(
+                    Circle(self._pedb).create(
                         layout,
                         self.start_layer,
                         via.net,
@@ -732,7 +737,7 @@ class PadstackDef(GrpcPadstackDef):
                         net_name=via.net_name,
                     )
                 else:
-                    GrpcCircle.create(
+                    Circle(self._pedb).create(
                         layout,
                         self.stop_layer,
                         via.net,
@@ -745,7 +750,7 @@ class PadstackDef(GrpcPadstackDef):
                     if layer_name == via.start_layer or started:
                         start = layer_name
                         stop = layer_names[layer_names.index(layer_name) + 1]
-                        cloned_circle = GrpcCircle.create(
+                        cloned_circle = Circle(self._pedb).create(
                             layout,
                             start,
                             via.net,
@@ -753,7 +758,7 @@ class PadstackDef(GrpcPadstackDef):
                             Value(pos[1]),
                             Value(rad1),
                         )
-                        cloned_circle2 = GrpcCircle.create(
+                        cloned_circle2 = Circle(self._pedb).create(
                             layout,
                             stop,
                             via.net,
