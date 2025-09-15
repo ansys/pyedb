@@ -25,16 +25,13 @@ This module contains these classes: `EdbLayout` and `Shape`.
 """
 
 import math
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Iterable, List, Optional, Union
 
-from ansys.edb.core.geometry.arc_data import ArcData as GrpcArcData
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import (
     PolygonData as GrpcPolygonData,
-    PolygonSenseType as GrpcPolygonSenseType,
 )
 from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
-from ansys.edb.core.inner.exceptions import InvalidArgumentException
 from ansys.edb.core.primitive.bondwire import BondwireType as GrpcBondwireType
 from ansys.edb.core.primitive.path import PathCornerType as GrpcPathCornerType, PathEndCapType as GrpcPathEndCapType
 from ansys.edb.core.primitive.rectangle import (
@@ -49,6 +46,25 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.grpc.database.utility.value import Value
+
+
+def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
+    """
+    Convert any reasonable point description into [[x1, y1], [x2, y2], …]
+    """
+    pts = list(points)
+    if not pts:  # empty input
+        return []
+
+    # Detect flat vs nested
+    if isinstance(pts[0], (list, tuple)):
+        # already nested – just ensure every item is a *list* (not tuple)
+        return [list(pair) for pair in pts]
+    else:
+        # flat list – chunk into pairs
+        if len(pts) % 2:
+            raise ValueError("Odd number of coordinates supplied")
+        return [[pts[i], pts[i + 1]] for i in range(0, len(pts), 2)]
 
 
 class Modeler(object):
@@ -683,7 +699,8 @@ class Modeler(object):
         else:
             corner_style = GrpcPathCornerType.MITER
         _points = []
-        if isinstance(points, list):
+        if isinstance(points, Iterable):
+            points = normalize_pairs(points)
             for pt in points:
                 _pt = []
                 for coord in pt:
@@ -714,7 +731,7 @@ class Modeler(object):
 
     def create_trace(
         self,
-        path_list: Union[List[List[float]], GrpcPolygonData],
+        path_list: Union[Iterable[float], GrpcPolygonData],
         layer_name: str,
         width: float = 1,
         net_name: str = "",
@@ -726,8 +743,9 @@ class Modeler(object):
 
         Parameters
         ----------
-        path_list : list
-            List of [x,y] points.
+        path_list : Iterable
+            List of points [x,y] or [[x, y], ...]
+            or [(x, y)...].
         layer_name : str
             Layer name.
         width : float, optional

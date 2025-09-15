@@ -84,9 +84,9 @@ class Path(GrpcPath, Primitive):
         layer: Union[str, Layer] = None,
         net: Union[str, "Net"] = None,
         width: float = 100e-6,
-        end_cap1: str = "flat",
-        end_cap2: str = "flat",
-        corner_style: str = "sharp",
+        end_cap1: Union[str, GrpcPathEndCapType] = "flat",
+        end_cap2: Union[str, GrpcPathEndCapType] = "flat",
+        corner_style: Union[str, GrpcPatCornerType] = "sharp",
         points: Union[list, GrpcPolygonData] = None,
     ):
         """
