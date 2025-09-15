@@ -839,6 +839,62 @@ class Edb(EdbInit):
         self.edbpath = os.path.join(working_dir, aedb_name)
         return self.open_edb()
 
+    def import_vlctech_stackup(
+        self,
+        vlctech_file,
+        working_dir="",
+        export_xml=None,
+    ):
+        """Import a vlc.tech file and generate an ``edb.def`` file in the working directory containing only the stackup.
+
+        Parameters
+        ----------
+        vlctech_file : str
+            Full path to the technology stackup file. It must be vlc.tech.
+        working_dir : str, optional
+            Directory in which to create the ``aedb`` folder. The name given to the AEDB file
+            is the same as the name of the board file.
+        export_xml : str, optional
+            Export technology file in XML control file format.
+
+        Returns
+        -------
+        Full path to the AEDB file : str
+
+        """
+        if not working_dir:
+            working_dir = os.path.dirname(vlctech_file)
+        command = os.path.join(self.base_path, "helic", "tools", "raptorh", "bin", "make-edb.exe")
+        if is_linux:
+            mono_path = os.path.join(self.base_path, "common/mono/Linux64/bin/mono")
+            cmd_make_edb = [
+                mono_path,
+                command,
+                "-t",
+                "{}".format(vlctech_file),
+                "-o",
+                "{}".format(os.path.join(working_dir, "vlctech")),
+            ]
+        else:
+            cmd_make_edb = [
+                command,
+                "-t",
+                "{}".format(vlctech_file),
+                "-o",
+                "{}".format(os.path.join(working_dir, "vlctech")),
+            ]
+        if export_xml:
+            cmd_make_edb.extend(["-x", "{}".format(export_xml)])
+        subprocess.run(cmd_make_edb)
+        if not os.path.exists(os.path.join(working_dir, "vlctech.aedb")):
+            self.logger.error("Failed to create edb.")
+            return False
+        else:
+            self.logger.info("edb successfully created.")
+        self.edbpath = os.path.join(working_dir, "vlctech.aedb")
+        self.open()
+        return self.edbpath
+
     def export_to_ipc2581(self, ipc_path=None, units="MILLIMETER") -> str:
         """Export design to IPC2581 format.
 
