@@ -699,7 +699,7 @@ class Modeler(object):
         else:
             corner_style = GrpcPathCornerType.MITER
         _points = []
-        if isinstance(points, Iterable):
+        if isinstance(points, (list, tuple)):
             points = normalize_pairs(points)
             for pt in points:
                 _pt = []
