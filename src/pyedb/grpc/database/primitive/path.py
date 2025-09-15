@@ -25,7 +25,7 @@ from typing import Union
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.primitive.path import (
     Path as GrpcPath,
-    PathCornerType as GrpcPatCornerType,
+    PathCornerType as GrpcPathCornerType,
     PathEndCapType as GrpcPathEndCapType,
 )
 
@@ -86,7 +86,7 @@ class Path(GrpcPath, Primitive):
         width: float = 100e-6,
         end_cap1: Union[str, GrpcPathEndCapType] = "flat",
         end_cap2: Union[str, GrpcPathEndCapType] = "flat",
-        corner_style: Union[str, GrpcPatCornerType] = "sharp",
+        corner_style: Union[str, GrpcPathCornerType] = "sharp",
         points: Union[list, GrpcPolygonData] = None,
     ):
         """
