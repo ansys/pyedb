@@ -67,7 +67,7 @@ class EMCRuleCheckerSettings:
         tree = ET.ElementTree(root)
         try:
             ET.indent(tree, space="\t", level=0)
-        except:  # pragma no cover
+        except AttributeError:  # pragma no cover
             pass
         return tree
 

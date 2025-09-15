@@ -3,6 +3,8 @@ import secrets
 import shutil
 import string
 
+from pyedb.generic.settings import settings
+
 
 def search_files(dirname, pattern="*"):
     """Search for files inside a directory given a specific pattern.
@@ -65,8 +67,8 @@ class Scratch:
         try:
             # TODO check why on Anaconda 3.7 get errors with os.path.exists
             shutil.rmtree(self._scratch_path, ignore_errors=True)
-        except:
-            pass
+        except Exception:
+            settings.logger.error(f"An error occurred while removing {self._scratch_path}")
 
     def copyfile(self, src_file, dst_filename=None):
         """

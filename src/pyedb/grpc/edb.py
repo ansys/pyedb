@@ -1567,8 +1567,11 @@ class Edb(EdbInit):
                                         voids_poly.append(void_polydata)
                                 if voids_poly:
                                     obj_data = obj_data[0].subtract(list(obj_data), voids_poly)
-                        except:
-                            pass
+                        except Exception as e:
+                            self.logger.error(
+                                f"A(n) {type(e).__name__} error occurred in method _create_conformal of "
+                                f"class Edb at iteration {k} for data {i}: {str(e)}"
+                            )
                         finally:
                             unite_polys.extend(list(obj_data))
             _poly_unite = GrpcPolygonData.unite(unite_polys)
@@ -1939,8 +1942,8 @@ class Edb(EdbInit):
                 if os.path.exists(source) and not os.path.exists(target):
                     try:
                         shutil.copy(source, target)
-                    except:
-                        pass
+                    except Exception as e:
+                        self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         elif open_cutout_at_end:
             self._active_cell = _cutout
             self._init_objects()
@@ -2418,8 +2421,8 @@ class Edb(EdbInit):
                     try:
                         shutil.copy(source, target)
                         self.logger.warning("aedb def file manually created.")
-                    except:
-                        pass
+                    except Exception as e:
+                        self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         return [[Value(pt.x), Value(pt.y)] for pt in polygon_data.without_arcs().points]
 
     @staticmethod
@@ -2598,8 +2601,10 @@ class Edb(EdbInit):
         process = SiwaveSolve(self)
         try:
             self.close()
-        except:
-            pass
+        except Exception as e:
+            self.logger.warning(
+                f"A(n) {type(e).__name__} error occurred while attempting to close the database {self}: {str(e)}"
+            )
         process.solve()
         return self.edbpath[:-5] + ".siw"
 
@@ -2649,8 +2654,10 @@ class Edb(EdbInit):
         process = SiwaveSolve(self)
         try:
             self.close()
-        except:
-            pass
+        except Exception as e:
+            self.logger.warning(
+                f"A(n) {type(e).__name__} error occurred while attempting to close the database {self}: {str(e)}"
+            )
         return process.export_dc_report(
             siwave_project,
             solution_name,

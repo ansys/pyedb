@@ -36,6 +36,7 @@ class Bondwire(GrpcBondWire):
         super().__init__(edb_object.msg)
         self._pedb = _pedb
         self._edb_object = edb_object
+        # TODO add create and delete methods to keep cache in sync
 
     @property
     def material(self):
@@ -52,25 +53,6 @@ class Bondwire(GrpcBondWire):
     @material.setter
     def material(self, value):
         self.set_material(value)
-
-    # def __create(self, **kwargs):
-    #     return Bondwire.create(
-    #         self._pedb.layout,
-    #         kwargs.get("net"),
-    #         self._bondwire_type[kwargs.get("bondwire_type")],
-    #         kwargs.get("definition_name"),
-    #         kwargs.get("placement_layer"),
-    #         kwargs.get("width"),
-    #         kwargs.get("material"),
-    #         kwargs.get("start_context"),
-    #         kwargs.get("start_layer_name"),
-    #         kwargs.get("start_x"),
-    #         kwargs.get("start_y"),
-    #         kwargs.get("end_context"),
-    #         kwargs.get("end_layer_name"),
-    #         kwargs.get("end_x"),
-    #         kwargs.get("end_y"),
-    #     )
 
     @property
     def type(self):
@@ -120,28 +102,6 @@ class Bondwire(GrpcBondWire):
     def cross_section_height(self, cross_section_height):
         super(Bondwire, self.__class__).cross_section_height.__set__(self, Value(cross_section_height))
 
-    # @property
-    # def trajectory(self):
-    #     """Get trajectory parameters of a bondwire object.
-    #
-    #     Returns
-    #     -------
-    #     tuple[float, float, float, float]
-    #
-    #     Returns a tuple of the following format:
-    #     **(x1, y1, x2, y2)**
-    #     **x1** : X value of the start point.
-    #     **y1** : Y value of the start point.
-    #     **x1** : X value of the end point.
-    #     **y1** : Y value of the end point.
-    #     """
-    #     return [Value(i) for i in self.get_traj()]
-    #
-    # @trajectory.setter
-    # def trajectory(self, value):
-    #     values = [Value(i) for i in value]
-    #     self.set_traj(values[0], values[1], values[2], values[3])
-
     @property
     def width(self):
         """:class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object.
@@ -156,27 +116,3 @@ class Bondwire(GrpcBondWire):
     @width.setter
     def width(self, width):
         super(Bondwire, self.__class__).width.__set__(self, Value(width))
-
-    # @property
-    # def start_elevation(self):
-    #     layer = self.get_start_elevation(self._pedb.active_cell)
-    #     return layer.name
-    #
-    # @start_elevation.setter
-    # def start_elevation(self, layer):
-    #     if not layer in self._pedb.stackup.layers:
-    #         return
-    #     layer = self._pedb.stackup.layers[layer]
-    #     self.set_start_elevation(self._pedb.active_cell, layer)
-    #
-    # @property
-    # def end_elevation(self):
-    #     layer = self.get_end_elevation(self._pedb.active_cell)
-    #     return layer.name
-    #
-    # @end_elevation.setter
-    # def end_elevation(self, layer):
-    #     if not layer in self._pedb.stackup.layers:
-    #         return
-    #     layer = self._pedb.stackup.layers[layer]
-    #     self.set_end_elevation(self._pedb.active_cell, layer)

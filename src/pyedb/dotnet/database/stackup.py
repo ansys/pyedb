@@ -1229,8 +1229,11 @@ class Stackup(LayerCollection):
                         sball_prop = cmp_prop.GetSolderBallProperty().Clone()
                         sball_prop.SetPlacement(self._pedb.definition.SolderballPlacement.AbovePadstack)
                         cmp_prop.SetSolderBallProperty(sball_prop)
-                except:
-                    pass
+                except Exception as e:
+                    self._logger.warning(
+                        f"A(n) {type(e).__name__} error occurred while attempting to update "
+                        f"SolderBallProperty for component {cmp}: {str(e)}"
+                    )
                 if cmp_type == self._pedb.definition.ComponentType.IC:
                     die_prop = cmp_prop.GetDieProperty().Clone()
                     chip_orientation = die_prop.GetOrientation()

@@ -353,8 +353,11 @@ class StackupLayer(GrpcStackupLayer):
             if len(top_roughness_model) == 2:
                 top_roughness_model[0] = Value(value)
                 self.set_roughness_model(top_roughness_model, GrpcRoughnessRegion.TOP)
-        except:
-            pass
+        except Exception as e:
+            self._pedb.logger.error(
+                f"Failed to update property top_hallhuray_nodule_radius with value {value} "
+                f"- {type(e).__name__}: {str(e)}"
+            )
 
     @property
     def top_hallhuray_surface_ratio(self) -> float:
@@ -381,8 +384,11 @@ class StackupLayer(GrpcStackupLayer):
             if len(top_roughness_model) == 2:
                 top_roughness_model[1] = Value(value)
                 self.set_roughness_model(top_roughness_model, GrpcRoughnessRegion.TOP)
-        except:
-            pass
+        except Exception as e:
+            self._pedb.logger.error(
+                f"Failed to update property top_hallhuray_surface_ratio with value {value} "
+                f"- {type(e).__name__}: {str(e)}"
+            )
 
     @property
     def bottom_hallhuray_nodule_radius(self) -> float:
@@ -409,8 +415,11 @@ class StackupLayer(GrpcStackupLayer):
             if len(bottom_roughness_model) == 2:
                 bottom_roughness_model[0] = Value(value)
                 self.set_roughness_model(bottom_roughness_model, GrpcRoughnessRegion.BOTTOM)
-        except:
-            pass
+        except Exception as e:
+            self._pedb.logger.error(
+                f"Failed to update property bottom_hallhuray_nodule_radius with value {value} "
+                f"- {type(e).__name__}: {str(e)}"
+            )
 
     @property
     def bottom_hallhuray_surface_ratio(self) -> float:
@@ -437,8 +446,11 @@ class StackupLayer(GrpcStackupLayer):
             if len(bottom_roughness_model) == 2:
                 bottom_roughness_model[1] = Value(value)
                 self.set_roughness_model(bottom_roughness_model, GrpcRoughnessRegion.BOTTOM)
-        except:
-            pass
+        except Exception as e:
+            self._pedb.logger.error(
+                f"Failed to update property bottom_hallhuray_surface_ratio with value {value} "
+                f"- {type(e).__name__}: {str(e)}"
+            )
 
     @property
     def side_hallhuray_nodule_radius(self) -> float:
@@ -465,8 +477,11 @@ class StackupLayer(GrpcStackupLayer):
             if len(side_roughness_model) == 2:
                 side_roughness_model[0] = Value(value)
                 self.set_roughness_model(side_roughness_model, GrpcRoughnessRegion.SIDE)
-        except:
-            pass
+        except Exception as e:
+            self._pedb.logger.error(
+                f"Failed to update property side_hallhuray_nodule_radius with value {value} "
+                f"- {type(e).__name__}: {str(e)}"
+            )
 
     @property
     def side_hallhuray_surface_ratio(self) -> float:
@@ -492,8 +507,11 @@ class StackupLayer(GrpcStackupLayer):
             if len(side_roughness_model) == 2:
                 side_roughness_model[1] = Value(value)
                 self.set_roughness_model(side_roughness_model, GrpcRoughnessRegion.SIDE)
-        except:
-            pass
+        except Exception as e:
+            self._pedb.logger.error(
+                f"Failed to update property side_hallhuray_surface_ratio with value {value} "
+                f"- {type(e).__name__}: {str(e)}"
+            )
 
     @property
     def top_groisse_roughness(self) -> float:
@@ -520,8 +538,10 @@ class StackupLayer(GrpcStackupLayer):
             if isinstance(top_roughness_model, Value):
                 top_roughness_model = Value(value)
                 self.set_roughness_model(top_roughness_model, GrpcRoughnessRegion.TOP)
-        except:
-            pass
+        except Exception as e:
+            self._pedb.logger.error(
+                f"Failed to update property top_groisse_roughness with value {value} - {type(e).__name__}: {str(e)}"
+            )
 
     @property
     def bottom_groisse_roughness(self) -> float:
@@ -548,8 +568,10 @@ class StackupLayer(GrpcStackupLayer):
             if isinstance(bottom_roughness_model, Value):
                 bottom_roughness_model = Value(value)
                 self.set_roughness_model(bottom_roughness_model, GrpcRoughnessRegion.BOTTOM)
-        except:
-            pass
+        except Exception as e:
+            self._pedb.logger.error(
+                f"Failed to update property bottom_groisse_roughness with value {value} - {type(e).__name__}: {str(e)}"
+            )
 
     @property
     def side_groisse_roughness(self) -> float:
@@ -577,7 +599,9 @@ class StackupLayer(GrpcStackupLayer):
                 side_roughness_model = Value(value)
                 self.set_roughness_model(side_roughness_model, GrpcRoughnessRegion.BOTTOM)
         except Exception as e:
-            self._pedb.logger.error(e)
+            self._pedb.logger.error(
+                f"Failed to update property side_groisse_roughness with value {value} - {type(e).__name__}: {str(e)}"
+            )
 
     def assign_roughness_model(
         self,

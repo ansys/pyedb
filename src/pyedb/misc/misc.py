@@ -25,6 +25,8 @@
 import os
 import warnings
 
+from pyedb.generic.settings import settings
+
 
 def list_installed_ansysem():
     """Return a list of installed AEDT versions on ``ANSYSEM_ROOT``."""
@@ -69,8 +71,8 @@ def installed_versions():
             else:
                 v_key = "20{0}.{1}".format(version, release)
             return_dict[v_key] = os.environ[version_env_var]
-        except:  # pragma: no cover
-            pass
+        except Exception:  # pragma: no cover
+            settings.logger.debug(f"Failed to parse version and release from {current_version_id}")
     return return_dict
 
 
