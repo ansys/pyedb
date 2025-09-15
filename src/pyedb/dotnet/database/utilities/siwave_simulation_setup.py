@@ -409,7 +409,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
     def dc_advanced_settings(self):
         """Siwave DC advanced settings.
 
-        deprecated :: 0.57.0
+        .. deprecated :: 0.57.0
                 Use :property:`settings` property instead.
 
         Returns
@@ -425,7 +425,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
     def source_terms_to_ground(self):
         """Dictionary of grounded terminals.
 
-        ..deprecated:: 0.57.0
+        .. deprecated:: 0.57.0
             Use :property:`settings.source_terms_to_ground` property instead.
 
         Returns
@@ -443,7 +443,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
     def add_source_terminal_to_ground(self, source_name, terminal=0):
         """Add a source terminal to ground.
 
-        ..deprecated:: 0.57.0
+        .. deprecated:: 0.57.0
             Use :method:`settings.add_source_terminal_to_ground` method instead.
 
         Parameters
