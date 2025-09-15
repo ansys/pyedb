@@ -233,9 +233,7 @@ class Padstacks(object):
         if not self._instances_by_net:
             for edb_padstack_instance in self._instances.values():
                 if edb_padstack_instance.net_name:
-                    self._instances_by_net.setdefault(edb_padstack_instance.net_name, []).append(
-                        edb_padstack_instance
-                    )
+                    self._instances_by_net.setdefault(edb_padstack_instance.net_name, []).append(edb_padstack_instance)
         return self._instances_by_net
 
     @property
