@@ -1,7 +1,9 @@
 import os
-import random
+import secrets
 import shutil
 import string
+
+from pyedb.generic.settings import settings
 
 
 def search_files(dirname, pattern="*"):
@@ -44,7 +46,10 @@ class Scratch:
         self._volatile = volatile
         self._cleaned = True
         char_set = string.ascii_uppercase + string.digits
-        self._scratch_path = os.path.normpath(os.path.join(local_path, "scratch" + "".join(random.sample(char_set, 6))))
+        generator = secrets.SystemRandom()
+        self._scratch_path = os.path.normpath(
+            os.path.join(local_path, "scratch" + "".join(secrets.SystemRandom.sample(generator, char_set, 6)))
+        )
         if os.path.exists(self._scratch_path):
             try:
                 self.remove()
@@ -62,8 +67,8 @@ class Scratch:
         try:
             # TODO check why on Anaconda 3.7 get errors with os.path.exists
             shutil.rmtree(self._scratch_path, ignore_errors=True)
-        except:
-            pass
+        except Exception:
+            settings.logger.error(f"An error occurred while removing {self._scratch_path}")
 
     def copyfile(self, src_file, dst_filename=None):
         """

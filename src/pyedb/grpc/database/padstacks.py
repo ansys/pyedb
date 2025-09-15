@@ -23,6 +23,7 @@
 """
 This module contains the `EdbPadstacks` class.
 """
+
 from collections import defaultdict
 import math
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -30,20 +31,12 @@ import warnings
 
 from ansys.edb.core.definition.padstack_def_data import (
     PadGeometryType as GrpcPadGeometryType,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     PadstackDefData as GrpcPadstackDefData,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     PadstackHoleRange as GrpcPadstackHoleRange,
-)
-from ansys.edb.core.definition.padstack_def_data import (
+    PadType as GrpcPadType,
     SolderballPlacement as GrpcSolderballPlacement,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     SolderballShape as GrpcSolderballShape,
 )
-from ansys.edb.core.definition.padstack_def_data import PadType as GrpcPadType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 import numpy as np
@@ -334,7 +327,7 @@ class Padstacks(object):
         >>> groups = edb_padstacks._layout.pin_groups  # New way
         """
         warnings.warn(
-            "`pingroups` is deprecated and is now located here " "`pyedb.grpc.core.layout.pin_groups` instead.",
+            "`pingroups` is deprecated and is now located here `pyedb.grpc.core.layout.pin_groups` instead.",
             DeprecationWarning,
         )
         return self._layout.pin_groups
@@ -380,10 +373,7 @@ class Padstacks(object):
         Examples
         --------
         >>> via_name = edb_padstacks.create_circular_padstack(
-        ...     padstackname="VIA1",
-        ...     holediam="200um",
-        ...     paddiam="400um",
-        ...     antipaddiam="600um"
+        ...     padstackname="VIA1", holediam="200um", paddiam="400um", antipaddiam="600um"
         ... )
         """
 
@@ -1299,8 +1289,7 @@ class Padstacks(object):
             List of padstack instances associated with the specified net.
         """
         warnings.warn(
-            "`get_padstack_instance_by_net_name` is deprecated, use `get_instances` with `net_name` "
-            "parameter instead.",
+            "`get_padstack_instance_by_net_name` is deprecated, use `get_instances` with `net_name` parameter instead.",
             DeprecationWarning,
         )
         return self.get_instances(net_name=net)
@@ -1853,3 +1842,90 @@ class Padstacks(object):
             clusters[int(label)].append(padstack_ids[i])
 
         return dict(clusters)
+
+    def reduce_via_by_density(
+        self, padstacks: List[int], cell_size_x: float = 1e-3, cell_size_y: float = 1e-3, delete: bool = False
+    ) -> tuple[List[int], List[List[List[float]]]]:
+        """
+        Reduce the number of vias by density. Keep only one via which is closest to the center of the cell. The cells
+        are automatically populated based on the input vias.
+
+        Parameters
+        ----------
+        padstacks: List[int]
+            List of padstack ids to be reduced.
+
+        cell_size_x : float
+            Width of each grid cell (default is 1e-3).
+
+        cell_size_y : float
+            Height of each grid cell (default is 1e-3).
+
+        delete: bool
+            If True, delete vias that are not kept (default is False).
+
+        Returns
+        -------
+        List[int]
+            IDs of vias kept after reduction.
+
+        List[List[float]]
+            coordinates for grid lines (for plotting).
+
+        """
+        to_keep = set()
+
+        all_instances = self.instances
+        positions = np.array([all_instances[_id].position for _id in padstacks])
+
+        x_coords, y_coords = positions[:, 0], positions[:, 1]
+        x_min, x_max = np.min(x_coords), np.max(x_coords)
+        y_min, y_max = np.min(y_coords), np.max(y_coords)
+
+        padstacks_array = np.array(padstacks)
+        cell_map = {}  # {(cell_x, cell_y): [(id1, [x1, y1]), (id2, [x2, y2), ...]}
+        grid = []
+
+        for idx, pos in enumerate(positions):
+            i = int((pos[0] - x_min) // cell_size_x)
+            j = int((pos[1] - y_min) // cell_size_y)
+            cell_key = (i, j)
+            cell_map.setdefault(cell_key, []).append((padstacks_array[idx], pos))
+
+        for (i, j), items in cell_map.items():
+            # cell center
+            cell_x_min = x_min + i * cell_size_x
+            cell_y_min = y_min + j * cell_size_y
+            cell_x_mid = cell_x_min + 0.5 * cell_size_x
+            cell_y_mid = cell_y_min + 0.5 * cell_size_y
+
+            grid.append(
+                [
+                    [
+                        cell_x_min,
+                        cell_x_min + cell_size_x,
+                        cell_x_min + cell_size_x,
+                        cell_x_min,
+                        cell_x_min,
+                    ],
+                    [
+                        cell_y_min,
+                        cell_y_min,
+                        cell_y_min + cell_size_y,
+                        cell_y_min + cell_size_y,
+                        cell_y_min,
+                    ],
+                ]
+            )
+
+            # Find closest via to cell center
+            distances = [np.linalg.norm(pos - [cell_x_mid, cell_y_mid]) for _, pos in items]
+            closest_idx = np.argmin(distances)
+            to_keep.add(items[closest_idx][0])
+
+        if delete:
+            to_delete = set(padstacks) - to_keep
+            for _id in to_delete:
+                all_instances[_id].delete()
+
+        return list(to_keep), grid

@@ -22,19 +22,23 @@
 
 
 import math
+from typing import Union
 
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.primitive.polygon import Polygon as GrpcPolygon
 
+from pyedb.grpc.database.layers.layer import Layer
+from pyedb.grpc.database.layout.layout import Layout
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
 
 class Polygon(GrpcPolygon, Primitive):
-    def __init__(self, pedb, edb_object):
-        GrpcPolygon.__init__(self, edb_object.msg)
-        Primitive.__init__(self, pedb, edb_object)
+    def __init__(self, pedb, edb_object=None):
+        if edb_object:
+            GrpcPolygon.__init__(self, edb_object.msg)
+            Primitive.__init__(self, pedb, edb_object)
         self._pedb = pedb
 
     @property
@@ -58,6 +62,67 @@ class Polygon(GrpcPolygon, Primitive):
         bool
         """
         return self.polygon_data.has_self_intersections()
+
+    def create(
+        self, layout: Layout = None, layer: Union[str, Layer] = None, net: Union[str, "Net"] = None, polygon_data=None
+    ):
+        """
+        Create a polygon in the specified layout, layer, and net using the provided polygon data.
+
+        Parameters
+        ----------
+        layout : Layout, optional
+            The layout in which the polygon will be created. If not provided, the active layout of the `pedb`
+            instance will be used.
+        layer : Union[str, Layer], optional
+            The layer in which the polygon will be created. This parameter is required and must be specified.
+        net : Union[str, Net], optional
+            The net to which the polygon will belong. If not provided, the polygon will not be associated with a
+            net.
+        polygon_data : list or GrpcPolygonData, optional
+            The data defining the polygon. This can be a list of points or an instance of `GrpcPolygonData`.
+            This parameter is required and must be specified.
+
+        Returns
+        -------
+        :class:`Polygon <ansys.edb.core.primitive.polygon.Polygon>`
+            The created polygon object.
+
+        Raises
+        ------
+        ValueError
+            If the `layer` parameter is not provided.
+        ValueError
+            If the `polygon_data` parameter is not provided.
+
+        Notes
+        -----
+        - If `polygon_data` is provided as a list, it will be converted to a `GrpcPolygonData` object.
+        - The created polygon is added to the modeler primitives of the `pedb` instance.
+
+        """
+        if not layout:
+            layout = self._pedb.active_layout
+        if not layer:
+            raise ValueError("Layer is required to create a polygon.")
+        if not polygon_data:
+            raise ValueError("Polygon data or point list is required to create a polygon.")
+        if isinstance(polygon_data, list):
+            polygon_data = GrpcPolygonData(polygon_data)
+
+        # call into the gRPC layer to actually create the polygon
+        edb_object = super().create(layout=layout, layer=layer, net=net, polygon_data=polygon_data)
+        new_polygon = Polygon(self._pedb, edb_object)
+        # keep modeler cache in sync
+        self._pedb.modeler._add_primitive(new_polygon)
+
+        return new_polygon
+
+    def delete(self):
+        """Delete polygon from layout."""
+        # keeping cache in sync
+        self._pedb.modeler._remove_primitive(self)
+        super().delete()
 
     def fix_self_intersections(self) -> list[any]:
         """Remove self intersections if they exist.
@@ -88,13 +153,14 @@ class Polygon(GrpcPolygon, Primitive):
             Cloned polygon.
 
         """
+        voids = self.voids
         polygon_data = self.polygon_data
-        duplicated_polygon = self.create(
+        cloned_polygon = self.create(
             layout=self._pedb.active_layout, layer=self.layer, net=self.net, polygon_data=polygon_data
         )
-        for void in self.voids:
-            duplicated_polygon.add_void(void)
-        return duplicated_polygon
+        for void in voids:
+            cloned_polygon.add_void(void)
+        return cloned_polygon
 
     def duplicate_across_layers(self, layers) -> bool:
         """Duplicate across layer a primitive object.
@@ -271,6 +337,6 @@ class Polygon(GrpcPolygon, Primitive):
             return False
 
     def add_void(self, polygon):
-        if isinstance(polygon, list):
+        if isinstance(polygon, list) or isinstance(polygon, GrpcPolygonData):
             polygon = self._pedb.modeler.create_polygon(points=polygon, layer_name=self.layer.name)
-        return self._edb_object.add_void(polygon._edb_object)
+        return self._edb_object.add_void(polygon)

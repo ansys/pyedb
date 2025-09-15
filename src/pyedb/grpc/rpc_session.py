@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 import os
-from random import randint
+import secrets
 import sys
 import time
 
@@ -170,11 +170,12 @@ class RpcSession:
     @staticmethod
     def __get_random_free_port():
         """"""
-        port = randint(49152, 65535)
+        secure_random = secrets.SystemRandom()
+        port = secure_random.randint(49152, 65535)
         while True:
             used_ports = [conn.laddr[1] for conn in psutil.net_connections()]
             if port in used_ports:
-                port = randint(49152, 65535)
+                port = secure_random.randint(49152, 65535)
             else:
                 break
         return port

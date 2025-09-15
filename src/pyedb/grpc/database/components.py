@@ -20,9 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module contains the `Components` class.
+"""This module contains the `Components` class."""
 
-"""
 import codecs
 import json
 import math
@@ -31,8 +30,7 @@ import re
 from typing import Any, Dict, List, Optional, Tuple, Union
 import warnings
 
-from ansys.edb.core.definition.die_property import DieOrientation as GrpDieOrientation
-from ansys.edb.core.definition.die_property import DieType as GrpcDieType
+from ansys.edb.core.definition.die_property import DieOrientation as GrpDieOrientation, DieType as GrpcDieType
 from ansys.edb.core.definition.solder_ball_property import (
     SolderballShape as GrpcSolderballShape,
 )
@@ -996,8 +994,7 @@ class Components(object):
         """
         component_definition = ComponentDef.find(self._db, name)
         if component_definition.is_null:
-            from ansys.edb.core.layout.cell import Cell as GrpcCell
-            from ansys.edb.core.layout.cell import CellType as GrpcCellType
+            from ansys.edb.core.layout.cell import Cell as GrpcCell, CellType as GrpcCellType
 
             foot_print_cell = GrpcCell.create(self._pedb.active_db, GrpcCellType.FOOTPRINT_CELL, name)
             component_definition = ComponentDef.create(self._db, name, fp=foot_print_cell)
@@ -1065,6 +1062,9 @@ class Components(object):
             ComponentGroup as GrpcComponentGroup,
         )
 
+        if not pins:
+            raise ValueError("Pins must be a list of PadstackInstance objects.")
+
         if not component_name:
             component_name = generate_unique_name("Comp_")
         if component_part_name:
@@ -1074,7 +1074,12 @@ class Components(object):
         if not compdef:
             return False
         new_cmp = GrpcComponentGroup.create(self._active_layout, component_name, compdef.name)
-        hosting_component_location = pins[0].component.transform
+        if hasattr(pins[0], "component") and pins[0].component:
+            hosting_component_location = None
+            if not pins[0].component.is_null:
+                hosting_component_location = pins[0].component.transform
+        else:
+            hosting_component_location = None
         if not len(pins) == len(compdef.component_pins):
             self._pedb.logger.error(
                 f"Number on pins {len(pins)} does not match component definition number "
@@ -1092,7 +1097,18 @@ class Components(object):
         if new_cmp_layer_name in self._pedb.stackup.signal_layers:
             new_cmp_placement_layer = self._pedb.stackup.signal_layers[new_cmp_layer_name]
             new_cmp.placement_layer = new_cmp_placement_layer
-        new_cmp.component_type = GrpcComponentType.OTHER
+        if r_value:
+            new_cmp.component_type = GrpcComponentType.RESISTOR
+            is_rlc = True
+        elif c_value:
+            new_cmp.component_type = GrpcComponentType.CAPACITOR
+            is_rlc = True
+        elif l_value:
+            new_cmp.component_type = GrpcComponentType.INDUCTOR
+            is_rlc = True
+        else:
+            new_cmp.component_type = GrpcComponentType.OTHER
+            is_rlc = False
         if is_rlc and len(pins) == 2:
             rlc = GrpcRlc()
             rlc.is_parallel = is_parallel
@@ -1125,7 +1141,8 @@ class Components(object):
             component_property = new_cmp.component_property
             component_property.model = rlc_model
             new_cmp.component_property = component_property
-        new_cmp.transform = hosting_component_location
+        if hosting_component_location:
+            new_cmp.transform = hosting_component_location
         new_edb_comp = Component(self._pedb, new_cmp)
         self._cmp[new_cmp.name] = new_edb_comp
         return new_edb_comp
@@ -1666,7 +1683,9 @@ class Components(object):
                     if comp.partname == part_name:
                         pass
                     else:
-                        pinlist = self._pedb.padstacks.get_instances(refdes)
+                        pinlist = list(self.instances[refdes].pins.values())
+                        if not pinlist:
+                            continue
                         if not part_name in self.definitions:
                             comp_def = ComponentDef.create(self._db, part_name, None)
                             # for pin in range(len(pinlist)):
@@ -2208,7 +2227,7 @@ class Components(object):
         Examples
         --------
         >>> from pyedb import Edb
-        >>> edb_file = r'C:\my_edb_file.aedb'
+        >>> edb_file = r"C:\my_edb_file.aedb"
         >>> edb = Edb(edb_file)
         >>> for cmp in list(edb.components.instances.keys()):
         >>>     edb.components.deactivate_rlc_component(component=cmp, create_circuit_port=False)

@@ -27,3 +27,12 @@ def test_general():
     assert settings.LATEST_VERSION == "2025.2"
     assert settings.LATEST_STUDENT_VERSION == "2025.2"
     assert settings.aedt_installation_path == "/fake/path251"
+
+
+@patch("os.path.exists")
+def test_specify_aedt_path(mock_exists):
+    settings = Settings()
+
+    mock_exists.return_value = True
+    settings.edb_dll_path = "/fake/AnsysEM/v241/Win64"
+    assert settings.specified_version == "2024.1"

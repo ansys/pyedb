@@ -21,10 +21,10 @@
 # SOFTWARE.
 
 from ansys.edb.core.utility.hfss_extent_info import (
+    HfssExtentInfo as GrpcHfssExtentInfo,
     HFSSExtentInfoType as GrpcHfssExtentInfoType,
+    OpenRegionType as GrpcOpenRegionType,
 )
-from ansys.edb.core.utility.hfss_extent_info import HfssExtentInfo as GrpcHfssExtentInfo
-from ansys.edb.core.utility.hfss_extent_info import OpenRegionType as GrpcOpenRegionType
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 

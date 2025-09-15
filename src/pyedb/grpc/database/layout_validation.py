@@ -224,8 +224,11 @@ class LayoutValidation:
                             if el.layout_obj.obj_type.value == 0:
                                 if not el.is_void:
                                     sum += el.area()
-                        except:
-                            pass
+                        except Exception as e:
+                            self._pedb._logger.warning(
+                                f"A(n) {type(e).__name__} error occurred while calculating area "
+                                f"for element {elem} - Default value of 0 is used: {str(e)}"
+                            )
                     return sum
 
                 if order_by_area:
@@ -354,7 +357,7 @@ class LayoutValidation:
         temp = []
         for k, v in inductors.items():
             model = v.component_property.model
-            if not len(model.pin_pairs):  # pragma: no cover
+            if not len(model.pin_pairs()):  # pragma: no cover
                 temp.append(k)
                 if fix:
                     v.rlc_values = [0, 1, 0]
@@ -373,7 +376,7 @@ class LayoutValidation:
         >>> # Automatically assign names to unnamed padstacks
         >>> edb.layout_validation.padstacks_no_name(fix=True)
         """
-        pds = self._pedb.layout.padstack_instances
+        pds = list(self._pedb.layout.padstack_instances.values())
         counts = 0
         via_count = 1
         for obj in pds:

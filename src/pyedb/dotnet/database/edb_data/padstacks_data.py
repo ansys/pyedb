@@ -1740,8 +1740,11 @@ class EDBPadstackInstance(Connectable):
             hole_diam = 0
             try:  # pragma no cover
                 hole_diam = padstack_def.hole_properties[0]
-            except:  # pragma no cover
-                pass
+            except Exception as e:  # pragma no cover
+                self._pedb.logger.error(
+                    f"Failed to access first element of hole_properties attribute of object "
+                    f"{padstack_def} - Hole diameter is set to default value 0 - {type(e).__name__}: {str(e)}"
+                )
             if hole_diam:  # pragma no cover
                 hole_finished_size = padstack_def.hole_finished_size
                 via_length = (

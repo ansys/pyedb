@@ -20,14 +20,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 import re
 
 from ansys.edb.core.terminal.edge_terminal import EdgeType as GrpcEdgeType
-from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
-from ansys.edb.core.terminal.terminal import Terminal as GrpcTerminal
-from ansys.edb.core.terminal.terminal import TerminalType as GrpcTerminalType
+from ansys.edb.core.terminal.terminal import (
+    BoundaryType as GrpcBoundaryType,
+    Terminal as GrpcTerminal,
+    TerminalType as GrpcTerminalType,
+)
 
-from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
@@ -364,13 +371,17 @@ class Terminal(GrpcTerminal):
                     return (primitive, self._pedb)
         return None  # pragma: no cover
 
-    def get_point_terminal_reference_primitive(self) -> Primitive:  # pragma : no cover
-        """Find and return the primitive reference for the point terminal or the padstack instance.
+    def get_point_terminal_reference_primitive(self) -> Primitive:
+        """
+        Find and return the primitive reference for the point terminal or the padstack instance.
 
         Returns
         -------
-        :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>` or
-        :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`
+        Primitive or PadstackInstance
+            The primitive reference for the point terminal or the padstack instance.
+            Returns an instance of :class:`PadstackInstance
+            <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
+            or :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`.
         """
 
         ref_term = self.reference_terminal  # return value is type terminal
