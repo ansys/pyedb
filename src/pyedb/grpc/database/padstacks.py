@@ -25,6 +25,7 @@ This module contains the `EdbPadstacks` class.
 """
 
 from collections import defaultdict
+from functools import lru_cache
 import math
 from typing import Any, Dict, List, Optional, Tuple, Union
 import warnings
@@ -110,6 +111,15 @@ class Padstacks(object):
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
         self.__definitions: Dict[str, Any] = {}
+        self._instances = None
+        self._instances_by_name = {}
+        self._instances_by_net = {}
+
+    def clear_instances_cache(self):
+        """Clear the cached padstack instances."""
+        self._instances = None
+        self._instances_by_name = {}
+        self._instances_by_net = {}
 
     @property
     def _active_layout(self) -> Any:
@@ -214,7 +224,20 @@ class Padstacks(object):
         >>> for id, instance in all_instances.items():
         ...     print(f"Instance {id}: {instance.name}")
         """
-        return self._pedb.layout.padstack_instances
+        if self._instances is None:
+            self._instances = self._pedb.layout.padstack_instances
+        return self._instances
+
+    @property
+    def instances_by_net(self) -> Dict[Any, PadstackInstance]:
+        if not self._instances_by_net:
+            if not self._instances_by_net:  # still empty
+                for edb_padstack_instance in self._instances.values():
+                    if edb_padstack_instance.net_name:
+                        self._instances_by_net.setdefault(edb_padstack_instance.net_name, []).append(
+                            edb_padstack_instance
+                        )
+        return self._instances_by_net
 
     @property
     def instances_by_name(self) -> Dict[str, PadstackInstance]:
@@ -231,11 +254,11 @@ class Padstacks(object):
         >>> for name, instance in named_instances.items():
         ...     print(f"Instance named {name}")
         """
-        padstack_instances = {}
-        for _, edb_padstack_instance in self.instances.items():
-            if edb_padstack_instance.aedt_name:
-                padstack_instances[edb_padstack_instance.aedt_name] = edb_padstack_instance
-        return padstack_instances
+        if not self._instances_by_name:
+            for _, edb_padstack_instance in self.instances.items():
+                if edb_padstack_instance.aedt_name:
+                    self._instances_by_name[edb_padstack_instance.aedt_name] = edb_padstack_instance
+        return self._instances_by_name
 
     def find_instance_by_id(self, value: int) -> Optional[PadstackInstance]:
         """Find a padstack instance by database ID.
@@ -460,6 +483,7 @@ class Padstacks(object):
             if p.net_name in net_names:
                 if not p.delete():  # pragma: no cover
                     return False
+        self.clear_instances_cache()
         return True
 
     def set_solderball(self, padstackInst, sballLayer_name, isTopPlaced=True, ballDiam=100e-6):
@@ -1122,6 +1146,7 @@ class Padstacks(object):
                 layer_map=None,
             )
             padstack_instance.is_layout_pin = is_pin
+            self.clear_instances_cache()
             return PadstackInstance(self._pedb, padstack_instance)
         else:
             raise RuntimeError("Place padstack failed")
@@ -1261,6 +1286,7 @@ class Padstacks(object):
         self.definitions[padstack_name].data = new_padstack_def
         return True
 
+    @lru_cache(maxsize=None)
     def get_padstack_instance_by_net_name(self, net: str):
         """Get padstack instances by net name.
 
@@ -1494,7 +1520,7 @@ class Padstacks(object):
         minimum_via_number: int = 6,
         selected_angles: Optional[List[float]] = None,
         padstack_instances_id: Optional[List[int]] = None,
-    ) -> None:
+    ) -> List[str]:
         """Replace padstack instances along lines into a single polygon.
 
         Detect all pad-stack instances that are placed along lines and replace them by a single polygon based one
@@ -1583,66 +1609,13 @@ class Padstacks(object):
                 inst.delete()
         return instances_created
 
-    def reduce_via_in_bounding_box(self, bounding_box, x_samples, y_samples, nets=None):
-        """Reduces the number of vias intersecting bounding box and nets by x and y samples.
-
-        Parameters
-        ----------
-        bounding_box : tuple or list.
-            bounding box, [x1, y1, x2, y2]
-        x_samples : int
-        y_samples : int
-        nets : str or list, optional
-            net name or list of nets name applying filtering on padstack instances selection. If ``None`` is provided
-            all instances are included in the index. Default value is ``None``.
-
-        Returns
-        -------
-        bool
-            ``True`` when succeeded ``False`` when failed.
-        """
-
-        padstacks_inbox = self.get_padstack_instances_intersecting_bounding_box(bounding_box, nets)
-        if not padstacks_inbox:
-            self._logger.info("no padstack in bounding box")
-            return False
-        else:
-            if len(padstacks_inbox) <= (x_samples * y_samples):
-                self._logger.info(f"more samples {x_samples * y_samples} than existing {len(padstacks_inbox)}")
-                return False
-            else:
-                # extract ids and positions
-                vias = {item: self.instances[item].position for item in padstacks_inbox}
-                ids, positions = zip(*vias.items())
-                pt_x, pt_y = zip(*positions)
-
-                # meshgrid
-                _x_min, _x_max = min(pt_x), max(pt_x)
-                _y_min, _y_max = min(pt_y), max(pt_y)
-
-                x_grid, y_grid = np.meshgrid(
-                    np.linspace(_x_min, _x_max, x_samples), np.linspace(_y_min, _y_max, y_samples)
-                )
-
-                # mapping to meshgrid
-                to_keep = {
-                    ids[np.argmin(np.square(_x - pt_x) + np.square(_y - pt_y))]
-                    for _x, _y in zip(x_grid.ravel(), y_grid.ravel())
-                }
-
-                for item in padstacks_inbox:
-                    if item not in to_keep:
-                        self.instances[item].delete()
-
-                return True
-
     def merge_via(
         self,
         contour_boxes: List[List[float]],
         net_filter: Optional[Union[str, List[str]]] = None,
         start_layer: Optional[str] = None,
         stop_layer: Optional[str] = None,
-    ) -> bool:
+    ) -> List[str]:
         """Evaluate pad-stack instances included on the provided point list and replace all by single instance.
 
         Parameters
@@ -1706,6 +1679,7 @@ class Padstacks(object):
             )
             merged_via_ids.append(merged_instance.edb_uid)
             [self.instances[inst].delete() for inst in instances]
+        self.clear_instances_cache()
         return merged_via_ids
 
     def reduce_via_in_bounding_box(
@@ -1761,6 +1735,7 @@ class Padstacks(object):
                 for item in padstacks_inbox:
                     if item not in to_keep:
                         all_instances[item].delete()
+                self.clear_instances_cache()
                 return True
 
     @staticmethod
@@ -1916,5 +1891,5 @@ class Padstacks(object):
             to_delete = set(padstacks) - to_keep
             for _id in to_delete:
                 all_instances[_id].delete()
-
+        self.clear_instances_cache()
         return list(to_keep), grid
