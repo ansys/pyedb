@@ -181,7 +181,7 @@ class SiwaveSimulationSetup(SimulationSetup):
     @property
     def enabled(self):
         """Flag indicating if the setup is enabled."""
-        self.dc
+        return self.sim_setup_info.simulation_settings.Enabled
 
     @enabled.setter
     def enabled(self, value: bool):
@@ -403,6 +403,13 @@ class SiwaveDCSimulationSetup(SimulationSetup):
 
     @property
     def settings(self):
+        """Get the settings interface for SIwave DC simulation.
+
+        Returns
+        -------
+        Settings
+            An instance of the Settings class providing access to SIwave DC simulation settings.
+        """
         return Settings(self, self.sim_setup_info)
 
     @property
