@@ -42,9 +42,7 @@ def create_polygon_from_dxf(edb: Edb, dxf_path: str, layer_name: str) -> Primiti
     Examples
     --------
     >>> edb = Edb(edbpath="my_design.aedb")
-    >>> poly = create_polygon_from_dxf(edb,
-    ...          dxf_path="outline.dxf",
-    ...          layer_name="Outline")
+    >>> poly = create_polygon_from_dxf(edb, dxf_path="outline.dxf", layer_name="Outline")
     >>> print(poly)
     <pyedb.dotnet.edb_core.edb_data.primitives.EDBPrimitives object ...>
     """
@@ -112,8 +110,8 @@ def swap_polygon_with_dxf(edb: Edb, dxf_path: str, layer_name: str, point_dxf: L
     ...     edb,
     ...     dxf_path="new_outline.dxf",
     ...     layer_name="Outline",
-    ...     point_dxf=["0", "0"],        # Origin in DXF
-    ...     point_aedt=["10", "5"]       # Where DXF origin should land
+    ...     point_dxf=["0", "0"],  # Origin in DXF
+    ...     point_aedt=["10", "5"],  # Where DXF origin should land
     ... )
     >>> edb.save()
     """
@@ -194,7 +192,7 @@ def swap_polygon_with_dxf_center_point(edb: Edb, dxf_path: str, layer_name: str,
     ...     edb,
     ...     dxf_path="new_outline.dxf",
     ...     layer_name="Outline",
-    ...     point_aedt=["10", "5"]       # Where DXF origin should land
+    ...     point_aedt=["10", "5"],  # Where DXF origin should land
     ... )
     >>> edb.save()
     """
