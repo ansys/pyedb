@@ -23,6 +23,7 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
+
 import math
 import warnings
 
@@ -355,8 +356,11 @@ class Modeler(object):
                 bounding_box.Item2.X.ToDouble(),
                 bounding_box.Item2.Y.ToDouble(),
             ]
-        except:
-            pass
+        except Exception as e:
+            self._logger.warning(
+                f"A(n) {type(e).__name__} error occurred while retrieving bounding box for polygon {polygon} - "
+                f"Empty list is returned: {str(e)}"
+            )
         return bounding
 
     def get_polygon_points(self, polygon):
@@ -383,7 +387,7 @@ class Modeler(object):
         --------
 
         >>> poly = database.modeler.get_polygons_by_layer("GND")
-        >>> points  = database.modeler.get_polygon_points(poly[0])
+        >>> points = database.modeler.get_polygon_points(poly[0])
 
         """
         points = []

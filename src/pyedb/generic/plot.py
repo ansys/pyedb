@@ -24,8 +24,8 @@ except ImportError:
         "The Matplotlib module is required to run some functionalities of PostProcess.\n"
         "Install with \n\npip install matplotlib\n\nRequires CPython."
     )
-except:
-    pass
+except Exception:
+    warnings.warn("Unknown error occurred while attempting to import Matplotlib.")
 
 
 def plot_matplotlib(

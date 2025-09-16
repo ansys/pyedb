@@ -36,6 +36,7 @@ from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
 from pyedb.configuration.cfg_setup import CfgSetups
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
 from pyedb.configuration.cfg_stackup import CfgStackup
+from pyedb.configuration.cfg_terminals import CfgTerminals
 
 
 class CfgData(object):
@@ -58,6 +59,8 @@ class CfgData(object):
         self.padstacks = CfgPadstacks(self._pedb, kwargs.get("padstacks", None))
 
         self.pin_groups = CfgPinGroups(self._pedb, pingroup_data=kwargs.get("pin_groups", []))
+
+        self.terminals = CfgTerminals.create(terminals=kwargs.get("terminals", []))
 
         self.ports = CfgPorts(self._pedb, ports_data=kwargs.get("ports", []))
 

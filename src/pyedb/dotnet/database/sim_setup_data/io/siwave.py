@@ -349,7 +349,7 @@ class AdvancedSettings(SettingsBase):
             ``True`` if automatic mesh is used, ``False`` otherwise.
         """
         warnings.warn(
-            "`automatic_mesh` is deprecated." "Use `mesh_automatic` instead.",
+            "`automatic_mesh` is deprecated. Use `mesh_automatic` instead.",
             DeprecationWarning,
         )
         return self.sim_setup_info.simulation_settings.AdvancedSettings.MeshAutoMatic
@@ -713,6 +713,19 @@ class DCAdvancedSettings(SettingsBase):
     def max_num_pass(self):
         """Maximum number of passes.
 
+        deprecated: Use `max_num_passes` instead.
+
+        Returns
+        -------
+        int
+        """
+        warnings.warn("`max_num_pass` is deprecated. Use `max_num_passes` instead.", DeprecationWarning)
+        return self.max_num_passes
+
+    @property
+    def max_num_passes(self):
+        """Maximum number of passes.
+
         Returns
         -------
         int
@@ -721,6 +734,19 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def min_num_pass(self):
+        """Minimum number of passes.
+
+        deprecated: Use `min_num_passes` instead.
+
+        Returns
+        -------
+        int
+        """
+        warnings.warn("`min_num_pass` is deprecated. Use `min_num_passes` instead.", DeprecationWarning)
+        return self.sim_setup_info
+
+    @property
+    def min_num_passes(self):
         """Minimum number of passes.
 
         Returns
@@ -751,6 +777,19 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def num_bondwire_sides(self):
+        """Number of bondwire sides.
+
+        deprecated: Use `num_bw_sides` instead.
+
+        Returns
+        -------
+        int
+        """
+        warnings.warn("`num_bondwire_sides` is deprecated. Use `num_bw_sides` instead.", DeprecationWarning)
+        return self.num_bw_sides
+
+    @property
+    def num_bw_sides(self):
         """Number of bondwire sides.
 
         Returns
@@ -792,6 +831,20 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def refine_bondwires(self):
+        """Whether to refine mesh along bondwires.
+
+        deprecated: Use `refine_bws` instead.
+
+        Returns
+        -------
+        bool
+            ``True`` if refine bondwires is used, ``False`` otherwise.
+        """
+        warnings.warn("`refine_bondwires` is deprecated. Use `refine_bws` instead.", DeprecationWarning)
+        return self.refine_bws
+
+    @property
+    def refine_bws(self):
         """Whether to refine mesh along bondwires.
 
         Returns

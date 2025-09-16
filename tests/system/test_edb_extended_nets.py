@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Tests related to Edb extended nets
-"""
+"""Tests related to Edb extended nets"""
 
 import pytest
 
@@ -40,7 +39,6 @@ class TestClass(BaseTestClass):
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_nets_queries(self, edb_examples):
         """Evaluate nets queries"""
         edbapp = edb_examples.get_si_verse()

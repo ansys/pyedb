@@ -758,6 +758,7 @@ class SIWaveCPASimulationSetup:
         self._pedb = pedb
         self._channel_setup = ChannelSetup(pedb)
         self._solver_options = SolverOptions(pedb)
+        self.type = "cpa"
         if isinstance(siwave_cpa_setup_class, SIwaveCpaSetup):
             self._apply_cfg_object(siwave_cpa_setup_class)
         else:

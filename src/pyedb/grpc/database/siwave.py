@@ -24,6 +24,7 @@
 This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiwave``,
 ``PinGroup``, ``ResistorSource``, ``Source``, ``SourceType``, and ``VoltageSource``.
 """
+
 import os
 from typing import Any, Dict, Optional, Union
 import warnings
@@ -31,11 +32,9 @@ import warnings
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.simulation_setup.simulation_setup import (
     Distribution as GrpcDistribution,
-)
-from ansys.edb.core.simulation_setup.simulation_setup import (
     FrequencyData as GrpcFrequencyData,
+    SweepData as GrpcSweepData,
 )
-from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSweepData
 
 from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
     SIWaveCPASimulationSetup,
@@ -335,7 +334,7 @@ class Siwave(object):
             Use :func:`pyedb.grpc.core.excitations._check_gnd` instead.
         """
         warnings.warn(
-            "`_check_gnd` is deprecated and is now located here " "`pyedb.grpc.core.excitations._check_gnd` instead.",
+            "`_check_gnd` is deprecated and is now located here `pyedb.grpc.core.excitations._check_gnd` instead.",
             DeprecationWarning,
         )
         return self._pedb.source_excitation._check_gnd(component_name)
@@ -563,9 +562,7 @@ class Siwave(object):
         >>> success = edbapp.siwave.create_exec_file(add_ac=True, add_syz=True)
         >>> # Create exec file with Touchstone export
         >>> success = edbapp.siwave.create_exec_file(
-        ...     add_ac=True,
-        ...     export_touchstone=True,
-        ...     touchstone_file_path="C:/temp/my_touchstone.s2p"
+        ...     add_ac=True, export_touchstone=True, touchstone_file_path="C:/temp/my_touchstone.s2p"
         ... )
         """
         workdir = os.path.dirname(self._pedb.edbpath)
@@ -644,17 +641,13 @@ class Siwave(object):
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
         >>> # Add SYZ analysis with linear sweep from 1kHz to 10GHz
-        >>> setup = edbapp.siwave.add_siwave_syz_analysis(
-        ...     start_freq=1e3,
-        ...     stop_freq=10e9,
-        ...     distribution="linear"
-        ... )
+        >>> setup = edbapp.siwave.add_siwave_syz_analysis(start_freq=1e3, stop_freq=10e9, distribution="linear")
         >>> # Add SYZ analysis with decade sweep
         >>> setup = edbapp.siwave.add_siwave_syz_analysis(
         ...     start_freq=1e3,
         ...     stop_freq=10e9,
         ...     distribution="decade_count",
-        ...     step_freq=10  # 10 points per decade
+        ...     step_freq=10,  # 10 points per decade
         ... )
         """
         setup = self._pedb.create_siwave_syz_setup()
