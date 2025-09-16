@@ -27,14 +27,16 @@ import warnings
 
 import toml
 
+from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
-from pyedb.dotnet.database.definition.package_def import PackageDef
+from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.misc.decorators import execution_timer
 
 
 class Configuration:
     """Enables export and import of a JSON configuration file that can be applied to a new or existing design."""
 
-    def __init__(self, pedb):
+    def __init__(self, pedb: Edb):
         self._pedb = pedb
 
         self._components = self._pedb.components.instances
@@ -42,6 +44,11 @@ class Configuration:
         self._s_parameter_library = ""
         self._spice_model_library = ""
         self.cfg_data = CfgData(self._pedb)
+
+    def __apply_with_logging(self, label: str, func):
+        start = datetime.now()
+        func()
+        self._pedb.logger.info(f"{label} finished. Time lapse {datetime.now() - start}")
 
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
         """Import configuration settings from a configure file.
@@ -116,79 +123,34 @@ class Configuration:
             self.cfg_data.general.apply()
 
         # Configure boundary settings
-        now = datetime.now()
         if self.cfg_data.boundaries:
-            self.cfg_data.boundaries.apply()
-        self._pedb.logger.info(f"Updating boundaries finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+            self.__apply_with_logging("Updating boundaries", self.cfg_data.boundaries.apply)
 
-        # Configure nets
         if self.cfg_data.nets:
-            self.cfg_data.nets.apply()
-        self._pedb.logger.info(f"Updating nets finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+            self.__apply_with_logging("Updating nets", self.cfg_data.nets.apply)
 
-        # Configure components
-        self.cfg_data.components.apply()
-        self._pedb.logger.info(f"Updating components finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+        self.__apply_with_logging("Updating components", self.cfg_data.components.apply)
+        self.__apply_with_logging("Creating pin groups", self.cfg_data.pin_groups.apply)
+        self.__apply_with_logging("Placing sources", self.cfg_data.sources.apply)
+        self.__apply_with_logging("Creating setups", self.cfg_data.setups.apply)
 
-        # Configure pin groups
-        self.cfg_data.pin_groups.apply()
-        self._pedb.logger.info(f"Creating pin groups finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+        self.__apply_with_logging("Applying materials", self.apply_materials)
+        self.__apply_with_logging("Updating stackup", self.apply_stackup)
 
-        # Configure sources
-        self.cfg_data.sources.apply()
-        self._pedb.logger.info(f"Placing sources finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Configure setup
-        self.cfg_data.setups.apply()
-        self._pedb.logger.info(f"Creating setups finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Configure stackup
-        self.configuration_stackup()
-        self._pedb.logger.info(f"Updating stackup finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Configure padstacks
         if self.cfg_data.padstacks:
-            self.cfg_data.padstacks.apply()
-        self._pedb.logger.info(f"Applying padstacks finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+            self.__apply_with_logging("Applying padstacks", self.cfg_data.padstacks.apply)
 
-        # Configure S-parameter
-        self.cfg_data.s_parameters.apply()
-        self._pedb.logger.info(f"Applying S-parameters finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+        self.__apply_with_logging("Applying S-parameters", self.cfg_data.s_parameters.apply)
 
-        # Configure SPICE models
         for spice_model in self.cfg_data.spice_models:
-            spice_model.apply()
-        self._pedb.logger.info(f"Assigning Spice models finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
+            self.__apply_with_logging(f"Assigning Spice model {spice_model}", spice_model.apply)
 
-        # Configure package definitions
-        self.cfg_data.package_definitions.apply()
-        self._pedb.logger.info(f"Applying package definitions finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Modeler
-        self.apply_modeler()
-
-        # Configure ports
-        self.cfg_data.ports.apply()
-        self._pedb.logger.info(f"Placing ports finished. Time lapse {datetime.now() - now}")
-        now = datetime.now()
-
-        # Configure probes
-        self.cfg_data.probes.apply()
-        self._pedb.logger.info(f"Placing probes finished. Time lapse {datetime.now() - now}")
-
-        # Configure operations
-        self.cfg_data.operations.apply()
+        self.__apply_with_logging("Applying package definitions", self.cfg_data.package_definitions.apply)
+        self.__apply_with_logging("Applying modeler", self.apply_modeler)
+        self.__apply_with_logging("Placing ports", self.cfg_data.ports.apply)
+        self.apply_terminals()
+        self.__apply_with_logging("Placing probes", self.cfg_data.probes.apply)
+        self.apply_operations()
 
         return True
 
@@ -228,7 +190,7 @@ class Configuration:
                 pdef.SetData(pdata)
                 pdef = self._pedb.pedb_class.database.edb_data.padstacks_data.EDBPadstack(pdef, self._pedb.padstacks)
                 p.pyedb_obj = pdef
-                p.api.set_parameters_to_edb()
+                p.set_parameters_to_edb()
 
         if modeler.padstack_instances:
             for p in modeler.padstack_instances:
@@ -240,7 +202,7 @@ class Configuration:
                     rotation=p.rotation if p.rotation is not None else 0,
                 )
                 p.pyedb_obj = p_inst
-                p.api.set_parameters_to_edb()
+                p.set_parameters_to_edb()
 
         if modeler.planes:
             for p in modeler.planes:
@@ -285,137 +247,164 @@ class Configuration:
                     component_part_name=c.definition,
                 )
                 c.pyedb_obj = obj
-                c.api.set_parameters_to_edb()
+                c.set_parameters_to_edb()
 
         primitives = self._pedb.layout.find_primitive(**modeler.primitives_to_delete)
         for i in primitives:
             i.delete()
 
     def apply_variables(self):
+        """Set variables into database."""
         inst = self.cfg_data.variables
         for i in inst.variables:
             if i.name.startswith("$"):
-                self._pedb.add_project_variable(i.name, i.value)
+                self._pedb.add_project_variable(i.name, i.value, i.description)
             else:
-                self._pedb.add_design_variable(i.name, i.value)
+                self._pedb.add_design_variable(i.name, i.value, description=i.description)
 
-    def configuration_stackup(self):
+    def get_variables(self):
+        """Retrieve variables from database."""
+        self.cfg_data.variables.variables = []
+        for name, obj in self._pedb.design_variables.items():
+            self.cfg_data.variables.add_variable(name, obj.value_string, obj.description)
+        for name, obj in self._pedb.project_variables.items():
+            self.cfg_data.variables.add_variable(name, obj.value_string, obj.description)
+
+    def apply_materials(self):
+        """Apply material settings to the current design"""
+        cfg_stackup = self.cfg_data.stackup
+        if len(cfg_stackup.materials):
+            materials_in_db = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
+            for mat_in_cfg in cfg_stackup.materials:
+                if mat_in_cfg.name.lower() in materials_in_db:
+                    self._pedb.materials.delete_material(materials_in_db[mat_in_cfg.name.lower()])
+
+                attrs = mat_in_cfg.model_dump(exclude_none=True)
+                mat = self._pedb.materials.add_material(**attrs)
+
+                for i in attrs.get("thermal_modifiers", []):
+                    mat.set_thermal_modifier(**i.to_dict())
+
+    def get_materials(self):
+        """Retrieve materials from the current design.
+
+        Parameters
+        ----------
+        append: bool, optional
+            If `True`, append materials to the current material list.
+        """
+
+        self.cfg_data.stackup.materials = []
+        for name, mat in self._pedb.materials.materials.items():
+            self.cfg_data.stackup.add_material(**mat.to_dict())
+
+    def apply_stackup(self):
+        layers = self.cfg_data.stackup.layers
+        input_signal_layers = [i for i in layers if i.type.lower() == "signal"]
+        if len(input_signal_layers) == 0:
+            return
+        else:  # Create materials with default properties used in stackup but not defined
+            materials = [m.name for m in self.cfg_data.stackup.materials]
+            for i in self.cfg_data.stackup.layers:
+                if i.type == "signal":
+                    if i.material not in materials:
+                        self.cfg_data.stackup.add_material(
+                            name=i.material, **self._pedb.materials.default_conductor_property_values
+                        )
+
+                    if i.fill_material not in materials:
+                        self.cfg_data.stackup.add_material(
+                            name=i.material, **self._pedb.materials.default_dielectric_property_values
+                        )
+
+                elif i.type == "dielectric":
+                    if i.material not in materials:
+                        self.cfg_data.stackup.add_material(
+                            name=i.material, **self._pedb.materials.default_dielectric_property_values
+                        )
+
+        if len(self._pedb.stackup.signal_layers) == 0:
+            self.__create_stackup()
+        elif not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
+            raise Exception(f"Input signal layer count do not match.")
+        else:
+            self.__update_stackup()
+
+    def __create_stackup(self):
+        layers_ = list()
+        layers_.extend(self.cfg_data.stackup.layers)
+        for l_attrs in layers_:
+            attrs = l_attrs.model_dump(exclude_none=True)
+            self._pedb.stackup.add_layer_bottom(**attrs)
+
+    def __update_stackup(self):
+        """Apply layer settings to the current design"""
+
+        # After import stackup, padstacks lose their definitions. They need to be fixed after loading stackup
+        # step 1, archive padstack definitions
         temp_pdef_data = {}
         for pdef_name, pdef in self._pedb.padstacks.definitions.items():
             pdef_edb_object = pdef._padstack_def_data
             temp_pdef_data[pdef_name] = pdef_edb_object
-
+        # step 2, archive padstack instance layer map
         temp_p_inst_layer_map = {}
         for p_inst in self._pedb.layout.padstack_instances:
             temp_p_inst_layer_map[p_inst.id] = p_inst._edb_object.GetLayerMap()
 
-        self.cfg_data.stackup.apply()
+        # ----------------------------------------------------------------------
+        # Apply stackup
+        layers = list()
+        layers.extend(self.cfg_data.stackup.layers)
 
+        removal_list = []
+        lc_signal_layers = []
+        for name, obj in self._pedb.stackup.all_layers.items():
+            if obj.type == "dielectric":
+                removal_list.append(name)
+            elif obj.type == "signal":
+                lc_signal_layers.append(obj.id)
+        for l in removal_list:
+            self._pedb.stackup.remove_layer(l)
+
+        # update all signal layers
+        id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
+        signal_idx = 0
+        for l in layers:
+            if l.type == "signal":
+                layer_id = lc_signal_layers[signal_idx]
+                layer_name = id_name[layer_id]
+                attrs = l.model_dump(exclude_none=True)
+                self._pedb.stackup.layers[layer_name].update(**attrs)
+                signal_idx = signal_idx + 1
+
+        # add all dielectric layers. Dielectric layers must be added last. Otherwise,
+        # dielectric layer will occupy signal and document layer id.
+        l = layers.pop(0)
+        if l.type == "signal":
+            prev_layer_clone = self._pedb.stackup.layers[l.name]
+        else:
+            attrs = l.model_dump(exclude_none=True)
+            prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
+        for idx, l in enumerate(layers):
+            if l.type == "dielectric":
+                attrs = l.model_dump(exclude_none=True)
+                prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **attrs)
+            elif l.type == "signal":
+                prev_layer_clone = self._pedb.stackup.layers[l.name]
+
+        # ----------------------------------------------------------------------
+        # restore padstack definitions
         for pdef_name, pdef_data in temp_pdef_data.items():
             pdef = self._pedb.padstacks.definitions[pdef_name]
             pdef._padstack_def_data = pdef_data
-
+        # restore padstack instance layer map
         for p_inst in self._pedb.layout.padstack_instances:
             p_inst._edb_object.SetLayerMap(temp_p_inst_layer_map[p_inst.id])
 
-    def _load_stackup(self):
-        """Imports stackup information from json."""
-        data = self.data["stackup"]
-        materials = data.get("materials")
-
-        if materials:
-            edb_materials = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
-            for mat in materials:
-                name = mat["name"].lower()
-                if name in edb_materials:
-                    self._pedb.materials.delete_material(edb_materials[name])
-            for mat in materials:
-                self._pedb.materials.add_material(**mat)
-
-        layers = data.get("layers")
-
-        if layers:
-            input_signal_layers = [i for i in layers if i["type"].lower() == "signal"]
-            if not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
-                self._pedb.logger.error("Input signal layer count do not match.")
-                return False
-
-            removal_list = []
-            lc_signal_layers = []
-            for name, obj in self._pedb.stackup.all_layers.items():
-                if obj.type == "dielectric":
-                    removal_list.append(name)
-                elif obj.type == "signal":
-                    lc_signal_layers.append(obj.id)
-            for l in removal_list:
-                self._pedb.stackup.remove_layer(l)
-
-            # update all signal layers
-            id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
-            signal_idx = 0
-            for l in layers:
-                if l["type"] == "signal":
-                    layer_id = lc_signal_layers[signal_idx]
-                    layer_name = id_name[layer_id]
-                    self._pedb.stackup.layers[layer_name].update(**l)
-                    signal_idx = signal_idx + 1
-
-            # add all dielectric layers. Dielectric layers must be added last. Otherwise,
-            # dielectric layer will occupy signal and document layer id.
-            prev_layer_clone = None
-            l = layers.pop(0)
-            if l["type"] == "signal":
-                prev_layer_clone = self._pedb.stackup.layers[l["name"]]
-            else:
-                prev_layer_clone = self._pedb.stackup.add_layer_top(**l)
-            for idx, l in enumerate(layers):
-                if l["type"] == "dielectric":
-                    prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **l)
-                elif l["type"] == "signal":
-                    prev_layer_clone = self._pedb.stackup.layers[l["name"]]
-
-    def _load_package_def(self):
-        """Imports package definition information from JSON."""
-        comps = self._pedb.components.instances
-        for pkgd in self.data["package_definitions"]:
-            name = pkgd["name"]
-            if name in self._pedb.definitions.package:
-                self._pedb.definitions.package[name].delete()
-            extent_bounding_box = pkgd.get("extent_bounding_box", None)
-            if extent_bounding_box:
-                package_def = PackageDef(self._pedb, name=name, extent_bounding_box=extent_bounding_box)
-            else:
-                package_def = PackageDef(self._pedb, name=name, component_part_name=pkgd["component_definition"])
-            package_def.maximum_power = pkgd["maximum_power"]
-            package_def.therm_cond = pkgd["therm_cond"]
-            package_def.theta_jb = pkgd["theta_jb"]
-            package_def.theta_jc = pkgd["theta_jc"]
-            package_def.height = pkgd["height"]
-
-            heatsink = pkgd.get("heatsink", None)
-            if heatsink:
-                package_def.set_heatsink(
-                    heatsink["fin_base_height"],
-                    heatsink["fin_height"],
-                    heatsink["fin_orientation"],
-                    heatsink["fin_spacing"],
-                    heatsink["fin_thickness"],
-                )
-
-            comp_def_name = pkgd["component_definition"]
-            comp_def = self._pedb.definitions.component[comp_def_name]
-
-            comp_list = dict()
-            if pkgd["apply_to_all"]:
-                comp_list.update(
-                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in pkgd["components"]}
-                )
-            else:
-                comp_list.update(
-                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes in pkgd["components"]}
-                )
-            for _, i in comp_list.items():
-                i.package_def = name
+    def get_stackup(self):
+        self.cfg_data.stackup.layers = []
+        for name, obj in self._pedb.stackup.all_layers.items():
+            self.cfg_data.stackup.add_layer_at_bottom(**obj.properties)
 
     def get_data_from_db(self, **kwargs):
         """Get configuration data from layout.
@@ -429,17 +418,27 @@ class Configuration:
 
         """
         self._pedb.logger.info("Getting data from layout database.")
+        self.get_variables()
+        self.get_materials()
+        self.get_stackup()
+        self.get_operations()
+
         data = {}
         if kwargs.get("general", False):
             data["general"] = self.cfg_data.general.get_data_from_db()
+        if kwargs.get("variables", False):
+            data.update(self.cfg_data.variables.model_dump(exclude_none=True))
         if kwargs.get("stackup", False):
-            data["stackup"] = self.cfg_data.stackup.get_data_from_db()
+            data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True)
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):
             setups = self.cfg_data.setups
             setups.retrieve_parameters_from_edb()
             data["setups"] = setups.to_dict()
+        if kwargs.get("terminals", False):
+            self.get_terminals()
+            data.update(self.cfg_data.terminals.model_dump(exclude_none=True))
         if kwargs.get("sources", False):
             data["sources"] = self.cfg_data.sources.get_data_from_db()
         if kwargs.get("ports", False):
@@ -461,7 +460,7 @@ class Configuration:
         if kwargs.get("pin_groups", False):
             data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
         if kwargs.get("operations", False):
-            data["operations"] = self.cfg_data.operations.get_data_from_db()
+            data["operations"] = self.cfg_data.operations.model_dump()
         if kwargs.get("padstacks", False):
             self.cfg_data.padstacks.retrieve_parameters_from_edb()
             definitions = []
@@ -479,6 +478,197 @@ class Configuration:
 
         return data
 
+    @execution_timer("Applying operations")
+    def apply_operations(self):
+        """Apply operations to the current design."""
+        op_cutout = self.cfg_data.operations.cutout
+        if op_cutout:
+            cutout_params = op_cutout.model_dump()
+            auto_identify_nets = cutout_params.pop("auto_identify_nets")
+            if auto_identify_nets["enabled"]:
+                reference_list = cutout_params.get("reference_list", [])
+                if auto_identify_nets:
+                    self._pedb.nets.generate_extended_nets(
+                        auto_identify_nets["resistor_below"],
+                        auto_identify_nets["inductor_below"],
+                        auto_identify_nets["capacitor_above"],
+                        auto_identify_nets.get("exception_list", []),
+                    )
+                    signal_nets = []
+                    for i in self._pedb.terminals.values():
+                        if i.net_name in reference_list:
+                            continue
+
+                        extended_net = i.net.extended_net
+                        if extended_net:
+                            temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_list]
+                            temp = [i2 for i2 in temp if i2 not in signal_nets]
+                            signal_nets.extend(temp)
+                        else:
+                            signal_nets.append(i.net_name)
+
+                    cutout_params["signal_list"] = signal_nets
+            polygon_points = self._pedb.cutout(**cutout_params)
+            if "pyedb_cutout" not in self._pedb.stackup.all_layers:
+                self._pedb.stackup.add_document_layer(name="pyedb_cutout")
+                self._pedb.modeler.create_polygon(polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout")
+
+    def get_operations(self):
+        if "pyedb_cutout" not in self._pedb.stackup.all_layers:
+            return
+
+        polygons = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")
+        if polygons:
+            poly = polygons[0]
+            custom_extent = poly.polygon_data.points
+            net_names = []
+            for name, obj in self._pedb.nets.nets.items():
+                if obj.primitives:
+                    if obj.primitives[0].layer.name == "pyedb_cutout":
+                        continue
+                    else:
+                        net_names.append(name)
+            reference_list = []
+            signal_list = net_names
+
+            self.cfg_data.operations.add_cutout(
+                custom_extent=custom_extent,
+                reference_list=reference_list,
+                signal_list=signal_list,
+            )
+
+    @execution_timer("Placing terminals")
+    def apply_terminals(self):
+        terminals_dict = {}
+        bungle_terminals = []
+        edge_terminals = {}
+        for cfg_terminal in self.cfg_data.terminals.terminals:
+            if cfg_terminal.terminal_type == "padstack_instance":
+                if cfg_terminal.padstack_instance_id:
+                    pds = self._pedb.layout.find_padstack_instances(
+                        instance_id=cfg_terminal.padstack_instance_id,
+                        aedt_name=None,
+                        component_name=None,
+                        component_pin_name=None,
+                    )[0]
+                else:
+                    pds = self._pedb.layout.find_padstack_instances(
+                        instance_id=None,
+                        aedt_name=cfg_terminal.padstack_instance,
+                        component_name=None,
+                        component_pin_name=None,
+                    )[0]
+                terminal = pds.create_terminal(name=cfg_terminal.name)
+
+            elif cfg_terminal.terminal_type == "pin_group":
+                pg = self._pedb.siwave.pin_groups[cfg_terminal.pin_group]
+                terminal = pg.create_terminal(name=cfg_terminal.name)
+            elif cfg_terminal.terminal_type == "point":
+                terminal = self._pedb.get_point_terminal(
+                    cfg_terminal.name, cfg_terminal.net, [cfg_terminal.x, cfg_terminal.y], cfg_terminal.layer
+                )
+            elif cfg_terminal.terminal_type == "edge":
+                pt = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
+                    self._pedb, x=cfg_terminal.point_on_edge_x, y=cfg_terminal.point_on_edge_y
+                )
+                primitive = self._pedb.layout.primitives_by_aedt_name[cfg_terminal.primitive]
+                edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, pt._edb_object)
+                edge = convert_py_list_to_net_list(edge, self._pedb.core.Cell.Terminal.Edge)
+                _terminal = self._pedb.core.Cell.Terminal.EdgeTerminal.Create(
+                    primitive._edb_object.GetLayout(),
+                    primitive._edb_object.GetNet(),
+                    cfg_terminal.name,
+                    edge,
+                    isRef=False,
+                )
+                terminal = self._pedb.pedb_class.database.cell.terminal.edge_terminal.EdgeTerminal(
+                    self._pedb, _terminal
+                )
+                terminal.horizontal_extent_factor = terminal.horizontal_extent_factor
+                terminal.vertical_extent_factor = terminal.vertical_extent_factor
+                terminal.pec_launch_width = terminal.pec_launch_width
+                terminal.do_renormalize = True
+                edge_terminals[cfg_terminal.name] = terminal
+            elif cfg_terminal.terminal_type == "bundle":
+                bungle_terminals.append(cfg_terminal)
+                continue
+            else:
+                self._pedb.logger.warning(f"Terminal type {cfg_terminal.terminal_type} not supported.")
+                continue
+
+            terminal.impedance = cfg_terminal.impedance
+            terminal.is_circuit_port = cfg_terminal.is_circuit_port
+            terminal.boundary_type = cfg_terminal.boundary_type
+            terminal.source_amplitude = cfg_terminal.amplitude
+            terminal.source_phase = cfg_terminal.phase
+            terminal.terminal_to_ground = cfg_terminal.terminal_to_ground
+
+            terminals_dict[cfg_terminal.name] = cfg_terminal, terminal
+
+        for _, obj in terminals_dict.items():
+            cfg, obj = obj
+            if cfg.reference_terminal:
+                obj.reference_terminal = terminals_dict[cfg.reference_terminal][1]
+
+        for i in bungle_terminals:
+            boundle_terminal = self._pedb.pedb_class.database.cell.terminal.bundle_terminal.BundleTerminal.create(
+                self._pedb, i.name, i.terminals
+            )
+            bundle_term = boundle_terminal.terminals
+            bundle_term[0].name = i.name + ":T1"
+            bundle_term[1].mame = i.name + ":T2"
+
+    @execution_timer("Retrieving terminal information")
+    def get_terminals(self):
+        manager = self.cfg_data.terminals
+        manager.terminals = []
+        for i in self._pedb.terminals.values():
+            if i.terminal_type == "PadstackInstanceTerminal":
+                manager.add_padstack_instance_terminal(
+                    padstack_instance=i.padstack_instance.aedt_name,
+                    padstack_instance_id=i.padstack_instance.id,
+                    name=i.name,
+                    impedance=i.impedance,
+                    is_circuit_port=i.is_circuit_port,
+                    boundary_type=i.boundary_type,
+                    amplitude=i.source_amplitude,
+                    phase=i.source_phase,
+                    terminal_to_ground=i.terminal_to_ground,
+                    reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
+                    hfss_type=i.hfss_type if i.hfss_type else "Wave",
+                )
+            elif i.terminal_type == "PinGroupTerminal":
+                manager.add_pin_group_terminal(
+                    pin_group=i.pin_group().name,
+                    name=i.name,
+                    impedance=i.impedance,
+                    boundary_type=i.boundary_type,
+                    reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
+                    amplitude=i.source_amplitude,
+                    phase=i.source_phase,
+                    terminal_to_ground=i.terminal_to_ground,
+                )
+            elif i.terminal_type == "PointTerminal":
+                manager.add_point_terminal(
+                    x=i.location[0],
+                    y=i.location[1],
+                    layer=i.layer.name,
+                    name=i.name,
+                    impedance=i.impedance,
+                    boundary_type=i.boundary_type,
+                    reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
+                    amplitude=i.source_amplitude,
+                    phase=i.source_phase,
+                    terminal_to_ground=i.terminal_to_ground,
+                    net=i.net_name,
+                )
+            elif i.terminal_type == "EdgeTerminal":
+                pass
+            elif i.terminal_type == "BundleTerminal":
+                pass
+            else:  # pragma: no cover
+                raise RuntimeError(f"Terminal type {i.terminal_type} not supported.")
+
     def export(
         self,
         file_path,
@@ -495,6 +685,8 @@ class Configuration:
         s_parameters=True,
         padstacks=True,
         general=True,
+        variables=True,
+        terminals=False,
     ):
         """Export the configuration data from layout to a file.
 
@@ -509,9 +701,9 @@ class Configuration:
         setups : bool
             Whether to export setups or not.
         sources : bool
-            Whether to export sources or not.
+            Whether to export sources or not. Alternative to terminals.
         ports : bool
-            Whether to export ports or not.
+            Whether to export ports or not. Alternative to terminals.
         nets : bool
             Whether to export nets.
         pin_groups : bool
@@ -528,6 +720,10 @@ class Configuration:
             Whether to export padstacks.
         general : bool
             Whether to export general information.
+        variables : bool
+            Whether to export variable.
+        terminals : bool
+            Whether to export terminals. Alternative to ports and sources.
         Returns
         -------
         bool
@@ -546,6 +742,8 @@ class Configuration:
             s_parameters=s_parameters,
             padstacks=padstacks,
             general=general,
+            variables=variables,
+            terminals=terminals,
         )
 
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)

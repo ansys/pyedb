@@ -20,12 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from ansys.edb.core.layout.voltage_regulator import (
     VoltageRegulator as GrpcVoltageRegulator,
 )
-from ansys.edb.core.utility.value import Value as GrpcValue
 
-from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+from pyedb.grpc.database.utility.value import Value
 
 
 class VoltageRegulator(GrpcVoltageRegulator):
@@ -70,11 +75,11 @@ class VoltageRegulator(GrpcVoltageRegulator):
         float
             Current value.
         """
-        return self.load_regulator_current.value
+        return Value(self.load_regulator_current)
 
     @load_regulator_current.setter
     def load_regulator_current(self, value):
-        self.load_regulation_percent = GrpcValue(value)
+        self.load_regulation_percent = Value(value)
 
     @property
     def load_regulation_percent(self) -> float:
@@ -85,11 +90,11 @@ class VoltageRegulator(GrpcVoltageRegulator):
         float
             Percent value.
         """
-        return self.load_regulation_percent.value
+        return Value(self.load_regulation_percent)
 
     @load_regulation_percent.setter
     def load_regulation_percent(self, value):
-        self.load_regulation_percent = GrpcValue(value)
+        self.load_regulation_percent = Value(value)
 
     @property
     def negative_remote_sense_pin(self) -> PadstackInstance:
@@ -142,8 +147,8 @@ class VoltageRegulator(GrpcVoltageRegulator):
         float
             Voltage value.
         """
-        return self.voltage.value
+        return Value(self.voltage)
 
     @voltage.setter
     def voltage(self, value):
-        self.voltage = GrpcValue(value)
+        self.voltage = Value(value)

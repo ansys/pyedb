@@ -21,23 +21,22 @@
 # SOFTWARE.
 
 import math
+import warnings
 
 from ansys.edb.core.definition.padstack_def import PadstackDef as GrpcPadstackDef
 from ansys.edb.core.definition.padstack_def_data import (
     PadGeometryType as GrpcPadGeometryType,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     PadstackHoleRange as GrpcPadstackHoleRange,
+    PadType as GrpcPadType,
 )
-from ansys.edb.core.definition.padstack_def_data import PadType as GrpcPadType
 import ansys.edb.core.geometry.polygon_data
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure
-from ansys.edb.core.hierarchy.structure3d import Structure3D as GrpcStructure3D
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure, Structure3D as GrpcStructure3D
 from ansys.edb.core.primitive.circle import Circle as GrpcCircle
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.grpc.database.primitive.circle import Circle
+from pyedb.grpc.database.utility.value import Value
 
 
 class PadProperties:
@@ -109,6 +108,26 @@ class PadProperties:
         """
         return self._pad_parameter_value[0].name.split("_")[-1].lower()
 
+    @shape.setter
+    def shape(self, value: str):
+        """Set pad shape.
+
+        Parameters
+        ----------
+        value : str
+            Pad shape.
+        """
+        if value.lower() == "circle":
+            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_CIRCLE)
+        elif value.lower() == "rectangle":
+            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE)
+        elif value.lower() == "polygon":
+            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_POLYGON)
+        else:
+            raise ValueError(
+                f"Unsupported pad shape: {value}. Supported shapes are 'circle', 'rectangle', and 'polygon'."
+            )
+
     @property
     def parameters_values(self):
         """Parameters.
@@ -119,7 +138,7 @@ class PadProperties:
             List of parameters.
         """
         try:
-            return [i.value for i in self._pad_parameter_value[1]]
+            return [Value(i) for i in self._pad_parameter_value[1]]
         except TypeError:
             return []
 
@@ -158,7 +177,7 @@ class PadProperties:
         str
             Offset for the X axis.
         """
-        return self._pad_parameter_value[2].value
+        return Value(self._pad_parameter_value[2])
 
     @property
     def offset_y(self) -> float:
@@ -170,7 +189,7 @@ class PadProperties:
             Offset for the Y axis.
         """
 
-        return self._pad_parameter_value[3].value
+        return Value(self._pad_parameter_value[3])
 
     @offset_x.setter
     def offset_x(self, value):
@@ -190,7 +209,7 @@ class PadProperties:
             Value for the rotation.
         """
 
-        return self._pad_parameter_value[4].value
+        return Value(self._pad_parameter_value[4])
 
     @rotation.setter
     def rotation(self, value):
@@ -218,27 +237,27 @@ class PadProperties:
         if params is None:
             params = self._pad_parameter_value[1]
         elif isinstance(params, list):
-            offsetx = [GrpcValue(i, self._pedbpadstack._pedb.db) for i in params]
+            offsetx = [Value(i, self._pedbpadstack._pedb.db) for i in params]
         if rotation is None:
             rotation = self._pad_parameter_value[4]
         elif isinstance(rotation, (str, float, int)):
-            rotation = GrpcValue(rotation, self._pedbpadstack._pedb.db)
+            rotation = Value(rotation, self._pedbpadstack._pedb.db)
         if offsetx is None:
             offsetx = self._pad_parameter_value[2]
         elif isinstance(offsetx, (str, float, int)):
-            offsetx = GrpcValue(offsetx, self._pedbpadstack._pedb.db)
+            offsetx = Value(offsetx, self._pedbpadstack._pedb.db)
         if offsety is None:
             offsety = self._pad_parameter_value[3]
         elif isinstance(offsety, (str, float, int)):
-            offsety = GrpcValue(offsety, self._pedbpadstack._pedb.db)
+            offsety = Value(offsety, self._pedbpadstack._pedb.db)
         self._edb_padstack.set_pad_parameters(
             layer=layer_name,
             pad_type=pad_type,
             type_geom=geom_type,
-            offset_x=GrpcValue(offsetx, self._pedbpadstack._pedb.db),
-            offset_y=GrpcValue(offsety, self._pedbpadstack._pedb.db),
-            rotation=GrpcValue(rotation, self._pedbpadstack._pedb.db),
-            sizes=[GrpcValue(i, self._pedbpadstack._pedb.db) for i in params],
+            offset_x=Value(offsetx, self._pedbpadstack._pedb.db),
+            offset_y=Value(offsety, self._pedbpadstack._pedb.db),
+            rotation=Value(rotation, self._pedbpadstack._pedb.db),
+            sizes=[Value(i, self._pedbpadstack._pedb.db) for i in params],
         )
 
 
@@ -276,7 +295,11 @@ class PadstackDef(GrpcPadstackDef):
         List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             List of PadstackInstance objects.
         """
-        return [i for i in list(self._pedb.padstacks.instances.values()) if i.padstack_def.name == self.name]
+        return [
+            i
+            for i in list(self._pedb.padstacks.instances.values())
+            if not i.is_null and i.padstack_def.name == self.name
+        ]
 
     @property
     def layers(self) -> list[str]:
@@ -301,6 +324,22 @@ class PadstackDef(GrpcPadstackDef):
         return self.layers[0]
 
     @property
+    def via_start_layer(self):
+        """Via starting layer.
+
+        .deprecated
+        Use: :method:`start_layer <pyedb.grpc.database.definition.padstack_def.PadstackDef.start_layer>`
+        instead.
+
+        Returns
+        -------
+        str
+            Name of the via starting layer.
+        """
+        warnings.warn("via_start_layer is deprecated. Use start_layer instead.", DeprecationWarning)
+        return self.start_layer
+
+    @property
     def stop_layer(self):
         """Stopping layer.
 
@@ -310,6 +349,22 @@ class PadstackDef(GrpcPadstackDef):
             Name of the stopping layer.
         """
         return self.layers[-1]
+
+    @property
+    def via_stop_layer(self):
+        """Via stop layer.
+
+        .deprecated
+        Use :method:`stop_layer <pyedb.grpc.database.definition.padstack_def.PadstackDef.stop_layer>`
+        instead.
+
+        Returns
+        -------
+        str
+            Name of the via stop layer.
+        """
+        warnings.warn("via_stop_layer is deprecated. Use stop_layer instead.", DeprecationWarning)
+        return self.stop_layer
 
     @property
     def hole_diameter(self) -> float:
@@ -324,7 +379,7 @@ class PadstackDef(GrpcPadstackDef):
         try:
             hole_parameter = self.data.get_hole_parameters()
             if hole_parameter[0].name.lower() == "padgeomtype_circle":
-                return round(hole_parameter[1][0].value, 6)
+                return Value(hole_parameter[1][0])
         except:
             return 0.0
 
@@ -332,9 +387,9 @@ class PadstackDef(GrpcPadstackDef):
     def hole_diameter(self, value):
         hole_parameter = self.data.get_hole_parameters()
         if not isinstance(value, list):
-            value = [GrpcValue(value)]
+            value = [Value(value)]
         else:
-            value = [GrpcValue(p) for p in value]
+            value = [Value(p) for p in value]
         hole_size = value
         geometry_type = hole_parameter[0]
         hole_offset_x = hole_parameter[2]
@@ -359,7 +414,7 @@ class PadstackDef(GrpcPadstackDef):
             hole type.
 
         """
-        return self.data.get_hole_parameters()[0].value
+        return Value(self.data.get_hole_parameters()[0])
 
     @property
     def edb_hole_type(self):
@@ -383,14 +438,14 @@ class PadstackDef(GrpcPadstackDef):
             Hole offset value for the X axis.
         """
         try:
-            return round(self.data.get_hole_parameters()[2].value, 6)
+            return Value(self.data.get_hole_parameters()[2])
         except:
             return 0.0
 
     @hole_offset_x.setter
     def hole_offset_x(self, value):
         hole_parameter = list(self.data.get_hole_parameters())
-        hole_parameter[2] = GrpcValue(value, self._pedb.db)
+        hole_parameter[2] = Value(value, self._pedb.db)
         self.data.set_hole_parameters(
             offset_x=hole_parameter[2],
             offset_y=hole_parameter[3],
@@ -409,14 +464,14 @@ class PadstackDef(GrpcPadstackDef):
             Hole offset value for the Y axis.
         """
         try:
-            return round(self.data.get_hole_parameters()[3].value, 6)
+            return Value(self.data.get_hole_parameters()[3])
         except:
             return 0.0
 
     @hole_offset_y.setter
     def hole_offset_y(self, value):
         hole_parameter = list(self.data.get_hole_parameters())
-        hole_parameter[3] = GrpcValue(value, self._pedb.db)
+        hole_parameter[3] = Value(value, self._pedb.db)
         self.data.set_hole_parameters(
             offset_x=hole_parameter[2],
             offset_y=hole_parameter[3],
@@ -435,14 +490,14 @@ class PadstackDef(GrpcPadstackDef):
             Value for the hole rotation.
         """
         try:
-            return round(self.data.get_hole_parameters()[4].value, 6)
+            return Value(self.data.get_hole_parameters()[4])
         except:
             return 0.0
 
     @hole_rotation.setter
     def hole_rotation(self, value):
         hole_parameter = list(self.data.get_hole_parameters())
-        hole_parameter[4] = GrpcValue(value, self._pedb.db)
+        hole_parameter[4] = Value(value, self._pedb.db)
         self.data.set_hole_parameters(
             offset_x=hole_parameter[2],
             offset_y=hole_parameter[3],
@@ -511,11 +566,11 @@ class PadstackDef(GrpcPadstackDef):
         float
             Percentage for the hole plating.
         """
-        return round(self.data.plating_percentage.value, 6)
+        return Value(self.data.plating_percentage)
 
     @hole_plating_ratio.setter
     def hole_plating_ratio(self, ratio):
-        self.data.plating_percentage = GrpcValue(ratio)
+        self.data.plating_percentage = Value(ratio)
 
     @property
     def hole_plating_thickness(self) -> float:
@@ -543,7 +598,7 @@ class PadstackDef(GrpcPadstackDef):
         float
             Thickness of the hole plating if present.
         """
-        hr = 200 * GrpcValue(value).value / self.hole_diameter
+        hr = 200 * Value(value) / self.hole_diameter
         self.hole_plating_ratio = hr
 
     @property
@@ -667,13 +722,13 @@ class PadstackDef(GrpcPadstackDef):
                         net_name=via.net_name,
                     )
                 else:
-                    GrpcCircle.create(
+                    Circle(self._pedb).create(
                         layout,
                         self.start_layer,
                         via.net,
-                        GrpcValue(pos[0]),
-                        GrpcValue(pos[1]),
-                        GrpcValue(self.pad_by_layer[self.start_layer].parameters_values[0] / 2),
+                        Value(pos[0]),
+                        Value(pos[1]),
+                        Value(self.pad_by_layer[self.start_layer].parameters_values[0] / 2),
                     )
                 if len(self.pad_by_layer[self.stop_layer].parameters_values) == 0:
                     self._pedb.modeler.create_polygon(
@@ -682,34 +737,34 @@ class PadstackDef(GrpcPadstackDef):
                         net_name=via.net_name,
                     )
                 else:
-                    GrpcCircle.create(
+                    Circle(self._pedb).create(
                         layout,
                         self.stop_layer,
                         via.net,
-                        GrpcValue(pos[0]),
-                        GrpcValue(pos[1]),
-                        GrpcValue(self.pad_by_layer[self.stop_layer].parameters_values[0] / 2),
+                        Value(pos[0]),
+                        Value(pos[1]),
+                        Value(self.pad_by_layer[self.stop_layer].parameters_values[0] / 2),
                     )
                 for layer_name in layer_names:
                     stop = ""
                     if layer_name == via.start_layer or started:
                         start = layer_name
                         stop = layer_names[layer_names.index(layer_name) + 1]
-                        cloned_circle = GrpcCircle.create(
+                        cloned_circle = Circle(self._pedb).create(
                             layout,
                             start,
                             via.net,
-                            GrpcValue(pos[0]),
-                            GrpcValue(pos[1]),
-                            GrpcValue(rad1),
+                            Value(pos[0]),
+                            Value(pos[1]),
+                            Value(rad1),
                         )
-                        cloned_circle2 = GrpcCircle.create(
+                        cloned_circle2 = Circle(self._pedb).create(
                             layout,
                             stop,
                             via.net,
-                            GrpcValue(pos[0]),
-                            GrpcValue(pos[1]),
-                            GrpcValue(rad2),
+                            Value(pos[0]),
+                            Value(pos[1]),
+                            Value(rad2),
                         )
                         s3d = GrpcStructure3D.create(
                             layout, generate_unique_name("via3d_" + via.aedt_name.replace("via_", ""), n=3)
@@ -718,7 +773,7 @@ class PadstackDef(GrpcPadstackDef):
                         s3d.add_member(cloned_circle2)
                         if not self.data.material.value:
                             self._pedb.logger.warning(
-                                f"Padstack definution {self.name} has no material defined." f"Defaulting to copper"
+                                f"Padstack definution {self.name} has no material defined.Defaulting to copper"
                             )
                             self.data.material = "copper"
                         s3d.set_material(self.data.material.value)
@@ -771,9 +826,9 @@ class PadstackDef(GrpcPadstackDef):
                     new_padstack_definition.data.set_pad_parameters(
                         layer=layer,
                         pad_type=GrpcPadType.REGULAR_PAD,
-                        offset_x=GrpcValue(pl.offset_x, self._pedb.db),
-                        offset_y=GrpcValue(pl.offset_y, self._pedb.db),
-                        rotation=GrpcValue(pl.rotation, self._pedb.db),
+                        offset_x=Value(pl.offset_x, self._pedb.db),
+                        offset_y=Value(pl.offset_y, self._pedb.db),
+                        rotation=Value(pl.rotation, self._pedb.db),
                         type_geom=pl._edb_geometry_type,
                         sizes=pl.parameters_values,
                     )
@@ -783,9 +838,9 @@ class PadstackDef(GrpcPadstackDef):
                         new_padstack_definition.data.set_pad_parameters(
                             layer=layer,
                             pad_type=GrpcPadType.ANTI_PAD,
-                            offset_x=GrpcValue(pl.offset_x, self._pedb.db),
-                            offset_y=GrpcValue(pl.offset_y, self._pedb.db),
-                            rotation=GrpcValue(pl.rotation, self._pedb.db),
+                            offset_x=Value(pl.offset_x, self._pedb.db),
+                            offset_y=Value(pl.offset_y, self._pedb.db),
+                            rotation=Value(pl.rotation, self._pedb.db),
                             type_geom=pl._edb_geometry_type,
                             sizes=pl.parameters_values,
                         )
@@ -795,21 +850,21 @@ class PadstackDef(GrpcPadstackDef):
                         new_padstack_definition.data.set_pad_parameters(
                             layer=layer,
                             pad_type=GrpcPadType.THERMAL_PAD,
-                            offset_x=GrpcValue(pl.offset_x, self._pedb.db),
-                            offset_y=GrpcValue(pl.offset_y, self._pedb.db),
-                            rotation=GrpcValue(pl.rotation, self._pedb.db),
+                            offset_x=Value(pl.offset_x, self._pedb.db),
+                            offset_y=Value(pl.offset_y, self._pedb.db),
+                            rotation=Value(pl.rotation, self._pedb.db),
                             type_geom=pl._edb_geometry_type,
                             sizes=pl.parameters_values,
                         )
                 new_padstack_definition.data.set_hole_parameters(
-                    offset_x=GrpcValue(self.hole_offset_x, self._pedb.db),
-                    offset_y=GrpcValue(self.hole_offset_y, self._pedb.db),
-                    rotation=GrpcValue(self.hole_rotation, self._pedb.db),
+                    offset_x=Value(self.hole_offset_x, self._pedb.db),
+                    offset_y=Value(self.hole_offset_y, self._pedb.db),
+                    rotation=Value(self.hole_rotation, self._pedb.db),
                     type_geom=self.edb_hole_type,
                     sizes=[self.hole_diameter],
                 )
                 new_padstack_definition.data.material = self.material
-                new_padstack_definition.data.plating_percentage = GrpcValue(self.hole_plating_ratio, self._pedb.db)
+                new_padstack_definition.data.plating_percentage = Value(self.hole_plating_ratio, self._pedb.db)
                 new_instances.append(PadstackDef(self._pedb, new_padstack_definition))
                 started = True
             if self.stop_layer == stop:

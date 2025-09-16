@@ -22,11 +22,9 @@
 
 from ansys.edb.core.simulation_setup.simulation_setup import (
     Distribution as GrpcDistribution,
-)
-from ansys.edb.core.simulation_setup.simulation_setup import (
     FrequencyData as GrpcFrequencyData,
+    SweepData as GrpcSweepData,
 )
-from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSweepData
 
 
 class SweepData(GrpcSweepData):

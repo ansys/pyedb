@@ -80,7 +80,7 @@ class PadstackInstanceTerminal(Terminal):
 
         layer_obj = self._pedb.stackup.signal_layers[layer]
 
-        terminal = self._edb.cell.terminal.PadstackInstanceTerminal.Create(
+        terminal = self._edb.Cell.Terminal.PadstackInstanceTerminal.Create(
             self._pedb.active_layout,
             padstack_instance.net.net_object,
             name,

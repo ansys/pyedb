@@ -20,16 +20,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 import re
 
 from ansys.edb.core.terminal.edge_terminal import EdgeType as GrpcEdgeType
-from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
-from ansys.edb.core.terminal.terminal import Terminal as GrpcTerminal
-from ansys.edb.core.terminal.terminal import TerminalType as GrpcTerminalType
-from ansys.edb.core.utility.value import Value as GrpcValue
+from ansys.edb.core.terminal.terminal import (
+    BoundaryType as GrpcBoundaryType,
+    Terminal as GrpcTerminal,
+    TerminalType as GrpcTerminalType,
+)
 
-from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.primitive import Primitive
+from pyedb.grpc.database.utility.value import Value
 
 
 class Terminal(GrpcTerminal):
@@ -239,11 +246,11 @@ class Terminal(GrpcTerminal):
         float : impedance value.
 
         """
-        return self.impedance.value
+        return Value(self.impedance)
 
     @impedance.setter
     def impedance(self, value):
-        self.impedance = GrpcValue(value)
+        self.impedance = Value(value)
 
     @property
     def reference_object(self) -> any:
@@ -356,7 +363,7 @@ class Terminal(GrpcTerminal):
         ref_layer = self.reference_layer
         edges = self.edges
         _, _, point_data = edges[0].get_parameters()
-        # shape_pd = self._pedb.edb_api.geometry.point_data(X, Y)
+        # shape_pd = self._pedb.core.geometry.point_data(X, Y)
         layer_name = ref_layer.name
         for primitive in self._pedb.layout.primitives:
             if primitive.layer.name == layer_name:
@@ -364,18 +371,22 @@ class Terminal(GrpcTerminal):
                     return (primitive, self._pedb)
         return None  # pragma: no cover
 
-    def get_point_terminal_reference_primitive(self) -> Primitive:  # pragma : no cover
-        """Find and return the primitive reference for the point terminal or the padstack instance.
+    def get_point_terminal_reference_primitive(self) -> Primitive:
+        """
+        Find and return the primitive reference for the point terminal or the padstack instance.
 
         Returns
         -------
-        :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>` or
-        :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`
+        Primitive or PadstackInstance
+            The primitive reference for the point terminal or the padstack instance.
+            Returns an instance of :class:`PadstackInstance
+            <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
+            or :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`.
         """
 
         ref_term = self.reference_terminal  # return value is type terminal
         _, point_data, layer = ref_term.get_parameters()
-        # shape_pd = self._pedb.edb_api.geometry.point_data(X, Y)
+        # shape_pd = self._pedb.core.geometry.point_data(X, Y)
         layer_name = layer.name
         for primitive in self._pedb.layout.primitives:
             if primitive.layer.name == layer_name:
@@ -448,11 +459,11 @@ class Terminal(GrpcTerminal):
         -------
         float : source magnitude.
         """
-        return self.source_amplitude.value
+        return Value(self.source_amplitude)
 
     @magnitude.setter
     def magnitude(self, value):
-        self.source_amplitude = GrpcValue(value)
+        self.source_amplitude = Value(value)
 
     @property
     def phase(self) -> float:
@@ -463,8 +474,8 @@ class Terminal(GrpcTerminal):
         float : source phase.
 
         """
-        return self.source_phase.value
+        return Value(self.source_phase)
 
     @phase.setter
     def phase(self, value):
-        self.source_phase = GrpcValue(value)
+        self.source_phase = Value(value)

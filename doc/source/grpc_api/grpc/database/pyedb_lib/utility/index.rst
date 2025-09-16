@@ -14,3 +14,4 @@ This section describes EDB utility classes.
    rlc
    sources
    xml_control_file
+   value

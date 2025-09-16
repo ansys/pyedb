@@ -1,5 +1,4 @@
 class HeatSink:
-
     """Heatsink model description.
 
     Parameters
@@ -12,15 +11,15 @@ class HeatSink:
     def __init__(self, pedb, edb_object=None):
         self._pedb = pedb
         self._fin_orientation_type = {
-            "x_oriented": self._pedb.edb_api.utility.utility.HeatSinkFinOrientation.XOriented,
-            "y_oriented": self._pedb.edb_api.utility.utility.HeatSinkFinOrientation.YOriented,
-            "other_oriented": self._pedb.edb_api.utility.utility.HeatSinkFinOrientation.OtherOriented,
+            "x_oriented": self._pedb.core.Utility.HeatSinkFinOrientation.XOriented,
+            "y_oriented": self._pedb.core.Utility.HeatSinkFinOrientation.YOriented,
+            "other_oriented": self._pedb.core.Utility.HeatSinkFinOrientation.OtherOriented,
         }
 
         if edb_object:
             self._edb_object = edb_object
         else:
-            self._edb_object = self._pedb.edb_api.utility.utility.HeatSink()
+            self._edb_object = self._pedb.core.Utility.HeatSink()
 
     @property
     def fin_base_height(self):

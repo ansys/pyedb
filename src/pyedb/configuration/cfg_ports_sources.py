@@ -58,7 +58,7 @@ class CfgTerminalInfo(CfgBase):
         self.contact_type = kwargs.get("contact_type", "default")  # options are full, center, quad, inline
         contact_radius = "0.1mm" if kwargs.get("contact_radius") is None else kwargs.get("contact_radius")
 
-        self.contact_radius = self._pedb.edb_value(contact_radius).ToDouble()
+        self.contact_radius = self._pedb.value(contact_radius)
         self.num_of_contact = kwargs.get("num_of_contact", 4)
         self.contact_expansion = kwargs.get("contact_expansion", 1)
 
@@ -130,6 +130,7 @@ class CfgSources:
                 self._pedb,
                 name=name,
                 type=src_type,
+                impedance=src.impedance,
                 magnitude=magnitude,
                 reference_designator=refdes,
                 positive_terminal=pos_term_info,
@@ -236,6 +237,7 @@ class CfgPorts:
                     self._pedb,
                     name=p.name,
                     type=port_type,
+                    impedance=p.impedance,
                     reference_designator=refdes,
                     positive_terminal=pos_term_info,
                     negative_terminal=neg_term_info,
@@ -245,6 +247,7 @@ class CfgPorts:
                     self._pedb,
                     name=p.name,
                     type=port_type,
+                    impedance=p.impedance,
                     reference_designator=refdes,
                     positive_terminal=pos_term_info,
                 )
@@ -275,6 +278,7 @@ class CfgCircuitElement(CfgBase):
         self._pedb = pedb
         self.name = kwargs["name"]
         self.type = kwargs["type"]
+        self.impedance = kwargs.get("impedance", None)
         self.reference_designator = kwargs.get("reference_designator", None)
         self.distributed = kwargs.get("distributed", False)
         self._elem_num = 1
@@ -558,6 +562,7 @@ class CfgPort(CfgCircuitElement):
                 elem = self._pedb.create_port(j, self.neg_terminal[name], is_circuit_port)
             else:
                 elem = self._pedb.create_port(j, self.neg_terminal, is_circuit_port)
+            elem.impedance = self.impedance if self.impedance else self._pedb.edb_value(50)
             if not self.distributed:
                 elem.name = self.name
             circuit_elements.append(elem)
@@ -567,6 +572,7 @@ class CfgPort(CfgCircuitElement):
         data = {
             "name": self.name,
             "type": self.type,
+            "impedance": self.impedance,
             "reference_designator": self.reference_designator,
             "positive_terminal": self.positive_terminal_info.export_properties(),
         }
@@ -596,6 +602,12 @@ class CfgSource(CfgCircuitElement):
                 elem = create_xxx_source(j, self.neg_terminal[name])
             else:
                 elem = create_xxx_source(j, self.neg_terminal)
+
+            if self.impedance:
+                elem.impedance = self.impedance
+            else:
+                elem.impedance = 5e7 if self.type == "current" else 1e-6
+
             if self._elem_num == 1:
                 elem.name = self.name
                 elem.magnitude = self.magnitude
@@ -650,6 +662,7 @@ class CfgSource(CfgCircuitElement):
             "name": self.name,
             "reference_designator": self.reference_designator,
             "type": self.type,
+            "impedance": self.impedance,
             "magnitude": self.magnitude,
             "positive_terminal": self.positive_terminal_info.export_properties(),
             "negative_terminal": self.negative_terminal_info.export_properties(),
@@ -676,13 +689,11 @@ class CfgProbe(CfgCircuitElement):
 
 class CfgEdgePort:
     def set_parameters_to_edb(self):
-        point_on_edge = PointData(self._pedb, x=self.point_on_edge[0], y=self.point_on_edge[1])
+        point_on_edge = PointData.create_from_xy(self._pedb, x=self.point_on_edge[0], y=self.point_on_edge[1])
         primitive = self._pedb.layout.primitives_by_aedt_name[self.primitive_name]
-        pos_edge = self._pedb.edb_api.cell.terminal.PrimitiveEdge.Create(
-            primitive._edb_object, point_on_edge._edb_object
-        )
-        pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb.edb_api.cell.terminal.Edge)
-        edge_term = self._pedb.edb_api.cell.terminal.EdgeTerminal.Create(
+        pos_edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, point_on_edge._edb_object)
+        pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb.core.Cell.Terminal.Edge)
+        edge_term = self._pedb.core.Cell.Terminal.EdgeTerminal.Create(
             primitive._edb_object.GetLayout(),
             primitive._edb_object.GetNet(),
             self.name,
@@ -755,9 +766,9 @@ class CfgDiffWavePort:
         pos_term = self.positive_port.set_parameters_to_edb()
         neg_term = self.negative_port.set_parameters_to_edb()
         edb_list = convert_py_list_to_net_list(
-            [pos_term._edb_object, neg_term._edb_object], self._pedb.edb_api.cell.terminal.Terminal
+            [pos_term._edb_object, neg_term._edb_object], self._pedb.core.Cell.Terminal.Terminal
         )
-        _edb_boundle_terminal = self._pedb.edb_api.cell.terminal.BundleTerminal.Create(edb_list)
+        _edb_boundle_terminal = self._pedb.core.Cell.Terminal.BundleTerminal.Create(edb_list)
         _edb_boundle_terminal.SetName(self.name)
         pos, neg = list(_edb_boundle_terminal.GetTerminals())
         pos.SetName(self.name + ":T1")

@@ -20,14 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Union
+from __future__ import annotations
 
+from typing import TYPE_CHECKING, Union
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.primitive.circle import Circle
+    from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from ansys.edb.core.net.net import Net as GrpcNet
 from ansys.edb.core.primitive.primitive import PrimitiveType as GrpcPrimitiveType
 
 from pyedb.grpc.database.primitive.bondwire import Bondwire
-from pyedb.grpc.database.primitive.circle import Circle
-from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.path import Path
 from pyedb.grpc.database.primitive.polygon import Polygon
 from pyedb.grpc.database.primitive.rectangle import Rectangle
@@ -60,7 +63,7 @@ class Net(GrpcNet):
         self._pedb = pedb
         self._core_components = pedb.components
         self._core_primitive = pedb.modeler
-        self._edb_object = raw_net
+        self.__primitives = []
 
     @property
     def primitives(self) -> list[Union[Path, Polygon, Circle, Rectangle, Bondwire]]:
@@ -76,19 +79,21 @@ class Net(GrpcNet):
             - :class:`Rectangle <pyedb.grpc.database.primitive.rectangle.Rectangle>`
             - :class:`Bondwire <pyedb.grpc.database.primitive.bondwire.Bondwire>`
         """
-        primitives = []
-        for primitive in super().primitives:
-            if primitive.primitive_type == GrpcPrimitiveType.PATH:
-                primitives.append(Path(self._pedb, primitive))
-            elif primitive.primitive_type == GrpcPrimitiveType.POLYGON:
-                primitives.append(Polygon(self._pedb, primitive))
-            elif primitive.primitive_type == GrpcPrimitiveType.CIRCLE:
-                primitives.append(Circle(self._pedb, primitive))
-            elif primitive.primitive_type == GrpcPrimitiveType.RECTANGLE:
-                primitives.append(Rectangle(self._pedb, primitive))
-            elif primitive.primitive_type == GrpcPrimitiveType.BONDWIRE:
-                primitives.append(Bondwire(self._pedb, primitive))
-        return primitives
+
+        primitives = super().primitives
+        if not len(self.__primitives) == len(primitives):
+            for primitive in primitives:
+                if primitive.primitive_type == GrpcPrimitiveType.PATH:
+                    self.__primitives.append(Path(self._pedb, primitive))
+                elif primitive.primitive_type == GrpcPrimitiveType.POLYGON:
+                    self.__primitives.append(Polygon(self._pedb, primitive))
+                elif primitive.primitive_type == GrpcPrimitiveType.CIRCLE:
+                    self.__primitives.append(Circle(self._pedb, primitive))
+                elif primitive.primitive_type == GrpcPrimitiveType.RECTANGLE:
+                    self.__primitives.append(Rectangle(self._pedb, primitive))
+                elif primitive.primitive_type == GrpcPrimitiveType.BONDWIRE:
+                    self.__primitives.append(Bondwire(self._pedb, primitive))
+        return self.__primitives
 
     @property
     def padstack_instances(self) -> list[PadstackInstance]:
@@ -99,6 +104,8 @@ class Net(GrpcNet):
         list of :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
             Padstack instances associated with the net.
         """
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+
         return [PadstackInstance(self._pedb, i) for i in super().padstack_instances]
 
     @property
@@ -117,8 +124,11 @@ class Net(GrpcNet):
             if component:
                 try:
                     components[component.name] = component
-                except:
-                    pass
+                except Exception as e:
+                    self._pedb.logger.error(
+                        f"A(n) {type(e).__name__} error occurred while attempting to access "
+                        f"'components' property for object {self} - Empty dict is returned: {str(e)}"
+                    )
         return components
 
     def find_dc_short(self, fix=False) -> list[list[str, str]]:

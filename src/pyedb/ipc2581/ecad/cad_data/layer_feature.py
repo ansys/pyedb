@@ -23,6 +23,7 @@
 import math
 
 from pyedb.generic.general_methods import ET
+from pyedb.generic.settings import settings
 from pyedb.ipc2581.ecad.cad_data.feature import Feature, FeatureType
 
 
@@ -99,8 +100,11 @@ class LayerFeature(object):
                         )
                     )
                 self.features.append(feature)
-            except:
-                pass
+            except Exception as e:
+                settings.logger.warning(
+                    f"A(n) {type(e).__name__} error occurred while attempting to append IPC2581 "
+                    f"feature {feature} to features of object {self}: {str(e)}"
+                )
 
     def add_drill_feature(self, via, diameter=0.0):  # pragma no cover
         feature = Feature(self._ipc, self._pedb)

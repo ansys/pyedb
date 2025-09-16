@@ -21,8 +21,11 @@
 # SOFTWARE.
 
 """Miscellaneous Methods for PyEDB."""
+
 import os
 import warnings
+
+from pyedb.generic.settings import settings
 
 
 def list_installed_ansysem():
@@ -68,8 +71,8 @@ def installed_versions():
             else:
                 v_key = "20{0}.{1}".format(version, release)
             return_dict[v_key] = os.environ[version_env_var]
-        except:  # pragma: no cover
-            pass
+        except Exception:  # pragma: no cover
+            settings.logger.debug(f"Failed to parse version and release from {current_version_id}")
     return return_dict
 
 
@@ -87,16 +90,3 @@ def current_student_version():
         if "SV" in version_key:
             return version_key
     return ""
-
-
-def deprecated_property(func):
-    """
-    This decorator marks a property as deprecated.
-    It will emit a warning when the property is accessed.
-    """
-
-    def wrapper(*args, **kwargs):
-        warnings.warn(f"Access to deprecated property {func.__name__}.", category=DeprecationWarning, stacklevel=2)
-        return func(*args, **kwargs)
-
-    return wrapper

@@ -48,7 +48,7 @@ class PinGroupTerminal(Terminal):
         :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`
         """
         net_obj = self._pedb.layout.find_net_by_name(net_name)
-        term = self._pedb.edb_api.cell.terminal.PinGroupTerminal.Create(
+        term = self._pedb.core.Cell.Terminal.PinGroupTerminal.Create(
             self._pedb.active_layout,
             net_obj._edb_object,
             name,
@@ -57,7 +57,7 @@ class PinGroupTerminal(Terminal):
         )
         term = PinGroupTerminal(self._pedb, term)
         if term.is_null:
-            msg = f"Failed to create terminal. "
+            msg = f"Failed to create terminal {name}."
             if name in self._pedb.terminals:
                 msg += f"Terminal {name} already exists."
             raise ValueError(msg)

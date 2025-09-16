@@ -24,18 +24,21 @@
 This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiwave``,
 ``PinGroup``, ``ResistorSource``, ``Source``, ``SourceType``, and ``VoltageSource``.
 """
+
 import os
+from typing import Any, Dict, Optional, Union
 import warnings
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.simulation_setup.simulation_setup import (
     Distribution as GrpcDistribution,
-)
-from ansys.edb.core.simulation_setup.simulation_setup import (
     FrequencyData as GrpcFrequencyData,
+    SweepData as GrpcSweepData,
 )
-from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSweepData
 
+from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
+    SIWaveCPASimulationSetup,
+)
 from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
 
 
@@ -54,41 +57,41 @@ class Siwave(object):
     >>> edb_siwave = edbapp.siwave
     """
 
-    def __init__(self, p_edb):
+    def __init__(self, p_edb) -> None:
         self._pedb = p_edb
 
     @property
-    def _edb(self):
+    def _edb(self) -> Any:
         """EDB object."""
         return self._pedb
 
     @property
-    def _logger(self):
+    def _logger(self) -> Any:
         """Logger object."""
         return self._pedb.logger
 
     @property
-    def _active_layout(self):
+    def _active_layout(self) -> Any:
         """Active layout."""
         return self._pedb.active_layout
 
     @property
-    def _layout(self):
+    def _layout(self) -> Any:
         """Active layout."""
         return self._pedb.layout
 
     @property
-    def _cell(self):
+    def _cell(self) -> Any:
         """Active cell."""
         return self._pedb.active_cell
 
     @property
-    def _db(self):
+    def _db(self) -> Any:
         """Active database."""
         return self._pedb.active_db
 
     @property
-    def excitations(self):
+    def excitations(self) -> Dict[str, Any]:
         """Excitation sources in the layout.
 
         Examples
@@ -100,7 +103,7 @@ class Siwave(object):
         return self._pedb.excitations
 
     @property
-    def sources(self):
+    def sources(self) -> Dict[str, Any]:
         """All sources in the layout.
 
         Examples
@@ -112,7 +115,7 @@ class Siwave(object):
         return self._pedb.sources
 
     @property
-    def probes(self):
+    def probes(self) -> Dict[str, Any]:
         """All probes in the layout.
 
         Examples
@@ -124,7 +127,7 @@ class Siwave(object):
         return self._pedb.probes
 
     @property
-    def pin_groups(self):
+    def pin_groups(self) -> Dict[str, Any]:
         """All layout pin groups.
 
         Returns
@@ -331,7 +334,7 @@ class Siwave(object):
             Use :func:`pyedb.grpc.core.excitations._check_gnd` instead.
         """
         warnings.warn(
-            "`_check_gnd` is deprecated and is now located here " "`pyedb.grpc.core.excitations._check_gnd` instead.",
+            "`_check_gnd` is deprecated and is now located here `pyedb.grpc.core.excitations._check_gnd` instead.",
             DeprecationWarning,
         )
         return self._pedb.source_excitation._check_gnd(component_name)
@@ -523,8 +526,13 @@ class Siwave(object):
         return self._pedb.source_excitation.create_dc_terminal(component_name, net_name, source_name)
 
     def create_exec_file(
-        self, add_dc=False, add_ac=False, add_syz=False, export_touchstone=False, touchstone_file_path=""
-    ):
+        self,
+        add_dc: bool = False,
+        add_ac: bool = False,
+        add_syz: bool = False,
+        export_touchstone: bool = False,
+        touchstone_file_path: str = "",
+    ) -> bool:
         """Create an executable file.
 
         Parameters
@@ -554,9 +562,7 @@ class Siwave(object):
         >>> success = edbapp.siwave.create_exec_file(add_ac=True, add_syz=True)
         >>> # Create exec file with Touchstone export
         >>> success = edbapp.siwave.create_exec_file(
-        ...     add_ac=True,
-        ...     export_touchstone=True,
-        ...     touchstone_file_path="C:/temp/my_touchstone.s2p"
+        ...     add_ac=True, export_touchstone=True, touchstone_file_path="C:/temp/my_touchstone.s2p"
         ... )
         """
         workdir = os.path.dirname(self._pedb.edbpath)
@@ -580,17 +586,28 @@ class Siwave(object):
                     f.write('ExportTouchstone "{}"\n'.format(touchstone_file_path))
             f.write("SaveSiw\n")
 
-        return True if os.path.exists(file_name) else False
+        return file_name
+
+    def add_cpa_analysis(self, name=None, siwave_cpa_setup_class=None):
+        if not name:
+            from pyedb.generic.general_methods import generate_unique_name
+
+            if not siwave_cpa_setup_class:
+                name = generate_unique_name("cpa_setup")
+            else:
+                name = siwave_cpa_setup_class.name
+        cpa_setup = SIWaveCPASimulationSetup(self._pedb, name=name, siwave_cpa_setup_class=siwave_cpa_setup_class)
+        return cpa_setup
 
     def add_siwave_syz_analysis(
         self,
-        accuracy_level=1,
-        distribution="linear",
-        start_freq=1,
-        stop_freq=1e9,
-        step_freq=1e6,
-        discrete_sweep=False,
-    ):
+        accuracy_level: int = 1,
+        distribution: str = "linear",
+        start_freq: Union[str, float] = 1,
+        stop_freq: Union[str, float] = 1e9,
+        step_freq: Union[str, float, int] = 1e6,
+        discrete_sweep: bool = False,
+    ) -> Any:
         """Add a SIwave AC analysis to EDB.
 
         Parameters
@@ -624,17 +641,13 @@ class Siwave(object):
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
         >>> # Add SYZ analysis with linear sweep from 1kHz to 10GHz
-        >>> setup = edbapp.siwave.add_siwave_syz_analysis(
-        ...     start_freq=1e3,
-        ...     stop_freq=10e9,
-        ...     distribution="linear"
-        ... )
+        >>> setup = edbapp.siwave.add_siwave_syz_analysis(start_freq=1e3, stop_freq=10e9, distribution="linear")
         >>> # Add SYZ analysis with decade sweep
         >>> setup = edbapp.siwave.add_siwave_syz_analysis(
         ...     start_freq=1e3,
         ...     stop_freq=10e9,
         ...     distribution="decade_count",
-        ...     step_freq=10  # 10 points per decade
+        ...     step_freq=10,  # 10 points per decade
         ... )
         """
         setup = self._pedb.create_siwave_syz_setup()
@@ -670,7 +683,7 @@ class Siwave(object):
         self.create_exec_file(add_ac=True)
         return setup
 
-    def add_siwave_dc_analysis(self, name=None):
+    def add_siwave_dc_analysis(self, name: Optional[str] = None) -> Any:
         """Add a Siwave DC analysis in EDB.
 
         .. note::
@@ -1001,7 +1014,7 @@ class Siwave(object):
             negative_layer,
         )
 
-    def create_impedance_crosstalk_scan(self, scan_type="impedance"):
+    def create_impedance_crosstalk_scan(self, scan_type: str = "impedance") -> "SiwaveScanConfig":
         """Create Siwave crosstalk scan object.
 
         Parameters
@@ -1021,7 +1034,7 @@ class Siwave(object):
         return SiwaveScanConfig(self._pedb, scan_type)
 
     @property
-    def icepak_use_minimal_comp_defaults(self):
+    def icepak_use_minimal_comp_defaults(self) -> bool:
         """Icepak default setting.
 
         If ``True``, only resistors are active in Icepak simulation and power dissipation
@@ -1035,7 +1048,7 @@ class Siwave(object):
         self._pedb.active_cell.set_product_property(GrpcProductIdType.SIWAVE, 422, value)
 
     @property
-    def icepak_component_file(self):
+    def icepak_component_file(self) -> str:
         """Icepak component file path."""
         return self._pedb.active_cell.get_product_property(GrpcProductIdType.SIWAVE, 420).value
 

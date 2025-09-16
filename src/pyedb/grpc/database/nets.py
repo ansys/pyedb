@@ -22,11 +22,15 @@
 
 from __future__ import absolute_import  # noreorder
 
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 import warnings
+
+from ansys.edb.core.net.net_class import NetClass as GrpcNetClass
 
 from pyedb.common.nets import CommonNets
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.net.net import Net
+from pyedb.grpc.database.net.net_class import NetClass
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.path import Path
 from pyedb.grpc.database.primitive.polygon import Polygon
@@ -91,34 +95,21 @@ class Nets(CommonNets):
     >>> print("Eligible power nets:", [net.name for net in eligible_pwr])
 
     >>> # Generate extended nets (deprecated)
-    >>> nets.generate_extended_nets(
-    >>> resistor_below=5,
-    >>>inductor_below=0.5,
-    >>> capacitor_above=0.1
-    >>> )
+    >>> nets.generate_extended_nets(resistor_below=5, inductor_below=0.5, capacitor_above=0.1)
 
     >>> # Classify nets
-    >>> nets.classify_nets(
-    >>> power_nets=["VDD_CPU", "VDD_MEM"],
-    >>> signal_nets=["PCIe_TX", "ETH_RX"]
-    >>> )
+    >>> nets.classify_nets(power_nets=["VDD_CPU", "VDD_MEM"], signal_nets=["PCIe_TX", "ETH_RX"])
 
     >>> # Check power/ground status
     >>> is_power = nets.is_power_gound_net(["VDD_CPU", "PCIe_TX"])
     >>> print("Is power net:", is_power)
 
     >>> # Get DC-connected nets
-    >>> dc_connected = nets.get_dcconnected_net_list(
-    >>> ground_nets=["GND"],
-    >>> res_value=0.002
-    >>> )
+    >>> dc_connected = nets.get_dcconnected_net_list(ground_nets=["GND"], res_value=0.002)
         print("DC-connected nets:", dc_connected)
 
     >>> # Get power tree
-    >>> comp_list, columns, net_group = nets.get_powertree(
-    >>> power_net_name="VDD_CPU",
-    >>> ground_nets=["GND"]
-    >>> )
+    >>> comp_list, columns, net_group = nets.get_powertree(power_net_name="VDD_CPU", ground_nets=["GND"])
     >>> print("Power tree components:", comp_list)
 
     >>> # Find net by name
@@ -138,10 +129,7 @@ class Nets(CommonNets):
     >>> print("Net in component:", in_component)
 
     >>> # Find and fix disjoint nets (deprecated)
-    >>> fixed_nets = nets.find_and_fix_disjoint_nets(
-    >>> net_list=["PCIe_TX"],
-    >>> clean_disjoints_less_than=1e-6
-    >>> )
+    >>> fixed_nets = nets.find_and_fix_disjoint_nets(net_list=["PCIe_TX"], clean_disjoints_less_than=1e-6)
     >>> print("Fixed nets:", fixed_nets)
 
     >>> # Merge net polygons
@@ -152,7 +140,7 @@ class Nets(CommonNets):
     >>> edbapp.close()
     """
 
-    def __getitem__(self, name):
+    def __getitem__(self, name: str) -> Net:
         """Get a net by name.
 
         Parameters
@@ -172,7 +160,7 @@ class Nets(CommonNets):
         """
         return Net(self._pedb, Net.find_by_name(self._active_layout, name))
 
-    def __contains__(self, name):
+    def __contains__(self, name: str) -> bool:
         """Check if a net exists in the layout.
 
         Parameters
@@ -192,11 +180,11 @@ class Nets(CommonNets):
         """
         return name in self.nets
 
-    def __init__(self, p_edb):
+    def __init__(self, p_edb: Any) -> None:
         """Initialize the Nets class."""
         CommonNets.__init__(self, p_edb)
-        self._nets_by_comp_dict = {}
-        self._comps_by_nets_dict = {}
+        self._nets_by_comp_dict: Dict[str, List[str]] = {}
+        self._comps_by_nets_dict: Dict[str, List[str]] = {}
 
     @property
     def _edb(self):
@@ -229,7 +217,7 @@ class Nets(CommonNets):
         return self._pedb.logger
 
     @property
-    def nets(self):
+    def nets(self) -> Dict[str, Net]:
         """All nets in the layout.
 
         Returns
@@ -246,7 +234,7 @@ class Nets(CommonNets):
         return {i.name: i for i in self._pedb.layout.nets}
 
     @property
-    def netlist(self):
+    def netlist(self) -> List[str]:
         """List of all net names.
 
         Returns
@@ -262,7 +250,7 @@ class Nets(CommonNets):
         return list(self.nets.keys())
 
     @property
-    def signal(self):
+    def signal(self) -> Dict[str, Net]:
         """Signal nets in the layout.
 
         Returns
@@ -282,7 +270,7 @@ class Nets(CommonNets):
         return nets
 
     @property
-    def power(self):
+    def power(self) -> Dict[str, Net]:
         """Power and ground nets in the layout.
 
         Returns
@@ -301,7 +289,7 @@ class Nets(CommonNets):
                 nets[net] = value
         return nets
 
-    def eligible_power_nets(self, threshold=0.3):
+    def eligible_power_nets(self, threshold: float = 0.3) -> List[Net]:
         """Identify nets eligible for power/ground classification based on area ratio.
 
         Uses the same algorithm implemented in SIwave.
@@ -343,7 +331,7 @@ class Nets(CommonNets):
         return pwr_gnd_nets
 
     @property
-    def nets_by_components(self):
+    def nets_by_components(self) -> Dict[str, List[str]]:
         """Mapping of components to their associated nets.
 
         Returns
@@ -361,7 +349,7 @@ class Nets(CommonNets):
         return self._nets_by_comp_dict
 
     @property
-    def components_by_nets(self):
+    def components_by_nets(self) -> Dict[str, List[str]]:
         """Mapping of nets to their associated components.
 
         Returns
@@ -384,13 +372,13 @@ class Nets(CommonNets):
 
     def generate_extended_nets(
         self,
-        resistor_below=10,
-        inductor_below=1,
-        capacitor_above=1,
-        exception_list=None,
-        include_signal=True,
-        include_power=True,
-    ):
+        resistor_below: Union[int, float] = 10,
+        inductor_below: Union[int, float] = 1,
+        capacitor_above: Union[int, float] = 1,
+        exception_list: Optional[List[str]] = None,
+        include_signal: bool = True,
+        include_power: bool = True,
+    ) -> List[Any]:
         """Generate extended nets based on component thresholds.
 
         .. deprecated:: pyedb 0.30.0
@@ -418,11 +406,7 @@ class Nets(CommonNets):
 
         Examples
         --------
-        >>> edb_nets.generate_extended_nets(
-        ...     resistor_below=5,
-        ...     inductor_below=0.5,
-        ...     capacitor_above=0.1
-        ... )
+        >>> edb_nets.generate_extended_nets(resistor_below=5, inductor_below=0.5, capacitor_above=0.1)
         """
         warnings.warn("Use new method :func:`edb.extended_nets.generate_extended_nets` instead.", DeprecationWarning)
         self._pedb.extended_nets.generate_extended_nets(
@@ -430,7 +414,7 @@ class Nets(CommonNets):
         )
 
     @staticmethod
-    def _get_points_for_plot(my_net_points):
+    def _get_points_for_plot(my_net_points: List[Any]) -> Tuple[List[float], List[float]]:
         """Get points for plotting.
 
         Parameters
@@ -464,7 +448,9 @@ class Nets(CommonNets):
         # fmt: on
         return x, y
 
-    def classify_nets(self, power_nets=None, signal_nets=None):
+    def classify_nets(
+        self, power_nets: Optional[Union[str, List[str]]] = None, signal_nets: Optional[Union[str, List[str]]] = None
+    ) -> bool:
         """Reassign net classifications as power/ground or signal.
 
         Parameters
@@ -481,10 +467,7 @@ class Nets(CommonNets):
 
         Examples
         --------
-        >>> edb_nets.classify_nets(
-        ...     power_nets=["VDD_CPU", "VDD_MEM"],
-        ...     signal_nets=["PCIe_TX", "ETH_RX"]
-        ... )
+        >>> edb_nets.classify_nets(power_nets=["VDD_CPU", "VDD_MEM"], signal_nets=["PCIe_TX", "ETH_RX"])
         """
         if isinstance(power_nets, str):
             power_nets = []
@@ -502,7 +485,7 @@ class Nets(CommonNets):
                 self.nets[net].is_power_ground = False
         return True
 
-    def is_power_gound_net(self, netname_list):
+    def is_power_gound_net(self, netname_list: Union[str, List[str]]) -> bool:
         """Check if any net in a list is a power/ground net.
 
         Parameters
@@ -528,7 +511,7 @@ class Nets(CommonNets):
                 return True
         return False
 
-    def get_dcconnected_net_list(self, ground_nets=["GND"], res_value=0.001):
+    def get_dcconnected_net_list(self, ground_nets: List[str] = ["GND"], res_value: float = 0.001) -> List[Set[str]]:
         """Get nets connected to DC through inductors and low-value resistors.
 
         Parameters
@@ -545,10 +528,7 @@ class Nets(CommonNets):
 
         Examples
         --------
-        >>> dc_connected = edb_nets.get_dcconnected_net_list(
-        ...     ground_nets=["GND"],
-        ...     res_value=0.002
-        ... )
+        >>> dc_connected = edb_nets.get_dcconnected_net_list(ground_nets=["GND"], res_value=0.002)
         >>> for net_group in dc_connected:
         ...     print("Connected nets:", net_group)
         """
@@ -586,7 +566,9 @@ class Nets(CommonNets):
 
         return dcconnected_net_list
 
-    def get_powertree(self, power_net_name, ground_nets):
+    def get_powertree(
+        self, power_net_name: str, ground_nets: List[str]
+    ) -> Tuple[List[List[str]], List[str], List[str]]:
         """Retrieve power tree for a given power net.
 
         Parameters
@@ -603,10 +585,7 @@ class Nets(CommonNets):
 
         Examples
         --------
-        >>> comp_list, columns, net_group = edb_nets.get_powertree(
-        ...     power_net_name="VDD_CPU",
-        ...     ground_nets=["GND"]
-        ... )
+        >>> comp_list, columns, net_group = edb_nets.get_powertree(power_net_name="VDD_CPU", ground_nets=["GND"])
         >>> print("Power tree components:", comp_list)
         """
         flag_in_ng = False
@@ -654,7 +633,7 @@ class Nets(CommonNets):
         ]
         return component_list, component_list_columns, net_group
 
-    def get_net_by_name(self, net_name):
+    def get_net_by_name(self, net_name: str) -> Optional[Net]:
         """Find a net by name.
 
         Parameters
@@ -677,7 +656,7 @@ class Nets(CommonNets):
         if edb_net is not None:
             return edb_net
 
-    def delete(self, netlist):
+    def delete(self, netlist: Union[str, List[str]]) -> List[str]:
         """Delete one or more nets from the layout.
 
         Parameters
@@ -692,7 +671,7 @@ class Nets(CommonNets):
 
         Examples
         --------
-        >>> deleted_nets = database.nets.delete(["Net1","Net2"])
+        >>> deleted_nets = database.nets.delete(["Net1", "Net2"])
         """
         if isinstance(netlist, str):
             netlist = [netlist]
@@ -708,7 +687,9 @@ class Nets(CommonNets):
                 nets_deleted.append(i.name)
         return nets_deleted
 
-    def find_or_create_net(self, net_name="", start_with="", contain="", end_with=""):
+    def find_or_create_net(
+        self, net_name: str = "", start_with: str = "", contain: str = "", end_with: str = ""
+    ) -> Union[Net, List[Net]]:
         """Find or create a net based on given criteria.
 
         Parameters
@@ -789,7 +770,7 @@ class Nets(CommonNets):
                 nets_found = [self.nets[net] for net in list(self.nets.keys()) if contain in net.lower()]
                 return nets_found
 
-    def is_net_in_component(self, component_name, net_name):
+    def is_net_in_component(self, component_name: str, net_name: str) -> bool:
         """Check if a net belongs to a component.
 
         Parameters
@@ -817,8 +798,12 @@ class Nets(CommonNets):
         return False
 
     def find_and_fix_disjoint_nets(
-        self, net_list=None, keep_only_main_net=False, clean_disjoints_less_than=0.0, order_by_area=False
-    ):
+        self,
+        net_list: Optional[List[str]] = None,
+        keep_only_main_net: bool = False,
+        clean_disjoints_less_than: float = 0.0,
+        order_by_area: bool = False,
+    ) -> List[str]:
         """Find and fix disjoint nets.
 
         .. deprecated:: pyedb 0.30.0
@@ -844,10 +829,7 @@ class Nets(CommonNets):
 
         Examples
         --------
-        >>> fixed_nets = edb_nets.find_and_fix_disjoint_nets(
-        ...     net_list=["PCIe_TX"],
-        ...     clean_disjoints_less_than=1e-6
-        ... )
+        >>> fixed_nets = edb_nets.find_and_fix_disjoint_nets(net_list=["PCIe_TX"], clean_disjoints_less_than=1e-6)
         >>> print("Fixed nets:", fixed_nets)
         """
 
@@ -856,7 +838,7 @@ class Nets(CommonNets):
             net_list, keep_only_main_net, clean_disjoints_less_than, order_by_area
         )
 
-    def merge_nets_polygons(self, net_names_list):
+    def merge_nets_polygons(self, net_names_list: Union[str, List[str]]) -> bool:
         """Merge polygons for specified nets on each layer.
 
         Parameters
@@ -877,3 +859,70 @@ class Nets(CommonNets):
         if isinstance(net_names_list, str):
             net_names_list = [net_names_list]
         return self._pedb.modeler.unite_polygons_on_layer(net_names_list=net_names_list)
+
+
+class NetClasses:
+    """Net classes management.
+
+    This class provides access to net classes in the EDB layout.
+    It allows for operations like retrieving nets, adding/removing nets,
+    and checking if a net is part of a net class.
+
+    Examples
+    --------
+    >>> from pyedb import Edb
+    >>> edb = Edb(myedb, edbversion="2025.1")
+    >>> net_classes = edb.net_classes
+    """
+
+    def __init__(self, pedb):
+        self._pedb = pedb
+        self._net_classes = pedb.active_layout.net_classes
+
+    def __getitem__(self, name: str) -> NetClass:
+        """Get a net by name.
+
+        Parameters
+        ----------
+        name : str
+            Name of the net to retrieve.
+
+        """
+        return self.items[name]
+
+    @property
+    def items(self) -> Dict[str, NetClass]:
+        """Extended nets.
+
+        Returns
+        -------
+        Dict[str, :class:`pyedb.grpc.database.nets.nets_class.NetClass`]
+            Dictionary of extended nets.
+        """
+        return {i.name: i for i in self._pedb.layout.net_classes}
+
+    def create(self, name, net) -> Union[bool, NetClass]:
+        """Create a new net class.
+
+        Parameters
+        ----------
+        name : str
+            Name of the net class.
+        net : str, list
+           Name of the nets to be added into this net class.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.database.edb_data.nets_data.EDBNetClassData` `False` if net name already exists.
+        """
+        if name in self.items:
+            self._pedb.logger.error("{} already exists.".format(name))
+            return False
+        grpc_net_class = GrpcNetClass.create(self._pedb.active_layout, name)
+        if isinstance(net, str):
+            net = [net]
+        for i in net:
+            grpc_net_class.add_net(self._pedb.nets[i])
+        net_class = NetClass(self._pedb, grpc_net_class)
+        self.items[name] = net_class
+        return net_class

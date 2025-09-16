@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
 
 
 def _parse_value(v):
@@ -92,7 +93,7 @@ class AdvancedSettings(SettingsBase):
     def __init__(self, parent):
         super().__init__(parent)
         self.defaults = {
-            "automatic_mesh": True,
+            "mesh_automatic": True,
             "ignore_non_functional_pads": True,
             "include_coplane_coupling": True,
             "include_fringe_coupling": True,
@@ -339,6 +340,26 @@ class AdvancedSettings(SettingsBase):
         depending on drawing size, number of modes, and/or maximum sweep
         frequency.
 
+        .. deprecated:: 0.54.0
+           Use :func:`automatic_mesh` instead.
+
+        Returns
+        -------
+        bool
+            ``True`` if automatic mesh is used, ``False`` otherwise.
+        """
+        warnings.warn(
+            "`automatic_mesh` is deprecated. Use `mesh_automatic` instead.",
+            DeprecationWarning,
+        )
+        return self.sim_setup_info.simulation_settings.AdvancedSettings.MeshAutoMatic
+
+    @property
+    def mesh_automatic(self):
+        """Whether to automatically pick a suitable mesh refinement frequency,
+        depending on drawing size, number of modes, and/or maximum sweep
+        frequency.
+
         Returns
         -------
         bool
@@ -492,6 +513,10 @@ class AdvancedSettings(SettingsBase):
 
     @automatic_mesh.setter
     def automatic_mesh(self, value):
+        self.mesh_automatic = value
+
+    @mesh_automatic.setter
+    def mesh_automatic(self, value):
         edb_setup_info = self.sim_setup_info
 
         edb_setup_info.simulation_settings.AdvancedSettings.MeshAutoMatic = value
@@ -688,6 +713,19 @@ class DCAdvancedSettings(SettingsBase):
     def max_num_pass(self):
         """Maximum number of passes.
 
+        deprecated: Use `max_num_passes` instead.
+
+        Returns
+        -------
+        int
+        """
+        warnings.warn("`max_num_pass` is deprecated. Use `max_num_passes` instead.", DeprecationWarning)
+        return self.max_num_passes
+
+    @property
+    def max_num_passes(self):
+        """Maximum number of passes.
+
         Returns
         -------
         int
@@ -696,6 +734,19 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def min_num_pass(self):
+        """Minimum number of passes.
+
+        deprecated: Use `min_num_passes` instead.
+
+        Returns
+        -------
+        int
+        """
+        warnings.warn("`min_num_pass` is deprecated. Use `min_num_passes` instead.", DeprecationWarning)
+        return self.sim_setup_info
+
+    @property
+    def min_num_passes(self):
         """Minimum number of passes.
 
         Returns
@@ -726,6 +777,19 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def num_bondwire_sides(self):
+        """Number of bondwire sides.
+
+        deprecated: Use `num_bw_sides` instead.
+
+        Returns
+        -------
+        int
+        """
+        warnings.warn("`num_bondwire_sides` is deprecated. Use `num_bw_sides` instead.", DeprecationWarning)
+        return self.num_bw_sides
+
+    @property
+    def num_bw_sides(self):
         """Number of bondwire sides.
 
         Returns
@@ -767,6 +831,20 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def refine_bondwires(self):
+        """Whether to refine mesh along bondwires.
+
+        deprecated: Use `refine_bws` instead.
+
+        Returns
+        -------
+        bool
+            ``True`` if refine bondwires is used, ``False`` otherwise.
+        """
+        warnings.warn("`refine_bondwires` is deprecated. Use `refine_bws` instead.", DeprecationWarning)
+        return self.refine_bws
+
+    @property
+    def refine_bws(self):
         """Whether to refine mesh along bondwires.
 
         Returns

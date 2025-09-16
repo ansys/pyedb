@@ -49,7 +49,7 @@ class LayerEdbClass(object):
         layer_type = self._layer_name_mapping[layer_type]
         layer_type = self._doc_layer_mapping[layer_type]
 
-        self._edb_object = self._pedb.edb_api.cell._cell.Layer(
+        self._edb_object = self._pedb.core.Cell.Layer(
             self._name,
             layer_type,
         )
@@ -83,30 +83,30 @@ class LayerEdbClass(object):
     @property
     def _stackup_layer_mapping(self):
         return {
-            "SignalLayer": self._edb.cell.layer_type.SignalLayer,
-            "DielectricLayer": self._edb.cell.layer_type.DielectricLayer,
+            "SignalLayer": self._edb.Cell.LayerType.SignalLayer,
+            "DielectricLayer": self._edb.Cell.LayerType.DielectricLayer,
         }
 
     @property
     def _doc_layer_mapping(self):
         return {
-            "ConductingLayer": self._edb.cell.layer_type.ConductingLayer,
-            "AirlinesLayer": self._edb.cell.layer_type.AirlinesLayer,
-            "ErrorsLayer": self._edb.cell.layer_type.ErrorsLayer,
-            "SymbolLayer": self._edb.cell.layer_type.SymbolLayer,
-            "MeasureLayer": self._edb.cell.layer_type.MeasureLayer,
-            "AssemblyLayer": self._edb.cell.layer_type.AssemblyLayer,
-            "SilkscreenLayer": self._edb.cell.layer_type.SilkscreenLayer,
-            "SolderMaskLayer": self._edb.cell.layer_type.SolderMaskLayer,
-            "SolderPasteLayer": self._edb.cell.layer_type.SolderPasteLayer,
-            "GlueLayer": self._edb.cell.layer_type.GlueLayer,
-            "WirebondLayer": self._edb.cell.layer_type.WirebondLayer,
-            "UserLayer": self._edb.cell.layer_type.UserLayer,
-            "SIwaveHFSSSolverRegions": self._edb.cell.layer_type.SIwaveHFSSSolverRegions,
-            "PostprocessingLayer": self._edb.cell.layer_type.PostprocessingLayer,
-            "OutlineLayer": self._edb.cell.layer_type.OutlineLayer,
-            "LayerTypesCount": self._edb.cell.layer_type.LayerTypesCount,
-            "UndefinedLayerType": self._edb.cell.layer_type.UndefinedLayerType,
+            "ConductingLayer": self._edb.Cell.LayerType.ConductingLayer,
+            "AirlinesLayer": self._edb.Cell.LayerType.AirlinesLayer,
+            "ErrorsLayer": self._edb.Cell.LayerType.ErrorsLayer,
+            "SymbolLayer": self._edb.Cell.LayerType.SymbolLayer,
+            "MeasureLayer": self._edb.Cell.LayerType.MeasureLayer,
+            "AssemblyLayer": self._edb.Cell.LayerType.AssemblyLayer,
+            "SilkscreenLayer": self._edb.Cell.LayerType.SilkscreenLayer,
+            "SolderMaskLayer": self._edb.Cell.LayerType.SolderMaskLayer,
+            "SolderPasteLayer": self._edb.Cell.LayerType.SolderPasteLayer,
+            "GlueLayer": self._edb.Cell.LayerType.GlueLayer,
+            "WirebondLayer": self._edb.Cell.LayerType.WirebondLayer,
+            "UserLayer": self._edb.Cell.LayerType.UserLayer,
+            "SIwaveHFSSSolverRegions": self._edb.Cell.LayerType.SIwaveHFSSSolverRegions,
+            "PostprocessingLayer": self._edb.Cell.LayerType.PostprocessingLayer,
+            "OutlineLayer": self._edb.Cell.LayerType.OutlineLayer,
+            "LayerTypesCount": self._edb.Cell.LayerType.LayerTypesCount,
+            "UndefinedLayerType": self._edb.Cell.LayerType.UndefinedLayerType,
         }
 
     @property
@@ -146,7 +146,7 @@ class LayerEdbClass(object):
 
     @property
     def _edb(self):
-        return self._pedb.edb_api
+        return self._pedb.core
 
     @property
     def _edb_layer(self):
@@ -289,7 +289,7 @@ class StackupLayerEdbClass(LayerEdbClass):
     def _create(self, layer_type):
         layer_type_edb_name = self._layer_name_mapping[layer_type]
         layer_type = self._layer_type_mapping[layer_type_edb_name]
-        self._edb_object = self._pedb.edb_api.cell._cell.StackupLayer(
+        self._edb_object = self._pedb.core.Cell.StackupLayer(
             self._name,
             layer_type,
             self._pedb.edb_value(0),
@@ -639,11 +639,11 @@ class StackupLayerEdbClass(LayerEdbClass):
         if not self.is_stackup_layer:  # pragma: no cover
             return
         if surface == "top":
-            return self._edb_layer.GetRoughnessModel(self._pedb.edb_api.Cell.RoughnessModel.Region.Top)
+            return self._edb_layer.GetRoughnessModel(self._pedb.core.Cell.RoughnessModel.Region.Top)
         elif surface == "bottom":
-            return self._edb_layer.GetRoughnessModel(self._pedb.edb_api.Cell.RoughnessModel.Region.Bottom)
+            return self._edb_layer.GetRoughnessModel(self._pedb.core.Cell.RoughnessModel.Region.Bottom)
         elif surface == "side":
-            return self._edb_layer.GetRoughnessModel(self._pedb.edb_api.Cell.RoughnessModel.Region.Side)
+            return self._edb_layer.GetRoughnessModel(self._pedb.core.Cell.RoughnessModel.Region.Side)
 
     def assign_roughness_model(
         self,
@@ -685,27 +685,27 @@ class StackupLayerEdbClass(LayerEdbClass):
         if apply_on_surface == "all":
             self._side_roughness = "all"
             regions = [
-                self._pedb.edb_api.Cell.RoughnessModel.Region.Top,
-                self._pedb.edb_api.Cell.RoughnessModel.Region.Side,
-                self._pedb.edb_api.Cell.RoughnessModel.Region.Bottom,
+                self._pedb.core.Cell.RoughnessModel.Region.Top,
+                self._pedb.core.Cell.RoughnessModel.Region.Side,
+                self._pedb.core.Cell.RoughnessModel.Region.Bottom,
             ]
         elif apply_on_surface == "top":
             self._side_roughness = "top"
-            regions = [self._pedb.edb_api.Cell.RoughnessModel.Region.Top]
+            regions = [self._pedb.core.Cell.RoughnessModel.Region.Top]
         elif apply_on_surface == "bottom":
             self._side_roughness = "bottom"
-            regions = [self._pedb.edb_api.Cell.RoughnessModel.Region.Bottom]
+            regions = [self._pedb.core.Cell.RoughnessModel.Region.Bottom]
         elif apply_on_surface == "side":
             self._side_roughness = "side"
-            regions = [self._pedb.edb_api.Cell.RoughnessModel.Region.Side]
+            regions = [self._pedb.core.Cell.RoughnessModel.Region.Side]
 
         layer_clone = self._edb_layer
         layer_clone.SetRoughnessEnabled(True)
         for r in regions:
             if model_type == "huray":
-                model = self._pedb.edb_api.Cell.HurrayRoughnessModel(radius, surface_ratio)
+                model = self._pedb.core.Cell.HurrayRoughnessModel(radius, surface_ratio)
             else:
-                model = self._pedb.edb_api.Cell.GroisseRoughnessModel(groisse_roughness)
+                model = self._pedb.core.Cell.GroisseRoughnessModel(groisse_roughness)
             layer_clone.SetRoughnessModel(r, model)
         return self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
 
@@ -800,7 +800,7 @@ class StackupLayerEdbClass(LayerEdbClass):
             "factor": self._edb_layer.GetEtchFactor().ToString(),
             "enabled": self._edb_layer.IsEtchFactorEnabled(),
         }
-        if self._pedb.edbversion >= "2024.2":
+        if self._pedb.version >= "2024.2":
             etch_power_ground_nets = int(self._edb_layer.GetEtchNetClass())
             etch_power_ground_nets = False if etch_power_ground_nets else True
             data["etching"]["etch_power_ground_nets"] = etch_power_ground_nets
@@ -869,7 +869,7 @@ class StackupLayerEdbClass(LayerEdbClass):
             layer_clone = self._edb_layer
             layer_clone.SetEtchFactorEnabled(etching["enabled"])
             layer_clone.SetEtchFactor(self._pedb.stackup._edb_value(float(etching["factor"])))
-            if self._pedb.edbversion >= "2024.2":
+            if self._pedb.version >= "2024.2":
                 if etching["etch_power_ground_nets"]:
                     layer_clone.SetEtchNetClass(self._pedb._edb.Cell.EtchNetClass.NoEtchPowerGroundNets)
                 else:

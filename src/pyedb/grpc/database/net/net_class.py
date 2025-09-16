@@ -20,9 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from ansys.edb.core.net.net_class import NetClass as GrpcNetClass
 
-from pyedb.grpc.database.net.net import Net
+if TYPE_CHECKING:
+    from pyedb.grpc.database.net.net import Net
 
 
 class NetClass(GrpcNetClass):
@@ -49,6 +54,8 @@ class NetClass(GrpcNetClass):
         List[:class:`Net <pyedb.grpc.database.net.net.Net>`].
             List of Net object.
         """
+        from pyedb.grpc.database.net.net import Net
+
         return [Net(self._pedb, i) for i in super().nets]
 
     def add_net(self, net):
@@ -59,21 +66,30 @@ class NetClass(GrpcNetClass):
         bool
         """
         if isinstance(net, str):
+            from pyedb.grpc.database.net.net import Net
+
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         if isinstance(net, Net) and not net.is_null:
             self.add_net(net)
             return True
         return False
 
-    def contains_net(self, net):
-        """Determine if a net exists in the net class.
+    def contains_net(self, net) -> bool:
+        """
+        Determine if a net exists in the net class.
 
-        returns
+        Parameters
+        ----------
+        net : str or Net
+            The net to check. This can be a string representing the net name or a `Net` object.
+
+        Returns
         -------
-        List[:class:`Net <pyedb.grpc.database.net.net.Net>`].
-            List of Net object.
+        bool
+            True if the net exists in the net class, False otherwise.
 
         """
+
         if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         return super().contains_net(net)
@@ -85,9 +101,10 @@ class NetClass(GrpcNetClass):
         -------
         bool
         """
+
         if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         if isinstance(net, Net) and not net.is_null:
-            self.remove(net)
+            self.remove_net(net)
             return True
         return False

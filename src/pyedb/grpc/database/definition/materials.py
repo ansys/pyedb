@@ -34,17 +34,17 @@ from ansys.edb.core.definition.djordjecvic_sarkar_model import (
     DjordjecvicSarkarModel as GrpcDjordjecvicSarkarModel,
 )
 from ansys.edb.core.definition.material_def import (
+    MaterialDef as GrpcMaterialDef,
     MaterialProperty as GrpcMaterialProperty,
 )
-from ansys.edb.core.definition.material_def import MaterialDef as GrpcMaterialDef
 from ansys.edb.core.definition.multipole_debye_model import (
     MultipoleDebyeModel as GrpcMultipoleDebyeModel,
 )
-from ansys.edb.core.utility.value import Value as GrpcValue
 from pydantic import BaseModel, confloat
 
 from pyedb import Edb
 from pyedb.exceptions import MaterialModelException
+from pyedb.grpc.database.utility.value import Value
 
 logger = logging.getLogger(__name__)
 
@@ -181,8 +181,7 @@ class Material(GrpcMaterialDef):
          Conductivity value.
         """
         try:
-            value = self.get_property(GrpcMaterialProperty.CONDUCTIVITY).value
-            return value
+            return Value(self.get_property(GrpcMaterialProperty.CONDUCTIVITY))
         except:
             return 0.0
 
@@ -195,7 +194,7 @@ class Material(GrpcMaterialDef):
                 f"Changing conductivity is only allowed when no dielectric model is assigned."
             )
         else:
-            self.set_property(GrpcMaterialProperty.CONDUCTIVITY, GrpcValue(value))
+            self.set_property(GrpcMaterialProperty.CONDUCTIVITY, Value(value))
 
     @property
     def dc_conductivity(self):
@@ -310,15 +309,14 @@ class Material(GrpcMaterialDef):
 
         """
         try:
-            value = self.get_property(GrpcMaterialProperty.PERMITTIVITY).value
-            return value
+            return Value(self.get_property(GrpcMaterialProperty.PERMITTIVITY))
         except:
             return 0.0
 
     @permittivity.setter
     def permittivity(self, value):
         """Set material permittivity."""
-        self.set_property(GrpcMaterialProperty.PERMITTIVITY, GrpcValue(value))
+        self.set_property(GrpcMaterialProperty.PERMITTIVITY, Value(value))
 
     @property
     def permeability(self) -> float:
@@ -331,15 +329,14 @@ class Material(GrpcMaterialDef):
 
         """
         try:
-            value = self.get_property(GrpcMaterialProperty.PERMEABILITY).value
-            return value
+            return Value(self.get_property(GrpcMaterialProperty.PERMEABILITY))
         except:
             return 0.0
 
     @permeability.setter
     def permeability(self, value):
         """Set material permeability."""
-        self.set_property(GrpcMaterialProperty.PERMEABILITY, GrpcValue(value))
+        self.set_property(GrpcMaterialProperty.PERMEABILITY, Value(value))
 
     @property
     def loss_tangent(self):
@@ -369,7 +366,7 @@ class Material(GrpcMaterialDef):
 
         """
         try:
-            return self.get_property(GrpcMaterialProperty.DIELECTRIC_LOSS_TANGENT).value
+            return Value(self.get_property(GrpcMaterialProperty.DIELECTRIC_LOSS_TANGENT))
         except:
             return 0.0
 
@@ -381,12 +378,12 @@ class Material(GrpcMaterialDef):
             "Use property dielectric_loss_tangent instead.",
             DeprecationWarning,
         )
-        self.dielectric_loss_tangent(value)
+        self.dielectric_loss_tangent = value
 
     @dielectric_loss_tangent.setter
     def dielectric_loss_tangent(self, value):
         """Set material loss tangent."""
-        self.set_property(GrpcMaterialProperty.DIELECTRIC_LOSS_TANGENT, GrpcValue(value))
+        self.set_property(GrpcMaterialProperty.DIELECTRIC_LOSS_TANGENT, Value(value))
 
     @property
     def magnetic_loss_tangent(self) -> float:
@@ -398,15 +395,14 @@ class Material(GrpcMaterialDef):
             Magnetic loss tangent value.
         """
         try:
-            value = self.get_property(GrpcMaterialProperty.MAGNETIC_LOSS_TANGENT).value
-            return value
+            return Value(self.get_property(GrpcMaterialProperty.MAGNETIC_LOSS_TANGENT))
         except:
             return 0.0
 
     @magnetic_loss_tangent.setter
     def magnetic_loss_tangent(self, value):
         """Set material magnetic loss tangent."""
-        self.set_property(GrpcMaterialProperty.MAGNETIC_LOSS_TANGENT, GrpcValue(value))
+        self.set_property(GrpcMaterialProperty.MAGNETIC_LOSS_TANGENT, Value(value))
 
     @property
     def thermal_conductivity(self) -> float:
@@ -419,15 +415,14 @@ class Material(GrpcMaterialDef):
 
         """
         try:
-            value = self.get_property(GrpcMaterialProperty.THERMAL_CONDUCTIVITY).value
-            return value
+            return Value(self.get_property(GrpcMaterialProperty.THERMAL_CONDUCTIVITY))
         except:
             return 0.0
 
     @thermal_conductivity.setter
     def thermal_conductivity(self, value):
         """Set material thermal conductivity."""
-        self.set_property(GrpcMaterialProperty.THERMAL_CONDUCTIVITY, GrpcValue(value))
+        self.set_property(GrpcMaterialProperty.THERMAL_CONDUCTIVITY, Value(value))
 
     @property
     def mass_density(self) -> float:
@@ -440,15 +435,14 @@ class Material(GrpcMaterialDef):
 
         """
         try:
-            value = self.get_property(GrpcMaterialProperty.MASS_DENSITY).value
-            return value
+            return Value(self.get_property(GrpcMaterialProperty.MASS_DENSITY))
         except:
             return 0.0
 
     @mass_density.setter
     def mass_density(self, value):
         """Set material mass density."""
-        self.set_property(GrpcMaterialProperty.MASS_DENSITY, GrpcValue(value))
+        self.set_property(GrpcMaterialProperty.MASS_DENSITY, Value(value))
 
     @property
     def youngs_modulus(self) -> float:
@@ -461,15 +455,14 @@ class Material(GrpcMaterialDef):
 
         """
         try:
-            value = self.get_property(GrpcMaterialProperty.YOUNGS_MODULUS).value
-            return value
+            return Value(self.get_property(GrpcMaterialProperty.YOUNGS_MODULUS))
         except:
             return 0.0
 
     @youngs_modulus.setter
     def youngs_modulus(self, value):
         """Set material young modulus."""
-        self.set_property(GrpcMaterialProperty.YOUNGS_MODULUS, GrpcValue(value))
+        self.set_property(GrpcMaterialProperty.YOUNGS_MODULUS, Value(value))
 
     @property
     def specific_heat(self) -> float:
@@ -481,14 +474,14 @@ class Material(GrpcMaterialDef):
             Material specific heat value.
         """
         try:
-            return self.get_property(GrpcMaterialProperty.SPECIFIC_HEAT).value
+            return Value(self.get_property(GrpcMaterialProperty.SPECIFIC_HEAT))
         except:
             return 0.0
 
     @specific_heat.setter
     def specific_heat(self, value):
         """Set material specific heat."""
-        self.set_property(GrpcMaterialProperty.SPECIFIC_HEAT, GrpcValue(value))
+        self.set_property(GrpcMaterialProperty.SPECIFIC_HEAT, Value(value))
 
     @property
     def poisson_ratio(self) -> float:
@@ -500,14 +493,14 @@ class Material(GrpcMaterialDef):
             Material poisson ratio value.
         """
         try:
-            return self.get_property(GrpcMaterialProperty.POISSONS_RATIO).value
+            return Value(self.get_property(GrpcMaterialProperty.POISSONS_RATIO))
         except:
             return 0.0
 
     @poisson_ratio.setter
     def poisson_ratio(self, value):
         """Set material poisson ratio."""
-        self.set_property(GrpcMaterialProperty.POISSONS_RATIO, GrpcValue(value))
+        self.set_property(GrpcMaterialProperty.POISSONS_RATIO, Value(value))
 
     @property
     def thermal_expansion_coefficient(self) -> float:
@@ -520,14 +513,14 @@ class Material(GrpcMaterialDef):
 
         """
         try:
-            return self.get_property(GrpcMaterialProperty.THERMAL_EXPANSION_COEFFICIENT).value
+            return Value(self.get_property(GrpcMaterialProperty.THERMAL_EXPANSION_COEFFICIENT))
         except:
             return 0.0
 
     @thermal_expansion_coefficient.setter
     def thermal_expansion_coefficient(self, value):
         """Set material thermal coefficient."""
-        self.set_property(GrpcMaterialProperty.THERMAL_EXPANSION_COEFFICIENT, GrpcValue(value))
+        self.set_property(GrpcMaterialProperty.THERMAL_EXPANSION_COEFFICIENT, Value(value))
 
     def set_debye_model(self):
         """Set Debye model on current material."""
