@@ -25,7 +25,7 @@ from typing import Union
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.primitive.path import (
     Path as GrpcPath,
-    PathCornerType as GrpcPatCornerType,
+    PathCornerType as GrpcPathCornerType,
     PathEndCapType as GrpcPathEndCapType,
 )
 
@@ -84,9 +84,9 @@ class Path(GrpcPath, Primitive):
         layer: Union[str, Layer] = None,
         net: Union[str, "Net"] = None,
         width: float = 100e-6,
-        end_cap1: str = "flat",
-        end_cap2: str = "flat",
-        corner_style: str = "sharp",
+        end_cap1: Union[str, GrpcPathEndCapType] = "flat",
+        end_cap2: Union[str, GrpcPathEndCapType] = "flat",
+        corner_style: Union[str, GrpcPathCornerType] = "sharp",
         points: Union[list, GrpcPolygonData] = None,
     ):
         """
@@ -141,9 +141,9 @@ class Path(GrpcPath, Primitive):
             "clipped": GrpcPathEndCapType.CLIPPED,
         }
         corner_style_mapping = {
-            "round": GrpcPatCornerType.ROUND,
-            "mitter": GrpcPatCornerType.MITER,
-            "sharp": GrpcPatCornerType.SHARP,
+            "round": GrpcPathCornerType.ROUND,
+            "mitter": GrpcPathCornerType.MITER,
+            "sharp": GrpcPathCornerType.SHARP,
         }
         if isinstance(end_cap1, str):
             end_cap1 = end_cap_mapping[end_cap1.lower()]
@@ -215,9 +215,9 @@ class Path(GrpcPath, Primitive):
             ``True`` when successful, ``False`` when failed.
         """
         mapping = {
-            "round": GrpcPatCornerType.ROUND,
-            "mitter": GrpcPatCornerType.MITER,
-            "sharp": GrpcPatCornerType.SHARP,
+            "round": GrpcPathCornerType.ROUND,
+            "mitter": GrpcPathCornerType.MITER,
+            "sharp": GrpcPathCornerType.SHARP,
         }
 
         cloned_path = GrpcPath.create(
@@ -444,9 +444,9 @@ class Path(GrpcPath, Primitive):
     def corner_style(self, corner_type):
         if isinstance(corner_type, str):
             mapping = {
-                "round": GrpcPatCornerType.ROUND,
-                "mitter": GrpcPatCornerType.MITER,
-                "sharp": GrpcPatCornerType.SHARP,
+                "round": GrpcPathCornerType.ROUND,
+                "mitter": GrpcPathCornerType.MITER,
+                "sharp": GrpcPathCornerType.SHARP,
             }
             self.corner_style = mapping[corner_type]
 
