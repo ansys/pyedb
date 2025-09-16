@@ -141,9 +141,9 @@ class Path(GrpcPath, Primitive):
             "clipped": GrpcPathEndCapType.CLIPPED,
         }
         corner_style_mapping = {
-            "round": GrpcPatCornerType.ROUND,
-            "mitter": GrpcPatCornerType.MITER,
-            "sharp": GrpcPatCornerType.SHARP,
+            "round": GrpcPathCornerType.ROUND,
+            "mitter": GrpcPathCornerType.MITER,
+            "sharp": GrpcPathCornerType.SHARP,
         }
         if isinstance(end_cap1, str):
             end_cap1 = end_cap_mapping[end_cap1.lower()]
@@ -215,9 +215,9 @@ class Path(GrpcPath, Primitive):
             ``True`` when successful, ``False`` when failed.
         """
         mapping = {
-            "round": GrpcPatCornerType.ROUND,
-            "mitter": GrpcPatCornerType.MITER,
-            "sharp": GrpcPatCornerType.SHARP,
+            "round": GrpcPathCornerType.ROUND,
+            "mitter": GrpcPathCornerType.MITER,
+            "sharp": GrpcPathCornerType.SHARP,
         }
 
         cloned_path = GrpcPath.create(
@@ -444,9 +444,9 @@ class Path(GrpcPath, Primitive):
     def corner_style(self, corner_type):
         if isinstance(corner_type, str):
             mapping = {
-                "round": GrpcPatCornerType.ROUND,
-                "mitter": GrpcPatCornerType.MITER,
-                "sharp": GrpcPatCornerType.SHARP,
+                "round": GrpcPathCornerType.ROUND,
+                "mitter": GrpcPathCornerType.MITER,
+                "sharp": GrpcPathCornerType.SHARP,
             }
             self.corner_style = mapping[corner_type]
 
