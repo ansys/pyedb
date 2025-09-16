@@ -32,7 +32,7 @@ import os
 from pathlib import Path
 import re
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 import time
 import traceback
@@ -754,6 +754,11 @@ class Edb:
 
         This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         input_file : str
@@ -817,7 +822,10 @@ class Edb:
             cmd_translator.append('-t="{}"'.format(tech_file))
         if layer_filter:
             cmd_translator.append('-f="{}"'.format(layer_filter))
-        subprocess.run(cmd_translator)
+        try:
+            subprocess.run(cmd_translator, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError("An error occurred while translating board file to ``edb.def`` file") from e
         if not os.path.exists(os.path.join(working_dir, aedb_name)):
             raise RuntimeWarning(f"Translator failed. command : {' '.join(cmd_translator)}")
         else:
@@ -4837,6 +4845,11 @@ class Edb:
     def compare(self, input_file, results=""):
         """Compares current open database with another one.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         input_file : str
@@ -4858,10 +4871,10 @@ class Edb:
             cmd_input = [mono_path, command, input_file, self.edbpath, results]
         else:
             cmd_input = [command, input_file, self.edbpath, results]
-        p = subprocess.run(cmd_input)
-        if p.returncode == 0:
+        try:
+            subprocess.run(cmd_input, check=True)  # nosec
             return str(Path(self.base_path).joinpath("EDBDiff.exe"))
-        else:
+        except subprocess.CalledProcessError as e:  # nosec
             raise RuntimeError(
                 "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
             )
