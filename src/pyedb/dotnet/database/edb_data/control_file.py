@@ -123,7 +123,7 @@ class ControlProperty:
                 float(value)
                 self.type = 0
             except TypeError:
-                pass
+                self.type = -1
 
     def _write_xml(self, root):
         try:
@@ -133,8 +133,11 @@ class ControlProperty:
                 double.text = str(self.value)
             else:
                 pass
-        except:
-            pass
+        except Exception as e:
+            settings.logger.error(
+                f"A(n) {type(e).__name__} error occurred while attempting to create a new sub-element {self.name} "
+                f"for element {root}: {str(e)}"
+            )
 
 
 class ControlFileMaterial:

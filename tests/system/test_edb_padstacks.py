@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """Tests related to Edb padstacks"""
+
 import math
 import os
 
@@ -29,7 +30,8 @@ import pytest
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.dotnet.database.padstack import EDBPadstackInstance
-from tests.conftest import GRPC, local_path, test_subfolder
+from pyedb.generic.general_methods import is_windows
+from tests.conftest import GRPC, config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -175,18 +177,20 @@ class TestClass(BaseTestClass):
             assert abs(pad.hole_properties[0] - hole_pad) < tol
         else:
             assert abs(pad.hole_properties - hole_pad) < tol
-        offset_x = 7
-        offset_y = 1
+        offset_x = 7.0
+        offset_y = 1.0
         pad.pad_by_layer[pad.via_stop_layer].shape = "Circle"
         pad.pad_by_layer[pad.via_stop_layer].parameters = 7.0
         pad.pad_by_layer[pad.via_stop_layer].offset_x = offset_x
         pad.pad_by_layer[pad.via_stop_layer].offset_y = offset_y
         if edbapp.grpc:
             assert pad.pad_by_layer[pad.via_stop_layer].parameters == 7.0
+            assert pad.pad_by_layer[pad.via_stop_layer].offset_x == offset_x
+            assert pad.pad_by_layer[pad.via_stop_layer].offset_y == offset_y
         else:
             assert pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"].tofloat == 7.0
-        assert str(pad.pad_by_layer[pad.via_stop_layer].offset_x) == str(offset_x)
-        assert str(pad.pad_by_layer[pad.via_stop_layer].offset_y) == str(offset_y)
+            assert float(pad.pad_by_layer[pad.via_stop_layer].offset_x) == offset_x
+            assert float(pad.pad_by_layer[pad.via_stop_layer].offset_y) == offset_y
         if edbapp.grpc:
             pad.pad_by_layer[pad.via_stop_layer].parameters = 8.0
         else:
@@ -521,6 +525,7 @@ class TestClass(BaseTestClass):
         edbapp.close_edb()
 
     def test_via_merge(self, edb_examples):
+        # TODO check this test is slow with grpc
         edbapp = edb_examples.get_si_verse()
         polygon = [[[118e-3, 60e-3], [125e-3, 60e-3], [124e-3, 56e-3], [118e-3, 56e-3]]]
         result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
@@ -543,6 +548,7 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.instances[merged_via[0]].stop_layer == "layer2"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_dbscan(self, edb_examples):
         source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
         edbapp = edb_examples.load_edb(source_path)
@@ -561,6 +567,27 @@ class TestClass(BaseTestClass):
         assert len(clusters1[0]) == 20
         assert len(clusters2) == 2
         assert len(clusters2[1]) == 21
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_reduce_via_by_density(self, edb_examples):
+        source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
+        edbapp = edb_examples.load_edb(source_path)
+
+        inst = edbapp.padstacks.instances
+        all_vias = {id_: i.position for id_, i in inst.items()}
+        clusters = edbapp.padstacks.dbscan(all_vias, max_distance=2e-3, min_samples=3)
+
+        kept_2mm, grid_2mm = edbapp.padstacks.reduce_via_by_density(clusters[0], cell_size_x=2e-3, cell_size_y=2e-3)
+        kept_5mm, grid_5mm = edbapp.padstacks.reduce_via_by_density(clusters[0], cell_size_x=5e-3, cell_size_y=5e-3)
+        assert len(kept_2mm) == 8
+        assert len(grid_2mm) == 8
+        assert len(kept_5mm) == 1
+        assert len(grid_5mm) == 1
+
+        _, _ = edbapp.padstacks.reduce_via_by_density(clusters[0], cell_size_x=5e-3, cell_size_y=5e-3, delete=True)
+        _, _ = edbapp.padstacks.reduce_via_by_density(clusters[1], cell_size_x=5e-3, cell_size_y=5e-3, delete=True)
+        assert len(edbapp.padstacks.instances) == 2
+        edbapp.close(terminate_rpc_session=False)
 
 
 def _get_padstack_polygon_data(edb, padstack_instance: EDBPadstackInstance, layer_name: str) -> PolygonData:
@@ -581,6 +608,6 @@ def _assert_inside(rect, pad):
     BASE_MESSAGE = "rectangle is not inside pad as"
     result = rect.Intersect(pad)
     assert len(result) == 1, f"{BASE_MESSAGE} intersection returned more than one lump"
-    assert math.isclose(
-        round(result[0].Area(), 4), round(rect.Area(), 4)
-    ), f"{BASE_MESSAGE} area of intersection is not equal to rectangle area"
+    assert math.isclose(round(result[0].Area(), 4), round(rect.Area(), 4)), (
+        f"{BASE_MESSAGE} area of intersection is not equal to rectangle area"
+    )

@@ -1,6 +1,6 @@
-==================
-gRPC API reference
-==================
+=============
+API reference
+=============
 
 This section describes EDB functions, classes, and methods
 for EDB gRPC applications and modules. Use the search feature or click links
@@ -26,6 +26,8 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
    PyEDB gRPC becomes the long term supported version and new features are only implemented
    into this one. Therefore users are highly encouraged migrating to gRPC when possible to get the
    best user experience.
+
+   If you want to access the legacy DotNet API please refer to the :ref:`archive section <archive>`.
 
 To enable PyEDB gRPC you have two options.
 - Explicit import

@@ -371,6 +371,10 @@ class Edb(EdbInit):
         """Ansys Edb Core module."""
         return ansys.edb.core
 
+    @property
+    def ansys_em_path(self):
+        return self.base_path
+
     def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         files = [aedt_file, aedt_file + ".lock"]
@@ -654,8 +658,7 @@ class Edb(EdbInit):
         bool
             True if successful, False otherwise.
         """
-        from ansys.edb.core.layout.cell import Cell as GrpcCell
-        from ansys.edb.core.layout.cell import CellType as GrpcCellType
+        from ansys.edb.core.layout.cell import Cell as GrpcCell, CellType as GrpcCellType
 
         self.standalone = self.standalone
         n_try = 10
@@ -1187,7 +1190,7 @@ class Edb(EdbInit):
                         continue
         except:
             self.logger.warning(
-                f"Failed to find connected objects on layout_obj " f"{layout_object_instance.layout_obj.id}, skipping."
+                f"Failed to find connected objects on layout_obj {layout_object_instance.layout_obj.id}, skipping."
             )
             pass
         return temp
@@ -1395,7 +1398,7 @@ class Edb(EdbInit):
                 command = [
                     anstranslator_full_path,
                     inputGDS,
-                    f'-o="{control_file_temp}"' f'-t="{tech_file}"',
+                    f'-o="{control_file_temp}"-t="{tech_file}"',
                     f'-g="{map_file}"',
                     f'-f="{layer_filter}"',
                 ]
@@ -1564,8 +1567,11 @@ class Edb(EdbInit):
                                         voids_poly.append(void_polydata)
                                 if voids_poly:
                                     obj_data = obj_data[0].subtract(list(obj_data), voids_poly)
-                        except:
-                            pass
+                        except Exception as e:
+                            self.logger.error(
+                                f"A(n) {type(e).__name__} error occurred in method _create_conformal of "
+                                f"class Edb at iteration {k} for data {i}: {str(e)}"
+                            )
                         finally:
                             unite_polys.extend(list(obj_data))
             _poly_unite = GrpcPolygonData.unite(unite_polys)
@@ -1730,7 +1736,7 @@ class Edb(EdbInit):
         >>> # Create a basic cutout:
         >>> edb.cutout(signal_list=["Net1"], reference_list=["GND"])
         >>> # Create cutout with custom polygon:
-        >>> custom_poly = [[0,0], [10e-3,0], [10e-3,10e-3], [0,10e-3]]
+        >>> custom_poly = [[0, 0], [10e-3, 0], [10e-3, 10e-3], [0, 10e-3]]
         >>> edb.cutout(custom_extent=custom_poly)
         """
         if expansion_factor > 0:
@@ -1936,8 +1942,8 @@ class Edb(EdbInit):
                 if os.path.exists(source) and not os.path.exists(target):
                     try:
                         shutil.copy(source, target)
-                    except:
-                        pass
+                    except Exception as e:
+                        self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         elif open_cutout_at_end:
             self._active_cell = _cutout
             self._init_objects()
@@ -2415,8 +2421,8 @@ class Edb(EdbInit):
                     try:
                         shutil.copy(source, target)
                         self.logger.warning("aedb def file manually created.")
-                    except:
-                        pass
+                    except Exception as e:
+                        self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         return [[Value(pt.x), Value(pt.y)] for pt in polygon_data.without_arcs().points]
 
     @staticmethod
@@ -2490,7 +2496,7 @@ class Edb(EdbInit):
         >>> # Export to HFSS project:
         >>> edb.export_hfss(r"C:/output", net_list=["SignalNet"])
         """
-        siwave_s = SiwaveSolve(self.edbpath)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
 
     def export_q3d(
@@ -2526,7 +2532,7 @@ class Edb(EdbInit):
         >>> # Export to Q3D project:
         >>> edb.export_q3d(r"C:/output")
         """
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad(
             "Q3D",
             path_to_output,
@@ -2569,7 +2575,7 @@ class Edb(EdbInit):
         >>> # Export to Maxwell project:
         >>> edb.export_maxwell(r"C:/output")
         """
-        siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
+        siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad(
             "Maxwell",
             path_to_output,
@@ -2592,11 +2598,13 @@ class Edb(EdbInit):
         >>> # Solve with SIwave:
         >>> edb.solve_siwave()
         """
-        process = SiwaveSolve(self.edbpath)
+        process = SiwaveSolve(self)
         try:
             self.close()
-        except:
-            pass
+        except Exception as e:
+            self.logger.warning(
+                f"A(n) {type(e).__name__} error occurred while attempting to close the database {self}: {str(e)}"
+            )
         process.solve()
         return self.edbpath[:-5] + ".siw"
 
@@ -2643,11 +2651,13 @@ class Edb(EdbInit):
         list[str]
             Generated report files.
         """
-        process = SiwaveSolve(self.edbpath, aedt_version=self.edbversion)
+        process = SiwaveSolve(self)
         try:
             self.close()
-        except:
-            pass
+        except Exception as e:
+            self.logger.warning(
+                f"A(n) {type(e).__name__} error occurred while attempting to close the database {self}: {str(e)}"
+            )
         return process.export_dc_report(
             siwave_project,
             solution_name,
@@ -3005,7 +3015,7 @@ class Edb(EdbInit):
         Use :func:`pyedb.grpc.core.hfss.add_setup` instead.
         """
         warnings.warn(
-            "`create_hfss_setup` is deprecated and is now located here " "`pyedb.grpc.core.hfss.add_setup` instead.",
+            "`create_hfss_setup` is deprecated and is now located here `pyedb.grpc.core.hfss.add_setup` instead.",
             DeprecationWarning,
         )
         return self._hfss.add_setup(
@@ -3753,8 +3763,7 @@ class Edb(EdbInit):
         ]
         if not polys:
             self.logger.error(
-                f"No polygon found with voids on layer {reference_layer} during model creation for "
-                f"arbitrary wave ports"
+                f"No polygon found with voids on layer {reference_layer} during model creation for arbitrary wave ports"
             )
             return False
         void_padstacks = []
@@ -3767,7 +3776,7 @@ class Edb(EdbInit):
 
         if not void_padstacks:
             self.logger.error(
-                "No padstack instances found inside evaluated voids during model creation for arbitrary" "waveports"
+                "No padstack instances found inside evaluated voids during model creation for arbitrary waveports"
             )
             return False
         cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion, restart_rpc_server=True)

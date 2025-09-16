@@ -23,8 +23,6 @@
 
 from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
     AdaptType as GrpcAdaptType,
-)
-from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
     HFSSGeneralSettings as GrpcHFSSGeneralSettings,
 )
 

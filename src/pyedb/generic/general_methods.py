@@ -35,8 +35,8 @@ import itertools
 import logging
 import math
 import os
-import random
 import re
+import secrets
 import string
 import sys
 import tempfile
@@ -118,7 +118,6 @@ def _exception(ex_info, func, args, kwargs, message="Type Error"):
     if message_to_print:
         _write_mes("Last Electronics Desktop Message - " + message_to_print)
 
-    args_name = []
     try:
         args_dict = _get_args_dicts(func, args, kwargs)
         first_time_log = True
@@ -129,13 +128,13 @@ def _exception(ex_info, func, args, kwargs, message="Type Error"):
                     _write_mes("Method arguments: ")
                     first_time_log = False
                 _write_mes("    {} = {} ".format(el, args_dict[el]))
-    except:
-        pass
-    args = [func.__name__] + [i for i in args_name if i not in ["self"]]
+    except Exception:
+        settings.logger.error(f"An error occurred while parsing and logging an error with method {func.__name__}.")
+
     if not func.__name__.startswith("_"):
         _write_mes(
             "Check Online documentation on: https://edb.docs.pyansys.com/version/stable/search.html?q={}".format(
-                "+".join(args)
+                func.__name__
             )
         )
 
@@ -254,7 +253,7 @@ def generate_unique_name(rootname, suffix="", n=6):
 
     """
     char_set = string.ascii_uppercase + string.digits
-    uName = "".join(random.choice(char_set) for _ in range(n))
+    uName = "".join(secrets.choice(char_set) for _ in range(n))
     unique_name = rootname + "_" + uName
     if suffix:
         unique_name += "_" + suffix

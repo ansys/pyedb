@@ -193,8 +193,11 @@ class PackageDef(GrpcPackageDef):
         """
         try:
             return HeatSink(self._pedb, super().heat_sink)
-        except:
-            pass
+        except Exception as e:
+            settings.logger.error(
+                f"A(n) {type(e).__name__} error occurred while attempting to access 'heatsink' "
+                f"property for object {self}: {str(e)}"
+            )
 
     @property
     @deprecated_property
@@ -222,9 +225,9 @@ class PackageDef(GrpcPackageDef):
             Fin thickness.
         """
         from ansys.edb.core.utility.heat_sink import (
+            HeatSink as GrpcHeatSink,
             HeatSinkFinOrientation as GrpcHeatSinkFinOrientation,
         )
-        from ansys.edb.core.utility.heat_sink import HeatSink as GrpcHeatSink
 
         if fin_orientation == "x_oriented":
             fin_orientation = GrpcHeatSinkFinOrientation.X_ORIENTED

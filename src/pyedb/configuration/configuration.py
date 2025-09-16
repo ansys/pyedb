@@ -29,6 +29,8 @@ import toml
 
 from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
+from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.misc.decorators import execution_timer
 
 
 class Configuration:
@@ -146,8 +148,9 @@ class Configuration:
         self.__apply_with_logging("Applying package definitions", self.cfg_data.package_definitions.apply)
         self.__apply_with_logging("Applying modeler", self.apply_modeler)
         self.__apply_with_logging("Placing ports", self.cfg_data.ports.apply)
+        self.apply_terminals()
         self.__apply_with_logging("Placing probes", self.cfg_data.probes.apply)
-        self.__apply_with_logging("Applying operations", self.apply_operations)
+        self.apply_operations()
 
         return True
 
@@ -433,6 +436,9 @@ class Configuration:
             setups = self.cfg_data.setups
             setups.retrieve_parameters_from_edb()
             data["setups"] = setups.to_dict()
+        if kwargs.get("terminals", False):
+            self.get_terminals()
+            data.update(self.cfg_data.terminals.model_dump(exclude_none=True))
         if kwargs.get("sources", False):
             data["sources"] = self.cfg_data.sources.get_data_from_db()
         if kwargs.get("ports", False):
@@ -472,6 +478,7 @@ class Configuration:
 
         return data
 
+    @execution_timer("Applying operations")
     def apply_operations(self):
         """Apply operations to the current design."""
         op_cutout = self.cfg_data.operations.cutout
@@ -488,28 +495,17 @@ class Configuration:
                         auto_identify_nets.get("exception_list", []),
                     )
                     signal_nets = []
-                    for i in self._pedb.ports.values():
-                        # Positive terminal
+                    for i in self._pedb.terminals.values():
+                        if i.net_name in reference_list:
+                            continue
+
                         extended_net = i.net.extended_net
                         if extended_net:
                             temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_list]
                             temp = [i2 for i2 in temp if i2 not in signal_nets]
                             signal_nets.extend(temp)
                         else:
-                            signal_nets.append(i.net.name)
-
-                        # Negative terminal
-                        ref_net = i.ref_terminal.net if i.ref_terminal else None
-                        if ref_net is None:
-                            continue
-                        elif ref_net.name not in reference_list:
-                            extended_net = ref_net.extended_net
-                            if extended_net:
-                                temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_list]
-                                temp = [i2 for i2 in temp if i2 not in signal_nets]
-                                signal_nets.extend(temp)
-                            else:
-                                signal_nets.append(ref_net.name)
+                            signal_nets.append(i.net_name)
 
                     cutout_params["signal_list"] = signal_nets
             polygon_points = self._pedb.cutout(**cutout_params)
@@ -518,21 +514,160 @@ class Configuration:
                 self._pedb.modeler.create_polygon(polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout")
 
     def get_operations(self):
-        op_cutout = self.cfg_data.operations.cutout
-        if "pyedb_cutout" in self._pedb.stackup.all_layers:
-            polygons = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")
-            if polygons:
-                poly = polygons[0]
-                op_cutout.custom_extent = poly.polygon_data.points
-                net_names = []
-                for name, obj in self._pedb.nets.nets.items():
-                    if obj.primitives:
-                        if obj.primitives[0].layer.name == "pyedb_cutout":
-                            continue
-                        else:
-                            net_names.append(name)
-                op_cutout.reference_list = []
-                op_cutout.signal_list = net_names
+        if "pyedb_cutout" not in self._pedb.stackup.all_layers:
+            return
+
+        polygons = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")
+        if polygons:
+            poly = polygons[0]
+            custom_extent = poly.polygon_data.points
+            net_names = []
+            for name, obj in self._pedb.nets.nets.items():
+                if obj.primitives:
+                    if obj.primitives[0].layer.name == "pyedb_cutout":
+                        continue
+                    else:
+                        net_names.append(name)
+            reference_list = []
+            signal_list = net_names
+
+            self.cfg_data.operations.add_cutout(
+                custom_extent=custom_extent,
+                reference_list=reference_list,
+                signal_list=signal_list,
+            )
+
+    @execution_timer("Placing terminals")
+    def apply_terminals(self):
+        terminals_dict = {}
+        bungle_terminals = []
+        edge_terminals = {}
+        for cfg_terminal in self.cfg_data.terminals.terminals:
+            if cfg_terminal.terminal_type == "padstack_instance":
+                if cfg_terminal.padstack_instance_id:
+                    pds = self._pedb.layout.find_padstack_instances(
+                        instance_id=cfg_terminal.padstack_instance_id,
+                        aedt_name=None,
+                        component_name=None,
+                        component_pin_name=None,
+                    )[0]
+                else:
+                    pds = self._pedb.layout.find_padstack_instances(
+                        instance_id=None,
+                        aedt_name=cfg_terminal.padstack_instance,
+                        component_name=None,
+                        component_pin_name=None,
+                    )[0]
+                terminal = pds.create_terminal(name=cfg_terminal.name)
+
+            elif cfg_terminal.terminal_type == "pin_group":
+                pg = self._pedb.siwave.pin_groups[cfg_terminal.pin_group]
+                terminal = pg.create_terminal(name=cfg_terminal.name)
+            elif cfg_terminal.terminal_type == "point":
+                terminal = self._pedb.get_point_terminal(
+                    cfg_terminal.name, cfg_terminal.net, [cfg_terminal.x, cfg_terminal.y], cfg_terminal.layer
+                )
+            elif cfg_terminal.terminal_type == "edge":
+                pt = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
+                    self._pedb, x=cfg_terminal.point_on_edge_x, y=cfg_terminal.point_on_edge_y
+                )
+                primitive = self._pedb.layout.primitives_by_aedt_name[cfg_terminal.primitive]
+                edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, pt._edb_object)
+                edge = convert_py_list_to_net_list(edge, self._pedb.core.Cell.Terminal.Edge)
+                _terminal = self._pedb.core.Cell.Terminal.EdgeTerminal.Create(
+                    primitive._edb_object.GetLayout(),
+                    primitive._edb_object.GetNet(),
+                    cfg_terminal.name,
+                    edge,
+                    isRef=False,
+                )
+                terminal = self._pedb.pedb_class.database.cell.terminal.edge_terminal.EdgeTerminal(
+                    self._pedb, _terminal
+                )
+                terminal.horizontal_extent_factor = terminal.horizontal_extent_factor
+                terminal.vertical_extent_factor = terminal.vertical_extent_factor
+                terminal.pec_launch_width = terminal.pec_launch_width
+                terminal.do_renormalize = True
+                edge_terminals[cfg_terminal.name] = terminal
+            elif cfg_terminal.terminal_type == "bundle":
+                bungle_terminals.append(cfg_terminal)
+                continue
+            else:
+                self._pedb.logger.warning(f"Terminal type {cfg_terminal.terminal_type} not supported.")
+                continue
+
+            terminal.impedance = cfg_terminal.impedance
+            terminal.is_circuit_port = cfg_terminal.is_circuit_port
+            terminal.boundary_type = cfg_terminal.boundary_type
+            terminal.source_amplitude = cfg_terminal.amplitude
+            terminal.source_phase = cfg_terminal.phase
+            terminal.terminal_to_ground = cfg_terminal.terminal_to_ground
+
+            terminals_dict[cfg_terminal.name] = cfg_terminal, terminal
+
+        for _, obj in terminals_dict.items():
+            cfg, obj = obj
+            if cfg.reference_terminal:
+                obj.reference_terminal = terminals_dict[cfg.reference_terminal][1]
+
+        for i in bungle_terminals:
+            boundle_terminal = self._pedb.pedb_class.database.cell.terminal.bundle_terminal.BundleTerminal.create(
+                self._pedb, i.name, i.terminals
+            )
+            bundle_term = boundle_terminal.terminals
+            bundle_term[0].name = i.name + ":T1"
+            bundle_term[1].mame = i.name + ":T2"
+
+    @execution_timer("Retrieving terminal information")
+    def get_terminals(self):
+        manager = self.cfg_data.terminals
+        manager.terminals = []
+        for i in self._pedb.terminals.values():
+            if i.terminal_type == "PadstackInstanceTerminal":
+                manager.add_padstack_instance_terminal(
+                    padstack_instance=i.padstack_instance.aedt_name,
+                    padstack_instance_id=i.padstack_instance.id,
+                    name=i.name,
+                    impedance=i.impedance,
+                    is_circuit_port=i.is_circuit_port,
+                    boundary_type=i.boundary_type,
+                    amplitude=i.source_amplitude,
+                    phase=i.source_phase,
+                    terminal_to_ground=i.terminal_to_ground,
+                    reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
+                    hfss_type=i.hfss_type if i.hfss_type else "Wave",
+                )
+            elif i.terminal_type == "PinGroupTerminal":
+                manager.add_pin_group_terminal(
+                    pin_group=i.pin_group().name,
+                    name=i.name,
+                    impedance=i.impedance,
+                    boundary_type=i.boundary_type,
+                    reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
+                    amplitude=i.source_amplitude,
+                    phase=i.source_phase,
+                    terminal_to_ground=i.terminal_to_ground,
+                )
+            elif i.terminal_type == "PointTerminal":
+                manager.add_point_terminal(
+                    x=i.location[0],
+                    y=i.location[1],
+                    layer=i.layer.name,
+                    name=i.name,
+                    impedance=i.impedance,
+                    boundary_type=i.boundary_type,
+                    reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
+                    amplitude=i.source_amplitude,
+                    phase=i.source_phase,
+                    terminal_to_ground=i.terminal_to_ground,
+                    net=i.net_name,
+                )
+            elif i.terminal_type == "EdgeTerminal":
+                pass
+            elif i.terminal_type == "BundleTerminal":
+                pass
+            else:  # pragma: no cover
+                raise RuntimeError(f"Terminal type {i.terminal_type} not supported.")
 
     def export(
         self,
@@ -551,6 +686,7 @@ class Configuration:
         padstacks=True,
         general=True,
         variables=True,
+        terminals=False,
     ):
         """Export the configuration data from layout to a file.
 
@@ -565,9 +701,9 @@ class Configuration:
         setups : bool
             Whether to export setups or not.
         sources : bool
-            Whether to export sources or not.
+            Whether to export sources or not. Alternative to terminals.
         ports : bool
-            Whether to export ports or not.
+            Whether to export ports or not. Alternative to terminals.
         nets : bool
             Whether to export nets.
         pin_groups : bool
@@ -586,6 +722,8 @@ class Configuration:
             Whether to export general information.
         variables : bool
             Whether to export variable.
+        terminals : bool
+            Whether to export terminals. Alternative to ports and sources.
         Returns
         -------
         bool
@@ -605,6 +743,7 @@ class Configuration:
             padstacks=padstacks,
             general=general,
             variables=variables,
+            terminals=terminals,
         )
 
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)

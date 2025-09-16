@@ -624,6 +624,15 @@ class TestClass(BaseTestClass):
                     "positive_terminal": {"pin": "AP18"},
                 }
             ],
+            "sources": [
+                {
+                    "name": "VSOURCE_1",
+                    "reference_designator": "U1",
+                    "type": "voltage",
+                    "positive_terminal": {"pin": "AH23"},
+                    "negative_terminal": {"net": "GND"},
+                },
+            ],
             "operations": {
                 "cutout": {
                     "auto_identify_nets": {
@@ -639,7 +648,7 @@ class TestClass(BaseTestClass):
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        assert {"PCIe_Gen4_TX3_CAP_P", "PCIe_Gen4_TX3_P"}.issubset(edbapp.nets.nets.keys())
+        assert {"PCIe_Gen4_TX3_CAP_P", "PCIe_Gen4_TX3_P", "PCIe_Gen4_RX3_N"}.issubset(edbapp.nets.nets.keys())
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
@@ -1464,4 +1473,203 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND", "pyedb_cutout"])
+        edbapp.close(terminate_rpc_session=False)
+
+
+@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+class TestClassTerminals(BaseTestClass):
+    @pytest.fixture(autouse=True)
+    def init(self, edb_examples):
+        """init runs before each test."""
+        self.terminal1 = {
+            "name": "terminal1",
+            "impedance": 1,
+            "is_circuit_port": False,
+            "boundary_type": "PortBoundary",
+            "hfss_type": "Wave",
+            "terminal_type": "padstack_instance",
+            "padstack_instance": "U7-M7",
+            "layer": None,
+        }
+        self.pin_group2 = {"name": "U7_GND", "reference_designator": "U7", "net": "GND"}
+        self.terminal2 = {
+            "name": "terminal2",
+            "impedance": 40,
+            "boundary_type": "PortBoundary",
+            "terminal_type": "pin_group",
+            "pin_group": "U7_GND",
+            "reference_terminal": "terminal1",
+        }
+        self.terminal3 = {
+            "x": "104mm",
+            "y": "37mm",
+            "layer": "1_Top",
+            "name": "terminal3",
+            "impedance": 50,
+            "boundary_type": "PortBoundary",
+            "reference_terminal": "terminal3_ref",
+            "terminal_type": "point",
+            "net": "AVCC_1V3",
+        }
+        self.terminal3_ref = {
+            "x": "104mm",
+            "y": "37mm",
+            "layer": "Inner6(GND2)",
+            "net": "GND",
+            "name": "terminal3_ref",
+            "impedance": 50,
+            "boundary_type": "PortBoundary",
+            "terminal_type": "point",
+        }
+
+        self.edge_terminal_1 = {
+            "name": "edge_terminal_1",
+            "impedance": 50,
+            "is_circuit_port": False,
+            "boundary_type": "PortBoundary",
+            "primitive": "path_1",
+            "point_on_edge_x": 0,
+            "point_on_edge_y": "1mm",
+            "horizontal_extent_factor": 6,
+            "vertical_extent_factor": 8,
+            "pec_launch_width": "0.02mm",
+            "terminal_type": "edge",
+        }
+        self.edge_terminal_2 = {
+            "terminal_type": "edge",
+            "name": "edge_terminal_2",
+            "impedance": 50,
+            "is_circuit_port": False,
+            "boundary_type": "PortBoundary",
+            "primitive": "path_2",
+            "point_on_edge_x": "1mm",
+            "point_on_edge_y": "1mm",
+            "horizontal_extent_factor": 6,
+            "vertical_extent_factor": 8,
+            "pec_launch_width": "0.02mm",
+        }
+        self.bundle_terminal = {
+            "terminal_type": "bundle",
+            "terminals": ["edge_terminal_1", "edge_terminal_2"],
+            "name": "bundle_terminal",
+        }
+
+    def test_padstack_instance_terminal(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.configuration.load({"terminals": [self.terminal1]}, append=False)
+        edbapp.configuration.run()
+        terminal1 = edbapp.ports["terminal1"]
+        assert terminal1.impedance == 1
+        assert terminal1.padstack_instance.aedt_name == "U7-M7"
+
+        exported = edbapp.configuration.get_data_from_db(terminals=True)["terminals"]
+        assert exported[0] == {
+            "name": "terminal1",
+            "impedance": 1.0,
+            "is_circuit_port": False,
+            "amplitude": 1.0,
+            "phase": 0.0,
+            "terminal_to_ground": "kNoGround",
+            "boundary_type": "PortBoundary",
+            "hfss_type": "Wave",
+            "terminal_type": "padstack_instance",
+            "padstack_instance": "U7-M7",
+            "padstack_instance_id": 4294971660,
+        }
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_pin_group_terminal(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.configuration.load({"pin_groups": [self.pin_group2]})
+        edbapp.configuration.run()
+
+        edbapp.configuration.load({"terminals": [self.terminal1, self.terminal2]}, append=False)
+        edbapp.configuration.run()
+        assert "terminal2" in edbapp.terminals
+        exported = edbapp.configuration.get_data_from_db(terminals=True)["terminals"]
+        ex_terminal2 = [i for i in exported if i["name"] == "terminal2"][0]
+        assert ex_terminal2 == {
+            "name": "terminal2",
+            "impedance": 40.0,
+            "is_circuit_port": True,
+            "reference_terminal": "terminal1",
+            "amplitude": 1.0,
+            "phase": 0.0,
+            "terminal_to_ground": "kNoGround",
+            "boundary_type": "PortBoundary",
+            "terminal_type": "pin_group",
+            "pin_group": "U7_GND",
+        }
+
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_point_terminal(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load({"terminals": [self.terminal3, self.terminal3_ref]}, apply_file=True)
+
+        exported = edbapp.configuration.get_data_from_db(terminals=True)["terminals"]
+        assert exported == [
+            {
+                "name": "terminal3",
+                "impedance": 50.0,
+                "is_circuit_port": True,
+                "reference_terminal": "terminal3_ref",
+                "amplitude": 1.0,
+                "phase": 0.0,
+                "terminal_to_ground": "kNoGround",
+                "boundary_type": "PortBoundary",
+                "terminal_type": "point",
+                "x": 0.10400000000000001,
+                "y": 0.037,
+                "layer": "1_Top",
+                "net": "AVCC_1V3",
+            },
+            {
+                "name": "terminal3_ref",
+                "impedance": 50.0,
+                "is_circuit_port": True,
+                "amplitude": 1.0,
+                "phase": 0.0,
+                "terminal_to_ground": "kNoGround",
+                "boundary_type": "PortBoundary",
+                "terminal_type": "point",
+                "x": 0.10400000000000001,
+                "y": 0.037,
+                "layer": "Inner6(GND2)",
+                "net": "GND",
+            },
+        ]
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_edge_bundle_terminal(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp.modeler.create_rectangle(
+            layer_name="BOT", net_name="GND", lower_left_point=["-2mm", "-2mm"], upper_right_point=["2mm", "2mm"]
+        )
+        prim_1 = edbapp.modeler.create_trace(
+            path_list=([0, 0], [0, "1mm"]),
+            layer_name="TOP",
+            net_name="SIG",
+            width="0.1mm",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        prim_1.aedt_name = "path_1"
+        prim_2 = edbapp.modeler.create_trace(
+            path_list=(["1mm", 0], ["1mm", "1mm"]),
+            layer_name="TOP",
+            net_name="SIG",
+            width="0.1mm",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        prim_2.aedt_name = "path_2"
+
+        edbapp.configuration.load(
+            {"terminals": [self.edge_terminal_1, self.edge_terminal_2, self.bundle_terminal]}, apply_file=True
+        )
+        port1 = edbapp.ports["bundle_terminal"]
+        assert port1.terminals[0].name == "bundle_terminal:T1"
+        assert port1.terminals[1].name == "bundle_terminal:T2"
         edbapp.close(terminate_rpc_session=False)

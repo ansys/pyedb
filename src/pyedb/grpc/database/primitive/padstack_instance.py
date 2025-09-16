@@ -28,8 +28,7 @@ from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
-from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure
-from ansys.edb.core.hierarchy.structure3d import Structure3D as GrpcStructure3D
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure, Structure3D as GrpcStructure3D
 from ansys.edb.core.primitive.padstack_instance import (
     PadstackInstance as GrpcPadstackInstance,
 )
@@ -123,6 +122,14 @@ class PadstackInstance(GrpcPadstackInstance):
             term = PadstackInstanceTerminal(self._pedb, term)
         return term if not term.is_null else None
 
+    def delete(self):
+        """Delete the padstack instance."""
+        try:
+            self._pedb.padstacks._instances.pop(self.edb_uid, None)
+        except Exception:
+            self._pedb.padstacks.clear_instances_cache()
+        super().delete()
+
     def set_backdrill_top(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from top.
 
@@ -144,7 +151,7 @@ class PadstackInstance(GrpcPadstackInstance):
             True if success, False otherwise.
         """
         warnings.warn(
-            "`set_backdrill_top` is deprecated. Use `set_back_drill_by_depth` or " "`set_back_drill_by_layer` instead.",
+            "`set_backdrill_top` is deprecated. Use `set_back_drill_by_depth` or `set_back_drill_by_layer` instead.",
             DeprecationWarning,
         )
         if isinstance(drill_depth, str):
@@ -179,8 +186,7 @@ class PadstackInstance(GrpcPadstackInstance):
             True if success, False otherwise.
         """
         warnings.warn(
-            "`set_backdrill_bottom` is deprecated. Use `set_back_drill_by_depth` or "
-            "`set_back_drill_by_layer` instead.",
+            "`set_backdrill_bottom` is deprecated. Use `set_back_drill_by_depth` or `set_back_drill_by_layer` instead.",
             DeprecationWarning,
         )
         if isinstance(drill_depth, str):
@@ -826,21 +832,21 @@ class PadstackInstance(GrpcPadstackInstance):
             rad_l = rad_large
 
         layout = self._pedb.active_layout
-        cloned_circle = Circle.create(
-            layout,
-            self.start_layer,
-            self.net,
-            Value(self.position[0]),
-            Value(self.position[1]),
-            Value(rad_u),
+        cloned_circle = Circle(self._pedb).create(
+            layout=layout,
+            layer=self.start_layer,
+            net=self.net,
+            center_x=Value(self.position[0]),
+            center_y=Value(self.position[1]),
+            radius=Value(rad_u),
         )
-        cloned_circle2 = Circle.create(
-            layout,
-            self.stop_layer,
-            self.net,
-            Value(self.position[0]),
-            Value(self.position[1]),
-            Value(rad_l),
+        cloned_circle2 = Circle(self._pedb).create(
+            layout=layout,
+            layer=self.stop_layer,
+            net=self.net,
+            center_x=Value(self.position[0]),
+            center_y=Value(self.position[1]),
+            radius=Value(rad_l),
         )
 
         s3d = GrpcStructure3D.create(layout, generate_unique_name("via3d_" + self.aedt_name.replace("via_", ""), n=3))

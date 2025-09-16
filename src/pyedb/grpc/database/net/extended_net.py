@@ -20,9 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.net.extended_net import ExtendedNet as GrpcExtendedNet
+from __future__ import annotations
 
-from pyedb.grpc.database.net.net import Net
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.net.net import Net
+from ansys.edb.core.net.extended_net import ExtendedNet as GrpcExtendedNet
 
 
 class ExtendedNets:
@@ -204,12 +208,21 @@ class ExtendedNets:
                 val_value = cmp.rlc_values
                 if refdes in exception_list:
                     pass
-                elif cmp.type == "inductor" and val_value[1] < inductor_below:
-                    pass
-                elif cmp.type == "resistor" and val_value[0] < resistor_below:
-                    pass
-                elif cmp.type == "capacitor" and val_value[2] > capacitor_above:
-                    pass
+                elif cmp.type == "inductor":
+                    if val_value[1] is None:
+                        continue
+                    elif not val_value[1] < inductor_below:
+                        continue
+                elif cmp.type == "resistor":
+                    if val_value[0] is None:
+                        continue
+                    elif not val_value[0] < resistor_below:
+                        continue
+                elif cmp.type == "capacitor":
+                    if val_value[2] is None:
+                        continue
+                    elif not val_value[2] > capacitor_above:
+                        continue
                 else:
                     continue
                 for net in comp_dict[refdes]:
@@ -263,7 +276,7 @@ class ExtendedNet(GrpcExtendedNet):
         self._pedb = pedb
 
     @property
-    def nets(self):
+    def nets(self) -> dict[str, Net]:
         """Nets dictionary.
 
         Returns
@@ -271,6 +284,8 @@ class ExtendedNet(GrpcExtendedNet):
         Dict[str, :class:`Net <pyedb.grpc.database.net.net.Net>`]
             Dict[net name, Net object].
         """
+        from pyedb.grpc.database.net.net import Net
+
         return {net.name: Net(self._pedb, net) for net in super().nets}
 
     @property

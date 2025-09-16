@@ -35,9 +35,12 @@ Examples
 
 """
 
-from __future__ import absolute_import  # noreorder
-from __future__ import division
+from __future__ import (
+    absolute_import,  # noreorder
+    division,
+)
 
+import ast
 import os
 import re
 import types
@@ -181,13 +184,15 @@ class CSVDataset:
                 if variable in key_string:
                     found_variable = True
                     break
-            assert found_variable, "Input string {} is not a key of the data dictionary.".format(variable)
+            if not found_variable:
+                raise KeyError(f"Input string {variable} is not a key of the data dictionary.")
             data_out._data[variable] = self._data[key_string]
             data_out._header.append(variable)
         return data_out
 
     def __add__(self, other):  # pragma: no cover
-        assert self.number_of_columns == other.number_of_columns, "Inconsistent number of columns"
+        if self.number_of_columns != other.number_of_columns:
+            raise ValueError("Number of columns is inconsistent.")
         # Create a new object to return, avoiding changing the original inputs
         new_dataset = CSVDataset()
         # Add empty columns to new_dataset
@@ -222,7 +227,8 @@ class CSVDataset:
             for column in other.data:
                 self._data[column] = []
 
-        assert self.number_of_columns == other.number_of_columns, "Inconsistent number of columns"
+        if self.number_of_columns != other.number_of_columns:
+            raise ValueError("Number of columns is inconsistent.")
 
         # Append the data from 'other'
         for column, row_data in other.data.items():
@@ -490,13 +496,13 @@ class VariableManager(object):
         --------
         >>> hfss = Hfss()
         >>> print(hfss.variable_manager.decompose("5mm"))
-        >>> (5.0, 'mm')
+        >>> (5.0, "mm")
         >>> hfss["v1"] = "3N"
         >>> print(hfss.variable_manager.decompose("v1"))
-        >>> (3.0, 'N')
+        >>> (3.0, "N")
         >>> hfss["v2"] = "2*v1"
         >>> print(hfss.variable_manager.decompose("v2"))
-        >>> (6.0, 'N')
+        >>> (6.0, "N")
         """
         if variable_value in self.independent_variable_names:
             val, unit = decompose_variable_value(self[variable_value].expression)
@@ -1006,8 +1012,13 @@ class VariableManager(object):
         creating the property if it does not already exist. Also make
         it read-only and hidden and add a description.
 
-        >>> aedtapp.variable_manager.set_variable(variable_name="p2", expression="10mm", readonly=True, hidden=True,
-        ...                                       description="This is the description of this variable.")
+        >>> aedtapp.variable_manager.set_variable(
+        ...     variable_name="p2",
+        ...     expression="10mm",
+        ...     readonly=True,
+        ...     hidden=True,
+        ...     description="This is the description of this variable.",
+        ... )
 
         Set the value of the project variable ``$p1`` to ``"30mm"``,
         creating the variable if it does not exist.
@@ -1070,8 +1081,8 @@ class VariableManager(object):
                     desktop_object.Undo()
                     self._logger.clear_messages()
                     return
-            except:
-                pass
+            except Exception:
+                self._logger.debug(f"Something went wrong when deleting '{variable_name}'.")
         else:
             raise Exception("Unhandled input type to the design property or project variable.")  # pragma: no cover
 
@@ -1201,8 +1212,8 @@ class VariableManager(object):
                     ]
                 )
                 return True
-            except:
-                pass
+            except Exception:
+                self._logger.debug("Failed to change desktop object property.")
         return False
 
     def delete_variable(self, var_name):  # pragma: no cover
@@ -1241,8 +1252,8 @@ class VariableManager(object):
                         ],
                     ]
                 )
-            except:  # pragma: no cover
-                pass
+            except Exception:  # pragma: no cover
+                self._logger.debug("Failed to change desktop object property.")
             else:
                 self._cleanup_variables()
                 return True
@@ -1341,9 +1352,10 @@ class Variable(object):
             self._value = self._calculated_value
         # If units have been specified, check for a conflict and otherwise use the specified unit system
         if units:
-            assert not self._units, "The unit specification {} is inconsistent with the identified units {}.".format(
-                specified_units, self._units
-            )
+            if self._units and self._units != specified_units:
+                raise RuntimeError(
+                    f"The unit specification {specified_units} is inconsistent with the identified units {self._units}."
+                )
             self._units = specified_units
 
         if not si_value and is_number(self._value):
@@ -1407,8 +1419,8 @@ class Variable(object):
                 if result:
                     break
                 i += 1
-        except:
-            pass
+        except Exception:
+            self._app.logger.debug(f"Failed to set property '{prop}' value.")
 
     def _get_prop_val(self, prop):  # pragma: no cover
         if self._app.design_type == "Maxwell Circuit":
@@ -1428,8 +1440,8 @@ class Variable(object):
                 else:
                     name = "LocalVariables"
             return self._app.get_oo_object(self._aedt_obj, "{}/{}".format(name, self._variable_name)).GetPropValue(prop)
-        except:
-            pass
+        except Exception:
+            self._app.logger.debug(f"Failed to get property '{prop}' value.")
 
     @property
     def name(self):  # pragma: no cover
@@ -1638,7 +1650,7 @@ class Variable(object):
     def numeric_value(self):  # pragma: no cover
         """Numeric part of the expression as a float value."""
         if is_array(self._value):
-            return list(eval(self._value))
+            return list(ast.literal_eval(self._value))
         try:
             var_obj = self._aedt_obj.GetChildObject("Variables").GetChildObject(self._variable_name)
             val, _ = decompose_variable_value(var_obj.GetPropEvaluatedValue("EvaluatedValue"))
@@ -1704,7 +1716,7 @@ class Variable(object):
         >>> hfss = Hfss()
         >>> hfss["v1"] = "3N"
         >>> print(hfss.variable_manager["v1"].decompose("v1"))
-        >>> (3.0, 'N')
+        >>> (3.0, "N")
 
         """
         return decompose_variable_value(self.evaluated_value)
@@ -1730,9 +1742,10 @@ class Variable(object):
 
         """
         new_unit_system = unit_system(units)
-        assert (
-            new_unit_system == self.unit_system
-        ), "New unit system {0} is inconsistent with the current unit system {1}."
+        if new_unit_system != self.unit_system:
+            raise ValueError(
+                f"New unit system {new_unit_system} is inconsistent with the current unit system {self.unit_system}."
+            )
         self._units = units
         return self
 
@@ -1755,9 +1768,9 @@ class Variable(object):
         >>> from pyedb.dotnet.database.Variables import Variable
 
         >>> v = Variable("10W")
-        >>> assert v.format("f") == '10.000000W'
-        >>> assert v.format("06.2f") == '010.00W'
-        >>> assert v.format("6.2f") == ' 10.00W'
+        >>> assert v.format("f") == "10.000000W"
+        >>> assert v.format("06.2f") == "010.00W"
+        >>> assert v.format("6.2f") == " 10.00W"
 
         """
         return ("{0:" + format + "}{1}").format(self.numeric_value, self._units)
@@ -1803,7 +1816,8 @@ class Variable(object):
         >>> assert result_3.unit_system == "Power"
 
         """
-        assert is_number(other) or isinstance(other, Variable), "Multiplier must be a scalar quantity or a variable."
+        if not is_number(other) and not isinstance(other, Variable):
+            raise ValueError("Multiplier must be a scalar quantity or a variable.")
         if is_number(other):
             result_value = self.numeric_value * other
             result_units = self.units
@@ -1847,10 +1861,10 @@ class Variable(object):
         >>> assert result.unit_system == "Current"
 
         """
-        assert isinstance(other, Variable), "You can only add a variable with another variable."
-        assert (
-            self.unit_system == other.unit_system
-        ), "Only ``Variable`` objects with the same unit system can be added."
+        if not isinstance(other, Variable):
+            raise ValueError("You can only add a variable with another variable.")
+        if self.unit_system != other.unit_system:
+            raise ValueError("Only Variable objects with the same unit system can be added.")
         result_value = self.value + other.value
         result_units = SI_UNITS[self.unit_system]
         # If the units of the two operands are different, return SI-Units
@@ -1888,10 +1902,10 @@ class Variable(object):
         >>> assert result_2.unit_system == "Current"
 
         """
-        assert isinstance(other, Variable), "You can only subtract a variable from another variable."
-        assert (
-            self.unit_system == other.unit_system
-        ), "Only ``Variable`` objects with the same unit system can be subtracted."
+        if not isinstance(other, Variable):
+            raise ValueError("You can only subtract a variable from another variable.")
+        if self.unit_system != other.unit_system:
+            raise ValueError("Only Variable objects with the same unit system can be subtracted.")
         result_value = self.value - other.value
         result_units = SI_UNITS[self.unit_system]
         # If the units of the two operands are different, return SI-Units
@@ -1933,7 +1947,8 @@ class Variable(object):
         >>> assert result_1.unit_system == "Current"
 
         """
-        assert is_number(other) or isinstance(other, Variable), "Divisor must be a scalar quantity or a variable."
+        if not is_number(other) and not isinstance(other, Variable):
+            raise ValueError("Divisor must be a scalar quantity or a variable.")
         if is_number(other):
             result_value = self.numeric_value / other
             result_units = self.units
