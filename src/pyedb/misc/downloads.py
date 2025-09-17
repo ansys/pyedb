@@ -58,7 +58,7 @@ def _retrieve_file(url, filename, directory, destination=None, local_paths=[]): 
 
     """
     # Check that provided url is pointing to pyaedt-example repo
-    if not "https://github.com/ansys/example-data" in url:
+    if "https://github.com/ansys/example-data" not in url:
         raise ValueError(f"Attempting to download file(s) from url {url} not pointing the to example-data repo.")
 
     # First check if file has already been downloaded
