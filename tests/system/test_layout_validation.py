@@ -60,3 +60,12 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         edbapp.layout_validation.illegal_rlc_values(fix=True)
         edbapp.close(terminate_rpc_session=False)
+
+    def test_empty_pin_groups(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        _, pg = edbapp.siwave.create_pin_group("U9", ["32", "33"])
+        pg.remove_pins(["32", "33"])
+        assert len(edbapp.siwave.pin_groups) == 1
+        edbapp.layout_validation.delete_empty_pin_groups()
+        assert len(edbapp.siwave.pin_groups) == 0
+        edbapp.close(terminate_rpc_session=False)

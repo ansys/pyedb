@@ -339,3 +339,12 @@ class LayoutValidation:
                 if fix:
                     obj.aedt_name = f"via_{obj.id}"
         self._pedb.logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")
+
+    @execution_timer("empty_pin_group")
+    def delete_empty_pin_groups(self):
+        for name, pg in self._pedb.siwave.pin_groups.items():
+            pins = pg.pins
+            if len(pins) == 0:
+                pg.delete()
+                self._pedb.logger.info(f"Pin group {name} deleted because it has no pins.")
+
