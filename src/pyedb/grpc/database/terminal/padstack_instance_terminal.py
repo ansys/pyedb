@@ -184,9 +184,13 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
             "pec": GrpcBoundaryType.PEC,
         }
         if isinstance(value, str):
-            new_boundary_type = mapping.get(value.lower())
+            key = value.lower()
         else:
-            new_boundary_type = mapping.get(value.name.lower())
+            key = value.name.lower()
+        new_boundary_type = mapping.get(key)
+        if new_boundary_type is None:
+            valid_types = ', '.join(mapping.keys())
+            raise ValueError(f"Invalid boundary type '{value}'. Valid types are: {valid_types}")
         super(PadstackInstanceTerminal, self.__class__).boundary_type.__set__(self, new_boundary_type)
 
     @property
