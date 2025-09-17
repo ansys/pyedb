@@ -35,7 +35,7 @@ class CfgPinGroups:
         layout_pin_groups = self._pedb.siwave.pin_groups
         for pg_name, pg_obj in layout_pin_groups.items():
             pins = list(pg_obj.pins.keys())
-            if len(list(pg_obj.pins.values())) == 0:  # pragma: no cover
+            if len(pins) == 0:  # pragma: no cover
                 continue
             refdes = list(pg_obj.pins.values())[0].component.name
             cfg_pg = CfgPinGroup(
