@@ -217,10 +217,9 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
         ]
         commands.append(command)
         commands.append(["rm", "-r", vlc_file_name + ".aedb"])
-        my_env = os.environ.copy()
         for command in commands:
             try:
-                subprocess.run(command, env=my_env, check=True)  # nosec
+                subprocess.run(command, check=True)  # nosec
             except subprocess.CalledProcessError as e:  # nosec
                 raise RuntimeError("An error occurred while converting a technology file to edb control file") from e
         if os.path.exists(control_file):
