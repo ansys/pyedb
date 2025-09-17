@@ -57,6 +57,10 @@ def _retrieve_file(url, filename, directory, destination=None, local_paths=[]): 
             See the :ref:`security guide<ref_security_consideration>` for details.
 
     """
+    # Check that provided url is pointing to pyaedt-example repo
+    if not "https://github.com/ansys/example-data" in url:
+        raise ValueError(f"Attempting to download file(s) from url {url} not pointing the to example-data repo.")
+
     # First check if file has already been downloaded
     if not destination:
         destination = EXAMPLES_PATH
@@ -72,7 +76,7 @@ def _retrieve_file(url, filename, directory, destination=None, local_paths=[]): 
         os.makedirs(destination_dir)
     # Perform download
     if is_linux:
-        command = "wget {} -O {}".format(url, local_path)
+        command = ["wget", url, "-O", local_path]
         try:
             subprocess.run(command, check=True)  # nosec
         except subprocess.CalledProcessError as e:  # nosec
