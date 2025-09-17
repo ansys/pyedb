@@ -808,16 +808,16 @@ class Edb(EdbInit):
         self._nets = None
         aedb_name = os.path.splitext(os.path.basename(input_file))[0] + ".aedb"
         if anstranslator_full_path and os.path.exists(anstranslator_full_path):
-            command = anstranslator_full_path
+            executable_path = anstranslator_full_path
         else:
-            command = os.path.join(self.base_path, "anstranslator")
+            executable_path = os.path.join(self.base_path, "anstranslator")
             if is_windows:
-                command += ".exe"
+                executable_path += ".exe"
 
         if not working_dir:
             working_dir = os.path.dirname(input_file)
         cmd_translator = [
-            command,
+            executable_path,
             input_file,
             os.path.join(working_dir, aedb_name),
             "-l={}".format(os.path.join(working_dir, "Translator.log")),
@@ -3945,14 +3945,14 @@ class Edb(EdbInit):
         if not results:
             results = self.edbpath[:-5] + "_compare_results"
             os.mkdir(results)
-        command = os.path.join(self.base_path, "EDBDiff.exe")
+        executable_path = os.path.join(self.base_path, "EDBDiff.exe")
         if is_linux:
             mono_path = os.path.join(self.base_path, "common/mono/Linux64/bin/mono")
-            cmd_input = [mono_path, command, input_file, self.edbpath, results]
+            command = [mono_path, executable_path, input_file, self.edbpath, results]
         else:
-            cmd_input = [command, input_file, self.edbpath, results]
+            command = [executable_path, input_file, self.edbpath, results]
         try:
-            subprocess.run(cmd_input, check=True)  # nosec
+            subprocess.run(command, check=True)  # nosec
         except subprocess.CalledProcessError as e:  # nosec
             raise RuntimeError(
                 "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
