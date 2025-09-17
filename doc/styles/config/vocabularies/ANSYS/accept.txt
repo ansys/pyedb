@@ -15,7 +15,6 @@ DC
 docstring
 [Dd]ocstrings
 [Ee][Dd][Bb]
-[Pp]yedb
 untrusted
 EDT
 [gG][dD][sS]
