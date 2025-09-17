@@ -2661,7 +2661,7 @@ class SourceExcitation:
             for __pin in pins_name:
                 if __pin in pins:
                     pin = pins[__pin]
-                    term_name = f"{pin.component.name}_{pin.net.name}_{pin.component}"
+                    term_name = f"{pin.component.name}_{pin.net.name}_{pin.component.name}"
                     start_layer, stop_layer = pin.get_layer_range()
                     if start_layer:
                         positive_terminal = PadstackInstanceTerminal.create(
