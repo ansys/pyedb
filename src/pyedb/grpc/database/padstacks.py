@@ -25,6 +25,7 @@ This module contains the `EdbPadstacks` class.
 """
 
 from collections import defaultdict
+from functools import lru_cache
 import math
 from typing import Any, Dict, List, Optional, Tuple, Union
 import warnings
@@ -47,6 +48,29 @@ from pyedb.grpc.database.definition.padstack_def import PadstackDef
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.utility.value import Value
 from pyedb.modeler.geometry_operators import GeometryOperators
+
+GEOMETRY_MAP = {
+    0: GrpcPadGeometryType.PADGEOMTYPE_NO_GEOMETRY,
+    1: GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
+    2: GrpcPadGeometryType.PADGEOMTYPE_SQUARE,
+    3: GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE,
+    4: GrpcPadGeometryType.PADGEOMTYPE_OVAL,
+    5: GrpcPadGeometryType.PADGEOMTYPE_BULLET,
+    6: GrpcPadGeometryType.PADGEOMTYPE_NSIDED_POLYGON,
+    7: GrpcPadGeometryType.PADGEOMTYPE_POLYGON,
+    8: GrpcPadGeometryType.PADGEOMTYPE_ROUND45,
+    9: GrpcPadGeometryType.PADGEOMTYPE_ROUND90,
+    10: GrpcPadGeometryType.PADGEOMTYPE_SQUARE45,
+    11: GrpcPadGeometryType.PADGEOMTYPE_SQUARE90,
+}
+
+PAD_TYPE_MAP = {
+    0: GrpcPadType.REGULAR_PAD,
+    1: GrpcPadType.ANTI_PAD,
+    2: GrpcPadType.THERMAL_PAD,
+    3: GrpcPadType.HOLE,
+    4: GrpcPadType.UNKNOWN_GEOM_TYPE,
+}
 
 
 class Padstacks(object):
@@ -87,6 +111,15 @@ class Padstacks(object):
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
         self.__definitions: Dict[str, Any] = {}
+        self._instances = None
+        self._instances_by_name = {}
+        self._instances_by_net = {}
+
+    def clear_instances_cache(self):
+        """Clear the cached padstack instances."""
+        self._instances = None
+        self._instances_by_name = {}
+        self._instances_by_net = {}
 
     @property
     def _active_layout(self) -> Any:
@@ -113,7 +146,8 @@ class Padstacks(object):
         """ """
         return self._pedb.stackup.layers
 
-    def int_to_pad_type(self, val=0) -> GrpcPadType:
+    @staticmethod
+    def int_to_pad_type(val=0) -> GrpcPadType:
         """Convert an integer to an EDB.PadGeometryType.
 
         Parameters
@@ -131,20 +165,10 @@ class Padstacks(object):
         >>> pad_type = edb_padstacks.int_to_pad_type(1)  # Returns ANTI_PAD
         """
 
-        if val == 0:
-            return GrpcPadType.REGULAR_PAD
-        elif val == 1:
-            return GrpcPadType.ANTI_PAD
-        elif val == 2:
-            return GrpcPadType.THERMAL_PAD
-        elif val == 3:
-            return GrpcPadType.HOLE
-        elif val == 4:
-            return GrpcPadType.UNKNOWN_GEOM_TYPE
-        else:
-            return val
+        return PAD_TYPE_MAP.get(val, val)
 
-    def int_to_geometry_type(self, val: int = 0) -> GrpcPadGeometryType:
+    @staticmethod
+    def int_to_geometry_type(val: int = 0) -> GrpcPadGeometryType:
         """Convert an integer to an EDB.PadGeometryType.
 
         Parameters
@@ -161,32 +185,7 @@ class Padstacks(object):
         >>> geom_type = edb_padstacks.int_to_geometry_type(1)  # Returns CIRCLE
         >>> geom_type = edb_padstacks.int_to_geometry_type(2)  # Returns SQUARE
         """
-        if val == 0:
-            return GrpcPadGeometryType.PADGEOMTYPE_NO_GEOMETRY
-        elif val == 1:
-            return GrpcPadGeometryType.PADGEOMTYPE_CIRCLE
-        elif val == 2:
-            return GrpcPadGeometryType.PADGEOMTYPE_SQUARE
-        elif val == 3:
-            return GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE
-        elif val == 4:
-            return GrpcPadGeometryType.PADGEOMTYPE_OVAL
-        elif val == 5:
-            return GrpcPadGeometryType.PADGEOMTYPE_BULLET
-        elif val == 6:
-            return GrpcPadGeometryType.PADGEOMTYPE_NSIDED_POLYGON
-        elif val == 7:
-            return GrpcPadGeometryType.PADGEOMTYPE_POLYGON
-        elif val == 8:
-            return GrpcPadGeometryType.PADGEOMTYPE_ROUND45
-        elif val == 9:
-            return GrpcPadGeometryType.PADGEOMTYPE_ROUND90
-        elif val == 10:
-            return GrpcPadGeometryType.PADGEOMTYPE_SQUARE45
-        elif val == 11:
-            return GrpcPadGeometryType.PADGEOMTYPE_SQUARE90
-        else:
-            return val
+        return GEOMETRY_MAP.get(val, val)
 
     @property
     def definitions(self) -> Dict[str, PadstackDef]:
@@ -225,7 +224,17 @@ class Padstacks(object):
         >>> for id, instance in all_instances.items():
         ...     print(f"Instance {id}: {instance.name}")
         """
-        return self._pedb.layout.padstack_instances
+        if self._instances is None:
+            self._instances = self._pedb.layout.padstack_instances
+        return self._instances
+
+    @property
+    def instances_by_net(self) -> Dict[Any, PadstackInstance]:
+        if not self._instances_by_net:
+            for edb_padstack_instance in self._instances.values():
+                if edb_padstack_instance.net_name:
+                    self._instances_by_net.setdefault(edb_padstack_instance.net_name, []).append(edb_padstack_instance)
+        return self._instances_by_net
 
     @property
     def instances_by_name(self) -> Dict[str, PadstackInstance]:
@@ -242,11 +251,11 @@ class Padstacks(object):
         >>> for name, instance in named_instances.items():
         ...     print(f"Instance named {name}")
         """
-        padstack_instances = {}
-        for _, edb_padstack_instance in self.instances.items():
-            if edb_padstack_instance.aedt_name:
-                padstack_instances[edb_padstack_instance.aedt_name] = edb_padstack_instance
-        return padstack_instances
+        if not self._instances_by_name:
+            for _, edb_padstack_instance in self.instances.items():
+                if edb_padstack_instance.aedt_name:
+                    self._instances_by_name[edb_padstack_instance.aedt_name] = edb_padstack_instance
+        return self._instances_by_name
 
     def find_instance_by_id(self, value: int) -> Optional[PadstackInstance]:
         """Find a padstack instance by database ID.
@@ -471,6 +480,7 @@ class Padstacks(object):
             if p.net_name in net_names:
                 if not p.delete():  # pragma: no cover
                     return False
+        self.clear_instances_cache()
         return True
 
     def set_solderball(self, padstackInst, sballLayer_name, isTopPlaced=True, ballDiam=100e-6):
@@ -1133,6 +1143,7 @@ class Padstacks(object):
                 layer_map=None,
             )
             padstack_instance.is_layout_pin = is_pin
+            self.clear_instances_cache()
             return PadstackInstance(self._pedb, padstack_instance)
         else:
             raise RuntimeError("Place padstack failed")
@@ -1505,7 +1516,7 @@ class Padstacks(object):
         minimum_via_number: int = 6,
         selected_angles: Optional[List[float]] = None,
         padstack_instances_id: Optional[List[int]] = None,
-    ) -> None:
+    ) -> List[str]:
         """Replace padstack instances along lines into a single polygon.
 
         Detect all pad-stack instances that are placed along lines and replace them by a single polygon based one
@@ -1594,66 +1605,13 @@ class Padstacks(object):
                 inst.delete()
         return instances_created
 
-    def reduce_via_in_bounding_box(self, bounding_box, x_samples, y_samples, nets=None):
-        """Reduces the number of vias intersecting bounding box and nets by x and y samples.
-
-        Parameters
-        ----------
-        bounding_box : tuple or list.
-            bounding box, [x1, y1, x2, y2]
-        x_samples : int
-        y_samples : int
-        nets : str or list, optional
-            net name or list of nets name applying filtering on padstack instances selection. If ``None`` is provided
-            all instances are included in the index. Default value is ``None``.
-
-        Returns
-        -------
-        bool
-            ``True`` when succeeded ``False`` when failed.
-        """
-
-        padstacks_inbox = self.get_padstack_instances_intersecting_bounding_box(bounding_box, nets)
-        if not padstacks_inbox:
-            self._logger.info("no padstack in bounding box")
-            return False
-        else:
-            if len(padstacks_inbox) <= (x_samples * y_samples):
-                self._logger.info(f"more samples {x_samples * y_samples} than existing {len(padstacks_inbox)}")
-                return False
-            else:
-                # extract ids and positions
-                vias = {item: self.instances[item].position for item in padstacks_inbox}
-                ids, positions = zip(*vias.items())
-                pt_x, pt_y = zip(*positions)
-
-                # meshgrid
-                _x_min, _x_max = min(pt_x), max(pt_x)
-                _y_min, _y_max = min(pt_y), max(pt_y)
-
-                x_grid, y_grid = np.meshgrid(
-                    np.linspace(_x_min, _x_max, x_samples), np.linspace(_y_min, _y_max, y_samples)
-                )
-
-                # mapping to meshgrid
-                to_keep = {
-                    ids[np.argmin(np.square(_x - pt_x) + np.square(_y - pt_y))]
-                    for _x, _y in zip(x_grid.ravel(), y_grid.ravel())
-                }
-
-                for item in padstacks_inbox:
-                    if item not in to_keep:
-                        self.instances[item].delete()
-
-                return True
-
     def merge_via(
         self,
         contour_boxes: List[List[float]],
         net_filter: Optional[Union[str, List[str]]] = None,
         start_layer: Optional[str] = None,
         stop_layer: Optional[str] = None,
-    ) -> bool:
+    ) -> List[str]:
         """Evaluate pad-stack instances included on the provided point list and replace all by single instance.
 
         Parameters
@@ -1717,6 +1675,7 @@ class Padstacks(object):
             )
             merged_via_ids.append(merged_instance.edb_uid)
             [self.instances[inst].delete() for inst in instances]
+        self.clear_instances_cache()
         return merged_via_ids
 
     def reduce_via_in_bounding_box(
@@ -1772,6 +1731,7 @@ class Padstacks(object):
                 for item in padstacks_inbox:
                     if item not in to_keep:
                         all_instances[item].delete()
+                self.clear_instances_cache()
                 return True
 
     @staticmethod
@@ -1927,5 +1887,5 @@ class Padstacks(object):
             to_delete = set(padstacks) - to_keep
             for _id in to_delete:
                 all_instances[_id].delete()
-
+        self.clear_instances_cache()
         return list(to_keep), grid
