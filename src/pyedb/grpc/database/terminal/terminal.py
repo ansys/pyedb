@@ -38,6 +38,16 @@ from ansys.edb.core.terminal.terminal import (
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
+mapping_boundary_type = {
+    "port": GrpcBoundaryType.PORT,
+    "dc_terminal": GrpcBoundaryType.DC_TERMINAL,
+    "voltage_probe": GrpcBoundaryType.VOLTAGE_PROBE,
+    "voltage_source": GrpcBoundaryType.VOLTAGE_SOURCE,
+    "current_source": GrpcBoundaryType.CURRENT_SOURCE,
+    "rlc": GrpcBoundaryType.RLC,
+    "pec": GrpcBoundaryType.PEC,
+}
+
 
 class Terminal(GrpcTerminal):
     def __init__(self, pedb, edb_object):
@@ -202,6 +212,10 @@ class Terminal(GrpcTerminal):
 
     @boundary_type.setter
     def boundary_type(self, value):
+        if isinstance(value, str):
+            value = mapping_boundary_type.get(value.lower(), None)
+        if not isinstance(value, GrpcBoundaryType):
+            raise ValueError("Value must be a string or BoundaryType enum.")
         super(Terminal, self.__class__).boundary_type.__set__(self, self._boundary_type_mapping[value])
 
     @property
