@@ -8,14 +8,50 @@ from __future__ import annotations
 import json
 import math
 import re
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Optional
 
-from knowledge import KnowledgeBase
+if TYPE_CHECKING:
+    from pyedb.grpc.database.components import Component
+
+from pyedb.workflows.ai_assistant.knowledge import KnowledgeBase
 
 
-# ---------------------------------------------------------------------------
-# 2.  Drop-in replacement class
-# ---------------------------------------------------------------------------
+def _get_digit_count(number: float) -> int:
+    frac_part = str(float(abs(number))).split(".")[1]
+    return len(frac_part.rstrip("0"))
+
+
+def get_component_nice_value(edb_component) -> str:
+    component_type = edb_component.type.lower()
+    if component_type in ["capacitor", "inductor", "resistor"]:
+        mapping_unit = {"capacitor": "F", "inductor": "H", "resistor": "Ohm"}
+        val = edb_component.value
+        if val / 1e-12 < 100:
+            unit = f"p{mapping_unit[component_type]}"
+            _val = round(val / 1e-12, 6)
+            return f"{_val:.{_get_digit_count(_val)}f}{unit}"
+        elif val / 1e-9 < 100:
+            unit = f"n{mapping_unit[component_type]}"
+            _val = round(val / 1e-9, 6)
+            return f"{_val:.{_get_digit_count(_val)}f}{unit}"
+        elif val / 1e-6 < 100:
+            unit = f"u{mapping_unit[component_type]}"
+            _val = round(val / 1e-6, 6)
+            return f"{_val:.{_get_digit_count(_val)}f}{unit}"
+        elif val / 1e-3 < 100:
+            unit = f"m{mapping_unit[component_type]}"
+            _val = round(val / 1e-3, 6)
+            return f"{_val:.{_get_digit_count(_val)}f}{unit}"
+        elif val >= 1000:
+            unit = f"k{mapping_unit[component_type]}"
+            _val = round(val / 1e3, 6)
+            return f"{_val:.{_get_digit_count(_val)}f}{unit}"
+        else:
+            _val = round(val, 6)
+            unit = mapping_unit[component_type]
+            return f"{_val:.{_get_digit_count(_val)}f}{unit}"
+
+
 class AIKnowledgeBase:
     """
     The brain of the AI assistant – now powered by dataclasses.
@@ -66,8 +102,7 @@ class AIKnowledgeBase:
 
     def get_component_function(
         self,
-        comp_type: str,
-        comp_value: str,
+        comp: Component,
         package: str = "",
         voltage: str = "",
         tolerance: str = "",
@@ -76,8 +111,8 @@ class AIKnowledgeBase:
         """
         Determine component function (fuzzy + legacy fallback).
         """
-        comp_type = comp_type.lower()
-        comp_value = (comp_value or "").strip()
+        comp_type = comp.type.lower()
+        comp_value = get_component_nice_value(comp)
 
         # 1.  fuzzy match using dataclass rules
         if comp_type in {"capacitor", "resistor", "inductor", "ferrite_bead"}:
@@ -91,10 +126,14 @@ class AIKnowledgeBase:
                         func_name,
                         rule.reason,
                     )
-                    return func_name
-
-        # 2.  legacy static table
-        return self._legacy_get_comp_func(comp_type, comp_value)
+                    component_class = rules[func_name]
+                    component_class.part_name = comp.component_def
+                    component_class.ref_des = comp.refdes
+                    component_class.value = comp.value
+                    return component_class
+                else:
+                    # 2.  legacy static table
+                    return self._legacy_get_comp_func(comp_type, comp_value)
 
     def get_design_rule(self, rule_name: str, default=None):
         """
@@ -129,13 +168,11 @@ class AIKnowledgeBase:
 
         self.component_rules = {
             "capacitor": {
-                "0.1uF": "high_freq_decoupling",
-                "100nF": "high_freq_decoupling",
-                "10uF": "bulk_decoupling",
-                "22uF": "bulk_decoupling",
-                "1uF": "general_decoupling",
+                100e-9: "high_freq_decoupling",
+                22e-6: "bulk_decoupling",
+                1e-6: "general_decoupling",
             },
-            "resistor": {"49.9": "termination", "50": "termination", "0": "zero_ohm", "100": "pull_up_down"},
+            "resistor": {49.9: "termination", 50: "termination", 0: "zero_ohm", 100: "pull_up_down"},
             "ic": {"default": "digital_ic"},
         }
 
@@ -163,27 +200,30 @@ class AIKnowledgeBase:
     # ------------------------------------------------------------------
     @staticmethod
     def _fuzzy_match(val, pkg, v, tol, dielec, rule) -> bool:
-        if (vrx := getattr(rule, "value_regex", None)) and not re.match(vrx, val, flags=re.I):
+        vrx = getattr(rule, "value_regex", None)
+        if vrx is not None:
+            vrx = vrx.replace(r"\\", "\\")
+        if vrx and not re.match(vrx, val, flags=re.I):
             return False
 
-        def _float_safe(text, default=0.0):
-            try:
-                return float(re.search(r"(\d+\.?\d*)", text or "").group(1))
-            except Exception:
-                return default
+        # def _float_safe(text, default=0.0):
+        #     try:
+        #         return float(re.search(r"(\d+\.?\d*)", text or "").group(1))
+        #     except Exception:
+        #         return default
 
-        if (pmax := getattr(rule, "package_max_mm", math.inf)) < math.inf:
-            if _float_safe(pkg, 999) > pmax:
-                return False
-        if (vmin := getattr(rule, "voltage_min_V", 0)) > 0:
-            if _float_safe(v, 999) < vmin:
-                return False
-        if (tmax := getattr(rule, "tolerance_max_pct", math.inf)) < math.inf:
-            if _float_safe(tol, 999) > tmax:
-                return False
-        if dlist := getattr(rule, "dielectric", []):
-            if dielec.upper() not in (d.upper() for d in dlist):
-                return False
+        # if (pmax := getattr(rule, "package_max_mm", math.inf)) < math.inf:
+        #     if _float_safe(pkg, 999) > pmax:
+        #         return False
+        # if (vmin := getattr(rule, "voltage_min_V", 0)) > 0:
+        #     if _float_safe(v, 999) < vmin:
+        #         return False
+        # if (tmax := getattr(rule, "tolerance_max_pct", math.inf)) < math.inf:
+        #     if _float_safe(tol, 999) > tmax:
+        #         return False
+        # if dlist := getattr(rule, "dielectric", []):
+        #     if dielec.upper() not in (d.upper() for d in dlist):
+        #         return False
         return True
 
     # ------------------------------------------------------------------

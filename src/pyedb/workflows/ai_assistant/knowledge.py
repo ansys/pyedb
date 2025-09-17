@@ -163,42 +163,60 @@ class Capacitor:
 class Resistor:
     @dataclass
     class PrecisionTermination:
-        value_regex: str = r"^(49\.9|50|60|75|100)(\.0)?(R|Ω)$"
+        value_regex: str = r"^(49\.9|50|60|75|100)(\.0)?(R|Ω|Ohm)$"
         tolerance_max_pct: int = 1
         package_max_mm: float = 2.0
         reason: str = "1 % 49.9-100 Ω"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
 
     @dataclass
     class SeriesTermination:
-        value_regex: str = r"^(22|33|47|68)(\.0)?(R|Ω)$"
+        value_regex: str = r"^(22|33|47|68)(\.0)?(R|Ω|Ohm)$"
         tolerance_max_pct: int = 5
         package_max_mm: float = 1.6
         reason: str = "22-68 Ω 5 %"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
 
     @dataclass
     class PullUpDown:
-        value_regex: str = r"^(1|4\.7|10|47|100)k(Ω|R)?$"
+        value_regex: str = r"^(1|4\.7|10|47|100)k(Ω|R|Ohm)?$"
         tolerance_max_pct: int = 10
         reason: str = "1 k-100 k pull"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
 
     @dataclass
     class CurrentSense:
-        value_regex: str = r"^(0\.01|0\.02|0\.05|0\.1|0\.2|0\.5)(R|Ω)$"
+        value_regex: str = r"^(0\.01|0\.02|0\.05|0\.1|0\.2|0\.5)(R|Ω|Ohm)$"
         power_min_W: float = 0.25
         tolerance_max_pct: int = 1
         reason: str = "<1 Ω 1 % sense"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
 
     @dataclass
     class ZeroOhm:
-        value_regex: str = r"^(0|0R|0Ω|0\.0R)$"
+        value_regex: str = r"^(0|0R|0Ω|0Ohm|0\.0R)$"
         reason: str = "Zero-ohm link"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
 
     @dataclass
     class RfMatch:
-        value_regex: str = r"^(0|1|2\.2|4\.7|10|22|33|47|68|100)(\.0)?(R|Ω)$"
+        value_regex: str = r"^(0|1|2\.2|4\.7|10|22|33|47|68|100)(\.0)?(R|Ω|Ohm)$"
         tolerance_max_pct: int = 1
         package_max_mm: float = 1.0
         reason: str = "≤100 Ω 1 % RF"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
 
     precision_termination: PrecisionTermination = field(default_factory=PrecisionTermination)
     series_termination: SeriesTermination = field(default_factory=SeriesTermination)
