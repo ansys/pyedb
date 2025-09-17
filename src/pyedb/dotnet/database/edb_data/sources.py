@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from typing import List, Tuple, Union
 import warnings
-from typing import Union, Tuple, List
 
 from pyedb.generic.constants import NodeType, SourceType
 from pyedb.generic.general_methods import generate_unique_name
