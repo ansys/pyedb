@@ -116,6 +116,10 @@ class Capacitor:
         tolerance_max_pct: int = 10
         dielectric: List[str] = field(default_factory=lambda: ["C0G", "NP0", "X7R"])
         reason: str = "<=1 nF, C0G/X7R, ≤0402"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class RfDcBlock:
@@ -123,6 +127,10 @@ class Capacitor:
         package_max_mm: float = 2.0
         dielectric: List[str] = field(default_factory=lambda: ["C0G", "NP0"])
         reason: str = "1-47 nF, RF grade"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class BulkDecoupling:
@@ -130,12 +138,20 @@ class Capacitor:
         package_min_mm: float = 1.6
         voltage_min_V: float = 6.3
         reason: str = ">=4.7 µF, ≥6.3 V"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class PackageDecoupling:
         value_regex: str = r"^(0\.1|0\.22|0\.47|1)uF$"
         package_max_mm: float = 1.0
         reason: str = "0402/0201 100 nF-1 µF"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class EsdShunt:
@@ -143,6 +159,10 @@ class Capacitor:
         package_max_mm: float = 1.6
         dielectric: List[str] = field(default_factory=lambda: ["X7R", "X5R"])
         reason: str = "15-100 nF close to connector"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class CrystalLoad:
@@ -150,6 +170,10 @@ class Capacitor:
         tolerance_max_pct: int = 5
         dielectric: List[str] = field(default_factory=lambda: ["C0G", "NP0"])
         reason: str = "5 % C0G crystal load"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     high_freq_decoupling: HighFreqDecoupling = field(default_factory=HighFreqDecoupling)
     rf_dc_block: RfDcBlock = field(default_factory=RfDcBlock)
@@ -170,6 +194,7 @@ class Resistor:
         part_name: str = ""
         ref_des: str = ""
         value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class SeriesTermination:
@@ -180,6 +205,7 @@ class Resistor:
         part_name: str = ""
         ref_des: str = ""
         value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class PullUpDown:
@@ -189,6 +215,7 @@ class Resistor:
         part_name: str = ""
         ref_des: str = ""
         value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class CurrentSense:
@@ -199,6 +226,7 @@ class Resistor:
         part_name: str = ""
         ref_des: str = ""
         value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class ZeroOhm:
@@ -207,6 +235,7 @@ class Resistor:
         part_name: str = ""
         ref_des: str = ""
         value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class RfMatch:
@@ -217,6 +246,7 @@ class Resistor:
         part_name: str = ""
         ref_des: str = ""
         value: float = 0.0
+        confidence: float = 0.0
 
     precision_termination: PrecisionTermination = field(default_factory=PrecisionTermination)
     series_termination: SeriesTermination = field(default_factory=SeriesTermination)
@@ -233,24 +263,40 @@ class Inductor:
         value_regex: str = r"^(100nH|1uH|2\.2uH|4\.7uH|10uH)$"
         current_min_A: float = 0.1
         reason: str = "100 nH-10 µH EMI"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class RfChock:
         value_regex: str = r"^(10|22|47|68|100)nH$"
         tolerance_max_pct: int = 10
         reason: str = "10-100 nH RF"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class PowerFilter:
         value_regex: str = r"^(10|22|47|100)uH$"
         current_min_A: float = 0.5
         reason: str = "≥10 µH power"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class VrmOutput:
         value_regex: str = r"^(0\.47|1|2\.2|4\.7)uH$"
         current_min_A: float = 1
         reason: str = "0.47-4.7 µH VRM"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     emi_chock: EmiChock = field(default_factory=EmiChock)
     rf_chock: RfChock = field(default_factory=RfChock)
@@ -265,12 +311,20 @@ class FerriteBead:
         impedance_regex: str = r"^(120|220|470|600|1000)@100MHz$"
         current_min_A: float = 0.1
         reason: str = "120-1 kΩ @100 MHz"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class HighFreqBlock:
         impedance_regex: str = r"^(2200|5000)@100MHz$"
         current_min_A: float = 0.05
         reason: str = "≥2 kΩ @100 MHz"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     emi_suppression: EmiSuppression = field(default_factory=EmiSuppression)
     high_freq_block: HighFreqBlock = field(default_factory=HighFreqBlock)
@@ -282,16 +336,28 @@ class CommonModeChoke:
     class UsbFilter:
         impedance_regex: str = r"^90@100MHz$"
         reason: str = "USB 90 Ω CM choke"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class LanFilter:
         impedance_regex: str = r"^2200@100MHz$"
         reason: str = "LAN 2.2 kΩ CM choke"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class HdmiFilter:
         impedance_regex: str = r"^1000@100MHz$"
         reason: str = "HDMI 1 kΩ CM choke"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     usb_filter: UsbFilter = field(default_factory=UsbFilter)
     lan_filter: LanFilter = field(default_factory=LanFilter)
@@ -306,12 +372,20 @@ class EsdDiode:
         capacitance_max_pF: float = 0.5
         package_max_mm: float = 1.6
         reason: str = "≤5 V, ≤0.5 pF, ≤0402"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     @dataclass
     class PowerEsd:
         voltage_min_V: int = 12
         power_min_W: float = 0.2
         reason: str = "≥12 V stand-off"
+        part_name: str = ""
+        ref_des: str = ""
+        value: float = 0.0
+        confidence: float = 0.0
 
     signal_esd: SignalEsd = field(default_factory=SignalEsd)
     power_esd: PowerEsd = field(default_factory=PowerEsd)

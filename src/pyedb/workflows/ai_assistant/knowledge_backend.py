@@ -8,12 +8,12 @@ from __future__ import annotations
 import json
 import math
 import re
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.components import Component
 
-from pyedb.workflows.ai_assistant.knowledge import KnowledgeBase
+from pyedb.workflows.ai_assistant.knowledge import KnowledgeBase, Resistor
 
 
 def _get_digit_count(number: float) -> int:
@@ -130,10 +130,11 @@ class AIKnowledgeBase:
                     component_class.part_name = comp.component_def
                     component_class.ref_des = comp.refdes
                     component_class.value = comp.value
+                    component_class.confidence = 0.8
                     return component_class
                 else:
                     # 2.  legacy static table
-                    return self._legacy_get_comp_func(comp_type, comp_value)
+                    return self._legacy_get_comp_func(comp)
 
     def get_design_rule(self, rule_name: str, default=None):
         """
@@ -190,10 +191,31 @@ class AIKnowledgeBase:
                 return cat
         return None
 
-    def _legacy_get_comp_func(self, comp_type: str, comp_value: str) -> Optional[str]:
-        comp_type = comp_type.lower()
+    def _legacy_get_comp_func(self, comp: Component) -> Union[Resistor.PrecisionTermination, Resistor.PullUpDown, None]:
+        comp_type = comp.type.lower()
         rules = self.component_rules.get(comp_type, {})
-        return rules.get(comp_value, rules.get("default"))
+        if comp_type == "resistor":
+            comp_value = comp.value
+            # Source Octopart, SourcEngine, Z2Data 2023-24
+            # 70 % of all 1 kΩ resistors and above in industry are used for digital I/O housekeeping (pull-up/down)
+            # or visual indication (LED)
+            comp_class = Resistor().PullUpDown()
+            comp_class.confidence = 0.70
+            if comp_value in rules:
+                comp_class = Resistor().PrecisionTermination()
+                comp_class.confidence = 0.8
+            comp_class.part_name = comp.component_def
+            comp_class.ref_des = comp.refdes
+            comp_class.value = comp.value
+            return comp_class
+        elif comp_type == "inductor":
+            pass
+        elif comp_type == "capacitor":
+            pass
+        elif comp_type == "ic":
+            pass
+        else:
+            return None
 
     # ------------------------------------------------------------------
     #  private – fuzzy matcher
@@ -205,25 +227,6 @@ class AIKnowledgeBase:
             vrx = vrx.replace(r"\\", "\\")
         if vrx and not re.match(vrx, val, flags=re.I):
             return False
-
-        # def _float_safe(text, default=0.0):
-        #     try:
-        #         return float(re.search(r"(\d+\.?\d*)", text or "").group(1))
-        #     except Exception:
-        #         return default
-
-        # if (pmax := getattr(rule, "package_max_mm", math.inf)) < math.inf:
-        #     if _float_safe(pkg, 999) > pmax:
-        #         return False
-        # if (vmin := getattr(rule, "voltage_min_V", 0)) > 0:
-        #     if _float_safe(v, 999) < vmin:
-        #         return False
-        # if (tmax := getattr(rule, "tolerance_max_pct", math.inf)) < math.inf:
-        #     if _float_safe(tol, 999) > tmax:
-        #         return False
-        # if dlist := getattr(rule, "dielectric", []):
-        #     if dielec.upper() not in (d.upper() for d in dlist):
-        #         return False
         return True
 
     # ------------------------------------------------------------------
