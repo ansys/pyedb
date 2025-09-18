@@ -28,21 +28,21 @@ class RLC_Application:
 # ------------------------------------------------------------------
 RLC_KB: Tuple[RLC_Application, ...] = (
     # ----------------  C A P A C I T O R S  -----------------------
-    RLC_Application("Capacitor", "HF decoupling", 10e-9, 470e-9, 1e6, 5e9, "0402…0805", 0.95),
-    RLC_Application("Capacitor", "LF bulk", 1e-6, 1e-3, 1e3, 1e6, "1206…1210", 0.90),
-    RLC_Application("Capacitor", "timing / RC", 1e-9, 10e-6, 1, 1e6, "0603…1206", 0.85),
-    RLC_Application("Capacitor", "AC coupling", 10e-9, 10e-6, 20, 100e6, "0402…0805", 0.87),
-    RLC_Application("Capacitor", "RF filter", 1e-12, 1e-9, 100e6, 10e9, "0201…0603", 0.90),
+    RLC_Application("capacitor", "HF decoupling", 10e-9, 470e-9, 1e6, 5e9, "0402…0805", 0.95),
+    RLC_Application("capacitor", "LF bulk", 1e-6, 1e-3, 1e3, 1e6, "1206…1210", 0.90),
+    RLC_Application("capacitor", "timing / RC", 1e-9, 10e-6, 1, 1e6, "0603…1206", 0.85),
+    RLC_Application("capacitor", "AC coupling", 10e-9, 10e-6, 20, 100e6, "0402…0805", 0.87),
+    RLC_Application("capacitor", "RF filter", 1e-12, 1e-9, 100e6, 10e9, "0201…0603", 0.90),
     # ----------------  I N D U C T O R S  -------------------------
-    RLC_Application("Inductor", "power filter", 0.47e-6, 100e-6, 1e3, 10e6, "0805…1210", 0.92),
-    RLC_Application("Inductor", "EMI bead", 1e-9, 1e-6, 100e6, 5e9, "0402…0805", 0.90),
-    RLC_Application("Inductor", "RF choke", 1e-9, 100e-9, 100e6, 10e9, "0201…0603", 0.91),
-    RLC_Application("Inductor", "DC-DC storage", 1e-6, 100e-6, 100e3, 10e6, "1210…1812", 0.90),
+    RLC_Application("inductor", "power filter", 0.47e-6, 100e-6, 1e3, 10e6, "0805…1210", 0.92),
+    RLC_Application("inductor", "EMI bead", 1e-9, 1e-6, 100e6, 5e9, "0402…0805", 0.90),
+    RLC_Application("inductor", "RF choke", 1e-9, 100e-9, 100e6, 10e9, "0201…0603", 0.91),
+    RLC_Application("inductor", "DC-DC storage", 1e-6, 100e-6, 100e3, 10e6, "1210…1812", 0.90),
     # ----------------  R E S I S T O R S  -------------------------
-    RLC_Application("Resistor", "termination", 100, 100e3, -1, 100e6, "0402…0805", 0.92),
-    RLC_Application("Resistor", "current-sense", 1e-3, 1, -1, 1e6, "0805…2512", 0.93),
-    RLC_Application("Resistor", "timing / RC", 1e3, 10e6, 1, 1e6, "0603…1206", 0.85),
-    RLC_Application("Resistor", "RF attenuation", 50, 1e3, 100e6, 20e9, "0201…0402", 0.90),
+    RLC_Application("resistor", "termination", 100, 100e3, -1, 100e6, "0402…0805", 0.92),
+    RLC_Application("resistor", "current-sense", 1e-3, 1, -1, 1e6, "0805…2512", 0.93),
+    RLC_Application("resistor", "timing / RC", 1e3, 10e6, 1, 1e6, "0603…1206", 0.85),
+    RLC_Application("resistor", "RF attenuation", 50, 1e3, 100e6, 20e9, "0201…0402", 0.90),
 )
 
 
@@ -164,6 +164,9 @@ class Prediction:
     power_nets: int
     probability: float
     application: str = ""
+    part_name: str = ""
+    refdes: str = ""
+    value: float = 0.0
 
     @property
     def total_nets(self) -> int:
@@ -341,10 +344,11 @@ def classify(
     signal_nets: Optional[int] = None,
     power_nets: Optional[int] = None,
     *,
-    component: str | None = None,
-    value: float | None = None,
+    component_type: Optional[str] = None,  # <-- renamed
+    value: Optional[float] = None,
     freq: float = 0.0,
     package: str = "",
+    refdes: str = "",  # <-- NEW
     tol: int = 0,
     power_tol: int = 0,
 ) -> List[Prediction]:
@@ -421,14 +425,19 @@ def classify(
         >>> preds[0].application
         'HF decoupling'
     """
-    if component and component.lower() in {"capacitor", "inductor", "resistor"}:
+    if component_type and component_type.lower() in {"capacitor", "inductor", "resistor"}:
         if value is None:
             raise ValueError("RLC classification requires *value* (Ohm, H or F)")
-        return classify_rlc(component, value, freq, package)
+        preds = classify_rlc(component_type, value, freq, package)
+        for p in preds:
+            p.part_name = part_name
+            p.refdes = refdes
+            p.value = round(value, 13) if value is not None else 0.0
+        return preds
 
-    # ---------- legacy digital path ----------
+        # ---------- digital branch ----------
     vendor = _extract_vendor(part_name)
-    part_name = part_name.upper()
+    part_name_u = part_name.upper()
     hits: List[Prediction] = []
 
     for rule in KB:
@@ -441,7 +450,7 @@ def classify(
         else:
             if kw_vendor:
                 continue
-        if not re.search(kw_class or rule.keyword, part_name):
+        if not re.search(kw_class or rule.keyword, part_name_u):
             continue
         if signal_nets is not None and abs(rule.signal_nets - signal_nets) > tol:
             continue
@@ -454,11 +463,14 @@ def classify(
                 signal_nets=rule.signal_nets,
                 power_nets=rule.power_nets,
                 probability=rule.probability,
-                application="",  # digital part
+                application="",
+                part_name=part_name,
+                refdes=refdes,
+                value=round(value, 13) if value is not None else 0.0,
             )
         )
 
-    if not hits:
+    if not hits:  # Unknown – keep everything
         hits.append(
             Prediction(
                 part_class="Unknown",
@@ -467,6 +479,9 @@ def classify(
                 power_nets=power_nets or 0,
                 probability=0.0,
                 application="",
+                part_name=part_name,
+                refdes=refdes,
+                value=round(value, 13) if value is not None else 0.0,
             )
         )
     else:
@@ -475,7 +490,7 @@ def classify(
 
 
 def predictions_to_json(
-    predictions: List[Prediction], *, file: Optional[str] = None, indent: Union[None, int, str] = 2
+    predictions: List[Prediction], file: Optional[str] = None, indent: Union[None, int, str] = 2
 ) -> str:
     """
     Serialize a list of `Prediction` objects to a JSON string.
