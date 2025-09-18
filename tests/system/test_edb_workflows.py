@@ -39,7 +39,7 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         ai = AIKnowledgeBase(edbapp)
         component_functions = []
-        for refdes, comp in edbapp.components.capacitors.items():
+        for refdes, comp in edbapp.components.instances.items():
             component_functions.append(ai.get_component_function(comp=comp))
         assert len(component_functions) == 380
         assert len([cap for cap in component_functions if cap.application == "HF decoupling"]) == 296
