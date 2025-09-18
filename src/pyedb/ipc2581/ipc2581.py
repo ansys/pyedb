@@ -89,9 +89,9 @@ class Ipc2581(object):
                             self.from_meter_to_units(pad.parameters_values[0], self.units)
                         )
                         if not primitive_ref in self.content.standard_geometries_dict.standard_circ_dict:
-                            self.content.standard_geometries_dict.standard_circ_dict[
-                                primitive_ref
-                            ] = self.from_meter_to_units(pad.parameters_values[0], self.units)
+                            self.content.standard_geometries_dict.standard_circ_dict[primitive_ref] = (
+                                self.from_meter_to_units(pad.parameters_values[0], self.units)
+                            )
                     elif pad.geometry_type == 2:
                         primitive_ref = "RECT_{}_{}".format(
                             self.from_meter_to_units(pad.parameters_values[0], self.units),
@@ -135,9 +135,9 @@ class Ipc2581(object):
                             self.from_meter_to_units(antipad.parameters_values[0], self.units)
                         )
                         if not primitive_ref in self.content.standard_geometries_dict.standard_circ_dict:
-                            self.content.standard_geometries_dict.standard_circ_dict[
-                                primitive_ref
-                            ] = self.from_meter_to_units(antipad.parameters_values[0], self.units)
+                            self.content.standard_geometries_dict.standard_circ_dict[primitive_ref] = (
+                                self.from_meter_to_units(antipad.parameters_values[0], self.units)
+                            )
                     elif antipad.geometry_type == 2:
                         primitive_ref = "RECT_{}_{}".format(
                             self.from_meter_to_units(antipad.parameters_values[0], self.units),
@@ -336,7 +336,8 @@ class Ipc2581(object):
         padstack_defs = {i: k for i, k in self._pedb.padstacks.definitions.items()}
         polys = {i: j for i, j in self._pedb.modeler.primitives_by_layer.items()}
         for layer_name, layer in layers.items():
-            self.ecad.cad_data.cad_data_step.add_layer_feature(layer, polys[layer_name])
+            if layer_name in polys:
+                self.ecad.cad_data.cad_data_step.add_layer_feature(layer, polys[layer_name])
         self.ecad.cad_data.cad_data_step.add_padstack_instances(padstack_instances, padstack_defs)
 
     def add_drills(self):

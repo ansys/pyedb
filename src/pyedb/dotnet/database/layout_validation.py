@@ -155,7 +155,7 @@ class LayoutValidation:
         Examples
         --------
 
-        >>> renamed_nets = edb.layout_validation.disjoint_nets(["GND","Net2"])
+        >>> renamed_nets = edb.layout_validation.disjoint_nets(["GND", "Net2"])
         """
 
         if not net_list:
@@ -208,8 +208,11 @@ class LayoutValidation:
                             if isinstance(obj_dict[el], Primitive):
                                 if not obj_dict[el].is_void:
                                     sum += obj_dict[el].area()
-                        except:
-                            pass
+                        except Exception as e:
+                            self._pedb.logger.warning(
+                                f"A(n) {type(e).__name__} error occurred while calculating area "
+                                f"for element {elem} - Default value of 0 is used: {str(e)}"
+                            )
                     return sum
 
                 if order_by_area:
