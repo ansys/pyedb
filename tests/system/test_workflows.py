@@ -1,0 +1,91 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+"""Tests related to Edb"""
+
+import os
+
+import pytest
+
+pytestmark = [pytest.mark.system, pytest.mark.grpc]
+
+ON_CI = os.environ.get("CI", "false").lower() == "true"
+
+
+class TestClass:
+    @pytest.fixture(autouse=True)
+    def init(self, local_scratch, target_path, target_path2, target_path4):
+        self.local_scratch = local_scratch
+
+    def test_drc_rules(self):
+        from pyedb.workflows.drc import Rules
+
+        RULES_DICT = {
+            "min_line_width": [{"name": "MW", "value": "3.5mil"}],
+            "min_clearance": [{"name": "CLR", "value": "4mil", "net1": "*", "net2": "*"}],
+            "min_annular_ring": [{"name": "AR", "value": "2mil"}],
+            "diff_pair_length_match": [
+                {"name": "DPMATCH", "tolerance": "5mil", "pairs": [{"positive": "DP_P", "negative": "DP_N"}]}
+            ],
+            "back_drill_stub_length": [{"name": "STUB", "value": "6mil"}],
+            "copper_balance": [{"name": "CB", "max_percent": 15, "layers": ["L3", "L4"]}],
+        }
+        rules = Rules.from_dict(RULES_DICT)
+        assert rules.min_clearance[0].name == "CLR"
+        assert rules.min_clearance[0].value == "4mil"
+        assert rules.min_clearance[0].name == "CLR"
+        assert rules.back_drill_stub_length[0].name == "STUB"
+        assert rules.back_drill_stub_length[0].value == "6mil"
+        assert rules.min_clearance[0].net1 == "*"
+        assert rules.min_clearance[0].net2 == "*"
+        assert rules.diff_pair_length_match[0].name == "DPMATCH"
+        assert rules.diff_pair_length_match[0].tolerance == "5mil"
+        assert rules.diff_pair_length_match[0].pairs[0].positive == "DP_P"
+        assert rules.diff_pair_length_match[0].pairs[0].negative == "DP_N"
+        assert rules.copper_balance[0].name == "CB"
+        assert rules.copper_balance[0].max_percent == 15
+
+    def test_drc_rules_from_file(self, edb_examples):
+        from pyedb.workflows.drc import Drc, Rules
+
+        RULES_DICT = {
+            "min_line_width": [{"name": "MW", "value": "3.5mil"}],
+            "min_clearance": [{"name": "CLR", "value": "4mil", "net1": "*", "net2": "*"}],
+            "min_annular_ring": [{"name": "AR", "value": "2mil"}],
+            "diff_pair_length_match": [
+                {
+                    "name": "DPMATCH",
+                    "tolerance": "5mil",
+                    "pairs": [{"positive": "PCIe_Gen4_TX3_CAP_P", "negative": "PCIe_Gen4_TX3_CAP_N"}],
+                }
+            ],
+            "back_drill_stub_length": [{"name": "STUB", "value": "6mil"}],
+            "copper_balance": [{"name": "CB", "max_percent": 15, "layers": ["L3", "L4"]}],
+        }
+
+        edbapp = edb_examples.get_si_verse()
+        rules = Rules.from_dict(RULES_DICT)
+        drc = Drc(edbapp)
+        drc.check(rules)
+        output_file = os.path.join(self.local_scratch.path, "drc_results.ipc356a")
+        drc.to_ipc356a(file_path=output_file)
+        assert os.path.isfile(output_file)
