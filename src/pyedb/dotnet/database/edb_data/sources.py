@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from typing import List, Tuple, Union
 import warnings
 
 from pyedb.generic.constants import NodeType, SourceType
@@ -279,9 +280,27 @@ class PinGroup(object):
     @property
     def pins(self):
         """Gets the pins belong to this pin group."""
-        from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
+        edb_pin_ids = [edb_pin.GetId() for edb_pin in list(self._edb_object.GetPins())]
+        if len(edb_pin_ids) == 0:
+            return {}
+        else:
+            pins = self._pedb.layout.find_padstack_instances(instance_id=edb_pin_ids)
+            return {i.name: i for i in pins}
 
-        return {i.GetName(): EDBPadstackInstance(i, self._pedb) for i in list(self._edb_object.GetPins())}
+    def remove_pins(self, pins: Union[str, List[str]]):
+        """Remove pins from the pin group.
+
+        Parameters
+        ----------
+        pins : str, list
+            List of padstack instance names.
+
+        """
+        _pins = pins if isinstance(pins, Union[list, Tuple]) else [pins]
+
+        pin_objs = [j for i, j in self.pins.items() if i in _pins]
+        for p in pin_objs:
+            self._edb_object.RemovePin(p._edb_object)
 
     @property
     def node_pins(self):
