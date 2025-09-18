@@ -1,0 +1,3 @@
+[codespell]
+skip = *.png,*.jpg,*.gif,*.svg,./.git/*
+ignore-words = .codespell-ignore
