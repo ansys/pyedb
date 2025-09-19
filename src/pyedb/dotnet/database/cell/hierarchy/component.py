@@ -25,6 +25,8 @@ import re
 from typing import Optional
 import warnings
 
+import numpy as np
+
 from pyedb.dotnet.database.cell.hierarchy.hierarchy_obj import Group
 from pyedb.dotnet.database.cell.hierarchy.model import PinPairModel, SPICEModel
 from pyedb.dotnet.database.cell.hierarchy.netlist_model import NetlistModel
@@ -33,14 +35,6 @@ from pyedb.dotnet.database.cell.hierarchy.s_parameter_model import SparamModel
 from pyedb.dotnet.database.cell.hierarchy.spice_model import SpiceModel
 from pyedb.dotnet.database.definition.package_def import PackageDef
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
-
-try:
-    import numpy as np
-except ImportError:
-    warnings.warn(
-        "The NumPy module is required to run some functionalities of EDB.\n"
-        "Install with \n\npip install numpy\n\nRequires CPython."
-    )
 from pyedb.generic.general_methods import get_filename_without_extension
 
 
