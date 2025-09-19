@@ -1208,10 +1208,10 @@ class TestClass(BaseTestClass):
         exec_path = edbapp.siwave.create_exec_file(add_dc=True)
         assert Path(exec_path).exists()
         executable = "siwave_ng" if is_linux else "siwave_ng.exe"
-        with patch("subprocess.Popen", return_value=mock_process) as mock_popen:
+        with patch("subprocess.run", return_value=mock_process) as mock_run:
             siw_path = edbapp.solve_siwave()
-            popen_args, _ = mock_popen.call_args
-            input_cmd = popen_args[0]
+            run_args, _ = mock_run.call_args
+            input_cmd = run_args[0]
 
         input_cmd_ = [
             str(Path(edbapp.ansys_em_path) / executable),
@@ -1223,10 +1223,10 @@ class TestClass(BaseTestClass):
         assert input_cmd == input_cmd_ if is_linux else " ".join(input_cmd_)
 
         executable = "siwave" if is_linux else "siwave.exe"
-        with patch("subprocess.Popen", return_value=mock_process) as mock_popen:
+        with patch("subprocess.run", return_value=mock_process) as mock_run:
             edbapp.export_siwave_dc_results(siw_path, "SIwaveDCIR1")
-            popen_args, _ = mock_popen.call_args
-            input_cmd = popen_args[0]
+            run_args, _ = mock_run.call_args
+            input_cmd = run_args[0]
 
         input_cmd_ = [
             str(Path(edbapp.ansys_em_path) / executable),

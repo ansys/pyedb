@@ -24,6 +24,7 @@
 
 import os
 import shutil
+import subprocess  # nosec B404
 import tempfile
 import urllib.request
 import zipfile
@@ -48,7 +49,18 @@ def _get_file_url(directory, filename=None):
 
 
 def _retrieve_file(url, filename, directory, destination=None, local_paths=[]):  # pragma: no cover
-    """Download a file from a url"""
+    """Download a file from a url
+
+    .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
+    """
+    # Check that provided url is pointing to pyaedt-example repo
+    if not url.startswith(EXAMPLE_REPO):
+        raise ValueError(f"Attempting to download file(s) from url {url} not pointing the to example-data repo.")
+
     # First check if file has already been downloaded
     if not destination:
         destination = EXAMPLES_PATH
@@ -64,8 +76,11 @@ def _retrieve_file(url, filename, directory, destination=None, local_paths=[]): 
         os.makedirs(destination_dir)
     # Perform download
     if is_linux:
-        command = "wget {} -O {}".format(url, local_path)
-        os.system(command)
+        command = ["wget", url, "-O", local_path]
+        try:
+            subprocess.run(command, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError("An error occurred while downloading wget") from e
     else:
         _, resp = urlretrieve(url, local_path)
     local_paths.append(local_path)

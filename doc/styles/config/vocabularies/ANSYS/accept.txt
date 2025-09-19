@@ -15,6 +15,7 @@ DC
 docstring
 [Dd]ocstrings
 [Ee][Dd][Bb]
+untrusted
 EDT
 [gG][dD][sS]
 HFSS

@@ -10,3 +10,4 @@ This guide explains the core concepts of PyEDB and Ansys EDB to help you build e
    communication_protocols
    getting_started
    common_tasks
+   security_considerations

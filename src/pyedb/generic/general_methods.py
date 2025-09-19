@@ -1146,6 +1146,11 @@ def install_with_pip(package_name, package_path=None, upgrade=False, uninstall=F
     """Install a new package using pip.
     This method is useful for installing a package from the AEDT Console without launching the Python environment.
 
+    .. warning::
+        Do not execute this function with untrusted function argument, environment
+        variables or pyedb global settings.
+        See the :ref:`security guide<ref_security_consideration>` for details.
+
     Parameters
     ----------
     package_name : str
@@ -1158,10 +1163,12 @@ def install_with_pip(package_name, package_path=None, upgrade=False, uninstall=F
         Whether to install the package or uninstall the package.
     """
 
-    import subprocess
+    import subprocess  # nosec B404
 
-    executable = '"{}"'.format(sys.executable) if is_windows else sys.executable
+    if not package_name or not isinstance(package_name, str):
+        raise ValueError("A valid package name must be provided.")
 
+    executable = sys.executable
     commands = []
     if uninstall:
         commands.append([executable, "-m", "pip", "uninstall", "--yes", package_name])
@@ -1175,12 +1182,12 @@ def install_with_pip(package_name, package_path=None, upgrade=False, uninstall=F
             command.append("-U")
 
         commands.append(command)
+
     for command in commands:
-        if is_linux:
-            p = subprocess.Popen(command)
-        else:
-            p = subprocess.Popen(" ".join(command))
-        p.wait()
+        try:
+            subprocess.run(command, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError("An error occurred while installing with pip") from e
 
 
 class Help:  # pragma: no cover
