@@ -27,6 +27,8 @@ import subprocess
 import sys
 from typing import Any, Dict, List, Optional, Union
 
+from defusedxml.ElementTree import parse as defused_parse
+
 from pyedb.generic.general_methods import ET, env_path, env_value, is_linux
 from pyedb.generic.settings import settings
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
@@ -1652,7 +1654,7 @@ class ControlFile:
         bool
             ``True`` if successful, ``False`` otherwise.
         """
-        tree = ET.parse(xml_input)
+        tree = defused_parse(xml_input)
         root = tree.getroot()
         for el in root:
             if el.tag == "Stackup":
