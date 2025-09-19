@@ -25,9 +25,14 @@ This module contains the array building feature from unit cell.
 """
 
 import itertools
+import time
 from typing import Optional, Union
 
+from ansys.edb.core.primitive.padstack_instance import PadstackInstance as GrpcPadstackInstance
+
 from pyedb import Edb
+from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+from pyedb.misc.decorators import execution_timer
 
 
 # ----------------------
@@ -100,6 +105,7 @@ def create_array_from_unit_cell(
 # ------------------------------------------------------------------
 # Implementation (technology-agnostic)
 # ------------------------------------------------------------------
+@execution_timer("create_array_from_unit_cell")
 def __create_array_from_unit_cell_impl(
     edb: Edb,
     adapter: "_BaseAdapter",
@@ -166,23 +172,34 @@ def __create_array_from_unit_cell_impl(
         dx = edb.value(offset_x * i)
         dy = edb.value(offset_y * j)
 
-        # Primitives & voids
-        for prim in primitives:
-            new_poly = adapter.duplicate_primitive(prim, dx, dy, i, j)
-            for void in prim.voids:
-                adapter.duplicate_void(new_poly, void, dx, dy)
-
-        # Paths
-        for path in paths:
-            adapter.duplicate_path(path, dx, dy, i, j)
-
-        # Stand-alone vias
-        for via in (v for v in vias if not v.component):
-            adapter.duplicate_standalone_via(via, dx, dy, i, j)
-
         # Components
+        start = time.time()
+        edb.logger.info(f" Replicating components ({i}, {j})")
         for comp in components:
             adapter.duplicate_component(comp, dx, dy, i, j)
+        edb.logger.info(f"Components done in {time.time() - start:.2f} s")
+
+        # Primitives & voids
+        start = time.time()
+        edb.logger.info(f" Replicating primitives ({i}, {j})")
+        for prim in primitives:
+            if not prim.is_void:
+                adapter.duplicate_primitive(prim, dx, dy, i, j)
+        edb.logger.info(f"Primitives done in {time.time() - start:.2f} s")
+
+        # Paths
+        start = time.time()
+        edb.logger.info(f" Replicating traces ({i}, {j}))")
+        for path in paths:
+            adapter.duplicate_path(path, dx, dy, i, j)
+        edb.logger.info(f"Traces done in {time.time() - start:.2f} s")
+
+        # Stand-alone vias
+        start = time.time()
+        edb.logger.info(f" Replicating vias ({i}, {j})")
+        for via in (v for v in vias if not v.component):
+            adapter.duplicate_standalone_via(via, dx, dy, i, j)
+        edb.logger.info(f"Vias done in {time.time() - start:.2f} s")
 
     edb.logger.info("Array replication finished successfully")
     return True
@@ -196,6 +213,8 @@ class _BaseAdapter:
 
     def __init__(self, edb: Edb):
         self.edb = edb
+        self.layers = edb.stackup.layers
+        self.active_layout = edb.active_layout
 
     # ---- Outline helpers ----
     def is_supported_outline(self, outline) -> bool:
@@ -220,10 +239,6 @@ class _BaseAdapter:
 
     def duplicate_primitive(self, prim, dx, dy, i, j):
         """Return a new primitive translated by (dx, dy)."""
-        raise NotImplementedError
-
-    def duplicate_void(self, new_poly, void, dx, dy):
-        """Add a translated copy of *void* to *new_poly*."""
         raise NotImplementedError
 
     def duplicate_path(self, path, dx, dy, i, j):
@@ -254,14 +269,10 @@ class _GrpcAdapter(_BaseAdapter):
 
     def duplicate_primitive(self, prim, dx, dy, i, j):
         moved_pd = prim.polygon_data.move((dx, dy))
+        voids = [voids.polygon_data.move((dx, dy)) for voids in prim.voids]
         return self.edb.modeler.create_polygon(
-            moved_pd,
-            layer_name=prim.layer.name,
-            net_name=prim.net.name,
+            moved_pd, layer_name=prim.layer.name, net_name=prim.net.name, voids=voids
         )
-
-    def duplicate_void(self, new_poly, void, dx, dy):
-        new_poly.add_void(void.polygon_data.move((dx, dy)))
 
     def duplicate_path(self, path, dx, dy, i, j):
         moved_line = path.cast().center_line.move((dx, dy))
@@ -276,24 +287,25 @@ class _GrpcAdapter(_BaseAdapter):
         )
 
     def duplicate_standalone_via(self, via, dx, dy, i, j):
-        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-
         pos = via.position
+        try:
+            if via.solderball_layer:
+                pass
+        except:
+            pass
         PadstackInstance.create(
-            self.edb.active_layout,
+            self.active_layout,
             net=via.net,
-            name=f"{via.name}_i{i}_j{j}",
-            padstack_def=self.edb.padstacks.definitions[via.padstack_definition],
+            name=f"{via.name}_X{i}_Y{j}",
+            padstack_def=via.definition,
             position_x=pos[0] + dx,
             position_y=pos[1] + dy,
             rotation=0.0,
-            top_layer=self.edb.stackup.layers[via.start_layer],
-            bottom_layer=self.edb.stackup.layers[via.stop_layer],
+            top_layer=self.layers[via.start_layer],
+            bottom_layer=self.layers[via.stop_layer],
         )
 
     def duplicate_component(self, comp, dx, dy, i, j):
-        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-
         new_pins = []
         for pin in comp.pins.values():
             pos = pin.position
@@ -352,14 +364,6 @@ class _DotNetAdapter(_BaseAdapter):
             net_name=prim.net.name,
         )
 
-    def duplicate_void(self, new_poly, void, dx, dy):
-        from pyedb.dotnet.database.geometry.point_data import PointData
-
-        vector = PointData.create_from_xy(self.edb, x=dx, y=dy)
-        void_polygon_data = void.polygon_data
-        void_polygon_data._edb_object.Move(vector._edb_object)
-        new_poly.add_void(void_polygon_data.points)
-
     def duplicate_path(self, path, dx, dy, i, j):
         from pyedb.dotnet.database.geometry.point_data import PointData
 
@@ -396,7 +400,6 @@ class _DotNetAdapter(_BaseAdapter):
                 via_name=f"{pin.aedt_name}_i{i}_j{j}",
             )
             new_pins.append(new_pin)
-
         if new_pins:
             new_comp = self.edb.components.create(
                 pins=new_pins,
