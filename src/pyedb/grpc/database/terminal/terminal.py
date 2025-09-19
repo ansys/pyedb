@@ -250,7 +250,7 @@ class Terminal(GrpcTerminal):
 
     @impedance.setter
     def impedance(self, value):
-        self.impedance = Value(value)
+        super(Terminal, self.__class__).impedance.__set__(self, self._pedb.value(value))
 
     @property
     def reference_object(self) -> any:
