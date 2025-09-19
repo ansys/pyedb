@@ -1,0 +1,6 @@
+pingroups
+=========
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. autoproperty:: Padstacks.pingroups

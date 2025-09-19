@@ -1,0 +1,6 @@
+layout\_size
+============
+
+.. currentmodule:: pyedb.grpc.database.utility.layout_statistics
+
+.. autoproperty:: LayoutStatistics.layout_size

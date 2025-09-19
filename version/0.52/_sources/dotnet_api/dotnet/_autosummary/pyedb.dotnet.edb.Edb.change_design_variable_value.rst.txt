@@ -1,0 +1,6 @@
+change\_design\_variable\_value
+===============================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.change_design_variable_value

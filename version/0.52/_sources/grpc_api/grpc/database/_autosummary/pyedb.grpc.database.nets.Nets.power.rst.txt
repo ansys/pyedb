@@ -1,0 +1,6 @@
+power
+=====
+
+.. currentmodule:: pyedb.grpc.database.nets
+
+.. autoproperty:: Nets.power

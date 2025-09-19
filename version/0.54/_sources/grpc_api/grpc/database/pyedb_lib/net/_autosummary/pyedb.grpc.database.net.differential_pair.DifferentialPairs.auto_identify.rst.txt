@@ -1,0 +1,6 @@
+auto\_identify
+==============
+
+.. currentmodule:: pyedb.grpc.database.net.differential_pair
+
+.. automethod:: DifferentialPairs.auto_identify

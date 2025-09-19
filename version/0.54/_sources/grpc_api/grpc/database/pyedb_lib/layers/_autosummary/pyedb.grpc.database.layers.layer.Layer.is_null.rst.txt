@@ -1,0 +1,6 @@
+is\_null
+========
+
+.. currentmodule:: pyedb.grpc.database.layers.layer
+
+.. autoproperty:: Layer.is_null

@@ -1,0 +1,6 @@
+add\_design\_variable
+=====================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.add_design_variable

@@ -1,0 +1,6 @@
+is\_port
+========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: CircuitPort.is_port

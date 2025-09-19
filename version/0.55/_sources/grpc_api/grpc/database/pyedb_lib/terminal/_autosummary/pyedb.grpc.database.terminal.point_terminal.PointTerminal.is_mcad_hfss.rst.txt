@@ -1,0 +1,6 @@
+is\_mcad\_hfss
+==============
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. autoproperty:: PointTerminal.is_mcad_hfss

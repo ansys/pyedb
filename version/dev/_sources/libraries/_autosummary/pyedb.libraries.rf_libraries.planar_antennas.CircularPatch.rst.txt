@@ -1,0 +1,32 @@
+﻿CircularPatch
+=============
+
+.. currentmodule:: pyedb.libraries.rf_libraries.planar_antennas
+
+.. autoclass:: CircularPatch
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CircularPatch.create
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CircularPatch.estimated_frequency
+      CircularPatch.radius
+   
+   

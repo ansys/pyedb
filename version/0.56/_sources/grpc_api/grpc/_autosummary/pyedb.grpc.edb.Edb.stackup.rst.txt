@@ -1,0 +1,6 @@
+stackup
+=======
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.stackup

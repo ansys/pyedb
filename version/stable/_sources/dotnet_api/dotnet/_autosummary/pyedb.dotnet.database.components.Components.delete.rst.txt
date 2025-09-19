@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.delete

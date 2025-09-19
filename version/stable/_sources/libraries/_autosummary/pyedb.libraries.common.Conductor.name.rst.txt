@@ -1,0 +1,6 @@
+name
+====
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoproperty:: Conductor.name

@@ -1,0 +1,6 @@
+import\_layout\_file
+====================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.import_layout_file

@@ -1,0 +1,6 @@
+set\_product\_property
+======================
+
+.. currentmodule:: pyedb.grpc.database.net.differential_pair
+
+.. automethod:: DifferentialPair.set_product_property

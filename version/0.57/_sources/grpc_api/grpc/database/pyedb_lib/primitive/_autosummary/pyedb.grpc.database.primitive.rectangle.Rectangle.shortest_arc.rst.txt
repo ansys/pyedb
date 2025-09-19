@@ -1,0 +1,6 @@
+shortest\_arc
+=============
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. autoproperty:: Rectangle.shortest_arc

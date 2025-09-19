@@ -1,0 +1,24 @@
+﻿Rlc
+===
+
+.. currentmodule:: pyedb.grpc.database.utility.rlc
+
+.. autoclass:: Rlc
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Rlc.c
+      Rlc.l
+      Rlc.r
+   
+   

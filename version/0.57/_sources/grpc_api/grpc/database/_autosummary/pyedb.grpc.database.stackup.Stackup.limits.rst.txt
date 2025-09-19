@@ -1,0 +1,6 @@
+limits
+======
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: Stackup.limits

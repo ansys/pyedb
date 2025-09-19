@@ -1,0 +1,6 @@
+export\_definition
+==================
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.export_definition
