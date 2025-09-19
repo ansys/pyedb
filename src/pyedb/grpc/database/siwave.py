@@ -710,18 +710,6 @@ class Siwave(object):
         self.create_exec_file(add_dc=True)
         return setup
 
-    def solve_siwave(self, edbpath, analysis_type):
-        """Solve an SIWave setup.
-        Parameters
-        ----------
-        analysis_type: str
-            Type of SIWave analysis to perform. Available types are "SYZ", "DCIR", "CPA", "Crosstalk", "Impedance".
-        edbpath: str
-            Full path to the .aedb folder, siw or siwz file to be solved.
-        siwave_ng: str, optinial
-            Path to the siwave_ng
-        """
-
     def create_pin_group_terminal(self, source):
         """Create a pin group terminal.
 

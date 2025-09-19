@@ -23,6 +23,18 @@ class SiwaveSolve(object):
         full_path = Path(self._pedb.ansys_em_path) / executable
         return str(full_path)
 
+    def solve_siwave(self, edbpath, analysis_type):
+        """Solve an SIWave setup.
+        Parameters
+        ----------
+        analysis_type: str
+            Type of SIWave analysis to perform. Available types are "SYZ", "DCIR", "CPA", "Crosstalk", "Impedance".
+        edbpath: str
+            Full path to the .aedb folder, siw or siwz file to be solved.
+        siwave_ng: str, optinial
+            Path to the siwave_ng
+        """
+
     def solve(self, num_of_cores=4):
         exec_file = os.path.splitext(self._pedb.edbpath)[0] + ".exec"
         if os.path.exists(exec_file):
