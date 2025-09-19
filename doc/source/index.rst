@@ -39,6 +39,7 @@ Reference
 
    examples/index
    grpc_api/index
+   workflows/index
    glossary
    troubleshooting
 
