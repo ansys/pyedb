@@ -44,6 +44,7 @@ def create_array_from_unit_cell(
     y_number: int = 2,
     offset_x: Optional[Union[int, float, str]] = None,
     offset_y: Optional[Union[int, float, str]] = None,
+    raw_copy: bool = True,
 ) -> bool:
     """
     Create a 2-D rectangular array from the current EDB unit cell.
@@ -67,7 +68,12 @@ def create_array_from_unit_cell(
         value is derived from the outline geometry.
     offset_y : int | float | str, None, optional
         Vertical pitch (distance between cell origins).  When *None* the
-        value is derived from the outline geometry.
+        value is derived from the outline geometry.#
+    raw_copy : bool, optional
+        If ``True``, the unit cell duplication is done by copying all primitives in the current layout.
+        If ``False``, the duplication is done by duplicating cells in the Database. Default value is ``True``.
+        Setting value to ``False`` is faster and creates duplicated cells across hierarchy which is not
+        supported by all solvers (Like HFSS PI).
 
     Returns
     -------
@@ -99,7 +105,7 @@ def create_array_from_unit_cell(
         adapter = _GrpcAdapter(edb)
     else:
         adapter = _DotNetAdapter(edb)
-    return __create_array_from_unit_cell_impl(edb, adapter, x_number, y_number, offset_x, offset_y)
+    return __create_array_from_unit_cell_impl(edb, adapter, x_number, y_number, offset_x, offset_y, raw_copy)
 
 
 # ------------------------------------------------------------------
@@ -113,6 +119,7 @@ def __create_array_from_unit_cell_impl(
     y_number: int,
     offset_x: Optional[Union[int, float]],
     offset_y: Optional[Union[int, float]],
+    raw_copy: bool = True,
 ) -> bool:
     """
     Inner worker that performs the actual replication.
@@ -174,32 +181,33 @@ def __create_array_from_unit_cell_impl(
 
         # Components
         start = time.time()
-        edb.logger.info(f" Replicating components ({i}, {j})")
-        for comp in components:
-            adapter.duplicate_component(comp, dx, dy, i, j)
-        edb.logger.info(f"Components done in {time.time() - start:.2f} s")
+        if raw_copy:
+            edb.logger.info(f" Replicating components ({i}, {j})")
+            for comp in components:
+                adapter.duplicate_component(comp, dx, dy, i, j)
+            edb.logger.info(f"Components done in {time.time() - start:.2f} s")
 
-        # Primitives & voids
-        start = time.time()
-        edb.logger.info(f" Replicating primitives ({i}, {j})")
-        for prim in primitives:
-            if not prim.is_void:
-                adapter.duplicate_primitive(prim, dx, dy, i, j)
-        edb.logger.info(f"Primitives done in {time.time() - start:.2f} s")
+            # Primitives & voids
+            start = time.time()
+            edb.logger.info(f" Replicating primitives ({i}, {j})")
+            for prim in primitives:
+                if not prim.is_void:
+                    adapter.duplicate_primitive(prim, dx, dy, i, j)
+            edb.logger.info(f"Primitives done in {time.time() - start:.2f} s")
 
-        # Paths
-        start = time.time()
-        edb.logger.info(f" Replicating traces ({i}, {j}))")
-        for path in paths:
-            adapter.duplicate_path(path, dx, dy, i, j)
-        edb.logger.info(f"Traces done in {time.time() - start:.2f} s")
+            # Paths
+            start = time.time()
+            edb.logger.info(f" Replicating traces ({i}, {j}))")
+            for path in paths:
+                adapter.duplicate_path(path, dx, dy, i, j)
+            edb.logger.info(f"Traces done in {time.time() - start:.2f} s")
 
-        # Stand-alone vias
-        start = time.time()
-        edb.logger.info(f" Replicating vias ({i}, {j})")
-        for via in (v for v in vias if not v.component):
-            adapter.duplicate_standalone_via(via, dx, dy, i, j)
-        edb.logger.info(f"Vias done in {time.time() - start:.2f} s")
+            # Stand-alone vias
+            start = time.time()
+            edb.logger.info(f" Replicating vias ({i}, {j})")
+            for via in (v for v in vias if not v.component):
+                adapter.duplicate_standalone_via(via, dx, dy, i, j)
+            edb.logger.info(f"Vias done in {time.time() - start:.2f} s")
 
     edb.logger.info("Array replication finished successfully")
     return True
@@ -288,11 +296,6 @@ class _GrpcAdapter(_BaseAdapter):
 
     def duplicate_standalone_via(self, via, dx, dy, i, j):
         pos = via.position
-        try:
-            if via.solderball_layer:
-                pass
-        except:
-            pass
         PadstackInstance.create(
             self.active_layout,
             net=via.net,
@@ -335,6 +338,7 @@ class _GrpcAdapter(_BaseAdapter):
                 l_value=ind,
                 c_value=cap,
             )
+            new_comp.type = comp.type
             if hasattr(comp, "component_property") and comp.component_property:
                 new_comp.component_property = comp.component_property
 
