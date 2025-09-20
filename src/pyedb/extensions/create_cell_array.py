@@ -169,6 +169,12 @@ def __create_array_from_unit_cell_impl(
     paths = list(edb.modeler.paths)
     vias = list(edb.padstacks.vias.values())
     components = list(edb.components.instances.values())
+    pingroups = edb.layout.pin_groups
+    pg_dict = {
+        pad.edb_uid: pg.name  # edb_uid → PinGroup.name
+        for pg in pingroups  # for every PinGroup
+        for pad in pg.pins.values()  # for every PadstackInstance in its pin-dict
+    }
 
     # ---------- Replication loops ----------
     edb.logger.info(f"Starting array replication {x_number}×{y_number}")
@@ -184,7 +190,7 @@ def __create_array_from_unit_cell_impl(
         if raw_copy:
             edb.logger.info(f" Replicating components ({i}, {j})")
             for comp in components:
-                adapter.duplicate_component(comp, dx, dy, i, j)
+                adapter.duplicate_component(comp, dx, dy, i, j, pin_groups=pg_dict)
             edb.logger.info(f"Components done in {time.time() - start:.2f} s")
 
             # Primitives & voids
@@ -257,7 +263,7 @@ class _BaseAdapter:
         """Create a translated copy of a stand-alone via."""
         raise NotImplementedError
 
-    def duplicate_component(self, comp, dx, dy, i, j):
+    def duplicate_component(self, comp, dx, dy, i, j, pin_groups=None):
         """Create a translated copy of *comp* (including its pins)."""
         raise NotImplementedError
 
@@ -308,9 +314,11 @@ class _GrpcAdapter(_BaseAdapter):
             bottom_layer=self.layers[via.stop_layer],
         )
 
-    def duplicate_component(self, comp, dx, dy, i, j):
+    def duplicate_component(self, comp, dx, dy, i, j, pin_groups=None):
         new_pins = []
+        _pg = {}
         for pin in comp.pins.values():
+            pg_name = pin_groups.get(pin.edb_uid, None)
             pos = pin.position
             new_pin = PadstackInstance.create(
                 self.edb.active_layout,
@@ -324,6 +332,8 @@ class _GrpcAdapter(_BaseAdapter):
                 bottom_layer=self.edb.stackup.layers[pin.stop_layer],
             )
             new_pins.append(new_pin)
+            if pg_name:
+                _pg.setdefault(pg_name, []).append(new_pin)
 
         if new_pins:
             res = self.edb.value(comp.res_value) if hasattr(comp, "res_value") and comp.res_value else None
@@ -341,6 +351,8 @@ class _GrpcAdapter(_BaseAdapter):
             new_comp.type = comp.type
             if hasattr(comp, "component_property") and comp.component_property:
                 new_comp.component_property = comp.component_property
+            for pg_name, pins in _pg.items():
+                self.edb.components.create_pingroup_from_pins(pins=pins, group_name=f"{pg_name}_{i}_{j}")
 
 
 class _DotNetAdapter(_BaseAdapter):
