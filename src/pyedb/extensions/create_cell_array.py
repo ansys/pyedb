@@ -65,7 +65,7 @@ def create_array_from_unit_cell(
         value is derived from the outline geometry.
     offset_y : int | float | str, None, optional
         Vertical pitch (distance between cell origins).  When *None* the
-        value is derived from the outline geometry.#
+        value is derived from the outline geometry.
 
     Returns
     -------
