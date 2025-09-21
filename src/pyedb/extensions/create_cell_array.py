@@ -25,10 +25,8 @@ This module contains the array building feature from unit cell.
 """
 
 import itertools
-import time
 from typing import Optional, Union
-
-from ansys.edb.core.primitive.padstack_instance import PadstackInstance as GrpcPadstackInstance
+import warnings
 
 from pyedb import Edb
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
@@ -36,7 +34,7 @@ from pyedb.misc.decorators import execution_timer
 
 
 # ----------------------
-# Public façade function
+# Public api
 # ----------------------
 def create_array_from_unit_cell(
     edb: Edb,
@@ -44,7 +42,6 @@ def create_array_from_unit_cell(
     y_number: int = 2,
     offset_x: Optional[Union[int, float, str]] = None,
     offset_y: Optional[Union[int, float, str]] = None,
-    raw_copy: bool = True,
 ) -> bool:
     """
     Create a 2-D rectangular array from the current EDB unit cell.
@@ -69,11 +66,6 @@ def create_array_from_unit_cell(
     offset_y : int | float | str, None, optional
         Vertical pitch (distance between cell origins).  When *None* the
         value is derived from the outline geometry.#
-    raw_copy : bool, optional
-        If ``True``, the unit cell duplication is done by copying all primitives in the current layout.
-        If ``False``, the duplication is done by duplicating cells in the Database. Default value is ``True``.
-        Setting value to ``False`` is faster and creates duplicated cells across hierarchy which is not
-        supported by all solvers (Like HFSS PI).
 
     Returns
     -------
@@ -105,7 +97,9 @@ def create_array_from_unit_cell(
         adapter = _GrpcAdapter(edb)
     else:
         adapter = _DotNetAdapter(edb)
-    return __create_array_from_unit_cell_impl(edb, adapter, x_number, y_number, offset_x, offset_y, raw_copy)
+        warnings.warn(".NET back-end is deprecated and will be removed in future releases.", UserWarning)
+        warnings.warn("Consider moving to PyEDB gRPC (ANSYS 2025R2) for better performances", UserWarning)
+    return __create_array_from_unit_cell_impl(edb, adapter, x_number, y_number, offset_x, offset_y)
 
 
 # ------------------------------------------------------------------
@@ -119,7 +113,6 @@ def __create_array_from_unit_cell_impl(
     y_number: int,
     offset_x: Optional[Union[int, float]],
     offset_y: Optional[Union[int, float]],
-    raw_copy: bool = True,
 ) -> bool:
     """
     Inner worker that performs the actual replication.
@@ -170,51 +163,43 @@ def __create_array_from_unit_cell_impl(
     vias = list(edb.padstacks.vias.values())
     components = list(edb.components.instances.values())
     pingroups = edb.layout.pin_groups
-    pg_dict = {
-        pad.edb_uid: pg.name  # edb_uid → PinGroup.name
-        for pg in pingroups  # for every PinGroup
-        for pad in pg.pins.values()  # for every PadstackInstance in its pin-dict
-    }
+    if edb.grpc:
+        pg_dict = {
+            pad.edb_uid: pg.name  # edb_uid → PinGroup.name
+            for pg in pingroups  # for every PinGroup
+            for pad in pg.pins.values()  # for every PadstackInstance in its pin-dict
+        }
+    else:
+        pg_dict = {
+            pad.id: pg.name  # edb_uid → PinGroup.name
+            for pg in pingroups  # for every PinGroup
+            for pad in pg.pins.values()  # for every PadstackInstance in its pin-dict
+        }
 
     # ---------- Replication loops ----------
     edb.logger.info(f"Starting array replication {x_number}×{y_number}")
+    total_number = x_number * y_number - 1  # minus original
+    cell_count = 0
     for i, j in itertools.product(range(x_number), range(y_number)):
         if i == 0 and j == 0:
             continue  # original already exists
-
         dx = edb.value(offset_x * i)
         dy = edb.value(offset_y * j)
-
         # Components
-        start = time.time()
-        if raw_copy:
-            edb.logger.info(f" Replicating components ({i}, {j})")
-            for comp in components:
-                adapter.duplicate_component(comp, dx, dy, i, j, pin_groups=pg_dict)
-            edb.logger.info(f"Components done in {time.time() - start:.2f} s")
-
-            # Primitives & voids
-            start = time.time()
-            edb.logger.info(f" Replicating primitives ({i}, {j})")
-            for prim in primitives:
-                if not prim.is_void:
-                    adapter.duplicate_primitive(prim, dx, dy, i, j)
-            edb.logger.info(f"Primitives done in {time.time() - start:.2f} s")
-
-            # Paths
-            start = time.time()
-            edb.logger.info(f" Replicating traces ({i}, {j}))")
-            for path in paths:
-                adapter.duplicate_path(path, dx, dy, i, j)
-            edb.logger.info(f"Traces done in {time.time() - start:.2f} s")
-
-            # Stand-alone vias
-            start = time.time()
-            edb.logger.info(f" Replicating vias ({i}, {j})")
-            for via in (v for v in vias if not v.component):
-                adapter.duplicate_standalone_via(via, dx, dy, i, j)
-            edb.logger.info(f"Vias done in {time.time() - start:.2f} s")
-
+        for comp in components:
+            adapter.duplicate_component(comp, dx, dy, i, j, pin_groups=pg_dict)
+        # Primitives & voids
+        for prim in primitives:
+            if not prim.is_void:
+                adapter.duplicate_primitive(prim, dx, dy, i, j)
+        # Paths
+        for path in paths:
+            adapter.duplicate_path(path, dx, dy, i, j)
+        # Stand-alone vias
+        for via in (v for v in vias if not v.component):
+            adapter.duplicate_standalone_via(via, dx, dy, i, j)
+        cell_count += 1
+        edb.logger.info(f"Replicated cell {cell_count} of {total_number} ({(cell_count / total_number) * 100:.1f}%)")
     edb.logger.info("Array replication finished successfully")
     return True
 
@@ -406,7 +391,7 @@ class _DotNetAdapter(_BaseAdapter):
             via_name=f"{via.aedt_name}_i{i}_j{j}",
         )
 
-    def duplicate_component(self, comp, dx, dy, i, j):
+    def duplicate_component(self, comp, dx, dy, i, j, pin_groups=None):
         new_pins = []
         for pin in comp.pins.values():
             pos = pin.position
