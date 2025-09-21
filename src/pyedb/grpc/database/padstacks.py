@@ -1631,7 +1631,6 @@ class Padstacks(object):
 
         """
 
-        import numpy as np
         from scipy.spatial import ConvexHull
 
         merged_via_ids = []
