@@ -303,7 +303,7 @@ class _GrpcAdapter(_BaseAdapter):
         new_pins = []
         _pg = {}
         for pin in comp.pins.values():
-            pg_name = pin_groups.get(pin.edb_uid, None)
+            pg_name = pin_groups.get(pin.edb_uid, None) if pin_groups else None
             pos = pin.position
             new_pin = PadstackInstance.create(
                 self.edb.active_layout,
