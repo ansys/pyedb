@@ -113,7 +113,7 @@ class SiwaveSolve(object):
             result = subprocess.run(command, check=True, capture_output=True)  # nosec
             print(result.stdout.decode())
         except subprocess.CalledProcessError as e:  # nosec
-            print(f"Error occurred: {e.stderr.decode()}")
+            raise RuntimeError("An error occurred while exporting 3D CAD") from e
         return os.path.join(output_folder, aedt_file_name)
 
     def export_dc_report(
