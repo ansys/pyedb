@@ -23,6 +23,54 @@ class SiwaveSolve(object):
         full_path = Path(self._pedb.ansys_em_path) / executable
         return str(full_path)
 
+    def __create_exec(self, type):
+        base = os.path.splitext(self._pedb.edbpath)[0]
+        txt_path = base + ".txt"
+        exec_path = base + ".exec"
+        with open(txt_path, "w") as file:
+            if type:
+                if type == "DCIR":
+                    file.write("ExecDcSim")
+                elif type == "SYZ":
+                    file.write("ExecSyzSim")
+                elif type == "CPA":
+                    file.write("ExecSentinelCpaSim")
+                elif type == "TimeCrosstalk":
+                    file.write("ExecTimeDomainCrosstalkSim")
+                elif type == "FreqCrosstalk":
+                    file.write("ExecCrosstalkSim")
+                elif type == "Impedance":
+                    file.write("ExecZ0Sim")
+
+        os.rename(txt_path, exec_path)
+        return exec_path
+
+    def solve_siwave(self, edbpath, analysis_type):
+        """Solve an SIWave setup. Only non-graphical batch mode is supported.
+
+        Parameters
+        ----------
+        analysis_type: str
+            Type of SIWave analysis to perform. Available types are "SYZ", "DCIR", "CPA", "TimeCrosstalk",
+            "FreqCrosstalk", "Impedance".
+        edbpath: str
+            Full path to the .aedb folder, siw or siwz file to be solved.
+        siwave_ng: str, optinial
+            Path to the siwave_ng. Default is the SIWave installation path.
+        """
+
+        command = [
+            self.__siwave_ng_exe_path,
+            edbpath,
+            self.__create_exec(type=analysis_type),
+            "-formatOutput",
+            "-useSubdir",
+        ]
+        try:
+            subprocess.run(command, check=True)
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(f"") from e
+
     def solve(self, num_of_cores=4):
         exec_file = os.path.splitext(self._pedb.edbpath)[0] + ".exec"
         if os.path.exists(exec_file):
