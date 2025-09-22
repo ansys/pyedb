@@ -27,16 +27,11 @@ This module contains EDB general methods and related methods.
 
 from __future__ import absolute_import  # noreorder
 
+from enum import Enum
 import logging
 import re
 
 from pyedb.dotnet.clr_module import Dictionary, List, Tuple
-
-try:
-    from enum import Enum
-except ImportError:
-    Enum = None
-
 
 logger = logging.getLogger(__name__)
 

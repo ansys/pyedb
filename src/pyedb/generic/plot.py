@@ -1,31 +1,16 @@
 import os
-import warnings
 
-try:
-    import numpy  # noqa: F401
-except ImportError:
-    warnings.warn(
-        "The NumPy module is required to run some functionalities of PostProcess.\n"
-        "Install with \n\npip install numpy\n\nRequires CPython."
-    )
-try:
-    from matplotlib.patches import PathPatch
-    from matplotlib.path import Path
+from matplotlib.patches import PathPatch
+from matplotlib.path import Path
+import numpy  # noqa: F401
 
-    # Use matplotlib agg backend (non-interactive) when the CI is running.
-    if bool(int(os.getenv("PYEDB_CI_NO_DISPLAY", "0"))):  # pragma: no cover
-        import matplotlib
+# Use matplotlib agg backend (non-interactive) when the CI is running.
+if bool(int(os.getenv("PYEDB_CI_NO_DISPLAY", "0"))):  # pragma: no cover
+    import matplotlib
 
-        matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
+    matplotlib.use("Agg")
 
-except ImportError:
-    warnings.warn(
-        "The Matplotlib module is required to run some functionalities of PostProcess.\n"
-        "Install with \n\npip install matplotlib\n\nRequires CPython."
-    )
-except Exception:
-    warnings.warn("Unknown error occurred while attempting to import Matplotlib.")
+import matplotlib.pyplot as plt
 
 
 def plot_matplotlib(

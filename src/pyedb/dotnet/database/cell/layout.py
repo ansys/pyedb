@@ -409,8 +409,8 @@ class Layout(ObjBase):
         """
         candidates = self.padstack_instances
         if instance_id is not None:
-            instance_id = int(instance_id)
             value = instance_id if isinstance(instance_id, list) else [instance_id]
+            value = [int(i) for i in value]
             candidates = [i for i in candidates if i.id in value]
 
         if aedt_name is not None:

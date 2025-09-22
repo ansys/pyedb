@@ -48,7 +48,9 @@ from ansys.edb.core.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
 )
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
+import numpy as np
 
+from pyedb.generic.general_methods import get_filename_without_extension
 from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.database.hierarchy.s_parameter_model import SparamModel
 from pyedb.grpc.database.hierarchy.spice_model import SpiceModel
@@ -58,15 +60,6 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
 from pyedb.grpc.database.utility.value import Value
-
-try:
-    import numpy as np
-except ImportError:
-    warnings.warn(
-        "The NumPy module is required to run some functionalities of EDB.\n"
-        "Install with \n\npip install numpy\n\nRequires CPython."
-    )
-from pyedb.generic.general_methods import get_filename_without_extension
 
 
 class Component(GrpcComponentGroup):
