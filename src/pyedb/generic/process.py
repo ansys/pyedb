@@ -69,7 +69,7 @@ class SiwaveSolve(object):
         try:
             subprocess.run(command, check=True)
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(f" Check input paths ") from e
+            raise RuntimeError(f"An error occurred when launching the solver. Please check input paths") from e
 
     def solve(self, num_of_cores=4):
         exec_file = os.path.splitext(self._pedb.edbpath)[0] + ".exec"
