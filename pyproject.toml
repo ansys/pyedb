@@ -39,6 +39,7 @@ dependencies = [
     "ansys-edb-core>=0.2.0",
     "psutil",
     "defusedxml>=0.7,<8.0",
+    "matplotlib>=3.5.0,<3.11",
 ]
 
 [project.optional-dependencies]
@@ -70,11 +71,6 @@ doc = [
     "sphinx-copybutton>=0.5.0,<0.6",
     "sphinx-gallery>=0.14.0,<0.20",
     "sphinx_design>=0.4.0,<0.7",
-    "shapely",
-
-]
-full = [
-    "matplotlib>=3.5.0,<3.11",
     "shapely",
 ]
 

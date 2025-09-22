@@ -34,6 +34,9 @@ import math
 import warnings
 
 from defusedxml.ElementTree import parse as defused_parse
+import matplotlib.colors as colors
+import numpy as np
+import pandas as pd
 
 from pyedb.dotnet.database.edb_data.layer_data import (
     LayerEdbClass,
@@ -43,24 +46,6 @@ from pyedb.dotnet.database.edb_data.layer_data import (
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
-
-colors = None
-pd = None
-np = None
-try:
-    import matplotlib.colors as colors
-except ImportError:
-    colors = None
-
-try:
-    import numpy as np
-except ImportError:
-    np = None
-
-try:
-    import pandas as pd
-except ImportError:
-    pd = None
 
 logger = logging.getLogger(__name__)
 
@@ -475,9 +460,6 @@ class Stackup(LayerCollection):
         -------
         bool
         """
-        if not np:
-            self._pedb.logger.error("Numpy is needed. Please, install it first.")
-            return False
         if not layer_count % 2 == 0:
             return False
 
@@ -975,10 +957,6 @@ class Stackup(LayerCollection):
         return self.export(fpath, file_format=file_format, include_material_with_layer=include_material_with_layer)
 
     def _export_layer_stackup_to_csv_xlsx(self, fpath=None, file_format=None):
-        if not pd:
-            self._pedb.logger.error("Pandas is needed. Please, install it first.")
-            return False
-
         data = {
             "Type": [],
             "Material": [],
@@ -1998,10 +1976,6 @@ class Stackup(LayerCollection):
         file_path : str
             File path to the CSV file.
         """
-        if not pd:
-            self._pedb.logger.error("Pandas is needed. You must install it first.")
-            return False
-
         df = pd.read_csv(file_path, index_col=0)
 
         for name in self.layers.keys():  # pragma: no cover
@@ -2268,10 +2242,7 @@ class Stackup(LayerCollection):
             ``True`` when successful, ``False`` when failed.
         """
 
-        if not colors:
-            self._pedb.logger.error("Matplotlib is needed. Please, install it first.")
-            return False
-        tree = defused_parse(file_path)
+        tree = ET.parse(file_path)
         root = tree.getroot()
         stackup = root.find("Stackup")
         stackup_dict = {}
