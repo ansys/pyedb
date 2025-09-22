@@ -1417,7 +1417,7 @@ class Edb(EdbInit):
                 ]
 
             try:
-                result = subprocess.run(command, capture_output=True, text=True, shell=True, check=True)  # nosec
+                result = subprocess.run(command, capture_output=True, text=True, check=True)  # nosec
                 print(result.stdout)
                 print(command)
             except subprocess.CalledProcessError as e:  # nosec
