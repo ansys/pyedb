@@ -1976,16 +1976,20 @@ class TestClass(BaseTestClass):
             signal_list=signal_nets, reference_list=power_nets, extent_type="BoundingBox", expansion_size="2mm"
         )
         setup = edbapp.hfss.add_setup("Setup1")
-        edbapp.source_excitation.create_port_on_component(
+        edbapp.components.create_port_on_component(
             component="U1", net_list=signal_nets, port_type="coax_port", reference_net=power_nets[0]
         )
-        edbapp.source_excitation.create_port_on_component(
+        edbapp.components.create_port_on_component(
             component="X1", net_list=signal_nets, port_type="coax_port", reference_net=power_nets[0]
         )
         setup.auto_mesh_operation(trace_ratio_seeding=4, signal_via_side_number=14, power_ground_via_side_number=4)
         assert setup.mesh_operations
-        assert setup.mesh_operations[0].max_length == "37.5um"
-        assert len(setup.mesh_operations[0].net_layer_info) == 4
-        net_layer_info = setup.mesh_operations[0].net_layer_info[0]
+        if not edbapp.grpc:
+            mesh_op = setup.mesh_operations["Setup1_AutoMeshOp"]
+        else:
+            mesh_op = setup.mesh_operations[0]
+        assert mesh_op.max_length == "37.5um"
+        assert len(mesh_op.net_layer_info) == 4
+        net_layer_info = mesh_op.net_layer_info[0]
         assert net_layer_info
         edbapp.close(terminate_rpc_session=False)
