@@ -1010,8 +1010,6 @@ class Components(object):
                 if component_definition_pin.is_null:
                     self._logger.error(f"Failed to create component definition pin {name}-{pin.name}")
                     return None
-        else:
-            self._logger.warning("Found existing component definition for footprint {}".format(name))
         return component_definition
 
     def create(
@@ -1074,6 +1072,8 @@ class Components(object):
         if not compdef:
             return False
         new_cmp = GrpcComponentGroup.create(self._active_layout, component_name, compdef.name)
+        if new_cmp.is_null:
+            raise ValueError(f"Failed to create component {component_name}.")
         if hasattr(pins[0], "component") and pins[0].component:
             hosting_component_location = None
             if not pins[0].component.is_null:

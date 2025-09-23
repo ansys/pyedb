@@ -1518,8 +1518,6 @@ class Components(object):
                 if componentDefinitionPin.IsNull():
                     self._logger.error("Failed to create component definition pin {}-{}".format(name, pin.GetName()))
                     return None
-        else:
-            self._logger.warning("Found existing component definition for footprint {}".format(name))
         return componentDefinition
 
     def create_rlc_component(
