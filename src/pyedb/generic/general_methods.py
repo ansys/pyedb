@@ -50,7 +50,7 @@ is_linux = os.name == "posix"
 is_windows = not is_linux
 _pythonver = sys.version_info[0]
 
-import xml.etree.cElementTree as ET
+import xml.etree.cElementTree as ET  # nosec B405
 
 ET.VERSION
 

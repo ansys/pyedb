@@ -26,6 +26,8 @@ import re
 import subprocess  # nosec B404
 import sys
 
+from defusedxml.ElementTree import parse as defused_parse
+
 from pyedb.generic.general_methods import ET, env_path, env_value, is_linux
 from pyedb.generic.settings import settings
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
@@ -1194,7 +1196,7 @@ class ControlFile:
         -------
         bool
         """
-        tree = ET.parse(xml_input)
+        tree = defused_parse(xml_input)
         root = tree.getroot()
         for el in root:
             if el.tag == "Stackup":

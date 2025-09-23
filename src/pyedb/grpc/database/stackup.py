@@ -49,6 +49,7 @@ from ansys.edb.core.layer.layer_collection import (
 )
 from ansys.edb.core.layer.stackup_layer import StackupLayer as GrpcStackupLayer
 from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
+from defusedxml.ElementTree import parse as defused_parse
 import matplotlib.colors as colors
 import numpy as np
 import pandas as pd
@@ -2201,7 +2202,7 @@ class Stackup(LayerCollection):
         bool
             ``True`` when successful.
         """
-        tree = ET.parse(file_path)
+        tree = defused_parse(file_path)
         root = tree.getroot()
         stackup = root.find("Stackup")
         stackup_dict = {}
