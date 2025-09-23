@@ -463,7 +463,7 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
         Examples
         --------
         >>> setup = edbapp.setups["my_setup"]
-        >>> setup.auto_mesh_operation(trace_ratio_seeding=4, signal_vias_side_number=16)
+        >>> setup.auto_mesh_operation(trace_ratio_seeding=4, signal_via_side_number=16)
         >>> setup.mesh_operations[0].max_length
         '2.5um'
         """
