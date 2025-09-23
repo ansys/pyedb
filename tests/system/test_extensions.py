@@ -632,3 +632,37 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_unit_cell()
         assert create_array_from_unit_cell(edbapp, x_number=2, y_number=2)
         edbapp.close()
+
+    def test_dxf_swap_backend_center_point(self, edb_examples):
+        from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf_center_point
+        dxf_path = "example_models/dxf_swap/rectangle.dxf"
+        layer_name = "Trace"
+
+        edb = edb_examples.load_dxf_edb()
+
+        point_aedt = ["170mm", "70mm"]
+
+        swap_polygon_with_dxf_center_point(edb, dxf_path, layer_name, point_aedt)
+
+        polygon = edb.modeler.get_primitive_by_layer_and_point(point=point_aedt, layer=layer_name)
+
+        assert len(polygon) == 1
+        # Area = 600 mm^2
+        assert polygon[0].area == 600
+
+    def test_dxf_swap_backend(self, ):
+        from pyedb import Edb
+        from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf
+
+        edb_path = "example_models/dxf_swap/starting_edb/starting_edb.aedb"
+        dxf_path = "example_models/dxf_swap/rectangle.dxf"
+        layer_name = "Trace"
+
+        edb = Edb(edb_path, version="2025.2", grpc=True)
+
+        point_dxf = ["40mm","25mm"]
+        point_aedt = ["170mm", "70mm"]
+
+        swap_polygon_with_dxf(edb, dxf_path, layer_name, point_dxf, point_aedt)
+
+        assert 1==1
