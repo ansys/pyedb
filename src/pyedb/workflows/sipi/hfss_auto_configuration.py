@@ -40,7 +40,6 @@ class HfssAutoConfig:
     power_ground_nets: list = field(default_factory=list)
     batch_size: int = field(default=2)
     batch_groups: list[BatchGroup] = field(default_factory=list)
-    auto_evaluate_batch_groups: bool = field(default=True)
     components: list[str] = field(default_factory=list)
     solder_balls: list[SolderBallsInfo] = field(default_factory=list)
     simulation_setup: SimulationSetup = field(default_factory=SimulationSetup)
@@ -51,9 +50,150 @@ class HfssAutoConfig:
     # ------------------------------------------------------------------
     _DIFF_SUFFIX = re.compile(r"_[PN]$|_[ML]$|_[+-]$", re.I)
 
-    def update(self, net_prefix=None):
-        if self.auto_evaluate_batch_groups and self.signal_nets:
-            self.group_nets_by_prefix(net_prefix)
+    def auto_populate_batch_groups(
+        self,
+        pattern: str | list[str] | None = None,
+    ) -> dict[str, list[list[str]]]:
+        """
+        Automatically create and populate :attr:`batch_groups` from the current
+        :attr:`signal_nets`.
+
+        This is a thin convenience wrapper around :meth:`group_nets_by_prefix`.
+        It **only** executes when both:
+
+        * :attr:`auto_evaluate_batch_groups` is ``True``, and
+        * :attr:`signal_nets` is non-empty.
+
+        Parameters
+        ----------
+        pattern : :class:`str` | :class:`list` [:class:`str`] | ``None``, optional
+            POSIX ERE prefix pattern(s) that control which nets are grouped.
+
+            * ``None`` *(default)* – activate **auto-discovery** mode: nets are
+              clustered heuristically and then split into chunks of size
+              :attr:`batch_size`.
+            * :class:`str` – treat the single string as a prefix pattern
+              (automatically anchored: ``pattern + ".*"``).
+            * :class:`list` [:class:`str`] – each list element becomes its own
+              prefix pattern; one :class:`.BatchGroup` is created **per list
+              entry**, regardless of :attr:`batch_size`.
+
+        Returns
+        -------
+        :class:`dict` [:class:`str`, :class:`list` [:class:`list` [:class:`str`]]]
+            Mapping whose keys are the original (or generated) prefix patterns and
+            whose values are lists of net-name batches.  Returned for inspection
+            or optional post-processing.
+
+        Side-effects
+        ------------
+        Clears and repopulates :attr:`batch_groups` in-place.
+        """
+        return self.group_nets_by_prefix(pattern)
+
+    # ------------------------------------------------------------------
+    #  Convenience adders
+    # ------------------------------------------------------------------
+    def add_batch_group(
+        self,
+        name: str,
+        nets: Sequence[str] | None = None,
+        *,
+        simulation_setup: SimulationSetup | None = None,
+    ) -> BatchGroup:
+        """
+        Append a new BatchGroup to the configuration.
+
+        Parameters
+        ----------
+        name : str
+            Descriptive name for the group (will also become the regex
+            pattern when the group is built automatically).
+        nets : Sequence[str], optional
+            List of net names that belong to this batch.  If omitted
+            an empty list is assumed and you can fill it later.
+        simulation_setup : SimulationSetup, optional
+            Per-batch simulation settings.  When None the global
+            ``self.simulation_setup`` is used.
+
+        Returns
+        -------
+        BatchGroup
+            The freshly created instance (already appended to
+            ``self.batch_groups``) so the caller can further
+            manipulate it if desired.
+        """
+        bg = BatchGroup(
+            name=name,
+            nets=list(nets or []),
+            simulation_setup=simulation_setup,
+        )
+        self.batch_groups.append(bg)
+        return bg
+
+    def add_solder_ball(
+        self,
+        ref_des: str,
+        *,
+        shape: str = "cylinder",
+        diameter: str | float | None = None,
+        mid_diameter: str | float | None = None,
+        height: str | float | None = None,
+    ) -> SolderBallsInfo:
+        """
+        Append a new SolderBallsInfo entry.
+
+        All parameters correspond to the dataclass fields.  The created
+        instance is returned for optional post-editing.
+        """
+        sb = SolderBallsInfo(
+            ref_des=ref_des,
+            shape=shape,
+            diameter=diameter,
+            mid_diameter=mid_diameter,
+            height=height,
+        )
+        self.solder_balls.append(sb)
+        return sb
+
+    def add_simulation_setup(
+        self,
+        *,
+        meshing_frequency: str | float = "10GHz",
+        frequency_min: str | float = 0,
+        frequency_max: str | float = "40GHz",
+        frequency_step: str | float = "0.05GHz",
+        mesh_operation_size: str | float | None = None,
+        replace: bool = False,
+    ) -> SimulationSetup:
+        """
+        Create a new SimulationSetup and store it.
+
+        Parameters
+        ----------
+        replace : bool, default False
+            - False  ->  append to ``self.batch_groups`` as a *per-batch* setup
+                        (useful when you want several setups).
+            - True   ->  overwrite the global ``self.simulation_setup``.
+
+        Returns
+        -------
+        SimulationSetup
+            The new instance (already attached to the configuration).
+        """
+        setup = SimulationSetup(
+            meshing_frequency=meshing_frequency,
+            frequency_min=frequency_min,
+            frequency_max=frequency_max,
+            frequency_step=frequency_step,
+            mesh_operation_size=mesh_operation_size,
+        )
+        if replace:
+            self.simulation_setup = setup
+        else:
+            # treat it as a per-batch setup (store in batch_groups)
+            self.batch_groups.append(BatchGroup(name="extra_setup", simulation_setup=setup))
+        return setup
 
     @staticmethod
     def _longest_common_prefix(strings: Sequence[str]) -> str:
