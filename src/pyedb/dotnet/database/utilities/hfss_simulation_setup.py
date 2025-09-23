@@ -393,7 +393,7 @@ class HfssSimulationSetup(SimulationSetup):
 
         The method inspects every signal net, determines the smallest trace width, and
         seeds a :class:`LengthMeshOperation` whose maximum element length is
-        ``smallest_width / trace_ratio_seeding``. Signal vias (padstack instances) are
+        ``smallest_width * trace_ratio_seeding``. Signal vias (padstack instances) are
         configured with the requested number of polygon sides, while power/ground vias
         are updated through the global ``num_via_sides`` advanced setting.
 
@@ -402,7 +402,7 @@ class HfssSimulationSetup(SimulationSetup):
         trace_ratio_seeding : float, optional
             Ratio used to compute the maximum allowed element length from the
             smallest trace width found in the design.  The resulting length is
-            ``min_width / trace_ratio_seeding``.  Defaults to ``3``.
+            ``min_width * trace_ratio_seeding``.  Defaults to ``3``.
         signal_via_side_number : int, optional
             Number of sides (i.e. faceting resolution) assigned to **signal**
             padstack instances that belong to the nets being meshed.
@@ -457,7 +457,7 @@ class HfssSimulationSetup(SimulationSetup):
         self.add_length_mesh_operation(
             net_layer_list=net_layer_dict,
             name=f"{self.name}_AutoMeshOp",
-            max_length=f"{round(float((smallest_width / trace_ratio_seeding)), 9) * 1e6}um",
+            max_length=f"{round(float((smallest_width * trace_ratio_seeding)), 9) * 1e6}um",
         )
         if f"{self.name}_AutoMeshOp" in self.mesh_operations:
             return True
