@@ -635,6 +635,7 @@ class TestClass(BaseTestClass):
 
     def test_dxf_swap_backend_center_point(self, edb_examples):
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf_center_point
+
         dxf_path = "example_models/dxf_swap/rectangle.dxf"
         layer_name = "Trace"
 
@@ -650,7 +651,9 @@ class TestClass(BaseTestClass):
         # Area = 600 mm^2
         assert polygon[0].area == 600
 
-    def test_dxf_swap_backend(self, ):
+    def test_dxf_swap_backend(
+        self,
+    ):
         from pyedb import Edb
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf
 
@@ -660,9 +663,9 @@ class TestClass(BaseTestClass):
 
         edb = Edb(edb_path, version="2025.2", grpc=True)
 
-        point_dxf = ["40mm","25mm"]
+        point_dxf = ["40mm", "25mm"]
         point_aedt = ["170mm", "70mm"]
 
         swap_polygon_with_dxf(edb, dxf_path, layer_name, point_dxf, point_aedt)
 
-        assert 1==1
+        assert 1 == 1
