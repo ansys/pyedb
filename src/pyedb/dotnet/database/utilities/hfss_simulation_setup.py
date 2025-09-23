@@ -392,7 +392,7 @@ class HfssSimulationSetup(SimulationSetup):
         Automatically create and apply a length-based mesh operation for all nets in the design.
 
         The method inspects every signal net, determines the smallest trace width, and
-        seeds a :class:`GrpcLengthMeshOperation` whose maximum element length is
+        seeds a :class:`LengthMeshOperation` whose maximum element length is
         ``smallest_width / trace_ratio_seeding``. Signal vias (padstack instances) are
         configured with the requested number of polygon sides, while power/ground vias
         are updated through the global ``num_via_sides`` advanced setting.
