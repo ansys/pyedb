@@ -23,7 +23,7 @@
 import copy
 import os
 import re
-import subprocess
+import subprocess  # nosec B404
 import sys
 
 from defusedxml.ElementTree import parse as defused_parse
@@ -36,6 +36,11 @@ from pyedb.misc.misc import list_installed_ansysem
 
 def convert_technology_file(tech_file, edbversion=None, control_file=None):
     """Convert a technology file to edb control file (xml).
+
+    .. warning::
+        Do not execute this function with untrusted function argument, environment
+        variables or pyedb global settings.
+        See the :ref:`security guide<ref_security_consideration>` for details.
 
     Parameters
     ----------
@@ -100,10 +105,11 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
         ]
         commands.append(command)
         commands.append(["rm", "-r", vlc_file_name + ".aedb"])
-        my_env = os.environ.copy()
         for command in commands:
-            p = subprocess.Popen(command, env=my_env)
-            p.wait()
+            try:
+                subprocess.run(command, check=True)  # nosec
+            except subprocess.CalledProcessError as e:  # nosec
+                raise RuntimeError("An error occurred while converting a technology file to edb control file") from e
         if os.path.exists(control_file):
             settings.logger.info("Xml file created.")
             return control_file

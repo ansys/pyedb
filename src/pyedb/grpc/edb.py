@@ -60,7 +60,7 @@ from itertools import combinations
 import os
 import re
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 import tempfile
 import time
@@ -761,6 +761,11 @@ class Edb(EdbInit):
 
         This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         input_file : str
@@ -803,16 +808,16 @@ class Edb(EdbInit):
         self._nets = None
         aedb_name = os.path.splitext(os.path.basename(input_file))[0] + ".aedb"
         if anstranslator_full_path and os.path.exists(anstranslator_full_path):
-            command = anstranslator_full_path
+            executable_path = anstranslator_full_path
         else:
-            command = os.path.join(self.base_path, "anstranslator")
+            executable_path = os.path.join(self.base_path, "anstranslator")
             if is_windows:
-                command += ".exe"
+                executable_path += ".exe"
 
         if not working_dir:
             working_dir = os.path.dirname(input_file)
         cmd_translator = [
-            command,
+            executable_path,
             input_file,
             os.path.join(working_dir, aedb_name),
             "-l={}".format(os.path.join(working_dir, "Translator.log")),
@@ -830,7 +835,10 @@ class Edb(EdbInit):
             cmd_translator.append('-t="{}"'.format(tech_file))
         if layer_filter:
             cmd_translator.append('-f="{}"'.format(layer_filter))
-        subprocess.run(cmd_translator)
+        try:
+            subprocess.run(cmd_translator, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError("An error occurred while translating board file to ``edb.def`` file") from e
         if not os.path.exists(os.path.join(working_dir, aedb_name)):
             self.logger.error("Translator failed to translate.")
             return False
@@ -1340,6 +1348,11 @@ class Edb(EdbInit):
     ):
         """Import GDS file.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         inputGDS : str
@@ -1403,9 +1416,12 @@ class Edb(EdbInit):
                     f'-f="{layer_filter}"',
                 ]
 
-            result = subprocess.run(command, capture_output=True, text=True, shell=True)
-            print(result.stdout)
-            print(command)
+            try:
+                result = subprocess.run(command, capture_output=True, text=True, check=True)  # nosec
+                print(result.stdout)
+                print(command)
+            except subprocess.CalledProcessError as e:  # nosec
+                raise RuntimeError("An error occurred while converting file") from e
             temp_inputGDS = inputGDS.split(".gds")[0]
             self.edbpath = temp_inputGDS + ".aedb"
             return self.open()
@@ -3908,6 +3924,11 @@ class Edb(EdbInit):
     def compare(self, input_file, results=""):
         """Compares current open database with another one.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         input_file : str
@@ -3924,13 +3945,18 @@ class Edb(EdbInit):
         if not results:
             results = self.edbpath[:-5] + "_compare_results"
             os.mkdir(results)
-        command = os.path.join(self.base_path, "EDBDiff.exe")
+        executable_path = os.path.join(self.base_path, "EDBDiff.exe")
         if is_linux:
             mono_path = os.path.join(self.base_path, "common/mono/Linux64/bin/mono")
-            cmd_input = [mono_path, command, input_file, self.edbpath, results]
+            command = [mono_path, executable_path, input_file, self.edbpath, results]
         else:
-            cmd_input = [command, input_file, self.edbpath, results]
-        subprocess.run(cmd_input)
+            command = [executable_path, input_file, self.edbpath, results]
+        try:
+            subprocess.run(command, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError(
+                "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
+            )
 
         if not os.path.exists(os.path.join(results, "EDBDiff.csv")):
             self.logger.error("Comparison execution failed")
