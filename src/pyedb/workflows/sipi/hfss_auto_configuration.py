@@ -44,6 +44,7 @@ class HfssAutoConfig:
     solder_balls: list[SolderBallsInfo] = field(default_factory=list)
     simulation_setup: SimulationSetup = field(default_factory=SimulationSetup)
     extent_type: str = field(default="bounding_box")
+    auto_mesh_seeding: bool = field(default=True)
 
     # ------------------------------------------------------------------
     #  NEW / CHANGED METHODS
