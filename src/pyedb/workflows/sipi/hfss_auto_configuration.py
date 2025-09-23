@@ -137,15 +137,49 @@ class HfssAutoConfig:
         ref_des: str,
         *,
         shape: str = "cylinder",
-        diameter: str | float | None = None,
-        mid_diameter: str | float | None = None,
-        height: str | float | None = None,
+        diameter: Union[str, float, None] = None,
+        mid_diameter: Union[str, float, None] = None,
+        height: Union[str, float, None] = None,
     ) -> SolderBallsInfo:
         """
-        Append a new SolderBallsInfo entry.
+        Append a new :class:`.SolderBallsInfo` entry to the configuration.
 
-        All parameters correspond to the dataclass fields.  The created
-        instance is returned for optional post-editing.
+        Parameters
+        ----------
+        ref_des : :class:`str`
+            Reference designator of the component to which the solder-ball
+            definition applies (e.g. ``"U1"``).
+        shape : :class:`str`, default ``"cylinder"``
+            Geometric model used for the solder ball. Supported values are
+            ``"cylinder"``, ``"sphere"``, ``"spheroid"``, etc.
+        diameter : :class:`str` | :class:`float` | ``None``, optional
+            Nominal diameter.  When ``None`` HFSS auto-evaluates the value
+            from the footprint.
+        mid_diameter : :class:`str` | :class:`float` | ``None``, optional
+            Middle diameter **required only for spheroid shapes**.  Ignored
+            for all other geometries.
+        height : :class:`str` | :class:`float` | ``None``, optional
+            Ball height.  When ``None`` HFSS computes an appropriate value
+            automatically.
+
+        Returns
+        -------
+        :class:`.SolderBallsInfo`
+            The newly created instance (already appended to
+            :attr:`solder_balls`).  The object can be further edited in-place
+            by the caller if desired.
+
+        Examples
+        --------
+        >>> cfg = HfssAutoConfig()
+        >>> cfg.add_solder_ball("U1", diameter="0.3mm", height="0.2mm")
+        >>> cfg.add_solder_ball(
+        ...     "U2",
+        ...     shape="spheroid",
+        ...     diameter="0.25mm",
+        ...     mid_diameter="0.35mm",
+        ...     height="0.18mm",
+        ... )
         """
         sb = SolderBallsInfo(
             ref_des=ref_des,
@@ -160,27 +194,50 @@ class HfssAutoConfig:
     def add_simulation_setup(
         self,
         *,
-        meshing_frequency: str | float = "10GHz",
-        frequency_min: str | float = 0,
-        frequency_max: str | float = "40GHz",
-        frequency_step: str | float = "0.05GHz",
-        mesh_operation_size: str | float | None = None,
+        meshing_frequency: Union[str, float] = "10GHz",
+        frequency_min: Union[str, float] = 0,
+        frequency_max: Union[str, float] = "40GHz",
+        frequency_step: Union[str, float] = "0.05GHz",
+        mesh_operation_size: Union[str, float, None] = None,
         replace: bool = False,
     ) -> SimulationSetup:
-        """
-        Create a new SimulationSetup and store it.
+        r"""
+        Create a :class:`.SimulationSetup` instance and attach it to the configuration.
 
         Parameters
         ----------
-        replace : bool, default False
-            - False  ->  append to ``self.batch_groups`` as a *per-batch* setup
-                        (useful when you want several setups).
-            - True   ->  overwrite the global ``self.simulation_setup``.
+        meshing_frequency : Union[:class:`str`, :class:`float`], default ``"10GHz"``
+            Driven frequency used during mesh generation.
+        frequency_min : Union[:class:`str`, :class:`float`], default ``0``
+            Lower bound of the sweep window.
+        frequency_max : Union[:class:`str`, :class:`float`], default ``"40GHz"``
+            Upper bound of the sweep window.
+        frequency_step : Union[:class:`str`, :class:`float`], default ``"0.05GHz"``
+            Linear step size for the frequency sweep.
+        mesh_operation_size : Union[:class:`str`, :class:`float`, ``None``], optional
+            Maximum element size for mesh operations.  When ``None`` HFSS
+            computes an appropriate value automatically.
+        replace : :class:`bool`, default ``False``
+            Placement strategy for the new setup:
+
+            * ``False`` – append a *per-batch* setup by creating an auxiliary
+              :class:`.BatchGroup` (``name="extra_setup"``) whose
+              :attr:`.BatchGroup.simulation_setup` points to the new object.
+            * ``True`` – overwrite the **global** :attr:`simulation_setup`
+              attribute of the current :class:`.HfssAutoConfig` instance.
 
         Returns
         -------
-        SimulationSetup
-            The new instance (already attached to the configuration).
+        :class:`.SimulationSetup`
+            The newly created instance (already stored inside the configuration).
+
+        Examples
+        --------
+        >>> cfg = HfssAutoConfig()
+        >>> # global setup
+        >>> cfg.add_simulation_setup(frequency_max="60GHz", replace=True)
+        >>> # per-batch setup
+        >>> cfg.add_simulation_setup(frequency_step="0.1GHz")
         """
         setup = SimulationSetup(
             meshing_frequency=meshing_frequency,
@@ -192,7 +249,6 @@ class HfssAutoConfig:
         if replace:
             self.simulation_setup = setup
         else:
-            # treat it as a per-batch setup (store in batch_groups)
             self.batch_groups.append(BatchGroup(name="extra_setup", simulation_setup=setup))
         return setup
 
@@ -356,29 +412,3 @@ class HfssAutoConfig:
             for nets in batches:
                 self.batch_groups.append(BatchGroup(name=pat, nets=nets))
         return grouped
-
-
-# ------------------------------------------------------------------
-#  Quick self-test
-# ------------------------------------------------------------------
-if __name__ == "__main__":
-    cfg = HfssAutoConfig(
-        signal_nets=[
-            "PCIe_RX0_P",
-            "PCIe_RX0_N",
-            "PCIe_RX1_P",
-            "PCIe_RX1_N",
-            "PCIe_TX0_P",
-            "PCIe_TX0_N",
-            "DDR4_A0",
-            "DDR4_A1",
-            "DDR4_A2",
-            "CLK_100M",
-            "CLK_200M",
-            "RANDOM",
-        ],
-        batch_size=3,
-    )
-    cfg.update()
-    for bg in cfg.batch_groups:
-        print(bg.name, bg.nets)
