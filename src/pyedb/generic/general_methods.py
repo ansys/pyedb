@@ -50,13 +50,9 @@ is_linux = os.name == "posix"
 is_windows = not is_linux
 _pythonver = sys.version_info[0]
 
+import xml.etree.cElementTree as ET
 
-try:
-    import xml.etree.cElementTree as ET
-
-    ET.VERSION
-except ImportError:
-    ET = None
+ET.VERSION
 
 
 class GrpcApiError(Exception):
@@ -694,13 +690,9 @@ def read_csv_pandas(filename, encoding="utf-8"):  # pragma: no cover
     :class:`pandas.DataFrame`
 
     """
-    try:
-        import pandas as pd
+    import pandas as pd
 
-        return pd.read_csv(filename, encoding=encoding, header=0, na_values=".")
-    except ImportError:
-        logging.error("Pandas is not available. Install it.")
-        return None
+    return pd.read_csv(filename, encoding=encoding, header=0, na_values=".")
 
 
 def read_tab(filename):  # pragma: no cover
@@ -734,14 +726,10 @@ def read_xlsx(filename):  # pragma: no cover
     list
 
     """
-    try:
-        import pandas as pd
+    import pandas as pd
 
-        lines = pd.read_excel(filename)
-        return lines
-    except ImportError:
-        lines = []
-        return lines
+    lines = pd.read_excel(filename)
+    return lines
 
 
 def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL):  # pragma: no cover
@@ -871,11 +859,7 @@ def compute_fft(time_vals, value):  # pragma: no cover
     tuple
         Frequency and Values.
     """
-    try:
-        import numpy as np
-    except ImportError:
-        logging.error("NumPy is not available. Install it.")
-        return False
+    import numpy as np
 
     deltaT = time_vals[-1] - time_vals[0]
     num_points = len(time_vals)
@@ -924,11 +908,8 @@ def parse_excitation_file(
     tuple
         Frequency, magnitude and phase.
     """
-    try:
-        import numpy as np
-    except ImportError:
-        logging.error("NumPy is not available. Install it.")
-        return False
+    import numpy as np
+
     df = read_csv_pandas(file_name, encoding=encoding)
     if is_time_domain:
         time = df[df.keys()[0]].values * x_scale

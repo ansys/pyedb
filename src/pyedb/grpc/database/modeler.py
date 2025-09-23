@@ -821,6 +821,8 @@ class Modeler(object):
         for void in voids:
             if isinstance(void, list):
                 void_polygon_data = GrpcPolygonData(points=void)
+            elif isinstance(void, GrpcPolygonData):
+                void_polygon_data = void
             else:
                 void_polygon_data = void.polygon_data
             if not void_polygon_data.points:
