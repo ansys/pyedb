@@ -46,6 +46,11 @@ class HfssAutoConfig:
     simulation_setup: SimulationSetup = field(default_factory=SimulationSetup)
     extent_type: str = field(default="bounding_box")
 
+    def update(self):
+        # Auto evaluate batch groups if enabled
+        if self.auto_evaluate_batch_groups and self.signal_nets:
+            self.group_nets_by_prefix()
+
     @staticmethod
     def _longest_common_prefix(strings: Sequence[str]) -> str:
         """
@@ -120,8 +125,6 @@ class HfssAutoConfig:
 
     def group_nets_by_prefix(
         self,
-        nets: Sequence[str],
-        *,
         prefix_patterns: Optional[Sequence[str]] = None,
     ) -> Dict[str, List[List[str]]]:
         """
@@ -162,14 +165,14 @@ class HfssAutoConfig:
         >>> group_nets_by_prefix(nets, batch_size=2)
         {'CLK.*': [['CLK_100M', 'CLK_200M']], 'DATA.*': [['DATA0', 'DATA1']], 'PWR.*': [['PWR_1V0']]}
         """
-        if not nets:
+        if not self.signal_nets:
             return {}
 
         # ------------------------------------------------------------------ #
         # 1. Determine patterns
         # ------------------------------------------------------------------ #
         if prefix_patterns is None:
-            patterns = self._infer_prefix_patterns(nets)
+            patterns = self._infer_prefix_patterns(self.signal_nets)
         else:
             patterns = list(prefix_patterns)
 
@@ -182,7 +185,7 @@ class HfssAutoConfig:
         # 3. Bucket nets
         # ------------------------------------------------------------------ #
         buckets: Dict[str, List[str]] = defaultdict(list)
-        for net in nets:
+        for net in self.signal_nets:
             for pat, orig in zip(compiled, patterns):
                 if pat.match(net):
                     buckets[orig].append(net)
