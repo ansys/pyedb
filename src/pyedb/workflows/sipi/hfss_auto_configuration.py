@@ -99,28 +99,87 @@ class HfssAutoConfig:
         self,
         prefix_patterns: Optional[Sequence[str]] = None,
     ) -> Dict[str, List[List[str]]]:
+        r"""
+        Group signal nets into *disjoint* batches while preserving differential pairs.
+
+        Behaviour in a nutshell
+        -----------------------
+        1. Nets that form differential pairs (``PCIe_RX0_P`` / ``PCIe_RX0_N``, ``USB3_TX_M`` / ``USB3_TX_P`` …)
+           are **never split**; they always appear in the **same** batch.
+        2. Every net is assigned to **exactly one** batch.
+        3. No batch contains only a single net; orphans are merged into the largest compatible group.
+        4. When *prefix_patterns* is supplied **only** nets that match one of those patterns are
+           returned; everything else is silently ignored.
+        5. If *prefix_patterns* is supplied the caller gets **one group per pattern** regardless of
+           :attr:`batch_size`; when it is ``None`` the legacy auto-discovery mode is used and
+           :attr:`batch_size` is honoured.
+
+        Parameters
+        ----------
+        prefix_patterns : Sequence[str], optional
+            POSIX ERE patterns that define the prefixes to be grouped.
+            Example: ``["PCIe", "USB"]``  ➜  interpreted as ``["PCIe.*", "USB.*"]``.
+            If ``None`` patterns are derived heuristically from the data set
+            (see :meth:`_infer_prefix_patterns`).
+
+        Returns
+        -------
+        Dict[str, List[List[str]]]
+            Keys are the original / generated pattern strings.
+            Values are lists of batches; each batch is an alphabetically sorted
+            list of net names.  When *prefix_patterns* was supplied the list
+            contains **exactly one** element (the complete group); in auto-discovery
+            mode the list may contain multiple slices sized according to
+            :attr:`batch_size`.
+
+        Examples
+        --------
+        Explicit grouping (production intent)::
+
+            >>> cfg.signal_nets = ["PCIe_RX0_P", "PCIe_RX0_N", "PCIe_TX0_P",
+            ...                    "USB3_DP", "USB3_DN", "DDR4_A0", "DDR4_A1"]
+            >>> cfg.batch_size = 1_000          # ignored when patterns are supplied
+            >>> cfg.group_nets_by_prefix(["PCIe", "USB"])
+            {'PCIe.*': [['PCIe_RX0_N', 'PCIe_RX0_P', 'PCIe_TX0_P']],
+             'USB.*':  [['USB3_DN', 'USB3_DP']]}
+
+        Auto-discovery with batching::
+
+            >>> cfg.group_nets_by_prefix()      # batch_size = 2
+            {'PCIe.*': [['PCIe_RX0_N', 'PCIe_RX0_P'], ['PCIe_TX0_P']],
+             'USB.*':  [['USB3_DN', 'USB3_DP']],
+             'DDR4.*': [['DDR4_A0', 'DDR4_A1']]}
+
+        Notes
+        -----
+        * Differential recognition strips the suffixes ``_[PN]``, ``_[ML]``, ``_[+-]``
+          (case-insensitive).
+        * The function updates the instance attribute :attr:`batch_groups` in place.
+        """
         if not self.signal_nets:
             return {}
 
         clusters = self._build_diff_pairs(self.signal_nets)
 
+        # ---------- 1.  patterns  ------------------------------------------
         if prefix_patterns is None:
             patterns = self._infer_prefix_patterns([base for base, _ in clusters])
         else:
-            patterns = list(prefix_patterns)
+            patterns = [p if p.endswith(".*") else p + ".*" for p in prefix_patterns]
+
         compiled = [re.compile(p, re.I) for p in patterns]
 
+        # ---------- 2.  bucket clusters ------------------------------------
         buckets: Dict[str, List[Tuple[str, List[str]]]] = defaultdict(list)
         for base, members in clusters:
             for pat, orig in zip(compiled, patterns):
                 if pat.match(base):
                     buckets[orig].append((base, members))
                     break
-            else:
-                buckets["UNMATCHED"].append((base, members))
 
+        # ---------- 3.  flatten --------------------------------------------
         flat: Dict[str, List[str]] = {}
-        for pat in list(patterns) + ["UNMATCHED"]:
+        for pat in patterns:
             if pat not in buckets:
                 continue
             flat[pat] = []
@@ -128,6 +187,7 @@ class HfssAutoConfig:
                 flat[pat].extend(members)
             flat[pat].sort()
 
+        # ---------- 4.  merge singles --------------------------------------
         singles = [k for k, lst in flat.items() if len(lst) == 1]
         if singles:
             biggest = max(flat.keys(), key=lambda k: len(flat[k]))
@@ -136,13 +196,20 @@ class HfssAutoConfig:
                 del flat[k]
             flat[biggest].sort()
 
+        # ---------- 5.  ONE group per supplied prefix -----------------------
         grouped: Dict[str, List[List[str]]] = {}
         for pat, lst in flat.items():
-            if self.batch_size is None:
-                grouped[pat] = [lst]
+            if prefix_patterns is None:
+                # old auto-mode – respect batch_size
+                if self.batch_size is None:
+                    grouped[pat] = [lst]
+                else:
+                    grouped[pat] = [lst[i : i + self.batch_size] for i in range(0, len(lst), self.batch_size)]
             else:
-                grouped[pat] = [lst[i : i + self.batch_size] for i in range(0, len(lst), self.batch_size)]
+                # user-mode – exactly one group per requested prefix
+                grouped[pat] = [lst]
 
+        # ---------- 6.  update instance -------------------------------------
         self.batch_groups.clear()
         for pat, batches in grouped.items():
             for nets in batches:
