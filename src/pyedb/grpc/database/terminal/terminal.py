@@ -216,7 +216,7 @@ class Terminal(GrpcTerminal):
             value = mapping_boundary_type.get(value.lower(), None)
         if not isinstance(value, GrpcBoundaryType):
             raise ValueError("Value must be a string or BoundaryType enum.")
-        super(Terminal, self.__class__).boundary_type.__set__(self, self._boundary_type_mapping[value])
+        super(Terminal, self.__class__).boundary_type.__set__(self, value)
 
     @property
     def is_port(self) -> bool:
