@@ -33,6 +33,7 @@ import logging
 import math
 import warnings
 
+from defusedxml.ElementTree import parse as defused_parse
 import matplotlib.colors as colors
 import numpy as np
 import pandas as pd
