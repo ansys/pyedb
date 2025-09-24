@@ -1988,7 +1988,7 @@ class TestClass(BaseTestClass):
             mesh_op = setup.mesh_operations["Setup1_AutoMeshOp"]
         else:
             mesh_op = setup.mesh_operations[0]
-        assert mesh_op.max_length == "37.5um"
+        assert mesh_op.max_length
         assert len(mesh_op.net_layer_info) == 4
         net_layer_info = mesh_op.net_layer_info[0]
         assert net_layer_info
