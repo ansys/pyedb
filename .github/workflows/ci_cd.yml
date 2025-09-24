@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check the title of the pull request
-        uses: ansys/actions/check-pr-title@e0de7dd89b2a4c100f74327666d5521cfda17950 # v10.1.1
+        uses: ansys/actions/check-pr-title@9de5aa715cf3c98a237b08e1a308c08599223c42 # v10.1.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           use-upper-case: true
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check documentation style
-        uses: ansys/actions/doc-style@e0de7dd89b2a4c100f74327666d5521cfda17950 # v10.1.1
+        uses: ansys/actions/doc-style@9de5aa715cf3c98a237b08e1a308c08599223c42 # v10.1.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -57,7 +57,7 @@ jobs:
     steps:
       - name: Build wheelhouse and perform smoke test
         id: build-wheelhouse
-        uses: ansys/actions/build-wheelhouse@e0de7dd89b2a4c100f74327666d5521cfda17950 # v10.1.1
+        uses: ansys/actions/build-wheelhouse@9de5aa715cf3c98a237b08e1a308c08599223c42 # v10.1.2
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
@@ -818,7 +818,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build documentation
-        uses: ansys/actions/doc-build@e0de7dd89b2a4c100f74327666d5521cfda17950 # v10.1.1
+        uses: ansys/actions/doc-build@9de5aa715cf3c98a237b08e1a308c08599223c42 # v10.1.2
         with:
           dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -840,7 +840,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
-        uses: ansys/actions/build-library@e0de7dd89b2a4c100f74327666d5521cfda17950 # v10.1.1
+        uses: ansys/actions/build-library@9de5aa715cf3c98a237b08e1a308c08599223c42 # v10.1.2
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -872,7 +872,7 @@ jobs:
           skip-existing: false
 
       - name: Release to GitHub
-        uses: ansys/actions/release-github@e0de7dd89b2a4c100f74327666d5521cfda17950 # v10.1.1
+        uses: ansys/actions/release-github@9de5aa715cf3c98a237b08e1a308c08599223c42 # v10.1.2
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -884,7 +884,7 @@ jobs:
     needs: [package]
     steps:
       - name: Deploy the latest documentation
-        uses: ansys/actions/doc-deploy-dev@e0de7dd89b2a4c100f74327666d5521cfda17950 # v10.1.1
+        uses: ansys/actions/doc-deploy-dev@9de5aa715cf3c98a237b08e1a308c08599223c42 # v10.1.2
         with:
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
@@ -898,7 +898,7 @@ jobs:
     needs: [release]
     steps:
       - name: Deploy the stable documentation
-        uses: ansys/actions/doc-deploy-stable@e0de7dd89b2a4c100f74327666d5521cfda17950 # v10.1.1
+        uses: ansys/actions/doc-deploy-stable@9de5aa715cf3c98a237b08e1a308c08599223c42 # v10.1.2
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
