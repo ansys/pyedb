@@ -541,7 +541,6 @@ class HFSSAutoConfiguration:
 
 def create_hfss_auto_configuration(
     edb: Optional[Edb] = None,
-    *,
     ansys_version: Optional[str] = None,
     grpc: Optional[bool] = None,
     source_edb_path: Optional[str] = None,
