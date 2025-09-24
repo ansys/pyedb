@@ -15,7 +15,7 @@ What Was the DotNet API?
 ------------------------
 The original implementation of the ``pyedb.dotnet`` module was
 built on the `Microsoft DotNet framework`_.
-Future development will use the gRPC client.
+Future development are going to use the gRPC client.
 
 .. _Microsoft DotNet framework: https://dotnet.microsoft.com/en-us/learn/dotnet/what-is-dotnet-framework
 
