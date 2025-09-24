@@ -28,6 +28,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import stat
 from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 from pyedb import Edb
@@ -63,27 +64,28 @@ class HFSSAutoConfiguration:
         self._pedb = edb
         self.ansys_version: str = "2025.2"
         self.grpc: bool = True
-        self.source_edb_path: str = field(default="")
+        self.source_edb_path: str = ""
         self.target_edb_path: str = ""
-        self.signal_nets: list = field(default_factory=list)
-        self.power_ground_nets: list = field(default_factory=list)
-        self.batch_size: int = field(default=2)
-        self.batch_groups: list[BatchGroup] = field(default_factory=list)
-        self.components: list[str] = field(default_factory=list)
-        self.solder_balls: list[SolderBallsInfo] = field(default_factory=list)
-        self.simulation_setup: SimulationSetup = field(default_factory=SimulationSetup)
-        self.extent_type: str = field(default="bounding_box")
-        self.cutout_expansion: float = field(default=0.002)
-        self.auto_mesh_seeding: bool = field(default=True)
-        self.port_type: str = field(default="coaxial")
-        self.create_pin_group: bool = field(default=False)
+        self.batch_group_folder: str = ""
+        self.signal_nets: list = []
+        self.power_ground_nets: list = []
+        self.batch_size: int = 100
+        self.batch_groups: list[BatchGroup] = []
+        self.components: list[str] = []
+        self.solder_balls: list[SolderBallsInfo] = []
+        self.simulation_setup: SimulationSetup = SimulationSetup()
+        self.extent_type: str = "bounding_box"
+        self.cutout_expansion: Union[float, str] = "2mm"
+        self.auto_mesh_seeding: bool = True
+        self.port_type: str = "coaxial"
+        self.create_pin_group: bool = False
 
     _DIFF_SUFFIX = re.compile(r"_[PN]$|_[ML]$|_[+-]$", re.I)
 
     def auto_populate_batch_groups(
         self,
         pattern: str | list[str] | None = None,
-    ) -> dict[str, list[list[str]]]:
+    ) -> None:
         """
         Automatically create and populate :attr:`batch_groups` from the current
         :attr:`signal_nets`.
@@ -108,18 +110,16 @@ class HFSSAutoConfiguration:
               prefix pattern; one :class:`.BatchGroup` is created **per list
               entry**, regardless of :attr:`batch_size`.
 
-        Returns
-        -------
-        :class:`dict` [:class:`str`, :class:`list` [:class:`list` [:class:`str`]]]
-            Mapping whose keys are the original (or generated) prefix patterns and
-            whose values are lists of net-name batches.  Returned for inspection
-            or optional post-processing.
-
         Side-effects
         ------------
         Clears and repopulates :attr:`batch_groups` in-place.
         """
-        return self.group_nets_by_prefix(pattern)
+        if not self._pedb:
+            self._pedb = Edb(edbpath=self.source_edb_path, version=self.ansys_version, grpc=self.grpc)
+        self.signal_nets = list(self._pedb.nets.signal.keys())
+        self.power_ground_nets = list(self._pedb.nets.power.keys())
+        self.group_nets_by_prefix(pattern)
+        self._pedb.close(terminate_rpc_session=False)
 
     def add_batch_group(
         self,
@@ -224,7 +224,7 @@ class HFSSAutoConfiguration:
         start_frequency: Union[str, float] = 0,
         stop_frequency: Union[str, float] = "40GHz",
         frequency_step: Union[str, float] = "0.05GHz",
-        replace: bool = False,
+        replace: bool = True,
     ) -> SimulationSetup:
         r"""
         Create a: class:`.SimulationSetup` instance and attach it to the configuration.
@@ -438,9 +438,16 @@ class HFSSAutoConfiguration:
         for pat, batches in grouped.items():
             for nets in batches:
                 self.batch_groups.append(BatchGroup(name=pat, nets=nets))
+        grouped = {k[:-2] if k.endswith("*") else k: v for k, v in grouped.items()}
+        for batch_group in self.batch_groups:
+            batch_group.name = batch_group.name[:-2] if batch_group.name.endswith(".*") else batch_group.name
         return grouped
 
     def create_projects(self):
+        def del_ro(func, path, _):
+            os.chmod(path, stat.S_IWRITE)
+            func(path)
+
         if not self.batch_groups:
             self._copy_edb_and_open_project()
             if not self._pedb:
@@ -449,13 +456,19 @@ class HFSSAutoConfiguration:
                 self._create_project(close_rpc=False)
         else:
             batch_count = 0
+            if os.path.isdir(self.batch_group_folder):
+                shutil.rmtree(self.batch_group_folder)
             for batch_group in self.batch_groups:
                 batch_count += 1
-                batch_folder = str(Path(self.target_edb_path).parent) + "bacth_groups"
+                if not self.batch_group_folder:
+                    self.batch_group_folder = os.path.join(str(Path(self.source_edb_path).parent), "bacth_groups")
+                    if batch_count == 1 and os.path.isdir(self.batch_group_folder):
+                        os.chdir(os.path.expanduser("~"))
+                        shutil.rmtree(self.batch_group_folder, onerror=del_ro)
                 if batch_group.simulation_setup:
                     self.simulation_setup = batch_group.simulation_setup
                 self.signal_nets = batch_group.nets
-                self.target_edb_path = os.path.join(batch_folder, batch_group.name + ".aedb")
+                self.target_edb_path = os.path.join(self.batch_group_folder, batch_group.name + ".aedb")
                 self._copy_edb_and_open_project()
                 if batch_count == len(self.batch_groups):
                     self._create_project(close_rpc=True)
@@ -480,22 +493,27 @@ class HFSSAutoConfiguration:
         # step 1: cutout
         self._pedb.logger.info(f"Creating project {self.target_edb_path}")
         self._pedb.logger.info(f"step 1: cutout")
-        self._pedb.create_cutout(
+        self._pedb.cutout(
             signal_list=self.signal_nets,
             reference_list=self.power_ground_nets,
             extent_type=self.extent_type,
-            expansion=self.cutout_expansion,
+            expansion_size=self.cutout_expansion,
         )
         # step 2: create Ports
         self._pedb.logger.info(f"step 2: creating ports")
         if self.port_type == "coaxial":
             if not self.components:
                 self._pedb.logger.info("No components provided, searching component instances")
-                self.components = [
-                    comp.refdes
-                    for comp in self._pedb.components.instances
-                    if not comp.type.lower() in ["resistor", "capacitor", "inductor"]
-                ]
+                self.components = list(
+                    set(
+                        [
+                            refdes
+                            for refdes, comp in self._pedb.components.instances.items()
+                            if not comp.type.lower() in ["resistor", "capacitor", "inductor"]
+                            and not set(comp.nets).isdisjoint(self.signal_nets)
+                        ]
+                    )
+                )
                 if not self.components:
                     raise ValueError("No components found in the design.")
             if self.solder_balls:
@@ -504,7 +522,7 @@ class HFSSAutoConfiguration:
                     if not comp in self.components:
                         self._pedb.logger.warning(f"Component {comp} not found in the design, skipping")
                         continue
-                    self._pedb.source_excitation.create_port_on_component(
+                    self._pedb.components.create_port_on_component(
                         component=comp,
                         net_list=self.signal_nets,
                         port_type="coax_port",
@@ -515,7 +533,7 @@ class HFSSAutoConfiguration:
                     )
             else:
                 for component in self.components:
-                    self._pedb.source_excitation.create_port_on_component(
+                    self._pedb.components.create_port_on_component(
                         component=component,
                         net_list=self.signal_nets,
                         port_type="coax_port",
@@ -526,7 +544,12 @@ class HFSSAutoConfiguration:
         self._pedb.logger.info(f"step 3: creating simulation setup")
         setup = self._pedb.hfss.add_setup("Setup1")
         setup.adaptive_settings.max_passes = self.simulation_setup.maximum_pass_number
-        setup.settings.mesh_frequency = self.simulation_setup.meshing_frequency
+        if not self.grpc:
+            setup.adaptive_settings.adaptive_frequency_data_list[
+                0
+            ].adaptive_frequency = self.simulation_setup.meshing_frequency
+        else:
+            setup.settings.mesh_frequency = self.simulation_setup.meshing_frequency
         setup.add_sweep(
             "AutoSweep",
             start_freq=self.simulation_setup.start_frequency,
