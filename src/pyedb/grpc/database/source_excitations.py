@@ -486,22 +486,22 @@ class SourceExcitation:
 
     def create_port_on_component(
         self,
-        component: Union[str, List[str]],
+        component: Union[str, Component],
         net_list: Union[str, List[str]],
-        port_type: SourceType,
+        port_type: str = "coax_port",
         do_pingroup: Optional[bool] = True,
         reference_net: Optional[str] = None,
         port_name: Optional[List[str]] = None,
-        solder_balls_height: Optional[float] = None,
-        solder_balls_size: Optional[float] = None,
-        solder_balls_mid_size: Optional[float] = None,
+        solder_balls_height: Union[float, str] = None,
+        solder_balls_size: Union[float, str] = None,
+        solder_balls_mid_size: Union[float, str] = None,
         extend_reference_pins_outside_component: Optional[bool] = False,
     ) -> List[str]:
         """Create ports on a component.
 
         Parameters
         ----------
-        component : str or  self._pedb.component
+        component : str or Component
             EDB component or str component name.
         net_list : str or list of string.
             List of nets where ports must be created on the component.

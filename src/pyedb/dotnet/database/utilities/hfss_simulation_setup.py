@@ -382,6 +382,87 @@ class HfssSimulationSetup(SimulationSetup):
             return False
         return True
 
+    def auto_mesh_operation(
+        self,
+        trace_ratio_seeding: float = 3,
+        signal_via_side_number: int = 12,
+        power_ground_via_side_number: int = 6,
+    ) -> bool:
+        """
+        Automatically create and apply a length-based mesh operation for all nets in the design.
+
+        The method inspects every signal net, determines the smallest trace width, and
+        seeds a :class:`LengthMeshOperation` whose maximum element length is
+        ``smallest_width * trace_ratio_seeding``. Signal vias (padstack instances) are
+        configured with the requested number of polygon sides, while power/ground vias
+        are updated through the global ``num_via_sides`` advanced setting.
+
+        Parameters
+        ----------
+        trace_ratio_seeding : float, optional
+            Ratio used to compute the maximum allowed element length from the
+            smallest trace width found in the design.  The resulting length is
+            ``min_width * trace_ratio_seeding``.  Defaults to ``3``.
+        signal_via_side_number : int, optional
+            Number of sides (i.e. faceting resolution) assigned to **signal**
+            padstack instances that belong to the nets being meshed.
+            Defaults to ``12``.
+        power_ground_via_side_number : int, optional
+            Number of sides assigned to **power/ground** vias via the global
+            ``advanced.num_via_sides`` setting.  Defaults to ``6``.
+
+        Returns
+        -------
+        bool
+
+        Raises
+        ------
+        ValueError
+            If the design contains no terminals, making mesh seeding impossible.
+
+        Notes
+        -----
+        * Only primitives of type ``"path"`` are considered when determining the
+          smallest trace width.
+        * Every ``(net, layer, sheet)`` tuple required by the mesher is
+          automatically populated; sheet are explicitly marked as ``False``.
+        * Existing contents of :attr:`mesh_operations` are **replaced** by the
+          single new operation.
+
+        Examples
+        --------
+        >>> setup = edbapp.setups["my_setup"]
+        >>> setup.auto_mesh_operation(trace_ratio_seeding=4, signal_vias_side_number=16)
+        >>> setup.mesh_operations[0].max_length
+        '2.5um'
+        """
+        net_for_mesh_seeding = list(set([term.net.name for term in list(self._pedb.terminals.values())]))
+        if not net_for_mesh_seeding:
+            raise ValueError("No terminals found to seed the mesh operation.")
+        net_layer_dict = {}
+        smallest_width = 1e3
+        for net in net_for_mesh_seeding:
+            net_layer_dict[net] = []
+            traces = [prim for prim in self._pedb.modeler.primitives_by_net[net] if prim.type.lower() == "path"]
+            _width = min([trace.width for trace in traces], default=1e3)
+            if _width < smallest_width:
+                smallest_width = _width
+            layers = list(set([trace.layer.name for trace in traces]))
+            for layer in layers:
+                net_layer_dict[net].append(layer)
+            for inst in [
+                inst for inst in list(self._pedb.padstacks.padstack_instances.values()) if inst.net_name == net
+            ]:
+                inst.side_number = signal_via_side_number
+        self.add_length_mesh_operation(
+            net_layer_list=net_layer_dict,
+            name=f"{self.name}_AutoMeshOp",
+            max_length=f"{round(float((smallest_width * trace_ratio_seeding)), 9) * 1e6}um",
+        )
+        if f"{self.name}_AutoMeshOp" in self.mesh_operations:
+            return True
+        return False
+
 
 class HFSSPISimulationSetup(SimulationSetup):
     """Manages EDB methods for HFSSPI simulation setup."""
