@@ -284,7 +284,7 @@ class TestClass(BaseTestClass):
                 "-RunScriptAndExit",
                 str(Path(edb.edbpath).parent / "export_cad.py"),
             ]
-            assert input_cmd == input_cmd_  #  if is_linux else " ".join(input_cmd_)
+            assert input_cmd == input_cmd_  # if is_linux else " ".join(input_cmd_)
 
             edb.export_maxwell(None)
             popen_args, _ = mock_run.call_args
@@ -1966,3 +1966,30 @@ class TestClass(BaseTestClass):
             edbapp = Edb(grpc=config["use_grpc"], edbversion=config["desktopVersion"])
             layout_comp = edbapp.import_layout_component(out_file)
             assert not layout_comp.cell_instance.is_null
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_auto_assign_mesh_seeding(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        signal_nets = ["PCIe_Gen4_RX0_N", "PCIe_Gen4_RX0_P"]
+        power_nets = ["GND"]
+        edbapp.cutout(
+            signal_list=signal_nets, reference_list=power_nets, extent_type="BoundingBox", expansion_size="2mm"
+        )
+        setup = edbapp.hfss.add_setup("Setup1")
+        edbapp.components.create_port_on_component(
+            component="U1", net_list=signal_nets, port_type="coax_port", reference_net=power_nets[0]
+        )
+        edbapp.components.create_port_on_component(
+            component="X1", net_list=signal_nets, port_type="coax_port", reference_net=power_nets[0]
+        )
+        setup.auto_mesh_operation(trace_ratio_seeding=4, signal_via_side_number=14, power_ground_via_side_number=4)
+        assert setup.mesh_operations
+        if not edbapp.grpc:
+            mesh_op = setup.mesh_operations["Setup1_AutoMeshOp"]
+        else:
+            mesh_op = setup.mesh_operations[0]
+        assert mesh_op.max_length
+        assert len(mesh_op.net_layer_info) == 4
+        net_layer_info = mesh_op.net_layer_info[0]
+        assert net_layer_info
+        edbapp.close(terminate_rpc_session=False)

@@ -961,7 +961,7 @@ class Components(object):
         if not isinstance(port_type, int):
             if port_type == "circuit_port":
                 port_type = SourceType.CircPort
-            elif port_type == "coaxial_port":
+            elif port_type in ["coaxial_port", "coax_port"]:
                 port_type = SourceType.CoaxPort
             elif port_type == "lumped_port":
                 port_type = SourceType.LumpedPort
