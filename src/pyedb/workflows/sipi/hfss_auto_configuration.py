@@ -1,9 +1,36 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass, field
+import os
+from pathlib import Path
 import re
+import shutil
 from typing import Dict, List, Optional, Sequence, Tuple, Union
+
+from pyedb import Edb
 
 
 @dataclass
@@ -18,10 +45,10 @@ class SolderBallsInfo:
 @dataclass
 class SimulationSetup:
     meshing_frequency: Union[str, float] = field(default="10GHz")
-    frequency_min: Union[str, float] = field(default=0)
-    frequency_max: Union[str, float] = field(default="40GHz")
+    maximum_pass_number: int = field(default=15)
+    start_frequency: Union[str, float] = field(default=0)
+    stop_frequency: Union[str, float] = field(default="40GHz")
     frequency_step: Union[str, float] = field(default="0.05GHz")
-    mesh_operation_size: Union[str, float] = None  # auto evaluated if None
 
 
 @dataclass
@@ -31,24 +58,26 @@ class BatchGroup:
     simulation_setup: SimulationSetup = None  # if None, use default in auto config
 
 
-@dataclass
-class HfssAutoConfig:
-    edb_path: str = field(default="")
-    cfg_path: str = field(default="")
-    edb_version: str = field(default="2025.2")
-    signal_nets: list = field(default_factory=list)
-    power_ground_nets: list = field(default_factory=list)
-    batch_size: int = field(default=2)
-    batch_groups: list[BatchGroup] = field(default_factory=list)
-    components: list[str] = field(default_factory=list)
-    solder_balls: list[SolderBallsInfo] = field(default_factory=list)
-    simulation_setup: SimulationSetup = field(default_factory=SimulationSetup)
-    extent_type: str = field(default="bounding_box")
-    auto_mesh_seeding: bool = field(default=True)
+class HFSSAutoConfiguration:
+    def __init__(self, edb=None):
+        self._pedb = edb
+        self.ansys_version: str = "2025.2"
+        self.grpc: bool = True
+        self.source_edb_path: str = field(default="")
+        self.target_edb_path: str = ""
+        self.signal_nets: list = field(default_factory=list)
+        self.power_ground_nets: list = field(default_factory=list)
+        self.batch_size: int = field(default=2)
+        self.batch_groups: list[BatchGroup] = field(default_factory=list)
+        self.components: list[str] = field(default_factory=list)
+        self.solder_balls: list[SolderBallsInfo] = field(default_factory=list)
+        self.simulation_setup: SimulationSetup = field(default_factory=SimulationSetup)
+        self.extent_type: str = field(default="bounding_box")
+        self.cutout_expansion: float = field(default=0.002)
+        self.auto_mesh_seeding: bool = field(default=True)
+        self.port_type: str = field(default="coaxial")
+        self.create_pin_group: bool = field(default=False)
 
-    # ------------------------------------------------------------------
-    #  NEW / CHANGED METHODS
-    # ------------------------------------------------------------------
     _DIFF_SUFFIX = re.compile(r"_[PN]$|_[ML]$|_[+-]$", re.I)
 
     def auto_populate_batch_groups(
@@ -92,9 +121,6 @@ class HfssAutoConfig:
         """
         return self.group_nets_by_prefix(pattern)
 
-    # ------------------------------------------------------------------
-    #  Convenience adders
-    # ------------------------------------------------------------------
     def add_batch_group(
         self,
         name: str,
@@ -193,37 +219,38 @@ class HfssAutoConfig:
 
     def add_simulation_setup(
         self,
-        *,
         meshing_frequency: Union[str, float] = "10GHz",
-        frequency_min: Union[str, float] = 0,
-        frequency_max: Union[str, float] = "40GHz",
+        maximum_pass_number: int = 15,
+        start_frequency: Union[str, float] = 0,
+        stop_frequency: Union[str, float] = "40GHz",
         frequency_step: Union[str, float] = "0.05GHz",
-        mesh_operation_size: Union[str, float, None] = None,
         replace: bool = False,
     ) -> SimulationSetup:
         r"""
-        Create a :class:`.SimulationSetup` instance and attach it to the configuration.
+        Create a: class:`.SimulationSetup` instance and attach it to the configuration.
 
         Parameters
         ----------
-        meshing_frequency : Union[:class:`str`, :class:`float`], default ``"10GHz"``
+        meshing_frequency : Union[:class:`str`,: class:`float`], default ``"10GHz"``
             Driven frequency used during mesh generation.
-        frequency_min : Union[:class:`str`, :class:`float`], default ``0``
+        maximum_pass_number : class:`int`, default ``15``
+            Maximum number of adaptive passes.
+        start_frequency : Union[:class:`str`,: class:`float`], default ``0``
             Lower bound of the sweep window.
-        frequency_max : Union[:class:`str`, :class:`float`], default ``"40GHz"``
+        stop_frequency : Union[:class:`str`,: class:`float`], default ``"40GHz"``
             Upper bound of the sweep window.
-        frequency_step : Union[:class:`str`, :class:`float`], default ``"0.05GHz"``
+        frequency_step : Union[:class:`str`,: class:`float`], default ``"0.05GHz"``
             Linear step size for the frequency sweep.
-        mesh_operation_size : Union[:class:`str`, :class:`float`, ``None``], optional
+        mesh_operation_size : Union[:class:`str`,: class:`float`, ``None``], optional
             Maximum element size for mesh operations.  When ``None`` HFSS
             computes an appropriate value automatically.
-        replace : :class:`bool`, default ``False``
+        replace : class:`bool`, default ``False``
             Placement strategy for the new setup:
 
             * ``False`` – append a *per-batch* setup by creating an auxiliary
               :class:`.BatchGroup` (``name="extra_setup"``) whose
               :attr:`.BatchGroup.simulation_setup` points to the new object.
-            * ``True`` – overwrite the **global** :attr:`simulation_setup`
+            * ``True`` – overwrite the **global**: attr:`simulation_setup`
               attribute of the current :class:`.HfssAutoConfig` instance.
 
         Returns
@@ -241,10 +268,10 @@ class HfssAutoConfig:
         """
         setup = SimulationSetup(
             meshing_frequency=meshing_frequency,
-            frequency_min=frequency_min,
-            frequency_max=frequency_max,
+            maximum_pass_number=maximum_pass_number,
+            start_frequency=start_frequency,
+            stop_frequency=stop_frequency,
             frequency_step=frequency_step,
-            mesh_operation_size=mesh_operation_size,
         )
         if replace:
             self.simulation_setup = setup
@@ -412,3 +439,101 @@ class HfssAutoConfig:
             for nets in batches:
                 self.batch_groups.append(BatchGroup(name=pat, nets=nets))
         return grouped
+
+    def create_projects(self):
+        if not self.batch_groups:
+            self._copy_edb_and_open_project()
+            if not self._pedb:
+                self._create_project(close_rpc=True)
+            else:
+                self._create_project(close_rpc=False)
+        else:
+            batch_count = 0
+            for batch_group in self.batch_groups:
+                batch_count += 1
+                batch_folder = str(Path(self.target_edb_path).parent) + "bacth_groups"
+                if batch_group.simulation_setup:
+                    self.simulation_setup = batch_group.simulation_setup
+                self.signal_nets = batch_group.nets
+                self.target_edb_path = os.path.join(batch_folder, batch_group.name + ".aedb")
+                self._copy_edb_and_open_project()
+                if batch_count == len(self.batch_groups):
+                    self._create_project(close_rpc=True)
+                else:
+                    self._create_project(close_rpc=False)
+
+    def _copy_edb_and_open_project(self):
+        if not self.source_edb_path:
+            raise ValueError("source EDB path is empty.")
+        shutil.copytree(self.source_edb_path, self.target_edb_path)
+        if not os.path.isdir(self.target_edb_path):
+            raise FileNotFoundError(f"Failed to copy EDB to {self.target_edb_path}")
+        self._pedb = Edb(edbpath=self.target_edb_path, version=self.ansys_version, grpc=self.grpc)
+
+    def _create_project(self, close_rpc: bool = True):
+        if not self.target_edb_path:
+            raise ValueError("Project path is empty.")
+        if not self.signal_nets:
+            raise ValueError("No signal nets defined.")
+        if not self.power_ground_nets:
+            raise ValueError("No power/ground nets defined.")
+        # step 1: cutout
+        self._pedb.logger.info(f"Creating project {self.target_edb_path}")
+        self._pedb.logger.info(f"step 1: cutout")
+        self._pedb.create_cutout(
+            signal_list=self.signal_nets,
+            reference_list=self.power_ground_nets,
+            extent_type=self.extent_type,
+            expansion=self.cutout_expansion,
+        )
+        # step 2: create Ports
+        self._pedb.logger.info(f"step 2: creating ports")
+        if self.port_type == "coaxial":
+            if not self.components:
+                self._pedb.logger.info("No components provided, searching component instances")
+                self.components = [
+                    comp.refdes
+                    for comp in self._pedb.components.instances
+                    if not comp.type.lower() in ["resistor", "capacitor", "inductor"]
+                ]
+                if not self.components:
+                    raise ValueError("No components found in the design.")
+            if self.solder_balls:
+                for solder_ball in self.solder_balls:
+                    comp = solder_ball.ref_des
+                    if not comp in self.components:
+                        self._pedb.logger.warning(f"Component {comp} not found in the design, skipping")
+                        continue
+                    self._pedb.source_excitation.create_port_on_component(
+                        component=comp,
+                        net_list=self.signal_nets,
+                        port_type="coax_port",
+                        reference_net=self.power_ground_nets,
+                        solder_balls_height=solder_ball.height,
+                        solder_balls_size=solder_ball.diameter,
+                        solder_balls_mid_size=solder_ball.mid_diameter,
+                    )
+            else:
+                for component in self.components:
+                    self._pedb.source_excitation.create_port_on_component(
+                        component=component,
+                        net_list=self.signal_nets,
+                        port_type="coax_port",
+                        reference_net=self.power_ground_nets,
+                    )
+        self._pedb.logger.info(f"Ports created: {len(self._pedb.hfss.excitations)}")
+        # step 3: create simulation setup
+        self._pedb.logger.info(f"step 3: creating simulation setup")
+        setup = self._pedb.hfss.add_setup("Setup1")
+        setup.adaptive_settings.max_passes = self.simulation_setup.maximum_pass_number
+        setup.settings.mesh_frequency = self.simulation_setup.meshing_frequency
+        setup.add_sweep(
+            "AutoSweep",
+            start_freq=self.simulation_setup.start_frequency,
+            stop_freq=self.simulation_setup.stop_frequency,
+            step=self.simulation_setup.frequency_step,
+        )
+        if self.auto_mesh_seeding:
+            setup.auto_mesh_operation()
+        self._pedb.save()
+        self._pedb.close(terminate_rpc_session=close_rpc)
