@@ -537,3 +537,72 @@ class HFSSAutoConfiguration:
             setup.auto_mesh_operation()
         self._pedb.save()
         self._pedb.close(terminate_rpc_session=close_rpc)
+
+
+def create_hfss_auto_configuration(
+    edb: Optional["Edb"] = None,
+    *,
+    ansys_version: Optional[str] = None,
+    grpc: Optional[bool] = None,
+    source_edb_path: Optional[str] = None,
+    target_edb_path: Optional[str] = None,
+    signal_nets: Optional[list] = None,
+    power_ground_nets: Optional[list] = None,
+    batch_size: Optional[int] = None,
+    batch_groups: Optional[list] = None,
+    components: Optional[list[str]] = None,
+    solder_balls: Optional[list] = None,
+    simulation_setup: Optional[SimulationSetup] = None,
+    extent_type: Optional[str] = None,
+    cutout_expansion: Optional[float] = None,
+    auto_mesh_seeding: Optional[bool] = None,
+    port_type: Optional[str] = None,
+    create_pin_group: Optional[bool] = None,
+) -> HFSSAutoConfiguration:
+    """
+    Factory function that creates an HFSSAutoConfiguration instance
+    with optional overrides for every public attribute.
+
+    Parameters
+    ----------
+    All parameters are optional. When omitted, the class-level defaults
+    (defined in HFSSAutoConfiguration.__init__) are kept.
+
+    Returns
+    -------
+    HFSSAutoConfiguration
+        A fully configured instance ready for further use or inspection.
+    """
+    cfg = HFSSAutoConfiguration(edb)
+
+    # Scalar overrides
+    for attr, value in (
+        ("ansys_version", ansys_version),
+        ("grpc", grpc),
+        ("source_edb_path", source_edb_path),
+        ("target_edb_path", target_edb_path),
+        ("batch_size", batch_size),
+        ("extent_type", extent_type),
+        ("cutout_expansion", cutout_expansion),
+        ("auto_mesh_seeding", auto_mesh_seeding),
+        ("port_type", port_type),
+        ("create_pin_group", create_pin_group),
+    ):
+        if value is not None:
+            setattr(cfg, attr, value)
+
+    # List / container overrides
+    if signal_nets is not None:
+        cfg.signal_nets = signal_nets
+    if power_ground_nets is not None:
+        cfg.power_ground_nets = power_ground_nets
+    if batch_groups is not None:
+        cfg.batch_groups = batch_groups
+    if components is not None:
+        cfg.components = components
+    if solder_balls is not None:
+        cfg.solder_balls = solder_balls
+    if simulation_setup is not None:
+        cfg.simulation_setup = simulation_setup
+
+    return cfg
