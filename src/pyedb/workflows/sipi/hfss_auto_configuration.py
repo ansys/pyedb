@@ -525,7 +525,7 @@ class HFSSAutoConfiguration:
             for batch_group in self.batch_groups:
                 batch_count += 1
                 if not self.batch_group_folder:
-                    self.batch_group_folder = os.path.join(str(Path(self.source_edb_path).parent), "bacth_groups")
+                    self.batch_group_folder = os.path.join(str(Path(self.source_edb_path).parent), "batch_groups")
                     if batch_count == 1 and os.path.isdir(self.batch_group_folder):
                         os.chdir(os.path.expanduser("~"))
                         shutil.rmtree(self.batch_group_folder, onerror=del_ro)
