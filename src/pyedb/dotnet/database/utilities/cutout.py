@@ -574,16 +574,17 @@ class Cutout:
     ):
         _poly = self._extent()
         # Create new cutout cell/design
-        expansion_size = self._edb.edb_value(self.expansion_size).ToDouble()
-
         # validate nets in layout
         net_signals = [net for net in self._edb.layout.nets if net.name in self.signals]
+
+        # reference nets in layout
+        ref_nets = [net for net in self._edb.layout.nets if net.name in self.references]
 
         # validate references in layout
         _netsClip = convert_py_list_to_net_list(
             [net.api_object for net in self._edb.layout.nets if net.name in self.references]
         )
-        included_nets_list = self.signals + self.references
+        included_nets_list = net_signals + ref_nets
         included_nets = convert_py_list_to_net_list(
             [net.api_object for net in self._edb.layout.nets if net.name in included_nets_list]
         )
@@ -659,6 +660,7 @@ class Cutout:
                 all_list = reference_list
         else:
             all_list = self.signals + self.references
+            reference_list = self.references
 
         pins_to_preserve, nets_to_preserve = self.pins_to_preserve()
         for i in self._edb.nets.nets.values():
