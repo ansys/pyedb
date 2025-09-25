@@ -83,6 +83,7 @@ from pyedb.dotnet.database.nets import EdbNets
 from pyedb.dotnet.database.padstack import EdbPadstacks
 from pyedb.dotnet.database.siwave import EdbSiwave
 from pyedb.dotnet.database.stackup import Stackup
+from pyedb.dotnet.database.utilities.cutout import Cutout
 from pyedb.dotnet.database.utilities.hfss_simulation_setup import (
     HFSSPISimulationSetup,
     HfssSimulationSetup,
@@ -2068,120 +2069,33 @@ class Edb:
 
 
         """
-        expansion_factor = self.value(expansion_factor)
-        if expansion_factor > 0:
-            expansion_size = self.calculate_initial_extent(expansion_factor)
-        if signal_list is None:
-            signal_list = []
-        if isinstance(reference_list, str):
-            reference_list = [reference_list]
-        elif reference_list is None:
-            reference_list = []
-        if not use_pyaedt_cutout and custom_extent:
-            return self._create_cutout_on_point_list(
-                custom_extent,
-                units=custom_extent_units,
-                output_aedb_path=output_aedb_path,
-                open_cutout_at_end=open_cutout_at_end,
-                nets_to_include=signal_list + reference_list,
-                include_partial_instances=include_partial_instances,
-                keep_voids=keep_voids,
-            )
-        elif not use_pyaedt_cutout:
-            return self._create_cutout_legacy(
-                signal_list=signal_list,
-                reference_list=reference_list,
-                extent_type=extent_type,
-                expansion_size=expansion_size,
-                use_round_corner=use_round_corner,
-                output_aedb_path=output_aedb_path,
-                open_cutout_at_end=open_cutout_at_end,
-                use_pyaedt_extent_computing=use_pyaedt_extent_computing,
-                check_terminals=check_terminals,
-                include_pingroups=include_pingroups,
-                inlcude_voids_in_extents=include_voids_in_extents,
-            )
-        else:
-            legacy_path = self.edbpath
-            if expansion_factor > 0 and not custom_extent:
-                start = time.time()
-                self.save()
-                dummy_path = self.edbpath.replace(".aedb", "_smart_cutout_temp.aedb")
-                working_cutout = False
-                i = 1
-                expansion = expansion_size
-                while i <= maximum_iterations:
-                    self.logger.info("-----------------------------------------")
-                    self.logger.info("Trying cutout with {}mm expansion size".format(expansion * 1e3))
-                    self.logger.info("-----------------------------------------")
-                    result = self._create_cutout_multithread(
-                        signal_list=signal_list,
-                        reference_list=reference_list,
-                        extent_type=extent_type,
-                        expansion_size=expansion,
-                        use_round_corner=use_round_corner,
-                        number_of_threads=number_of_threads,
-                        custom_extent=custom_extent,
-                        output_aedb_path=dummy_path,
-                        remove_single_pin_components=remove_single_pin_components,
-                        use_pyaedt_extent_computing=use_pyaedt_extent_computing,
-                        extent_defeature=extent_defeature,
-                        custom_extent_units=custom_extent_units,
-                        check_terminals=check_terminals,
-                        include_pingroups=include_pingroups,
-                        preserve_components_with_model=preserve_components_with_model,
-                        include_partial=include_partial_instances,
-                        simple_pad_check=simple_pad_check,
-                        keep_lines_as_path=keep_lines_as_path,
-                        inlcude_voids_in_extents=include_voids_in_extents,
-                    )
-                    if self.are_port_reference_terminals_connected():
-                        if output_aedb_path:
-                            self.save_as(output_aedb_path)
-                        else:
-                            self.save_as(legacy_path)
-                        working_cutout = True
-                        break
-                    self.close()
-                    self.edbpath = legacy_path
-                    self.open_edb()
-                    i += 1
-                    expansion = expansion_size * i
-                if working_cutout:
-                    msg = "Cutout completed in {} iterations with expansion size of {}mm".format(i, expansion * 1e3)
-                    self.logger.info_timer(msg, start)
-                else:
-                    msg = "Cutout failed after {} iterations and expansion size of {}mm".format(i, expansion * 1e3)
-                    self.logger.info_timer(msg, start)
-                    return False
-            else:
-                result = self._create_cutout_multithread(
-                    signal_list=signal_list,
-                    reference_list=reference_list,
-                    extent_type=extent_type,
-                    expansion_size=expansion_size,
-                    use_round_corner=use_round_corner,
-                    number_of_threads=number_of_threads,
-                    custom_extent=custom_extent,
-                    output_aedb_path=output_aedb_path,
-                    remove_single_pin_components=remove_single_pin_components,
-                    use_pyaedt_extent_computing=use_pyaedt_extent_computing,
-                    extent_defeature=extent_defeature,
-                    custom_extent_units=custom_extent_units,
-                    check_terminals=check_terminals,
-                    include_pingroups=include_pingroups,
-                    preserve_components_with_model=preserve_components_with_model,
-                    include_partial=include_partial_instances,
-                    simple_pad_check=simple_pad_check,
-                    keep_lines_as_path=keep_lines_as_path,
-                    inlcude_voids_in_extents=include_voids_in_extents,
-                )
-            if result and not open_cutout_at_end and self.edbpath != legacy_path:
-                self.save()
-                self.close()
-                self.edbpath = legacy_path
-                self.open_edb()
-            return result
+        cutout = Cutout(self)
+        cutout.expansion_size = expansion_size
+        cutout.signal_list=signal_list
+        cutout.reference_list=reference_list
+        cutout.extent_type=extent_type
+        cutout.expansion_size=expansion_size
+        cutout.use_round_corner=use_round_corner
+        cutout.output_file=output_aedb_path
+        cutout.open_cutout_at_end=open_cutout_at_end
+        cutout.use_pyaedt_cutout=use_pyaedt_cutout
+        cutout.number_of_threads=number_of_threads
+        cutout.use_pyaedt_extent_computing=use_pyaedt_extent_computing
+        cutout.extent_defeatured=extent_defeature
+        cutout.remove_single_pin_components=remove_single_pin_components
+        cutout.custom_extent=custom_extent
+        cutout.custom_extent_units=custom_extent_units
+        cutout.include_partial_instances=include_partial_instances
+        cutout.keep_voids=keep_voids
+        cutout.check_terminals=check_terminals
+        cutout.include_pingroups=include_pingroups
+        cutout.expansion_factor=expansion_factor
+        cutout.maximum_iterations=maximum_iterations
+        cutout.preserve_components_with_model=preserve_components_with_model
+        cutout.simple_pad_check=simple_pad_check
+        cutout.keep_lines_as_path=keep_lines_as_path
+        cutout.include_voids_in_extents=include_voids_in_extents
+        return cutout.run()
 
     def _create_cutout_legacy(
         self,
