@@ -17,10 +17,10 @@ Typical use-cases
 ~~~~~~~~~~~~~~~~~
 *  Post-layout signal-integrity sign-off for high-speed digital interfaces (PCIe, DDR, USB, Ethernet, etc.)
 *  Automated impedance, insertion-loss and return-loss validation for every active net in the design
-*  Regression testing across design spins – every net is simulated with identical boundary conditions, mesh
-settings and port types
-*  Design-of-experiments (DoE) where the same schematic is re-simulated with different stack-ups, materials or
-solder-ball geometries
+*  Regression testing across design spins—every net is simulated with identical boundary conditions, mesh
+   settings, and port types
+*  Design-of-experiments (DoE) where the same schematic is re-simulated with different stack-ups, materials, or
+   solder-ball geometries
 
 What the helper does
 ~~~~~~~~~~~~~~~~~~~~
@@ -37,14 +37,14 @@ What the helper does
 The user only supplies:
 
 * path to the source EDB
-* (optionally) a list of nets or prefix patterns – everything else is auto-discovered
+* (optionally) a list of nets or prefix patterns—everything else is auto-discovered
 
 Design philosophy
 -----------------
-* **No manual GUI work** – 100 % script driven
-* **Repeatable** – identical settings for every net, every run
-* **Scalable** – cut-outs + batching keep problem size small enough for overnight turnaround on a 32-core box
-* **Extensible** – every numeric setting, port type or mesh strategy is exposed as a dataclass field
+* **No manual GUI work**—100 % script driven
+* **Repeatable**—identical settings for every net, every run
+* **Scalable**—cut-outs + batching keep problem size small enough for overnight turnaround on a 32-core box
+* **Extensible**—every numeric setting, port type or mesh strategy is exposed as a dataclass field
 
 Minimal quick-start
 -------------------
@@ -66,7 +66,7 @@ The snippet above produces a folder ``../hfss/serdes.aedb`` that contains:
 
 * a cut-out with ≤ 50 nets
 * coaxial ports on every component pin
-* adaptive mesh 10 GHz – 40 GHz sweep
+* adaptive mesh 10 GHz–40 GHz sweep
 * ready to be solved
 
 Class and data model
@@ -79,8 +79,8 @@ HFSSAutoConfiguration
    :undoc-members:
    :exclude-members: __init__, __post_init__
 
-SimulationSetup
-~~~~~~~~~~~~~~~
+Simulation setup
+~~~~~~~~~~~~~~~~
 .. autoclass:: pyedb.workflows.sipi.hfss_auto_configuration.SimulationSetup
    :members:
    :undoc-members:
@@ -193,9 +193,9 @@ Logging and error handling
 
 Performance notes
 -----------------
-* Typical cut-out + port creation time: **2 – 5 s per batch** (201 GB DDR4 board, 3000 nets, 32 cores)
+* Typical cut-out + port creation time: **2–5 s per batch** (201 GB DDR4 board, 3000 nets, 32 cores)
 * Memory footprint: **< 2 GB** per batch because only the clipped geometry is kept in memory
-* Scales linearly with number of batches – jobs can be dispatched to an HPC cluster independently
+* Scales linearly with number of batches—jobs can be dispatched to an HPC cluster independently
 
 API reference index
 -------------------
@@ -228,8 +228,6 @@ Complete PCIe Gen-4 sign-off
    )
    cfg.auto_populate_batch_groups(pattern=["PCIe"])  # only PCIe nets
    cfg.create_projects()
-
-
 
 Troubleshooting
 ---------------
