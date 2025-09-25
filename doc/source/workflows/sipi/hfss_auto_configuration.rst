@@ -35,17 +35,18 @@ Quick start
    from pyedb.hfss_auto_config import create_hfss_auto_configuration
 
    cfg = create_hfss_auto_configuration(
-       source_edb_path = r"Y:\designs\main_board.aedb",
-       signal_nets     = ["PCIe_RX0_P", "PCIe_RX0_N", "DDR4_A0"],
-       power_ground_nets = ["GND", "VCC"],
-       batch_size      = 50,
+       source_edb_path=r"Y:\designs\main_board.aedb",
+       signal_nets=["PCIe_RX0_P", "PCIe_RX0_N", "DDR4_A0"],
+       power_ground_nets=["GND", "VCC"],
+       batch_size=50,
    )
 
-   cfg.auto_populate_batch_groups()   # heuristic grouping
-   cfg.create_projects()              # yields Y:\designs\bacth_groups\*.aedb
+   cfg.auto_populate_batch_groups()  # heuristic grouping
+   cfg.create_projects()  # yields Y:\designs\bacth_groups\*.aedb
 
    # launch HFSS and solve
    import pyedb
+
    for prj in Path(cfg.batch_group_folder).glob("*.aedb"):
        edb = pyedb.Edb(edbpath=prj)
        edb.solve()
@@ -105,8 +106,8 @@ Create one project per high-speed interface while keeping diff-pairs intact:
 .. code-block:: python
 
    cfg = create_hfss_auto_configuration(
-       source_edb_path = r"Y:\designs\backplane.aedb",
-       batch_size      = 150,
+       source_edb_path=r"Y:\designs\backplane.aedb",
+       batch_size=150,
    )
 
    # only PCIe and 100 GbE nets, ignore everything else
@@ -114,9 +115,9 @@ Create one project per high-speed interface while keeping diff-pairs intact:
 
    # override global sim setup for the entire run
    cfg.add_simulation_setup(
-       meshing_frequency = "28GHz",
-       stop_frequency    = "60GHz",
-       replace           = True,
+       meshing_frequency="28GHz",
+       stop_frequency="60GHz",
+       replace=True,
    )
 
    cfg.create_projects()
@@ -129,19 +130,19 @@ Cut out a 2 mm region around a PMIC and attach explicit solder-ball geometry:
 .. code-block:: python
 
    cfg = create_hfss_auto_configuration(
-       source_edb_path = r"Y:\designs\pkg.aedb",
-       signal_nets     = ["VIN", "SW"],
-       power_ground_nets = ["GND", "VOUT"],
-       extent_type     = "convex_hull",
-       cutout_expansion = "2mm",
+       source_edb_path=r"Y:\designs\pkg.aedb",
+       signal_nets=["VIN", "SW"],
+       power_ground_nets=["GND", "VOUT"],
+       extent_type="convex_hull",
+       cutout_expansion="2mm",
    )
 
    cfg.add_solder_ball(
-       ref_des  = "U1",
-       shape    = "spheroid",
-       diameter = "0.3mm",
-       mid_diameter = "0.35mm",
-       height   = "0.2mm",
+       ref_des="U1",
+       shape="spheroid",
+       diameter="0.3mm",
+       mid_diameter="0.35mm",
+       height="0.2mm",
    )
 
    cfg.create_projects()
@@ -153,21 +154,21 @@ Generate two independent configurations and compare them:
 
 .. code-block:: python
 
-   cfg coarse = create_hfss_auto_configuration(
-       source_edb_path = r"Y:\designs\dut.aedb",
-       signal_nets     = [...],
-       simulation_setup = SimulationSetup(
-           meshing_frequency = "5GHz",
-           frequency_step    = "0.2GHz",
+   cfg_coarse = create_hfss_auto_configuration(
+       source_edb_path=r"Y:\designs\dut.aedb",
+       signal_nets=[...],
+       simulation_setup=SimulationSetup(
+           meshing_frequency="5GHz",
+           frequency_step="0.2GHz",
        ),
    )
 
    cfg_fine = create_hfss_auto_configuration(
-       source_edb_path = r"Y:\designs\dut.aedb",
-       signal_nets     = [...],
-       simulation_setup = SimulationSetup(
-           meshing_frequency = "15GHz",
-           frequency_step    = "0.02GHz",
+       source_edb_path=r"Y:\designs\dut.aedb",
+       signal_nets=[...],
+       simulation_setup=SimulationSetup(
+           meshing_frequency="15GHz",
+           frequency_step="0.02GHz",
        ),
    )
 
