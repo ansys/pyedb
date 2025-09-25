@@ -51,7 +51,7 @@ Minimal quick-start
 .. code-block:: python
 
    from pyedb import Edb
-   from pyedb.hfss_auto_configuration import create_hfss_auto_configuration
+   from pyedb.workflows.sipi.hfss_auto_configuration import create_hfss_auto_configuration
 
    cfg = create_hfss_auto_configuration(
        source_edb_path=r"../release/board.aedb",
