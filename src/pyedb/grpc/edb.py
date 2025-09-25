@@ -217,8 +217,8 @@ class Edb(EdbInit):
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
-        self.edbversion = edbversion
-        if not float(self.edbversion) >= 2025.2:
+        self.version = edbversion
+        if not float(self.version) >= 2025.2:
             raise "EDB gRPC is only supported with ANSYS release 2025R2 and higher."
         self.logger.info("Using PyEDB with gRPC as Beta until ANSYS 2025R2 official release.")
         self.isaedtowned = isaedtowned
@@ -620,7 +620,7 @@ class Edb(EdbInit):
             if self.db.is_null:
                 self.logger.warning("Error Opening db")
                 self._active_cell = None
-            self.logger.info(f"Database {os.path.split(self.edbpath)[-1]} Opened in {self.edbversion}")
+            self.logger.info(f"Database {os.path.split(self.edbpath)[-1]} Opened in {self.version}")
             self._active_cell = None
             if self.cellname:
                 for cell in self.active_db.circuit_cells:
@@ -1371,7 +1371,7 @@ class Edb(EdbInit):
             Layer filter file.
         """
         control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(inputGDS)[-1][:-3] + "xml")
-        if float(self.edbversion) < 2024.1:
+        if float(self.version) < 2024.1:
             if not is_linux and tech_file:
                 self.logger.error("Technology files are supported only in Linux. Use control file instead.")
                 return False
@@ -3062,7 +3062,7 @@ class Edb(EdbInit):
         if name in self.setups:
             self.logger.error("Setup name already used in the layout")
             return False
-        version = self.edbversion.split(".")
+        version = self.version.split(".")
         if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
             setup = GrpcRaptorXSimulationSetup.create(cell=self.active_cell, name=name)
             return RaptorXSimulationSetup(self, setup)
@@ -3253,7 +3253,7 @@ class Edb(EdbInit):
         defined_ports = {}
         project_connexions = None
         for edb_path, zone_info in zone_dict.items():
-            edb = Edb(edbversion=self.edbversion, edbpath=edb_path)
+            edb = Edb(edbversion=self.version, edbpath=edb_path)
             edb.cutout(
                 use_pyaedt_cutout=True,
                 custom_extent=zone_info[1],
@@ -3795,7 +3795,7 @@ class Edb(EdbInit):
                 "No padstack instances found inside evaluated voids during model creation for arbitrary waveports"
             )
             return False
-        cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion, restart_rpc_server=True)
+        cloned_edb = Edb(edbpath=output_edb, edbversion=self.version, restart_rpc_server=True)
 
         cloned_edb.stackup.add_layer(
             layer_name="ports",

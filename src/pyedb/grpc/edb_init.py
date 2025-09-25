@@ -43,23 +43,23 @@ class EdbInit(object):
     def __init__(self, edbversion):
         self.logger = settings.logger
         self._db = None
-        self.edbversion = edbversion
+        self.version = edbversion
         self.logger.info("Logger is initialized in EDB.")
         self.logger.info("legacy v%s", __version__)
         self.logger.info("Python version %s", sys.version)
         self.session = None
         if is_linux:
-            if env_value(self.edbversion) in os.environ:
-                self.base_path = env_path(self.edbversion)
+            if env_value(self.version) in os.environ:
+                self.base_path = env_path(self.version)
                 sys.path.append(self.base_path)
             else:
                 edb_path = os.getenv("PYAEDT_SERVER_AEDT_PATH")
                 if edb_path:
                     self.base_path = edb_path
                     sys.path.append(edb_path)
-                    os.environ[env_value(self.edbversion)] = self.base_path
+                    os.environ[env_value(self.version)] = self.base_path
         else:
-            self.base_path = env_path(self.edbversion)
+            self.base_path = env_path(self.version)
             sys.path.append(self.base_path)
         os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = self.base_path
         oa_directory = os.path.join(self.base_path, "common", "oa")
@@ -100,7 +100,7 @@ class EdbInit(object):
         """
         if not RpcSession.pid:
             RpcSession.start(
-                edb_version=self.edbversion,
+                edb_version=self.version,
                 port=port,
                 restart_server=restart_rpc_server,
             )
@@ -133,7 +133,7 @@ class EdbInit(object):
             RpcSession.pid = 0
         if not RpcSession.pid:
             RpcSession.start(
-                edb_version=self.edbversion,
+                edb_version=self.version,
                 port=port,
                 restart_server=restart_rpc_server,
             )
@@ -371,18 +371,6 @@ class EdbInit(object):
             True if the existing materials in Database are kept. False to remove existing materials in database.
         """
         self._db.import_material_from_control_file(control_file, schema_dir, append)
-
-    @property
-    def version(self):
-        """Get version of the Database.
-
-        Returns
-        -------
-        tuple(int, int)
-            A tuple of the version numbers [major, minor]
-        """
-        major, minor = self._db.version
-        return major, minor
 
     def scale(self, scale_factor):
         """Uniformly scale all geometry and their locations by a positive factor.

@@ -50,4 +50,3 @@ class TestClass:
         )
         hfss_auto_config.create_projects()
         assert sum(1 for item in Path(hfss_auto_config.batch_group_folder).iterdir() if item.is_dir()) == 2
-        edbapp.close()
