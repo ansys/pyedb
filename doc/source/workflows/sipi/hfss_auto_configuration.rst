@@ -149,9 +149,9 @@ Mesh and sweep defaults
 .. list-table::
    :header-rows: 1
 
-   * Attribute
-     Default
-     Remark
+   * - Attribute
+     - Default
+     - Remark
    * meshing_frequency
      10 GHz
      Adaptive mesh frequency
