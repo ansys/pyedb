@@ -88,9 +88,9 @@ combined_ref = re.compile("|".join("(?:%s)" % p for p in ref_patterns), re.I)
 class SolderBallsInfo:
     ref_des: str = field(default="")
     shape: str = field(default="cylinder")
-    diameter: Union[str, float] = None  # auto evaluated if None
-    mid_diameter: Optional[Union[str, float]] = None  # Only for spheroid shape
-    height: Union[str, float] = None  # auto evaluated if None
+    diameter: Optional[Union[str, float]] = None
+    mid_diameter: Optional[Union[str, float]] = None
+    height: Optional[Union[str, float]] = None
 
 
 @dataclass
@@ -225,11 +225,10 @@ class HFSSAutoConfiguration:
     def add_solder_ball(
         self,
         ref_des: str,
-        *,
         shape: str = "cylinder",
-        diameter: Union[str, float, None] = None,
-        mid_diameter: Union[str, float, None] = None,
-        height: Union[str, float, None] = None,
+        diameter: Optional[Union[str, float]] = None,
+        mid_diameter: Optional[Union[str, float]] = None,
+        height: Optional[Union[str, float]] = None,
     ) -> SolderBallsInfo:
         """
         Append a new :class:`.SolderBallsInfo` entry to the configuration.
@@ -283,11 +282,11 @@ class HFSSAutoConfiguration:
 
     def add_simulation_setup(
         self,
-        meshing_frequency: Union[str, float] = "10GHz",
+        meshing_frequency: Optional[Union[str, float]] = "10GHz",
         maximum_pass_number: int = 15,
-        start_frequency: Union[str, float] = 0,
-        stop_frequency: Union[str, float] = "40GHz",
-        frequency_step: Union[str, float] = "0.05GHz",
+        start_frequency: Optional[Union[str, float]] = 0,
+        stop_frequency: Optional[Union[str, float]] = "40GHz",
+        frequency_step: Optional[Union[str, float]] = "0.05GHz",
         replace: bool = True,
     ) -> SimulationSetup:
         r"""
@@ -655,7 +654,7 @@ def create_hfss_auto_configuration(
     solder_balls: Optional[list] = None,
     simulation_setup: Optional[SimulationSetup] = None,
     extent_type: Optional[str] = None,
-    cutout_expansion: Optional[float] = None,
+    cutout_expansion: Optional[Union[str, float]] = None,
     auto_mesh_seeding: Optional[bool] = None,
     port_type: Optional[str] = None,
     create_pin_group: Optional[bool] = None,
