@@ -647,7 +647,8 @@ def create_hfss_auto_configuration(
     source_edb_path: Optional[str] = None,
     target_edb_path: Optional[str] = None,
     signal_nets: Optional[list] = None,
-    power_ground_nets: Optional[list] = None,
+    power_nets: Optional[list] = None,
+    reference_net: Optional[str] = None,
     batch_size: Optional[int] = None,
     batch_groups: Optional[list] = None,
     components: Optional[list[str]] = None,
@@ -694,8 +695,10 @@ def create_hfss_auto_configuration(
     # List / container overrides
     if signal_nets is not None:
         cfg.signal_nets = signal_nets
-    if power_ground_nets is not None:
-        cfg.power_ground_nets = power_ground_nets
+    if power_nets is not None:
+        cfg.power_nets = power_nets
+    if reference_net is not None:
+        cfg.reference_net = reference_net
     if batch_groups is not None:
         cfg.batch_groups = batch_groups
     if components is not None:
