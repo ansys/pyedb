@@ -594,8 +594,8 @@ class Cutout:
         self._add_setups(_cutout)
 
         _dbCells = [_cutout]
-        if self.output_file():
-            db2 = self._edb.core.Database.Create(self.output_file())
+        if self.output_file:
+            db2 = self._edb.core.Database.Create(self.output_file)
             _success = db2.Save()
             _dbCells = convert_py_list_to_net_list(_dbCells)
             db2.CopyCells(_dbCells)  # Copies cutout cell/design to db2 project
