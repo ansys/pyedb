@@ -487,13 +487,16 @@ class Cutout:
         return _pins_to_preserve, _nets_to_preserve
 
     def _compute_pyaedt_extent(self):
+        signal_nets = [self._edb.nets.nets[n] for n in self.signals]
+
         if str(self.extent_type).lower() in ["conforming", "conformal", "1"]:
             _poly = self._create_conformal(
                 1e-12,
             )
+
         elif str(self.extent_type).lower() in ["bounding", "0"]:
             _poly = self._edb.layout.expanded_extent(
-                self.signals,
+                signal_nets,
                 self._edb.core.Geometry.ExtentType.BoundingBox,
                 self.expansion_size,
                 False,
