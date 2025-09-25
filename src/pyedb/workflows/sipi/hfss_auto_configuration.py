@@ -33,6 +33,56 @@ from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 from pyedb import Edb
 
+# patterns used for Regex matching of ground/reference nets
+ref_patterns = [
+    r"^GND\d*$",
+    r"^GND_\w+",
+    r"^GND$",
+    r"^VSS\d*$",
+    r"^VSS\w*",
+    r"^DGND$",
+    r"^AGND$",
+    r"^PGND$",
+    r"^EGND$",
+    r"^SGND$",
+    r"^REF$",
+    r"^VREF[A-Z0-9]*",
+    r"^VREF$",
+    r"^VREF_\d+\.\d+V$",
+    r".*_REF$",
+    r".*REF$",
+    r"^VR[A-Z0-9]*",
+    r"^VTT$",
+    r"^VTT\d*V$",
+    r"^VDDQ_REF$",
+    r"^VPP$",
+    r"^VCCO_\w+",
+    r"^VCCA_\w+",
+    r"^VCCD_\w+",
+    r"^VSYS$",
+    r"^VBUS$",
+    r"^0V$",
+    r"^0V_\w+",
+    r"^GND plane$",
+    r"^GROUND$",
+    r"^SENSE\d*$",
+    r"^KSENSE\w*",
+    r"^CAL\d*$",
+    r"^CAL_\w+",
+    r"^VCM\d*$",
+    r"^VCM\w+",
+    r"^BGREF$",
+    r"^BGVREF$",
+    r"^VREFP$",
+    r"^VREFN$",
+    r"^AVSS$",
+    r"^AVDD$",
+    r"^DVSS$",
+    r"^DVDD$",
+]
+
+combined_ref = re.compile("|".join("(?:%s)" % p for p in ref_patterns), re.I)
+
 
 @dataclass
 class SolderBallsInfo:
@@ -68,7 +118,8 @@ class HFSSAutoConfiguration:
         self.target_edb_path: str = ""
         self.batch_group_folder: str = ""
         self.signal_nets: list = []
-        self.power_ground_nets: list = []
+        self.power_nets: list = []
+        self.reference_net: str = ""
         self.batch_size: int = 100
         self.batch_groups: list[BatchGroup] = []
         self.components: list[str] = []
@@ -117,7 +168,20 @@ class HFSSAutoConfiguration:
         if not self._pedb:
             self._pedb = Edb(edbpath=self.source_edb_path, version=self.ansys_version, grpc=self.grpc)
         self.signal_nets = list(self._pedb.nets.signal.keys())
-        self.power_ground_nets = list(self._pedb.nets.power.keys())
+        all_power_nets = list(self._pedb.nets.power.keys())
+        reference_nets = [n for n in all_power_nets if combined_ref.match(n)]
+
+        # --- guarantee: any net whose *upper-case* name contains "GND" comes first ---
+        def __key(n):
+            return (0, n) if "GND" in n.upper() else (1, n)
+
+        _ref_nets = list(sorted(reference_nets, key=__key))
+        if len(_ref_nets) > 1:
+            self._pedb.logger.warning(
+                f"Multiple candidate reference nets found: {_ref_nets}. Using {_ref_nets[0]} as the reference net."
+            )
+            self.reference_net = _ref_nets[0]
+        self.power_nets = [n for n in all_power_nets if n not in _ref_nets]
         self.group_nets_by_prefix(pattern)
         self._pedb.close(terminate_rpc_session=False)
 
@@ -483,39 +547,44 @@ class HFSSAutoConfiguration:
             raise FileNotFoundError(f"Failed to copy EDB to {self.target_edb_path}")
         self._pedb = Edb(edbpath=self.target_edb_path, version=self.ansys_version, grpc=self.grpc)
 
+    def __get_components_using_signal_nets(self):
+        self.components = list(
+            set(
+                [
+                    refdes
+                    for refdes, comp in self._pedb.components.instances.items()
+                    if not comp.type.lower() in ["resistor", "capacitor", "inductor"]
+                    and not set(comp.nets).isdisjoint(self.signal_nets)
+                ]
+            )
+        )
+
     def _create_project(self, close_rpc: bool = True):
         if not self.target_edb_path:
             raise ValueError("Project path is empty.")
         if not self.signal_nets:
             raise ValueError("No signal nets defined.")
-        if not self.power_ground_nets:
-            raise ValueError("No power/ground nets defined.")
+        if not self.reference_net:
+            raise ValueError("No reference net defined.")
         # step 1: cutout
         self._pedb.logger.info(f"Creating project {self.target_edb_path}")
         self._pedb.logger.info(f"step 1: cutout")
+        clipped_nets = self.power_nets
+        clipped_nets.append(self.reference_net)
         self._pedb.cutout(
             signal_list=self.signal_nets,
-            reference_list=self.power_ground_nets,
+            reference_list=clipped_nets,
             extent_type=self.extent_type,
             expansion_size=self.cutout_expansion,
         )
         # step 2: create Ports
         self._pedb.logger.info(f"step 2: creating ports")
-        if self.port_type == "coaxial":
+        if not self.components:
+            self._pedb.logger.info("No components provided, searching component instances")
+            self.__get_components_using_signal_nets()
             if not self.components:
-                self._pedb.logger.info("No components provided, searching component instances")
-                self.components = list(
-                    set(
-                        [
-                            refdes
-                            for refdes, comp in self._pedb.components.instances.items()
-                            if not comp.type.lower() in ["resistor", "capacitor", "inductor"]
-                            and not set(comp.nets).isdisjoint(self.signal_nets)
-                        ]
-                    )
-                )
-                if not self.components:
-                    raise ValueError("No components found in the design.")
+                raise ValueError("No components found in the design.")
+        if self.port_type in ["coaxial", "coax", "coax_port", "coaxial_port"]:
             if self.solder_balls:
                 for solder_ball in self.solder_balls:
                     comp = solder_ball.ref_des
@@ -526,7 +595,7 @@ class HFSSAutoConfiguration:
                         component=comp,
                         net_list=self.signal_nets,
                         port_type="coax_port",
-                        reference_net=self.power_ground_nets,
+                        reference_net=self.reference_net,
                         solder_balls_height=solder_ball.height,
                         solder_balls_size=solder_ball.diameter,
                         solder_balls_mid_size=solder_ball.mid_diameter,
@@ -537,8 +606,18 @@ class HFSSAutoConfiguration:
                         component=component,
                         net_list=self.signal_nets,
                         port_type="coax_port",
-                        reference_net=self.power_ground_nets,
+                        reference_net=self.reference_net,
                     )
+        elif self.port_type in ["circuit_port", "circuit", "circuit_ports"]:
+            for component in self.components:
+                self._pedb.components.create_port_on_component(
+                    component=component,
+                    net_list=self.signal_nets,
+                    port_type="circuit_port",
+                    do_pingroup=self.create_pin_group,
+                    reference_net=self.reference_net,
+                )
+
         self._pedb.logger.info(f"Ports created: {len(self._pedb.hfss.excitations)}")
         # step 3: create simulation setup
         self._pedb.logger.info(f"step 3: creating simulation setup")
