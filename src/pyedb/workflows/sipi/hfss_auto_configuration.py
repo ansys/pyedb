@@ -552,7 +552,7 @@ class HFSSAutoConfiguration:
                 [
                     refdes
                     for refdes, comp in self._pedb.components.instances.items()
-                    if not comp.type.lower() in ["resistor", "capacitor", "inductor"]
+                    if comp.type.lower() not in ["resistor", "capacitor", "inductor"]
                     and not set(comp.nets).isdisjoint(self.signal_nets)
                 ]
             )

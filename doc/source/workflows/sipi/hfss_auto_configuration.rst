@@ -51,7 +51,7 @@ Minimal quick-start
 .. code-block:: python
 
    from pyedb import Edb
-   from pyedb.hfss_auto_configuration import create_hfss_auto_configuration
+   from pyedb.workflows.sipi.hfss_auto_configuration import create_hfss_auto_configuration
 
    cfg = create_hfss_auto_configuration(
        source_edb_path=r"../release/board.aedb",
@@ -74,26 +74,26 @@ Class and data model
 
 HFSSAutoConfiguration
 ~~~~~~~~~~~~~~~~~~~~~
-.. autoclass:: pyedb.hfss_auto_configuration.HFSSAutoConfiguration
+.. autoclass:: pyedb.workflows.sipi.hfss_auto_configuration.HFSSAutoConfiguration
    :members:
    :undoc-members:
    :exclude-members: __init__, __post_init__
 
 SimulationSetup
 ~~~~~~~~~~~~~~~
-.. autoclass:: pyedb.hfss_auto_configuration.SimulationSetup
+.. autoclass:: pyedb.workflows.sipi.hfss_auto_configuration.SimulationSetup
    :members:
    :undoc-members:
 
 BatchGroup
 ~~~~~~~~~~
-.. autoclass:: pyedb.hfss_auto_configuration.BatchGroup
+.. autoclass:: pyedb.workflows.sipi.hfss_auto_configuration.BatchGroup
    :members:
    :undoc-members:
 
 SolderBallsInfo
 ~~~~~~~~~~~~~~~
-.. autoclass:: pyedb.hfss_auto_configuration.SolderBallsInfo
+.. autoclass:: pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo
    :members:
    :undoc-members:
 
@@ -149,9 +149,9 @@ Mesh and sweep defaults
 .. list-table::
    :header-rows: 1
 
-   * Attribute
-     Default
-     Remark
+   * - Attribute
+     - Default
+     - Remark
    * meshing_frequency
      10 GHz
      Adaptive mesh frequency
