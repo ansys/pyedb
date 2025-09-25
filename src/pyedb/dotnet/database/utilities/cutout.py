@@ -6,16 +6,17 @@ from pyedb.dotnet.database.general import convert_py_list_to_net_list
 
 
 class Cutout:
-    def __int__(self, edb):
-        self.__edb = edb
-        self.__signal_list = []
-        self.__reference_list = []
+    def __init__(self, edb):
+        self._edb = edb
+        self.__signal_nets = []
+        self.__reference_nets = []
         self.__extent_type = "ConvexHull"
         self.__expansion_size = 0.002
         self.__use_round_corner = False
         self.__output_aedb_path = None
         self.__open_cutout_at_end = True
         self.__use_pyaedt_cutout = True
+        self.__smart_cutout = False
         self.__number_of_threads = 1
         self.__use_pyaedt_extent_computing = True
         self.__extent_defeature = 0
@@ -56,25 +57,24 @@ class Cutout:
     @property
     def signals(self):
         """List of signals to apply cutout."""
-        return self.__signal_list if isinstance(self.__signal_list, list) else [self.__signal_list]
+        return self.__signal_nets if isinstance(self.__signal_nets, list) else [self.__signal_nets]
 
     @signals.setter
     def signals(self, value):
-        self.__signal_list = value
+        self.__signal_nets = value
 
     @property
     def references(self):
         """List of reference nets to apply cutout."""
-        return self.__reference_list if isinstance(self.__reference_list, list) else [self.__reference_list]
-
+        return self.__reference_nets if isinstance(self.__reference_nets, list) else [self.__reference_nets]
 
     @references.setter
     def references(self, value):
-        self.__reference_list = value
+        self.__reference_nets = value
 
     @property
     def extent_type(self):
-        """Extent type. """
+        """Extent type."""
         return self.__extent_type
 
     @extent_type.setter
@@ -176,8 +176,8 @@ class Cutout:
     @property
     def include_partial_instances(self):
         """Whether to include padstack instances that have bounding boxes intersecting with point list polygons.
-            This operation may slow down the cutout export.Valid only if `custom_extend` and
-            `use_pyaedt_cutout` is provided."""
+        This operation may slow down the cutout export.Valid only if `custom_extend` and
+        `use_pyaedt_cutout` is provided."""
         return self.__include_partial_instances
 
     @include_partial_instances.setter
@@ -187,7 +187,7 @@ class Cutout:
     @property
     def keep_voids(self):
         """Boolean used for keep or not the voids intersecting the polygon used for clipping the layout.
-           Default value is ``True``, ``False`` will remove the voids.Valid only if `custom_extend` is provided.
+        Default value is ``True``, ``False`` will remove the voids.Valid only if `custom_extend` is provided.
         """
         return self.__keep_voids
 
@@ -198,7 +198,7 @@ class Cutout:
     @property
     def check_terminals(self):
         """Whether to check for all reference terminals and increase extent to include them into the cutout.
-            This applies to components which have a model (spice, touchstone or netlist) associated.
+        This applies to components which have a model (spice, touchstone or netlist) associated.
         """
         return self.__check_terminals
 
@@ -209,7 +209,7 @@ class Cutout:
     @property
     def include_pingroups(self):
         """Whether to check for all pingroups terminals and increase extent to include them into the cutout.
-           It requires ``check_terminals``.
+        It requires ``check_terminals``.
         """
         return self.__include_pingroups
 
@@ -217,11 +217,10 @@ class Cutout:
     def include_pingroups(self, value):
         self.__include_pingroups = value
 
-
     @property
     def preserve_components_with_model(self):
         """Whether to preserve all pins of components that have associated models (Spice or NPort).
-           This parameter is applicable only for a PyAEDT cutout (except point list).
+        This parameter is applicable only for a PyAEDT cutout (except point list).
         """
         return self.__preserve_components_with_model
 
@@ -229,14 +228,12 @@ class Cutout:
     def preserve_components_with_model(self, value):
         self.__preserve_components_with_model = value
 
-
-
     @property
     def keep_lines_as_path(self):
         """Whether to keep the lines as Path after they are cutout or convert them to PolygonData.
-            This feature works only in Electronics Desktop (3D Layout).
-            If the flag is set to ``True`` it can cause issues in SiWave once the Edb is imported.
-            Default is ``False`` to generate PolygonData of cut lines.
+        This feature works only in Electronics Desktop (3D Layout).
+        If the flag is set to ``True`` it can cause issues in SiWave once the Edb is imported.
+        Default is ``False`` to generate PolygonData of cut lines.
         """
         return self.__keep_lines_as_path
 
@@ -247,8 +244,8 @@ class Cutout:
     @property
     def include_voids_in_extents(self):
         """Whether to compute and include voids in pyaedt extent before the cutout. Cutout time can be affected.
-            It works only with Conforming cutout.
-            Default is ``False`` to generate extent without voids.
+        It works only with Conforming cutout.
+        Default is ``False`` to generate extent without voids.
         """
         return self.__include_voids_in_extents
 
@@ -263,29 +260,29 @@ class Cutout:
 
     @smart_cutout.setter
     def smart_cutout(self, value):
-        self.__smart_cutout=value
+        self.__smart_cutout = value
         if value and self.expansion_factor == 0:
             self.expansion_factor = 2
 
     @property
     def expansion_factor(self):
         """The method computes a float representing the largest number between
-            the dielectric thickness or trace width multiplied by the expansion_factor factor.
-            The trace width search is limited to nets with ports attached. Works only if `use_pyaedt_cutout`.
-            Default is `0` to disable the search.
+        the dielectric thickness or trace width multiplied by the expansion_factor factor.
+        The trace width search is limited to nets with ports attached. Works only if `use_pyaedt_cutout`.
+        Default is `0` to disable the search.
         """
         return self.__expansion_factor
 
     @expansion_factor.setter
     def expansion_factor(self, value):
         self.__expansion_factor = value
-        if value>0:
-            self.smart_cutout=True
+        if value > 0:
+            self.smart_cutout = True
 
     @property
     def maximum_iterations(self):
         """Maximum number of iterations before stopping a search for a cutout with an error.
-            Default is `10`.
+        Default is `10`.
         """
         return self.__maximum_iterations
 
@@ -296,11 +293,11 @@ class Cutout:
     @property
     def logger(self):
         """Edb logger."""
-        return self.__edb.logger
+        return self._edb.logger
 
     @property
     def _modeler(self):
-        return self.__edb.modeler
+        return self._edb.modeler
 
     def calculate_initial_extent(self, expansion_factor):
         """Compute a float representing the larger number between the dielectric thickness or trace width
@@ -316,18 +313,18 @@ class Cutout:
         float
         """
         nets = []
-        for port in self.__edb.excitations.values():
+        for port in self._edb.excitations.values():
             nets.append(port.net_name)
-        for port in self.__edb.sources.values():
+        for port in self._edb.sources.values():
             nets.append(port.net_name)
         nets = list(set(nets))
         max_width = 0
         for net in nets:
-            for primitive in self.__edb.nets[net].primitives:
+            for primitive in self._edb.nets[net].primitives:
                 if primitive.type == "Path":
                     max_width = max(max_width, primitive.width)
 
-        for layer in list(self.__edb.stackup.dielectric_layers.values()):
+        for layer in list(self._edb.stackup.dielectric_layers.values()):
             max_width = max(max_width, layer.thickness)
 
         max_width = max_width * expansion_factor
@@ -341,25 +338,25 @@ class Cutout:
         _polys = []
         _pins_to_preserve, _ = self.pins_to_preserve()
         if _pins_to_preserve:
-            insts = self.__edb.padstacks.instances
+            insts = self._edb.padstacks.instances
             for i in _pins_to_preserve:
                 p = insts[i].position
                 pos_1 = [i - 1e-12 for i in p]
                 pos_2 = [i + 1e-12 for i in p]
-                plane = self.__edb.modeler.Shape("rectangle", pointA=pos_1, pointB=pos_2)
-                rectangle_data = self.__edb.modeler.shape_to_polygon_data(plane)
+                plane = self._edb.modeler.Shape("rectangle", pointA=pos_1, pointB=pos_2)
+                rectangle_data = self._edb.modeler.shape_to_polygon_data(plane)
                 _polys.append(rectangle_data)
-        for prim in self.__edb.modeler.primitives:
+        for prim in self._edb.modeler.primitives:
             if prim is not None and prim.net_name in self.signals:
                 _polys.append(prim.primitive_object.GetPolygonData())
         if self.smart_cutout:
             objs_data = self._smart_cut()
             if objs_data:
                 _polys.extend(objs_data)
-        _poly = self.__edb.core.Geometry.PolygonData.GetConvexHullOfPolygons(convert_py_list_to_net_list(_polys))
+        _poly = self._edb.core.Geometry.PolygonData.GetConvexHullOfPolygons(convert_py_list_to_net_list(_polys))
         _poly = _poly.Expand(self.expansion_size, tolerance, self.use_round_corner, self.expansion_size)
-        _poly_list = convert_py_list_to_net_list([_poly])
-        _poly = self.__edb.core.geometry.polygon_data.get_convex_hull_of_polygons(_poly_list)
+        _poly_list = convert_py_list_to_net_list(list(_poly)[0])
+        _poly = self._edb.core.Geometry.PolygonData.GetConvexHullOfPolygons(_poly_list)
         return _poly
 
     def _create_conformal(
@@ -369,16 +366,16 @@ class Cutout:
         _polys = []
         _pins_to_preserve, _ = self.pins_to_preserve()
         if _pins_to_preserve:
-            insts = self.__edb.padstacks.instances
+            insts = self._edb.padstacks.instances
             for i in _pins_to_preserve:
                 p = insts[i].position
                 pos_1 = [i - self.expansion_size for i in p]
                 pos_2 = [i + self.expansion_size for i in p]
-                plane = self.__edb.modeler.Shape("rectangle", pointA=pos_1, pointB=pos_2)
-                rectangle_data = self.__edb.modeler.shape_to_polygon_data(plane)
+                plane = self._edb.modeler.Shape("rectangle", pointA=pos_1, pointB=pos_2)
+                rectangle_data = self._edb.modeler.shape_to_polygon_data(plane)
                 _polys.append(rectangle_data)
 
-        for prim in self.__edb.modeler.primitives:
+        for prim in self._edb.modeler.primitives:
             if prim is not None and prim.net_name in self.signals:
                 _polys.append(prim)
         if self.smart_cutout:
@@ -387,7 +384,7 @@ class Cutout:
         k = 0
         expansion_size = self.expansion_size
         delta = self.expansion_size / 5
-        _poly_unite=[]
+        _poly_unite = []
         while k < 10:
             unite_polys = []
             for i in _polys:
@@ -426,7 +423,7 @@ class Cutout:
                             pass
                         finally:
                             unite_polys.extend(list(obj_data))
-            _poly_unite = self.__edb.core.Geometry.PolygonData.Unite(convert_py_list_to_net_list(unite_polys))
+            _poly_unite = self._edb.core.Geometry.PolygonData.Unite(convert_py_list_to_net_list(unite_polys))
             if len(_poly_unite) == 1:
                 self.logger.info("Correctly computed Extension at first iteration.")
                 return _poly_unite[0]
@@ -444,27 +441,29 @@ class Cutout:
         from pyedb.dotnet.clr_module import Tuple
 
         _polys = []
-        terms = [term for term in self.__edb.layout.terminals if int(term._edb_object.GetBoundaryType()) in [0, 3, 4, 7, 8]]
+        terms = [
+            term for term in self._edb.layout.terminals if int(term._edb_object.GetBoundaryType()) in [0, 3, 4, 7, 8]
+        ]
         locations = []
         for term in terms:
             if term._edb_object.GetTerminalType().ToString() == "PointTerminal" and term.net.name in self.references:
                 pd = term._edb_object.GetParameters()[1]
                 locations.append([pd.X.ToDouble(), pd.Y.ToDouble()])
         for point in locations:
-            pointA = self.__edb.core.geometry.point_data(
-                self.__edb.edb_value(point[0] - self.expansion_size),
-                self.__edb.edb_value(point[1] - self.expansion_size),
+            pointA = self._edb.core.geometry.point_data(
+                self._edb.edb_value(point[0] - self.expansion_size),
+                self._edb.edb_value(point[1] - self.expansion_size),
             )
-            pointB = self.__edb.core.geometry.point_data(
-                self.__edb.edb_value(point[0] + self.expansion_size),
-                self.__edb.edb_value(point[1] + self.expansion_size),
+            pointB = self._edb.core.geometry.point_data(
+                self._edb.edb_value(point[0] + self.expansion_size),
+                self._edb.edb_value(point[1] + self.expansion_size),
             )
 
             points = Tuple[
-                self.__edb.core.geometry.geometry.PointData,
-                self.__edb.core.geometry.geometry.PointData,
+                self._edb.core.geometry.geometry.PointData,
+                self._edb.core.geometry.geometry.PointData,
             ](pointA, pointB)
-            _polys.append(self.__edb.core.geometry.polygon_data.create_from_bbox(points))
+            _polys.append(self._edb.core.geometry.polygon_data.create_from_bbox(points))
         return _polys
 
     def pins_to_preserve(self):
@@ -472,7 +471,7 @@ class Cutout:
         _nets_to_preserve = []
 
         if self.preserve_components_with_model:
-            for el in self.__edb.layout.groups:
+            for el in self._edb.layout.groups:
                 if el.model_type in [
                     "SPICEModel",
                     "SParameterModel",
@@ -481,7 +480,7 @@ class Cutout:
                     _pins_to_preserve.extend([i.id for i in el.pins.values()])
                     _nets_to_preserve.extend(el.nets)
         if self.include_pingroups:
-            for pingroup in self.__edb.padstacks.pingroups:
+            for pingroup in self._edb.padstacks.pingroups:
                 for pin in pingroup.pins.values():
                     if pin.net_name in self.references:
                         _pins_to_preserve.append(pin.id)
@@ -489,13 +488,13 @@ class Cutout:
 
     def _compute_pyaedt_extent(self):
         if str(self.extent_type).lower() in ["conforming", "conformal", "1"]:
-                _poly = self._create_conformal(
-                    1e-12,
-                )
-        elif str(self.extent_type).lower() in ["bounding",  "0"]:
-            _poly = self.__edb.layout.expanded_extent(
+            _poly = self._create_conformal(
+                1e-12,
+            )
+        elif str(self.extent_type).lower() in ["bounding", "0"]:
+            _poly = self._edb.layout.expanded_extent(
                 self.signals,
-                self.__edb.core.Geometry.ExtentType.BoundingBox,
+                self._edb.core.Geometry.ExtentType.BoundingBox,
                 self.expansion_size,
                 False,
                 self.use_round_corner,
@@ -506,17 +505,17 @@ class Cutout:
                 1e-12,
             )
             _poly_list = convert_py_list_to_net_list([_poly])
-            _poly = self.__edb.core.geometry.polygon_data.get_convex_hull_of_polygons(_poly_list)
+            _poly = self._edb.core.Geometry.PolygonData.GetConvexHullOfPolygons(_poly_list)
         return _poly
 
     def _compute_legacy_extent(self):
         if str(self.extent_type).lower() in ["conforming", "conformal", "1"]:
-            extent_type = self.__edb.core.Geometry.ExtentType.Conforming
+            extent_type = self._edb.core.Geometry.ExtentType.Conforming
         elif str(self.extent_type).lower() in ["bounding", "0"]:
-            extent_type = self.__edb.core.Geometry.ExtentType.BoundingBox
+            extent_type = self._edb.core.Geometry.ExtentType.BoundingBox
         else:
-            extent_type = self.__edb.core.Geometry.ExtentType.ConvexHull
-        _poly = self.__edb.layout.expanded_extent(
+            extent_type = self._edb.core.Geometry.ExtentType.ConvexHull
+        _poly = self._edb.layout.expanded_extent(
             self.signals,
             extent_type,
             self.expansion_size,
@@ -532,9 +531,13 @@ class Cutout:
             point_list = self.custom_extent[::]
             if point_list[0] != point_list[-1]:
                 point_list.append(point_list[0])
-            point_list = [[self.__edb.number_with_units(i[0], self.custom_extent_units), self.__edb.number_with_units(i[1], self.custom_extent_units)] for i
-                          in
-                          point_list]
+            point_list = [
+                [
+                    self._edb.number_with_units(i[0], self.custom_extent_units),
+                    self._edb.number_with_units(i[1], self.custom_extent_units),
+                ]
+                for i in point_list
+            ]
             plane = self._modeler.Shape("polygon", points=point_list)
             _poly = self._modeler.shape_to_polygon_data(plane)
         else:
@@ -552,7 +555,7 @@ class Cutout:
 
     def _add_setups(self, _cutout):
         id = 1
-        for _setup in self.__edb.active_cell.SimulationSetups:
+        for _setup in self._edb.active_cell.SimulationSetups:
             # Empty string '' if coming from setup copy and don't set explicitly.
             _setup_name = _setup.GetName()
             if "GetSimSetupInfo" in dir(_setup):
@@ -566,31 +569,32 @@ class Cutout:
             else:
                 _cutout.AddSimulationSetup(_setup)  # Add simulation setup to the cutout design
 
-    def _create_cutout_legacy(self, ):
-
+    def _create_cutout_legacy(
+        self,
+    ):
         _poly = self._extent()
         # Create new cutout cell/design
-        expansion_size = self.__edb.edb_value(self.expansion_size).ToDouble()
+        expansion_size = self._edb.edb_value(self.expansion_size).ToDouble()
 
         # validate nets in layout
-        net_signals = [net for net in self.__edb.layout.nets if net.name in self.signals]
+        net_signals = [net for net in self._edb.layout.nets if net.name in self.signals]
 
         # validate references in layout
         _netsClip = convert_py_list_to_net_list(
-            [net.api_object for net in self.__edb.layout.nets if net.name in self.references]
-            )
+            [net.api_object for net in self._edb.layout.nets if net.name in self.references]
+        )
         included_nets_list = self.signals + self.references
         included_nets = convert_py_list_to_net_list(
-            [net.api_object for net in self.__edb.layout.nets if net.name in included_nets_list]
+            [net.api_object for net in self._edb.layout.nets if net.name in included_nets_list]
         )
-        _cutout = self.__edb.active_cell.CutOut(included_nets, _netsClip, _poly, True)
+        _cutout = self._edb.active_cell.CutOut(included_nets, _netsClip, _poly, True)
         # Analysis setups do not come over with the clipped design copy,
         # so add the analysis setups from the original here.
         self._add_setups(_cutout)
 
         _dbCells = [_cutout]
         if self.output_file():
-            db2 = self.__edb.core.Database.Create(self.output_file())
+            db2 = self._edb.core.Database.Create(self.output_file())
             _success = db2.Save()
             _dbCells = convert_py_list_to_net_list(_dbCells)
             db2.CopyCells(_dbCells)  # Copies cutout cell/design to db2 project
@@ -599,40 +603,40 @@ class Cutout:
                     if not net.GetName() in included_nets_list:
                         net.Delete()
                 _success = db2.Save()
-            for c in list(self.__edb._db.TopCircuitCells):
+            for c in list(self._edb._db.TopCircuitCells):
                 if c.GetName() == _cutout.GetName():
                     c.Delete()
             if self.open_cutout_at_end:  # pragma: no cover
-                self.__edb._db = db2
-                self.__edb.edbpath = self.output_file
-                self.__edb._active_cell = list(self.__edb.top_circuit_cells)[0]
-                self.__edb.edbpath = self.__edb.directory
-                self.__edb._init_objects()
+                self._edb._db = db2
+                self._edb.edbpath = self.output_file
+                self._edb._active_cell = list(self._edb.top_circuit_cells)[0]
+                self._edb.edbpath = self._edb.directory
+                self._edb._init_objects()
                 if self.remove_single_pin_components:
-                    self.__edb.components.delete_single_pin_rlc()
+                    self._edb.components.delete_single_pin_rlc()
                     self.logger.info_timer("Single Pins components deleted")
-                    self.__edb.components.refresh_components()
+                    self._edb.components.refresh_components()
             else:
                 if self.remove_single_pin_components:
-                    self.__edb.components.delete_single_pin_rlc()
+                    self._edb.components.delete_single_pin_rlc()
                     self.logger.info_timer("Single Pins components deleted")
-                    self.__edb.components.refresh_components()
+                    self._edb.components.refresh_components()
                 db2.Close()
                 source = os.path.join(self.output_file, "edb.def.tmp")
                 target = os.path.join(self.output_file, "edb.def")
-                self.__edb._wait_for_file_release(file_to_release=self.output_file)
+                self._edb._wait_for_file_release(file_to_release=self.output_file)
                 if os.path.exists(source) and not os.path.exists(target):
                     try:
                         shutil.copy(source, target)
                     except:
                         pass
         elif self.open_cutout_at_end:
-            self.__edb._active_cell = _cutout
-            self.__edb._init_objects()
+            self._edb._active_cell = _cutout
+            self._edb._init_objects()
             if self.__remove_single_pin_components:
-                self.__edb.components.delete_single_pin_rlc()
+                self._edb.components.delete_single_pin_rlc()
                 self.logger.info_timer("Single Pins components deleted")
-                self.__edb.components.refresh_components()
+                self._edb.components.refresh_components()
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(_poly.GetPolygonWithoutArcs().Points)]
 
     def _create_cutout_multithread(
@@ -641,14 +645,14 @@ class Cutout:
         from concurrent.futures import ThreadPoolExecutor
 
         if self.output_file:
-            self.__edb.save_as(self.output_file)
+            self._edb.save_as(self.output_file)
         self.logger.info("Cutout Multithread started.")
-        expansion_size = self.__edb.edb_value(self.expansion_size).ToDouble()
+        self.expansion_size = self._edb.value(self.expansion_size)
 
         timer_start = self.logger.reset_timer()
         if self.custom_extent:
             if not self.signals and not self.references:
-                reference_list = self.__edb.nets.netlist[::]
+                reference_list = self._edb.nets.netlist[::]
                 all_list = reference_list
             else:
                 reference_list = self.signals + self.references
@@ -657,7 +661,7 @@ class Cutout:
             all_list = self.signals + self.references
 
         pins_to_preserve, nets_to_preserve = self.pins_to_preserve()
-        for i in self.__edb.nets.nets.values():
+        for i in self._edb.nets.nets.values():
             name = i.name
             if name not in all_list and name not in nets_to_preserve:
                 i.net_object.Delete()
@@ -676,7 +680,7 @@ class Cutout:
                 reference_pinsts.append(item)
 
         with ThreadPoolExecutor(self.number_of_threads) as pool:
-            pool.map(lambda item: check_instances(item), self.__edb.layout.padstack_instances)
+            pool.map(lambda item: check_instances(item), self._edb.layout.padstack_instances)
 
         for i in pins_to_delete:
             i.delete()
@@ -695,7 +699,7 @@ class Cutout:
                         reference_prims.append(item)
 
         with ThreadPoolExecutor(self.number_of_threads) as pool:
-            pool.map(lambda item: check_prims(item), self.__edb.modeler.primitives)
+            pool.map(lambda item: check_prims(item), self._edb.modeler.primitives)
 
         for i in prim_to_delete:
             i.delete()
@@ -778,7 +782,9 @@ class Cutout:
             prims_to_delete.append(prim_1)
 
         def pins_clean(pinst):
-            if not pinst.in_polygon(_poly, include_partial=self.include_partial_instances, simple_check=self.simple_pad_check):
+            if not pinst.in_polygon(
+                _poly, include_partial=self.include_partial_instances, simple_check=self.simple_pad_check
+            ):
                 pins_to_delete.append(pinst)
 
         if not self.simple_pad_check:
@@ -800,7 +806,7 @@ class Cutout:
             pool.map(lambda item: clean_prim(item), reference_prims)
 
         for el in poly_to_create:
-            self.__edb.modeler.create_polygon(el[0], el[1], net_name=el[2], voids=el[3])
+            self._edb.modeler.create_polygon(el[0], el[1], net_name=el[2], voids=el[3])
 
         for prim in prims_to_delete:
             prim.delete()
@@ -809,19 +815,19 @@ class Cutout:
         self.logger.reset_timer()
 
         i = 0
-        for _, val in self.__edb.components.instances.items():
+        for _, val in self._edb.components.instances.items():
             if val.numpins == 0:
                 val.edbcomponent.Delete()
                 i += 1
                 i += 1
         self.logger.info("{} components deleted".format(i))
         if self.remove_single_pin_components:
-            self.__edb.components.delete_single_pin_rlc()
+            self._edb.components.delete_single_pin_rlc()
             self.logger.info_timer("Single Pins components deleted")
 
-        self.__edb.components.refresh_components()
+        self._edb.components.refresh_components()
         if self.output_file:
-            self.__edb.save_edb()
+            self._edb.save_edb()
         self.logger.info_timer("Cutout completed.", timer_start)
         self.logger.reset_timer()
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(_poly.GetPolygonWithoutArcs().Points)]
@@ -837,37 +843,36 @@ class Cutout:
                 self.expansion_factor = 0
             elif self.expansion_factor > 0:
                 expansion_size = self.calculate_initial_extent(self.expansion_factor)
-                self.__edb.save()
-                self.output_file = self.__edb.edbpath.replace(".aedb", "_smart_cutout_temp.aedb")
+                self._edb.save()
+                self.output_file = self._edb.edbpath.replace(".aedb", "_smart_cutout_temp.aedb")
 
-            legacy_path = self.__edb.edbpath
+            legacy_path = self._edb.edbpath
             start = time.time()
             working_cutout = False
             i = 1
-            expansion = expansion_size
+            expansion = self._edb.value(expansion_size)
             result = False
             while i <= self.maximum_iterations:
                 self.logger.info("-----------------------------------------")
-                self.logger.info("Trying cutout with {}mm expansion size".format(expansion * 1e3))
+                self.logger.info(f"Trying cutout with {expansion * 1e3}mm expansion size")
                 self.logger.info("-----------------------------------------")
-                result = self._create_cutout_multithread(
-                )
-                if result and self.__edb.are_port_reference_terminals_connected():
+                result = self._create_cutout_multithread()
+                if result and self._edb.are_port_reference_terminals_connected():
                     if self.output_file:
                         if self.smart_cutout:
                             self.output_file = out_file
-                        self.__edb.save_as(self.output_file)
+                        self._edb.save_as(self.output_file)
                     else:
-                        self.__edb.save_as(legacy_path)
+                        self._edb.save_as(legacy_path)
                     working_cutout = True
-                    if not self.open_cutout_at_end and self.__edb.edbpath != legacy_path:
-                        self.__edb.close()
-                        self.__edb.edbpath = legacy_path
-                        self.__edb.open_edb()
+                    if not self.open_cutout_at_end and self._edb.edbpath != legacy_path:
+                        self._edb.close()
+                        self._edb.edbpath = legacy_path
+                        self._edb.open_edb()
                     break
-                self.__edb.close()
-                self.__edb.edbpath = legacy_path
-                self.__edb.open_edb()
+                self._edb.close()
+                self._edb.edbpath = legacy_path
+                self._edb.open_edb()
                 i += 1
                 expansion = expansion_size * i
             if working_cutout:

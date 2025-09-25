@@ -99,7 +99,7 @@ from pyedb.generic.general_methods import generate_unique_name, is_linux, is_win
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
-from pyedb.misc.decorators import execution_timer
+from pyedb.misc.decorators import deprecate_argument_name, execution_timer
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflow import Workflow
@@ -1933,10 +1933,16 @@ class Edb:
         _poly = _poly.Expand(expansion_size, tolerance, round_corner, round_extension)[0]
         return _poly
 
+    @deprecate_argument_name(
+        {
+            "signal_list": "signal_nets",
+            "reference_list": "reference_nets",
+        }
+    )
     def cutout(
         self,
-        signal_list=None,
-        reference_list=None,
+        signal_nets=None,
+        reference_nets=None,
         extent_type="ConvexHull",
         expansion_size=0.002,
         use_round_corner=False,
@@ -1971,9 +1977,9 @@ class Edb:
 
         Parameters
         ----------
-         signal_list : list
+         signal_nets : list
             List of signal strings.
-        reference_list : list, optional
+        reference_nets : list, optional
             List of references to add. The default is ``["GND"]``.
         extent_type : str, optional
             Type of the extension. Options are ``"Conforming"``, ``"ConvexHull"``, and
@@ -2059,7 +2065,7 @@ class Edb:
         >>>      if "3V3" in net:
         >>>           signal_list.append(net)
         >>> power_list = ["PGND"]
-        >>> edb.cutout(signal_list=signal_list, reference_list=power_list, extent_type="Conforming")
+        >>> edb.cutout(signal_nets=signal_list, reference_nets=power_list, extent_type="Conforming")
         >>> end_time = str((time.time() - start) / 60)
         >>> edb.logger.info("Total legacy cutout time in min %s", end_time)
         >>> edb.nets.plot(signal_list, None, color_by_net=True)
@@ -2071,30 +2077,30 @@ class Edb:
         """
         cutout = Cutout(self)
         cutout.expansion_size = expansion_size
-        cutout.signal_list=signal_list
-        cutout.reference_list=reference_list
-        cutout.extent_type=extent_type
-        cutout.expansion_size=expansion_size
-        cutout.use_round_corner=use_round_corner
-        cutout.output_file=output_aedb_path
-        cutout.open_cutout_at_end=open_cutout_at_end
-        cutout.use_pyaedt_cutout=use_pyaedt_cutout
-        cutout.number_of_threads=number_of_threads
-        cutout.use_pyaedt_extent_computing=use_pyaedt_extent_computing
-        cutout.extent_defeatured=extent_defeature
-        cutout.remove_single_pin_components=remove_single_pin_components
-        cutout.custom_extent=custom_extent
-        cutout.custom_extent_units=custom_extent_units
-        cutout.include_partial_instances=include_partial_instances
-        cutout.keep_voids=keep_voids
-        cutout.check_terminals=check_terminals
-        cutout.include_pingroups=include_pingroups
-        cutout.expansion_factor=expansion_factor
-        cutout.maximum_iterations=maximum_iterations
-        cutout.preserve_components_with_model=preserve_components_with_model
-        cutout.simple_pad_check=simple_pad_check
-        cutout.keep_lines_as_path=keep_lines_as_path
-        cutout.include_voids_in_extents=include_voids_in_extents
+        cutout.signals = signal_nets
+        cutout.references = reference_nets
+        cutout.extent_type = extent_type
+        cutout.expansion_size = expansion_size
+        cutout.use_round_corner = use_round_corner
+        cutout.output_file = output_aedb_path
+        cutout.open_cutout_at_end = open_cutout_at_end
+        cutout.use_pyaedt_cutout = use_pyaedt_cutout
+        cutout.number_of_threads = number_of_threads
+        cutout.use_pyaedt_extent_computing = use_pyaedt_extent_computing
+        cutout.extent_defeatured = extent_defeature
+        cutout.remove_single_pin_components = remove_single_pin_components
+        cutout.custom_extent = custom_extent
+        cutout.custom_extent_units = custom_extent_units
+        cutout.include_partial_instances = include_partial_instances
+        cutout.keep_voids = keep_voids
+        cutout.check_terminals = check_terminals
+        cutout.include_pingroups = include_pingroups
+        cutout.expansion_factor = expansion_factor
+        cutout.maximum_iterations = maximum_iterations
+        cutout.preserve_components_with_model = preserve_components_with_model
+        cutout.simple_pad_check = simple_pad_check
+        cutout.keep_lines_as_path = keep_lines_as_path
+        cutout.include_voids_in_extents = include_voids_in_extents
         return cutout.run()
 
     def _create_cutout_legacy(
