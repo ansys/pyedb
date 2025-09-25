@@ -129,7 +129,7 @@ The first net that matches any of the following regexes (case-insensitive) is us
    ^GND_plane$       ^GROUND$         ^SENSE\d*$      ^KSENSE\w*
    … (≈ 30 patterns in total)
 
-If multiple candidates exist, the one whose name contains the substring “GND” is preferred; the rest become power nets.
+If multiple candidates exist, the one whose name contains the string “GND” is preferred; the rest become power nets.
 
 Port creation details
 ---------------------
@@ -242,4 +242,4 @@ Troubleshooting
 
 License
 -------
-MIT License – see file header for full text.
+MIT License, see file header for full text.
