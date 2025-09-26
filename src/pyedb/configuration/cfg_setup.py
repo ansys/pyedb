@@ -137,6 +137,11 @@ class CfgHFSSSetup(CfgSetup):
 
         self.apply_freq_sweep(edb_setup)
 
+        if self.auto_mesh_operation:
+            edb_setup.auto_mesh_operation(
+                **self.auto_mesh_operation
+            )
+
         for i in self.mesh_operations:
             edb_setup.add_length_mesh_operation(
                 name=i["name"],
@@ -178,6 +183,7 @@ class CfgHFSSSetup(CfgSetup):
         self.max_num_passes = kwargs.get("max_num_passes")
         self.max_mag_delta_s = kwargs.get("max_mag_delta_s")
 
+        self.auto_mesh_operation = kwargs.get("auto_mesh_operation", None)
         self.mesh_operations = kwargs.get("mesh_operations", [])
 
     def to_dict(self):
