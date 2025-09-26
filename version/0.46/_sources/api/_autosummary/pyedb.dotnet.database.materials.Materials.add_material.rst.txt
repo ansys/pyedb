@@ -1,0 +1,6 @@
+add\_material
+=============
+
+.. currentmodule:: pyedb.dotnet.database.materials
+
+.. automethod:: Materials.add_material

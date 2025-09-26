@@ -1,0 +1,6 @@
+hole\_finished\_size
+====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstack.hole_finished_size

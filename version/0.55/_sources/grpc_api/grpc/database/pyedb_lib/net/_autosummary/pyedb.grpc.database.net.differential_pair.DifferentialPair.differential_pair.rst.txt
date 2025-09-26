@@ -1,0 +1,6 @@
+differential\_pair
+==================
+
+.. currentmodule:: pyedb.grpc.database.net.differential_pair
+
+.. autoproperty:: DifferentialPair.differential_pair

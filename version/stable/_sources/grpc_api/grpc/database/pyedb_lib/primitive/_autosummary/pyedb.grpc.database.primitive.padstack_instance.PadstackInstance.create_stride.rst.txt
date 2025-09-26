@@ -1,0 +1,6 @@
+create\_stride
+==============
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. automethod:: PadstackInstance.create_stride

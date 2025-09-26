@@ -1,0 +1,6 @@
+thickness
+=========
+
+.. currentmodule:: pyedb.dotnet.database.stackup
+
+.. autoproperty:: Stackup.thickness

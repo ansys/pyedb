@@ -1,0 +1,6 @@
+make\_zone\_primitive
+=====================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. automethod:: EDBPadstackInstance.make_zone_primitive

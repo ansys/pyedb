@@ -1,0 +1,6 @@
+definitions
+===========
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. autoproperty:: Padstacks.definitions

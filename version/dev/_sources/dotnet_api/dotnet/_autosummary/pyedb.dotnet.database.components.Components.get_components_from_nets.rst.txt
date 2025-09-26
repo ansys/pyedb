@@ -1,0 +1,6 @@
+get\_components\_from\_nets
+===========================
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.get_components_from_nets

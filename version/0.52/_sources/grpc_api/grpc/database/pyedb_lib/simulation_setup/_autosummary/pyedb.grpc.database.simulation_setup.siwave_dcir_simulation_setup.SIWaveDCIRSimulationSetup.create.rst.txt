@@ -1,0 +1,6 @@
+create
+======
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup
+
+.. automethod:: SIWaveDCIRSimulationSetup.create

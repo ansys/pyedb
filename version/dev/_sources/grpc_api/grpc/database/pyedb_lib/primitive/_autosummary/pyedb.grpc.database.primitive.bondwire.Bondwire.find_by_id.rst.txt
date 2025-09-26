@@ -1,0 +1,6 @@
+find\_by\_id
+============
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. automethod:: Bondwire.find_by_id

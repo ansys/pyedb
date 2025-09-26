@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. automethod:: PadstackDef.delete

@@ -1,0 +1,6 @@
+source
+======
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.source

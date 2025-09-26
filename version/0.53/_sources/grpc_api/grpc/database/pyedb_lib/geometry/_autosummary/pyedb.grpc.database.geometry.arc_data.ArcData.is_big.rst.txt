@@ -1,0 +1,6 @@
+is\_big
+=======
+
+.. currentmodule:: pyedb.grpc.database.geometry.arc_data
+
+.. automethod:: ArcData.is_big

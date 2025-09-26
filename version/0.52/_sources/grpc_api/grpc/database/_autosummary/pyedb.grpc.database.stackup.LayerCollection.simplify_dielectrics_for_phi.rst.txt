@@ -1,0 +1,6 @@
+simplify\_dielectrics\_for\_phi
+===============================
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: LayerCollection.simplify_dielectrics_for_phi

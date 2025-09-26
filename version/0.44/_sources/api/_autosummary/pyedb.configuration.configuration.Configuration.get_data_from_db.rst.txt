@@ -1,0 +1,6 @@
+get\_data\_from\_db
+===================
+
+.. currentmodule:: pyedb.configuration.configuration
+
+.. automethod:: Configuration.get_data_from_db

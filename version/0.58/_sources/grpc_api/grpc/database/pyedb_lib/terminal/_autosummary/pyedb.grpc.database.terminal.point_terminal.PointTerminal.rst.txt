@@ -1,0 +1,109 @@
+﻿PointTerminal
+=============
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. autoclass:: PointTerminal
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      PointTerminal.cast
+      
+      
+      PointTerminal.create
+      
+      
+      PointTerminal.create_3d_comp
+      
+      
+      PointTerminal.create_hfss
+      
+      
+      PointTerminal.create_stride
+      
+      
+      PointTerminal.delete
+      
+      
+      PointTerminal.find
+      
+      
+      PointTerminal.find_by_id
+      
+      
+      PointTerminal.get_product_property
+      
+      
+      PointTerminal.get_product_property_ids
+      
+      
+      PointTerminal.product_solver_names
+      
+      
+      PointTerminal.product_solver_option
+      
+      
+      PointTerminal.set_product_property
+      
+      
+      PointTerminal.set_product_solver_option
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PointTerminal.boundary_type
+      PointTerminal.bundle_terminal
+      PointTerminal.component
+      PointTerminal.edb_uid
+      PointTerminal.group
+      PointTerminal.hfss_pi_type
+      PointTerminal.id
+      PointTerminal.impedance
+      PointTerminal.is_auto_port
+      PointTerminal.is_circuit_port
+      PointTerminal.is_interface_terminal
+      PointTerminal.is_mcad
+      PointTerminal.is_mcad_3d_comp
+      PointTerminal.is_mcad_hfss
+      PointTerminal.is_mcad_stride
+      PointTerminal.is_null
+      PointTerminal.is_port
+      PointTerminal.is_reference_terminal
+      PointTerminal.layer
+      PointTerminal.layout
+      PointTerminal.layout_obj_type
+      PointTerminal.location
+      PointTerminal.model
+      PointTerminal.msg
+      PointTerminal.name
+      PointTerminal.net
+      PointTerminal.obj_type
+      PointTerminal.params
+      PointTerminal.point
+      PointTerminal.port_post_processing_prop
+      PointTerminal.ref_terminal
+      PointTerminal.reference_layer
+      PointTerminal.reference_terminal
+      PointTerminal.rlc_boundary_parameters
+      PointTerminal.source_amplitude
+      PointTerminal.source_phase
+      PointTerminal.term_to_ground
+      PointTerminal.terminal_type
+      PointTerminal.type
+      PointTerminal.use_reference_from_hierarchy
+   
+   

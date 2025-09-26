@@ -1,0 +1,6 @@
+solver\_type
+============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_settings_options
+
+.. autoproperty:: HFSSSettingsOptions.solver_type

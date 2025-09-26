@@ -1,0 +1,6 @@
+max\_num\_arc\_points
+=====================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings
+
+.. autoproperty:: HFSSAdvancedMeshingSettings.max_num_arc_points

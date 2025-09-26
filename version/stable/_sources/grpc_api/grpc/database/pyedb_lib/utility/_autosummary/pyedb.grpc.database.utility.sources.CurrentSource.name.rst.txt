@@ -1,0 +1,6 @@
+name
+====
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoproperty:: CurrentSource.name

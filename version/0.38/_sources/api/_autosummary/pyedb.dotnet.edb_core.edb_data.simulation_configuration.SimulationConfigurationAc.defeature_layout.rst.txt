@@ -1,0 +1,6 @@
+defeature\_layout
+=================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationAc.defeature_layout

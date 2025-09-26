@@ -1,0 +1,6 @@
+add\_siwave\_syz\_analysis
+==========================
+
+.. currentmodule:: pyedb.grpc.database.siwave
+
+.. automethod:: Siwave.add_siwave_syz_analysis

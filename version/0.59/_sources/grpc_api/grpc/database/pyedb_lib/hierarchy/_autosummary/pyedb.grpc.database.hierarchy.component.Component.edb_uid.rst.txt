@@ -1,0 +1,6 @@
+edb\_uid
+========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoproperty:: Component.edb_uid

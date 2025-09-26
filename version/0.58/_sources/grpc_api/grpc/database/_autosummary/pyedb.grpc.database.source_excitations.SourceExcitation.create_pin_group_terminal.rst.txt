@@ -1,0 +1,6 @@
+create\_pin\_group\_terminal
+============================
+
+.. currentmodule:: pyedb.grpc.database.source_excitations
+
+.. automethod:: SourceExcitation.create_pin_group_terminal

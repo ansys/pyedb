@@ -1,0 +1,6 @@
+longest\_arc
+============
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoproperty:: Polygon.longest_arc

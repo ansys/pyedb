@@ -1,0 +1,6 @@
+rectangles
+==========
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. autoproperty:: Modeler.rectangles

@@ -1,0 +1,6 @@
+impedance
+=========
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. autoproperty:: Terminal.impedance

@@ -1,0 +1,6 @@
+probes
+======
+
+.. currentmodule:: pyedb.grpc.database.hfss
+
+.. autoproperty:: Hfss.probes
