@@ -275,8 +275,8 @@ class Cutout:
 
     @expansion_factor.setter
     def expansion_factor(self, value):
-        self.__expansion_factor = value
-        if value > 0:
+        self.__expansion_factor = self._edb.value(value)
+        if self.__expansion_factor > 0:
             self.smart_cutout = True
 
     @property
@@ -863,9 +863,9 @@ class Cutout:
                 self.logger.info("-----------------------------------------")
                 result = self._create_cutout_multithread()
                 if result and self._edb.are_port_reference_terminals_connected():
+                    if self.smart_cutout:
+                        self.output_file = out_file
                     if self.output_file:
-                        if self.smart_cutout:
-                            self.output_file = out_file
                         self._edb.save_as(self.output_file)
                     else:
                         self._edb.save_as(legacy_path)

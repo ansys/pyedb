@@ -3621,7 +3621,7 @@ class Edb:
             return True
         self.logger.reset_timer()
         if not common_reference:
-            common_reference = list(set([i.reference_net_name for i in all_sources if i.reference_net_name]))
+            common_reference = list(set([i.reference_net_name for i in all_sources if i.reference_terminal.net_name]))
             if len(common_reference) > 1:
                 self.logger.error("More than 1 reference found.")
                 return False
