@@ -356,11 +356,12 @@ class CfgCircuitElement(CfgBase):
             else:
                 pos_objs.update(pins)
         elif pos_type == "pin_group":
-            pins = self._get_pins(pos_type, pos_value, self.positive_terminal_info.reference_designator)
             if self.distributed:
+                pins = self._get_pins(pos_type, pos_value, self.positive_terminal_info.reference_designator)
                 pos_objs.update(pins)
                 self._elem_num = len(pos_objs)
             elif self.positive_terminal_info.contact_type in ["quad", "inline"]:
+                pins = self._get_pins(pos_type, pos_value, self.positive_terminal_info.reference_designator)
                 for _, pin in pins.items():
                     contact_type = self.positive_terminal_info.contact_type
                     radius = self.positive_terminal_info.contact_radius

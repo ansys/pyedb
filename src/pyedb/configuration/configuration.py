@@ -249,9 +249,10 @@ class Configuration:
                 c.pyedb_obj = obj
                 c.set_parameters_to_edb()
 
-        primitives = self._pedb.layout.find_primitive(**modeler.primitives_to_delete)
-        for i in primitives:
-            i.delete()
+        if len([i for i in modeler.primitives_to_delete.values() if len(i) > 0]):
+            primitives = self._pedb.layout.find_primitive(**modeler.primitives_to_delete)
+            for i in primitives:
+                i.delete()
 
     def apply_variables(self):
         """Set variables into database."""

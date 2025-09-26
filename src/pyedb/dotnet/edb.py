@@ -4234,7 +4234,18 @@ class Edb:
             terminal.ref_terminal = ref_terminal
         if name:
             terminal.name = name
-        return self.ports[terminal.name]
+
+        if terminal.is_circuit_port:
+            port = CircuitPort(self, terminal._edb_object)
+        elif terminal.terminal_type == "BundleTerminal":
+            port = BundleWavePort(self, terminal._edb_object)
+        elif terminal.hfss_type == "Wave":
+            port = WavePort(self, terminal._edb_object)
+        elif terminal.terminal_type == "PadstackInstanceTerminal":
+            port = CoaxPort(self, terminal._edb_object)
+        else:
+            port = GapPort(self, terminal._edb_object)
+        return port
 
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
