@@ -181,9 +181,15 @@ class Layout(ObjBase):
         for i in list(self._edb_object.Terminals):
             terminal_type = i.ToString().split(".")[-1]
             if terminal_type == "PinGroupTerminal":
-                temp.append(self._pedb.pedb_class.database.cell.terminal.pingroup_terminal.PinGroupTerminal(self._pedb, i))
+                temp.append(
+                    self._pedb.pedb_class.database.cell.terminal.pingroup_terminal.PinGroupTerminal(self._pedb, i)
+                )
             elif terminal_type == "PadstackInstanceTerminal":
-                temp.append(self._pedb.pedb_class.database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal(self._pedb, i))
+                temp.append(
+                    self._pedb.pedb_class.database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal(
+                        self._pedb, i
+                    )
+                )
             elif terminal_type == "EdgeTerminal":
                 temp.append(self._pedb.pedb_class.database.cell.terminal.edge_terminal.EdgeTerminal(self._pedb, i))
             elif terminal_type == "BundleTerminal":
