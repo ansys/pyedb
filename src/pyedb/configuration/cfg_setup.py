@@ -138,9 +138,7 @@ class CfgHFSSSetup(CfgSetup):
         self.apply_freq_sweep(edb_setup)
 
         if self.auto_mesh_operation:
-            edb_setup.auto_mesh_operation(
-                **self.auto_mesh_operation
-            )
+            edb_setup.auto_mesh_operation(**self.auto_mesh_operation)
 
         for i in self.mesh_operations:
             edb_setup.add_length_mesh_operation(

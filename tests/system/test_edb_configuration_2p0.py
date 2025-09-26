@@ -1655,15 +1655,15 @@ class TestClassSetups(BaseTestClass):
                         "trace_ratio_seeding": 3,
                         "signal_via_side_number": 12,
                         "power_ground_via_side_number": 6,
-                    }
+                    },
                 },
-            ]
+            ],
         }
 
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        assert data_from_db["setups"][0]["mesh_operations"][0]["name"] == 'hfss_setup_1_AutoMeshOp'
+        assert data_from_db["setups"][0]["mesh_operations"][0]["name"] == "hfss_setup_1_AutoMeshOp"
         edbapp.close(terminate_rpc_session=False)
 
     def test_01a_setups_frequency_sweeps(self, edb_examples):
