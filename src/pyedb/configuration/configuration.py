@@ -132,7 +132,6 @@ class Configuration:
         self.__apply_with_logging("Updating components", self.cfg_data.components.apply)
         self.__apply_with_logging("Creating pin groups", self.cfg_data.pin_groups.apply)
         self.__apply_with_logging("Placing sources", self.cfg_data.sources.apply)
-        self.__apply_with_logging("Creating setups", self.cfg_data.setups.apply)
 
         self.__apply_with_logging("Applying materials", self.apply_materials)
         self.__apply_with_logging("Updating stackup", self.apply_stackup)
@@ -151,6 +150,7 @@ class Configuration:
         self.apply_terminals()
         self.__apply_with_logging("Placing probes", self.cfg_data.probes.apply)
         self.apply_operations()
+        self.cfg_data.setups.apply()
 
         return True
 
