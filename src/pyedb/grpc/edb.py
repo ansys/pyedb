@@ -375,6 +375,30 @@ class Edb(EdbInit):
     def ansys_em_path(self):
         return self.base_path
 
+    @staticmethod
+    def number_with_units(value, units=None):
+        """Convert a number to a string with units. If value is a string, it's returned as is.
+
+        Parameters
+        ----------
+        value : float, int, str
+            Input number or string.
+        units : optional
+            Units for formatting. The default is ``None``, which uses ``"meter"``.
+
+        Returns
+        -------
+        str
+           String concatenating the value and unit.
+
+        """
+        if units is None:
+            units = "meter"
+        if isinstance(value, str):
+            return value
+        else:
+            return "{0}{1}".format(value, units)
+
     def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         files = [aedt_file, aedt_file + ".lock"]
@@ -2011,55 +2035,51 @@ class Edb(EdbInit):
         self.logger.reset_timer()
         if not common_reference:
             ref_terminals = [term for term in all_sources if term.is_reference_terminal]
-            common_reference = list(
-                set([i.reference_terminal.net.name for i in all_sources if i.is_reference_terminal])
-            )
+            common_reference = list(set([i.net.name for i in ref_terminals]))
             if len(common_reference) > 1:
-                self.logger.error("More than 1 reference found.")
-                return False
+                raise ValueError("Multiple reference nets found. Please specify one.")
             if not common_reference:
-                self.logger.error("No Reference found.")
-                return False
-
+                raise ValueError("No reference net found. Please specify one.")
             common_reference = common_reference[0]
         all_sources = [i for i in all_sources if i.net.name != common_reference]
-
-        setList = [
-            set(i.reference_object.get_connected_object_id_set())
-            for i in all_sources
-            if i.reference_object and i.reference_net.name == common_reference
-        ]
-        if len(setList) != len(all_sources):
+        layout_inst = self.layout.layout_instance
+        layout_obj_inst = layout_inst.get_layout_obj_instance_in_context(all_sources[0], None)  # 2nd arg was []
+        connected_objects = [loi.layout_obj.id for loi in layout_inst.get_connected_objects(layout_obj_inst, True)]
+        connected_primitives = [self.modeler.get_primitive(obj, edb_uid=False) for obj in connected_objects]
+        connected_primitives = [item for item in connected_primitives if item is not None]
+        set_list = list(set([obj.net_name for obj in connected_primitives]))
+        if len(set_list) != len(all_sources):
             self.logger.error("No Reference found.")
             return False
         cmps = [
             i
             for i in list(self.components.resistors.values())
-            if i.numpins == 2 and common_reference in i.nets and self._decompose_variable_value(i.res_value) <= 1
+            if i.num_pins == 2 and common_reference in i.nets and i.res_value <= 1
         ]
         cmps.extend(
-            [i for i in list(self.components.inductors.values()) if i.numpins == 2 and common_reference in i.nets]
+            [i for i in list(self.components.inductors.values()) if i.num_pins == 2 and common_reference in i.nets]
         )
 
         for cmp in cmps:
             found = False
-            ids = [i.id for i in cmp.pinlist]
-            for list_obj in setList:
+            ids = [v.id for i, v in cmp.pins.items()]
+            for list_obj in set_list:
                 if len(set(ids).intersection(list_obj)) == 1:
-                    for list_obj2 in setList:
+                    for list_obj2 in set_list:
                         if list_obj2 != list_obj and len(set(ids).intersection(list_obj)) == 1:
                             if (ids[0] in list_obj and ids[1] in list_obj2) or (
                                 ids[1] in list_obj and ids[0] in list_obj2
                             ):
-                                setList[setList.index(list_obj)] = list_obj.union(list_obj2)
-                                setList[setList.index(list_obj2)] = list_obj.union(list_obj2)
+                                set_list[set_list.index(list_obj)] = list_obj.union(list_obj2)
+                                set_list[set_list.index(list_obj2)] = list_obj.union(list_obj2)
                                 found = True
                                 break
                     if found:
                         break
 
         # Get the set intersections for all the ID sets.
-        iDintersection = set.intersection(*setList)
+        set_list = set(set_list)
+        iDintersection = set.intersection(set_list)
         self.logger.info_timer(f"Terminal reference primitive IDs total intersections = {len(iDintersection)}\n\n")
 
         # If the intersections are non-zero, the terminal references are connected.

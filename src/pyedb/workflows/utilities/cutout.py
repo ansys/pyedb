@@ -187,10 +187,13 @@ class Cutout:
             insts = self._edb.padstacks.instances
             for i in _pins_to_preserve:
                 p = insts[i].position
-                pos_1 = [i - 75e-6 for i in p]
-                pos_2 = [i + 75e-6 for i in p]
-                plane = self._edb.modeler.create_rectangle(lower_left_point=pos_1, upper_right_point=pos_2)
-                rectangle_data = plane.polygon_data
+
+                pos_1 = [i - 10e-6 for i in p]
+                pos_3 = [i + 10e-6 for i in p]
+                pos_4 = [pos_1[0], pos_3[1]]
+                pos_2 = [pos_3[0], pos_1[1]]
+                pts = [pos_1, pos_2, pos_3, pos_4, pos_1]
+                rectangle_data = GrpcPolygonData(points=pts)
                 _polys.append(rectangle_data)
         for prim in self._edb.modeler.primitives:
             if prim is not None and prim.net_name in self.signals:
@@ -324,13 +327,13 @@ class Cutout:
                     "SParameterModel",
                     "NetlistModel",
                 ] and list(set(el.nets[:]) & set(self.signals[:])):
-                    _pins_to_preserve.extend([i.id for i in el.pins.values()])
+                    _pins_to_preserve.extend([i.edb_uid for i in el.pins.values()])
                     _nets_to_preserve.extend(el.nets)
         if self.include_pingroups:
             for pingroup in self._edb.padstacks.pingroups:
                 for pin in pingroup.pins.values():
                     if pin.net_name in self.references:
-                        _pins_to_preserve.append(pin.id)
+                        _pins_to_preserve.append(pin.edb_uid)
         return _pins_to_preserve, _nets_to_preserve
 
     def _compute_pyaedt_extent(self):
@@ -344,7 +347,7 @@ class Cutout:
         elif str(self.extent_type).lower() in ["bounding", "0", "bounding_box"]:
             _poly = self._edb.layout.expanded_extent(
                 signal_nets,
-                self._edb.core.Geometry.ExtentType.BoundingBox,
+                GrpcExtentType.BOUNDING_BOX,
                 self.expansion_size,
                 False,
                 self.use_round_corner,
@@ -394,9 +397,9 @@ class Cutout:
                 _poly = self._compute_pyaedt_extent()
             else:
                 _poly = self._compute_legacy_extent()
-            _poly1 = _poly.without_arcs
+            _poly1 = _poly.without_arcs()
             if self.include_voids_in_extents:
-                for hole in list(_poly.Holes):
+                for hole in list(_poly.holes):
                     if hole.area() >= 0.05 * _poly1.area():
                         _poly1.add_hole(hole)
             _poly = _poly1
@@ -428,8 +431,8 @@ class Cutout:
         # validate references in layout
         _netsClip = [net for net in self._edb.layout.nets if net.name in self.references]
         included_nets_list = net_signals + ref_nets
-        included_nets = [net for net in self._edb.layout.nets if net.name in included_nets_list]
-        _cutout = self._edb.active_cell.cut_out(included_nets, _netsClip, _poly, True)
+        # included_nets = [net for net in self._edb.layout.nets if net.name in included_nets_list]
+        _cutout = self._edb.active_cell.cutout(included_nets_list, _netsClip, _poly, True)
         # Analysis setups do not come over with the clipped design copy,
         # so add the analysis setups from the original here.
         self._add_setups(_cutout)
@@ -479,7 +482,7 @@ class Cutout:
                 self._edb.components.delete_single_pin_rlc()
                 self.logger.info_timer("Single Pins components deleted")
                 self._edb.components.refresh_components()
-        return [[pt.x.value, pt.y.value] for pt in _poly.without_arcs.points]
+        return [[pt.x.value, pt.y.value] for pt in _poly.without_arcs().points]
 
     def _create_cutout_multithread(
         self,
@@ -551,7 +554,7 @@ class Cutout:
         self.logger.reset_timer()
 
         _poly = self._extent()
-        if not _poly or _poly.is_null:
+        if not _poly.points:
             self.logger.error("Failed to create Extent.")
             return []
         self.logger.info_timer("Extent Creation")
@@ -588,7 +591,7 @@ class Cutout:
                 if not self.include_voids_in_extents:
                     return
                 skip = False
-                for hole in list(_poly.Holes):
+                for hole in _poly.holes:
                     if hole.intersection_type(pdata) == 0:
                         prims_to_delete.append(prim_1)
                         return
@@ -655,7 +658,7 @@ class Cutout:
         i = 0
         for _, val in self._edb.components.instances.items():
             if val.numpins == 0:
-                val.edbcomponent.delete()
+                val.delete()
                 i += 1
                 i += 1
         self.logger.info(f"{i} components deleted")
@@ -668,7 +671,7 @@ class Cutout:
             self._edb.save()
         self.logger.info_timer("Cutout completed.", timer_start)
         self.logger.reset_timer()
-        return [[pt.x.value, pt.y.value] for pt in list(_poly.without_arcs.points)]
+        return [[pt.x.value, pt.y.value] for pt in list(_poly.without_arcs().points)]
 
     def run(self):
         if not self.use_pyaedt_cutout:
