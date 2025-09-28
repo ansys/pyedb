@@ -1412,25 +1412,169 @@ class Edb(EdbInit):
 
     def cutout(
         self,
-        signal_list: "list[str] | None" = None,
-        reference_list: "list[str] | None" = None,
-        point_list: "list[list[float]] | None" = None,
-        expansion: Union[float, str] = "2mm",
-        extent_type: str = "bounding_box",
-        output_path: "str | None" = None,
-        open_when_done: bool = True,
-        **kw,
-    ) -> "list[Tuple[float, float]]":
-        """
-        Create an EDB cutout.
+        signal_nets=None,
+        reference_nets=None,
+        extent_type="ConvexHull",
+        expansion_size=0.002,
+        use_round_corner=False,
+        output_aedb_path=None,
+        open_cutout_at_end=True,
+        use_pyaedt_cutout=True,
+        number_of_threads=1,
+        use_pyaedt_extent_computing=True,
+        extent_defeature=0,
+        remove_single_pin_components=False,
+        custom_extent=None,
+        custom_extent_units="mm",
+        include_partial_instances=False,
+        keep_voids=True,
+        check_terminals=False,
+        include_pingroups=False,
+        expansion_factor=0,
+        maximum_iterations=10,
+        preserve_components_with_model=False,
+        simple_pad_check=True,
+        keep_lines_as_path=False,
+        include_voids_in_extents=False,
+    ):
+        """Create a cutout using an approach entirely based on PyAEDT.
+        This method replaces all legacy cutout methods in PyAEDT.
+        It does in sequence:
+        - delete all nets not in list,
+        - create a extent of the nets,
+        - check and delete all vias not in the extent,
+        - check and delete all the primitives not in extent,
+        - check and intersect all the primitives that intersect the extent.
 
-        .deprecated:: 0.50.1
-        use :func:`modeler.cutout` instead.
+        Parameters
+        ----------
+         signal_nets : list
+            List of signal strings.
+        reference_nets : list, optional
+            List of references to add. The default is ``["GND"]``.
+        extent_type : str, optional
+            Type of the extension. Options are ``"Conforming"``, ``"ConvexHull"``, and
+            ``"Bounding"``. The default is ``"Conforming"``.
+        expansion_size : float, str, optional
+            Expansion size ratio in meters. The default is ``0.002``.
+        use_round_corner : bool, optional
+            Whether to use round corners. The default is ``False``.
+        output_aedb_path : str, optional
+            Full path and name for the new AEDB file. If None, then current aedb will be cutout.
+        open_cutout_at_end : bool, optional
+            Whether to open the cutout at the end. The default is ``True``.
+        use_pyaedt_cutout : bool, optional
+            Whether to use new PyAEDT cutout method or EDB API method.
+            New method is faster than native API method since it benefits of multithread.
+        number_of_threads : int, optional
+            Number of thread to use. Default is 4. Valid only if ``use_pyaedt_cutout`` is set to ``True``.
+        use_pyaedt_extent_computing : bool, optional
+            Whether to use legacy extent computing (experimental) or EDB API.
+        extent_defeature : float, optional
+            Defeature the cutout before applying it to produce simpler geometry for mesh (Experimental).
+            It applies only to Conforming bounding box. Default value is ``0`` which disable it.
+        remove_single_pin_components : bool, optional
+            Remove all Single Pin RLC after the cutout is completed. Default is `False`.
+        custom_extent : list
+            Points list defining the cutout shape. This setting will override `extent_type` field.
+        custom_extent_units : str
+            Units of the point list. The default is ``"mm"``. Valid only if `custom_extend` is provided.
+        include_partial_instances : bool, optional
+            Whether to include padstack instances that have bounding boxes intersecting with point list polygons.
+            This operation may slow down the cutout export.Valid only if `custom_extend` and
+            `use_pyaedt_cutout` is provided.
+        keep_voids : bool
+            Boolean used for keep or not the voids intersecting the polygon used for clipping the layout.
+            Default value is ``True``, ``False`` will remove the voids.Valid only if `custom_extend` is provided.
+        check_terminals : bool, optional
+            Whether to check for all reference terminals and increase extent to include them into the cutout.
+            This applies to components which have a model (spice, touchstone or netlist) associated.
+        include_pingroups : bool, optional
+            Whether to check for all pingroups terminals and increase extent to include them into the cutout.
+            It requires ``check_terminals``.
+        expansion_factor : int, optional
+            The method computes a float representing the largest number between
+            the dielectric thickness or trace width multiplied by the expansion_factor factor.
+            The trace width search is limited to nets with ports attached. Works only if `use_pyaedt_cutout`.
+            Default is `0` to disable the search.
+        maximum_iterations : int, optional
+            Maximum number of iterations before stopping a search for a cutout with an error.
+            Default is `10`.
+        preserve_components_with_model : bool, optional
+            Whether to preserve all pins of components that have associated models (Spice or NPort).
+            This parameter is applicable only for a PyAEDT cutout (except point list).
+        simple_pad_check : bool, optional
+            Whether to use the center of the pad to find the intersection with extent or use the bounding box.
+            Second method is much slower and requires to disable multithread on padstack removal.
+            Default is `True`.
+        keep_lines_as_path : bool, optional
+            Whether to keep the lines as Path after they are cutout or convert them to PolygonData.
+            This feature works only in Electronics Desktop (3D Layout).
+            If the flag is set to ``True`` it can cause issues in SiWave once the Edb is imported.
+            Default is ``False`` to generate PolygonData of cut lines.
+        include_voids_in_extents : bool, optional
+            Whether to compute and include voids in pyaedt extent before the cutout. Cutout time can be affected.
+            It works only with Conforming cutout.
+            Default is ``False`` to generate extent without voids.
+
+
+        Returns
+        -------
+        List
+            List of coordinate points defining the extent used for clipping the design. If it failed return an empty
+            list.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb(r"C:\\test.aedb", version="2022.2")
+        >>> edb.logger.info_timer("Edb Opening")
+        >>> edb.logger.reset_timer()
+        >>> start = time.time()
+        >>> signal_list = []
+        >>> for net in edb.nets.netlist:
+        >>>      if "3V3" in net:
+        >>>           signal_list.append(net)
+        >>> power_list = ["PGND"]
+        >>> edb.cutout(signal_nets=signal_list, reference_nets=power_list, extent_type="Conforming")
+        >>> end_time = str((time.time() - start) / 60)
+        >>> edb.logger.info("Total legacy cutout time in min %s", end_time)
+        >>> edb.nets.plot(signal_list, None, color_by_net=True)
+        >>> edb.nets.plot(power_list, None, color_by_net=True)
+        >>> edb.save()
+        >>> edb.close()
+
+
         """
-        warnings.warn("`cutout` is deprecated, use `modeler.cutout` instead.", DeprecationWarning)
-        return self.modeler.cutout(
-            signal_list, reference_list, point_list, expansion, extent_type, output_path, open_when_done, **kw
-        )
+        from pyedb.workflows.utilities.cutout import Cutout
+
+        cutout = Cutout(self)
+        cutout.expansion_size = expansion_size
+        cutout.signals = signal_nets
+        cutout.references = reference_nets
+        cutout.extent_type = extent_type
+        cutout.expansion_size = expansion_size
+        cutout.use_round_corner = use_round_corner
+        cutout.output_file = output_aedb_path
+        cutout.open_cutout_at_end = open_cutout_at_end
+        cutout.use_pyaedt_cutout = use_pyaedt_cutout
+        cutout.number_of_threads = number_of_threads
+        cutout.use_pyaedt_extent_computing = use_pyaedt_extent_computing
+        cutout.extent_defeatured = extent_defeature
+        cutout.remove_single_pin_components = remove_single_pin_components
+        cutout.custom_extent = custom_extent
+        cutout.custom_extent_units = custom_extent_units
+        cutout.include_partial_instances = include_partial_instances
+        cutout.keep_voids = keep_voids
+        cutout.check_terminals = check_terminals
+        cutout.include_pingroups = include_pingroups
+        cutout.expansion_factor = expansion_factor
+        cutout.maximum_iterations = maximum_iterations
+        cutout.preserve_components_with_model = preserve_components_with_model
+        cutout.simple_pad_check = simple_pad_check
+        cutout.keep_lines_as_path = keep_lines_as_path
+        cutout.include_voids_in_extents = include_voids_in_extents
+        return cutout.run()
 
     @staticmethod
     def write_export3d_option_config_file(path_to_output, config_dictionaries=None):
