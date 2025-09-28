@@ -316,7 +316,7 @@ class Modeler(object):
         """
         return self._pedb.stackup.layers
 
-    def get_primitive(self, primitive_id: int) -> Optional[Primitive]:
+    def get_primitive(self, primitive_id: int, edb_uid=True) -> Optional[Primitive]:
         """Retrieve primitive by ID.
 
         Parameters
@@ -329,13 +329,22 @@ class Modeler(object):
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` or bool
             Primitive object if found, False otherwise.
         """
-        for p in self._layout.primitives:
-            if p.edb_uid == primitive_id:
-                return self.__mapping_primitive_type(p)
-        for p in self._layout.primitives:
-            for v in p.voids:
-                if v.edb_uid == primitive_id:
-                    return self.__mapping_primitive_type(v)
+        if edb_uid:
+            for p in self._layout.primitives:
+                if p.edb_uid == primitive_id:
+                    return self.__mapping_primitive_type(p)
+            for p in self._layout.primitives:
+                for v in p.voids:
+                    if v.edb_uid == primitive_id:
+                        return self.__mapping_primitive_type(v)
+        else:
+            for p in self._layout.primitives:
+                if p.id == primitive_id:
+                    return self.__mapping_primitive_type(p)
+            for p in self._layout.primitives:
+                for v in p.voids:
+                    if v.id == primitive_id:
+                        return self.__mapping_primitive_type(v)
 
     def __mapping_primitive_type(self, primitive):
         from ansys.edb.core.primitive.primitive import (
