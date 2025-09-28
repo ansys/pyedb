@@ -341,7 +341,7 @@ class Cutout:
                 1e-12,
             )
 
-        elif str(self.extent_type).lower() in ["bounding", "0"]:
+        elif str(self.extent_type).lower() in ["bounding", "0", "bounding_box"]:
             _poly = self._edb.layout.expanded_extent(
                 signal_nets,
                 self._edb.core.Geometry.ExtentType.BoundingBox,
@@ -354,15 +354,15 @@ class Cutout:
             _poly = self._create_convex_hull(
                 1e-12,
             )
-            _poly_list = convert_py_list_to_net_list([_poly])
-            _poly = self._edb.core.Geometry.PolygonData.GetConvexHullOfPolygons(_poly_list)
+            _poly_list = [_poly]
+            _poly = GrpcPolygonData.convex_hull(_poly_list)
         return _poly
 
     def _compute_legacy_extent(self):
         if str(self.extent_type).lower() in ["conforming", "conformal", "1"]:
-            extent_type = self._edb.core.Geometry.ExtentType.Conforming
+            extent_type = GrpcExtentType.CONFORMING
         elif str(self.extent_type).lower() in ["bounding", "0"]:
-            extent_type = self._edb.core.Geometry.ExtentType.BoundingBox
+            extent_type = GrpcExtentType.BOUNDING_BOX
         else:
             extent_type = self._edb.core.Geometry.ExtentType.ConvexHull
         _poly = self._edb.layout.expanded_extent(
@@ -388,36 +388,31 @@ class Cutout:
                 ]
                 for i in point_list
             ]
-            plane = self._modeler.Shape("polygon", points=point_list)
-            _poly = self._modeler.shape_to_polygon_data(plane)
+            _poly = GrpcPolygonData(points=point_list)
         else:
             if self.use_pyaedt_extent_computing:
                 _poly = self._compute_pyaedt_extent()
             else:
                 _poly = self._compute_legacy_extent()
-            _poly1 = _poly.CreateFromArcs(_poly.GetArcData(), True)
+            _poly1 = _poly.without_arcs
             if self.include_voids_in_extents:
                 for hole in list(_poly.Holes):
-                    if hole.Area() >= 0.05 * _poly1.Area():
-                        _poly1.AddHole(hole)
+                    if hole.area() >= 0.05 * _poly1.area():
+                        _poly1.add_hole(hole)
             _poly = _poly1
         return _poly
 
     def _add_setups(self, _cutout):
         id = 1
-        for _setup in self._edb.active_cell.SimulationSetups:
+        for _setup in self._edb.active_cell.simulation_setups:
             # Empty string '' if coming from setup copy and don't set explicitly.
-            _setup_name = _setup.GetName()
-            if "GetSimSetupInfo" in dir(_setup):
-                # setup is an Ansys.Ansoft.Edb.Utility.HFSSSimulationSetup object
-                _hfssSimSetupInfo = _setup.GetSimSetupInfo()
-                _hfssSimSetupInfo.Name = "HFSS Setup " + str(id)  # Set name of analysis setup
-                # Write the simulation setup info into the cell/design setup
-                _setup.SetSimSetupInfo(_hfssSimSetupInfo)
-                _cutout.AddSimulationSetup(_setup)  # Add simulation setup to the cutout design
-                id += 1
-            else:
-                _cutout.AddSimulationSetup(_setup)  # Add simulation setup to the cutout design
+            _setup_name = _setup.name
+            _setup.name = "HFSS Setup " + str(id)  # Set name of analysis setup
+            # Write the simulation setup info into the cell/design setup
+            # _cutout.AddSimulationSetup(_setup)  # Add simulation setup to the cutout design
+            # id += 1
+            # _cutout.AddSimulationSetup(_setup)  # Add simulation setup to the cutout design
+            # finish adding setup for grpc
 
     def _create_cutout_legacy(
         self,
@@ -431,36 +426,33 @@ class Cutout:
         ref_nets = [net for net in self._edb.layout.nets if net.name in self.references]
 
         # validate references in layout
-        _netsClip = convert_py_list_to_net_list(
-            [net.api_object for net in self._edb.layout.nets if net.name in self.references]
-        )
+        _netsClip = [net for net in self._edb.layout.nets if net.name in self.references]
         included_nets_list = net_signals + ref_nets
-        included_nets = convert_py_list_to_net_list(
-            [net.api_object for net in self._edb.layout.nets if net.name in included_nets_list]
-        )
-        _cutout = self._edb.active_cell.CutOut(included_nets, _netsClip, _poly, True)
+        included_nets = [net for net in self._edb.layout.nets if net.name in included_nets_list]
+        _cutout = self._edb.active_cell.cut_out(included_nets, _netsClip, _poly, True)
         # Analysis setups do not come over with the clipped design copy,
         # so add the analysis setups from the original here.
         self._add_setups(_cutout)
 
         _dbCells = [_cutout]
         if self.output_file:
-            db2 = self._edb.core.Database.Create(self.output_file)
-            _success = db2.Save()
-            _dbCells = convert_py_list_to_net_list(_dbCells)
-            db2.CopyCells(_dbCells)  # Copies cutout cell/design to db2 project
-            if len(list(db2.CircuitCells)) > 0:
-                for net in list(list(db2.CircuitCells)[0].GetLayout().Nets):
-                    if not net.GetName() in included_nets_list:
-                        net.Delete()
-                _success = db2.Save()
-            for c in list(self._edb._db.TopCircuitCells):
-                if c.GetName() == _cutout.GetName():
-                    c.Delete()
+            from ansys.edb.core.database import Database as GrpcDatabase
+
+            db2 = GrpcDatabase.create(self.output_file)
+            _success = db2.save()
+            db2.copy_cells(_dbCells)  # Copies cutout cell/design to db2 project
+            if len(list(db2.top_circuit_cells)) > 0:
+                for net in db2.top_circuit_cells[0].layout.nets:
+                    if not net.name in included_nets_list:
+                        net.delete()
+                _success = db2.save()
+            for c in self._edb._db.top_circuit_cells:
+                if c.name == _cutout.name:
+                    c.delete()
             if self.open_cutout_at_end:  # pragma: no cover
                 self._edb._db = db2
                 self._edb.edbpath = self.output_file
-                self._edb._active_cell = list(self._edb.top_circuit_cells)[0]
+                self._edb._active_cell = self._edb.top_circuit_cells[0]
                 self._edb.edbpath = self._edb.directory
                 self._edb._init_objects()
                 if self.remove_single_pin_components:
@@ -472,10 +464,9 @@ class Cutout:
                     self._edb.components.delete_single_pin_rlc()
                     self.logger.info_timer("Single Pins components deleted")
                     self._edb.components.refresh_components()
-                db2.Close()
+                db2.close()
                 source = os.path.join(self.output_file, "edb.def.tmp")
                 target = os.path.join(self.output_file, "edb.def")
-                self._edb._wait_for_file_release(file_to_release=self.output_file)
                 if os.path.exists(source) and not os.path.exists(target):
                     try:
                         shutil.copy(source, target)
@@ -484,11 +475,11 @@ class Cutout:
         elif self.open_cutout_at_end:
             self._edb._active_cell = _cutout
             self._edb._init_objects()
-            if self.__remove_single_pin_components:
+            if self.remove_single_pin_components:
                 self._edb.components.delete_single_pin_rlc()
                 self.logger.info_timer("Single Pins components deleted")
                 self._edb.components.refresh_components()
-        return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(_poly.GetPolygonWithoutArcs().Points)]
+        return [[pt.x.value, pt.y.value] for pt in _poly.without_arcs.points]
 
     def _create_cutout_multithread(
         self,
@@ -516,7 +507,7 @@ class Cutout:
         for i in self._edb.nets.nets.values():
             name = i.name
             if name not in all_list and name not in nets_to_preserve:
-                i.net_object.Delete()
+                i.delete()
 
         reference_pinsts = []
         reference_prims = []
@@ -545,7 +536,7 @@ class Cutout:
                 if net_name not in all_list:
                     prim_to_delete.append(item)
                 elif net_name in reference_list and not item.is_void:
-                    if self.keep_lines_as_path and item.type == "Path":
+                    if self.keep_lines_as_path and item.type == "path":
                         reference_paths.append(item)
                     else:
                         reference_prims.append(item)
@@ -560,13 +551,13 @@ class Cutout:
         self.logger.reset_timer()
 
         _poly = self._extent()
-        if not _poly or _poly.IsNull():
+        if not _poly or _poly.is_null:
             self.logger.error("Failed to create Extent.")
             return []
         self.logger.info_timer("Extent Creation")
         self.logger.reset_timer()
 
-        _poly_list = convert_py_list_to_net_list([_poly])
+        _poly_list = [_poly]
         prims_to_delete = []
         poly_to_create = []
         pins_to_delete = []
@@ -574,39 +565,34 @@ class Cutout:
         def intersect(poly1, poly2):
             if not isinstance(poly2, list):
                 poly2 = [poly2]
-            return list(
-                poly1.Intersect(
-                    convert_py_list_to_net_list(poly1),
-                    convert_py_list_to_net_list(poly2),
-                )
-            )
+            return poly1.intersect(poly1, poly2)
 
         def subtract(poly, voids):
-            return poly.Subtract(convert_py_list_to_net_list(poly), convert_py_list_to_net_list(voids))
+            return poly.subtract(poly, voids)
 
         def clip_path(path):
-            pdata = path.polygon_data._edb_object
-            int_data = _poly.GetIntersectionType(pdata)
+            pdata = path.polygon_data
+            int_data = _poly.intersection_type(pdata)
             if int_data == 0:
                 prims_to_delete.append(path)
                 return
-            result = path._edb_object.SetClipInfo(_poly, True)
+            result = path.set_clip_info(_poly, True)
             if not result:
                 self.logger.info("Failed to clip path {}. Clipping as polygon.".format(path.id))
                 reference_prims.append(path)
 
         def clean_prim(prim_1):  # pragma: no cover
-            pdata = prim_1.polygon_data._edb_object
-            int_data = _poly.GetIntersectionType(pdata)
+            pdata = prim_1.polygon_data
+            int_data = _poly.intersection_type(pdata)
             if int_data == 2:
                 if not self.include_voids_in_extents:
                     return
                 skip = False
                 for hole in list(_poly.Holes):
-                    if hole.GetIntersectionType(pdata) == 0:
+                    if hole.intersection_type(pdata) == 0:
                         prims_to_delete.append(prim_1)
                         return
-                    elif hole.GetIntersectionType(pdata) == 1:
+                    elif hole.intersection_type(pdata) == 1:
                         skip = True
                 if skip:
                     return
@@ -618,15 +604,15 @@ class Cutout:
                 net = prim_1.net_name
                 voids = prim_1.voids
                 for p in list_poly:
-                    if p.IsNull():
+                    if p.is_null:
                         continue
                     # points = list(p.Points)
                     list_void = []
                     if voids:
-                        voids_data = [void.polygon_data._edb_object for void in voids]
+                        voids_data = [void.polygon_data for void in voids]
                         list_prims = subtract(p, voids_data)
                         for prim in list_prims:
-                            if not prim.IsNull():
+                            if not prim.is_null:
                                 poly_to_create.append([prim, prim_1.layer.name, net, list_void])
                     else:
                         poly_to_create.append([p, prim_1.layer.name, net, list_void])
@@ -663,26 +649,26 @@ class Cutout:
         for prim in prims_to_delete:
             prim.delete()
 
-        self.logger.info_timer("{} Primitives deleted.".format(len(prims_to_delete)))
+        self.logger.info_timer(f"{len(prims_to_delete)} Primitives deleted.")
         self.logger.reset_timer()
 
         i = 0
         for _, val in self._edb.components.instances.items():
             if val.numpins == 0:
-                val.edbcomponent.Delete()
+                val.edbcomponent.delete()
                 i += 1
                 i += 1
-        self.logger.info("{} components deleted".format(i))
+        self.logger.info(f"{i} components deleted")
         if self.remove_single_pin_components:
             self._edb.components.delete_single_pin_rlc()
             self.logger.info_timer("Single Pins components deleted")
 
         self._edb.components.refresh_components()
         if self.output_file:
-            self._edb.save_edb()
+            self._edb.save()
         self.logger.info_timer("Cutout completed.", timer_start)
         self.logger.reset_timer()
-        return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(_poly.GetPolygonWithoutArcs().Points)]
+        return [[pt.x.value, pt.y.value] for pt in list(_poly.without_arcs.points)]
 
     def run(self):
         if not self.use_pyaedt_cutout:
@@ -720,11 +706,11 @@ class Cutout:
                     if not self.open_cutout_at_end and self._edb.edbpath != legacy_path:
                         self._edb.close()
                         self._edb.edbpath = legacy_path
-                        self._edb.open_edb()
+                        self._edb.open()
                     break
                 self._edb.close()
                 self._edb.edbpath = legacy_path
-                self._edb.open_edb()
+                self._edb.open()
                 i += 1
                 expansion = expansion_size * i
             if working_cutout:
