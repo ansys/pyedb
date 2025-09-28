@@ -1,294 +1,136 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
 import os
 import shutil
 import time
+from typing import List, Union
 
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 
 
 class Cutout:
+    """Create a clipped (cut-out) EDB cell from an existing layout.
+    High-performance EDB cut-out utility.
+
+    Attributes
+    ----------
+    signals : list[str]
+        List of signal net names to keep in the cut-out.
+    references : list[str]
+        List of reference net names to keep in the cut-out.
+    extent_type : str
+        Extent algorithm: ``ConvexHull`` (default), ``Conforming``, ``Bounding``.
+    expansion_size : float
+        Additional margin (metres) around the computed extent.  Default 0.002.
+    use_round_corner : bool
+        Round the corners of the expanded extent.  Default ``False``.
+    custom_extent : list[tuple[float, float]] | None
+        Optional closed polygon [(x1,y1), …] overriding any automatic extent.
+    custom_extent_units : str
+        Length unit for *custom_extent*.  Default ``mm``.
+    include_voids_in_extents : bool
+        Include voids ≥ 5 % of the extent area when building the clip polygon.
+    open_cutout_at_end : bool
+        Open the resulting cut-out database in the active Edb object.  Default ``True``.
+    use_pyaedt_cutout : bool
+        Use the PyAEDT based implementation instead of native EDB API.  Default ``True``.
+    smart_cutout : bool
+        Automatically enlarge *expansion_size* until all ports have reference.  Default ``False``.
+    expansion_factor : float
+        If > 0, compute initial *expansion_size* from trace-width/dielectric.  Default 0.
+    maximum_iterations : int
+        Maximum attempts for *smart_cutout* before giving up.  Default 10.
+    number_of_threads : int
+        Worker threads for polygon clipping and padstack cleaning.  Default 1.
+    remove_single_pin_components : bool
+        Delete RLC components with only one pin after cut-out.  Default ``False``.
+    preserve_components_with_model : bool
+        Keep every pin of components that carry a Spice/S-parameter model.  Default ``False``.
+    check_terminals : bool
+        Grow extent until all reference terminals are inside the cut-out.  Default ``False``.
+    include_pingroups : bool
+        Ensure complete pin-groups are included (needs *check_terminals*).  Default ``False``.
+    simple_pad_check : bool
+        Use fast centre-point padstack check instead of bounding-box.  Default ``True``.
+    keep_lines_as_path : bool
+        Keep clipped traces as Path objects (3D Layout only).  Default ``False``.
+    extent_defeature : float
+        Defeature tolerance (metres) for conformal extent.  Default 0.
+    include_partial_instances : bool
+        Include padstacks that only partially overlap the clip polygon.  Default ``False``.
+    keep_voids : bool
+        Retain voids that intersect the clip polygon.  Default ``True``.
+
+
+    The cut-out can be produced with three different extent strategies:
+
+    * ``ConvexHull`` (default)
+    * ``Conforming`` (tight follow of geometry)
+    * ``Bounding`` (simple bounding box)
+
+    Multi-threaded execution, automatic terminal expansion and smart
+    expansion-factor logic are supported.
+
+    Examples
+    --------
+    >>> cut = Cutout(edb)
+    >>> cut.signals = ["DDR4_DQ0", "DDR4_DQ1"]
+    >>> cut.references = ["GND"]
+    >>> cut.expansion_size = 0.001
+    >>> polygon = cut.run()
+    """
+
+    # ------------------------------------------------------------------
+    # Construction
+    # ------------------------------------------------------------------
     def __init__(self, edb):
         self._edb = edb
-        self.__signal_nets = []
-        self.__reference_nets = []
-        self.__extent_type = "ConvexHull"
-        self.__expansion_size = 0.002
-        self.__use_round_corner = False
-        self.__output_aedb_path = None
-        self.__open_cutout_at_end = True
-        self.__use_pyaedt_cutout = True
-        self.__smart_cutout = False
-        self.__number_of_threads = 1
-        self.__use_pyaedt_extent_computing = True
-        self.__extent_defeature = 0
-        self.__remove_single_pin_components = False
-        self.__custom_extent = None
-        self.__custom_extent_units = "mm"
-        self.__include_partial_instances = False
-        self.__keep_voids = True
-        self.__check_terminals = False
-        self.__include_pingroups = False
-        self.__expansion_factor = 0
-        self.__maximum_iterations = 10
-        self.__preserve_components_with_model = False
-        self.__simple_pad_check = True
-        self.__keep_lines_as_path = False
-        self.__include_voids_in_extents = False
-
-    @property
-    def remove_single_pin_components(self):
-        """Whether to remove single pin components after cutout to simplify validation check."""
-        return self.__remove_single_pin_components
-
-    @remove_single_pin_components.setter
-    def remove_single_pin_components(self, value):
-        self.__remove_single_pin_components = value
-
-    @property
-    def simple_pad_check(self):
-        """Whether to apply a simple padstack check on the center
-        of the padstack or a complete check based on bounding box.
-        Second option can be much slower."""
-        return self.__simple_pad_check
-
-    @simple_pad_check.setter
-    def simple_pad_check(self, value):
-        self.__simple_pad_check = value
-
-    @property
-    def signals(self):
-        """List of signals to apply cutout."""
-        return self.__signal_nets if isinstance(self.__signal_nets, list) else [self.__signal_nets]
-
-    @signals.setter
-    def signals(self, value):
-        self.__signal_nets = value
-
-    @property
-    def references(self):
-        """List of reference nets to apply cutout."""
-        return self.__reference_nets if isinstance(self.__reference_nets, list) else [self.__reference_nets]
-
-    @references.setter
-    def references(self, value):
-        self.__reference_nets = value
-
-    @property
-    def extent_type(self):
-        """Extent type."""
-        return self.__extent_type
-
-    @extent_type.setter
-    def extent_type(self, value):
-        self.__extent_type = value
-
-    @property
-    def expansion_size(self):
-        """Expansion size of the cutout in meters."""
-        return self.__expansion_size
-
-    @expansion_size.setter
-    def expansion_size(self, value):
-        self.__expansion_size = value
-
-    @property
-    def use_round_corner(self):
-        """Whether to use round corner for extension or not.
-        Default is ``False``."""
-        return self.__use_round_corner
-
-    @use_round_corner.setter
-    def use_round_corner(self, value):
-        self.__use_round_corner = value
-
-    @property
-    def output_file(self):
-        """Output aedb path folder."""
-        return self.__output_aedb_path
-
-    @output_file.setter
-    def output_file(self, value):
-        self.__output_aedb_path = value
-
-    @property
-    def open_cutout_at_end(self):
-        """Whether if open or not cutout file at the end."""
-        return self.__open_cutout_at_end
-
-    @open_cutout_at_end.setter
-    def open_cutout_at_end(self, value):
-        self.__open_cutout_at_end = value
-
-    @property
-    def use_pyaedt_cutout(self):
-        """Use default pyaedt cutout instead of API cutout."""
-        return self.__use_pyaedt_cutout
-
-    @use_pyaedt_cutout.setter
-    def use_pyaedt_cutout(self, value):
-        self.__use_pyaedt_cutout = value
-
-    @property
-    def number_of_threads(self):
-        """Number of threads to be used during pyaedt cutout."""
-        return self.__number_of_threads
-
-    @number_of_threads.setter
-    def number_of_threads(self, value):
-        self.__number_of_threads = value
-
-    @property
-    def use_pyaedt_extent_computing(self):
-        """Use Pyaedt to compute extent."""
-        return self.__use_pyaedt_extent_computing
-
-    @use_pyaedt_extent_computing.setter
-    def use_pyaedt_extent_computing(self, value):
-        self.__use_pyaedt_extent_computing = value
-
-    @property
-    def extent_defeature(self):
-        """Whether if defeature the extent after creation or not and relative value in meter.
-        This applies only to conformal extent."""
-        return self.__extent_defeature
-
-    @extent_defeature.setter
-    def extent_defeature(self, value):
-        self.__extent_defeature = value
-
-    @property
-    def custom_extent(self):
-        """Applies a custom extent point list to the cutout."""
-        return self.__custom_extent
-
-    @custom_extent.setter
-    def custom_extent(self, value):
-        self.__custom_extent = value
-
-    @property
-    def custom_extent_units(self):
-        """Applies a custom extent point list to the cutout."""
-        return self.__custom_extent_units
-
-    @custom_extent_units.setter
-    def custom_extent_units(self, value):
-        self.__custom_extent_units = value
-
-    @property
-    def include_partial_instances(self):
-        """Whether to include padstack instances that have bounding boxes intersecting with point list polygons.
-        This operation may slow down the cutout export.Valid only if `custom_extend` and
-        `use_pyaedt_cutout` is provided."""
-        return self.__include_partial_instances
-
-    @include_partial_instances.setter
-    def include_partial_instances(self, value):
-        self.__include_partial_instances = value
-
-    @property
-    def keep_voids(self):
-        """Boolean used for keep or not the voids intersecting the polygon used for clipping the layout.
-        Default value is ``True``, ``False`` will remove the voids.Valid only if `custom_extend` is provided.
-        """
-        return self.__keep_voids
-
-    @keep_voids.setter
-    def keep_voids(self, value):
-        self.__keep_voids = value
-
-    @property
-    def check_terminals(self):
-        """Whether to check for all reference terminals and increase extent to include them into the cutout.
-        This applies to components which have a model (spice, touchstone or netlist) associated.
-        """
-        return self.__check_terminals
-
-    @check_terminals.setter
-    def check_terminals(self, value):
-        self.__check_terminals = value
-
-    @property
-    def include_pingroups(self):
-        """Whether to check for all pingroups terminals and increase extent to include them into the cutout.
-        It requires ``check_terminals``.
-        """
-        return self.__include_pingroups
-
-    @include_pingroups.setter
-    def include_pingroups(self, value):
-        self.__include_pingroups = value
-
-    @property
-    def preserve_components_with_model(self):
-        """Whether to preserve all pins of components that have associated models (Spice or NPort).
-        This parameter is applicable only for a PyAEDT cutout (except point list).
-        """
-        return self.__preserve_components_with_model
-
-    @preserve_components_with_model.setter
-    def preserve_components_with_model(self, value):
-        self.__preserve_components_with_model = value
-
-    @property
-    def keep_lines_as_path(self):
-        """Whether to keep the lines as Path after they are cutout or convert them to PolygonData.
-        This feature works only in Electronics Desktop (3D Layout).
-        If the flag is set to ``True`` it can cause issues in SiWave once the Edb is imported.
-        Default is ``False`` to generate PolygonData of cut lines.
-        """
-        return self.__keep_lines_as_path
-
-    @keep_lines_as_path.setter
-    def keep_lines_as_path(self, value):
-        self.__keep_lines_as_path = value
-
-    @property
-    def include_voids_in_extents(self):
-        """Whether to compute and include voids in pyaedt extent before the cutout. Cutout time can be affected.
-        It works only with Conforming cutout.
-        Default is ``False`` to generate extent without voids.
-        """
-        return self.__include_voids_in_extents
-
-    @include_voids_in_extents.setter
-    def include_voids_in_extents(self, value):
-        self.__include_voids_in_extents = value
-
-    @property
-    def smart_cutout(self):
-        """Whether to apply smart cutout or not. If ``expansion_factor`` is 0 it will be set to 2."""
-        return self.__smart_cutout
-
-    @smart_cutout.setter
-    def smart_cutout(self, value):
-        self.__smart_cutout = value
-        if value and self.expansion_factor == 0:
-            self.expansion_factor = 2
-
-    @property
-    def expansion_factor(self):
-        """The method computes a float representing the largest number between
-        the dielectric thickness or trace width multiplied by the expansion_factor factor.
-        The trace width search is limited to nets with ports attached. Works only if `use_pyaedt_cutout`.
-        Default is `0` to disable the search.
-        """
-        return self.__expansion_factor
-
-    @expansion_factor.setter
-    def expansion_factor(self, value):
-        self.__expansion_factor = self._edb.value(value)
-        if self.__expansion_factor > 0:
-            self.smart_cutout = True
-
-    @property
-    def maximum_iterations(self):
-        """Maximum number of iterations before stopping a search for a cutout with an error.
-        Default is `10`.
-        """
-        return self.__maximum_iterations
-
-    @maximum_iterations.setter
-    def maximum_iterations(self, value):
-        self.__maximum_iterations = value
+        self.signals: List[str] = []  # list of signal nets
+        self.references: List[str] = []  # list of reference nets
+        self.extent_type: str = "ConvexHull"  # ConvexHull | Conforming | Bounding
+        self.expansion_size: Union[str, float] = 0.002  # metres
+        self.use_round_corner: bool = False
+        self.output_file: str = ""  # output .aedb folder
+        self.open_cutout_at_end: bool = True
+        self.use_pyaedt_cutout: bool = True
+        self.smart_cutout: bool = False
+        self.number_of_threads: int = 2
+        self.use_pyaedt_extent_computing: bool = True
+        self.extent_defeature: Union[int, float] = 0
+        self.remove_single_pin_components: bool = False
+        self.custom_extent: List[float, float] = None
+        self.custom_extent_units: str = "mm"
+        self.include_partial_instances: bool = False
+        self.keep_voids: bool = True
+        self.check_terminals: bool = False
+        self.include_pingroups: bool = False
+        self.expansion_factor: Union[int, float] = 0
+        self.maximum_iterations: int = 10
+        self.preserve_components_with_model: bool = False
+        self.simple_pad_check: bool = True
+        self.keep_lines_as_path: bool = False
+        self.include_voids_in_extents: bool = False
 
     @property
     def logger(self):
