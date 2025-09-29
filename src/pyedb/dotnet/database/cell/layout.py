@@ -29,6 +29,11 @@ from typing import List, Union
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.database.cell.primitive.path import Path
+from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
+from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
+from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
+from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
+from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.cell.voltage_regulator import VoltageRegulator
 from pyedb.dotnet.database.edb_data.nets_data import (
     EDBDifferentialPairData,
@@ -181,15 +186,15 @@ class Layout(ObjBase):
         for i in list(self._edb_object.Terminals):
             terminal_type = i.ToString().split(".")[-1]
             if terminal_type == "PinGroupTerminal":
-                temp.append(self._pedb.pedb_class.database.cell.terminal.pingroup_terminal.PinGroupTerminal(self._pedb, i))
+                temp.append(PinGroupTerminal(self._pedb, i))
             elif terminal_type == "PadstackInstanceTerminal":
-                temp.append(self._pedb.pedb_class.database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal(self._pedb, i))
+                temp.append(PadstackInstanceTerminal(self._pedb, i))
             elif terminal_type == "EdgeTerminal":
-                temp.append(self._pedb.pedb_class.database.cell.terminal.edge_terminal.EdgeTerminal(self._pedb, i))
+                temp.append(EdgeTerminal(self._pedb, i))
             elif terminal_type == "BundleTerminal":
-                temp.append(self._pedb.pedb_class.database.cell.terminal.bundle_terminal.BundleTerminal(self._pedb, i))
+                temp.append(BundleTerminal(self._pedb, i))
             elif terminal_type == "PointTerminal":
-                temp.append(self._pedb.pedb_class.database.cell.terminal.point_terminal.PointTerminal(self._pedb, i))
+                temp.append(PointTerminal(self._pedb, i))
         return temp
 
     @property
