@@ -183,9 +183,9 @@ class Modeler(object):
         prim_list : list
             List of primitive objects to delete.
         """
-        self._reload_all()
         for prim in prim_list:
             prim._edb_object.delete()
+        self._reload_all()
 
     @property
     def primitives(self) -> list[Primitive]:
