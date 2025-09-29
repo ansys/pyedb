@@ -565,26 +565,33 @@ class Cutout:
         # PHASE 4: PRIMITIVE PROCESSING (BATCH OPERATIONS)
         self.logger.info("Phase 4: Batch primitive processing...")
 
-        reference_prims = []
-        reference_paths = []
-        prim_to_delete = []
+        reference_prims = []  # Reference primitives to be CLIPPED
+        reference_paths = []  # Reference paths to be CLIPPED
+        signal_prims = []  # Signal primitives to be PRESERVED as-is
+        prim_to_delete = []  # Primitives to delete (not in nets to preserve)
 
-        # Single-threaded primitive processing
+        # Single-threaded primitive processing - SEPARATE SIGNAL AND REFERENCE PRIMITIVES
         for item in all_primitives:
             if item:
                 net_name = item.net_name
-                if net_name not in all_list:
+                if net_name not in all_list and net_name not in nets_to_preserve:
                     prim_to_delete.append(item)
                 elif net_name in reference_list and not item.is_void:
+                    # Reference primitives - will be clipped
                     if self.keep_lines_as_path and item.type == "path":
                         reference_paths.append(item)
                     else:
                         reference_prims.append(item)
+                elif net_name in self.signals:
+                    # Signal primitives - preserve as-is, no clipping
+                    signal_prims.append(item)
 
-        # Batch delete primitives
+        # Batch delete only non-reference, non-signal primitives
         self._edb.modeler.delete_batch_primitives(prim_to_delete)
 
         self.logger.info_timer(f"{len(prim_to_delete)} primitives deleted")
+        self.logger.info(f"Signal primitives to preserve: {len(signal_prims)}")
+        self.logger.info(f"Reference primitives to clip: {len(reference_prims)}")
         self.logger.reset_timer()
 
         # PHASE 5: EXTENT CREATION
@@ -598,109 +605,111 @@ class Cutout:
         self.logger.info_timer("Extent Creation")
         self.logger.reset_timer()
 
-        # PHASE 6: GEOMETRY CLIPPING (OPTIMIZED BATCH OPERATIONS)
-        self.logger.info("Phase 6: Batch geometry clipping...")
+        # PHASE 6: GEOMETRY CLIPPING - ONLY REFERENCE NETS
+        self.logger.info("Phase 6: Clipping only reference primitives...")
 
-        _poly_list = [_poly]
         prims_to_delete = []
         poly_to_create = []
         pins_to_delete = []
 
-        # Helper functions for geometry operations
-        def intersect(poly1, poly2):
-            if not isinstance(poly2, list):
-                poly2 = [poly2]
-            return poly1.intersect(poly1, poly2)
-
-        def subtract(poly, voids):
-            return poly.subtract(poly, voids)
-
-        # PHASE 6A: PADSTACK CLIPPING
-        if not self.simple_pad_check:
-            pad_cores = 1
-        else:
-            pad_cores = 1  # Single-threaded for EDB safety
-
-        # Single-threaded padstack cleaning
+        # PHASE 6A: PADSTACK CLIPPING (Reference nets only)
         for pinst in reference_pinsts:
             if not pinst.in_polygon(_poly, include_partial=self.include_partial_instances):
                 pins_to_delete.append(pinst)
 
-        # Batch delete pins
+        # Batch delete reference pins outside cutout
         for pin in pins_to_delete:
             pin.delete()
 
-        self.logger.info_timer(f"{len(pins_to_delete)} padstack instances deleted")
+        self.logger.info_timer(f"{len(pins_to_delete)} reference padstack instances deleted")
         self.logger.reset_timer()
 
-        # PHASE 6B: PATH CLIPPING
+        # PHASE 6B: REFERENCE PATH CLIPPING
         for path in reference_paths:
             pdata = path.polygon_data
-            int_data = _poly.intersection_type(pdata)
+            int_data = _poly.intersection_type(pdata).value
             if int_data == 0:
                 prims_to_delete.append(path)
                 continue
             result = path.set_clip_info(_poly, True)
             if not result:
-                self.logger.info(f"Failed to clip path {path.id}. Clipping as polygon.")
+                self.logger.info(f"Failed to clip reference path {path.id}. Clipping as polygon.")
                 reference_prims.append(path)
 
-        # PHASE 6C: PRIMITIVE CLIPPING (BATCHED)
-        batch_size = 50  # Process primitives in batches to reduce memory pressure
-        for i in range(0, len(reference_prims), batch_size):
-            batch = reference_prims[i : i + batch_size]
+        # PHASE 6C: REFERENCE PRIMITIVE CLIPPING - FIXED LOGIC
+        self.logger.info("Clipping reference primitives with proper intersection...")
 
-            for prim_1 in batch:
-                pdata = prim_1.polygon_data
-                int_data = _poly.intersection_type(pdata)
+        # Process reference primitives for clipping
+        for prim in reference_prims:
+            try:
+                pdata = prim.polygon_data
+                int_data = _poly.intersection_type(pdata).value
 
-                if int_data == 2:
-                    if not self.include_voids_in_extents:
-                        continue
-                    skip = False
-                    for hole in _poly.holes:
-                        if hole.intersection_type(pdata) == 0:
-                            prims_to_delete.append(prim_1)
-                            break
-                        elif hole.intersection_type(pdata) == 1:
-                            skip = True
-                    if skip:
-                        continue
-                elif int_data == 0:
-                    prims_to_delete.append(prim_1)
+                if int_data in (0, 4):
+                    # Completely outside - delete
+                    prims_to_delete.append(prim)
+                elif int_data == 2:
+                    # Completely inside - keep as is, no clipping needed
+                    # DO NOTHING - preserve the primitive
                     continue
+                elif int_data in (1, 3):
+                    # Partially intersecting - clip and recreate
+                    # Use the original intersection logic from the working code
+                    list_poly = _poly.intersect(_poly, pdata)
+                    if list_poly:
+                        net = prim.net_name
+                        layer_name = prim.layer.name
+                        voids = prim.voids
 
-                list_poly = intersect(_poly, pdata)
-                if list_poly:
-                    net = prim_1.net_name
-                    voids = prim_1.voids
-                    for p in list_poly:
-                        if p.points:
-                            continue
+                        for p in list_poly:
+                            if not p.points:
+                                continue
+                            list_void = []
+                            if voids:
+                                voids_data = [void.polygon_data for void in voids]
+                                # Use subtract as in original working code
+                                list_prims = p.subtract(p, voids_data)
+                                for clipped_prim in list_prims:
+                                    if clipped_prim.points:
+                                        poly_to_create.append([clipped_prim, layer_name, net, list_void])
+                            else:
+                                poly_to_create.append([p, layer_name, net, list_void])
 
-                        list_void = []
-                        if voids:
-                            voids_data = [void.polygon_data for void in voids]
-                            list_prims = subtract(p, voids_data)
-                            for prim in list_prims:
-                                if not prim.points:
-                                    poly_to_create.append([prim, prim_1.layer.name, net, list_void])
-                        else:
-                            poly_to_create.append([p, prim_1.layer.name, net, list_void])
+                        # Mark original for deletion since we're creating clipped version
+                        prims_to_delete.append(prim)
 
-                prims_to_delete.append(prim_1)
+            except Exception as e:
+                self.logger.warning(f"Error clipping reference primitive {prim.id}: {str(e)}")
+                # If clipping fails, keep the original primitive
+                continue
 
-        # PHASE 7: BATCH CREATE NEW POLYGONS
-        self.logger.info("Phase 7: Batch polygon creation...")
+        # PHASE 7: BATCH CREATE NEW CLIPPED REFERENCE POLYGONS
+        self.logger.info("Phase 7: Batch creating clipped reference polygons...")
 
-        # Batch create polygons (single-threaded for EDB safety)
+        created_count = 0
         for el in poly_to_create:
-            self._edb.modeler.create_polygon(el[0], el[1], net_name=el[2], voids=el[3])
+            try:
+                # Use the same create_polygon call as original working code
+                self._edb.modeler.create_polygon(el[0], el[1], net_name=el[2], voids=el[3])
+                created_count += 1
+            except Exception as e:
+                self.logger.warning(f"Failed to create clipped reference polygon: {str(e)}")
 
-        # PHASE 8: BATCH DELETE OLD PRIMITIVES
-        self._pedb.modeler.delete_batch_primitives(prims_to_delete)
+        self.logger.info(f"Created {created_count} new clipped reference polygons")
 
-        self.logger.info_timer(f"{len(prims_to_delete)} primitives deleted, {len(poly_to_create)} new polygons created")
+        # PHASE 8: BATCH DELETE OLD REFERENCE PRIMITIVES
+        deleted_count = 0
+        for prim in prims_to_delete:
+            try:
+                prim.delete()
+                deleted_count += 1
+            except Exception as e:
+                self.logger.warning(f"Failed to delete reference primitive: {str(e)}")
+
+        self.logger.info_timer(
+            f"{deleted_count} reference primitives deleted, {created_count} new reference polygons created"
+        )
+        self.logger.info(f"Preserved {len(signal_prims)} signal primitives without clipping")
         self.logger.reset_timer()
 
         # PHASE 9: COMPONENT CLEANUP
