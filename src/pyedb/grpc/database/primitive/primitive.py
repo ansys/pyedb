@@ -401,11 +401,6 @@ class Primitive(GrpcPrimitive):
         for prim in primitives:
             if isinstance(prim, Primitive):
                 prim.delete()
-            else:
-                try:
-                    prim.Delete()
-                except AttributeError:
-                    continue
         return new_polys
 
     def intersect(self, primitives) -> list[any]:

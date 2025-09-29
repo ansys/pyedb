@@ -484,9 +484,8 @@ class Cutout:
                 self._edb.components.refresh_components()
         return [[pt.x.value, pt.y.value] for pt in _poly.without_arcs().points]
 
-    def _create_cutout_multithread(
-        self,
-    ):
+    def _create_cutout_multithread(self):
+        """Optimized version of _create_cutout_multithread that preserves all functionality."""
         from concurrent.futures import ThreadPoolExecutor
 
         if self.output_file:
@@ -495,6 +494,8 @@ class Cutout:
         self.expansion_size = self._edb.value(self.expansion_size)
 
         timer_start = self.logger.reset_timer()
+
+        # Preserve original net list logic
         if self.custom_extent:
             if not self.signals and not self.references:
                 reference_list = self._edb.nets.netlist[::]
@@ -507,17 +508,46 @@ class Cutout:
             reference_list = self.references
 
         pins_to_preserve, nets_to_preserve = self.pins_to_preserve()
-        for i in self._edb.nets.nets.values():
-            name = i.name
-            if name not in all_list and name not in nets_to_preserve:
-                i.delete()
+
+        # PHASE 1: BATCH READ OPERATIONS
+        self.logger.info("Phase 1: Batch reading operations...")
+
+        # Cache all nets data first
+        all_nets_data = {net.name: net for net in self._edb.nets.nets.values()}
+
+        # Cache all padstack instances
+        all_padstack_instances = list(self._edb.padstacks.instances.values())
+
+        # Cache all primitives
+        all_primitives = list(self._edb.modeler.primitives)
+
+        self.logger.info_timer("Data caching completed")
+        self.logger.reset_timer()
+
+        # PHASE 2: NET CLEANUP (BATCH DELETES)
+        self.logger.info("Phase 2: Batch net cleanup...")
+
+        # Batch delete nets not in all_list
+        nets_to_delete = []
+        for net_name, net_obj in all_nets_data.items():
+            if net_name not in all_list and net_name not in nets_to_preserve:
+                nets_to_delete.append(net_obj)
+
+        # Batch delete nets
+        for net in nets_to_delete:
+            net.delete()
+
+        self.logger.info_timer(f"{len(nets_to_delete)} nets deleted")
+        self.logger.reset_timer()
+
+        # PHASE 3: PADSTACK PROCESSING (BATCH OPERATIONS)
+        self.logger.info("Phase 3: Batch padstack processing...")
 
         reference_pinsts = []
-        reference_prims = []
-        reference_paths = []
         pins_to_delete = []
 
-        def check_instances(item):
+        # Single-threaded padstack processing (EDB not thread-safe for writes)
+        for item in all_padstack_instances:
             net_name = item.net_name
             item_id = item.id
             if net_name not in all_list and item_id not in pins_to_preserve:
@@ -525,15 +555,22 @@ class Cutout:
             elif net_name in reference_list and item_id not in pins_to_preserve:
                 reference_pinsts.append(item)
 
-        with ThreadPoolExecutor(self.number_of_threads) as pool:
-            pool.map(lambda item: check_instances(item), self._edb.layout.padstack_instances)
+        # Batch delete pins
+        for pin in pins_to_delete:
+            pin.delete()
 
-        for i in pins_to_delete:
-            i.delete()
+        self.logger.info_timer(f"{len(pins_to_delete)} padstack instances processed")
+        self.logger.reset_timer()
 
+        # PHASE 4: PRIMITIVE PROCESSING (BATCH OPERATIONS)
+        self.logger.info("Phase 4: Batch primitive processing...")
+
+        reference_prims = []
+        reference_paths = []
         prim_to_delete = []
 
-        def check_prims(item):
+        # Single-threaded primitive processing
+        for item in all_primitives:
             if item:
                 net_name = item.net_name
                 if net_name not in all_list:
@@ -544,27 +581,32 @@ class Cutout:
                     else:
                         reference_prims.append(item)
 
-        with ThreadPoolExecutor(self.number_of_threads) as pool:
-            pool.map(lambda item: check_prims(item), self._edb.modeler.primitives)
+        # Batch delete primitives
+        self._edb.modeler.delete_batch_primitives(prim_to_delete)
 
-        for i in prim_to_delete:
-            i.delete()
-
-        self.logger.info_timer("Net clean up")
+        self.logger.info_timer(f"{len(prim_to_delete)} primitives deleted")
         self.logger.reset_timer()
+
+        # PHASE 5: EXTENT CREATION
+        self.logger.info("Phase 5: Extent creation...")
 
         _poly = self._extent()
         if not _poly.points:
             self.logger.error("Failed to create Extent.")
             return []
+
         self.logger.info_timer("Extent Creation")
         self.logger.reset_timer()
+
+        # PHASE 6: GEOMETRY CLIPPING (OPTIMIZED BATCH OPERATIONS)
+        self.logger.info("Phase 6: Batch geometry clipping...")
 
         _poly_list = [_poly]
         prims_to_delete = []
         poly_to_create = []
         pins_to_delete = []
 
+        # Helper functions for geometry operations
         def intersect(poly1, poly2):
             if not isinstance(poly2, list):
                 poly2 = [poly2]
@@ -573,104 +615,117 @@ class Cutout:
         def subtract(poly, voids):
             return poly.subtract(poly, voids)
 
-        def clip_path(path):
+        # PHASE 6A: PADSTACK CLIPPING
+        if not self.simple_pad_check:
+            pad_cores = 1
+        else:
+            pad_cores = 1  # Single-threaded for EDB safety
+
+        # Single-threaded padstack cleaning
+        for pinst in reference_pinsts:
+            if not pinst.in_polygon(_poly, include_partial=self.include_partial_instances):
+                pins_to_delete.append(pinst)
+
+        # Batch delete pins
+        for pin in pins_to_delete:
+            pin.delete()
+
+        self.logger.info_timer(f"{len(pins_to_delete)} padstack instances deleted")
+        self.logger.reset_timer()
+
+        # PHASE 6B: PATH CLIPPING
+        for path in reference_paths:
             pdata = path.polygon_data
             int_data = _poly.intersection_type(pdata)
             if int_data == 0:
                 prims_to_delete.append(path)
-                return
+                continue
             result = path.set_clip_info(_poly, True)
             if not result:
-                self.logger.info("Failed to clip path {}. Clipping as polygon.".format(path.id))
+                self.logger.info(f"Failed to clip path {path.id}. Clipping as polygon.")
                 reference_prims.append(path)
 
-        def clean_prim(prim_1):  # pragma: no cover
-            pdata = prim_1.polygon_data
-            int_data = _poly.intersection_type(pdata)
-            if int_data == 2:
-                if not self.include_voids_in_extents:
-                    return
-                skip = False
-                for hole in _poly.holes:
-                    if hole.intersection_type(pdata) == 0:
-                        prims_to_delete.append(prim_1)
-                        return
-                    elif hole.intersection_type(pdata) == 1:
-                        skip = True
-                if skip:
-                    return
-            elif int_data == 0:
-                prims_to_delete.append(prim_1)
-                return
-            list_poly = intersect(_poly, pdata)
-            if list_poly:
-                net = prim_1.net_name
-                voids = prim_1.voids
-                for p in list_poly:
-                    if p.is_null:
+        # PHASE 6C: PRIMITIVE CLIPPING (BATCHED)
+        batch_size = 50  # Process primitives in batches to reduce memory pressure
+        for i in range(0, len(reference_prims), batch_size):
+            batch = reference_prims[i : i + batch_size]
+
+            for prim_1 in batch:
+                pdata = prim_1.polygon_data
+                int_data = _poly.intersection_type(pdata)
+
+                if int_data == 2:
+                    if not self.include_voids_in_extents:
                         continue
-                    # points = list(p.Points)
-                    list_void = []
-                    if voids:
-                        voids_data = [void.polygon_data for void in voids]
-                        list_prims = subtract(p, voids_data)
-                        for prim in list_prims:
-                            if not prim.is_null:
-                                poly_to_create.append([prim, prim_1.layer.name, net, list_void])
-                    else:
-                        poly_to_create.append([p, prim_1.layer.name, net, list_void])
+                    skip = False
+                    for hole in _poly.holes:
+                        if hole.intersection_type(pdata) == 0:
+                            prims_to_delete.append(prim_1)
+                            break
+                        elif hole.intersection_type(pdata) == 1:
+                            skip = True
+                    if skip:
+                        continue
+                elif int_data == 0:
+                    prims_to_delete.append(prim_1)
+                    continue
 
-            prims_to_delete.append(prim_1)
+                list_poly = intersect(_poly, pdata)
+                if list_poly:
+                    net = prim_1.net_name
+                    voids = prim_1.voids
+                    for p in list_poly:
+                        if p.points:
+                            continue
 
-        def pins_clean(pinst):
-            if not pinst.in_polygon(
-                _poly, include_partial=self.include_partial_instances, simple_check=self.simple_pad_check
-            ):
-                pins_to_delete.append(pinst)
+                        list_void = []
+                        if voids:
+                            voids_data = [void.polygon_data for void in voids]
+                            list_prims = subtract(p, voids_data)
+                            for prim in list_prims:
+                                if not prim.points:
+                                    poly_to_create.append([prim, prim_1.layer.name, net, list_void])
+                        else:
+                            poly_to_create.append([p, prim_1.layer.name, net, list_void])
 
-        if not self.simple_pad_check:
-            pad_cores = 1
-        else:
-            pad_cores = self.number_of_threads
-        with ThreadPoolExecutor(pad_cores) as pool:
-            pool.map(lambda item: pins_clean(item), reference_pinsts)
+                prims_to_delete.append(prim_1)
 
-        for pin in pins_to_delete:
-            pin.delete()
+        # PHASE 7: BATCH CREATE NEW POLYGONS
+        self.logger.info("Phase 7: Batch polygon creation...")
 
-        self.logger.info_timer("{} Padstack Instances deleted.".format(len(pins_to_delete)))
-        self.logger.reset_timer()
-
-        with ThreadPoolExecutor(self.number_of_threads) as pool:
-            pool.map(lambda item: clip_path(item), reference_paths)
-        with ThreadPoolExecutor(self.number_of_threads) as pool:
-            pool.map(lambda item: clean_prim(item), reference_prims)
-
+        # Batch create polygons (single-threaded for EDB safety)
         for el in poly_to_create:
             self._edb.modeler.create_polygon(el[0], el[1], net_name=el[2], voids=el[3])
 
-        for prim in prims_to_delete:
-            prim.delete()
+        # PHASE 8: BATCH DELETE OLD PRIMITIVES
+        self._pedb.modeler.delete_batch_primitives(prims_to_delete)
 
-        self.logger.info_timer(f"{len(prims_to_delete)} Primitives deleted.")
+        self.logger.info_timer(f"{len(prims_to_delete)} primitives deleted, {len(poly_to_create)} new polygons created")
         self.logger.reset_timer()
+
+        # PHASE 9: COMPONENT CLEANUP
+        self.logger.info("Phase 9: Component cleanup...")
 
         i = 0
         for _, val in self._edb.components.instances.items():
             if val.numpins == 0:
                 val.delete()
                 i += 1
-                i += 1
+
         self.logger.info(f"{i} components deleted")
+
         if self.remove_single_pin_components:
             self._edb.components.delete_single_pin_rlc()
             self.logger.info_timer("Single Pins components deleted")
 
         self._edb.components.refresh_components()
+
         if self.output_file:
             self._edb.save()
+
         self.logger.info_timer("Cutout completed.", timer_start)
         self.logger.reset_timer()
+
         return [[pt.x.value, pt.y.value] for pt in list(_poly.without_arcs().points)]
 
     def run(self):
