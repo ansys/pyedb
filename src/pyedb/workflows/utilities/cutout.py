@@ -664,16 +664,16 @@ class Cutout:
                         for p in list_poly:
                             if not p.points:
                                 continue
-                            list_void = []
+                            # list_void = []
                             if voids:
                                 voids_data = [void.polygon_data for void in voids]
                                 # Use subtract as in original working code
                                 list_prims = p.subtract(p, voids_data)
                                 for clipped_prim in list_prims:
                                     if clipped_prim.points:
-                                        poly_to_create.append([clipped_prim, layer_name, net, list_void])
+                                        poly_to_create.append([clipped_prim, layer_name, net, []])
                             else:
-                                poly_to_create.append([p, layer_name, net, list_void])
+                                poly_to_create.append([p, layer_name, net, []])
 
                         # Mark original for deletion since we're creating clipped version
                         prims_to_delete.append(prim)
@@ -698,14 +698,12 @@ class Cutout:
         self.logger.info(f"Created {created_count} new clipped reference polygons")
 
         # PHASE 8: BATCH DELETE OLD REFERENCE PRIMITIVES
-        deleted_count = 0
-        for prim in prims_to_delete:
-            try:
-                prim.delete()
-                deleted_count += 1
-            except Exception as e:
-                self.logger.warning(f"Failed to delete reference primitive: {str(e)}")
-
+        deleted_count = len(prims_to_delete)
+        voids = []
+        [voids.extend(prim.voids) for prim in prims_to_delete if prim.voids]
+        if voids:
+            self._edb.modeler.delete_batch_primitives(voids)
+        self._edb.modeler.delete_batch_primitives(prims_to_delete)
         self.logger.info_timer(
             f"{deleted_count} reference primitives deleted, {created_count} new reference polygons created"
         )
