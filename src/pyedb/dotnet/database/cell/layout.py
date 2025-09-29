@@ -29,10 +29,10 @@ from typing import List, Union
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.database.cell.primitive.path import Path
-from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
-from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
-from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
 from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
+from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
+from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
+from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.cell.voltage_regulator import VoltageRegulator
 from pyedb.dotnet.database.edb_data.nets_data import (
