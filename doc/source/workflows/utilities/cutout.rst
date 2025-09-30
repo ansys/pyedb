@@ -19,9 +19,9 @@ through the **gRPC** back-end.
 The legacy .NET back-end is still present for compatibility; it is **deprecated**
 and scheduled for removal in a future release.
 
---------
+----------
 Quickstart
---------
+----------
 
 .. code-block:: python
 
@@ -33,7 +33,7 @@ Quickstart
    cut.expansion_size = 0.001
    polygon = cut.run()
 
---------
+-----------------------
 Convenience entry point
 -----------------------
 
@@ -50,7 +50,7 @@ Existing scripts continue to work without modification:
 The ``edb.cutout`` method internally instantiates the ``Cutout`` class (gRPC-first)
 and returns the same clipped cell as in previous releases.
 
---------
+----------------------------
 Complete parameter reference
 ----------------------------
 
@@ -66,10 +66,10 @@ Defaults are shown in **bold**; physical values are in **metres** unless a
    * - Name
      - Type
      - Purpose
-   * - ``signal_nets`` *(alias ``signals``)*
+   * - ``signal_nets`` *(alias “signals”)*
      - ``list[str]``
      - Net names to retain in the cut-out (required).
-   * - ``reference_nets`` *(alias ``references``)*
+   * - ``reference_nets`` *(alias “references”)*
      - ``list[str]``
      - Net names used as reference (required).
    * - ``expansion_size``
@@ -77,7 +77,7 @@ Defaults are shown in **bold**; physical values are in **metres** unless a
      - Additional margin around computed extent.  **0.002**
    * - ``extent_type``
      - ``str``
-     - Extent algorithm: **"ConvexHull"**, "Conforming", "Bounding".
+     - Extent algorithm: **“ConvexHull”**, “Conforming”, “Bounding”.
    * - ``use_round_corner``
      - ``bool``
      - Apply rounded corners after expansion.  **False**
@@ -86,20 +86,20 @@ Defaults are shown in **bold**; physical values are in **metres** unless a
      - Closed polygon ``[(x1,y1), …]`` overriding automatic extent.  **None**
    * - ``custom_extent_units``
      - ``str``
-     - Length unit for *custom_extent*.  **"mm"**
+     - Length unit for *custom_extent*.  **“mm”**
    * - ``include_voids_in_extents``
      - ``bool``
-     - Include voids ≥ 5 % of extent area while building clip polygon.  **False**
+     - Include voids ≥ 5 % of extent area while Building clip polygon.  **False**
    * - ``open_cutout_at_end``
      - ``bool``
-     - Load the resulting .aedb into the active ``edb`` object.  **True**
+     - Load the resulting .AEDB into the active ``edb`` object.  **True**
    * - ``output_file``
      - ``str``
-     - Full path where the clipped .aedb is saved.  **""** (in-place)
+     - Full path where the clipped .AEDB is saved.  **“”** (in-place)
    * - ``use_pyaedt_cutout``
      - ``bool``
      - Use PyAEDT-based clipping instead of native EDB API.  **True**
-   * - ``smart_cutout``
+   * - ``smart\_cutout``
      - ``bool``
      - Auto-enlarge *expansion_size* until every port has a reference.  **False**
    * - ``expansion_factor``
@@ -117,7 +117,7 @@ Defaults are shown in **bold**; physical values are in **metres** unless a
    * - ``preserve_components_with_model``
      - ``bool``
      - Keep every pin of components that carry a Spice/S-parameter model.  **False**
-   * - ``check_terminals``
+   * - ``check\_terminals``
      - ``bool``
      - Grow extent until all reference terminals are inside the cut-out.  **False**
    * - ``include_pingroups``
@@ -125,7 +125,7 @@ Defaults are shown in **bold**; physical values are in **metres** unless a
      - Ensure complete pin-groups are included (requires *check_terminals*).  **False**
    * - ``simple_pad_check``
      - ``bool``
-     - Use fast centre-point padstack check instead of bounding-box.  **True**
+     - Use fast center-point padstack check instead of bounding-box.  **True**
    * - ``keep_lines_as_path``
      - ``bool``
      - Retain clipped traces as Path objects (3D Layout only).  **False**
@@ -139,20 +139,20 @@ Defaults are shown in **bold**; physical values are in **metres** unless a
      - ``bool``
      - Retain voids that intersect the clip polygon.  **True**
 
---------
+-----------------
 Extent strategies
 -----------------
 
 The cut-out boundary can be generated with three built-in algorithms:
 
-* ``ConvexHull`` (default) – convex hull of selected objects plus expansion
-* ``Conforming`` – tight follow of geometry contours
-* ``Bounding`` – simple bounding box
+* ``ConvexHull`` (default)–convex hull of selected objects plus expansion
+* ``Conforming``–tight follow of geometry contours
+* ``Bounding``–simple bounding box
 
 Additional options control corner rounding, void inclusion, multi-threading,
 smart expansion, and user-supplied boundary polygons.
 
---------
+-------------
 API reference
 -------------
 
@@ -170,7 +170,7 @@ API reference
    :show-inheritance:
    :inherited-members:
 
---------
+-------------
 Legacy notice
 -------------
 

@@ -121,3 +121,5 @@ Getting Started
 [Pp][Cc][Ii][Ee]
 [Ss]imulation[Ss]etup
 [Bb]atch[Gg]roup
+[Ee][Dd][Bb]
+[Cc]utout
