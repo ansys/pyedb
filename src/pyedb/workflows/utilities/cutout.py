@@ -129,7 +129,7 @@ class GrpcCutout:
         self.use_pyaedt_extent_computing: bool = True
         self.extent_defeature: Union[int, float] = 0
         self.remove_single_pin_components: bool = False
-        self.custom_extent: List[float, float] = None
+        self.custom_extent: List[float] = None
         self.custom_extent_units: str = "mm"
         self.include_partial_instances: bool = False
         self.keep_voids: bool = True
