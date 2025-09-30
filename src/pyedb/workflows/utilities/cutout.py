@@ -491,242 +491,176 @@ class GrpcCutout:
         return [[pt.x.value, pt.y.value] for pt in _poly.without_arcs().points]
 
     def _create_cutout_multithread(self):
-        """Optimized cutout implementation with corrected clipping logic and void handling."""
-        if self.output_file:
-            self._edb.save_as(self.output_file)
-        self.logger.info("Optimized Cutout started.")
+        """
+        Optimised cut-out that is GRPC friendly.
+        EDB is **NOT** thread-safe and every write flushes the cache.
+        -----------------------------------------------------------
+        1.  READ  – collect everything that is required
+        2.  COMPUTE – decide what has to be deleted / created
+        3.  WRITE – one single, serial, write-pass
+        -----------------------------------------------------------
+        """
+        _t0 = time.time()
+        self.logger.info("GRPC cut-out started")
+        timer_start = time.time()
         self.expansion_size = self._edb.value(self.expansion_size)
 
-        timer_start = time.time()
+        # ------------------------------------------------------------------
+        # 1.  READ ONLY – everything that can be queried without side effects
+        # ------------------------------------------------------------------
+        _t = time.time()
+        all_nets = {net.name: net for net in self._edb.nets.nets.values()}
+        all_padstack_instances = list(self._edb.padstacks.instances.values())
+        all_primitives = list(self._edb.modeler.primitives)
+        all_components = list(self._edb.components.instances.values())
+        nets_num = len(all_nets)
+        inst_num = len(all_padstack_instances)
+        prim_num = len(all_primitives)
+        comp_num = len(all_components)
+        self.logger.info(f"[READ] Data collection finished in {time.time() - _t:.3f} s")
+        self.logger.info(
+            f"Nets:{nets_num}, padstack_instances:{inst_num}, primitives:{prim_num}, components:{comp_num}"
+        )
 
-        # Preserve original net list logic
+        # preserve original net list logic
         if self.custom_extent:
-            if not self.signals and not self.references:
-                reference_list = self._edb.nets.netlist[::]
-                all_list = reference_list
-            else:
-                reference_list = self.signals + self.references
-                all_list = reference_list
+            reference_list = (
+                all_nets.keys() if not (self.signals or self.references) else self.signals + self.references
+            )
+            full_list = reference_list
         else:
-            all_list = self.signals + self.references
+            full_list = self.signals + self.references
             reference_list = self.references
 
         pins_to_preserve, nets_to_preserve = self.pins_to_preserve()
 
-        # PHASE 1: BATCH DATA COLLECTION
-        self.logger.info("Phase 1: Batch data collection...")
+        # build extent polygon
+        _t = time.time()
+        extent_poly = self._extent()
+        if not extent_poly.points:
+            self.logger.error("Failed to create extent polygon")
+            return []
+        self.logger.info(f"[EXTENT] Polygon created in {time.time() - _t:.3f} s")
 
-        all_nets = {net.name: net for net in self._edb.nets.nets.values()}
-        all_padstack_instances = list(self._edb.padstacks.instances.values())
-        all_primitives = list(self._edb.modeler.primitives)
+        # 2.  COMPUTE – decide what has to be deleted / created
+        _t = time.time()
+        # nets
+        nets_to_delete = [
+            net for name, net in all_nets.items() if name not in full_list and name not in nets_to_preserve
+        ]
 
-        self.logger.info_timer("Data collection completed")
-        self.logger.reset_timer()
+        # padstacks
+        pins_to_delete, reference_pinsts = [], []
+        for p in all_padstack_instances:
+            if p.id in pins_to_preserve:
+                continue
+            if p.net_name not in full_list:
+                pins_to_delete.append(p)
+            elif p.net_name in reference_list:
+                reference_pinsts.append(p)
 
-        # PHASE 2: NET CLEANUP
-        self.logger.info("Phase 2: Batch net cleanup...")
+        # primitives
+        signal_prims, reference_prims, reference_paths, prim_to_delete = [], [], [], []
+        for prim in all_primitives:
+            if not prim:
+                continue
+            net = prim.net_name
+            if net not in full_list and net not in nets_to_preserve:
+                prim_to_delete.append(prim)
+            elif net in self.signals:
+                signal_prims.append(prim)
+            elif net in reference_list and not prim.is_void:
+                if self.keep_lines_as_path and prim.type == "path":
+                    reference_paths.append(prim)
+                else:
+                    reference_prims.append(prim)
 
-        nets_to_delete = []
-        for net_name, net_obj in all_nets.items():
-            if net_name not in all_list and net_name not in nets_to_preserve:
-                nets_to_delete.append(net_obj)
+        # geometry clipping – only *compute* new polygons, do **not** create them yet
+        pins_to_clip, prims_to_clip, poly_to_create = [], [], []
 
+        # padstacks
+        for p in reference_pinsts:
+            if not p.in_polygon(extent_poly, include_partial=self.include_partial_instances):
+                pins_to_clip.append(p)
+
+        # paths
+        for path in reference_paths:
+            pdata = path.polygon_data
+            if extent_poly.intersection_type(pdata) == 0:
+                prims_to_clip.append(path)
+                continue
+            if not path.set_clip_info(extent_poly, True):
+                # clipping failed – treat as polygon
+                reference_prims.append(path)
+
+        # reference primitives
+        for prim in reference_prims:
+            pdata = prim.polygon_data
+            int_type = extent_poly.intersection_type(pdata).value
+            if int_type in (0, 4):  # completely outside
+                prims_to_clip.append(prim)
+            elif int_type == 2:  # completely inside – keep
+                continue
+            elif int_type in (1, 3):  # partial – clip
+                clipped_list = extent_poly.intersect(extent_poly, pdata)
+                for p in clipped_list:
+                    if not p.points:
+                        continue
+                    voids_data = [v.polygon_data for v in prim.voids]
+                    if voids_data:
+                        for poly_void in p.subtract(p, voids_data):
+                            if poly_void.points:
+                                poly_to_create.append([poly_void, prim.layer.name, prim.net_name, []])
+                    else:
+                        poly_to_create.append([p, prim.layer.name, prim.net_name, []])
+                prims_to_clip.append(prim)
+
+        # components
+        components_to_delete = [comp for comp in all_components if comp.numpins == 0]
+        self.logger.info(f"[COMPUTE] Decision lists ready in {time.time() - _t:.3f} s")
+        # ------------------------------------------------------------------
+        # 3.  WRITE – single serial pass, no interleaved reads
+        # ------------------------------------------------------------------
+        _t = time.time()
+        self.logger.info("Starting single write-pass")
+        self.logger.info(f"Deleting {len(nets_to_delete)} nets")
         for net in nets_to_delete:
             net.delete()
 
-        self.logger.info_timer(f"{len(nets_to_delete)} nets deleted")
-        self.logger.reset_timer()
+        # padstacks
+        total_pins_to_delete = pins_to_delete + pins_to_clip
+        _t1 = time.time()
+        self._edb.padstacks.delete_batch_instances(total_pins_to_delete)
+        self.logger.info(f"{len(total_pins_to_delete)} pad-stack instances deleted in {time.time() - _t1:.3f} s")
 
-        # PHASE 3: PADSTACK PROCESSING
-        self.logger.info("Phase 3: Padstack processing...")
+        # primitives
+        total_primitive_to_delete = prim_to_delete + prims_to_clip + [v for prim in prims_to_clip for v in prim.voids]
+        _t1 = time.time()
+        self._edb.modeler.delete_batch_primitives(total_primitive_to_delete)
+        self.logger.info(f"{len(total_primitive_to_delete)} primitives deleted in {time.time() - _t1:.3f} s")
 
-        reference_pinsts = []
-        pins_to_delete = []
+        # new polygons
+        _t1 = time.time()
+        for p_data, layer, net, voids in poly_to_create:
+            self._edb.modeler.create_polygon(p_data, layer, net_name=net, voids=voids)
+        self.logger.info(f"{len(poly_to_create)} primitives created in {time.time() - _t1:.3f} s")
 
-        for item in all_padstack_instances:
-            net_name = item.net_name
-            item_id = item.id
-
-            if net_name not in all_list and item_id not in pins_to_preserve:
-                pins_to_delete.append(item)
-            elif net_name in reference_list and item_id not in pins_to_preserve:
-                reference_pinsts.append(item)
-
-        self._edb.padstacks.delete_batch_instances(pins_to_delete)
-
-        self.logger.info_timer(f"{len(pins_to_delete)} padstack instances processed")
-        self.logger.reset_timer()
-
-        # PHASE 4: PRIMITIVE SORTING
-        self.logger.info("Phase 4: Primitive sorting...")
-
-        reference_prims = []
-        reference_paths = []
-        signal_prims = []
-        prim_to_delete = []
-
-        for item in all_primitives:
-            if not item:
-                continue
-
-            net_name = item.net_name
-            if net_name not in all_list and net_name not in nets_to_preserve:
-                prim_to_delete.append(item)
-            elif net_name in reference_list and not item.is_void:
-                if self.keep_lines_as_path and item.type == "path":
-                    reference_paths.append(item)
-                else:
-                    reference_prims.append(item)
-            elif net_name in self.signals:
-                signal_prims.append(item)
-
-        self._edb.modeler.delete_batch_primitives(prim_to_delete)
-
-        self.logger.info_timer(
-            f"Sorted {len(prim_to_delete)} to delete, {len(signal_prims)} signals, {len(reference_prims)} references"
-        )
-        self.logger.reset_timer()
-
-        # PHASE 5: EXTENT CREATION
-        self.logger.info("Phase 5: Extent creation...")
-
-        _poly = self._extent()
-        if not _poly.points:
-            self.logger.error("Failed to create Extent.")
-            return []
-
-        self.logger.info_timer("Extent created")
-        self.logger.reset_timer()
-
-        # PHASE 6: GEOMETRY PROCESSING
-        self.logger.info("Phase 6: Geometry processing...")
-
-        prims_to_delete = []
-        poly_to_create = []
-        pins_to_delete = []
-
-        # 6A: Padstack clipping
-        for pinst in reference_pinsts:
-            if not pinst.in_polygon(_poly, include_partial=self.include_partial_instances):
-                pins_to_delete.append(pinst)
-
-        self._edb.padstacks.delete_batch_instances(pins_to_delete)
-
-        self.logger.info_timer(f"{len(pins_to_delete)} padstacks clipped")
-        self.logger.reset_timer()
-
-        # 6B: Path clipping
-        for path in reference_paths:
-            pdata = path.polygon_data
-            int_data = _poly.intersection_type(pdata)
-            if int_data == 0:
-                prims_to_delete.append(path)
-                continue
-            result = path.set_clip_info(_poly, True)
-            if not result:
-                self.logger.info(f"Failed to clip path {path.id}, converting to polygon.")
-                reference_prims.append(path)
-
-        # 6C: REFERENCE PRIMITIVE CLIPPING - CORRECTED LOGIC
-        self.logger.info(f"Clipping {len(reference_prims)} reference primitives...")
-
-        for prim in reference_prims:
-            try:
-                pdata = prim.polygon_data
-                int_data = _poly.intersection_type(pdata).value
-
-                if int_data in (0, 4):
-                    # Completely outside - delete
-                    prims_to_delete.append(prim)
-                elif int_data == 2:
-                    # Completely inside - keep as is, no clipping needed
-                    # DO NOTHING - preserve the primitive
-                    continue
-                elif int_data in (1, 3):
-                    # Partially intersecting - clip and recreate
-                    # Use the original intersection logic from the working code
-                    list_poly = _poly.intersect(_poly, pdata)
-                    if list_poly:
-                        net = prim.net_name
-                        layer_name = prim.layer.name
-                        voids = prim.voids
-
-                        for p in list_poly:
-                            if not p.points:
-                                continue
-                            # list_void = []
-                            if voids:
-                                voids_data = [void.polygon_data for void in voids]
-                                # Use subtract as in original working code
-                                list_prims = p.subtract(p, voids_data)
-                                for clipped_prim in list_prims:
-                                    if clipped_prim.points:
-                                        poly_to_create.append([clipped_prim, layer_name, net, []])
-                            else:
-                                poly_to_create.append([p, layer_name, net, []])
-
-                        # Mark original for deletion since we're creating clipped version
-                        prims_to_delete.append(prim)
-
-            except Exception as e:
-                self.logger.warning(f"Error clipping reference primitive {prim.id}: {str(e)}")
-                # If clipping fails, keep the original primitive
-                continue
-
-        self.logger.info_timer("Reference primitive clipping completed")
-        self.logger.reset_timer()
-
-        # PHASE 7: GEOMETRY CREATION
-        self.logger.info("Phase 7: Geometry creation...")
-
-        created_count = 0
-        for el in poly_to_create:
-            try:
-                polygon_data, layer_name, net_name, voids = el
-                # Create polygon with proper void handling
-                self._edb.modeler.create_polygon(polygon_data, layer_name, net_name=net_name, voids=voids)
-                created_count += 1
-            except Exception as e:
-                self.logger.warning(f"Failed to create polygon: {str(e)}")
-
-        self.logger.info(f"Created {created_count} new polygons")
-
-        # PHASE 8: CLEANUP - CORRECTED VOID HANDLING
-        self.logger.info("Phase 8: Cleanup with explicit void removal...")
-
-        # Delete primitives marked for deletion
-        voids_to_delete = []
-        [voids_to_delete.extend(prim.voids) for prim in prims_to_delete if prim.voids]
-        deleted_count = len(voids_to_delete) + len(prims_to_delete)
-        self._edb.modeler.delete_batch_primitives(voids_to_delete + prims_to_delete)
-        self.logger.info_timer(f"Cleaned up {deleted_count} primitives")
-        self.logger.reset_timer()
-
-        # PHASE 9: COMPONENT PROCESSING
-        self.logger.info("Phase 9: Component processing...")
-
-        components_to_delete = []
-        for inst_name, instance in self._edb.components.instances.items():
-            if instance.numpins == 0:
-                components_to_delete.append(instance)
-
+        # components
+        _t1 = time.time()
         for comp in components_to_delete:
             comp.delete()
-
-        self.logger.info(f"Deleted {len(components_to_delete)} components with no pins")
-
         if self.remove_single_pin_components:
             self._edb.components.delete_single_pin_rlc()
-            self.logger.info_timer("Single pin components deleted")
-
+        self.logger.info(f"{len(components_to_delete)} components deleted in {time.time() - _t1:.3f} s")
         self._edb.components.refresh_components()
+        self.logger.info(f"[WRITE] All writes finished in {time.time() - _t:.3f} s")
 
+        # final save
         if self.output_file:
             self._edb.save_as(self.output_file)
 
-        self.logger.info_timer("Cutout completed", timer_start)
-
-        return [[pt.x.value, pt.y.value] for pt in list(_poly.without_arcs().points)]
+        self.logger.info_timer("GRPC-safe cut-out completed", _t0)
+        return [[pt.x.value, pt.y.value] for pt in extent_poly.without_arcs().points]
 
     def run(self):
         if not self.use_pyaedt_cutout:
@@ -772,10 +706,10 @@ class GrpcCutout:
                 i += 1
                 expansion = expansion_size * i
             if working_cutout:
-                msg = "Cutout completed in {} iterations with expansion size of {}mm".format(i, expansion * 1e3)
+                msg = f"Cutout completed in {i} iterations with expansion size of {float(expansion) * 1e3}mm"
                 self.logger.info_timer(msg, start)
             else:
-                msg = "Cutout failed after {} iterations and expansion size of {}mm".format(i, expansion * 1e3)
+                msg = f"Cutout failed after {i} iterations and expansion size of {float(expansion) * 1e3}mm"
                 self.logger.info_timer(msg, start)
                 return False
             return result
