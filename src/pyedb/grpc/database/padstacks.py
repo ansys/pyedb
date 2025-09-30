@@ -455,6 +455,11 @@ class Padstacks(object):
 
         padstack_def.data = padstack_data
 
+    def delete_batch_instances(self, instances_to_delete):
+        for inst in instances_to_delete:
+            inst._edb_object.delete()
+        self.clear_instances_cache()
+
     def delete_padstack_instances(self, net_names: Union[str, List[str]]) -> bool:
         """Delete padstack instances by net names.
 
@@ -478,7 +483,7 @@ class Padstacks(object):
 
         for p_id, p in self.instances.items():
             if p.net_name in net_names:
-                if not p.delete():  # pragma: no cover
+                if not p._edb_object.delete():  # pragma: no cover
                     return False
         self.clear_instances_cache()
         return True
