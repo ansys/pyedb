@@ -7,3 +7,4 @@ This section describes PyEDB workflows features.
    :maxdepth: 2
 
    sipi/hfss_auto_configuration
+   utilities/cutout
