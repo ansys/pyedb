@@ -123,3 +123,5 @@ Getting Started
 [Bb]atch[Gg]roup
 [Ee][Dd][Bb]
 [Cc]utout
+check_terminals
+[Dd]efeature
