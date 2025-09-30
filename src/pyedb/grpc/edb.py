@@ -129,12 +129,12 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
 from pyedb.grpc.database.terminal.terminal import Terminal
-from pyedb.grpc.database.utility.constants import get_terminal_supported_boundary_types
 from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
+from pyedb.workflows.utilities.cutout import Cutout
 
 os.environ["no_proxy"] = "localhost,127.0.0.1"
 
@@ -1570,8 +1570,6 @@ class Edb(EdbInit):
 
 
         """
-        from pyedb.workflows.utilities.cutout import Cutout
-
         cutout = Cutout(self)
         cutout.expansion_size = expansion_size
         cutout.signals = signal_nets

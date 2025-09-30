@@ -83,7 +83,6 @@ from pyedb.dotnet.database.nets import EdbNets
 from pyedb.dotnet.database.padstack import EdbPadstacks
 from pyedb.dotnet.database.siwave import EdbSiwave
 from pyedb.dotnet.database.stackup import Stackup
-from pyedb.dotnet.database.utilities.cutout import Cutout
 from pyedb.dotnet.database.utilities.hfss_simulation_setup import (
     HFSSPISimulationSetup,
     HfssSimulationSetup,
@@ -103,6 +102,7 @@ from pyedb.misc.decorators import deprecate_argument_name, execution_timer
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflow import Workflow
+from pyedb.workflows.utilities.cutout import Cutout
 
 
 class Edb:
