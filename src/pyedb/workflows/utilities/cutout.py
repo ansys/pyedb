@@ -552,8 +552,7 @@ class GrpcCutout:
             elif net_name in reference_list and item_id not in pins_to_preserve:
                 reference_pinsts.append(item)
 
-        for pin in pins_to_delete:
-            pin.delete()
+        self._edb.padstacks.delete_batch_instances(pins_to_delete)
 
         self.logger.info_timer(f"{len(pins_to_delete)} padstack instances processed")
         self.logger.reset_timer()
@@ -611,8 +610,7 @@ class GrpcCutout:
             if not pinst.in_polygon(_poly, include_partial=self.include_partial_instances):
                 pins_to_delete.append(pinst)
 
-        for pin in pins_to_delete:
-            pin.delete()
+        self._edb.padstacks.delete_batch_instances(pins_to_delete)
 
         self.logger.info_timer(f"{len(pins_to_delete)} padstacks clipped")
         self.logger.reset_timer()
@@ -700,9 +698,7 @@ class GrpcCutout:
         voids_to_delete = []
         [voids_to_delete.extend(prim.voids) for prim in prims_to_delete if prim.voids]
         deleted_count = len(voids_to_delete) + len(prims_to_delete)
-        self._edb.modeler.delete_batch_primitives(voids_to_delete)
-        self._edb.modeler.delete_batch_primitives(prims_to_delete)
-
+        self._edb.modeler.delete_batch_primitives(voids_to_delete + prims_to_delete)
         self.logger.info_timer(f"Cleaned up {deleted_count} primitives")
         self.logger.reset_timer()
 
@@ -726,11 +722,9 @@ class GrpcCutout:
         self._edb.components.refresh_components()
 
         if self.output_file:
-            self._edb.save()
+            self._edb.save_as(self.output_file)
 
         self.logger.info_timer("Cutout completed", timer_start)
-        # self.logger.info(f"Total processing time: {total_time:.2f}s")
-        # self.logger.reset_timer()
 
         return [[pt.x.value, pt.y.value] for pt in list(_poly.without_arcs().points)]
 
