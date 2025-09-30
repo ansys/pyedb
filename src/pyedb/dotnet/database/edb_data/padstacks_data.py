@@ -22,6 +22,7 @@
 
 from collections import OrderedDict
 import math
+import re
 import warnings
 
 from pyedb.dotnet.clr_module import String
@@ -1214,6 +1215,39 @@ class EDBPadstackInstance(Connectable):
             return term
 
     @property
+    def side_number(self):
+        """Return the number of sides meshed of the padstack instance.
+        Returns
+        -------
+        int
+            Number of sides meshed of the padstack instance.
+        """
+        side_value = self._edb_object.GetProductProperty(self._pedb._edb.ProductId.Hfss3DLayout, 21)
+        if side_value[0]:
+            return int(re.search(r"(?m)^\s*sid=(\d+)", side_value[1]).group(1))
+        return 0
+
+    @side_number.setter
+    def side_number(self, value):
+        """Set the number of sides meshed of the padstack instance.
+
+        Parameters
+        ----------
+        value : int
+            Number of sides to mesh the padstack instance.
+
+        Returns
+        -------
+        bool
+            True if successful, False otherwise.
+        """
+        if isinstance(value, int) and 3 <= value <= 64:
+            prop_string = f"$begin ''\n\tsid={value}\n\tmat='copper'\n\tvs='Wirebond'\n$end ''\n"
+            self._edb_object.SetProductProperty(self._pedb._edb.ProductId.Hfss3DLayout, 21, prop_string)
+        else:
+            raise ValueError("Number of sides must be an integer between 3 and 64")
+
+    @property
     def terminal(self):
         """Terminal."""
         from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import (
@@ -1740,8 +1774,11 @@ class EDBPadstackInstance(Connectable):
             hole_diam = 0
             try:  # pragma no cover
                 hole_diam = padstack_def.hole_properties[0]
-            except:  # pragma no cover
-                pass
+            except Exception as e:  # pragma no cover
+                self._pedb.logger.error(
+                    f"Failed to access first element of hole_properties attribute of object "
+                    f"{padstack_def} - Hole diameter is set to default value 0 - {type(e).__name__}: {str(e)}"
+                )
             if hole_diam:  # pragma no cover
                 hole_finished_size = padstack_def.hole_finished_size
                 via_length = (
@@ -1914,18 +1951,6 @@ class EDBPadstackInstance(Connectable):
             * -1 Undefined.
         """
         return int(self._edb_padstackinstance.GetGroup().GetPlacementLayer().GetTopBottomAssociation())
-
-    @property
-    def side_number(self) -> float:
-        if not self._side_number:
-            prop_string = "$begin ''\n\tsid=3\n\tmat='copper'\n\tvs='Wirebond'\n$end ''\n"
-            self._edb_padstackinstance.SetProductProperty(self._pedb._edb.ProductId.Designer, 21, prop_string)
-        self._side_number = self._edb_padstackinstance.GetProductProperty(self._pedb._edb.ProductId.Designer, 21)
-        return self._side_number
-
-    @side_number.setter
-    def side_number(self, value):
-        self._side_number = self._edb_padstackinstance.GetProductProperty(self._pedb._edb.ProductId.Designer, 21, value)
 
     def create_rectangle_in_pad(self, layer_name, return_points=False, partition_max_order=16):
         """Create a rectangle inscribed inside a padstack instance pad.

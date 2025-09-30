@@ -31,9 +31,7 @@ from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.database.cell.primitive.path import Path
 from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
 from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
-from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal,
-)
+from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.cell.voltage_regulator import VoltageRegulator
@@ -412,8 +410,8 @@ class Layout(ObjBase):
         """
         candidates = self.padstack_instances
         if instance_id is not None:
-            instance_id = int(instance_id)
             value = instance_id if isinstance(instance_id, list) else [instance_id]
+            value = [int(i) for i in value]
             candidates = [i for i in candidates if i.id in value]
 
         if aedt_name is not None:

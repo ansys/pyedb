@@ -32,7 +32,7 @@ import os
 from pathlib import Path
 import re
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 import time
 import traceback
@@ -755,6 +755,11 @@ class Edb:
 
         This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         input_file : str
@@ -791,16 +796,16 @@ class Edb:
         self._nets = None
         aedb_name = os.path.splitext(os.path.basename(input_file))[0] + ".aedb"
         if anstranslator_full_path and os.path.exists(anstranslator_full_path):
-            command = anstranslator_full_path
+            executable_path = anstranslator_full_path
         else:
-            command = os.path.join(self.base_path, "anstranslator")
+            executable_path = os.path.join(self.base_path, "anstranslator")
             if is_windows:
-                command += ".exe"
+                executable_path += ".exe"
 
         if not working_dir:
             working_dir = os.path.dirname(input_file)
         cmd_translator = [
-            command,
+            executable_path,
             input_file,
             os.path.join(working_dir, aedb_name),
             "-l={}".format(os.path.join(working_dir, "Translator.log")),
@@ -818,7 +823,10 @@ class Edb:
             cmd_translator.append('-t="{}"'.format(tech_file))
         if layer_filter:
             cmd_translator.append('-f="{}"'.format(layer_filter))
-        subprocess.run(cmd_translator)
+        try:
+            subprocess.run(cmd_translator, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError("An error occurred while translating board file to ``edb.def`` file") from e
         if not os.path.exists(os.path.join(working_dir, aedb_name)):
             raise RuntimeWarning(f"Translator failed. command : {' '.join(cmd_translator)}")
         else:
@@ -1854,8 +1862,11 @@ class Edb:
                                         convert_py_list_to_net_list(list(obj_data)),
                                         convert_py_list_to_net_list(voids_poly),
                                     )
-                        except:
-                            pass
+                        except Exception as e:
+                            self.logger.error(
+                                f"A(n) {type(e).__name__} error occurred in method _create_conformal of "
+                                f"class Edb at iteration {k} for data {i}: {str(e)}"
+                            )
                         finally:
                             unite_polys.extend(list(obj_data))
             _poly_unite = self.core.Geometry.PolygonData.Unite(convert_py_list_to_net_list(unite_polys))
@@ -2213,8 +2224,8 @@ class Edb:
                 if os.path.exists(source) and not os.path.exists(target):
                     try:
                         shutil.copy(source, target)
-                    except:
-                        pass
+                    except Exception as e:
+                        self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         elif open_cutout_at_end:
             self._active_cell = _cutout
             self._init_objects()
@@ -2899,8 +2910,8 @@ class Edb:
                     try:
                         shutil.copy(source, target)
                         self.logger.warning("aedb def file manually created.")
-                    except:
-                        pass
+                    except Exception as e:
+                        self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(polygonData.GetPolygonWithoutArcs().Points)]
 
     def create_cutout_on_point_list(
@@ -4144,7 +4155,18 @@ class Edb:
             terminal.ref_terminal = ref_terminal
         if name:
             terminal.name = name
-        return self.ports[terminal.name]
+
+        if terminal.is_circuit_port:
+            port = CircuitPort(self, terminal._edb_object)
+        elif terminal.terminal_type == "BundleTerminal":
+            port = BundleWavePort(self, terminal._edb_object)
+        elif terminal.hfss_type == "Wave":
+            port = WavePort(self, terminal._edb_object)
+        elif terminal.terminal_type == "PadstackInstanceTerminal":
+            port = CoaxPort(self, terminal._edb_object)
+        else:
+            port = GapPort(self, terminal._edb_object)
+        return port
 
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
@@ -4755,6 +4777,11 @@ class Edb:
     def compare(self, input_file, results=""):
         """Compares current open database with another one.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         input_file : str
@@ -4770,16 +4797,16 @@ class Edb:
         if not results:
             results = self.edbpath[:-5] + "_compare_results"
             os.mkdir(results)
-        command = os.path.join(self.base_path, "EDBDiff.exe")
+        executable_path = os.path.join(self.base_path, "EDBDiff.exe")
         if is_linux:
             mono_path = os.path.join(self.base_path, "common/mono/Linux64/bin/mono")
-            cmd_input = [mono_path, command, input_file, self.edbpath, results]
+            command = [mono_path, executable_path, input_file, self.edbpath, results]
         else:
-            cmd_input = [command, input_file, self.edbpath, results]
-        p = subprocess.run(cmd_input)
-        if p.returncode == 0:
+            command = [executable_path, input_file, self.edbpath, results]
+        try:
+            subprocess.run(command, check=True)  # nosec
             return str(Path(self.base_path).joinpath("EDBDiff.exe"))
-        else:
+        except subprocess.CalledProcessError as e:  # nosec
             raise RuntimeError(
                 "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
-            )
+            ) from e

@@ -49,30 +49,16 @@ from ansys.edb.core.layer.layer_collection import (
 )
 from ansys.edb.core.layer.stackup_layer import StackupLayer as GrpcStackupLayer
 from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
+from defusedxml.ElementTree import parse as defused_parse
+import matplotlib.colors as colors
+import numpy as np
+import pandas as pd
 
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
-
-colors = None
-pd = None
-np = None
-try:
-    import matplotlib.colors as colors
-except ImportError:
-    colors = None
-
-try:
-    import numpy as np
-except ImportError:
-    np = None
-
-try:
-    import pandas as pd
-except ImportError:
-    pd = None
 
 logger = logging.getLogger(__name__)
 
@@ -565,9 +551,6 @@ class Stackup(LayerCollection):
         >>> edb = Edb()
         >>> edb.stackup.create_symmetric_stackup(layer_count=4)
         """
-        if not np:
-            self._pedb.logger.error("Numpy is needed. Please, install it first.")
-            return False
         if not layer_count % 2 == 0:
             return False
 
@@ -1024,10 +1007,6 @@ class Stackup(LayerCollection):
         return self.export(fpath, file_format=file_format, include_material_with_layer=include_material_with_layer)
 
     def _export_layer_stackup_to_csv_xlsx(self, fpath: Optional[str] = None, file_format: Optional[str] = None) -> bool:
-        if not pd:
-            self._pedb.logger.error("Pandas is needed. Please, install it first.")
-            return False
-
         data = {
             "Type": [],
             "Material": [],
@@ -1190,8 +1169,11 @@ class Stackup(LayerCollection):
                         sball_prop = cmp_prop.solder_ball_property
                         sball_prop.placement = GrpcSolderballPlacement.ABOVE_PADSTACK
                         cmp_prop.solder_ball_property = sball_prop
-                except:
-                    pass
+                except Exception as e:
+                    self._logger.warning(
+                        f"A(n) {type(e).__name__} error occurred while attempting to update "
+                        f"solder_ball_property for component {cmp}: {str(e)}"
+                    )
                 if cmp_type == GrpcComponentType.IC:
                     die_prop = cmp_prop.die_property
                     chip_orientation = die_prop.die_orientation
@@ -1237,8 +1219,11 @@ class Stackup(LayerCollection):
             try:
                 if val.solder_ball_height and val.placement_layer == layer_name:
                     height = val.solder_ball_height
-            except:
-                pass
+            except Exception as e:
+                self._logger.error(
+                    f"A(n) {type(e).__name__} error occurred while attempting to retrieve solder_height "
+                    f"for layer {layer_name} - Default value of 0.0 is returned: {str(e)}"
+                )
         return height
 
     def _remove_solder_pec(self, layer_name):
@@ -1949,10 +1934,6 @@ class Stackup(LayerCollection):
         bool
             ``True`` when successful.
         """
-        if not pd:
-            self._pedb.logger.error("Pandas is needed. You must install it first.")
-            return False
-
         df = pd.read_csv(file_path, index_col=0)
 
         for name in self.layers.keys():  # pragma: no cover
@@ -2221,10 +2202,7 @@ class Stackup(LayerCollection):
         bool
             ``True`` when successful.
         """
-        if not colors:
-            self._pedb.logger.error("Matplotlib is needed. Please, install it first.")
-            return False
-        tree = ET.parse(file_path)
+        tree = defused_parse(file_path)
         root = tree.getroot()
         stackup = root.find("Stackup")
         stackup_dict = {}

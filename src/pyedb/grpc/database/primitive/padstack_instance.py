@@ -122,6 +122,47 @@ class PadstackInstance(GrpcPadstackInstance):
             term = PadstackInstanceTerminal(self._pedb, term)
         return term if not term.is_null else None
 
+    @property
+    def side_number(self):
+        """Return the number of sides meshed of the padstack instance.
+        Returns
+        -------
+        int
+            Number of sides meshed of the padstack instance.
+        """
+        side_value = self.get_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21)
+        if side_value:
+            return int(re.search(r"(?m)^\s*sid=(\d+)", side_value).group(1))
+        return 0
+
+    @side_number.setter
+    def side_number(self, value):
+        """Set the number of sides meshed of the padstack instance.
+
+        Parameters
+        ----------
+        value : int
+            Number of sides to mesh the padstack instance.
+
+        Returns
+        -------
+        bool
+            True if successful, False otherwise.
+        """
+        if isinstance(value, int) and 3 <= value <= 64:
+            prop_string = f"$begin ''\n\tsid={value}\n\tmat='copper'\n\tvs='Wirebond'\n$end ''\n"
+            self.set_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21, prop_string)
+        else:
+            raise ValueError("Number of sides must be an integer between 3 and 64")
+
+    def delete(self):
+        """Delete the padstack instance."""
+        try:
+            self._pedb.padstacks._instances.pop(self.edb_uid, None)
+        except Exception:
+            self._pedb.padstacks.clear_instances_cache()
+        super().delete()
+
     def set_backdrill_top(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from top.
 
@@ -763,18 +804,6 @@ class PadstackInstance(GrpcPadstackInstance):
     @aedt_name.setter
     def aedt_name(self, value):
         self.set_product_property(GrpcProductIdType.DESIGNER, 11, value)
-
-    @property
-    def side_number(self) -> int:
-        if not self._side_number:
-            prop_string = "$begin ''\n\tsid=3\n\tmat='copper'\n\tvs='Wirebond'\n$end ''\n"
-            self.set_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21, prop_string)
-        self._side_number = self.get_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21)
-        return self._side_number
-
-    @side_number.setter
-    def side_number(self, value):
-        self._side_number = self.set_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21, value)
 
     def split(self) -> list:
         """Split padstack instance into multiple instances. The new instances only connect adjacent layers."""

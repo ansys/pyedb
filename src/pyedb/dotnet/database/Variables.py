@@ -1081,8 +1081,8 @@ class VariableManager(object):
                     desktop_object.Undo()
                     self._logger.clear_messages()
                     return
-            except:
-                pass
+            except Exception:
+                self._logger.debug(f"Something went wrong when deleting '{variable_name}'.")
         else:
             raise Exception("Unhandled input type to the design property or project variable.")  # pragma: no cover
 
@@ -1212,8 +1212,8 @@ class VariableManager(object):
                     ]
                 )
                 return True
-            except:
-                pass
+            except Exception:
+                self._logger.debug("Failed to change desktop object property.")
         return False
 
     def delete_variable(self, var_name):  # pragma: no cover
@@ -1252,8 +1252,8 @@ class VariableManager(object):
                         ],
                     ]
                 )
-            except:  # pragma: no cover
-                pass
+            except Exception:  # pragma: no cover
+                self._logger.debug("Failed to change desktop object property.")
             else:
                 self._cleanup_variables()
                 return True
@@ -1419,8 +1419,8 @@ class Variable(object):
                 if result:
                     break
                 i += 1
-        except:
-            pass
+        except Exception:
+            self._app.logger.debug(f"Failed to set property '{prop}' value.")
 
     def _get_prop_val(self, prop):  # pragma: no cover
         if self._app.design_type == "Maxwell Circuit":
@@ -1440,8 +1440,8 @@ class Variable(object):
                 else:
                     name = "LocalVariables"
             return self._app.get_oo_object(self._aedt_obj, "{}/{}".format(name, self._variable_name)).GetPropValue(prop)
-        except:
-            pass
+        except Exception:
+            self._app.logger.debug(f"Failed to get property '{prop}' value.")
 
     @property
     def name(self):  # pragma: no cover

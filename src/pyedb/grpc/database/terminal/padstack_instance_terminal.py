@@ -38,16 +38,6 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         self._pedb = pedb
 
     @property
-    def boundary_type(self) -> str:
-        """Boundary type.
-
-        Returns
-        -------
-        str : boundary type.
-        """
-        return super().boundary_type.name.lower()
-
-    @property
     def position(self) -> list[float]:
         """Terminal position.
 
@@ -193,7 +183,15 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
             "rlc": GrpcBoundaryType.RLC,
             "pec": GrpcBoundaryType.PEC,
         }
-        super(PadstackInstanceTerminal, self.__class__).boundary_type.__set__(self, mapping[value.name.lower()])
+        if isinstance(value, str):
+            key = value.lower()
+        else:
+            key = value.name.lower()
+        new_boundary_type = mapping.get(key)
+        if new_boundary_type is None:
+            valid_types = ", ".join(mapping.keys())
+            raise ValueError(f"Invalid boundary type '{value}'. Valid types are: {valid_types}")
+        super(PadstackInstanceTerminal, self.__class__).boundary_type.__set__(self, new_boundary_type)
 
     @property
     def is_port(self) -> bool:

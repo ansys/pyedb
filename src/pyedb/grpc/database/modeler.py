@@ -25,17 +25,13 @@ This module contains these classes: `EdbLayout` and `Shape`.
 """
 
 import math
-from typing import Any, Dict, List, Optional, Tuple, Union
-import warnings
+from typing import Any, Dict, Iterable, List, Optional, Union
 
-from ansys.edb.core.geometry.arc_data import ArcData as GrpcArcData
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import (
     PolygonData as GrpcPolygonData,
-    PolygonSenseType as GrpcPolygonSenseType,
 )
 from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
-from ansys.edb.core.inner.exceptions import InvalidArgumentException
 from ansys.edb.core.primitive.bondwire import BondwireType as GrpcBondwireType
 from ansys.edb.core.primitive.path import PathCornerType as GrpcPathCornerType, PathEndCapType as GrpcPathEndCapType
 from ansys.edb.core.primitive.rectangle import (
@@ -51,6 +47,25 @@ from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecate_argument_name
+
+
+def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
+    """
+    Convert any reasonable point description into [[x1, y1], [x2, y2], …]
+    """
+    pts = list(points)
+    if not pts:  # empty input
+        return []
+
+    # Detect flat vs nested
+    if isinstance(pts[0], (list, tuple)):
+        # already nested – just ensure every item is a *list* (not tuple)
+        return [list(pair) for pair in pts]
+    else:
+        # flat list – chunk into pairs
+        if len(pts) % 2:
+            raise ValueError("Odd number of coordinates supplied")
+        return [[pts[i], pts[i + 1]] for i in range(0, len(pts), 2)]
 
 
 class Modeler(object):
@@ -706,7 +721,8 @@ class Modeler(object):
         else:
             corner_style = GrpcPathCornerType.MITER
         _points = []
-        if isinstance(points, list):
+        if isinstance(points, (list, tuple)):
+            points = normalize_pairs(points)
             for pt in points:
                 _pt = []
                 for coord in pt:
@@ -737,7 +753,7 @@ class Modeler(object):
 
     def create_trace(
         self,
-        path_list: Union[List[List[float]], GrpcPolygonData],
+        path_list: Union[Iterable[float], GrpcPolygonData],
         layer_name: str,
         width: float = 1,
         net_name: str = "",
@@ -749,8 +765,9 @@ class Modeler(object):
 
         Parameters
         ----------
-        path_list : list
-            List of [x,y] points.
+        path_list : Iterable
+            List of points [x,y] or [[x, y], ...]
+            or [(x, y)...].
         layer_name : str
             Layer name.
         width : float, optional
@@ -826,6 +843,8 @@ class Modeler(object):
         for void in voids:
             if isinstance(void, list):
                 void_polygon_data = GrpcPolygonData(points=void)
+            elif isinstance(void, GrpcPolygonData):
+                void_polygon_data = void
             else:
                 void_polygon_data = void.polygon_data
             if not void_polygon_data.points:
@@ -1507,186 +1526,3 @@ class Modeler(object):
             if not flag:
                 return flag
         return True
-
-    @deprecate_argument_name(
-        {
-            "signal_list": "signal_nets",
-            "reference_list": "reference_nets",
-            "expansion_size": "expansion",
-            "point_list": "extent_points",
-        }
-    )
-    def cutout(
-        self,
-        signal_nets: "list[str] | None" = None,
-        reference_nets: "list[str] | None" = None,
-        extent_points: List[Tuple[float, float]] = None,
-        expansion: Union[float, str] = "2mm",
-        extent_type: str = "bounding_box",
-        number_of_threads: int = None,
-        custom_extent_units: str = "mm",
-        include_partial_instances: bool = False,
-        check_terminals: bool = False,
-        preserve_components_with_model: bool = False,
-        simple_pad_check: bool = True,
-        keep_lines_as_paths: bool = False,
-        **kw,
-    ) -> "list[Tuple[float, float]]":
-        """
-        Create an EDB cutout and return the polygon that defines the resulting extent.
-
-        Two mutually exclusive modes are available:
-
-        1. Net-driven mode
-           Automatically derives the cutout polygon from the geometries that belong to
-           the requested nets.
-           Example:
-           >>> edb.cutout(
-           ...     signal_net=["DDR4_D0", "DDR4_D1"],
-           ...     reference_nets=["GND", "VDD"],
-           ...     expansion=1e-3,
-           ...     extent_type="convex_hull",
-           ... )
-
-        2. Polygon-driven mode
-           Uses an explicitly supplied polygon.
-           Example:
-           >>> edb.cutout(
-           ...     point_list=[(0, 0), (5e-3, 0), (5e-3, 5e-3), ([0, 5e-3)]],
-           ...     expansion=0,
-           ... )
-
-        Parameters
-        ----------
-        signal_nets : list[str] | None, default None
-            Nets to be kept inside the cutout.  Must be provided in net-driven mode.
-        reference_nets : list[str] | None, default None
-            Additional reference nets that are required for a meaningful cutout
-            (e.g., ground or supply nets).  Ignored in polygon-driven mode.
-        extent_points : List[Tuple[float, float]] | None, default None
-            Sequence of (x, y) coordinates (in meters) that define the user-supplied
-            polygon.  Must be provided in polygon-driven mode.
-        expansion : float or str default "2mm"
-            Extra margin (in meters) to enlarge the automatically computed bounding
-            polygon.
-        extent_type: {"bounding_box", "convex_hull", "conforming"}, default "bounding_box"
-            Strategy used to compute the extent when operating in net-driven mode. 'conforming' raises a warning
-            as it is not the recommended way to compute the extent and increase computational time.
-        number_of_threads : int | None, default None
-            Number of parallel threads to use while computing the cutout.  If *None*,
-            the implementation chooses the maximum number of threads available but will be limited by python GIL.
-            Therefore, cpu usage does not go above 25 percent if you have multiple cores.
-        custom_extent_units : str, default "mm"
-            Unit string used when interpreting legacy ``custom_extent`` arguments
-            supplied through ``**kw``.
-        include_partial_instances : bool, default False
-            If *True*, any component or via that intersects the extent polygon—even
-            partially—is retained; otherwise only fully contained instances are kept.
-        check_terminals : bool, default False
-            If *True*, the routine verifies that every signal net terminal is still
-            connected after the cutout is performed and raises a warning if not.
-        preserve_components_with_model : bool, default False
-            If *True*, components that have a 3-D model are always preserved,
-            regardless of their location relative to the extent.
-        simple_pad_check : bool, default True
-            Use the faster, less accurate pad/via geometry check when deciding which
-            objects lie inside the cutout.
-        keep_lines_as_paths : bool, default False
-            If *True*, trace geometries remain as path objects instead of being
-            converted to polygons.  This can reduce memory usage at the cost of
-            slightly increased geometric complexity.
-        **kw : dict
-            Legacy keyword arguments (deprecated): ``use_pyaedt_cutout``,
-            ``remove_single_pin_components``, ``custom_extent``, ``keep_voids``,
-            ``output_aedb_path``, etc. A warning is emitted for every legacy key
-            that is encountered.
-
-        Returns
-        -------
-        list[Tuple[float, float]]
-            The final polygon that defines the cutout extent, represented as a list
-            of (x, y) coordinates in meters.
-
-        Raises
-        ------
-        ValueError
-            If neither ``signal_net`` nor ``point_list`` is provided, or if both are
-            provided simultaneously.
-
-        Examples
-        --------
-        Net-driven cutout with a 1 mm expansion around the convex hull of all
-        geometries belonging to the differential pair nets:
-
-        >>> extent = edb.cutout(
-        ...     signal_net=["USB_DP", "USB_DN"],
-        ...     reference_nets=["GND"],
-        ...     expansion="1mm",
-        ...     extent_type="convex_hull",
-        ... )
-
-        Polygon-driven cutout using an L-shaped boundary:
-
-        >>> outline = [(0, 0), (5e-3, 0), (5e-3, 2e-3), (2e-3, 2e-3),
-        ...            (2e-3, 5e-3), (0, 5e-3])]
-        >>> extent = edb.cutout(point_list=outline)
-        """
-        # TODO add support for include_partial_instances,
-        # TODO add support for check_terminals
-        # TODO add support for preserve_components_with_model
-        # TODO add support for simple_pad_check
-        # TODO add support for keep_lines_as_paths
-
-        from pyedb.grpc.database.utility.cutout import cutout_worker, extent_from_nets
-
-        if getattr(kw, "use_round_corner", None):
-            warnings.warn("Argument `use_round_corner` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "use_pyaedt_cutout", None):
-            warnings.warn("Argument `use_pyaedt_cutout` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "use_pyaedt_extent_computing", None):
-            warnings.warn("Argument `use_pyaedt_extent_computing` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "extent_defeature", None):
-            warnings.warn("Argument `extent_defeature` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "remove_single_pin_components", None):
-            warnings.warn("Argument `remove_single_pin_components` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "custom_extent", None):
-            warnings.warn("Argument `custom_extent` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "keep_voids", None):
-            warnings.warn("Argument `keep_voids` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "include_pingroups", None):
-            warnings.warn("Argument `include_pingroups` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "expansion_factor", None):
-            warnings.warn("Argument `expansion_factor` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "maximum_iterations", None):
-            warnings.warn("Argument `maximum_iterations` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "include_voids_in_extents", None):
-            warnings.warn("Argument `include_voids_in_extents` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "output_aedb_path", None):
-            warnings.warn("Argument `output_aedb_path` is deprecated. ", DeprecationWarning)
-        if getattr(kw, "open_cutout_at_end", None):
-            warnings.warn("Argument `open_cutout_at_end` is deprecated. ", DeprecationWarning)
-
-        if extent_points:
-            if custom_extent_units:
-                for pt in extent_points:
-                    if not isinstance(pt, list) or len(pt) != 2:
-                        raise ValueError(f"Invalid point {pt} in point_list. Expected a list of [x, y] coordinates.")
-                extent_points = [
-                    [Value(f"{pt[0]}{custom_extent_units}"), Value(f"{pt[1]}{custom_extent_units}")]
-                    for pt in extent_points
-                ]
-            else:
-                warnings.warn("No custom_extent_units provided, using default 'meter'.", UserWarning)
-
-            warnings.warn("Using polygon driven cutout mode.", UserWarning)
-        else:
-            if signal_nets and reference_nets:
-                extent_points = extent_from_nets(
-                    self._pedb,
-                    signal_nets or [],
-                    expansion,
-                    extent_type,
-                    **kw,
-                )
-        cutout_worker(self._pedb, extent_points, signal_nets, reference_nets, number_of_threads, **kw)
-        return extent_points

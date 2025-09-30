@@ -60,7 +60,7 @@ from itertools import combinations
 import os
 import re
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 import tempfile
 import time
@@ -129,6 +129,7 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
 from pyedb.grpc.database.terminal.terminal import Terminal
+from pyedb.grpc.database.utility.constants import get_terminal_supported_boundary_types
 from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
@@ -217,8 +218,8 @@ class Edb(EdbInit):
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
-        self.edbversion = edbversion
-        if not float(self.edbversion) >= 2025.2:
+        self.version = edbversion
+        if not float(self.version) >= 2025.2:
             raise "EDB gRPC is only supported with ANSYS release 2025R2 and higher."
         self.logger.info("Using PyEDB with gRPC as Beta until ANSYS 2025R2 official release.")
         self.isaedtowned = isaedtowned
@@ -644,7 +645,7 @@ class Edb(EdbInit):
             if self.db.is_null:
                 self.logger.warning("Error Opening db")
                 self._active_cell = None
-            self.logger.info(f"Database {os.path.split(self.edbpath)[-1]} Opened in {self.edbversion}")
+            self.logger.info(f"Database {os.path.split(self.edbpath)[-1]} Opened in {self.version}")
             self._active_cell = None
             if self.cellname:
                 for cell in self.active_db.circuit_cells:
@@ -785,6 +786,11 @@ class Edb(EdbInit):
 
         This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         input_file : str
@@ -827,16 +833,16 @@ class Edb(EdbInit):
         self._nets = None
         aedb_name = os.path.splitext(os.path.basename(input_file))[0] + ".aedb"
         if anstranslator_full_path and os.path.exists(anstranslator_full_path):
-            command = anstranslator_full_path
+            executable_path = anstranslator_full_path
         else:
-            command = os.path.join(self.base_path, "anstranslator")
+            executable_path = os.path.join(self.base_path, "anstranslator")
             if is_windows:
-                command += ".exe"
+                executable_path += ".exe"
 
         if not working_dir:
             working_dir = os.path.dirname(input_file)
         cmd_translator = [
-            command,
+            executable_path,
             input_file,
             os.path.join(working_dir, aedb_name),
             "-l={}".format(os.path.join(working_dir, "Translator.log")),
@@ -854,7 +860,10 @@ class Edb(EdbInit):
             cmd_translator.append('-t="{}"'.format(tech_file))
         if layer_filter:
             cmd_translator.append('-f="{}"'.format(layer_filter))
-        subprocess.run(cmd_translator)
+        try:
+            subprocess.run(cmd_translator, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError("An error occurred while translating board file to ``edb.def`` file") from e
         if not os.path.exists(os.path.join(working_dir, aedb_name)):
             self.logger.error("Translator failed to translate.")
             return False
@@ -1364,6 +1373,11 @@ class Edb(EdbInit):
     ):
         """Import GDS file.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         inputGDS : str
@@ -1382,7 +1396,7 @@ class Edb(EdbInit):
             Layer filter file.
         """
         control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(inputGDS)[-1][:-3] + "xml")
-        if float(self.edbversion) < 2024.1:
+        if float(self.version) < 2024.1:
             if not is_linux and tech_file:
                 self.logger.error("Technology files are supported only in Linux. Use control file instead.")
                 return False
@@ -1427,9 +1441,12 @@ class Edb(EdbInit):
                     f'-f="{layer_filter}"',
                 ]
 
-            result = subprocess.run(command, capture_output=True, text=True, shell=True)
-            print(result.stdout)
-            print(command)
+            try:
+                result = subprocess.run(command, capture_output=True, text=True, check=True)  # nosec
+                print(result.stdout)
+                print(command)
+            except subprocess.CalledProcessError as e:  # nosec
+                raise RuntimeError("An error occurred while converting file") from e
             temp_inputGDS = inputGDS.split(".gds")[0]
             self.edbpath = temp_inputGDS + ".aedb"
             return self.open()
@@ -1774,8 +1791,10 @@ class Edb(EdbInit):
         process = SiwaveSolve(self)
         try:
             self.close()
-        except:
-            pass
+        except Exception as e:
+            self.logger.warning(
+                f"A(n) {type(e).__name__} error occurred while attempting to close the database {self}: {str(e)}"
+            )
         process.solve()
         return self.edbpath[:-5] + ".siw"
 
@@ -1825,8 +1844,10 @@ class Edb(EdbInit):
         process = SiwaveSolve(self)
         try:
             self.close()
-        except:
-            pass
+        except Exception as e:
+            self.logger.warning(
+                f"A(n) {type(e).__name__} error occurred while attempting to close the database {self}: {str(e)}"
+            )
         return process.export_dc_report(
             siwave_project,
             solution_name,
@@ -2211,7 +2232,7 @@ class Edb(EdbInit):
         if name in self.setups:
             self.logger.error("Setup name already used in the layout")
             return False
-        version = self.edbversion.split(".")
+        version = self.version.split(".")
         if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
             setup = GrpcRaptorXSimulationSetup.create(cell=self.active_cell, name=name)
             return RaptorXSimulationSetup(self, setup)
@@ -2402,7 +2423,7 @@ class Edb(EdbInit):
         defined_ports = {}
         project_connexions = None
         for edb_path, zone_info in zone_dict.items():
-            edb = Edb(edbversion=self.edbversion, edbpath=edb_path)
+            edb = Edb(edbversion=self.version, edbpath=edb_path)
             edb.cutout(
                 use_pyaedt_cutout=True,
                 custom_extent=zone_info[1],
@@ -2944,7 +2965,7 @@ class Edb(EdbInit):
                 "No padstack instances found inside evaluated voids during model creation for arbitrary waveports"
             )
             return False
-        cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion, restart_rpc_server=True)
+        cloned_edb = Edb(edbpath=output_edb, edbversion=self.version, restart_rpc_server=True)
 
         cloned_edb.stackup.add_layer(
             layer_name="ports",
@@ -3073,6 +3094,11 @@ class Edb(EdbInit):
     def compare(self, input_file, results=""):
         """Compares current open database with another one.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         input_file : str
@@ -3089,13 +3115,18 @@ class Edb(EdbInit):
         if not results:
             results = self.edbpath[:-5] + "_compare_results"
             os.mkdir(results)
-        command = os.path.join(self.base_path, "EDBDiff.exe")
+        executable_path = os.path.join(self.base_path, "EDBDiff.exe")
         if is_linux:
             mono_path = os.path.join(self.base_path, "common/mono/Linux64/bin/mono")
-            cmd_input = [mono_path, command, input_file, self.edbpath, results]
+            command = [mono_path, executable_path, input_file, self.edbpath, results]
         else:
-            cmd_input = [command, input_file, self.edbpath, results]
-        subprocess.run(cmd_input)
+            command = [executable_path, input_file, self.edbpath, results]
+        try:
+            subprocess.run(command, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError(
+                "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
+            )
 
         if not os.path.exists(os.path.join(results, "EDBDiff.csv")):
             self.logger.error("Comparison execution failed")

@@ -20,36 +20,33 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Tests related to Edb extended nets"""
+"""Tests related to Edb"""
+
+import os
+from pathlib import Path
 
 import pytest
 
-from pyedb.generic.general_methods import is_windows
-from tests.conftest import config
-from tests.system.base_test_class import BaseTestClass
+pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
-pytestmark = [pytest.mark.system, pytest.mark.legacy]
+ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
-class TestClass(BaseTestClass):
+class TestClass:
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
         self.local_scratch = local_scratch
-        self.target_path = target_path
-        self.target_path2 = target_path2
-        self.target_path4 = target_path4
 
-    def test_nets_queries(self, edb_examples):
-        """Evaluate nets queries"""
+    def test_hfss_auto_setup(self, edb_examples):
+        from pyedb.workflows.sipi.hfss_auto_configuration import create_hfss_auto_configuration
+
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.extended_nets.auto_identify_signal()
-        assert edbapp.extended_nets.auto_identify_power()
-        extended_net_name, _ = next(iter(edbapp.extended_nets.items.items()))
-        assert edbapp.extended_nets.items[extended_net_name]
-        assert edbapp.extended_nets.items[extended_net_name].nets
-        assert edbapp.extended_nets.items[extended_net_name].components
-        assert edbapp.extended_nets.items[extended_net_name].rlc
-        assert edbapp.extended_nets.items[extended_net_name].serial_rlc
-        assert edbapp.extended_nets.items["1V0"].serial_rlc
-        assert edbapp.extended_nets.create("new_ex_net", "DDR4_A1")
-        edbapp.close(terminate_rpc_session=False)
+        hfss_auto_config = create_hfss_auto_configuration(source_edb_path=edbapp.edbpath, edb=edbapp)
+        hfss_auto_config.grpc = edbapp.grpc
+        hfss_auto_config.ansys_version = edbapp.version
+        hfss_auto_config.auto_populate_batch_groups(["PCIe_Gen4_RX", "PCIe_Gen4_TX"])
+        hfss_auto_config.add_simulation_setup(
+            meshing_frequency="10GHz", start_frequency="0GHz", stop_frequency="40GHz", frequency_step="0.05GHz"
+        )
+        hfss_auto_config.create_projects()
+        assert sum(1 for item in Path(hfss_auto_config.batch_group_folder).iterdir() if item.is_dir()) == 2

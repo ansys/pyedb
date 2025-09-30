@@ -15,9 +15,9 @@
 
 import os
 
+from defusedxml.ElementTree import parse as defused_parse
 import pytest
 
-from pyedb.generic.general_methods import ET
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -40,7 +40,7 @@ class TestClass(BaseTestClass):
             )
         xtalk_scan.file_path = os.path.join(self.local_scratch.path, "test_impedance_scan.xml")
         assert xtalk_scan.write_xml()
-        tree = ET.parse(xtalk_scan.file_path)
+        tree = defused_parse(xtalk_scan.file_path)
         root = tree.getroot()
         nets = [child for child in root[0] if "SingleEndedNets" in child.tag][0]
         assert len(nets) == 342
@@ -64,7 +64,7 @@ class TestClass(BaseTestClass):
 
         xtalk_scan.file_path = os.path.join(self.local_scratch.path, "test_impedance_scan.xml")
         assert xtalk_scan.write_xml()
-        tree = ET.parse(xtalk_scan.file_path)
+        tree = defused_parse(xtalk_scan.file_path)
         root = tree.getroot()
         nets = [child for child in root[0] if "SingleEndedNets" in child.tag][0]
         assert len(nets) == 342
@@ -92,7 +92,7 @@ class TestClass(BaseTestClass):
             xtalk_scan.time_xtalk_scan.add_receiver_pin(name=pin.name, ref_des="U1", impedance=80.0)
         xtalk_scan.file_path = os.path.join(self.local_scratch.path, "test_impedance_scan.xml")
         assert xtalk_scan.write_xml()
-        tree = ET.parse(xtalk_scan.file_path)
+        tree = defused_parse(xtalk_scan.file_path)
         root = tree.getroot()
         nets = [child for child in root[0] if "SingleEndedNets" in child.tag][0]
         assert len(nets) == 342
