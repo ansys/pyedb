@@ -286,8 +286,11 @@ class GrpcCutout:
                                         voids_poly.append(void_polydata)
                                 if voids_poly:
                                     obj_data = obj_data[0].subtract(list(obj_data), voids_poly)
-                        except:
-                            pass
+                        except Exception as e:
+                            self.logger.error(
+                                f"A(n) {type(e).__name__} error occurred in method _create_conformal of "
+                                f"class GrpcCutout at iteration {k} for data {i}: {str(e)}"
+                            )
                         finally:
                             unite_polys.extend(list(obj_data))
             _poly_unite = GrpcPolygonData.unite(unite_polys)
@@ -479,8 +482,8 @@ class GrpcCutout:
                 if os.path.exists(source) and not os.path.exists(target):
                     try:
                         shutil.copy(source, target)
-                    except:
-                        pass
+                    except Exception as e:
+                        self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         elif self.open_cutout_at_end:
             self._edb._active_cell = _cutout
             self._edb._init_objects()
@@ -947,8 +950,11 @@ class DotNetCutout:
                                         convert_py_list_to_net_list(list(obj_data)),
                                         convert_py_list_to_net_list(voids_poly),
                                     )
-                        except:
-                            pass
+                        except Exception as e:
+                            self.logger.error(
+                                f"A(n) {type(e).__name__} error occurred in method _create_conformal of "
+                                f"class DotNetCutout at iteration {k} for data {i}: {str(e)}"
+                            )
                         finally:
                             unite_polys.extend(list(obj_data))
             _poly_unite = self._edb.core.Geometry.PolygonData.Unite(convert_py_list_to_net_list(unite_polys))
@@ -1160,8 +1166,8 @@ class DotNetCutout:
                 if os.path.exists(source) and not os.path.exists(target):
                     try:
                         shutil.copy(source, target)
-                    except:
-                        pass
+                    except Exception as e:
+                        self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         elif self.open_cutout_at_end:
             self._edb._active_cell = _cutout
             self._edb._init_objects()
