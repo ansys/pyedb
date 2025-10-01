@@ -76,8 +76,6 @@ class SchedulerType(enum.Enum):
     NONE = "none"
     LSF = "lsf"
     SLURM = "slurm"
-    PBS = "pbs"
-    WINDOWS_HPC = "windows_hpc"
 
 
 @dataclass
@@ -270,7 +268,7 @@ class HFSS3DLayoutBatchOptions:
     enable_gpu: bool = False
     mpi_vendor: str = field(default_factory=lambda: "Intel" if platform.system() == "Windows" else "OpenMPI")
     mpi_version: str = "Default"
-    remote_spawn_command: str = field(default_factory=lambda: "SSH" if platform.system() == "Windows" else "ssh")
+    remote_spawn_command: str = "Scheduler"
     solve_adaptive_only: bool = False
     validate_only: bool = False
     temp_directory: str = field(default_factory=lambda: "/tmp" if platform.system() != "Windows" else "D:\\Temp")
@@ -565,176 +563,6 @@ class HFSSSimulationConfig:
 
         return "\n".join(script)
 
-    def generate_pbs_script(self) -> str:
-        """
-        Return PBS/Torque batch script.
-
-        Returns
-        -------
-        str
-            Multi-line string.
-        """
-        opts = self.scheduler_options
-        script = [
-            "#!/bin/bash",
-            f"#PBS -N {self.jobid}",
-            f"#PBS -o {self.jobid}.$PBS_JOBID.out",
-            f"#PBS -e {self.jobid}.$PBS_JOBID.err",
-            f"#PBS -q {opts.queue}",
-            f"#PBS -l walltime={opts.time}",
-            f"#PBS -l nodes={opts.nodes}:ppn={opts.tasks_per_node}",
-        ]
-
-        if opts.memory:
-            script.append(f"#PBS -l mem={opts.memory}")
-        if opts.account:
-            script.append(f"#PBS -A {opts.account}")
-
-        script.extend(
-            [
-                "",
-                "# Set up ANSYS environment",
-                "module load ansys",
-                "",
-                "# Run simulation",
-                self.generate_command_string(),
-                "",
-                "echo 'PBS job completed'",
-            ]
-        )
-
-        return "\n".join(script)
-
-    def generate_windows_hpc_script(self) -> str:
-        """
-        Return PowerShell script for Windows HPC.
-
-        Returns
-        -------
-        str
-            PowerShell code that submits job.
-        """
-        opts = self.scheduler_options
-
-        script = [
-            "# Windows HPC PowerShell Script for HFSS Simulation",
-            "# Generated: " + datetime.now().isoformat(),
-            "",
-            '$jobName = "' + self.jobid + '"',
-            '$command = "' + self.generate_command_string().replace('"', '`"') + '"',
-            "",
-            "# Create job XML configuration",
-            '$xmlContent = @"',
-            "<Job>",
-            f"  <Name>{self.jobid}</Name>",
-            f"  <Priority>{opts.priority}</Priority>",
-            "  <JobType>Interactive</JobType>",
-            "  <Resources>",
-            f"    <MinNodes>{opts.nodes}</MinNodes>",
-            f"    <MaxNodes>{opts.nodes}</MaxNodes>",
-            f"    <NodeGroups>{opts.queue}</NodeGroups>",
-            "  </Resources>",
-            "  <Tasks>",
-            "    <Task>",
-            "      <Name>HFSS_Simulation_Task</Name>",
-            '      <CommandLine>cmd /c "$command"</CommandLine>',
-            f"      <IsConsole>true</IsConsole>",
-            f"      <WorkDirectory>{os.path.dirname(self.project_path)}</WorkDirectory>",
-            "      <TaskType>Basic</TaskType>",
-            f"      <RequiredNodes>{opts.nodes}</RequiredNodes>",
-            "    </Task>",
-            "  </Tasks>",
-            "</Job>",
-            '"@',
-            "",
-            "# Save XML to temporary file",
-            '$xmlFile = [System.IO.Path]::GetTempFileName() + ".xml"',
-            "Set-Content -Path $xmlFile -Value $xmlContent -Encoding UTF8",
-            "",
-            "# Submit job to HPC cluster",
-            "try {",
-            '    Write-Host "Submitting job to Windows HPC cluster..."',
-            "    $job = Submit-HpcJob -File $xmlFile",
-            '    Write-Host "Job submitted with ID: $($job.Id)"',
-            "    ",
-            "    # Monitor job status with progress reporting",
-            '    while ($job.State -eq "Configuring" -or $job.State -eq "Submitted" -or $job.State -eq "Running") {',
-            "        Start-Sleep -Seconds 30",
-            "        $job = Get-HpcJob -Id $job.Id",
-            '        Write-Host "Job status: $($job.State)"',
-            "    }",
-            "    ",
-            '    Write-Host "Job completed with final status: $($job.State)"',
-            "    ",
-            "    # Get job exit code if available",
-            "    if ($job.ExitCode) {",
-            '        Write-Host "Job exit code: $($job.ExitCode)"',
-            "    }",
-            "}",
-            "catch {",
-            '    Write-Error "Failed to submit job: $_"',
-            "    exit 1",
-            "}",
-            "finally {",
-            "    # Cleanup temporary files",
-            "    if (Test-Path $xmlFile) {",
-            "        Remove-Item $xmlFile -Force -ErrorAction SilentlyContinue",
-            "    }",
-            "}",
-            "",
-            "exit 0",
-        ]
-
-        return "\n".join(script)
-
-    def generate_windows_hpc_xml(self) -> str:
-        """
-        Return Windows HPC **job XML** definition.
-
-        Returns
-        -------
-        str
-            Valid XML document that can be saved to ``*.xml`` and submitted with ``Submit-HpcJob -File``.
-        """
-        opts = self.scheduler_options
-
-        # Create XML structure with proper namespace
-        job = ET.Element("Job")
-        ET.SubElement(job, "Name").text = self.jobid
-        ET.SubElement(job, "Priority").text = opts.priority
-
-        # Email notifications if configured
-        if opts.email_notification:
-            notifications = ET.SubElement(job, "Notifications")
-            notification = ET.SubElement(notifications, "Notification")
-            ET.SubElement(notification, "Email").text = opts.email_notification
-            ET.SubElement(notification, "Event").text = "JobCompletion"
-
-        # Resource allocation
-        resources = ET.SubElement(job, "Resources")
-        ET.SubElement(resources, "MinNodes").text = str(opts.nodes)
-        ET.SubElement(resources, "MaxNodes").text = str(opts.nodes)
-        if opts.queue and opts.queue != "default":
-            ET.SubElement(resources, "NodeGroups").text = opts.queue
-
-        # Task definition
-        tasks = ET.SubElement(job, "Tasks")
-        task = ET.SubElement(tasks, "Task")
-        ET.SubElement(task, "Name").text = "HFSS_Simulation_Task"
-        ET.SubElement(task, "CommandLine").text = f'cmd /c "{self.generate_command_string()}"'
-        ET.SubElement(task, "IsConsole").text = "true"
-        ET.SubElement(task, "WorkDirectory").text = os.path.dirname(self.project_path)
-        ET.SubElement(task, "TaskType").text = "Basic"
-        ET.SubElement(task, "RequiredNodes").text = str(opts.nodes)
-
-        # Administrator privileges if requested
-        if opts.run_as_administrator:
-            ET.SubElement(task, "RunAsAdministrator").text = "true"
-
-        # Convert to formatted XML string
-        ET.indent(job, space="  ")
-        return ET.tostring(job, encoding="unicode", method="xml")
-
     def generate_scheduler_script(self) -> str:
         """
         Delegate to the correct generator based on
@@ -754,10 +582,6 @@ class HFSSSimulationConfig:
             return self.generate_slurm_script()
         elif self.scheduler_type == SchedulerType.LSF:
             return self.generate_lsf_script()
-        elif self.scheduler_type == SchedulerType.PBS:
-            return self.generate_pbs_script()
-        elif self.scheduler_type == SchedulerType.WINDOWS_HPC:
-            return self.generate_windows_hpc_script()
         else:
             raise ValueError(f"Unsupported scheduler type: {self.scheduler_type}")
 
@@ -842,32 +666,26 @@ class HFSSSimulationConfig:
         if self.scheduler_type == SchedulerType.NONE:
             raise ValueError("No scheduler configured")
 
-        # Handle Windows HPC separately due to XML-based submission
-        if self.scheduler_type == SchedulerType.WINDOWS_HPC:
-            return self.submit_to_windows_hpc()
-
         # Generate scheduler-specific script
         script_content = self.generate_scheduler_script()
 
         # Determine script path
         if script_path is None:
-            script_ext = "sh" if self.scheduler_type != SchedulerType.WINDOWS_HPC else "ps1"
+            script_ext = "sh"  # if self.scheduler_type != SchedulerType.WINDOWS_HPC else "ps1"
             script_path = f"{self.jobid}_{self.scheduler_type.value}.{script_ext}"
 
         # Save batch script with proper permissions
         with open(script_path, "w", encoding="utf-8") as f:
             f.write(script_content)
 
-        if self.scheduler_type != SchedulerType.WINDOWS_HPC:
-            os.chmod(script_path, 0o755)  # Make executable on Unix-like systems
+        # if self.scheduler_type != SchedulerType.WINDOWS_HPC:
+        os.chmod(script_path, 0o755)  # Make executable on Unix-like systems
 
         # Construct scheduler submission command
         if self.scheduler_type == SchedulerType.SLURM:
             submit_cmd = ["sbatch", script_path]
         elif self.scheduler_type == SchedulerType.LSF:
             submit_cmd = ["bsub", "<", script_path]
-        elif self.scheduler_type == SchedulerType.PBS:
-            submit_cmd = ["qsub", script_path]
         else:
             raise ValueError(f"Unsupported scheduler: {self.scheduler_type}")
 
@@ -885,62 +703,6 @@ class HFSSSimulationConfig:
             raise Exception(f"Scheduler submission timed out after 30 seconds")
         except Exception as e:
             raise Exception(f"Failed to submit to {self.scheduler_type.value}: {e}")
-
-    def submit_to_windows_hpc(self) -> subprocess.CompletedProcess:
-        """
-        Specialised Windows HPC submission using **HPC PowerShell cmdlets**.
-
-        Returns
-        -------
-        subprocess.CompletedProcess
-            PowerShell console output.
-
-        Raises
-        ------
-        ValueError
-            If not running on Windows.
-        """
-        if platform.system() != "Windows":
-            raise ValueError("Windows HPC is only available on Windows platforms")
-
-        # Generate XML job definition
-        xml_content = self.generate_windows_hpc_xml()
-        xml_file = f"{self.jobid}_hpc_job.xml"
-
-        try:
-            # Save XML job definition
-            with open(xml_file, "w", encoding="utf-8") as f:
-                f.write(xml_content)
-
-            # PowerShell script for job submission
-            ps_script = f"""
-            try {{
-                Import-Module HPC -ErrorAction Stop
-                $job = Submit-HpcJob -File "{xml_file}"
-                Write-Output "Job submitted with ID: $($job.Id)"
-                Remove-Item "{xml_file}" -Force -ErrorAction SilentlyContinue
-                exit 0
-            }}
-            catch {{
-                Write-Error "Failed to submit job: $_"
-                if (Test-Path "{xml_file}") {{
-                    Remove-Item "{xml_file}" -Force -ErrorAction SilentlyContinue
-                }}
-                exit 1
-            }}
-            """
-
-            # Execute PowerShell submission
-            result = subprocess.run(
-                ["powershell", "-Command", ps_script], capture_output=True, text=True, timeout=45, encoding="utf-8"
-            )
-            return result
-
-        except Exception as e:
-            # Cleanup on error
-            if os.path.exists(xml_file):
-                os.remove(xml_file)
-            raise Exception(f"Failed to submit to Windows HPC: {e}")
 
     def run_simulation(self, **subprocess_kwargs) -> Union[subprocess.CompletedProcess, str]:
         """
