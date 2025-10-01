@@ -73,9 +73,3 @@ class PinPairModel(Model):
         bool
         """
         return self._edb_object.SetPinPairRlc(pin_pair, pin_par_rlc)
-
-
-
-
-
-
