@@ -1944,12 +1944,7 @@ class Edb:
         _poly = _poly.Expand(expansion_size, tolerance, round_corner, round_extension)[0]
         return _poly
 
-    @deprecate_argument_name(
-        {
-            "signal_list": "signal_nets",
-            "reference_list": "reference_nets",
-        }
-    )
+    @deprecate_argument_name({"signal_list": "signal_nets", "reference_list": "reference_nets"})
     def cutout(
         self,
         signal_nets=None,

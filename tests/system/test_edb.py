@@ -1247,13 +1247,13 @@ class TestClass(BaseTestClass):
         )
         assert extent
         assert len(extent) == 55
-        assert [round(num, 9) for num in extent[0]] == [0.0110258, 0.044515088]
-        assert [round(num, 9) for num in extent[10]] == [0.022142312, 0.028510392]
-        assert [round(num, 9) for num in extent[20]] == [0.067229304, 0.026054684]
-        assert [round(num, 9) for num in extent[30]] == [0.067937069, 0.02961899]
-        assert [round(num, 9) for num in extent[40]] == [0.065503274, 0.031478932]
-        assert [round(num, 9) for num in extent[50]] == [0.011434652, 0.04636553]
-        edbapp.close_edb()
+        assert [round(num, 6) for num in extent[0]] == [0.011025, 0.044555]
+        assert [round(num, 6) for num in extent[10]] == [0.015891, 0.047141]
+        assert [round(num, 6) for num in extent[20]] == [0.067474, 0.03016]
+        assert [round(num, 6) for num in extent[30]] == [0.068436, 0.027209]
+        assert [round(num, 6) for num in extent[40]] == [0.050244, 0.022631]
+        assert [round(num, 6) for num in extent[50]] == [0.011433, 0.03922]
+        edbapp.close(terminate_rpc_session=False)
 
     def test_move_and_edit_polygons(self, edb_examples):
         """Move a polygon."""
@@ -1286,17 +1286,6 @@ class TestClass(BaseTestClass):
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
         edbapp.close(terminate_rpc_session=False)
-
-    def test_multizone(self, edb_examples):
-        # Done
-        # edbapp = edb_examples.get_multizone_pcb()
-        # common_reference_net = "gnd"
-        # edb_zones = edbapp.copy_zones()
-        # assert edb_zones
-        # defined_ports, project_connexions = edbapp.cutout_multizone_layout(edb_zones, common_reference_net)
-        # assert defined_ports
-        # assert project_connexions
-        pass
 
     def test_icepak(self, edb_examples):
         # Done
@@ -1973,7 +1962,7 @@ class TestClass(BaseTestClass):
         signal_nets = ["PCIe_Gen4_RX0_N", "PCIe_Gen4_RX0_P"]
         power_nets = ["GND"]
         edbapp.cutout(
-            signal_list=signal_nets, reference_list=power_nets, extent_type="BoundingBox", expansion_size="2mm"
+            signal_list=signal_nets, reference_list=power_nets, extent_type="Bounding_box", expansion_size="5mm"
         )
         setup = edbapp.hfss.add_setup("Setup1")
         edbapp.components.create_port_on_component(

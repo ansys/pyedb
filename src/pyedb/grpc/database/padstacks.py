@@ -231,7 +231,7 @@ class Padstacks(object):
     @property
     def instances_by_net(self) -> Dict[Any, PadstackInstance]:
         if not self._instances_by_net:
-            for edb_padstack_instance in self._instances.values():
+            for edb_padstack_instance in self.instances.values():
                 if edb_padstack_instance.net_name:
                     self._instances_by_net.setdefault(edb_padstack_instance.net_name, []).append(edb_padstack_instance)
         return self._instances_by_net

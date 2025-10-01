@@ -350,7 +350,7 @@ class GrpcCutout:
                 1e-12,
             )
 
-        elif str(self.extent_type).lower() in ["bounding", "0", "bounding_box"]:
+        elif str(self.extent_type).lower() in ["bounding", "0", "bounding_box", "bbox", "boundingbox"]:
             _poly = self._edb.layout.expanded_extent(
                 signal_nets,
                 GrpcExtentType.BOUNDING_BOX,
@@ -370,7 +370,7 @@ class GrpcCutout:
     def _compute_legacy_extent(self):
         if str(self.extent_type).lower() in ["conforming", "conformal", "1"]:
             extent_type = GrpcExtentType.CONFORMING
-        elif str(self.extent_type).lower() in ["bounding", "0"]:
+        elif str(self.extent_type).lower() in ["bounding", "bounding_box", "bbox", "0", "boundingbox"]:
             extent_type = GrpcExtentType.BOUNDING_BOX
         else:
             extent_type = self._edb.core.Geometry.ExtentType.ConvexHull
@@ -1022,7 +1022,7 @@ class DotNetCutout:
                 1e-12,
             )
 
-        elif str(self.extent_type).lower() in ["bounding", "0"]:
+        elif str(self.extent_type).lower() in ["bounding", "0", "bounding_box", "bbox", "boundingbox"]:
             _poly = self._edb.layout.expanded_extent(
                 signal_nets,
                 self._edb.core.Geometry.ExtentType.BoundingBox,
@@ -1042,7 +1042,7 @@ class DotNetCutout:
     def _compute_legacy_extent(self):
         if str(self.extent_type).lower() in ["conforming", "conformal", "1"]:
             extent_type = self._edb.core.Geometry.ExtentType.Conforming
-        elif str(self.extent_type).lower() in ["bounding", "0"]:
+        elif str(self.extent_type).lower() in ["bounding", "0", "bounding_box", "bbox", "boundingbox"]:
             extent_type = self._edb.core.Geometry.ExtentType.BoundingBox
         else:
             extent_type = self._edb.core.Geometry.ExtentType.ConvexHull
