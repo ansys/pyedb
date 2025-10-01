@@ -28,11 +28,11 @@ import warnings
 import numpy as np
 
 from pyedb.dotnet.database.cell.hierarchy.hierarchy_obj import Group
-from pyedb.dotnet.database.cell.hierarchy.model import PinPairModel, SPICEModel
+from pyedb.dotnet.database.cell.hierarchy.model import PinPairModel
+from pyedb.dotnet.database.cell.hierarchy.spice_model import SPICEModel
 from pyedb.dotnet.database.cell.hierarchy.netlist_model import NetlistModel
 from pyedb.dotnet.database.cell.hierarchy.pin_pair_model import PinPair
-from pyedb.dotnet.database.cell.hierarchy.s_parameter_model import SparamModel
-from pyedb.dotnet.database.cell.hierarchy.spice_model import SpiceModel
+from pyedb.dotnet.database.cell.hierarchy.s_parameter_model import SParameterModel
 from pyedb.dotnet.database.definition.package_def import PackageDef
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.generic.general_methods import get_filename_without_extension
@@ -148,11 +148,13 @@ class EDBComponent(Group):
     def model(self):
         """Component model."""
         edb_object = self.component_property.GetModel().Clone()
-        model_type = edb_object.ToString().split(".")[-1]
+        model_type = edb_object.GetModelType().ToString()
         if model_type == "PinPairModel":
             return PinPairModel(self._pedb, edb_object)
         elif model_type == "SPICEModel":
             return SPICEModel(self._pedb, edb_object)
+        elif model_type == "SParameterModel":
+            return SParameterModel(self._pedb, edb_object)
 
     @model.setter
     def model(self, value):
@@ -261,7 +263,7 @@ class EDBComponent(Group):
         if not self.model_type == "SPICEModel":
             return None
         else:
-            return SpiceModel(self._edb_model)
+            return SPICEModel(self._pedb, self._edb_model)
 
     @property
     def s_param_model(self):
@@ -269,7 +271,7 @@ class EDBComponent(Group):
         if not self.model_type == "SParameterModel":
             return None
         else:
-            return SparamModel(self._edb_model)
+            return SParameterModel(self._pedb, self._edb_model)
 
     @property
     def netlist_model(self):

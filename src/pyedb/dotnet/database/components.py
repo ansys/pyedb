@@ -2374,7 +2374,11 @@ class Components(object):
                     continue
                 part_name = comp.partname
                 comp_type = comp.type
-                if comp_type == "Resistor":
+                if not comp.model:
+                    print("")
+                elif comp.model.model_type != "PinPairModel":
+                    value = ""
+                elif comp_type == "Resistor":
                     value = str(comp.res_value)
                 elif comp_type == "Capacitor":
                     value = str(comp.cap_value)
