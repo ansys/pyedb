@@ -687,8 +687,9 @@ class GrpcCutout:
             result = False
             while i <= self.maximum_iterations:
                 self.logger.info("-----------------------------------------")
-                self.logger.info(f"Trying cutout with {float(expansion) * 1e3}mm expansion size")
+                self.logger.info(f"Trying cutout with {expansion * 1e3}mm expansion size")
                 self.logger.info("-----------------------------------------")
+                result = self._create_cutout_multithread()
                 if result:
                     if self.smart_cutout:
                         if not self._edb.are_port_reference_terminals_connected():
