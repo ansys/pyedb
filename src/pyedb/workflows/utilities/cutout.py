@@ -1396,9 +1396,11 @@ class DotNetCutout:
                 self.logger.info(f"Trying cutout with {expansion * 1e3}mm expansion size")
                 self.logger.info("-----------------------------------------")
                 result = self._create_cutout_multithread()
-                if result and self._edb.are_port_reference_terminals_connected():
+                if result:
                     if self.smart_cutout:
-                        self.output_file = out_file
+                        if not self._edb.are_port_reference_terminals_connected():
+                            raise RuntimeError("Smart cutout failed.")
+                    self.output_file = out_file
                     if self.output_file:
                         self._edb.save_as(self.output_file)
                     else:
