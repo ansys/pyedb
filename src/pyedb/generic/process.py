@@ -48,6 +48,11 @@ class SiwaveSolve(object):
     def solve_siwave(self, edbpath, analysis_type):
         """Solve an SIWave setup. Only non-graphical batch mode is supported.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         analysis_type: str
@@ -67,8 +72,8 @@ class SiwaveSolve(object):
             "-useSubdir",
         ]
         try:
-            subprocess.run(command, check=True)
-        except subprocess.CalledProcessError as e:
+            subprocess.run(command, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
             raise RuntimeError(f"An error occurred when launching the solver. Please check input paths") from e
 
     def solve(self, num_of_cores=4):
