@@ -689,10 +689,11 @@ class GrpcCutout:
                 self.logger.info("-----------------------------------------")
                 self.logger.info(f"Trying cutout with {float(expansion) * 1e3}mm expansion size")
                 self.logger.info("-----------------------------------------")
-                result = self._create_cutout_multithread()
-                if result and self._edb.are_port_reference_terminals_connected():
+                if result:
                     if self.smart_cutout:
-                        self.output_file = out_file
+                        if not self._edb.are_port_reference_terminals_connected():
+                            raise RuntimeError("Smart cutout failed.")
+                    self.output_file = out_file
                     if self.output_file:
                         self._edb.save_as(self.output_file)
                     else:
@@ -701,11 +702,11 @@ class GrpcCutout:
                     if not self.open_cutout_at_end and self._edb.edbpath != legacy_path:
                         self._edb.close()
                         self._edb.edbpath = legacy_path
-                        self._edb.open()
+                        self._edb.open_edb()
                     break
                 self._edb.close()
                 self._edb.edbpath = legacy_path
-                self._edb.open()
+                self._edb.open_edb()
                 i += 1
                 expansion = expansion_size * i
             if working_cutout:
