@@ -833,7 +833,7 @@ class HFSSSimulationConfig:
         list[str]
             Already shell-escaped arguments.
         """
-        ansysedt_path = self.get_ansysedt_path()
+        ansysedt_path = self.ansys_edt_path
 
         command = [
             ansysedt_path,
