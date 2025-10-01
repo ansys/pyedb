@@ -25,7 +25,7 @@ Quickstart
 
 .. code-block:: python
 
-   from ansys.edb.core.cutout import Cutout
+   from pyedb.workflows.utilities.cutout import Cutout
 
    cut = Cutout(edb)  # gRPC is selected automatically when edb.grpc == True
    cut.signals = ["DDR4_DQ0", "DDR4_DQ1"]
@@ -156,7 +156,7 @@ smart expansion, and user-supplied boundary polygons.
 API reference
 -------------
 
-.. currentmodule:: ansys.edb.core.cutout
+.. currentmodule:: pyedb.workflows.utilities.cutout
 
 .. autosummary::
    :toctree: _autosummary
@@ -165,7 +165,7 @@ API reference
 
    Cutout
 
-.. autoclass:: ansys.edb.core.cutout.Cutout
+.. autoclass:: pyedb.workflows.utilities.cutout
    :members:
    :show-inheritance:
    :inherited-members:
