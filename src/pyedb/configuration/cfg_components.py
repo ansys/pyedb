@@ -98,14 +98,39 @@ class CfgComponent(CfgBase):
             m = self._pedb._edb.Cell.Hierarchy.PinPairModel()
             for i in self.pin_pair_model:
                 p = self._pedb._edb.Utility.PinPair(str(i["first_pin"]), str(i["second_pin"]))
+                res = i.get("resistance")
+                if res is None:
+                    # If resistance is not defined, set it to 0 and disable it
+                    res = "0ohm"
+                    en_res = False
+                else:
+                    # If resistance is defined, use the provided value and enabled status
+                    res = i["resistance"]
+                    en_res = i.get("resistance_enabled", True)
+                ind = i.get("inductance")
+                if ind is None:
+                    # If inductance is not defined, set it to 0 and disable it
+                    ind = "0nH"
+                    en_ind = False
+                else:
+                    # If inductance is defined, use the provided value and enabled status
+                    ind = i["inductance"]
+                    en_ind = i.get("inductance_enabled", True)
+                cap = i.get("capacitance")
+                if cap is None:
+                    # If capacitance is not defined, set it to 0 and disable it
+                    cap = "0pF"
+                    en_cap = False
+                else:
+                    # If capacitance is defined, use the provided value and enabled status
+                    cap = i["capacitance"]
+                    en_cap = i.get("capacitance_enabled", True)
+
                 rlc = self._pedb._edb.Utility.Rlc(
-                    self._pedb.edb_value(i["resistance"]),
-                    i["resistance_enabled"],
-                    self._pedb.edb_value(i["inductance"]),
-                    i["inductance_enabled"],
-                    self._pedb.edb_value(i["capacitance"]),
-                    i["capacitance_enabled"],
-                    i["is_parallel"],
+                    self._pedb.edb_value(res), en_res,
+                    self._pedb.edb_value(ind), en_ind,
+                    self._pedb.edb_value(cap), en_cap,
+                    i.get("is_parallel", False),
                 )
                 m.SetPinPairRlc(p, rlc)
             c_p.SetModel(m)
