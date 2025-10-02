@@ -46,6 +46,13 @@ repos:
     files: '(src|doc|tests)/.*'
     exclude: 'tests/example_models'
 
+- repo: https://github.com/ansys/pre-commit-hooks
+  rev: v0.5.2
+  hooks:
+  - id: add-license-headers
+    args:
+    - --start_year=2023
+
 # # validate GitHub workflow files
 # - repo: https://github.com/python-jsonschema/check-jsonschema
 #   rev: 0.27.0
