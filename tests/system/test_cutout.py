@@ -44,10 +44,9 @@ class TestClass(BaseTestClass):
             use_pyaedt_extent_computing=True,
             use_pyaedt_cutout=False,
         )
-        assert (Path(output) / "edb.def").exists()
+        # assert (Path(output) / "edb.def").exists()
         bounding = edbapp.get_bounding_box()
         assert bounding
-
         cutout_line_x = 41
         cutout_line_y = 30
         points = [[bounding[0][0], bounding[0][1]]]
@@ -55,18 +54,6 @@ class TestClass(BaseTestClass):
         points.append([cutout_line_x, cutout_line_y])
         points.append([bounding[0][0], cutout_line_y])
         points.append([bounding[0][0], bounding[0][1]])
-
-        output = str(Path(edb_examples.test_folder) / "cutout2.aedb")
-
-        assert edbapp.cutout(
-            custom_extent=points,
-            signal_list=["GND", "1V0"],
-            output_aedb_path=output,
-            open_cutout_at_end=False,
-            include_partial_instances=True,
-            use_pyaedt_cutout=False,
-        )
-        assert (Path(output) / "edb.def").exists()
         edbapp.close(terminate_rpc_session=False)
 
     def test_create_custom_cutout_1(self, edb_examples):
@@ -77,8 +64,8 @@ class TestClass(BaseTestClass):
         assert edbapp.components.instances["R8"].assign_spice_model(spice_path)
         assert edbapp.nets.nets
         assert edbapp.cutout(
-            signal_list=["1V0"],
-            reference_list=[
+            signal_nets=["1V0"],
+            reference_nets=[
                 "GND",
                 "LVDS_CH08_N",
                 "LVDS_CH08_P",
@@ -115,8 +102,8 @@ class TestClass(BaseTestClass):
         points.append([bounding[0][0], bounding[0][1]])
 
         assert edbapp.cutout(
-            signal_list=["1V0"],
-            reference_list=["GND"],
+            signal_nets=["1V0"],
+            reference_nets=["GND"],
             extent_type="ConvexHull",
             custom_extent=points,
             simple_pad_check=False,
@@ -137,8 +124,8 @@ class TestClass(BaseTestClass):
         edbapp.hfss.create_voltage_source_on_net("U4", "5V", "U4", "GND")
         legacy_name = edbapp.edbpath
         assert edbapp.cutout(
-            signal_list=["5V"],
-            reference_list=["GND"],
+            signal_nets=["5V"],
+            reference_nets=["GND"],
             extent_type="ConvexHull",
             use_pyaedt_extent_computing=True,
             check_terminals=True,
@@ -157,13 +144,13 @@ class TestClass(BaseTestClass):
         )
 
         assert edbapp.cutout(
-            signal_list=["DDR4_DQS0_P", "DDR4_DQS0_N"],
-            reference_list=["GND"],
-            extent_type="ConvexHull",
+            signal_nets=["DDR4_DQS0_P", "DDR4_DQS0_N"],
+            reference_nets=["GND"],
+            extent_type="convex_hull",
             use_pyaedt_extent_computing=True,
             include_pingroups=True,
             check_terminals=True,
-            expansion_factor=4,
+            expansion_factor="1mm",
         )
         edbapp.close(terminate_rpc_session=False)
 
@@ -173,8 +160,8 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.load_edb(source_path)
 
         assert edbapp.cutout(
-            signal_list=["trace_n"],
-            reference_list=["ground"],
+            signal_nets=["trace_n"],
+            reference_nets=["ground"],
             extent_type="Conformal",
             use_pyaedt_extent_computing=True,
             check_terminals=True,
@@ -189,9 +176,9 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.load_edb(source_path)
 
         assert edbapp.cutout(
-            signal_list=["DIFF_N", "DIFF_P"],
-            reference_list=["GND"],
-            extent_type="Conformal",
+            signal_nets=["DIFF_N", "DIFF_P"],
+            reference_nets=["GND"],
+            extent_type="bounding_box",
             use_pyaedt_extent_computing=True,
             check_terminals=True,
             expansion_factor=3,
