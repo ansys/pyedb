@@ -127,9 +127,12 @@ class CfgComponent(CfgBase):
                     en_cap = i.get("capacitance_enabled", True)
 
                 rlc = self._pedb._edb.Utility.Rlc(
-                    self._pedb.edb_value(res), en_res,
-                    self._pedb.edb_value(ind), en_ind,
-                    self._pedb.edb_value(cap), en_cap,
+                    self._pedb.edb_value(res),
+                    en_res,
+                    self._pedb.edb_value(ind),
+                    en_ind,
+                    self._pedb.edb_value(cap),
+                    en_cap,
                     i.get("is_parallel", False),
                 )
                 m.SetPinPairRlc(p, rlc)
