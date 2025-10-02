@@ -333,7 +333,7 @@ class HFSSSimulationConfig:
 
     The class is a **frozen** dataclass (after ``__post_init__``) and can be
     serialised to/from JSON via :meth:`to_dict` / :meth:`from_dict`.
-
+    e
     Parameters
     ----------
     ansys_edt_path : str
