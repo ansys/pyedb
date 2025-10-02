@@ -447,7 +447,7 @@ class PadstackInstance(GrpcPadstackInstance):
             return self._bounding_box
         return self._bounding_box
 
-    def in_polygon(self, polygon_data, include_partial=True) -> bool:
+    def in_polygon(self, polygon_data, include_partial=True, arbitrary_extent_value=300e-6) -> bool:
         """Check if padstack Instance is in given polygon data.
 
         Parameters
@@ -457,30 +457,35 @@ class PadstackInstance(GrpcPadstackInstance):
             Whether to include partial intersecting instances. The default is ``True``.
         simple_check : bool, optional
             Whether to perform a single check based on the padstack center or check the padstack bounding box.
+        arbitrary_extent_value : float, optional
+            When ``include_partial`` is ``True``, an arbitrary value is used to create a bounding box for the padstack
+            instance to check for intersection and save computation time during the cutout. The default is ``300e-6``.
 
         Returns
         -------
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        int_val = 1 if polygon_data.point_in_polygon(GrpcPointData(self.position)) else 0
+        int_val = 1 if polygon_data.is_inside(GrpcPointData(self.position)) else 0
         if int_val == 0:
+            if include_partial:
+                # pad-stack instance bbox is slow we take an arbitrary value e.g. 300e-6
+                arbitrary_value = arbitrary_extent_value
+                position = self.position
+                inst_bbox = [
+                    position[0] - arbitrary_value / 2,
+                    position[1] - arbitrary_value / 2,
+                    position[0] + arbitrary_value / 2,
+                    position[1] + arbitrary_value / 2,
+                ]
+                int_val = polygon_data.intersection_type(GrpcPolygonData(inst_bbox)).value
+                if int_val == 0:  # fully outside
+                    return False
+                elif int_val in [2, 3]:  # fully or partially inside
+                    return True
             return False
         else:
-            int_val = polygon_data.intersection_type(GrpcPolygonData(self.bounding_box))
-        # Intersection type:
-        # 0 = objects do not intersect
-        # 1 = this object fully inside other (no common contour points)
-        # 2 = other object fully inside this
-        # 3 = common contour points 4 = undefined intersection
-        if int_val == 0:
-            return False
-        elif include_partial:
             return True
-        elif int_val < 3:
-            return True
-        else:
-            return False
 
     @property
     def start_layer(self) -> str:
