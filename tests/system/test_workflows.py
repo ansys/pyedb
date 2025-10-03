@@ -24,8 +24,10 @@
 
 import os
 from pathlib import Path
-from tests.conftest import config
+
 import pytest
+
+from tests.conftest import config
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
