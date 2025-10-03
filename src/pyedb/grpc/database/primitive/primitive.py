@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -401,11 +401,6 @@ class Primitive(GrpcPrimitive):
         for prim in primitives:
             if isinstance(prim, Primitive):
                 prim.delete()
-            else:
-                try:
-                    prim.Delete()
-                except AttributeError:
-                    continue
         return new_polys
 
     def intersect(self, primitives) -> list[any]:
