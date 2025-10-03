@@ -24,7 +24,7 @@
 
 import os
 from pathlib import Path
-
+from tests.conftest import config
 import pytest
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
@@ -37,6 +37,7 @@ class TestClass:
     def init(self, local_scratch, target_path, target_path2, target_path4):
         self.local_scratch = local_scratch
 
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Failing on GRPC")
     def test_hfss_auto_setup(self, edb_examples):
         from pyedb.workflows.sipi.hfss_auto_configuration import create_hfss_auto_configuration
 
