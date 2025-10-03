@@ -20,22 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.dotnet.database.cell.hierarchy.model import Model
 
-class SparamModel(object):  # pragma: no cover
-    def __init__(self, edb_model):
-        self._edb_model = edb_model
 
-    @property
-    def name(self):
-        return self._edb_model.GetComponentModelName()
+class SParameterModel(Model):
+    """Manages S-parameter model class."""
+
+    def __init__(self, pedb, edb_object=None):
+        super().__init__(pedb, edb_object)
+
+    def component_model_name(self):
+        self._edb_object.GetComponentModelName()
 
     @property
     def reference_net(self):
-        return self._edb_model.GetReferenceNet()
-
-    @property
-    def is_null(self):
-        """Adding this property to be compatible with grpc."""
-        if self.name:
-            return False
-        return True
+        return self._edb_object.GetReferenceNet()
