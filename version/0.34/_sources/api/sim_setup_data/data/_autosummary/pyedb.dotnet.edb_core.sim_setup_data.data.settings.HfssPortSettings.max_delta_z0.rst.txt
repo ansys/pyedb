@@ -1,0 +1,6 @@
+max\_delta\_z0
+==============
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: HfssPortSettings.max_delta_z0

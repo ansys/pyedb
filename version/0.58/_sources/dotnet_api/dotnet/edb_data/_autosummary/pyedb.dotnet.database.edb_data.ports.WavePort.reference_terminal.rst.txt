@@ -1,0 +1,6 @@
+reference\_terminal
+===================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: WavePort.reference_terminal

@@ -1,0 +1,6 @@
+mesh\_display\_attributes
+=========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: AdvancedMeshSettings.mesh_display_attributes

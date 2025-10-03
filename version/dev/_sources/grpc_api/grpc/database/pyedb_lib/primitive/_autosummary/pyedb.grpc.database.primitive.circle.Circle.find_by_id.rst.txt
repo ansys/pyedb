@@ -1,0 +1,6 @@
+find\_by\_id
+============
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. automethod:: Circle.find_by_id

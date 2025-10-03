@@ -1,0 +1,6 @@
+layout\_validation
+==================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.layout_validation

@@ -1,0 +1,6 @@
+is\_null
+========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.s_parameter_model
+
+.. autoproperty:: SparamModel.is_null

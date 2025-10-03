@@ -1,0 +1,33 @@
+﻿ResistorSource
+==============
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoclass:: ResistorSource
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ResistorSource.amplitude
+      ResistorSource.c_value
+      ResistorSource.create_physical_resistor
+      ResistorSource.impedance
+      ResistorSource.l_value
+      ResistorSource.name
+      ResistorSource.negative_node
+      ResistorSource.phase
+      ResistorSource.positive_node
+      ResistorSource.r_value
+      ResistorSource.rvalue
+      ResistorSource.source_type
+   
+   

@@ -1,0 +1,6 @@
+improved\_loss\_model
+=====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.improved_loss_model

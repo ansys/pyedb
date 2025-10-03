@@ -1,0 +1,6 @@
+sources
+=======
+
+.. currentmodule:: pyedb.grpc.database.siwave
+
+.. autoproperty:: Siwave.sources

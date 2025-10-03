@@ -1,0 +1,6 @@
+description
+===========
+
+.. currentmodule:: pyedb.grpc.database.net.net_class
+
+.. autoproperty:: NetClass.description

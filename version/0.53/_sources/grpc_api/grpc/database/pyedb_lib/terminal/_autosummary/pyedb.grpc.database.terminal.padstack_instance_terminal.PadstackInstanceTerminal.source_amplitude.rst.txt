@@ -1,0 +1,6 @@
+source\_amplitude
+=================
+
+.. currentmodule:: pyedb.grpc.database.terminal.padstack_instance_terminal
+
+.. autoproperty:: PadstackInstanceTerminal.source_amplitude

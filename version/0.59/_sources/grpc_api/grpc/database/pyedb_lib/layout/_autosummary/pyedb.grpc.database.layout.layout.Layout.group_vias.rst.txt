@@ -1,0 +1,6 @@
+group\_vias
+===========
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.group_vias

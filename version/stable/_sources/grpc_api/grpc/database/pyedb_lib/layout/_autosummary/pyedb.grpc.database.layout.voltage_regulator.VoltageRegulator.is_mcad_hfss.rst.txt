@@ -1,0 +1,6 @@
+is\_mcad\_hfss
+==============
+
+.. currentmodule:: pyedb.grpc.database.layout.voltage_regulator
+
+.. autoproperty:: VoltageRegulator.is_mcad_hfss

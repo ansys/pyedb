@@ -1,0 +1,6 @@
+create
+======
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. automethod:: PinGroupTerminal.create

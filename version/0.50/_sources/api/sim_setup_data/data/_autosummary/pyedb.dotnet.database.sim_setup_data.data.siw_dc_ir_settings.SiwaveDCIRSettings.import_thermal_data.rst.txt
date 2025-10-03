@@ -1,0 +1,6 @@
+import\_thermal\_data
+=====================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings
+
+.. autoproperty:: SiwaveDCIRSettings.import_thermal_data

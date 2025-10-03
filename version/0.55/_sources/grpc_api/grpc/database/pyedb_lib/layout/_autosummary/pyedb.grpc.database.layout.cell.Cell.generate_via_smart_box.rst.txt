@@ -1,0 +1,6 @@
+generate\_via\_smart\_box
+=========================
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. automethod:: Cell.generate_via_smart_box

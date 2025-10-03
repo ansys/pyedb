@@ -1,0 +1,6 @@
+get\_product\_property
+======================
+
+.. currentmodule:: pyedb.grpc.database.terminal.bundle_terminal
+
+.. automethod:: BundleTerminal.get_product_property

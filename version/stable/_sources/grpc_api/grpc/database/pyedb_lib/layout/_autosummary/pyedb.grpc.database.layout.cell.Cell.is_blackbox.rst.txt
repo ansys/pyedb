@@ -1,0 +1,6 @@
+is\_blackbox
+============
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. autoproperty:: Cell.is_blackbox

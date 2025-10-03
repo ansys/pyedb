@@ -1,0 +1,6 @@
+deembed
+=======
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: CircuitPort.deembed

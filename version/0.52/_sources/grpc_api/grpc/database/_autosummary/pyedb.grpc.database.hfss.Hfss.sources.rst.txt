@@ -1,0 +1,6 @@
+sources
+=======
+
+.. currentmodule:: pyedb.grpc.database.hfss
+
+.. autoproperty:: Hfss.sources

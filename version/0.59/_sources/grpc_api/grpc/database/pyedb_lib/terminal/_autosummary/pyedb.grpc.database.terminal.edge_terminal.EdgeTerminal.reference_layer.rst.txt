@@ -1,0 +1,6 @@
+reference\_layer
+================
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. autoproperty:: EdgeTerminal.reference_layer

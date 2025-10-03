@@ -1,0 +1,6 @@
+primitive\_type
+===============
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. autoproperty:: Circle.primitive_type

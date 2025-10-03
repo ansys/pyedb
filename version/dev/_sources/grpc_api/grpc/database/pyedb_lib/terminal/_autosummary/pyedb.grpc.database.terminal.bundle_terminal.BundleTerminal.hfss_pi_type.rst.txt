@@ -1,0 +1,6 @@
+hfss\_pi\_type
+==============
+
+.. currentmodule:: pyedb.grpc.database.terminal.bundle_terminal
+
+.. autoproperty:: BundleTerminal.hfss_pi_type

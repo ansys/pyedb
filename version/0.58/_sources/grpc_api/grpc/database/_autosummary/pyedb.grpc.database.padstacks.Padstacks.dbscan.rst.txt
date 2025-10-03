@@ -1,0 +1,6 @@
+dbscan
+======
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.dbscan

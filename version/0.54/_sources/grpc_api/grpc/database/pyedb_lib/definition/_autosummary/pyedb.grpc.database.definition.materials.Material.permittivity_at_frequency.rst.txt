@@ -1,0 +1,6 @@
+permittivity\_at\_frequency
+===========================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoproperty:: Material.permittivity_at_frequency

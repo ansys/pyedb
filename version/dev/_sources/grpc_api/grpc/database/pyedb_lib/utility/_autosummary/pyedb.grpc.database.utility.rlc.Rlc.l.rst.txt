@@ -1,0 +1,6 @@
+l
+=
+
+.. currentmodule:: pyedb.grpc.database.utility.rlc
+
+.. autoproperty:: Rlc.l

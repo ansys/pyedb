@@ -1,0 +1,6 @@
+fill\_material
+==============
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoproperty:: StackupLayer.fill_material

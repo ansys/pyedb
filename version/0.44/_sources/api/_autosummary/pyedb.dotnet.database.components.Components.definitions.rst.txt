@@ -1,0 +1,6 @@
+definitions
+===========
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. autoproperty:: Components.definitions

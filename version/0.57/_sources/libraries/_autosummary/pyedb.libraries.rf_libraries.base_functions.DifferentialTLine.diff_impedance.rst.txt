@@ -1,0 +1,6 @@
+diff\_impedance
+===============
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. autoproperty:: DifferentialTLine.diff_impedance

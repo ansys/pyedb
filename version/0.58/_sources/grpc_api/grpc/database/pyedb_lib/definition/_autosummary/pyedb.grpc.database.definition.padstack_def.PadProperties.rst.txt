@@ -1,0 +1,29 @@
+﻿PadProperties
+=============
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoclass:: PadProperties
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PadProperties.geometry_type
+      PadProperties.offset_x
+      PadProperties.offset_y
+      PadProperties.parameters_values
+      PadProperties.parameters_values_string
+      PadProperties.polygon_data
+      PadProperties.rotation
+      PadProperties.shape
+   
+   

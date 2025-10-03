@@ -1,0 +1,6 @@
+add\_void
+=========
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. automethod:: Bondwire.add_void

@@ -1,0 +1,6 @@
+center\_line
+============
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. autoproperty:: Path.center_line
