@@ -668,7 +668,8 @@ class Edb:
         #     self.standalone = False
 
         self.core.Database.SetRunAsStandAlone(self.standalone)
-
+        if self._db:  # pragma no cover
+            self._db.Close()
         self._db = self.core.Database.Create(self.edbpath)
 
         if not self._db:
