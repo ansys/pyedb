@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -46,6 +46,7 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecate_argument_name
 
 
 def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
@@ -189,6 +190,18 @@ class Modeler(object):
                         if not layer_dict:
                             self._primitives_by_layer_and_net.pop(layer_name, None)
 
+    def delete_batch_primitives(self, prim_list: List[Primitive]) -> None:
+        """Delete a batch of primitives and update caches.
+
+        Parameters
+        ----------
+        prim_list : list
+            List of primitive objects to delete.
+        """
+        for prim in prim_list:
+            prim._edb_object.delete()
+        self._reload_all()
+
     @property
     def primitives(self) -> list[Primitive]:
         if not self._primitives:
@@ -318,7 +331,7 @@ class Modeler(object):
         """
         return self._pedb.stackup.layers
 
-    def get_primitive(self, primitive_id: int) -> Optional[Primitive]:
+    def get_primitive(self, primitive_id: int, edb_uid=True) -> Optional[Primitive]:
         """Retrieve primitive by ID.
 
         Parameters
@@ -331,13 +344,22 @@ class Modeler(object):
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` or bool
             Primitive object if found, False otherwise.
         """
-        for p in self._layout.primitives:
-            if p.edb_uid == primitive_id:
-                return self.__mapping_primitive_type(p)
-        for p in self._layout.primitives:
-            for v in p.voids:
-                if v.edb_uid == primitive_id:
-                    return self.__mapping_primitive_type(v)
+        if edb_uid:
+            for p in self._layout.primitives:
+                if p.edb_uid == primitive_id:
+                    return self.__mapping_primitive_type(p)
+            for p in self._layout.primitives:
+                for v in p.voids:
+                    if v.edb_uid == primitive_id:
+                        return self.__mapping_primitive_type(v)
+        else:
+            for p in self._layout.primitives:
+                if p.id == primitive_id:
+                    return self.__mapping_primitive_type(p)
+            for p in self._layout.primitives:
+                for v in p.voids:
+                    if v.id == primitive_id:
+                        return self.__mapping_primitive_type(v)
 
     def __mapping_primitive_type(self, primitive):
         from ansys.edb.core.primitive.primitive import (
@@ -821,6 +843,8 @@ class Modeler(object):
         for void in voids:
             if isinstance(void, list):
                 void_polygon_data = GrpcPolygonData(points=void)
+            elif isinstance(void, GrpcPolygonData):
+                void_polygon_data = void
             else:
                 void_polygon_data = void.polygon_data
             if not void_polygon_data.points:

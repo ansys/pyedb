@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -33,6 +33,7 @@ import logging
 import math
 import warnings
 
+from defusedxml.ElementTree import parse as defused_parse
 import matplotlib.colors as colors
 import numpy as np
 import pandas as pd

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -37,6 +37,16 @@ from ansys.edb.core.terminal.terminal import (
 
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
+
+mapping_boundary_type = {
+    "port": GrpcBoundaryType.PORT,
+    "dc_terminal": GrpcBoundaryType.DC_TERMINAL,
+    "voltage_probe": GrpcBoundaryType.VOLTAGE_PROBE,
+    "voltage_source": GrpcBoundaryType.VOLTAGE_SOURCE,
+    "current_source": GrpcBoundaryType.CURRENT_SOURCE,
+    "rlc": GrpcBoundaryType.RLC,
+    "pec": GrpcBoundaryType.PEC,
+}
 
 
 class Terminal(GrpcTerminal):
@@ -202,7 +212,11 @@ class Terminal(GrpcTerminal):
 
     @boundary_type.setter
     def boundary_type(self, value):
-        super(Terminal, self.__class__).boundary_type.__set__(self, self._boundary_type_mapping[value])
+        if isinstance(value, str):
+            value = mapping_boundary_type.get(value.lower(), None)
+        if not isinstance(value, GrpcBoundaryType):
+            raise ValueError("Value must be a string or BoundaryType enum.")
+        super(Terminal, self.__class__).boundary_type.__set__(self, value)
 
     @property
     def is_port(self) -> bool:

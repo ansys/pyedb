@@ -87,7 +87,7 @@
             "PCIe_Gen4_RX3_P",
             "PCIe_Gen4_TX0_N",
             "PCIe_Gen4_TX0_CAP_N",
-            "PCIe_Gen4_TX0_p",
+            "PCIe_Gen4_TX0_P",
             "PCIe_Gen4_TX0_CAP_P",
             "PCIe_Gen4_TX1_N",
             "PCIe_Gen4_TX1_CAP_N",

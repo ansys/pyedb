@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -51,8 +51,9 @@ def convert_netdict_to_pydict(dict_in):
 
     """
     pydict = {}
-    for key in dict_in.Keys:
-        pydict[key] = dict_in[key]
+    if dict_in:
+        for key in dict_in.Keys:
+            pydict[key] = dict_in[key]
     return pydict
 
 
