@@ -9,6 +9,7 @@
 * [Alberto Di Maria](https://github.com/Alberto-DM)
 * [amichel0205](https://github.com/amichel0205)
 * [boyang2022](https://github.com/boyang2022)
+* [Devin](https://github.com/Devin-Crawford)
 * [Dipin](https://github.com/dipinknair)
 * [drewm102](https://github.com/drewm102)
 * [Edouard Coussoux](https://github.com/ecoussoux-ansys)
