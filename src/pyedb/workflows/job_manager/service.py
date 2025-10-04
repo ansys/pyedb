@@ -814,5 +814,214 @@ async def main():
     await manager.submit_job(config3, priority=-5)  # Low priority
 
 
+# --------------------------------------------------------------------------- #
+#  SchedulerManager  –  live SLURM / LSF introspection
+# --------------------------------------------------------------------------- #
+class SchedulerManager:
+    """
+    Thin async wrapper around ``sinfo`` (SLURM) and ``bhosts`` / ``bqueues``
+    (LSF) that returns:
+
+    * List of partitions / queues
+    * Per-partition: total & free cores, total & free memory
+    * Global job table (running, pending, etc.)
+
+    All methods are **coroutines** so they can be awaited from the REST layer
+    without blocking the event-loop.
+    """
+
+    def __init__(self, scheduler_type: SchedulerType):
+        if scheduler_type not in {SchedulerType.SLURM, SchedulerType.LSF}:
+            raise ValueError("Only SLURM and LSF are supported")
+        self.scheduler_type = scheduler_type
+
+    # --------------------------------------------------------------------- #
+    #  Public high-level API
+    # --------------------------------------------------------------------- #
+    async def get_partitions(self) -> List[Dict[str, Any]]:
+        """
+        Return a list with one dict per partition / queue::
+
+            [
+                {
+                    "name": "compute",
+                    "cores_total": 800,
+                    "cores_used": 120,
+                    "memory_total_gb": 3200.0,
+                    "memory_used_gb": 400.0,
+                },
+                ...,
+            ]
+        """
+        if self.scheduler_type == SchedulerType.SLURM:
+            return await self._slurm_partitions()
+        else:  # LSF
+            return await self._lsf_partitions()
+
+    async def get_jobs(self) -> List[Dict[str, Any]]:
+        """
+        Return global job table (all users) with at least::
+
+            [
+                {
+                    "job_id": "12345",
+                    "partition": "compute",
+                    "user": "alice",
+                    "state": "RUNNING",  # or PENDING, COMPLETED, FAILED …
+                    "nodes": 2,
+                    "cpus": 64,
+                    "memory_gb": 128.0,
+                },
+                ...,
+            ]
+        """
+        if self.scheduler_type == SchedulerType.SLURM:
+            return await self._slurm_jobs()
+        else:
+            return await self._lsf_jobs()
+
+    # --------------------------------------------------------------------- #
+    #  SLURM helpers
+    # --------------------------------------------------------------------- #
+    async def _slurm_partitions(self) -> List[Dict[str, Any]]:
+        """
+        Parse ``sinfo -h -o %R %C %m``  →  PARTITION CPUS MEMORY
+        """
+        cmd = ["sinfo", "-h", "-o", "%R %C %m"]
+        stdout = await self._run(cmd)
+        partitions = []
+        for line in stdout.splitlines():
+            if not line.strip():
+                continue
+            part, cpu_str, mem_mb = line.split()
+            alloc, idle, other, total = map(int, cpu_str.split("/"))
+            # Remove optional '+' or size suffix (M/G/T)
+            mem_mb_clean = mem_mb.rstrip("+MGTP").strip()
+            mem_total_gb = float(mem_mb_clean) / 1024
+            mem_used_gb = mem_total_gb * (alloc + other) / max(total, 1)
+
+            partitions.append(
+                {
+                    "name": part,
+                    "cores_total": total,
+                    "cores_used": alloc + other,
+                    "memory_total_gb": mem_total_gb,
+                    "memory_used_gb": mem_used_gb,
+                }
+            )
+        return partitions
+
+    async def _slurm_jobs(self) -> List[Dict[str, Any]]:
+        """
+        Parse ``squeue -h -o %i %u %P %T %D %C %m``  →  JOBID USER PARTITION STATE NODES CPUS MEMORY
+        """
+        cmd = ["squeue", "-h", "-o", "%i %u %P %T %D %C %m"]
+        stdout = await self._run(cmd)
+        jobs = []
+        for line in stdout.splitlines():
+            if not line.strip():
+                continue
+            job_id, user, partition, state, nodes, cpus, mem_str = line.split()
+            # unify memory to GiB
+            mem_str = mem_str.strip()
+            if mem_str.endswith(("M", "G", "T")):
+                unit = mem_str[-1]
+                val = float(mem_str[:-1])
+                if unit == "M":
+                    memory_gb = val / 1024
+                elif unit == "G":
+                    memory_gb = val
+                else:  # T
+                    memory_gb = val * 1024
+            else:  # plain number → assume MiB
+                memory_gb = float(mem_str) / 1024
+            jobs.append(
+                {
+                    "job_id": job_id,
+                    "partition": partition,
+                    "user": user,
+                    "state": state,
+                    "nodes": int(nodes),
+                    "cpus": int(cpus),
+                    "memory_gb": memory_gb,
+                }
+            )
+        return jobs
+
+    # --------------------------------------------------------------------- #
+    #  LSF helpers
+    # --------------------------------------------------------------------- #
+    async def _lsf_partitions(self) -> List[Dict[str, Any]]:
+        """
+        Combine ``bqueues -o 'queue_name max num_proc'`` and
+        ``bhosts -o 'host_name max mem ncpus'`` to build per-queue stats.
+        """
+        # 1. Queues
+        queues_raw = await self._run(["bqueues", "-o", "queue_name:20 max:10 num_proc:10", "-noheader"])
+        queue_info = {}
+        for ln in queues_raw.splitlines():
+            if not ln.strip():
+                continue
+            name, max_slots, num_proc = ln.split()
+            queue_info[name] = {"cores_total": int(num_proc), "cores_used": 0, "mem_total_gb": 0.0, "mem_used_gb": 0.0}
+
+        # 2. Hosts
+        hosts_raw = await self._run(["bhosts", "-o", "host_name:20 max_mem:15 ncpus:10 r1m:10", "-noheader"])
+        for ln in hosts_raw.splitlines():
+            if not ln.strip():
+                continue
+            host, max_mem, ncpus, r1m = ln.split()
+            max_mem_gb = int(max_mem) / (1024**2)  # KB → GB
+            used_mem_gb = float(r1m) / 1024  # 1-minute load ≈ used mem (rough)
+            # Distribute host resources evenly across all queues (simplification)
+            for q in queue_info:
+                queue_info[q]["mem_total_gb"] += max_mem_gb
+                queue_info[q]["mem_used_gb"] += used_mem_gb
+
+        return [{"name": q, **queue_info[q]} for q in queue_info]
+
+    async def _lsf_jobs(self) -> List[Dict[str, Any]]:
+        """
+        Parse ``bjobs -u all -o 'jobid user queue stat slots mem' -noheader``
+        """
+        cmd = ["bjobs", "-u", "all", "-o", "jobid:10 user:15 queue:15 stat:10 slots:10 mem:10", "-noheader"]
+        stdout = await self._run(cmd)
+        jobs = []
+        for line in stdout.splitlines():
+            if not line.strip():
+                continue
+            job_id, user, queue, state, slots, mem = line.split()
+            jobs.append(
+                {
+                    "job_id": job_id,
+                    "partition": queue,
+                    "user": user,
+                    "state": state,
+                    "nodes": 1,  # LSF does not expose node count directly
+                    "cpus": int(slots),
+                    "memory_gb": int(mem) / 1024 if mem.isdigit() else float(mem),
+                }
+            )
+        return jobs
+
+    # --------------------------------------------------------------------- #
+    #  Generic helper
+    # --------------------------------------------------------------------- #
+    async def _run(self, cmd: List[str]) -> str:
+        """
+        Run ``cmd`` via asyncio subprocess and return stripped stdout.
+        Raises RuntimeError on non-zero exit.
+        """
+        proc = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        stdout, stderr = await proc.communicate()
+        if proc.returncode != 0:
+            raise RuntimeError(f"{' '.join(cmd)} failed: {stderr.decode()}")
+        return stdout.decode().strip()
+
+
 if __name__ == "__main__":
     asyncio.run(main())

@@ -42,8 +42,10 @@ import concurrent
 import concurrent.futures
 import concurrent.futures as _futs
 import os
+import platform
+import shutil
 import threading
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from aiohttp import web
 
@@ -56,6 +58,7 @@ from pyedb.workflows.job_manager.job_submission import (
 from pyedb.workflows.job_manager.service import (
     JobManager,
     ResourceLimits,
+    SchedulerManager,
     submit_job_to_manager,
 )
 
@@ -102,8 +105,68 @@ class JobManagerHandler:
         self._start_event = threading.Event()  # becomes True when aiohttp is bound
         self._shutdown = False
         atexit.register(self.stop_service)  # emergency brake
+        # ---  NEW: lazy, conditional SchedulerManager  ---
+        self.scheduler_type = self._detect_scheduler()
+        self._sch_mgr: Optional[SchedulerManager] = None
         # auto-start
         # self.start_service()
+
+    @staticmethod
+    def _detect_scheduler() -> SchedulerType:
+        """
+        Auto-detect external scheduler **only on Linux**.
+        Windows → always NONE (SLURM/LSF are Unix-only).
+        """
+        if platform.system() == "Windows":
+            return SchedulerType.NONE
+
+        for cmd, enum in (("sinfo", SchedulerType.SLURM), ("bhosts", SchedulerType.LSF)):
+            if shutil.which(cmd) is not None:
+                return enum
+        return SchedulerType.NONE
+
+    # -------------------------------------------------
+    # read-only property – raises if external scheduler not configured
+    # -------------------------------------------------
+    @property
+    def scheduler_manager(self) -> Union[SchedulerManager, None]:
+        if self.scheduler_type == SchedulerType.NONE:
+            return None
+        if self._sch_mgr is None:  # create on first access
+            self._sch_mgr = SchedulerManager(self.scheduler_type)
+        return self._sch_mgr
+
+    def cluster_status(self, timeout: float = 10.0) -> dict:
+        """
+        Thread-safe snapshot of the external cluster (SLURM or LSF).
+
+        Returns
+        -------
+        dict
+            {
+              "partitions": [ {...}, ... ],   # per-partition resources
+              "jobs":       [ {...}, ... ]    # global job table
+            }
+
+        Raises
+        ------
+        None
+            If *scheduler_type* is ``SchedulerType.NONE``.
+        concurrent.futures.TimeoutError
+            If the underlying asyncio calls do not finish within *timeout*.
+        """
+        # Ensure an external scheduler is configured
+        _ = self.scheduler_manager
+
+        if not self.scheduler_manager:
+            raise RuntimeError("Scheduler manager not available")
+
+        async def _gather():
+            return await asyncio.gather(self.scheduler_manager.get_partitions(), self.scheduler_manager.get_jobs())
+
+        future = asyncio.run_coroutine_threadsafe(_gather(), self._loop)
+        partitions, jobs = future.result(timeout=timeout)
+        return {"partitions": partitions, "jobs": jobs}
 
     @property
     def url(self) -> str:

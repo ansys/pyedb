@@ -50,9 +50,9 @@ import os
 import platform
 import re
 import shlex
+import shutil
 import subprocess
 from typing import Any, Dict, List, Optional, Union
-import xml.etree.ElementTree as ET
 
 
 class SchedulerType(enum.Enum):
@@ -131,6 +131,7 @@ class SchedulerOptions:
     time: str = "24:00:00"
     nodes: int = 1
     tasks_per_node: int = 1
+    cores_per_node: int = 0  # 0 → use scheduler default
     memory: str = "4GB"
     account: Optional[str] = None
     reservation: Optional[str] = None
@@ -158,6 +159,8 @@ class SchedulerOptions:
             raise ValueError("Tasks per node must be at least 1")
         if self.gpus < 0:
             raise ValueError("GPU count cannot be negative")
+        if self.cores_per_node < 0:
+            raise ValueError("cores_per_node must be non-negative")
 
         # Validate priority values
         valid_priorities = ["Low", "BelowNormal", "Normal", "AboveNormal", "High"]
@@ -263,7 +266,7 @@ class HFSS3DLayoutBatchOptions:
         Scratch path.  Auto-detected.
     """
 
-    create_starting_mesh: bool = True
+    create_starting_mesh: bool = False
     default_process_priority: str = "Normal"
     enable_gpu: bool = False
     mpi_vendor: str = field(default_factory=lambda: "Intel" if platform.system() == "Windows" else "OpenMPI")
@@ -417,8 +420,8 @@ class HFSSSimulationConfig:
             raise FileNotFoundError(f"Project file not found: {self.project_path}")
 
         # Platform-scheduler compatibility validation
-        if self.scheduler_type == SchedulerType.WINDOWS_HPC and platform.system() != "Windows":
-            raise ValueError("Windows HPC scheduler is only available on Windows platforms")
+        # if self.scheduler_type == SchedulerType.WINDOWS_HPC and platform.system() != "Windows":
+        #    raise ValueError("Windows HPC scheduler is only available on Windows platforms")
 
         # Validate scheduler options
         self.scheduler_options.validate()
@@ -483,6 +486,7 @@ class HFSSSimulationConfig:
             f"#SBATCH --time={opts.time}",
             f"#SBATCH --nodes={opts.nodes}",
             f"#SBATCH --ntasks-per-node={opts.tasks_per_node}",
+            f"#SBATCH --cpus-per-task={opts.cores_per_node}",
         ]
 
         # Optional SLURM directives
@@ -539,6 +543,7 @@ class HFSSSimulationConfig:
             f"#BSUB -q {opts.queue}",
             f"#BSUB -W {opts.time}",
             f"#BSUB -n {opts.nodes * opts.tasks_per_node}",
+            f'#BSUB -R "rusage[ncpus={opts.cores_per_node}]"',
         ]
 
         if opts.memory:
@@ -585,6 +590,13 @@ class HFSSSimulationConfig:
         else:
             raise ValueError(f"Unsupported scheduler type: {self.scheduler_type}")
 
+    def _num_cores_for_scheduler(self) -> int:
+        """Total cores requested: nodes * cores_per_node (or tasks fallback)."""
+        opts = self.scheduler_options
+        # prefer explicit cores-per-node, else tasks-per-node, else 1
+        cpp = opts.cores_per_node if opts.cores_per_node > 0 else opts.tasks_per_node
+        return opts.nodes * cpp
+
     def generate_command_string(self) -> str:
         """Complete quoted command line ready for ``subprocess``.
 
@@ -608,8 +620,13 @@ class HFSSSimulationConfig:
         # Distributed computing configuration
         if self.distributed:
             parts.append("-distributed")
-            machinelist = self.generate_machinelist_string()
-            parts.append(f"-machinelist {machinelist}")
+            if self.scheduler_type != SchedulerType.NONE:
+                total_cores = self._num_cores_for_scheduler()
+                parts.append(f"-machinelist numcores={total_cores}")
+            else:
+                # local run – keep old behaviour
+                machinelist = self.generate_machinelist_string()
+                parts.append(f"-machinelist {machinelist}")
 
         # Execution mode flags
         if self.auto:
@@ -664,15 +681,37 @@ class HFSSSimulationConfig:
             than 30 s.
         """
         if self.scheduler_type == SchedulerType.NONE:
-            raise ValueError("No scheduler configured")
+            # ----  auto-detect  (avoids circular import)  -----------------
+            if platform.system() == "Windows":
+                detected = SchedulerType.NONE
+            else:
+                detected = SchedulerType.NONE
+                for cmd, enum in (("sinfo", SchedulerType.SLURM), ("bhosts", SchedulerType.LSF)):
+                    if shutil.which(cmd):
+                        detected = enum
+                        break
+            # --------------------------------------------------------------
+            if detected == SchedulerType.NONE:
+                raise ValueError(
+                    "No scheduler configured and none auto-detected on this host "
+                    "(SLURM / LSF binaries not found in PATH)."
+                )
+            self.scheduler_type = detected
 
         # Generate scheduler-specific script
         script_content = self.generate_scheduler_script()
 
-        # Determine script path
+        project_dir = os.path.dirname(os.path.abspath(self.project_path))
         if script_path is None:
-            script_ext = "sh"  # if self.scheduler_type != SchedulerType.WINDOWS_HPC else "ps1"
-            script_path = f"{self.jobid}_{self.scheduler_type.value}.{script_ext}"
+            script_ext = "sh"
+            script_name = f"{self.jobid}_{self.scheduler_type.value}.{script_ext}"
+            script_path = os.path.join(project_dir, script_name)
+        else:
+            # user gave a relative name → make it relative to project dir
+            script_path = os.path.join(project_dir, script_path)
+
+        # Ensure directory exists
+        os.makedirs(project_dir, exist_ok=True)
 
         # Save batch script with proper permissions
         with open(script_path, "w", encoding="utf-8") as f:
@@ -843,8 +882,13 @@ class HFSSSimulationConfig:
 
         if self.distributed:
             command.extend(["-distributed"])
-            machinelist = self.generate_machinelist_string()
-            command.extend(["-machinelist", machinelist])
+            command.extend(["-distributed"])
+            if self.scheduler_type != SchedulerType.NONE:
+                total_cores = self._num_cores_for_scheduler()
+                command.extend(["-machinelist", f"numcores={total_cores}"])
+            else:
+                machinelist = self.generate_machinelist_string()
+                command.extend(["-machinelist", machinelist])
 
         if self.auto:
             command.append("-auto")
