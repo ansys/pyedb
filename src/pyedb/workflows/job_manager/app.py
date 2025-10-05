@@ -7,7 +7,7 @@ import os
 # Add the backend path to import JobManager
 sys.path.append(os.path.join(os.path.dirname(__file__), 'backend'))
 from job_manager import JobManager
-from job_submission import HFSS3DLayoutBatchOptions
+from  pyedb.workflows.job_manager.backend.job_submission import HFSS3DLayoutBatchOptions
 
 # Set page configuration
 st.set_page_config(
