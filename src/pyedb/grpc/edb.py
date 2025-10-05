@@ -135,7 +135,7 @@ from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
-from pyedb.workflows.job_manager.job_manager_handler import JobManagerHandler
+from pyedb.workflows.job_manager.backend.job_manager_handler import JobManagerHandler
 
 os.environ["no_proxy"] = "localhost,127.0.0.1"
 

@@ -50,12 +50,12 @@ from typing import List, Optional, Union
 from aiohttp import web
 
 from pyedb.generic.general_methods import is_linux
-from pyedb.workflows.job_manager.job_submission import (
+from pyedb.workflows.job_manager.backend.job_submission import (
     HFSSSimulationConfig,
     SchedulerType,
     create_hfss_config,
 )
-from pyedb.workflows.job_manager.service import (
+from pyedb.workflows.job_manager.backend.service import (
     JobManager,
     ResourceLimits,
     SchedulerManager,

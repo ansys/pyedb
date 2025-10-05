@@ -39,7 +39,9 @@ dependencies = [
     "ansys-edb-core>=0.2.0",
     "psutil",
     "aiohttp>=3.8",
-    "python-socketio>=5.10"
+    "python-socketio>=5.10",
+    "streamlit>=1.28.0",
+    "plotly>=5.15.0"
 ]
 
 [project.optional-dependencies]

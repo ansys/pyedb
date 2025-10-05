@@ -49,7 +49,7 @@ from aiohttp import web
 import psutil
 import socketio
 
-from pyedb.workflows.job_manager.job_submission import (
+from pyedb.workflows.job_manager.backend.job_submission import (
     HFSSSimulationConfig,
     SchedulerType,
 )
