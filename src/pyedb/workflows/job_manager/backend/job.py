@@ -1,5 +1,6 @@
 import datetime
 
+
 class Job:
     def __init__(self):
         self.job_id: str
