@@ -1,13 +1,35 @@
 import streamlit as st
-import pandas as pd
 from datetime import datetime, timedelta
 import sys
 import os
+import tempfile
 
 # Add the backend path to import JobManager
 sys.path.append(os.path.join(os.path.dirname(__file__), 'backend'))
-from job_manager import JobManager
-from  pyedb.workflows.job_manager.backend.job_submission import HFSS3DLayoutBatchOptions
+try:
+    from job_manager import JobManager
+    from job_submission import HFSS3DLayoutBatchOptions, SimulationType
+    from database import JobDatabase
+    from job import Job, JobStatus
+except ImportError as e:
+    st.error(f"Backend import error: {e}")
+
+
+    # Create mock classes for demonstration
+    class JobStatus:
+        PENDING = "pending"
+        RUNNING = "running"
+        COMPLETED = "completed"
+        FAILED = "failed"
+        QUEUED = "queued"
+
+
+    class SimulationType:
+        SI_ANALYSIS = "signal_integrity"
+        PI_ANALYSIS = "power_integrity"
+        THERMAL = "thermal"
+        EMI_EMC = "emi_emc"
+        LAYOUT_VERIFICATION = "layout_verification"
 
 # Set page configuration
 st.set_page_config(
@@ -17,9 +39,20 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Premium Corporate CSS with enhanced styling
+# PREMIUM CORPORATE CSS WITH TRANSPARENCY AND HOVER EFFECTS
 st.markdown("""
 <style>
+    :root {
+        --synopsys-blue: #0033a0;
+        --synopsys-light-blue: #00a3e0;
+        --synopsys-orange: #ff6b00;
+        --dark-gray: #2c3e50;
+        --medium-gray: #546e7a;
+        --light-gray: #f8f9fa;
+        --border-gray: #e0e0e0;
+        --card-bg: rgba(255, 255, 255, 0.95);
+    }
+
     .main {
         background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
         font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
@@ -267,21 +300,130 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# Initialize JobManager
+# Initialize JobManager with error handling
 @st.cache_resource
-def get_job_manager():
-    return JobManager()
+def initialize_job_manager():
+    """Initialize the JobManager with proper error handling"""
+    try:
+        # Initialize database connection
+        db_path = os.path.join(tempfile.gettempdir(), "pyedb_jobs.db")
+        job_manager = JobManager(database_path=db_path)
 
+        # Test connection
+        jobs = job_manager.get_jobs()
+        st.success("✅ Backend connected successfully")
+        return job_manager
+    except Exception as e:
+        st.error(f"❌ Failed to initialize JobManager: {str(e)}")
+        st.info("Running in demonstration mode with sample data")
+        return None
 
-job_manager = get_job_manager()
 
 # Initialize session state
 if 'show_new_job' not in st.session_state:
     st.session_state.show_new_job = False
 if 'refresh_key' not in st.session_state:
     st.session_state.refresh_key = 0
+if 'job_manager' not in st.session_state:
+    st.session_state.job_manager = initialize_job_manager()
 
-# Header
+
+# Helper functions for backend integration
+def get_jobs_from_backend():
+    """Get jobs from backend with fallback to sample data"""
+    if st.session_state.job_manager:
+        try:
+            jobs = st.session_state.job_manager.get_jobs()
+            return jobs
+        except Exception as e:
+            st.error(f"Error fetching jobs: {e}")
+
+    # Fallback to sample data
+    return get_sample_jobs()
+
+
+def get_sample_jobs():
+    """Provide sample jobs when backend is not available"""
+    return [
+        {
+            'job_id': 'JOB-2841',
+            'name': 'Signal Integrity Analysis',
+            'project': 'Mobile SoC Design',
+            'status': 'running',
+            'start_time': datetime.now() - timedelta(hours=2, minutes=15),
+            'submit_time': datetime.now() - timedelta(hours=2, minutes=20),
+            'resources': {'nodes': 8, 'cpus_per_node': 16},
+            'batch_system': 'slurm',
+            'priority': 'high'
+        },
+        {
+            'job_id': 'JOB-2840',
+            'name': 'Power Distribution Network',
+            'project': 'Server Board Rev. B',
+            'status': 'completed',
+            'start_time': datetime.now() - timedelta(hours=4),
+            'completion_time': datetime.now() - timedelta(hours=2, minutes=18),
+            'submit_time': datetime.now() - timedelta(hours=4, minutes=5),
+            'resources': {'nodes': 12, 'cpus_per_node': 8},
+            'batch_system': 'pbs',
+            'priority': 'normal'
+        }
+    ]
+
+
+def submit_job_to_backend(job_config, project_file):
+    """Submit job to backend with proper file handling"""
+    if not st.session_state.job_manager:
+        st.error("JobManager not initialized - running in demo mode")
+        return False
+
+    try:
+        # Save uploaded file to temporary location
+        if project_file is not None:
+            temp_dir = tempfile.mkdtemp()
+            project_file_path = os.path.join(temp_dir, project_file.name)
+            with open(project_file_path, "wb") as f:
+                f.write(project_file.getbuffer())
+            job_config['project_file'] = project_file_path
+
+        # Create and submit job
+        job = st.session_state.job_manager.create_job(
+            name=job_config['name'],
+            project=job_config['project'],
+            simulation_type=job_config['simulation_type'],
+            project_file=job_config.get('project_file'),
+            batch_options=job_config.get('hfss_3d_layout_options'),
+            resources=job_config['resources'],
+            batch_system=job_config['batch_system'],
+            priority=job_config['priority']
+        )
+
+        # Submit the job
+        success = st.session_state.job_manager.submit_job(job)
+        return success
+
+    except Exception as e:
+        st.error(f"Failed to submit job: {str(e)}")
+        return False
+
+
+def get_job_actions(job_id, job_status):
+    """Get available actions for a job based on its status"""
+    actions = []
+
+    if job_status in [JobStatus.PENDING, JobStatus.QUEUED]:
+        actions.extend(["start", "delete"])
+    elif job_status == JobStatus.RUNNING:
+        actions.extend(["stop", "pause", "view_logs"])
+    elif job_status == JobStatus.COMPLETED:
+        actions.extend(["view_results", "download", "rerun"])
+    elif job_status == JobStatus.FAILED:
+        actions.extend(["view_logs", "rerun", "delete"])
+
+    return actions
+
+
+# Header Section with Premium Styling
 col1, col2, col3 = st.columns([3, 1, 1])
 with col1:
     st.markdown("""
@@ -303,23 +445,21 @@ with col3:
     st.markdown("<div style='text-align: right; padding-top: 2.5rem;'>", unsafe_allow_html=True)
     if st.button("🔄 Refresh", key="header_refresh", use_container_width=True):
         st.session_state.refresh_key += 1
+        st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-# Dashboard Metrics
-try:
-    jobs = job_manager.get_jobs()
-    total_jobs = len(jobs)
-    completed_jobs = len([j for j in jobs if j.status == "completed"])
-    running_jobs = len([j for j in jobs if j.status == "running"])
-    failed_jobs = len([j for j in jobs if j.status == "failed"])
-    pending_jobs = len([j for j in jobs if j.status == "pending"])
-except:
-    # Fallback data if JobManager not available
-    total_jobs = 142
-    completed_jobs = 98
-    running_jobs = 24
-    failed_jobs = 6
-    pending_jobs = 14
+# Dashboard Metrics with Real Data and Premium Cards
+jobs_data = get_jobs_from_backend()
+
+# Calculate metrics
+total_jobs = len(jobs_data)
+completed_jobs = len(
+    [j for j in jobs_data if getattr(j, 'status', j.get('status')) in ['completed', JobStatus.COMPLETED]])
+running_jobs = len([j for j in jobs_data if getattr(j, 'status', j.get('status')) in ['running', JobStatus.RUNNING]])
+failed_jobs = len([j for j in jobs_data if getattr(j, 'status', j.get('status')) in ['failed', JobStatus.FAILED]])
+pending_jobs = len([j for j in jobs_data if
+                    getattr(j, 'status', j.get('status')) in ['pending', 'queued', JobStatus.PENDING,
+                                                              JobStatus.QUEUED]])
 
 col1, col2, col3, col4, col5 = st.columns(5)
 
@@ -386,121 +526,122 @@ with action_col:
         st.session_state.show_new_job = True
 
 
-# Sample job data based on your backend structure
-def get_job_data():
-    try:
-        jobs = job_manager.get_jobs()
-        job_data = []
-        for job in jobs:
-            job_data.append({
-                'id': job.job_id,
-                'name': job.name,
-                'project': job.project or "Default Project",
-                'status': job.status,
-                'start_time': job.start_time.strftime('%Y-%m-%d %H:%M') if job.start_time else '--',
-                'duration': str(job.duration) if job.duration else '--',
-                'submit_time': job.submit_time.strftime('%Y-%m-%d %H:%M') if job.submit_time else '--',
-                'completion_time': job.completion_time.strftime('%Y-%m-%d %H:%M') if job.completion_time else '--',
-                'nodes': job.resources.get('nodes', 1) if job.resources else 1,
-                'cpus_per_node': job.resources.get('cpus_per_node', 1) if job.resources else 1,
-                'batch_system': job.batch_system or 'local',
-                'priority': job.priority or 'normal'
-            })
-        return job_data
-    except:
-        # Fallback data
-        return [
-            {
-                'id': 'JOB-2841',
-                'name': 'Signal Integrity Analysis',
-                'project': 'Mobile SoC Design',
-                'status': 'running',
-                'start_time': '2023-06-15 09:30',
-                'duration': '2h 15m',
-                'submit_time': '2023-06-15 09:25',
-                'completion_time': '--',
-                'nodes': 8,
-                'cpus_per_node': 16,
-                'batch_system': 'slurm',
-                'priority': 'high'
-            },
-            {
-                'id': 'JOB-2840',
-                'name': 'Power Distribution Network',
-                'project': 'Server Board Rev. B',
-                'status': 'completed',
-                'start_time': '2023-06-15 07:15',
-                'duration': '1h 42m',
-                'submit_time': '2023-06-15 07:10',
-                'completion_time': '2023-06-15 08:57',
-                'nodes': 12,
-                'cpus_per_node': 8,
-                'batch_system': 'pbs',
-                'priority': 'normal'
-            }
-        ]
+# Display Jobs with Premium Styling
+def format_job_duration(start_time, completion_time):
+    """Calculate and format job duration"""
+    if not start_time:
+        return "--"
+
+    if completion_time and isinstance(completion_time, datetime):
+        duration = completion_time - start_time
+    elif isinstance(start_time, datetime):
+        duration = datetime.now() - start_time
+    else:
+        return "--"
+
+    hours, remainder = divmod(duration.total_seconds(), 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    if hours > 0:
+        return f"{int(hours)}h {int(minutes)}m"
+    else:
+        return f"{int(minutes)}m"
 
 
-jobs_data = get_job_data()
-
-# Filter jobs
+# Filter and display jobs with premium styling
 filtered_jobs = jobs_data
 if search_term:
     filtered_jobs = [job for job in filtered_jobs
-                     if search_term.lower() in job['name'].lower()
-                     or search_term.lower() in job['id'].lower()]
-if status_filter != "All":
-    filtered_jobs = [job for job in filtered_jobs if job['status'] == status_filter.lower()]
+                     if search_term.lower() in getattr(job, 'name', job.get('name', '')).lower()
+                     or search_term.lower() in getattr(job, 'job_id', job.get('job_id', '')).lower()]
 
-# Display jobs with more information
+if status_filter != "All":
+    filtered_jobs = [job for job in filtered_jobs
+                     if getattr(job, 'status', job.get('status')) == status_filter.lower()]
+
 if filtered_jobs:
     for job in filtered_jobs:
-        status_class = f"status-{job['status']}"
-        priority_class = f"priority-{job['priority']}"
+        # Extract job data with fallbacks for both object and dict types
+        job_id = getattr(job, 'job_id', job.get('job_id', 'Unknown'))
+        job_name = getattr(job, 'name', job.get('name', 'Unknown'))
+        project = getattr(job, 'project', job.get('project', 'Unknown'))
+        status = getattr(job, 'status', job.get('status', 'unknown'))
+        priority = getattr(job, 'priority', job.get('priority', 'normal'))
+        batch_system = getattr(job, 'batch_system', job.get('batch_system', 'local'))
 
+        # Handle timestamps
+        start_time = getattr(job, 'start_time', job.get('start_time'))
+        submit_time = getattr(job, 'submit_time', job.get('submit_time'))
+        completion_time = getattr(job, 'completion_time', job.get('completion_time'))
+
+        # Handle resources
+        resources = getattr(job, 'resources', job.get('resources', {}))
+        nodes = resources.get('nodes', 1) if resources else 1
+        cpus_per_node = resources.get('cpus_per_node', 1) if resources else 1
+
+        status_class = f"status-{status}"
+        priority_class = f"priority-{priority}"
+
+        # Job row with premium styling
         with st.container():
+            st.markdown('<div class="job-row">', unsafe_allow_html=True)
+
             col1, col2, col3, col4 = st.columns([1.2, 2, 1.5, 1])
 
             with col1:
-                st.markdown(f"<div class='job-id'>{job['id']}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='compact-text'>{job['project']}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='{priority_class}'>Priority: {job['priority'].upper()}</div>",
-                            unsafe_allow_html=True)
+                st.markdown(f"<div class='job-id'>{job_id}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='compact-text'>{project}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='{priority_class}'>Priority: {priority.upper()}</div>", unsafe_allow_html=True)
 
             with col2:
                 st.markdown(
-                    f"<div style='font-weight: 700; font-size: 15px; color: #1a202c; margin-bottom: 8px;'>{job['name']}</div>",
+                    f"<div style='font-weight: 700; font-size: 15px; color: #1a202c; margin-bottom: 8px;'>{job_name}</div>",
                     unsafe_allow_html=True)
-                st.markdown(f"<div class='compact-text'>📅 Submitted: {job['submit_time']}</div>",
-                            unsafe_allow_html=True)
-                if job['completion_time'] != '--':
-                    st.markdown(f"<div class='compact-text'>✅ Completed: {job['completion_time']}</div>",
-                                unsafe_allow_html=True)
-                st.markdown(f"<div class='compact-text'>⚡ Batch: {job['batch_system'].upper()}</div>",
-                            unsafe_allow_html=True)
+                if submit_time:
+                    submit_str = submit_time.strftime('%Y-%m-%d %H:%M') if isinstance(submit_time, datetime) else str(
+                        submit_time)
+                    st.markdown(f"<div class='compact-text'>📅 Submitted: {submit_str}</div>", unsafe_allow_html=True)
+                if completion_time:
+                    complete_str = completion_time.strftime('%Y-%m-%d %H:%M') if isinstance(completion_time,
+                                                                                            datetime) else str(
+                        completion_time)
+                    st.markdown(f"<div class='compact-text'>✅ Completed: {complete_str}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='compact-text'>⚡ Batch: {batch_system.upper()}</div>", unsafe_allow_html=True)
 
             with col3:
-                st.markdown(f"<span class='status-badge {status_class}'>{job['status'].upper()}</span>",
+                st.markdown(f"<span class='status-badge {status_class}'>{status.upper()}</span>",
                             unsafe_allow_html=True)
-                st.markdown(f"<div class='compact-text'>⏱️ Started: {job['start_time']}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='compact-text'>⏳ Duration: {job['duration']}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='compact-text'>🖥️ {job['nodes']} nodes × {job['cpus_per_node']} CPUs</div>",
+                if start_time:
+                    start_str = start_time.strftime('%Y-%m-%d %H:%M') if isinstance(start_time, datetime) else str(
+                        start_time)
+                    st.markdown(f"<div class='compact-text'>⏱️ Started: {start_str}</div>", unsafe_allow_html=True)
+
+                duration = format_job_duration(start_time, completion_time)
+                st.markdown(f"<div class='compact-text'>⏳ Duration: {duration}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='compact-text'>🖥️ {nodes} nodes × {cpus_per_node} CPUs</div>",
                             unsafe_allow_html=True)
 
             with col4:
-                col4a, col4b = st.columns(2)
-                with col4a:
-                    if st.button("View", key=f"view_{job['id']}", use_container_width=True):
-                        st.session_state.selected_job = job['id']
-                with col4b:
-                    if st.button("Logs", key=f"logs_{job['id']}", use_container_width=True):
-                        st.session_state.log_job = job['id']
+                # Dynamic actions based on job status
+                actions = get_job_actions(job_id, status)
 
+                if "view_logs" in actions:
+                    if st.button("Logs", key=f"logs_{job_id}", use_container_width=True):
+                        st.session_state.log_job = job_id
+                if "view_results" in actions:
+                    if st.button("Results", key=f"results_{job_id}", use_container_width=True):
+                        st.session_state.results_job = job_id
+                if "rerun" in actions:
+                    if st.button("Rerun", key=f"rerun_{job_id}", use_container_width=True):
+                        # Implement rerun logic
+                        st.info(f"Rerunning job {job_id}")
+
+            st.markdown('</div>', unsafe_allow_html=True)
             st.markdown("---")
 else:
     st.info("No jobs found matching your criteria.")
 
-# New Job Form with Correct HFSS 3D Layout Batch Options
+# New Job Form with Premium Styling
 if st.session_state.show_new_job:
     st.markdown("---")
     st.markdown('<div class="section-title">Create New Job</div>', unsafe_allow_html=True)
@@ -543,7 +684,7 @@ if st.session_state.show_new_job:
 
             priority = st.selectbox("Priority", ["low", "normal", "high", "critical"])
 
-        # HFSS 3D Layout Batch Options - Correct Options
+        # HFSS 3D Layout Batch Options with Premium Cards
         st.subheader("🎛️ HFSS 3D Layout Batch Options")
 
         col3, col4 = st.columns(2)
@@ -551,36 +692,16 @@ if st.session_state.show_new_job:
         with col3:
             st.markdown('<div class="batch-option-card">', unsafe_allow_html=True)
             st.markdown("**🔄 Mesh & Solver Options**")
-            create_starting_mesh = st.checkbox("Create Starting Mesh", value=True,
-                                               help="Generate initial mesh before simulation")
-            solve_adaptive_only = st.checkbox("Solve Adaptive Only", value=False,
-                                              help="Only run adaptive passes")
-            validate_only = st.checkbox("Validate Only", value=False,
-                                        help="Validate setup without solving")
-            st.markdown('</div>', unsafe_allow_html=True)
-
-            st.markdown('<div class="batch-option-card">', unsafe_allow_html=True)
-            st.markdown("**📁 Directory Settings**")
-            temp_directory = st.text_input("Temp Directory",
-                                           value="/tmp",
-                                           help="Temporary directory for simulation files")
+            create_starting_mesh = st.checkbox("Create Starting Mesh", value=True)
+            solve_adaptive_only = st.checkbox("Solve Adaptive Only", value=False)
+            validate_only = st.checkbox("Validate Only", value=False)
             st.markdown('</div>', unsafe_allow_html=True)
 
         with col4:
             st.markdown('<div class="batch-option-card">', unsafe_allow_html=True)
             st.markdown("**🚀 Performance Options**")
-            enable_gpu = st.checkbox("Enable GPU Acceleration", value=False,
-                                     help="Use GPU for faster computation")
-            mpi_vendor = st.selectbox("MPI Vendor",
-                                      ["intel", "openmpi", "mpich", "msmpi"],
-                                      help="MPI implementation to use")
-            st.markdown('</div>', unsafe_allow_html=True)
-
-            st.markdown('<div class="batch-option-card">', unsafe_allow_html=True)
-            st.markdown("**🌐 Remote Execution**")
-            remote_spawn_command = st.text_input("Remote Spawn Command",
-                                                 placeholder="ssh user@host",
-                                                 help="Command for remote process spawning")
+            enable_gpu = st.checkbox("Enable GPU Acceleration", value=False)
+            mpi_vendor = st.selectbox("MPI Vendor", ["intel", "openmpi", "mpich", "msmpi"])
             st.markdown('</div>', unsafe_allow_html=True)
 
         st.subheader("📝 Additional Configuration")
@@ -602,15 +723,13 @@ if st.session_state.show_new_job:
         if submit_btn:
             if job_name and project_name and project_file is not None:
                 try:
-                    # Create HFSS 3D Layout Batch Options with correct parameters
+                    # Create HFSS 3D Layout Batch Options
                     hfss_options = HFSS3DLayoutBatchOptions(
                         create_starting_mesh=create_starting_mesh,
                         enable_gpu=enable_gpu,
                         mpi_vendor=mpi_vendor,
-                        remote_spawn_command=remote_spawn_command if remote_spawn_command else None,
                         solve_adaptive_only=solve_adaptive_only,
-                        validate_only=validate_only,
-                        temp_directory=temp_directory
+                        validate_only=validate_only
                     )
 
                     # Create job configuration
@@ -625,31 +744,25 @@ if st.session_state.show_new_job:
                             'cpus_per_node': cpus_per_node
                         },
                         'walltime': walltime,
-                        'hfss_3d_layout_options': hfss_options,
-                        'additional_args': additional_args
+                        'hfss_3d_layout_options': hfss_options
                     }
 
-                    # Save uploaded file
-                    if project_file is not None:
-                        # Save file to temporary location
-                        file_path = f"/tmp/{project_file.name}"
-                        with open(file_path, "wb") as f:
-                            f.write(project_file.getbuffer())
-                        job_config['project_file'] = file_path
+                    # Submit to backend
+                    success = submit_job_to_backend(job_config, project_file)
 
-                    # This would call your actual JobManager
-                    # new_job = job_manager.create_job(**job_config)
-                    # job_manager.submit_job(new_job)
+                    if success:
+                        st.success(f"Job '{job_name}' submitted successfully!")
+                        st.session_state.show_new_job = False
+                        st.rerun()
+                    else:
+                        st.error("Failed to submit job to backend")
 
-                    st.success(f"Job '{job_name}' submitted successfully!")
-                    st.session_state.show_new_job = False
-                    st.rerun()
                 except Exception as e:
                     st.error(f"Failed to submit job: {str(e)}")
             else:
                 st.error("Please fill in all required fields (marked with *) and upload a project file")
 
-# Sidebar
+# Sidebar with Premium Styling
 with st.sidebar:
     st.markdown("""
     <div style="text-align: center; margin-bottom: 2rem;">
@@ -662,7 +775,6 @@ with st.sidebar:
 
     st.markdown("### 📊 System Status")
 
-    # System metrics
     col1, col2 = st.columns(2)
     with col1:
         st.metric("CPU Usage", "42%", "-2%")
@@ -674,22 +786,17 @@ with st.sidebar:
     st.markdown("---")
 
     st.markdown("### ⚡ Quick Actions")
-    if st.button("🔄 Refresh All", use_container_width=True, icon="🔄"):
+    if st.button("🔄 Refresh All", use_container_width=True):
         st.session_state.refresh_key += 1
         st.rerun()
 
-    if st.button("📊 Export Report", use_container_width=True, icon="📊"):
+    if st.button("📊 Export Report", use_container_width=True):
         st.success("Job report exported successfully")
-
-    if st.button("📋 System Logs", use_container_width=True, icon="📋"):
-        st.info("System logs would be displayed here")
 
     st.markdown("---")
 
     st.markdown("### ⚙️ Configuration")
     auto_refresh = st.checkbox("Enable auto-refresh", value=False)
-    if auto_refresh:
-        refresh_interval = st.selectbox("Refresh interval", ["30 seconds", "1 minute", "5 minutes"])
 
     st.markdown("---")
 
