@@ -1,613 +1,197 @@
+"""
+Simplified Streamlit app using backend's scheduler detection
+"""
+
+import asyncio
+import platform
+import time
+
+from backend_client import EnhancedBackendClient
 import streamlit as st
-import pandas as pd
-from datetime import datetime
+from websocket_client import StreamlitWebSocketManager
 
-# Set page configuration
-st.set_page_config(
-    page_title="PyEDB Job Manager",
-    page_icon="🔷",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 
-# Premium Corporate CSS with enhanced styling
-st.markdown("""
-<style>
-    .main {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
-        font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-        min-height: 100vh;
-    }
+class SimplifiedSchedulerUI:
+    """UI that simply uses backend's scheduler detection"""
 
-    .header-container {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.98) 100%);
-        backdrop-filter: blur(20px);
-        padding: 2.5rem 0;
-        border-bottom: 1px solid rgba(0, 51, 160, 0.08);
-        margin-bottom: 2.5rem;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
-    }
+    def __init__(self):
+        self.client = EnhancedBackendClient()
+        self.system_status = None
+        self.ws_manager = None
 
-    .metric-card {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
-        backdrop-filter: blur(15px);
-        padding: 1.75rem;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-        margin-bottom: 0.75rem;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-    }
+    async def initialize(self):
+        """Initialize using backend detection"""
+        await self.client.initialize()
+        self.system_status = await self.client.get_system_status()
 
-    .metric-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, #0033a0, #00a3e0);
-    }
+        # Setup WebSocket
+        self.ws_manager = StreamlitWebSocketManager()
+        await self.ws_manager.initialize(self.refresh_callback)
 
-    .metric-card:hover {
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-        transform: translateY(-4px);
-        border-color: rgba(0, 51, 160, 0.2);
-    }
-
-    .job-row {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, rgba(248, 250, 252, 0.97) 100%);
-        backdrop-filter: blur(15px);
-        padding: 1.5rem;
-        margin-bottom: 0.75rem;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-    }
-
-    .job-row::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-        background: linear-gradient(180deg, #0033a0, #00a3e0);
-        border-radius: 4px 0 0 4px;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .job-row:hover {
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-        border-color: rgba(0, 51, 160, 0.15);
-        transform: translateX(4px);
-    }
-
-    .job-row:hover::before {
-        opacity: 1;
-    }
-
-    .status-badge {
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.75px;
-        border: none;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-
-    .status-running { 
-        background: linear-gradient(135deg, rgba(0, 163, 224, 0.15) 0%, rgba(0, 123, 255, 0.1) 100%); 
-        color: #0066cc; 
-    }
-
-    .status-completed { 
-        background: linear-gradient(135deg, rgba(46, 125, 50, 0.15) 0%, rgba(56, 142, 60, 0.1) 100%); 
-        color: #2e7d32; 
-    }
-
-    .status-failed { 
-        background: linear-gradient(135deg, rgba(211, 47, 47, 0.15) 0%, rgba(198, 40, 40, 0.1) 100%); 
-        color: #d32f2f; 
-    }
-
-    .status-pending { 
-        background: linear-gradient(135deg, rgba(237, 108, 2, 0.15) 0%, rgba(245, 124, 0, 0.1) 100%); 
-        color: #ed6c02; 
-    }
-
-    .status-queued { 
-        background: linear-gradient(135deg, rgba(123, 31, 162, 0.15) 0%, rgba(106, 27, 154, 0.1) 100%); 
-        color: #7b1fa2; 
-    }
-
-    .section-title {
-        color: #1a202c;
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid linear-gradient(90deg, #0033a0, transparent);
-        background: linear-gradient(90deg, #0033a0, #00a3e0);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .job-id {
-        font-family: 'SF Mono', 'Monaco', 'JetBrains Mono', monospace;
-        font-weight: 700;
-        color: #1a202c;
-        font-size: 14px;
-        letter-spacing: -0.25px;
-    }
-
-    .compact-text {
-        font-size: 13px;
-        color: #718096;
-        line-height: 1.5;
-        font-weight: 500;
-    }
-
-    .priority-high {
-        color: #e53e3e;
-        font-weight: 700;
-        background: rgba(229, 62, 62, 0.1);
-        padding: 2px 8px;
-        border-radius: 6px;
-        font-size: 11px;
-    }
-
-    .priority-critical {
-        color: #c53030;
-        font-weight: 800;
-        background: rgba(197, 48, 48, 0.15);
-        padding: 2px 8px;
-        border-radius: 6px;
-        font-size: 11px;
-    }
-
-    .priority-normal {
-        color: #38a169;
-        font-weight: 600;
-        background: rgba(56, 161, 105, 0.1);
-        padding: 2px 8px;
-        border-radius: 6px;
-        font-size: 11px;
-    }
-
-    .form-section {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, rgba(248, 250, 252, 0.97) 100%);
-        backdrop-filter: blur(20px);
-        padding: 2.5rem;
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
-        margin-bottom: 2rem;
-        position: relative;
-    }
-
-    .form-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #0033a0, #00a3e0, #ff6b00);
-        border-radius: 16px 16px 0 0;
-    }
-
-    .batch-option-card {
-        background: rgba(255, 255, 255, 0.8);
-        border: 1px solid rgba(0, 51, 160, 0.1);
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin: 0.75rem 0;
-        transition: all 0.3s ease;
-    }
-
-    .batch-option-card:hover {
-        background: rgba(255, 255, 255, 0.95);
-        border-color: rgba(0, 51, 160, 0.2);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-
-    /* Hide only specific Streamlit elements */
-    footer {visibility: hidden;}
-    .stDeployButton {display: none !important;}
-
-    /* Keep settings menu visible */
-    #MainMenu {visibility: visible !important;}
-
-    .stButton button {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border-radius: 8px;
-        font-weight: 600;
-    }
-
-    .stButton button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.05);
-        border-radius: 3px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #0033a0, #00a3e0);
-        border-radius: 3px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(135deg, #00257a, #0080c0);
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# Initialize session state
-if 'show_new_job' not in st.session_state:
-    st.session_state.show_new_job = False
-
-# Header
-col1, col2, col3 = st.columns([3, 1, 1])
-with col1:
-    st.markdown("""
-    <div class="header-container">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #0033a0 0%, #00257a 100%); 
-                        border-radius: 12px; display: flex; align-items: center; justify-content: center; 
-                        color: white; font-weight: 800; font-size: 24px; box-shadow: 0 8px 24px rgba(0, 51, 160, 0.3); 
-                        border: 2px solid rgba(255, 255, 255, 0.9);">S</div>
-            <div>
-                <h1 style="color: #1a202c; margin: 0; font-size: 2.5rem; font-weight: 800; letter-spacing: -0.5px;">PyEDB Job Manager</h1>
-                <p style="color: #718096; margin: 0; font-size: 1.1rem; font-weight: 500;">Enterprise EDA Workflow Management Platform</p>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col3:
-    st.markdown("<div style='text-align: right; padding-top: 2.5rem;'>", unsafe_allow_html=True)
-    if st.button("🔄 Refresh", key="header_refresh", use_container_width=True):
+    async def refresh_callback(self):
+        """Refresh on WebSocket events"""
         st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
 
-# Dashboard Metrics
-col1, col2, col3, col4, col5 = st.columns(5)
+    def render_mode_banner(self):
+        """Simple mode indicator"""
+        if not self.system_status:
+            return
 
-with col1:
-    st.markdown("""
-    <div class="metric-card">
-        <div style="color: #718096; font-size: 0.875rem; margin-bottom: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Total Jobs</div>
-        <div style="color: #1a202c; font-size: 2.5rem; font-weight: 800; line-height: 1;">142</div>
-        <div style="color: #38a169; font-size: 0.75rem; margin-top: 0.5rem; font-weight: 600;">↑ 12% from last week</div>
-    </div>
-    """, unsafe_allow_html=True)
+        mode = self.system_status.get("mode", "unknown")
 
-with col2:
-    st.markdown("""
-    <div class="metric-card">
-        <div style="color: #718096; font-size: 0.875rem; margin-bottom: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Running</div>
-        <div style="color: #1a202c; font-size: 2.5rem; font-weight: 800; line-height: 1;">24</div>
-        <div style="color: #0066cc; font-size: 0.75rem; margin-top: 0.5rem; font-weight: 600;">Active simulations</div>
-    </div>
-    """, unsafe_allow_html=True)
+        if mode == "local":
+            st.info("🖥️ **Local Mode**: Using JobPoolManager for job execution")
+        else:
+            scheduler = self.system_status.get("scheduler_detection", {}).get("active_scheduler", "scheduler")
+            st.success(f"⚡ **Scheduler Mode**: Using {scheduler.upper()} for job execution")
 
-with col3:
-    st.markdown("""
-    <div class="metric-card">
-        <div style="color: #718096; font-size: 0.875rem; margin-bottom: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Completed</div>
-        <div style="color: #1a202c; font-size: 2.5rem; font-weight: 800; line-height: 1;">98</div>
-        <div style="color: #38a169; font-size: 0.75rem; margin-top: 0.5rem; font-weight: 600;">↑ 8% from last week</div>
-    </div>
-    """, unsafe_allow_html=True)
+    def render_pool_status(self):
+        """Show local pool status when in local mode"""
+        if not self.system_status or "local_pool" not in self.system_status:
+            return
 
-with col4:
-    st.markdown("""
-    <div class="metric-card">
-        <div style="color: #718096; font-size: 0.875rem; margin-bottom: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Pending</div>
-        <div style="color: #1a202c; font-size: 2.5rem; font-weight: 800; line-height: 1;">14</div>
-        <div style="color: #ed6c02; font-size: 0.75rem; margin-top: 0.5rem; font-weight: 600;">In queue</div>
-    </div>
-    """, unsafe_allow_html=True)
+        pool_info = self.system_status["local_pool"]
 
-with col5:
-    st.markdown("""
-    <div class="metric-card">
-        <div style="color: #718096; font-size: 0.875rem; margin-bottom: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Failed</div>
-        <div style="color: #1a202c; font-size: 2.5rem; font-weight: 800; line-height: 1;">6</div>
-        <div style="color: #e53e3e; font-size: 0.75rem; margin-top: 0.5rem; font-weight: 600;">Requires attention</div>
-    </div>
-    """, unsafe_allow_html=True)
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Running", pool_info.get("running_jobs", 0))
+        with col2:
+            st.metric("Queued", pool_info.get("queued_jobs", 0))
+        with col3:
+            st.metric("Max Concurrent", pool_info.get("max_concurrent", 2))
 
-# Job Management Section
-st.markdown('<div class="section-title">Job Management</div>', unsafe_allow_html=True)
+    def render_job_form(self):
+        """Job submission form"""
+        st.markdown("### 🚀 Submit New Job")
 
-# Search and Action Bar
-search_col, filter_col, action_col = st.columns([2, 1, 1])
+        self.render_mode_banner()
 
-with search_col:
-    search_term = st.text_input("", placeholder="Search jobs by name or ID...", label_visibility="collapsed")
-
-with filter_col:
-    status_filter = st.selectbox("Status", ["All", "Running", "Completed", "Failed", "Pending", "Queued"],
-                                 label_visibility="collapsed")
-
-with action_col:
-    if st.button("Create New Job", use_container_width=True, type="primary"):
-        st.session_state.show_new_job = True
-
-# Sample job data
-jobs_data = [
-    {
-        'id': 'JOB-2841',
-        'name': 'Signal Integrity Analysis',
-        'project': 'Mobile SoC Design',
-        'status': 'running',
-        'start_time': '2023-06-15 09:30',
-        'duration': '2h 15m',
-        'submit_time': '2023-06-15 09:25',
-        'completion_time': '--',
-        'nodes': 8,
-        'cpus_per_node': 16,
-        'batch_system': 'slurm',
-        'priority': 'high'
-    },
-    {
-        'id': 'JOB-2840',
-        'name': 'Power Distribution Network',
-        'project': 'Server Board Rev. B',
-        'status': 'completed',
-        'start_time': '2023-06-15 07:15',
-        'duration': '1h 42m',
-        'submit_time': '2023-06-15 07:10',
-        'completion_time': '2023-06-15 08:57',
-        'nodes': 12,
-        'cpus_per_node': 8,
-        'batch_system': 'pbs',
-        'priority': 'normal'
-    },
-    {
-        'id': 'JOB-2839',
-        'name': 'Thermal Analysis',
-        'project': 'Automotive ECU',
-        'status': 'pending',
-        'start_time': '--',
-        'duration': '--',
-        'submit_time': '2023-06-15 11:20',
-        'completion_time': '--',
-        'nodes': 4,
-        'cpus_per_node': 32,
-        'batch_system': 'local',
-        'priority': 'normal'
-    },
-    {
-        'id': 'JOB-2838',
-        'name': 'EMI Simulation',
-        'project': '5G Base Station',
-        'status': 'running',
-        'start_time': '2023-06-15 10:05',
-        'duration': '45m',
-        'submit_time': '2023-06-15 10:00',
-        'completion_time': '--',
-        'nodes': 16,
-        'cpus_per_node': 8,
-        'batch_system': 'slurm',
-        'priority': 'critical'
-    },
-    {
-        'id': 'JOB-2837',
-        'name': 'Layout Verification',
-        'project': 'Mobile SoC Design',
-        'status': 'failed',
-        'start_time': '2023-06-14 16:30',
-        'duration': '12m',
-        'submit_time': '2023-06-14 16:25',
-        'completion_time': '2023-06-14 16:42',
-        'nodes': 6,
-        'cpus_per_node': 16,
-        'batch_system': 'pbs',
-        'priority': 'high'
-    }
-]
-
-# Filter jobs
-filtered_jobs = jobs_data
-if search_term:
-    filtered_jobs = [job for job in filtered_jobs
-                     if search_term.lower() in job['name'].lower()
-                     or search_term.lower() in job['id'].lower()]
-if status_filter != "All":
-    filtered_jobs = [job for job in filtered_jobs if job['status'] == status_filter.lower()]
-
-# Display jobs with premium styling
-if filtered_jobs:
-    for job in filtered_jobs:
-        status_class = f"status-{job['status']}"
-        priority_class = f"priority-{job['priority']}"
-
-        with st.container():
-            st.markdown('<div class="job-row">', unsafe_allow_html=True)
-
-            col1, col2, col3, col4 = st.columns([1.2, 2, 1.5, 1])
+        with st.form("job_form"):
+            col1, col2 = st.columns(2)
 
             with col1:
-                st.markdown(f"<div class='job-id'>{job['id']}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='compact-text'>{job['project']}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='{priority_class}'>Priority: {job['priority'].upper()}</div>",
-                            unsafe_allow_html=True)
+                st.subheader("📋 Job Configuration")
+                job_name = st.text_input("Job Name *", placeholder="Enter job name")
+                project_name = st.text_input("Project Name *", placeholder="Enter project name")
+                project_file = st.file_uploader("Project File *", type=["aedt", "edb", "json", "py"])
+                simulation_type = st.selectbox(
+                    "Simulation Type *",
+                    [
+                        "Signal Integrity Analysis",
+                        "Power Integrity Analysis",
+                        "Thermal Analysis",
+                        "EMI/EMC Simulation",
+                        "Layout Verification",
+                        "Parasitic Extraction",
+                        "Power Delivery Network",
+                        "DC Analysis",
+                    ],
+                )
 
             with col2:
-                st.markdown(
-                    f"<div style='font-weight: 700; font-size: 15px; color: #1a202c; margin-bottom: 8px;'>{job['name']}</div>",
-                    unsafe_allow_html=True)
-                st.markdown(f"<div class='compact-text'>📅 Submitted: {job['submit_time']}</div>",
-                            unsafe_allow_html=True)
-                if job['completion_time'] != '--':
-                    st.markdown(f"<div class='compact-text'>✅ Completed: {job['completion_time']}</div>",
-                                unsafe_allow_html=True)
-                st.markdown(f"<div class='compact-text'>⚡ Batch: {job['batch_system'].upper()}</div>",
-                            unsafe_allow_html=True)
+                st.subheader("⚡ Compute Resources")
 
-            with col3:
-                st.markdown(f"<span class='status-badge {status_class}'>{job['status'].upper()}</span>",
-                            unsafe_allow_html=True)
-                st.markdown(f"<div class='compact-text'>⏱️ Started: {job['start_time']}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='compact-text'>⏳ Duration: {job['duration']}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='compact-text'>🖥️ {job['nodes']} nodes × {job['cpus_per_node']} CPUs</div>",
-                            unsafe_allow_html=True)
+                # Let backend handle the resource limits based on mode
+                col_res1, col_res2 = st.columns(2)
+                with col_res1:
+                    num_nodes = st.number_input("Nodes", min_value=1, max_value=64, value=1)
+                with col_res2:
+                    cpus_per_node = st.number_input("CPUs per Node", min_value=1, max_value=128, value=16)
 
-            with col4:
-                col4a, col4b = st.columns(2)
-                with col4a:
-                    if st.button("View", key=f"view_{job['id']}", use_container_width=True):
-                        st.info(f"Viewing details for {job['id']}")
-                with col4b:
-                    if st.button("Logs", key=f"logs_{job['id']}", use_container_width=True):
-                        st.info(f"Showing logs for {job['id']}")
+                priority = st.selectbox("Priority", ["low", "normal", "high", "critical"])
+                walltime = st.text_input("Walltime", value="04:00:00", help="HH:MM:SS format")
 
-            st.markdown('</div>', unsafe_allow_html=True)
-            st.markdown("---")
-else:
-    st.info("No jobs found matching your criteria.")
+            submitted = st.form_submit_button("🚀 Submit Job", type="primary", use_container_width=True)
 
-# New Job Form with Premium Styling
-if st.session_state.show_new_job:
-    st.markdown("---")
-    st.markdown('<div class="section-title">Create New Job</div>', unsafe_allow_html=True)
+            if submitted:
+                if job_name and project_name and project_file:
+                    # The backend will automatically handle local vs scheduler
+                    asyncio.create_task(
+                        self.submit_job(
+                            job_name=job_name,
+                            project_name=project_name,
+                            project_file=project_file,
+                            simulation_type=simulation_type,
+                            num_nodes=num_nodes,
+                            cpus_per_node=cpus_per_node,
+                            priority=priority,
+                            walltime=walltime,
+                        )
+                    )
+                else:
+                    st.error("Please fill in all required fields and upload a project file")
 
-    with st.form("new_job_form", clear_on_submit=True):
-        st.markdown('<div class="form-section">', unsafe_allow_html=True)
+    async def submit_job(self, **kwargs):
+        """Submit job - backend handles everything"""
+        try:
+            with st.spinner("Submitting job..."):
+                job_id = await self.client.submit_job_auto(**kwargs)
 
-        col1, col2 = st.columns(2)
+                if job_id:
+                    mode = self.client.get_current_mode()
+                    st.success(f"""
+                    ✅ Job submitted successfully!
+                    **Job ID:** `{job_id}`
+                    **Mode:** {mode.title()} Execution
+                    """)
+                    time.sleep(1)
+                    st.rerun()
+                else:
+                    st.error("❌ Failed to submit job")
 
-        with col1:
-            st.subheader("📋 Job Configuration")
-            job_name = st.text_input("Job Name*", placeholder="Enter job name")
-            project_name = st.text_input("Project Name*", placeholder="Enter project name")
-            project_file = st.file_uploader("Project File*", type=['aedt', 'edb', 'json', 'py'],
-                                            help="Upload your EDB project file or configuration")
+        except Exception as e:
+            st.error(f"❌ Error submitting job: {e}")
 
-            simulation_type = st.selectbox(
-                "Simulation Type*",
-                ["Signal Integrity Analysis", "Power Integrity Analysis",
-                 "Thermal Analysis", "EMI/EMC Simulation", "Layout Verification",
-                 "Parasitic Extraction", "Power Delivery Network", "DC Analysis"]
-            )
 
-        with col2:
-            st.subheader("⚡ Compute Resources")
-            batch_system = st.selectbox(
-                "Batch System",
-                ["local", "slurm", "pbs", "lsf", "sge"],
-                help="Select batch system for job submission"
-            )
+# Main app
+async def main():
+    st.set_page_config(page_title="PyEDB Job Manager - Simplified", page_icon="🔧", layout="wide")
 
-            col2a, col2b = st.columns(2)
-            with col2a:
-                num_nodes = st.number_input("Number of Nodes", min_value=1, max_value=64, value=1)
-            with col2b:
-                cpus_per_node = st.number_input("CPUs per Node", min_value=1, max_value=128, value=16)
+    st.markdown("# 🔧 PyEDB Job Manager - Scheduler Aware")
 
-            walltime = st.text_input("Walltime", value="04:00:00",
-                                     help="Format: HH:MM:SS")
+    if "ui_controller" not in st.session_state:
+        st.session_state.ui_controller = SimplifiedSchedulerUI()
+        st.session_state.initialized = False
 
-            priority = st.selectbox("Priority", ["low", "normal", "high", "critical"])
+    ui = st.session_state.ui_controller
 
-        # HFSS 3D Layout Batch Options with Premium Cards
-        st.subheader("🎛️ HFSS 3D Layout Batch Options")
+    if not st.session_state.initialized:
+        with st.spinner("Initializing system..."):
+            await ui.initialize()
+            st.session_state.initialized = True
 
-        col3, col4 = st.columns(2)
+    # Sidebar with system info
+    with st.sidebar:
+        st.markdown("### 🔧 System Info")
 
-        with col3:
-            st.markdown('<div class="batch-option-card">', unsafe_allow_html=True)
-            st.markdown("**🔄 Mesh & Solver Options**")
-            create_starting_mesh = st.checkbox("Create Starting Mesh", value=True)
-            solve_adaptive_only = st.checkbox("Solve Adaptive Only", value=False)
-            validate_only = st.checkbox("Validate Only", value=False)
-            st.markdown('</div>', unsafe_allow_html=True)
+        if ui.system_status:
+            mode = ui.system_status.get("mode", "unknown")
+            scheduler_info = ui.system_status.get("scheduler_detection", {})
 
-        with col4:
-            st.markdown('<div class="batch-option-card">', unsafe_allow_html=True)
-            st.markdown("**🚀 Performance Options**")
-            enable_gpu = st.checkbox("Enable GPU Acceleration", value=False)
-            mpi_vendor = st.selectbox("MPI Vendor", ["intel", "openmpi", "mpich", "msmpi"])
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.metric("Platform", platform.system())
+            st.metric("Mode", mode.title())
 
-        st.subheader("📝 Additional Configuration")
-        additional_args = st.text_area("Additional Arguments",
-                                       placeholder="--option1 value1 --option2 value2",
-                                       help="Additional command line arguments for the simulation",
-                                       height=80)
-
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        col1, col2 = st.columns(2)
-        with col1:
-            submit_btn = st.form_submit_button("🚀 Submit Job", type="primary", use_container_width=True)
-        with col2:
-            if st.form_submit_button("❌ Cancel", use_container_width=True):
-                st.session_state.show_new_job = False
-                st.rerun()
-
-        if submit_btn:
-            if job_name and project_name and project_file is not None:
-                st.success(f"Job '{job_name}' submitted successfully!")
-                st.session_state.show_new_job = False
-                st.rerun()
+            if mode == "local":
+                st.info("Running in local mode with JobPoolManager")
+                ui.render_pool_status()
             else:
-                st.error("Please fill in all required fields (marked with *) and upload a project file")
+                scheduler = scheduler_info.get("active_scheduler", "unknown")
+                st.success(f"Using {scheduler.upper()} scheduler")
 
-# Sidebar with Premium Styling
-with st.sidebar:
-    st.markdown("""
-    <div style="text-align: center; margin-bottom: 2rem;">
-        <div style="font-size: 1.5rem; font-weight: 800; color: #1a202c; letter-spacing: 1px; margin-bottom: 0.5rem;">SYNOPSYS</div>
-        <div style="font-size: 0.875rem; color: #718096; font-weight: 600;">ENTERPRISE EDA PLATFORM</div>
-    </div>
-    """, unsafe_allow_html=True)
+    # Main content
+    col1, col2 = st.columns([2, 1])
 
-    st.markdown("---")
-
-    st.markdown("### 📊 System Status")
-
-    col1, col2 = st.columns(2)
     with col1:
-        st.metric("CPU Usage", "42%", "-2%")
-        st.metric("Active Jobs", "24")
+        ui.render_job_form()
+
     with col2:
-        st.metric("Memory", "68%", "+5%")
-        st.metric("Queue", "14")
+        st.markdown("### 📊 Quick Stats")
+        # Add some quick stats here
 
-    st.markdown("---")
+    # Job list would go here
+    st.markdown("### 📋 Job List")
+    st.info("Job list implementation would go here")
 
-    st.markdown("### ⚡ Quick Actions")
-    if st.button("🔄 Refresh All", use_container_width=True):
-        st.rerun()
 
-    if st.button("📊 Export Report", use_container_width=True):
-        st.success("Job report exported successfully")
-
-    st.markdown("---")
-
-    st.markdown("### ⚙️ Configuration")
-    auto_refresh = st.checkbox("Enable auto-refresh", value=False)
-
-    st.markdown("---")
-
-    st.caption(f"🕒 Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+if __name__ == "__main__":
+    asyncio.run(main())
