@@ -83,8 +83,10 @@ jobs:
 
       - name: Import python package
         shell: bash
+        env:
+          ACTIVATE_VENV: ${{ steps.build-wheelhouse.outputs.activate-venv }}
         run: |
-          ${{ steps.build-wheelhouse.outputs.activate-venv }}
+          ${ACTIVATE_VENV}
           python -c "import pyedb; from pyedb import __version__"
 
 # =================================================================================================
@@ -806,20 +808,26 @@ jobs:
           persist-credentials: false
 
       - name: Install PyAEDT main branch version with its test dependencies
+        env:
+          ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${ANSYSEM}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           pip install --no-cache-dir external/pyaedt[tests]
 
       - name: Install PyEDB
+        env:
+          ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${ANSYSEM}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           python -m pip install .
 
       - name: Install CI dependencies (e.g. vtk-osmesa)
+        env:
+          ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${ANSYSEM}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
