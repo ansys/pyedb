@@ -35,15 +35,19 @@ The same code works **unchanged** on Windows and Linux.
 
 """
 
+import argparse
 import asyncio
 from asyncio import run_coroutine_threadsafe
 import atexit
 import concurrent
 import concurrent.futures
 import concurrent.futures as _futs
+import json
 import os
 import platform
 import shutil
+import sys
+import textwrap
 import threading
 from typing import List, Optional, Union
 
@@ -83,7 +87,7 @@ class JobManagerHandler:
 
     Examples
     --------
-    >>> handler = JobManagerHandler(edb, host="0.0.0.0", port=8080)
+    >>> handler = JobManagerHandler(host="0.0.0.0", port=8080)
     >>> handler.start_service()  # returns immediately
     >>> handler.close()  # idempotent graceful shutdown
     """
@@ -99,7 +103,7 @@ class JobManagerHandler:
 
             installed_versions = installed_ansys_em_versions()
             if not version:
-                self.ansys_path = installed_versions[-1][1]  # latest
+                self.ansys_path = list(installed_versions.values())[-1]  # latest
             else:
                 if version in installed_versions:
                     self.ansys_path = [
@@ -122,8 +126,6 @@ class JobManagerHandler:
         # ---  NEW: lazy, conditional SchedulerManager  ---
         self.scheduler_type = self._detect_scheduler()
         self._sch_mgr: Optional[SchedulerManager] = None
-        # auto-start
-        # self.start_service()
 
     @staticmethod
     def _detect_scheduler() -> SchedulerType:
@@ -422,3 +424,107 @@ class JobManagerHandler:
         return create_hfss_config(
             ansys_edt_path=ansys_edt_path, jobid=jobid, project_path=project_path, scheduler_type=scheduler_type
         )
+
+
+def _cli() -> None:
+    """Command-line façade around JobManagerHandler."""
+    parser = argparse.ArgumentParser(
+        prog="pyedb-job-manager",
+        description="Start the PyEDB job-manager service or fire one-shot commands.",
+    )
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    # ---------- start ----------
+    p = sub.add_parser("start", help="Start the web service (default host/port)")
+    p.add_argument("--host", default="localhost")
+    p.add_argument("--port", type=int, default=8080)
+    p.add_argument("--ansys-version", help="ANSYS EM release (e.g. 2024.2)")
+
+    # ---------- submit ----------
+    p = sub.add_parser("submit", help="Submit a single job and return its ID")
+    p.add_argument("project", help="Path to .aedt/.aedb project")
+    p.add_argument("--jobid", help="Custom job identifier")
+    p.add_argument("--priority", type=int, default=0)
+    p.add_argument("--scheduler", choices=["auto", "none", "slurm", "lsf"], default="auto")
+    p.add_argument("--host", default="localhost")
+    p.add_argument("--port", type=int, default=8080)
+
+    # ---------- wait ----------
+    p = sub.add_parser("wait", help="Submit job(s) and block until all finish")
+    p.add_argument("project", nargs="+", help="One or more projects")
+    p.add_argument("--priority", type=int, default=0)
+    p.add_argument("--timeout", type=float, help="Global timeout (s)")
+    p.add_argument("--scheduler", choices=["auto", "none", "slurm", "lsf"], default="auto")
+    p.add_argument("--host", default="localhost")
+    p.add_argument("--port", type=int, default=8080)
+
+    # ---------- status ----------
+    p = sub.add_parser("status", help="Pretty-print cluster status")
+    p.add_argument("--host", default="localhost")
+    p.add_argument("--port", type=int, default=8080)
+
+    args = parser.parse_args()
+
+    def _resolve_scheduler(args) -> SchedulerType:
+        """Return the scheduler that should be used for this CLI invocation."""
+        # 1. explicit flag wins
+        if hasattr(args, "scheduler") and args.scheduler != "auto":
+            return {
+                "none": SchedulerType.NONE,
+                "slurm": SchedulerType.SLURM,
+                "lsf": SchedulerType.LSF,
+            }[args.scheduler]
+
+        # 2. fall back to the same logic the library already uses
+        return JobManagerHandler._detect_scheduler()
+
+    sched = _resolve_scheduler(args)
+
+    # --------------- dispatch ---------------
+    if args.command == "start":
+        handler = JobManagerHandler(version=args.ansys_version, host=args.host, port=args.port)
+        handler.start_service()
+        print(f"Job-manager listening on http://{args.host}:{args.port}")
+        try:
+            threading.Event().wait()  # sleep forever
+        except KeyboardInterrupt:
+            handler.close()
+            sys.exit(0)
+
+    if args.command == "submit":
+        handler = JobManagerHandler(host=args.host, port=args.port)
+        handler.start_service()
+        cfg = handler.create_simulation_config(
+            project_path=args.project,
+            jobid=args.jobid,
+            scheduler_type=sched,
+        )
+        job_id = handler.submit_jobs([cfg])[0]
+        print(job_id)
+
+    if args.command == "wait":
+        handler = JobManagerHandler(host=args.host, port=args.port)
+        handler.start_service()
+        configs = [
+            handler.create_simulation_config(
+                project_path=p,
+                scheduler_type=sched,
+            )
+            for p in args.project
+        ]
+        ids = handler.submit_jobs_and_wait(configs, timeout=args.timeout)
+        print(json.dumps(ids, indent=2))
+
+    if args.command == "status":
+        handler = JobManagerHandler(host=args.host, port=args.port)
+        handler.start_service()
+        try:
+            info = handler.cluster_status()
+            print(textwrap.indent(json.dumps(info, indent=2), "  "))
+        except RuntimeError as e:
+            print(str(e), file=sys.stderr)
+            sys.exit(1)
+
+
+if __name__ == "__main__":
+    _cli()
