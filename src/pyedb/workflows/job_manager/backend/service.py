@@ -804,14 +804,14 @@ async def main():
     manager = JobManager(resource_limits)
 
     # Submit jobs with different priorities
-    config1 = HFSSSimulationConfig(jobid="high_prio", project_path="design1.aedt")
-    await manager.submit_job(config1, priority=10)  # High priority
-
-    config2 = HFSSSimulationConfig(jobid="normal_prio", project_path="design2.aedt")
-    await manager.submit_job(config2, priority=0)  # Normal priority
-
-    config3 = HFSSSimulationConfig(jobid="low_prio", project_path="design3.aedt")
-    await manager.submit_job(config3, priority=-5)  # Low priority
+    # config1 = HFSSSimulationConfig(jobid="high_prio", project_path="design1.aedt")
+    # await manager.submit_job(config1, priority=10)  # High priority
+    #
+    # config2 = HFSSSimulationConfig(jobid="normal_prio", project_path="design2.aedt")
+    # await manager.submit_job(config2, priority=0)  # Normal priority
+    #
+    # config3 = HFSSSimulationConfig(jobid="low_prio", project_path="design3.aedt")
+    # await manager.submit_job(config3, priority=-5)  # Low priority
 
 
 # --------------------------------------------------------------------------- #

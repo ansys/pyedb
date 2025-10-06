@@ -3,7 +3,6 @@ WebSocket client for real-time job updates
 """
 
 import asyncio
-import json
 import logging
 from typing import Any, Callable, Dict
 
