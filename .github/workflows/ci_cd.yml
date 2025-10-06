@@ -67,8 +67,6 @@ jobs:
   smoke-tests:
     name: Build and Smoke tests (${{ matrix.os }} | Python ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
-    permissions:
-      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -674,9 +672,7 @@ jobs:
     name: Testing PyAEDT main branch (Windows)
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
-    runs-on: [ self-hosted, Windows, pyedb ]
-    permissions:
-      contents: read
+    runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: Install Git and checkout project
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -772,9 +768,7 @@ jobs:
     name: Testing PyAEDT main branch (Linux)
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
-    runs-on: [ self-hosted, Linux, pyedb ]
-    permissions:
-      contents: read
+    runs-on: [ Linux, self-hosted, pyedb ]
     env:
       ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
       ANS_NODEPCHECK: '1'
@@ -878,8 +872,6 @@ jobs:
   docs-build:
     name: Build documentation
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - name: Build documentation
         uses: ansys/actions/doc-build@c2fa7c93f6883114e0e643599431b33d29f0b13f # v10.1.4
@@ -902,8 +894,6 @@ jobs:
             unit-tests-linux-grpc,
             docs-build]
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - name: Build library source and wheel artifacts
         uses: ansys/actions/build-library@c2fa7c93f6883114e0e643599431b33d29f0b13f # v10.1.4
