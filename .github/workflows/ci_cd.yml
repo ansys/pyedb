@@ -53,6 +53,18 @@ jobs:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           dev-mode: ${{ github.ref != 'refs/heads/main' }}
 
+  actions-security:
+    name: Check actions security
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: ansys/actions/check-actions-security@c2fa7c93f6883114e0e643599431b33d29f0b13f # v10.1.4
+        with:
+          generate-summary: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          auditing-level: 'high'
+
   doc-style:
     name: Documentation style check
     runs-on: ubuntu-latest
