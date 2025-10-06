@@ -88,11 +88,25 @@ class JobManagerHandler:
     >>> handler.close()  # idempotent graceful shutdown
     """
 
-    def __init__(self, edb, host="localhost", port=8080):
-        if is_linux:
-            self.ansys_path = os.path.join(edb.base_path, "ansysedt")
+    def __init__(self, edb=None, version=None, host="localhost", port=8080):
+        if edb:
+            if is_linux:
+                self.ansys_path = os.path.join(edb.base_path, "ansysedt")
+            else:
+                self.ansys_path = os.path.join(edb.base_path, "ansysedt.exe")
         else:
-            self.ansys_path = os.path.join(edb.base_path, "ansysedt.exe")
+            from pyedb.generic.general_methods import installed_ansys_em_versions
+
+            installed_versions = installed_ansys_em_versions()
+            if not version:
+                self.ansys_path = installed_versions[-1][1]  # latest
+            else:
+                if version in installed_versions:
+                    self.ansys_path = [
+                        ansys_path for release, ansys_path in installed_versions.items() if release == version
+                    ][0]
+                else:
+                    raise ValueError(f"ANSYS release {version} not found")
         self.manager = JobManager()
         self.manager.resource_limits = ResourceLimits(max_concurrent_jobs=2)
         self.runner: Optional[web.AppRunner] = None
