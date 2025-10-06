@@ -3,12 +3,13 @@ Simplified Streamlit app using backend's scheduler detection
 """
 
 import asyncio
+import os
 import platform
 import time
 
 from backend_client import EnhancedBackendClient
 import streamlit as st
-from websocket_client import StreamlitWebSocketManager
+from websocket_client import EnhancedBackendClient
 
 
 class SimplifiedSchedulerUI:
@@ -19,14 +20,19 @@ class SimplifiedSchedulerUI:
         self.system_status = None
         self.ws_manager = None
 
+    # Correct Code ✅
     async def initialize(self):
         """Initialize using backend detection"""
+        # The client's initialize method takes no arguments
         await self.client.initialize()
         self.system_status = await self.client.get_system_status()
 
         # Setup WebSocket
-        self.ws_manager = StreamlitWebSocketManager()
-        await self.ws_manager.initialize(self.refresh_callback)
+        from websocket_client import EnhancedBackendClient
+
+        self.ws_manager = EnhancedBackendClient()
+        # The refresh_callback correctly goes here
+        await self.ws_manager.initialize()
 
     async def refresh_callback(self):
         """Refresh on WebSocket events"""
@@ -122,8 +128,24 @@ class SimplifiedSchedulerUI:
                     st.error("Please fill in all required fields and upload a project file")
 
     async def submit_job(self, **kwargs):
-        """Submit job - backend handles everything"""
+        """Save uploaded file and submit job - this is the core connection logic."""
         try:
+            uploaded_file = kwargs.get("project_file")
+
+            # --- Start of Connection Logic ---
+            # Create an 'uploads' directory, save the file from memory to the disk,
+            # and then update the arguments to send the file's path to the backend.
+            upload_dir = "uploads"
+            os.makedirs(upload_dir, exist_ok=True)
+            file_path = os.path.join(upload_dir, uploaded_file.name)
+
+            with open(file_path, "wb") as f:
+                f.write(uploaded_file.getbuffer())
+
+            kwargs["project_path"] = os.path.abspath(file_path)
+            del kwargs["project_file"]
+            # --- End of Connection Logic ---
+
             with st.spinner("Submitting job..."):
                 job_id = await self.client.submit_job_auto(**kwargs)
 
