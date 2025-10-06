@@ -92,6 +92,8 @@ jobs:
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
@@ -157,6 +159,8 @@ jobs:
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
@@ -222,6 +226,8 @@ jobs:
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
@@ -287,6 +293,8 @@ jobs:
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
@@ -354,6 +362,8 @@ jobs:
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       - name: "Set up Python"
         uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
@@ -425,6 +435,8 @@ jobs:
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       - name: "Set up Python"
         uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
@@ -496,6 +508,8 @@ jobs:
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       - name: "Set up Python"
         uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
@@ -567,6 +581,8 @@ jobs:
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       - name: "Set up Python"
         uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
@@ -637,6 +653,8 @@ jobs:
     steps:
       - name: Install Git and checkout project
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       - name: Setup Python
         uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
@@ -659,6 +677,7 @@ jobs:
           repository: ansys/pyaedt
           path: "external/pyaedt"
           ref: "main"
+          persist-credentials: false
 
       - name: Install PyAEDT main branch version with its test dependencies
         run: |
@@ -733,6 +752,8 @@ jobs:
     steps:
       - name: Install Git and checkout project
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       - name: Install OS packages
         run: |
@@ -759,6 +780,7 @@ jobs:
           repository: ansys/pyaedt
           path: "external/pyaedt"
           ref: "main"
+          persist-credentials: false
 
       - name: Install PyAEDT main branch version with its test dependencies
         run: |
