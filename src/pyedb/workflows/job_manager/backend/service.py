@@ -327,8 +327,8 @@ class JobPoolManager:
         resources = resource_monitor.current_usage
 
         # Check if we've reached max concurrent jobs
-        if len(self.running_jobs) >= self.resource_limits.max_concurrent_jobs:
-            return False
+        # if len(self.running_jobs) >= self.resource_limits.max_concurrent_jobs:
+        #    return False
 
         # Check CPU usage
         # if resources["cpu_percent"] > self.resource_limits.max_cpu_percent:
@@ -401,6 +401,8 @@ class JobManager:
         # Background task for continuous job processing
         self._processing_task: Optional[asyncio.Task] = None
         self._shutdown = False
+        # setup monitor
+        # self._monitor_task = asyncio.create_task(self.resource_monitor.monitor_resources())
 
     def setup_routes(self):
         """
@@ -443,6 +445,7 @@ class JobManager:
             400 → ``{"success": false, "error": "..."}``
         """
         try:
+            logger.info("🔍 ROUTE HIT: /jobs/submit")
             data = await request.json()
             config_dict = data.get("config", {})
 
@@ -603,21 +606,37 @@ class JobManager:
 
         return job_id
 
+    # In service.py, inside the JobManager class
+
     async def _process_jobs_continuously(self):
         """Continuously process jobs until shutdown is requested."""
+        logger.info("✅ Job processing loop started.")
         while not self._shutdown:
-            # inner loop – also checks the flag
             while not self._shutdown:
-                if self.job_pool.can_start_job(self.resource_monitor):
+                # --- START DEBUG LOGGING ---
+                can_start = self.job_pool.can_start_job(self.resource_monitor)
+                running_count = len(self.job_pool.running_jobs)
+                max_concurrent = self.resource_limits.max_concurrent_jobs
+
+                logger.info(
+                    f"Checking conditions: can_start={can_start}, "
+                    f"running_jobs={running_count}, max_concurrent={max_concurrent}"
+                )
+                # --- END DEBUG LOGGING ---
+
+                if can_start:
                     next_job_id = self.job_pool.get_next_job()
                     if next_job_id:
+                        logger.info(f"Dequeued job {next_job_id}. Starting...")
                         self.job_pool.running_jobs.add(next_job_id)
                         asyncio.create_task(self._process_single_job(next_job_id))
                     else:
-                        await asyncio.sleep(1)  # safe sleep
+                        logger.info("Queue is empty, sleeping.")
+                        await asyncio.sleep(1)
                 else:
-                    await asyncio.sleep(5)  # safe sleep
-            # allow other coroutines to run before outer loop re-checks
+                    logger.warning("Cannot start new job, waiting...")
+                    await asyncio.sleep(5)
+
             await asyncio.sleep(0.2)
 
     async def _process_single_job(self, job_id: str):

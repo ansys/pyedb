@@ -1,10 +1,10 @@
 """
 Backend client for connecting to Job Manager service
 """
+
+from typing import Any, Dict, Optional, Union
+
 import aiohttp
-import asyncio
-import json
-from typing import Dict, Any, Optional
 
 
 class BackendClient:
@@ -32,18 +32,18 @@ class BackendClient:
         except Exception as e:
             return {"error": str(e), "mode": "offline"}
 
-    async def submit_job(self, config: Dict[str, Any], priority: int = 0) -> Optional[str]:
+    async def submit_job(self, config: Union[Dict[str, Any], str], priority: int = 0) -> Optional[str]:
         """Submit a job to the backend"""
         try:
-            payload = {
-                "config": config,
-                "priority": priority
-            }
+            payload = {"config": config, "priority": priority}
 
             async with self.session.post(f"{self.base_url}/jobs/submit", json=payload) as response:
-                if response.status == 200:
-                    result = await response.json()
-                    return result.get("job_id") if result.get("success") else None
+                response.raise_for_status()  # This will raise an exception for bad responses (4xx or 5xx)
+                result = await response.json()
+                return result
+                # if response.status == 200:
+                #     result = await response.json()
+                #     return result.get("job_id") if result.get("success") else None
                 return None
         except Exception as e:
             print(f"Error submitting job: {e}")

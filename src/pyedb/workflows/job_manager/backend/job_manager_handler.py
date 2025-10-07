@@ -48,38 +48,37 @@ from pyedb.workflows.job_manager.backend.service import (
     SchedulerManager,
 )
 
-
 # Mock submit_job_to_manager since its source is not provided.
 # In a real scenario, this would interact with the JobManager's internal queue.
-async def submit_job_to_manager(task, priority, manager_url, manager_instance, sio_server):
-    """Mock function to simulate job submission and lifecycle."""
-    job_id = task.jobid or str(uuid.uuid4())
-    job_info = {
-        "job_id": job_id,
-        "name": task.jobid,
-        "status": "queued",
-        "created_at": datetime.utcnow().isoformat(),
-        "project_path": task.project_path,
-        "simulation_type": "N/A",
-    }
-    manager_instance.jobs[job_id] = job_info
-    print(f"Job '{job_id}' queued.")
-    await sio_server.emit("job_queued", job_info)
-
-    # Simulate job lifecycle
-    async def job_runner():
-        await asyncio.sleep(5)
-        job_info["status"] = "running"
-        print(f"Job '{job_id}' is running.")
-        await sio_server.emit("job_started", job_info)
-
-        await asyncio.sleep(10)
-        job_info["status"] = "completed"
-        print(f"Job '{job_id}' completed.")
-        await sio_server.emit("job_completed", job_info)
-
-    asyncio.create_task(job_runner())
-    return job_id
+# async def submit_job_to_manager(task, priority, manager_url, manager_instance, sio_server):
+#     """Mock function to simulate job submission and lifecycle."""
+#     job_id = task.jobid or str(uuid.uuid4())
+#     job_info = {
+#         "job_id": job_id,
+#         "name": task.jobid,
+#         "status": "queued",
+#         "created_at": datetime.utcnow().isoformat(),
+#         "project_path": task.project_path,
+#         "simulation_type": "N/A",
+#     }
+#     manager_instance.jobs[job_id] = job_info
+#     print(f"Job '{job_id}' queued.")
+#     await sio_server.emit("job_queued", job_info)
+#
+#     # Simulate job lifecycle
+#     async def job_runner():
+#         await asyncio.sleep(5)
+#         job_info["status"] = "running"
+#         print(f"Job '{job_id}' is running.")
+#         await sio_server.emit("job_started", job_info)
+#
+#         await asyncio.sleep(10)
+#         job_info["status"] = "completed"
+#         print(f"Job '{job_id}' completed.")
+#         await sio_server.emit("job_completed", job_info)
+#
+#     await asyncio.create_task(job_runner())
+#     return job_id
 
 
 class JobManagerHandler:
@@ -154,22 +153,20 @@ class JobManagerHandler:
             """Endpoint to submit a new job."""
             try:
                 data = await request.json()
-                config_data = data.get("config", {})
                 priority = data.get("priority", 0)
 
-                if not config_data.get("project_path"):
+                if not data.get("project_path"):
                     return web.json_response({"success": False, "error": "project_path is required"}, status=400)
 
                 # Use the handler's logic to create a valid config
                 sim_config = self.create_simulation_config(
-                    project_path=config_data["project_path"],
-                    jobid=config_data.get("jobid"),
+                    project_path=data["project_path"],
+                    jobid=data.get("jobid"),
                     scheduler_type=self.scheduler_type,
+                    ansys_edt_path=data.get("ansys_edt_path"),
                 )
 
-                job_id = await submit_job_to_manager(
-                    sim_config, priority, self.url, manager_instance=self.manager, sio_server=self.sio
-                )
+                job_id = await self.manager.submit_job(sim_config, priority)
                 return web.json_response({"success": True, "job_id": job_id})
             except Exception as e:
                 return web.json_response({"success": False, "error": str(e)}, status=500)

@@ -54,6 +54,8 @@ import shutil
 import subprocess
 from typing import Any, Dict, List, Optional, Union
 
+from pydantic import BaseModel, Field, validator
+
 
 class SchedulerType(enum.Enum):
     """
@@ -329,8 +331,7 @@ class HFSS3DLayoutBatchOptions:
         }
 
 
-@dataclass
-class HFSSSimulationConfig:
+class HFSSSimulationConfig(BaseModel):
     """
     Complete, validated simulation configuration.
 
