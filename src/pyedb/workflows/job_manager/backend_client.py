@@ -38,13 +38,9 @@ class BackendClient:
             payload = {"config": config, "priority": priority}
 
             async with self.session.post(f"{self.base_url}/jobs/submit", json=payload) as response:
-                response.raise_for_status()  # This will raise an exception for bad responses (4xx or 5xx)
-                result = await response.json()
-                return result
-                # if response.status == 200:
-                #     result = await response.json()
-                #     return result.get("job_id") if result.get("success") else None
-                return None
+                if response.status == 200:
+                    result = await response.json()
+                    return result.get("job_id") if result.get("success") else None
         except Exception as e:
             print(f"Error submitting job: {e}")
             return None

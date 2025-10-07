@@ -327,8 +327,8 @@ class JobPoolManager:
         resources = resource_monitor.current_usage
 
         # Check if we've reached max concurrent jobs
-        # if len(self.running_jobs) >= self.resource_limits.max_concurrent_jobs:
-        #    return False
+        if len(self.running_jobs) >= self.resource_limits.max_concurrent_jobs:
+            return False
 
         # Check CPU usage
         # if resources["cpu_percent"] > self.resource_limits.max_cpu_percent:

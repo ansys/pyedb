@@ -16,69 +16,24 @@ The handler guarantees:
 * **Zero configuration** when used with PyEDB ``Edb`` objects.
 """
 
-import argparse
 import asyncio
 from asyncio import run_coroutine_threadsafe
 import atexit
-import concurrent
 import concurrent.futures as _futs
-from datetime import datetime
-import json
 import os
 import platform
 import shutil
 import sys
-import textwrap
 import threading
-from typing import List, Optional, Union
+from typing import Optional
 import uuid
 
 from aiohttp import web
 import socketio
 
 from pyedb.generic.general_methods import is_linux
-from pyedb.workflows.job_manager.backend.job_submission import (
-    HFSSSimulationConfig,
-    SchedulerType,
-    create_hfss_config,
-)
-from pyedb.workflows.job_manager.backend.service import (
-    JobManager,
-    ResourceLimits,
-    SchedulerManager,
-)
-
-# Mock submit_job_to_manager since its source is not provided.
-# In a real scenario, this would interact with the JobManager's internal queue.
-# async def submit_job_to_manager(task, priority, manager_url, manager_instance, sio_server):
-#     """Mock function to simulate job submission and lifecycle."""
-#     job_id = task.jobid or str(uuid.uuid4())
-#     job_info = {
-#         "job_id": job_id,
-#         "name": task.jobid,
-#         "status": "queued",
-#         "created_at": datetime.utcnow().isoformat(),
-#         "project_path": task.project_path,
-#         "simulation_type": "N/A",
-#     }
-#     manager_instance.jobs[job_id] = job_info
-#     print(f"Job '{job_id}' queued.")
-#     await sio_server.emit("job_queued", job_info)
-#
-#     # Simulate job lifecycle
-#     async def job_runner():
-#         await asyncio.sleep(5)
-#         job_info["status"] = "running"
-#         print(f"Job '{job_id}' is running.")
-#         await sio_server.emit("job_started", job_info)
-#
-#         await asyncio.sleep(10)
-#         job_info["status"] = "completed"
-#         print(f"Job '{job_id}' completed.")
-#         await sio_server.emit("job_completed", job_info)
-#
-#     await asyncio.create_task(job_runner())
-#     return job_id
+from pyedb.workflows.job_manager.backend.job_submission import SchedulerType, create_hfss_config
+from pyedb.workflows.job_manager.backend.service import JobManager, ResourceLimits, SchedulerManager
 
 
 class JobManagerHandler:
