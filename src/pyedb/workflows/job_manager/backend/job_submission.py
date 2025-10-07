@@ -81,7 +81,7 @@ class SchedulerType(enum.Enum):
 
 
 @dataclass
-class SchedulerOptions:
+class SchedulerOptions(BaseModel):
     """
     Resource requirements and scheduler-specific directives.
 

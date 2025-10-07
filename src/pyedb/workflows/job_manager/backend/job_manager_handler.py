@@ -135,6 +135,7 @@ class JobManagerHandler:
                     "queue",
                     "environment_vars",
                     "additional_args",
+                    "scheduler_options",
                 ]
 
                 for field in config_fields:
