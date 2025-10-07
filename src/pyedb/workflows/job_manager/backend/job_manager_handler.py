@@ -113,13 +113,33 @@ class JobManagerHandler:
                 if not data.get("project_path"):
                     return web.json_response({"success": False, "error": "project_path is required"}, status=400)
 
-                # Use the handler's logic to create a valid config
                 sim_config = self.create_simulation_config(
                     project_path=data["project_path"],
                     jobid=data.get("jobid"),
                     scheduler_type=self.scheduler_type,
                     ansys_edt_path=data.get("ansys_edt_path"),
                 )
+
+                # Populate all possible values from request data
+                config_fields = [
+                    "design_name",
+                    "setup_name",
+                    "sweep_name",
+                    "solution_name",
+                    "working_dir",
+                    "output_dir",
+                    "num_cores",
+                    "memory_limit_gb",
+                    "time_limit_hours",
+                    "partition",
+                    "queue",
+                    "environment_vars",
+                    "additional_args",
+                ]
+
+                for field in config_fields:
+                    if field in data:
+                        setattr(sim_config, field, data[field])
 
                 job_id = await self.manager.submit_job(sim_config, priority)
                 return web.json_response({"success": True, "job_id": job_id})
