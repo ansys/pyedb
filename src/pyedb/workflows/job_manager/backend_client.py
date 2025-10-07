@@ -64,3 +64,17 @@ class BackendClient:
                 return {}
         except Exception:
             return {}
+
+    async def edit_concurrent_limits(self, limits_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Edit concurrent job limits in the backend pool"""
+        try:
+            async with self.session.put(f"{self.base_url}/pool/limits", json=limits_data) as response:
+                if response.status == 200:
+                    result = await response.json()
+                    return result.get("limits") if result.get("success") else None
+                else:
+                    print(f"Failed to edit concurrent limits: HTTP {response.status}")
+                    return None
+        except Exception as e:
+            print(f"Error editing concurrent limits: {e}")
+            return None

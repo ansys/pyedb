@@ -406,8 +406,8 @@ class JobManager:
 
     def setup_routes(self):
         """
-        **Internal** method that wires aiohttp routes to class methods.
-        Called once from ``__init__``.
+        Internal method that wires aiohttp routes to class methods.
+        Called once from __init__.
         """
         self.app.router.add_get("/", self.handle_index)
         self.app.router.add_get("/jobs", self.handle_get_jobs)
@@ -416,6 +416,7 @@ class JobManager:
         self.app.router.add_post("/jobs/submit", self.handle_submit_job)
         self.app.router.add_post("/jobs/{job_id}/cancel", self.handle_cancel_job)
         self.app.router.add_post("/jobs/{job_id}/priority", self.handle_set_priority)
+        self.app.router.add_put("/pool/limits", self.handle_edit_concurrent_limits)
         if os.path.exists("static"):
             self.app.router.add_static("/static", "static")
         else:
@@ -547,6 +548,29 @@ class JobManager:
 
         except Exception as e:
             return web.json_response({"success": False, "error": str(e)}, status=400)
+
+    async def handle_edit_concurrent_limits(self, request):
+        """
+        PUT /pool/limits — edit concurrent job limits in the pool
+        """
+        try:
+            data = await request.json()
+
+            if not data:
+                return web.json_response({"error": "No data provided"}, status=400)
+
+            # Update the concurrent job limits
+            updated_limits = await self.edit_concurrent_limits(data)
+
+            if updated_limits:
+                return web.json_response(
+                    {"success": True, "message": "Concurrent job limits updated successfully", "limits": updated_limits}
+                )
+            else:
+                return web.json_response({"error": "Failed to update limits"}, status=400)
+
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=500)
 
     async def wait_until_all_done(self) -> None:
         """
@@ -763,6 +787,85 @@ class JobManager:
                 return False
 
         return False
+
+    async def edit_concurrent_limits(self, update_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """
+        Edit concurrent job limits in the pool.
+
+        Parameters
+        ----------
+        update_data : dict
+            Fields to update in resource limits
+
+        Returns
+        -------
+        dict or None
+            Updated limits data or None if update failed
+        """
+        try:
+            # Define allowed fields for editing
+            allowed_fields = ["max_concurrent_jobs", "max_cpu_percent", "min_memory_gb", "min_disk_gb"]
+
+            # Update allowed fields
+            updated = False
+            old_limits = {}
+
+            for field in allowed_fields:
+                if field in update_data:
+                    old_value = getattr(self.resource_limits, field)
+                    new_value = update_data[field]
+
+                    # Validate the new value
+                    if field == "max_concurrent_jobs" and (not isinstance(new_value, int) or new_value < 1):
+                        raise ValueError("max_concurrent_jobs must be a positive integer")
+                    elif field == "max_cpu_percent" and (
+                        not isinstance(new_value, (int, float)) or new_value <= 0 or new_value > 100
+                    ):
+                        raise ValueError("max_cpu_percent must be between 0 and 100")
+                    elif field in ["min_memory_gb", "min_disk_gb"] and (
+                        not isinstance(new_value, (int, float)) or new_value < 0
+                    ):
+                        raise ValueError(f"{field} must be a non-negative number")
+
+                    old_limits[field] = old_value
+                    setattr(self.resource_limits, field, new_value)
+                    updated = True
+
+            if updated:
+                # Log the changes
+                for field in old_limits:
+                    logger.info(
+                        f"Resource limit {field} changed from {old_limits[field]} to "
+                        f"{getattr(self.resource_limits, field)}"
+                    )
+
+                # Notify web clients about the update
+                await self.sio.emit(
+                    "limits_updated",
+                    {
+                        "old_limits": old_limits,
+                        "new_limits": {
+                            "max_concurrent_jobs": self.resource_limits.max_concurrent_jobs,
+                            "max_cpu_percent": self.resource_limits.max_cpu_percent,
+                            "min_memory_gb": self.resource_limits.min_memory_gb,
+                            "min_disk_gb": self.resource_limits.min_disk_gb,
+                        },
+                    },
+                )
+
+                # Return updated limits data
+                return {
+                    "max_concurrent_jobs": self.resource_limits.max_concurrent_jobs,
+                    "max_cpu_percent": self.resource_limits.max_cpu_percent,
+                    "min_memory_gb": self.resource_limits.min_memory_gb,
+                    "min_disk_gb": self.resource_limits.min_disk_gb,
+                }
+
+            return None
+
+        except Exception as e:
+            logger.error(f"Failed to update concurrent limits: {e}")
+            return None
 
 
 async def submit_job_to_manager(

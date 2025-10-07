@@ -142,10 +142,37 @@ class JobManagerHandler:
                 }
             )
 
+        async def edit_concurrent_limits(request):
+            """Endpoint to edit concurrent job limits in the pool"""
+            try:
+                data = await request.json()
+
+                if not data:
+                    return web.json_response({"error": "No data provided"}, status=400)
+
+                # Update the concurrent job limits
+                updated_limits = await self.manager.edit_concurrent_limits(data)
+
+                if updated_limits:
+                    return web.json_response(
+                        {
+                            "success": True,
+                            "message": "Concurrent job limits updated successfully",
+                            "limits": updated_limits,
+                        }
+                    )
+                else:
+                    return web.json_response({"error": "Failed to update limits"}, status=400)
+
+            except Exception as e:
+                return web.json_response({"error": str(e)}, status=500)
+
         app.router.add_get("/system/status", get_system_status)
         app.router.add_post("/jobs/submit", submit_job)
         app.router.add_get("/jobs", get_all_jobs)
         app.router.add_get("/queue", get_queue_stats)
+        app.router.add_put("/pool/limits", edit_concurrent_limits)
+
         return app
 
     @staticmethod
