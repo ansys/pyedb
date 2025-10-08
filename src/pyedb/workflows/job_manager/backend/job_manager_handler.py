@@ -87,6 +87,14 @@ class JobManagerHandler:
 
         async def get_system_status(request):
             """Endpoint to provide system and scheduler status."""
+            # Ensure resource monitoring is active
+            if (
+                not hasattr(self.manager, "_monitor_task")
+                or self.manager._monitor_task is None
+                or self.manager._monitor_task.done()
+            ):
+                self.manager._monitor_task = asyncio.create_task(self.manager.resource_monitor.monitor_resources())
+
             running_jobs = sum(1 for job in self.manager.jobs.values() if job["status"] == "running")
             queued_jobs = sum(1 for job in self.manager.jobs.values() if job["status"] == "queued")
             status = {
@@ -94,6 +102,12 @@ class JobManagerHandler:
                     "active_scheduler": self.scheduler_type.value,
                     "detected_by": "JobManagerHandler._detect_scheduler()",
                     "backend_available": True,
+                },
+                "resource_monitoring": {
+                    "active": hasattr(self.manager, "_monitor_task")
+                    and self.manager._monitor_task is not None
+                    and not self.manager._monitor_task.done(),
+                    "last_update": self.manager.resource_monitor.current_usage.get("timestamp", "Never"),
                 },
                 "mode": "local" if self.scheduler_type == SchedulerType.NONE else "scheduler",
                 "local_pool": {

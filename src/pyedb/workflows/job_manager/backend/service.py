@@ -401,8 +401,19 @@ class JobManager:
         # Background task for continuous job processing
         self._processing_task: Optional[asyncio.Task] = None
         self._shutdown = False
-        # setup monitor
-        # self._monitor_task = asyncio.create_task(self.resource_monitor.monitor_resources())
+        # Start resource monitoring immediately
+        self._monitor_task = None
+        self._ensure_monitor_running()
+
+    def _ensure_monitor_running(self):
+        """Ensure resource monitoring task is running"""
+        try:
+            loop = asyncio.get_running_loop()
+            if self._monitor_task is None or self._monitor_task.done():
+                self._monitor_task = loop.create_task(self.resource_monitor.monitor_resources())
+        except RuntimeError:
+            # No event loop running yet, will be started when JobManagerHandler starts
+            pass
 
     def setup_routes(self):
         """
@@ -417,11 +428,23 @@ class JobManager:
         self.app.router.add_post("/jobs/{job_id}/cancel", self.handle_cancel_job)
         self.app.router.add_post("/jobs/{job_id}/priority", self.handle_set_priority)
         self.app.router.add_put("/pool/limits", self.handle_edit_concurrent_limits)
+        self.app.router.add_post("/system/start_monitoring", self.handle_start_monitoring)
         if os.path.exists("static"):
             self.app.router.add_static("/static", "static")
         else:
             os.makedirs("static", exist_ok=True)
             self.app.router.add_static("/static", "static")
+
+    async def handle_start_monitoring(self, request):
+        """Endpoint to manually start resource monitoring."""
+        try:
+            if self._monitor_task is None or self._monitor_task.done():
+                self._monitor_task = asyncio.create_task(self.resource_monitor.monitor_resources())
+                return web.json_response({"success": True, "message": "Resource monitoring started"})
+            else:
+                return web.json_response({"success": True, "message": "Resource monitoring already active"})
+        except Exception as e:
+            return web.json_response({"success": False, "error": str(e)}, status=500)
 
     async def handle_index(self, request):
         """Serve the main web interface."""
