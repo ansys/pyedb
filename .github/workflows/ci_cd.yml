@@ -675,7 +675,7 @@ jobs:
           .venv\Scripts\Activate.ps1
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
-          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.3.1
+          pip install --index-url https://wheels.vtk.org vtk-osmesa==9.3.1
 
       - name: Run PyAEDT tests
         uses: nick-fields/retry@v3
@@ -778,7 +778,7 @@ jobs:
           . .venv/bin/activate
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
-          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.3.1
+          pip install --index-url https://wheels.vtk.org vtk-osmesa==9.3.1
 
       - name: Run PyAEDT tests
         uses: nick-fields/retry@v3
