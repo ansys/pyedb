@@ -1,0 +1,35 @@
+
+# Web framework and async support
+aiohttp>=3.8.0,<4.0.0
+
+# Development and debugging
+debugpy>=1.6.5
+
+# Web framework dependencies
+fastapi>=0.116.1
+ipykernel>=6.29.4
+
+# Jupyter dependencies
+jupyterlab>=4.3.7
+# Core dependencies with compatible versions
+numpy>=1.21.0,<2.0.0
+
+# System monitoring
+psutil>=5.9.0
+
+
+# Data validation and serialization
+pydantic>=2.0.0,<3.0.0
+
+# Additional utilities
+python-dotenv>=1.0.0
+python-socketio>=5.8.0
+
+# Visualization
+pyvista>=0.43.9
+
+# Reflex framework
+reflex
+reflex==0.8.14.post1
+setuptools>=41.1.0
+starlette>=0.40.0,<0.48.0
