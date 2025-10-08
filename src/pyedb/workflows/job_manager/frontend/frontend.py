@@ -66,6 +66,72 @@ class State(rx.State):
     notification_message: str = ""
     notification_type: str = "info"  # info, success, warning, error
 
+    # Add these setter methods here (they are NOT async)
+    def set_max_concurrent_jobs(self, value: str):
+        """Set max concurrent jobs from string input."""
+        try:
+            self.max_concurrent_jobs = int(value) if value else 1
+        except ValueError:
+            self.max_concurrent_jobs = 1
+
+    def set_min_memory_gb(self, value: str):
+        """Set min memory GB from string input."""
+        try:
+            self.min_memory_gb = float(value) if value else 1.0
+        except ValueError:
+            self.min_memory_gb = 1.0
+
+    def set_min_disk_gb(self, value: str):
+        """Set min disk GB from string input."""
+        try:
+            self.min_disk_gb = float(value) if value else 1.0
+        except ValueError:
+            self.min_disk_gb = 1.0
+
+    def set_num_cores(self, value: str):
+        """Set number of cores from string input."""
+        try:
+            self.num_cores = int(value) if value else 1
+        except ValueError:
+            self.num_cores = 1
+
+    def set_num_cores(self, value: str):
+        """Set number of cores from string input."""
+        try:
+            self.num_cores = int(value) if value else 1
+        except ValueError:
+            self.num_cores = 1
+
+    def set_max_cpu_percent(self, value: list):
+        """Set max CPU percent from slider."""
+        if value and len(value) > 0:
+            self.max_cpu_percent = float(value[0])
+
+    def set_job_priority(self, value: list):
+        """Set job priority from slider."""
+        if value and len(value) > 0:
+            self.job_priority = int(value[0])
+
+    def set_project_path(self, value: str):
+        """Set project path from input."""
+        self.project_path = value
+
+    def set_design_name(self, value: str):
+        """Set design name from input."""
+        self.design_name = value
+
+    def set_setup_name(self, value: str):
+        """Set setup name from input."""
+        self.setup_name = value
+
+    def set_notification_message(self, value: str):
+        """Set notification message."""
+        self.notification_message = value
+
+    def set_show_settings(self, value: bool):
+        """Toggle settings modal."""
+        self.show_settings = value
+
     async def connect_to_backend(self):
         """Initialize connection to backend API and WebSocket."""
         self.loading = True
@@ -182,10 +248,6 @@ class State(rx.State):
             self.selected_job_id = job_id
             self.show_job_details = True
 
-    def get_job_by_id(self, job_id: str) -> Optional[Dict[str, Any]]:
-        """Get job details by ID."""
-        return next((job for job in self.jobs if job.get("jobid") == job_id), None)
-
 
 # Design tokens and theme configuration
 DESIGN_TOKENS = {
@@ -273,10 +335,53 @@ def status_badge(status: str) -> rx.Component:
         JobStatus.SCHEDULED.value: DESIGN_TOKENS["colors"]["--accent"],
     }
 
+    # Use rx.cond to handle the uppercase transformation
+    status_text = rx.cond(
+        status == "queued",
+        "QUEUED",
+        rx.cond(
+            status == "running",
+            "RUNNING",
+            rx.cond(
+                status == "completed",
+                "COMPLETED",
+                rx.cond(
+                    status == "failed",
+                    "FAILED",
+                    rx.cond(status == "cancelled", "CANCELLED", rx.cond(status == "scheduled", "SCHEDULED", "UNKNOWN")),
+                ),
+            ),
+        ),
+    )
+
     return rx.badge(
-        status.upper(),
+        status_text,
         style={
-            "background": color_map.get(status, DESIGN_TOKENS["colors"]["--secondary"]),
+            "background": rx.cond(
+                status == "queued",
+                DESIGN_TOKENS["colors"]["--secondary"],
+                rx.cond(
+                    status == "running",
+                    DESIGN_TOKENS["colors"]["--primary"],
+                    rx.cond(
+                        status == "completed",
+                        DESIGN_TOKENS["colors"]["--success"],
+                        rx.cond(
+                            status == "failed",
+                            DESIGN_TOKENS["colors"]["--error"],
+                            rx.cond(
+                                status == "cancelled",
+                                DESIGN_TOKENS["colors"]["--warning"],
+                                rx.cond(
+                                    status == "scheduled",
+                                    DESIGN_TOKENS["colors"]["--accent"],
+                                    DESIGN_TOKENS["colors"]["--secondary"],
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
             "color": "white",
             "padding": "4px 12px",
             "border_radius": "20px",
@@ -314,7 +419,7 @@ def job_card(job: Dict[str, Any]) -> rx.Component:
                         color=DESIGN_TOKENS["colors"]["--text-primary"],
                     ),
                     status_badge(job.get("status", "unknown")),
-                    justify="space-between",
+                    justify="between",  # Changed from "space-between"
                     width="100%",
                 ),
                 rx.text(
@@ -328,7 +433,7 @@ def job_card(job: Dict[str, Any]) -> rx.Component:
                     color=DESIGN_TOKENS["colors"]["--text-muted"],
                 ),
                 align_items="start",
-                spacing="8px",
+                spacing="2",
                 flex="1",
             ),
             rx.vstack(
@@ -336,21 +441,21 @@ def job_card(job: Dict[str, Any]) -> rx.Component:
                     rx.icon("eye"),
                     on_click=State.toggle_job_details(job.get("jobid", "")),
                     variant="ghost",
-                    size="sm",
+                    size="2",
                 ),
                 rx.cond(
-                    job.get("status") in ["queued", "running"],
+                    (job.get("status") == "queued") | (job.get("status") == "running"),
                     rx.button(
                         rx.icon("x"),
                         on_click=State.cancel_job(job.get("jobid", "")),
                         variant="ghost",
-                        size="sm",
+                        size="2",
                         color_scheme="red",
                     ),
                 ),
-                spacing="8px",
+                spacing="2",
             ),
-            justify="space-between",
+            justify="between",  # Changed from "space-between"
             align_items="start",
             width="100%",
         ),
@@ -361,10 +466,8 @@ def job_card(job: Dict[str, Any]) -> rx.Component:
 
 def job_details_panel() -> rx.Component:
     """Expandable job details panel."""
-    job = State.get_job_by_id(State.selected_job_id)
-
     return rx.cond(
-        State.show_job_details & (job is not None),
+        State.show_job_details & (State.selected_job_id != ""),
         rx.box(
             rx.vstack(
                 rx.hstack(
@@ -378,46 +481,67 @@ def job_details_panel() -> rx.Component:
                         rx.icon("x"),
                         on_click=State.toggle_job_details(""),
                         variant="ghost",
-                        size="sm",
+                        size="2",
                     ),
-                    justify="space-between",
+                    justify="between",
                     width="100%",
                 ),
                 rx.divider(color=DESIGN_TOKENS["colors"]["--border"]),
                 rx.grid(
                     rx.box(
                         rx.text("Job ID:", font_weight="600", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
-                        rx.text(job.get("jobid", "N/A"), color=DESIGN_TOKENS["colors"]["--text-primary"]),
+                        rx.text(State.selected_job_id, color=DESIGN_TOKENS["colors"]["--text-primary"]),
                     ),
                     rx.box(
                         rx.text("Status:", font_weight="600", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
-                        status_badge(job.get("status", "unknown")),
+                        rx.foreach(
+                            State.jobs,
+                            lambda job: rx.cond(
+                                job["jobid"] == State.selected_job_id,
+                                status_badge(job["status"]),
+                            ),
+                        ),
                     ),
                     rx.box(
                         rx.text("Priority:", font_weight="600", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
-                        rx.text(str(job.get("priority", 0)), color=DESIGN_TOKENS["colors"]["--text-primary"]),
+                        rx.foreach(
+                            State.jobs,
+                            lambda job: rx.cond(
+                                job["jobid"] == State.selected_job_id,
+                                rx.text(str(job["priority"]), color=DESIGN_TOKENS["colors"]["--text-primary"]),
+                            ),
+                        ),
                     ),
                     rx.box(
                         rx.text("Project:", font_weight="600", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
-                        rx.text(job.get("project_path", "N/A"), color=DESIGN_TOKENS["colors"]["--text-primary"]),
+                        rx.foreach(
+                            State.jobs,
+                            lambda job: rx.cond(
+                                job["jobid"] == State.selected_job_id,
+                                rx.text(job["project_path"], color=DESIGN_TOKENS["colors"]["--text-primary"]),
+                            ),
+                        ),
                     ),
                     columns="2",
-                    spacing="16px",
+                    spacing="4",
                 ),
-                rx.cond(
-                    job.get("error"),
-                    rx.box(
-                        rx.text("Error:", font_weight="600", color=DESIGN_TOKENS["colors"]["--error"]),
-                        rx.text(job.get("error", ""), color=DESIGN_TOKENS["colors"]["--text-primary"]),
-                        style={
-                            "background": "rgba(239, 68, 68, 0.1)",
-                            "border": "1px solid rgba(239, 68, 68, 0.3)",
-                            "border_radius": "8px",
-                            "padding": "12px",
-                        },
+                rx.foreach(
+                    State.jobs,
+                    lambda job: rx.cond(
+                        (job["jobid"] == State.selected_job_id) & (job.get("error", "") != ""),
+                        rx.box(
+                            rx.text("Error:", font_weight="600", color=DESIGN_TOKENS["colors"]["--error"]),
+                            rx.text(job["error"], color=DESIGN_TOKENS["colors"]["--text-primary"]),
+                            style={
+                                "background": "rgba(239, 68, 68, 0.1)",
+                                "border": "1px solid rgba(239, 68, 68, 0.3)",
+                                "border_radius": "8px",
+                                "padding": "12px",
+                            },
+                        ),
                     ),
                 ),
-                spacing="16px",
+                spacing="4",
                 width="100%",
             ),
             style=CARD_STYLE,
@@ -481,14 +605,14 @@ def job_submission_form() -> rx.Component:
                             },
                             flex="1",
                         ),
-                        spacing="12px",
+                        spacing="3",
                         width="100%",
                     ),
                     rx.hstack(
                         rx.vstack(
                             rx.text("Priority", font_size="14px", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
                             rx.slider(
-                                value=State.job_priority,
+                                value=[State.job_priority],  # Changed: wrapped in list
                                 on_value_commit=State.set_job_priority,
                                 min_=-10,
                                 max_=10,
@@ -498,15 +622,16 @@ def job_submission_form() -> rx.Component:
                             rx.text(
                                 State.job_priority, font_size="12px", color=DESIGN_TOKENS["colors"]["--text-muted"]
                             ),
-                            spacing="4px",
+                            spacing="1",
                         ),
                         rx.vstack(
                             rx.text("Cores", font_size="14px", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
-                            rx.number_input(
+                            rx.input(
+                                type="number",
                                 value=State.num_cores,
                                 on_change=State.set_num_cores,
-                                min_=1,
-                                max_=64,
+                                min="1",
+                                max="64",
                                 style={
                                     "background": "rgba(255, 255, 255, 0.05)",
                                     "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
@@ -514,9 +639,9 @@ def job_submission_form() -> rx.Component:
                                     "color": DESIGN_TOKENS["colors"]["--text-primary"],
                                 },
                             ),
-                            spacing="4px",
+                            spacing="1",
                         ),
-                        spacing="24px",
+                        spacing="6",
                         width="100%",
                     ),
                     rx.button(
@@ -526,11 +651,11 @@ def job_submission_form() -> rx.Component:
                         width="100%",
                         loading=State.loading,
                     ),
-                    spacing="16px",
+                    spacing="4",
                     width="100%",
                 ),
             ),
-            spacing="16px",
+            spacing="4",
             width="100%",
         ),
         style=CARD_STYLE,
@@ -553,23 +678,29 @@ def system_status_card() -> rx.Component:
                     shimmer_skeleton(),
                     shimmer_skeleton(),
                     shimmer_skeleton(),
-                    spacing="8px",
+                    spacing="2",
                 ),
                 rx.vstack(
                     rx.hstack(
-                        rx.circle(
-                            size="12px",
-                            style={
-                                "background": DESIGN_TOKENS["colors"]["--success"]
-                                if State.connected
-                                else DESIGN_TOKENS["colors"]["--error"],
-                            },
+                        rx.box(
+                            width="12px",
+                            height="12px",
+                            border_radius="50%",
+                            background=rx.cond(
+                                State.connected,
+                                DESIGN_TOKENS["colors"]["--success"],
+                                DESIGN_TOKENS["colors"]["--error"],
+                            ),
                         ),
                         rx.text(
-                            "Connected" if State.connected else "Disconnected",
+                            rx.cond(
+                                State.connected,
+                                "Connected",
+                                "Disconnected",
+                            ),
                             color=DESIGN_TOKENS["colors"]["--text-primary"],
                         ),
-                        spacing="8px",
+                        spacing="2",
                     ),
                     rx.text(
                         f"Running Jobs: {State.queue_stats.get('running_jobs', 0)} / "
@@ -580,10 +711,10 @@ def system_status_card() -> rx.Component:
                         f"Queued Jobs: {State.queue_stats.get('total_queued', 0)}",
                         color=DESIGN_TOKENS["colors"]["--text-secondary"],
                     ),
-                    spacing="8px",
+                    spacing="2",
                 ),
             ),
-            spacing="12px",
+            spacing="3",
             align_items="start",
             width="100%",
         ),
@@ -593,100 +724,100 @@ def system_status_card() -> rx.Component:
 
 def settings_modal() -> rx.Component:
     """Settings modal for resource limits."""
-    return rx.modal(
-        rx.modal_overlay(
-            rx.modal_content(
-                rx.modal_header(
-                    "Resource Limits",
-                    color=DESIGN_TOKENS["colors"]["--text-primary"],
-                ),
-                rx.modal_body(
-                    rx.vstack(
-                        rx.vstack(
-                            rx.text(
-                                "Max Concurrent Jobs",
-                                font_size="14px",
-                                color=DESIGN_TOKENS["colors"]["--text-secondary"],
-                            ),
-                            rx.number_input(
-                                value=State.max_concurrent_jobs,
-                                on_change=State.set_max_concurrent_jobs,
-                                min_=1,
-                                max_=20,
-                            ),
-                            spacing="4px",
-                        ),
-                        rx.vstack(
-                            rx.text("Max CPU %", font_size="14px", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
-                            rx.slider(
-                                value=State.max_cpu_percent,
-                                on_value_commit=State.set_max_cpu_percent,
-                                min_=10,
-                                max_=100,
-                                step=5,
-                            ),
-                            rx.text(
-                                f"{State.max_cpu_percent}%",
-                                font_size="12px",
-                                color=DESIGN_TOKENS["colors"]["--text-muted"],
-                            ),
-                            spacing="4px",
-                        ),
-                        rx.vstack(
-                            rx.text(
-                                "Min Memory (GB)", font_size="14px", color=DESIGN_TOKENS["colors"]["--text-secondary"]
-                            ),
-                            rx.number_input(
-                                value=State.min_memory_gb,
-                                on_change=State.set_min_memory_gb,
-                                min_=1,
-                                max_=128,
-                                step=0.5,
-                            ),
-                            spacing="4px",
-                        ),
-                        rx.vstack(
-                            rx.text(
-                                "Min Disk Space (GB)",
-                                font_size="14px",
-                                color=DESIGN_TOKENS["colors"]["--text-secondary"],
-                            ),
-                            rx.number_input(
-                                value=State.min_disk_gb,
-                                on_change=State.set_min_disk_gb,
-                                min_=1,
-                                max_=1000,
-                                step=1,
-                            ),
-                            spacing="4px",
-                        ),
-                        spacing="16px",
-                        width="100%",
+    return rx.dialog.root(
+        rx.dialog.trigger(
+            rx.button("Settings", style={"display": "none"}),  # Hidden trigger
+        ),
+        rx.dialog.content(
+            rx.dialog.title(
+                "Resource Limits",
+                color=DESIGN_TOKENS["colors"]["--text-primary"],
+            ),
+            rx.vstack(
+                rx.vstack(
+                    rx.text(
+                        "Max Concurrent Jobs",
+                        font_size="14px",
+                        color=DESIGN_TOKENS["colors"]["--text-secondary"],
                     ),
+                    rx.input(
+                        type="number",
+                        value=State.max_concurrent_jobs,
+                        on_change=State.set_max_concurrent_jobs,
+                        min="1",
+                        max="20",
+                    ),
+                    spacing="1",
                 ),
-                rx.modal_footer(
-                    rx.hstack(
+                rx.vstack(
+                    rx.text("Max CPU %", font_size="14px", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
+                    rx.slider(
+                        value=[State.max_cpu_percent],
+                        on_value_commit=State.set_max_cpu_percent,
+                        min_=10,
+                        max_=100,
+                        step=5,
+                    ),
+                    rx.text(
+                        f"{State.max_cpu_percent}%",
+                        font_size="12px",
+                        color=DESIGN_TOKENS["colors"]["--text-muted"],
+                    ),
+                    spacing="1",
+                ),
+                rx.vstack(
+                    rx.text("Min Memory (GB)", font_size="14px", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
+                    rx.input(
+                        type="number",
+                        value=State.min_memory_gb,
+                        on_change=State.set_min_memory_gb,
+                        min="1",
+                        max="128",
+                        step="0.5",
+                    ),
+                    spacing="1",
+                ),
+                rx.vstack(
+                    rx.text(
+                        "Min Disk Space (GB)",
+                        font_size="14px",
+                        color=DESIGN_TOKENS["colors"]["--text-secondary"],
+                    ),
+                    rx.input(
+                        type="number",
+                        value=State.min_disk_gb,
+                        on_change=State.set_min_disk_gb,
+                        min="1",
+                        max="1000",
+                        step="1",
+                    ),
+                    spacing="1",
+                ),
+                rx.hstack(
+                    rx.dialog.close(
                         rx.button(
                             "Cancel",
-                            on_click=State.set_show_settings(False),
                             variant="ghost",
                         ),
-                        rx.button(
-                            "Save Changes",
-                            on_click=State.update_concurrent_limits,
-                            style=PRIMARY_BUTTON_STYLE,
-                        ),
-                        spacing="12px",
                     ),
+                    rx.button(
+                        "Save Changes",
+                        on_click=State.update_concurrent_limits,
+                        style=PRIMARY_BUTTON_STYLE,
+                    ),
+                    spacing="3",
                 ),
-                style={
-                    "background": DESIGN_TOKENS["colors"]["--surface"],
-                    "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
-                    "border_radius": "16px",
-                },
+                spacing="4",
+                width="100%",
             ),
+            style={
+                "background": DESIGN_TOKENS["colors"]["--surface"],
+                "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
+                "border_radius": "16px",
+                "padding": "24px",
+            },
         ),
-        is_open=State.show_settings,
+        open=State.show_settings,
     )
 
 
@@ -703,15 +834,18 @@ def notification_toast() -> rx.Component:
         State.notification_message != "",
         rx.box(
             rx.hstack(
-                rx.icon(
-                    "check-circle"
-                    if State.notification_type == "success"
-                    else "alert-triangle"
-                    if State.notification_type == "warning"
-                    else "x-circle"
-                    if State.notification_type == "error"
-                    else "info",
-                    color=color_map.get(State.notification_type, DESIGN_TOKENS["colors"]["--primary"]),
+                rx.cond(
+                    State.notification_type == "success",
+                    rx.icon("check-circle", color=color_map["success"]),
+                    rx.cond(
+                        State.notification_type == "warning",
+                        rx.icon("alert-triangle", color=color_map["warning"]),
+                        rx.cond(
+                            State.notification_type == "error",
+                            rx.icon("x-circle", color=color_map["error"]),
+                            rx.icon("info", color=color_map["info"]),
+                        ),
+                    ),
                 ),
                 rx.text(
                     State.notification_message,
@@ -722,9 +856,9 @@ def notification_toast() -> rx.Component:
                     rx.icon("x"),
                     on_click=State.set_notification_message(""),
                     variant="ghost",
-                    size="sm",
+                    size="1",
                 ),
-                justify="space-between",
+                justify="between",
                 align_items="center",
                 width="100%",
             ),
@@ -736,9 +870,7 @@ def notification_toast() -> rx.Component:
                 "z_index": "1000",
                 "max_width": "400px",
                 "padding": "16px",
-                "border_left": f"4px solid {
-                    color_map.get(State.notification_type, DESIGN_TOKENS['colors']['--primary'])
-                }",
+                "border_left": f"4px solid {color_map.get('success', DESIGN_TOKENS['colors']['--primary'])}",
             },
         ),
     )
@@ -749,14 +881,14 @@ def header() -> rx.Component:
     return rx.box(
         rx.hstack(
             rx.hstack(
-                rx.icon("zap", size="32px", color=DESIGN_TOKENS["colors"]["--primary"]),
+                rx.icon("zap", size=32, color=DESIGN_TOKENS["colors"]["--primary"]),
                 rx.text(
                     "ANSYS Job Manager",
                     font_size="24px",
                     font_weight="700",
                     color=DESIGN_TOKENS["colors"]["--text-primary"],
                 ),
-                spacing="12px",
+                spacing="3",
                 align_items="center",
             ),
             rx.hstack(
@@ -773,9 +905,9 @@ def header() -> rx.Component:
                     on_click=State.set_show_settings(True),
                     variant="ghost",
                 ),
-                spacing="8px",
+                spacing="2",
             ),
-            justify="space-between",
+            justify="between",
             align_items="center",
             width="100%",
         ),
@@ -802,7 +934,7 @@ def main_content() -> rx.Component:
                     grid_column="span 2",
                 ),
                 columns="3",
-                spacing="24px",
+                spacing="6",  # Changed from "24px"
                 width="100%",
             ),
             rx.box(
@@ -819,13 +951,13 @@ def main_content() -> rx.Component:
                             shimmer_skeleton(),
                             shimmer_skeleton(),
                             shimmer_skeleton(),
-                            spacing="16px",
+                            spacing="4",  # Changed from "16px"
                         ),
                         rx.cond(
                             State.jobs.length() > 0,
                             rx.vstack(
                                 rx.foreach(State.jobs, job_card),
-                                spacing="16px",
+                                spacing="4",  # Changed from "16px"
                                 width="100%",
                             ),
                             rx.box(
@@ -841,13 +973,13 @@ def main_content() -> rx.Component:
                             ),
                         ),
                     ),
-                    spacing="16px",
+                    spacing="4",  # Changed from "16px"
                     width="100%",
                 ),
                 style=CARD_STYLE,
             ),
             job_details_panel(),
-            spacing="24px",
+            spacing="6",  # Changed from "24px"
             width="100%",
         ),
         max_width="1200px",
@@ -875,6 +1007,6 @@ def index() -> rx.Component:
     )
 
 
-app = rx.App(stylesheets=["assets/custom.css"])
+app = rx.App(stylesheets=["custom.css"])
 
 app.add_page(index, route="/")
