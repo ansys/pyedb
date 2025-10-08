@@ -1,0 +1,6 @@
+use\_max\_refinement
+====================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_settings_options
+
+.. autoproperty:: HFSSSettingsOptions.use_max_refinement

@@ -1,0 +1,6 @@
+hfss\_solver\_properties
+========================
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoproperty:: StackupLayer.hfss_solver_properties

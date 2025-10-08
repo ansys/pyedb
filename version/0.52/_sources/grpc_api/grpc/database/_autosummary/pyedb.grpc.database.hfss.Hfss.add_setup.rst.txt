@@ -1,0 +1,6 @@
+add\_setup
+==========
+
+.. currentmodule:: pyedb.grpc.database.hfss
+
+.. automethod:: Hfss.add_setup

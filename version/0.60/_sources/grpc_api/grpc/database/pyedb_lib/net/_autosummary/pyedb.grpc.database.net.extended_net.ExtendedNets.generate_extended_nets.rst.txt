@@ -1,0 +1,6 @@
+generate\_extended\_nets
+========================
+
+.. currentmodule:: pyedb.grpc.database.net.extended_net
+
+.. automethod:: ExtendedNets.generate_extended_nets

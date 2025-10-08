@@ -1,0 +1,6 @@
+is\_current\_source
+===================
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoproperty:: PinGroupTerminal.is_current_source

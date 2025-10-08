@@ -1,0 +1,6 @@
+obj\_type
+=========
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. autoproperty:: Path.obj_type

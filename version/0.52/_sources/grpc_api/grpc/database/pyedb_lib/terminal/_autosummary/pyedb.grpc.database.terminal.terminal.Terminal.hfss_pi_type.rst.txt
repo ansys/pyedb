@@ -1,0 +1,6 @@
+hfss\_pi\_type
+==============
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. autoproperty:: Terminal.hfss_pi_type

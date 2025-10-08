@@ -1,0 +1,6 @@
+find\_by\_id
+============
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. automethod:: Primitive.find_by_id

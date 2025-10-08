@@ -1,0 +1,6 @@
+anti\_pads\_always\_on
+======================
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. autoproperty:: Cell.anti_pads_always_on

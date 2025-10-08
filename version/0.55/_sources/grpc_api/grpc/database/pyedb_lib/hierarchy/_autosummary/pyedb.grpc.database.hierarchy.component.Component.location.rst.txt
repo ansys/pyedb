@@ -1,0 +1,6 @@
+location
+========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoproperty:: Component.location

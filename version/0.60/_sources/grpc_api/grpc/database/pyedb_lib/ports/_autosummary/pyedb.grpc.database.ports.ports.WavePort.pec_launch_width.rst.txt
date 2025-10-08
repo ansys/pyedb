@@ -1,0 +1,6 @@
+pec\_launch\_width
+==================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: WavePort.pec_launch_width

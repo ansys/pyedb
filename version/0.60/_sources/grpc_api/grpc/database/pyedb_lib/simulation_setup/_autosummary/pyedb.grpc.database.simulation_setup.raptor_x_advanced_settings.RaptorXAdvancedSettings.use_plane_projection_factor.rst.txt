@@ -1,0 +1,6 @@
+use\_plane\_projection\_factor
+==============================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings
+
+.. autoproperty:: RaptorXAdvancedSettings.use_plane_projection_factor

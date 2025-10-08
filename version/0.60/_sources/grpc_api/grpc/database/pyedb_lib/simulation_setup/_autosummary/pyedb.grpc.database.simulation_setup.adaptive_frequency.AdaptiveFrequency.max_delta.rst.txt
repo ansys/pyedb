@@ -1,0 +1,6 @@
+max\_delta
+==========
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.adaptive_frequency
+
+.. autoproperty:: AdaptiveFrequency.max_delta

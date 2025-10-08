@@ -1,0 +1,6 @@
+create\_edge\_port
+==================
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. automethod:: Path.create_edge_port

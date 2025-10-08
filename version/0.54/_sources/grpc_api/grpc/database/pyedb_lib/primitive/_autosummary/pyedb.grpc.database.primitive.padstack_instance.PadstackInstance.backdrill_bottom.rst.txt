@@ -1,0 +1,6 @@
+backdrill\_bottom
+=================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. autoproperty:: PadstackInstance.backdrill_bottom

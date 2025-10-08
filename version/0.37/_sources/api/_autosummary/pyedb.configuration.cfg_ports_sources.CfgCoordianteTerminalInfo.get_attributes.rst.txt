@@ -1,0 +1,6 @@
+get\_attributes
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. automethod:: CfgCoordianteTerminalInfo.get_attributes

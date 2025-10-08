@@ -1,0 +1,6 @@
+layout\_instance
+================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. autoproperty:: Layout.layout_instance

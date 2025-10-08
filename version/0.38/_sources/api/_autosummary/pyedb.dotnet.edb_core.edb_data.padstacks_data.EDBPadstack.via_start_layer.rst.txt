@@ -1,0 +1,6 @@
+via\_start\_layer
+=================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstack.via_start_layer

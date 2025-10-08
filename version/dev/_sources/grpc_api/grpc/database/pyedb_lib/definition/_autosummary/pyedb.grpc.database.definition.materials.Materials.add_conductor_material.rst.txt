@@ -1,0 +1,6 @@
+add\_conductor\_material
+========================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Materials.add_conductor_material

@@ -1,0 +1,66 @@
+﻿PadstackDef
+===========
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoclass:: PadstackDef
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      PadstackDef.convert_to_3d_microvias
+      
+      
+      PadstackDef.create
+      
+      
+      PadstackDef.delete
+      
+      
+      PadstackDef.find_by_name
+      
+      
+      PadstackDef.split_to_microvias
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PadstackDef.antipad_by_layer
+      PadstackDef.data
+      PadstackDef.definition_type
+      PadstackDef.edb_hole_type
+      PadstackDef.hole_diameter
+      PadstackDef.hole_finished_size
+      PadstackDef.hole_offset_x
+      PadstackDef.hole_offset_y
+      PadstackDef.hole_plating_ratio
+      PadstackDef.hole_plating_thickness
+      PadstackDef.hole_range
+      PadstackDef.hole_rotation
+      PadstackDef.hole_type
+      PadstackDef.id
+      PadstackDef.instances
+      PadstackDef.is_null
+      PadstackDef.layers
+      PadstackDef.material
+      PadstackDef.msg
+      PadstackDef.name
+      PadstackDef.pad_by_layer
+      PadstackDef.start_layer
+      PadstackDef.stop_layer
+      PadstackDef.thermalpad_by_layer
+   
+   

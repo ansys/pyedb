@@ -1,0 +1,6 @@
+impedance
+=========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: WavePort.impedance

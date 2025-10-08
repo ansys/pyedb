@@ -1,0 +1,6 @@
+is\_parametric
+==============
+
+.. currentmodule:: pyedb.grpc.database.geometry.point_data
+
+.. autoproperty:: PointData.is_parametric

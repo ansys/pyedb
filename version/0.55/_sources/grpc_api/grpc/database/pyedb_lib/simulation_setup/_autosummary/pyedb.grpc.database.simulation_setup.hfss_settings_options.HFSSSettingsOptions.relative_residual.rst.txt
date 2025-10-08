@@ -1,0 +1,6 @@
+relative\_residual
+==================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_settings_options
+
+.. autoproperty:: HFSSSettingsOptions.relative_residual

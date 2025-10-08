@@ -1,0 +1,6 @@
+asin
+====
+
+.. currentmodule:: pyedb.grpc.database.utility.value
+
+.. automethod:: Value.asin

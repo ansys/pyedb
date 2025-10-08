@@ -1,0 +1,6 @@
+net\_name
+=========
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. autoproperty:: Primitive.net_name

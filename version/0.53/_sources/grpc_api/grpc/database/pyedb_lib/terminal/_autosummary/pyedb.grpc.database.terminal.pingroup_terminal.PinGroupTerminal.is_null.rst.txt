@@ -1,0 +1,6 @@
+is\_null
+========
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoproperty:: PinGroupTerminal.is_null

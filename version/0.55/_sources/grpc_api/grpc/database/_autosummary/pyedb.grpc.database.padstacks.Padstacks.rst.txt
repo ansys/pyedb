@@ -1,0 +1,116 @@
+﻿Padstacks
+=========
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. autoclass:: Padstacks
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Padstacks.check_and_fix_via_plating
+      
+      
+      Padstacks.create
+      
+      
+      Padstacks.create_circular_padstack
+      
+      
+      Padstacks.create_coax_port
+      
+      
+      Padstacks.dbscan
+      
+      
+      Padstacks.delete_padstack_instances
+      
+      
+      Padstacks.duplicate
+      
+      
+      Padstacks.find_instance_by_id
+      
+      
+      Padstacks.get_instances
+      
+      
+      Padstacks.get_pad_parameters
+      
+      
+      Padstacks.get_padstack_instances_id_intersecting_polygon
+      
+      
+      Padstacks.get_padstack_instances_intersecting_bounding_box
+      
+      
+      Padstacks.get_padstack_instances_rtree_index
+      
+      
+      Padstacks.get_pin_from_component_and_net
+      
+      
+      Padstacks.get_pinlist_from_component_and_net
+      
+      
+      Padstacks.get_reference_pins
+      
+      
+      Padstacks.get_via_instance_from_net
+      
+      
+      Padstacks.int_to_geometry_type
+      
+      
+      Padstacks.int_to_pad_type
+      
+      
+      Padstacks.merge_via
+      
+      
+      Padstacks.merge_via_along_lines
+      
+      
+      Padstacks.place
+      
+      
+      Padstacks.reduce_via_in_bounding_box
+      
+      
+      Padstacks.remove_pads_from_padstack
+      
+      
+      Padstacks.set_all_antipad_value
+      
+      
+      Padstacks.set_pad_property
+      
+      
+      Padstacks.set_solderball
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Padstacks.db
+      Padstacks.definitions
+      Padstacks.instances
+      Padstacks.instances_by_name
+      Padstacks.pad_type
+      Padstacks.pingroups
+      Padstacks.pins
+      Padstacks.vias
+   
+   

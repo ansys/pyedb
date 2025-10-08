@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.grpc.database.terminal.bundle_terminal
+
+.. automethod:: BundleTerminal.delete

@@ -1,0 +1,6 @@
+add\_void
+=========
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. automethod:: Circle.add_void

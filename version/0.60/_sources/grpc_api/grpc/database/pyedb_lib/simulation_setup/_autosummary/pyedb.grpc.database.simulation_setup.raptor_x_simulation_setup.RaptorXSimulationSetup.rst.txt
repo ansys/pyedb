@@ -1,0 +1,48 @@
+﻿RaptorXSimulationSetup
+======================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup
+
+.. autoclass:: RaptorXSimulationSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      RaptorXSimulationSetup.add_frequency_sweep
+      
+      
+      RaptorXSimulationSetup.add_sweep
+      
+      
+      RaptorXSimulationSetup.cast
+      
+      
+      RaptorXSimulationSetup.create
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      RaptorXSimulationSetup.frequency_sweeps
+      RaptorXSimulationSetup.id
+      RaptorXSimulationSetup.is_null
+      RaptorXSimulationSetup.msg
+      RaptorXSimulationSetup.name
+      RaptorXSimulationSetup.position
+      RaptorXSimulationSetup.settings
+      RaptorXSimulationSetup.sweep_data
+      RaptorXSimulationSetup.type
+   
+   

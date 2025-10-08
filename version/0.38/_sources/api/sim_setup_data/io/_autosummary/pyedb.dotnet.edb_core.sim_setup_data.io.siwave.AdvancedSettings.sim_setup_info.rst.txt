@@ -1,0 +1,6 @@
+sim\_setup\_info
+================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
+
+.. autoproperty:: AdvancedSettings.sim_setup_info

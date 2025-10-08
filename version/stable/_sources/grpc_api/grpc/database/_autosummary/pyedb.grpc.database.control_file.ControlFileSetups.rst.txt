@@ -1,0 +1,24 @@
+﻿ControlFileSetups
+=================
+
+.. currentmodule:: pyedb.grpc.database.control_file
+
+.. autoclass:: ControlFileSetups
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      ControlFileSetups.add_setup
+      
+   
+   
+
+   
+   
+   
