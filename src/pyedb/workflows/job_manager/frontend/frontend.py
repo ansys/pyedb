@@ -1208,7 +1208,7 @@ def header() -> rx.Component:
 
 def index() -> rx.Component:
     """Main dashboard page with responsive 3x2 grid (stacks on small screens)."""
-    return rx.container(
+    return rx.box(
         rx.vstack(
             # Header (unchanged structure / slight text change)
             rx.hstack(
@@ -1248,7 +1248,7 @@ def index() -> rx.Component:
                     system_status_card(),
                     active_jobs_grid(),
                     spacing="6",
-                    width="800px",
+                    width="20%",
                     align_items="stretch",
                 ),
                 # Middle Column
@@ -1256,7 +1256,7 @@ def index() -> rx.Component:
                     job_submission_form(),
                     job_list_table(),
                     spacing="6",
-                    flex_grow=1,
+                    width="60%",
                     align_items="stretch",
                 ),
                 # Right Column
@@ -1264,7 +1264,7 @@ def index() -> rx.Component:
                     local_resource_monitor(),
                     cluster_partitions(),
                     spacing="6",
-                    width="800px",
+                    width="20%",
                     align_items="stretch",
                 ),
                 spacing="6",
@@ -1296,8 +1296,8 @@ def index() -> rx.Component:
             "background": DESIGN_TOKENS["colors"]["background"],
             "color": DESIGN_TOKENS["colors"]["text_primary"],
             "font_family": "'Inter', sans-serif",
+            "width": "100%",
         },
-        max_width="3600px",
     )
 
 
