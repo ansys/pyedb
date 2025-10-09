@@ -1241,18 +1241,35 @@ def index() -> rx.Component:
                 border_bottom=f"1px solid {DESIGN_TOKENS['colors']['border']}",
                 align_items="center",
             ),
-            # Responsive 3x2 grid layout as per requested ASCII diagram.
-            rx.grid(
-                system_status_card(grid_column="1", grid_row="1"),
-                job_submission_form(grid_column="2", grid_row="1"),
-                local_resource_monitor(grid_column="3", grid_row="1"),
-                active_jobs_grid(grid_column="1", grid_row="2"),
-                job_list_table(grid_column="2", grid_row="2"),
-                cluster_partitions(grid_column="3", grid_row="2"),
-                template_columns="repeat(3, 1fr)",
-                template_rows="auto auto",
-                gap="6",
+            # Responsive 3-column layout using hstack and vstack
+            rx.hstack(
+                # Left Column
+                rx.vstack(
+                    system_status_card(),
+                    active_jobs_grid(),
+                    spacing="6",
+                    width="33%",
+                    align_items="stretch",
+                ),
+                # Middle Column
+                rx.vstack(
+                    job_submission_form(),
+                    job_list_table(),
+                    spacing="6",
+                    width="34%",
+                    align_items="stretch",
+                ),
+                # Right Column
+                rx.vstack(
+                    local_resource_monitor(),
+                    cluster_partitions(),
+                    spacing="6",
+                    width="33%",
+                    align_items="stretch",
+                ),
+                spacing="6",
                 width="100%",
+                align_items="start",  # Align columns to the top
             ),
             # Job details panel appears full-width below grid when toggled.
             job_details_panel(width="100%"),
