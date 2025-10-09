@@ -429,11 +429,22 @@ class JobManager:
         self.app.router.add_post("/jobs/{job_id}/priority", self.handle_set_priority)
         self.app.router.add_put("/pool/limits", self.handle_edit_concurrent_limits)
         self.app.router.add_post("/system/start_monitoring", self.handle_start_monitoring)
+        self.app.router.add_get("/scheduler/partitions", self.handle_get_partitions)
         if os.path.exists("static"):
             self.app.router.add_static("/static", "static")
         else:
             os.makedirs("static", exist_ok=True)
             self.app.router.add_static("/static", "static")
+
+    async def handle_get_partitions(self, request):
+        """Get scheduler partitions."""
+        if not self._sch_mgr:
+            return web.json_response({"error": "Scheduler not supported"}, status=400)
+        try:
+            partitions = await self._sch_mgr.get_partitions()
+            return web.json_response(partitions)
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=500)
 
     async def handle_start_monitoring(self, request):
         """Endpoint to manually start resource monitoring."""
