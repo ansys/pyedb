@@ -95,13 +95,6 @@ class State(rx.State):
         except ValueError:
             self.num_cores = 1
 
-    def set_num_cores(self, value: str):
-        """Set number of cores from string input."""
-        try:
-            self.num_cores = int(value) if value else 1
-        except ValueError:
-            self.num_cores = 1
-
     def set_max_cpu_percent(self, value: list):
         """Set max CPU percent from slider."""
         if value and len(value) > 0:
@@ -131,6 +124,11 @@ class State(rx.State):
     def set_show_settings(self, value: bool):
         """Toggle settings modal."""
         self.show_settings = value
+
+    def browse_project_file(self):
+        """Trigger file browser (legacy method - now using rx.upload)."""
+        self.notification_message = "Please use the Browse button to select a file"
+        self.notification_type = "info"
 
     async def connect_to_backend(self):
         """Initialize connection to backend API and WebSocket."""
@@ -247,6 +245,17 @@ class State(rx.State):
         else:
             self.selected_job_id = job_id
             self.show_job_details = True
+
+    async def handle_upload(self, files: list[rx.UploadFile]):
+        """Handle uploaded files."""
+        if files:
+            file = files[0]
+            self.project_path = file.filename
+            self.notification_message = f"File selected: {file.filename}"
+            self.notification_type = "success"
+        else:
+            self.notification_message = "No file selected"
+            self.notification_type = "warning"
 
 
 # Design tokens and theme configuration
@@ -550,7 +559,7 @@ def job_details_panel() -> rx.Component:
 
 
 def job_submission_form() -> rx.Component:
-    """Job submission form with glass morphism design."""
+    """Job submission form with manual path entry."""
     return rx.box(
         rx.vstack(
             rx.text(
@@ -561,68 +570,120 @@ def job_submission_form() -> rx.Component:
             ),
             rx.form(
                 rx.vstack(
-                    rx.input(
-                        placeholder="Project Path (.aedt/.aedb)",
-                        value=State.project_path,
-                        on_change=State.set_project_path,
-                        required=True,
-                        style={
-                            "background": "rgba(255, 255, 255, 0.05)",
-                            "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
-                            "border_radius": "8px",
-                            "color": DESIGN_TOKENS["colors"]["--text-primary"],
-                            "padding": "12px",
-                            "_focus": {
-                                "border_color": DESIGN_TOKENS["colors"]["--primary"],
-                                "box_shadow": "0 0 0 3px rgba(59, 130, 246, 0.1)",
+                    rx.vstack(
+                        rx.text(
+                            "Project Path (.aedt/.aedb)",
+                            font_size="14px",
+                            color=DESIGN_TOKENS["colors"]["--text-secondary"],
+                        ),
+                        rx.input(
+                            placeholder=r"C:\path\to\your\project.aedt",
+                            value=State.project_path,
+                            on_change=State.set_project_path,
+                            required=True,
+                            style={
+                                "background": "rgba(255, 255, 255, 0.05)",
+                                "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
+                                "border_radius": "8px",
+                                "color": DESIGN_TOKENS["colors"]["--text-primary"],
+                                "padding": "8px 12px",
+                                "font_size": "14px",
+                                "height": "40px",
+                                "width": "100%",
+                                "_focus": {
+                                    "border_color": DESIGN_TOKENS["colors"]["--primary"],
+                                    "box_shadow": "0 0 0 3px rgba(59, 130, 246, 0.1)",
+                                },
+                                "_placeholder": {
+                                    "color": DESIGN_TOKENS["colors"]["--text-muted"],
+                                },
                             },
-                        },
+                        ),
+                        rx.text(
+                            "💡 Tip: Copy and paste the full path to your ANSYS project file",
+                            font_size="12px",
+                            color=DESIGN_TOKENS["colors"]["--text-muted"],
+                        ),
+                        spacing="2",
                     ),
                     rx.hstack(
-                        rx.input(
-                            placeholder="Design Name (optional)",
-                            value=State.design_name,
-                            on_change=State.set_design_name,
-                            style={
-                                "background": "rgba(255, 255, 255, 0.05)",
-                                "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
-                                "border_radius": "8px",
-                                "color": DESIGN_TOKENS["colors"]["--text-primary"],
-                                "padding": "12px",
-                            },
+                        rx.vstack(
+                            rx.text(
+                                "Design Name (optional)",
+                                font_size="14px",
+                                color=DESIGN_TOKENS["colors"]["--text-secondary"],
+                            ),
+                            rx.input(
+                                placeholder="Enter design name...",
+                                value=State.design_name,
+                                on_change=State.set_design_name,
+                                style={
+                                    "background": "rgba(255, 255, 255, 0.05)",
+                                    "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
+                                    "border_radius": "8px",
+                                    "color": DESIGN_TOKENS["colors"]["--text-primary"],
+                                    "padding": "8px 12px",
+                                    "font_size": "14px",
+                                    "height": "40px",
+                                    "_placeholder": {
+                                        "color": DESIGN_TOKENS["colors"]["--text-muted"],
+                                    },
+                                },
+                            ),
+                            spacing="2",
                             flex="1",
                         ),
-                        rx.input(
-                            placeholder="Setup Name (optional)",
-                            value=State.setup_name,
-                            on_change=State.set_setup_name,
-                            style={
-                                "background": "rgba(255, 255, 255, 0.05)",
-                                "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
-                                "border_radius": "8px",
-                                "color": DESIGN_TOKENS["colors"]["--text-primary"],
-                                "padding": "12px",
-                            },
+                        rx.vstack(
+                            rx.text(
+                                "Setup Name (optional)",
+                                font_size="14px",
+                                color=DESIGN_TOKENS["colors"]["--text-secondary"],
+                            ),
+                            rx.input(
+                                placeholder="Enter setup name...",
+                                value=State.setup_name,
+                                on_change=State.set_setup_name,
+                                style={
+                                    "background": "rgba(255, 255, 255, 0.05)",
+                                    "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
+                                    "border_radius": "8px",
+                                    "color": DESIGN_TOKENS["colors"]["--text-primary"],
+                                    "padding": "8px 12px",
+                                    "font_size": "14px",
+                                    "height": "40px",
+                                    "_placeholder": {
+                                        "color": DESIGN_TOKENS["colors"]["--text-muted"],
+                                    },
+                                },
+                            ),
+                            spacing="2",
                             flex="1",
                         ),
-                        spacing="3",
+                        spacing="4",
                         width="100%",
                     ),
                     rx.hstack(
                         rx.vstack(
                             rx.text("Priority", font_size="14px", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
                             rx.slider(
-                                value=[State.job_priority],  # Changed: wrapped in list
-                                on_value_commit=State.set_job_priority,
+                                default_value=[0],
+                                value=[State.job_priority],
+                                on_change=State.set_job_priority,
                                 min_=-10,
                                 max_=10,
                                 step=1,
                                 width="100%",
+                                style={
+                                    "height": "20px",
+                                },
                             ),
                             rx.text(
-                                State.job_priority, font_size="12px", color=DESIGN_TOKENS["colors"]["--text-muted"]
+                                f"Value: {State.job_priority}",
+                                font_size="12px",
+                                color=DESIGN_TOKENS["colors"]["--text-muted"],
                             ),
-                            spacing="1",
+                            spacing="2",
+                            flex="1",
                         ),
                         rx.vstack(
                             rx.text("Cores", font_size="14px", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
@@ -637,12 +698,19 @@ def job_submission_form() -> rx.Component:
                                     "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
                                     "border_radius": "8px",
                                     "color": DESIGN_TOKENS["colors"]["--text-primary"],
+                                    "padding": "8px 12px",
+                                    "font_size": "14px",
+                                    "height": "40px",
+                                    "width": "80px",
+                                    "text_align": "center",
                                 },
                             ),
-                            spacing="1",
+                            spacing="2",
+                            flex="1",
                         ),
                         spacing="6",
                         width="100%",
+                        align_items="end",
                     ),
                     rx.button(
                         "Submit Job",
@@ -650,8 +718,9 @@ def job_submission_form() -> rx.Component:
                         style=PRIMARY_BUTTON_STYLE,
                         width="100%",
                         loading=State.loading,
+                        size="3",
                     ),
-                    spacing="4",
+                    spacing="6",
                     width="100%",
                 ),
             ),
@@ -724,100 +793,142 @@ def system_status_card() -> rx.Component:
 
 def settings_modal() -> rx.Component:
     """Settings modal for resource limits."""
-    return rx.dialog.root(
-        rx.dialog.trigger(
-            rx.button("Settings", style={"display": "none"}),  # Hidden trigger
-        ),
-        rx.dialog.content(
-            rx.dialog.title(
-                "Resource Limits",
-                color=DESIGN_TOKENS["colors"]["--text-primary"],
-            ),
-            rx.vstack(
-                rx.vstack(
-                    rx.text(
-                        "Max Concurrent Jobs",
-                        font_size="14px",
-                        color=DESIGN_TOKENS["colors"]["--text-secondary"],
-                    ),
-                    rx.input(
-                        type="number",
-                        value=State.max_concurrent_jobs,
-                        on_change=State.set_max_concurrent_jobs,
-                        min="1",
-                        max="20",
-                    ),
-                    spacing="1",
+    return rx.cond(
+        State.show_settings,
+        rx.dialog.root(
+            rx.dialog.content(
+                rx.dialog.title(
+                    "Resource Limits",
+                    color=DESIGN_TOKENS["colors"]["--text-primary"],
                 ),
                 rx.vstack(
-                    rx.text("Max CPU %", font_size="14px", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
-                    rx.slider(
-                        value=[State.max_cpu_percent],
-                        on_value_commit=State.set_max_cpu_percent,
-                        min_=10,
-                        max_=100,
-                        step=5,
+                    rx.vstack(
+                        rx.text(
+                            "Max Concurrent Jobs",
+                            font_size="14px",
+                            color=DESIGN_TOKENS["colors"]["--text-secondary"],
+                        ),
+                        rx.input(
+                            type="number",
+                            value=State.max_concurrent_jobs,
+                            on_change=State.set_max_concurrent_jobs,
+                            min="1",
+                            max="20",
+                            style={
+                                "background": "rgba(255, 255, 255, 0.05)",
+                                "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
+                                "border_radius": "8px",
+                                "color": DESIGN_TOKENS["colors"]["--text-primary"],
+                                "padding": "8px 12px",
+                                "font_size": "14px",
+                                "height": "40px",
+                                "width": "100px",
+                                "text_align": "center",
+                            },
+                        ),
+                        spacing="2",
                     ),
-                    rx.text(
-                        f"{State.max_cpu_percent}%",
-                        font_size="12px",
-                        color=DESIGN_TOKENS["colors"]["--text-muted"],
+                    rx.vstack(
+                        rx.text("Max CPU %", font_size="14px", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
+                        rx.slider(
+                            default_value=[75],
+                            value=[State.max_cpu_percent],
+                            on_change=State.set_max_cpu_percent,
+                            min_=10,
+                            max_=100,
+                            step=5,
+                            width="100%",
+                            style={
+                                "height": "20px",
+                            },
+                        ),
+                        rx.text(
+                            f"Value: {State.max_cpu_percent}%",
+                            font_size="12px",
+                            color=DESIGN_TOKENS["colors"]["--text-muted"],
+                        ),
+                        spacing="2",
                     ),
-                    spacing="1",
-                ),
-                rx.vstack(
-                    rx.text("Min Memory (GB)", font_size="14px", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
-                    rx.input(
-                        type="number",
-                        value=State.min_memory_gb,
-                        on_change=State.set_min_memory_gb,
-                        min="1",
-                        max="128",
-                        step="0.5",
+                    rx.vstack(
+                        rx.text("Min Memory (GB)", font_size="14px", color=DESIGN_TOKENS["colors"]["--text-secondary"]),
+                        rx.input(
+                            type="number",
+                            value=State.min_memory_gb,
+                            on_change=State.set_min_memory_gb,
+                            min="1",
+                            max="128",
+                            step="0.5",
+                            style={
+                                "background": "rgba(255, 255, 255, 0.05)",
+                                "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
+                                "border_radius": "8px",
+                                "color": DESIGN_TOKENS["colors"]["--text-primary"],
+                                "padding": "8px 12px",
+                                "font_size": "14px",
+                                "height": "40px",
+                                "width": "100px",
+                                "text_align": "center",
+                            },
+                        ),
+                        spacing="2",
                     ),
-                    spacing="1",
-                ),
-                rx.vstack(
-                    rx.text(
-                        "Min Disk Space (GB)",
-                        font_size="14px",
-                        color=DESIGN_TOKENS["colors"]["--text-secondary"],
+                    rx.vstack(
+                        rx.text(
+                            "Min Disk Space (GB)",
+                            font_size="14px",
+                            color=DESIGN_TOKENS["colors"]["--text-secondary"],
+                        ),
+                        rx.input(
+                            type="number",
+                            value=State.min_disk_gb,
+                            on_change=State.set_min_disk_gb,
+                            min="1",
+                            max="1000",
+                            step="1",
+                            style={
+                                "background": "rgba(255, 255, 255, 0.05)",
+                                "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
+                                "border_radius": "8px",
+                                "color": DESIGN_TOKENS["colors"]["--text-primary"],
+                                "padding": "8px 12px",
+                                "font_size": "14px",
+                                "height": "40px",
+                                "width": "100px",
+                                "text_align": "center",
+                            },
+                        ),
+                        spacing="2",
                     ),
-                    rx.input(
-                        type="number",
-                        value=State.min_disk_gb,
-                        on_change=State.set_min_disk_gb,
-                        min="1",
-                        max="1000",
-                        step="1",
-                    ),
-                    spacing="1",
-                ),
-                rx.hstack(
-                    rx.dialog.close(
+                    rx.hstack(
                         rx.button(
                             "Cancel",
+                            on_click=State.set_show_settings(False),
                             variant="ghost",
+                            size="3",
                         ),
+                        rx.button(
+                            "Save Changes",
+                            on_click=State.update_concurrent_limits,
+                            style=PRIMARY_BUTTON_STYLE,
+                            size="3",
+                        ),
+                        spacing="3",
+                        justify="end",
                     ),
-                    rx.button(
-                        "Save Changes",
-                        on_click=State.update_concurrent_limits,
-                        style=PRIMARY_BUTTON_STYLE,
-                    ),
-                    spacing="3",
+                    spacing="6",
+                    width="100%",
                 ),
-                spacing="4",
-                width="100%",
+                style={
+                    "background": DESIGN_TOKENS["colors"]["--surface"],
+                    "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
+                    "border_radius": "16px",
+                    "padding": "24px",
+                    "min_width": "500px",
+                    "max_width": "600px",
+                },
             ),
-            style={
-                "background": DESIGN_TOKENS["colors"]["--surface"],
-                "border": f"1px solid {DESIGN_TOKENS['colors']['--border']}",
-                "border_radius": "16px",
-                "padding": "24px",
-            },
+            open=True,
         ),
-        open=State.show_settings,
     )
 
 
@@ -934,7 +1045,7 @@ def main_content() -> rx.Component:
                     grid_column="span 2",
                 ),
                 columns="3",
-                spacing="6",  # Changed from "24px"
+                spacing="6",
                 width="100%",
             ),
             rx.box(
@@ -951,13 +1062,13 @@ def main_content() -> rx.Component:
                             shimmer_skeleton(),
                             shimmer_skeleton(),
                             shimmer_skeleton(),
-                            spacing="4",  # Changed from "16px"
+                            spacing="4",
                         ),
                         rx.cond(
                             State.jobs.length() > 0,
                             rx.vstack(
                                 rx.foreach(State.jobs, job_card),
-                                spacing="4",  # Changed from "16px"
+                                spacing="4",
                                 width="100%",
                             ),
                             rx.box(
@@ -973,16 +1084,16 @@ def main_content() -> rx.Component:
                             ),
                         ),
                     ),
-                    spacing="4",  # Changed from "16px"
+                    spacing="4",
                     width="100%",
                 ),
                 style=CARD_STYLE,
             ),
             job_details_panel(),
-            spacing="6",  # Changed from "24px"
+            spacing="6",
             width="100%",
         ),
-        max_width="1200px",
+        max_width="1400px",  # Increased from 1200px
         padding="24px",
     )
 
@@ -1007,6 +1118,8 @@ def index() -> rx.Component:
     )
 
 
-app = rx.App(stylesheets=["custom.css"])
+app = rx.App(
+    stylesheets=["custom.css"],
+)
 
 app.add_page(index, route="/")

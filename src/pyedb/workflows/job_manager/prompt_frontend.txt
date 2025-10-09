@@ -1,0 +1,27 @@
+Desktop like front end UI connecting attached backend
+selected framework : Reflex
+Auto detection if running on Local (SchedulerTpye.None) or cluster (lsf or slurm) -> backend has auto dectection
+listing all jobs both on JobPool and / or Cluster
+If running on cluster, add a section listing all partitions and showing resources monitor (cpu used vs available, memory...)
+Add also a section showing local resources (RAM, cpu disk space)
+Add a button to submit manually a new job (local or on scheduler).
+	-> open a new window
+		-> the option I need:
+			-> project file -> Need to browse local file. Refelx doe snot provide this find a way to implement with upload like mechanism.
+			-> number of cpus (if local)
+			-> number of nodes and cpus per node (if on scheduler)
+			-> task per node (if on scheduler)
+			-> queue selection (if on scheduler)
+			-> all batch options available in HFSS3DLayoutBatchOptions (job_submission.py)
+		-> button submit either submit the job on JobPool or scheduler.
+The frontend has to monitor continuously:
+	-> job list and job status
+	-> local resources
+	-> cluster partitions resources (if on scheduler)
+frontend should have modern rendering:
+	-> moder shadow and transparency
+	-> lift up effect for components
+	-> dark background color
+	-> components with lighter color
+Layout should be optimized to maximize user expererience
+
