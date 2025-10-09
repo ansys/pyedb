@@ -221,9 +221,15 @@ class State(rx.State):
 
     async def poll_backend(self):
         """Poll the backend periodically for updates."""
+        # Initial load
+        await self.connect_to_backend()
+        yield
+
+        # Continuous polling
         while True:
-            await self.connect_to_backend()
             await asyncio.sleep(5)
+            await self.load_initial_data()
+            yield
 
     async def load_initial_data(self):
         """Load jobs, queue stats, and system status."""

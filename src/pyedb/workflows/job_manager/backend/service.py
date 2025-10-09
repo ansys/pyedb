@@ -199,32 +199,32 @@ class ResourceMonitor:
 
                 # Memory usage
                 memory = psutil.virtual_memory()
-                memory_percent = memory.percent
-                memory_used_gb = memory.used / (1024**3)
                 memory_total_gb = memory.total / (1024**3)
+                memory_used_gb = memory.used / (1024**3)
                 memory_free_gb = memory.available / (1024**3)
 
-                # Disk usage
-                disk = psutil.disk_usage("/tmp" if platform.system() != "Windows" else "C:\\")
+                # Disk usage (checking the root directory)
+                disk = psutil.disk_usage(os.path.abspath(os.sep))
                 disk_usage_percent = disk.percent
                 disk_free_gb = disk.free / (1024**3)
 
-                self.current_usage = {
-                    "cpu_percent": cpu_percent,
-                    "memory_percent": memory_percent,
-                    "memory_used_gb": round(memory_used_gb, 2),
-                    "memory_total_gb": round(memory_total_gb, 2),
-                    "memory_free_gb": round(memory_free_gb, 2),
-                    "disk_usage_percent": disk_usage_percent,
-                    "disk_free_gb": round(disk_free_gb, 2),
-                    "timestamp": datetime.now().isoformat(),
-                }
-
-                await asyncio.sleep(self.update_interval)
+                self.current_usage.update(
+                    {
+                        "cpu_percent": cpu_percent,
+                        "memory_percent": memory.percent,
+                        "memory_used_gb": round(memory_used_gb, 2),
+                        "memory_total_gb": round(memory_total_gb, 2),
+                        "memory_free_gb": round(memory_free_gb, 2),
+                        "disk_usage_percent": disk_usage_percent,
+                        "disk_free_gb": round(disk_free_gb, 2),
+                        "timestamp": datetime.now().isoformat(),
+                    }
+                )
 
             except Exception as e:
                 logger.error(f"Resource monitoring error: {e}")
-                await asyncio.sleep(self.update_interval)
+
+            await asyncio.sleep(self.update_interval)
 
 
 class JobPoolManager:
@@ -430,11 +430,39 @@ class JobManager:
         self.app.router.add_put("/pool/limits", self.handle_edit_concurrent_limits)
         self.app.router.add_post("/system/start_monitoring", self.handle_start_monitoring)
         self.app.router.add_get("/scheduler/partitions", self.handle_get_partitions)
+        self.app.router.add_get("/system/status", self.handle_get_system_status)
         if os.path.exists("static"):
             self.app.router.add_static("/static", "static")
         else:
             os.makedirs("static", exist_ok=True)
             self.app.router.add_static("/static", "static")
+
+    async def handle_get_system_status(self, request):
+        """Endpoint to provide system and scheduler status."""
+        # Ensure resource monitoring is active
+        self._ensure_monitor_running()
+
+        running_jobs = sum(1 for job in self.jobs.values() if job.status == JobStatus.RUNNING)
+        queued_jobs = sum(1 for job in self.jobs.values() if job.status == JobStatus.QUEUED)
+        status = {
+            "scheduler_detection": {
+                "active_scheduler": "Not implemented in JobManager",
+                "detected_by": "JobManager",
+                "backend_available": True,
+            },
+            "resource_monitoring": {
+                "active": self._monitor_task is not None and not self._monitor_task.done(),
+                "last_update": self.resource_monitor.current_usage.get("timestamp", "Never"),
+                **self.resource_monitor.current_usage,
+            },
+            "mode": "local",  # Simplified for now
+            "local_pool": {
+                "running_jobs": running_jobs,
+                "queued_jobs": queued_jobs,
+                "max_concurrent": self.resource_limits.max_concurrent_jobs,
+            },
+        }
+        return web.json_response(status)
 
     async def handle_get_partitions(self, request):
         """Get scheduler partitions."""
@@ -1110,7 +1138,7 @@ class SchedulerManager:
     async def _lsf_partitions(self) -> List[Dict[str, Any]]:
         """
         Combine ``bqueues -o 'queue_name max num_proc'`` and
-        ``bhosts -o 'host_name max mem ncpus'`` to build per-queue stats.
+        ``bhosts -o 'host_name max_mem ncpus'`` to build per-queue stats.
         """
         # 1. Queues
         queues_raw = await self._run(["bqueues", "-o", "queue_name:20 max:10 num_proc:10", "-noheader"])

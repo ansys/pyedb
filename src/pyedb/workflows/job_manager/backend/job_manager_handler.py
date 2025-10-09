@@ -64,9 +64,8 @@ class JobManagerHandler:
         self._url = f"http://{host}:{port}"
 
         # --- NEW: Setup aiohttp and Socket.IO server ---
-        self.sio = socketio.AsyncServer(async_mode="aiohttp", cors_allowed_origins="*")
-        self.app = self._create_web_app()
-        self.sio.attach(self.app)
+        self.sio = self.manager.sio
+        self.app = self.manager.app
         # -----------------------------------------------
 
         self.runner: Optional[web.AppRunner] = None
@@ -80,135 +79,6 @@ class JobManagerHandler:
 
         self.scheduler_type = self._detect_scheduler()
         self._sch_mgr: Optional[SchedulerManager] = None
-
-    def _create_web_app(self) -> web.Application:
-        """Create and configure the aiohttp web application and its routes."""
-        app = web.Application()
-
-        async def get_system_status(request):
-            """Endpoint to provide system and scheduler status."""
-            # Ensure resource monitoring is active
-            if (
-                not hasattr(self.manager, "_monitor_task")
-                or self.manager._monitor_task is None
-                or self.manager._monitor_task.done()
-            ):
-                self.manager._monitor_task = asyncio.create_task(self.manager.resource_monitor.monitor_resources())
-
-            running_jobs = sum(1 for job in self.manager.jobs.values() if job["status"] == "running")
-            queued_jobs = sum(1 for job in self.manager.jobs.values() if job["status"] == "queued")
-            status = {
-                "scheduler_detection": {
-                    "active_scheduler": self.scheduler_type.value,
-                    "detected_by": "JobManagerHandler._detect_scheduler()",
-                    "backend_available": True,
-                },
-                "resource_monitoring": {
-                    "active": hasattr(self.manager, "_monitor_task")
-                    and self.manager._monitor_task is not None
-                    and not self.manager._monitor_task.done(),
-                    "last_update": self.manager.resource_monitor.current_usage.get("timestamp", "Never"),
-                },
-                "mode": "local" if self.scheduler_type == SchedulerType.NONE else "scheduler",
-                "local_pool": {
-                    "running_jobs": running_jobs,
-                    "queued_jobs": queued_jobs,
-                    "max_concurrent": self.manager.resource_limits.max_concurrent_jobs,
-                },
-            }
-            return web.json_response(status)
-
-        async def submit_job(request):
-            """Endpoint to submit a new job."""
-            try:
-                data = await request.json()
-                priority = data.get("priority", 0)
-
-                if not data.get("project_path"):
-                    return web.json_response({"success": False, "error": "project_path is required"}, status=400)
-
-                sim_config = self.create_simulation_config(
-                    project_path=data["project_path"],
-                    jobid=data.get("jobid"),
-                    scheduler_type=self.scheduler_type,
-                    ansys_edt_path=data.get("ansys_edt_path"),
-                )
-
-                # Populate all possible values from request data
-                config_fields = [
-                    "design_name",
-                    "setup_name",
-                    "sweep_name",
-                    "solution_name",
-                    "working_dir",
-                    "output_dir",
-                    "num_cores",
-                    "memory_limit_gb",
-                    "time_limit_hours",
-                    "partition",
-                    "queue",
-                    "environment_vars",
-                    "additional_args",
-                    "scheduler_options",
-                ]
-
-                for field in config_fields:
-                    if field in data:
-                        setattr(sim_config, field, data[field])
-
-                job_id = await self.manager.submit_job(sim_config, priority)
-                return web.json_response({"success": True, "job_id": job_id})
-            except Exception as e:
-                return web.json_response({"success": False, "error": str(e)}, status=500)
-
-        async def get_all_jobs(request):
-            """Endpoint to get the list of all jobs."""
-            return web.json_response(list(self.manager.jobs.values()))
-
-        async def get_queue_stats(request):
-            """Endpoint to get queue statistics."""
-            running_jobs = sum(1 for job in self.manager.jobs.values() if job["status"] == "running")
-            queued_jobs = sum(1 for job in self.manager.jobs.values() if job["status"] == "queued")
-            return web.json_response(
-                {
-                    "running_jobs": running_jobs,
-                    "total_queued": queued_jobs,
-                    "max_concurrent": self.manager.resource_limits.max_concurrent_jobs,
-                }
-            )
-
-        async def edit_concurrent_limits(request):
-            """Endpoint to edit concurrent job limits in the pool"""
-            try:
-                data = await request.json()
-
-                if not data:
-                    return web.json_response({"error": "No data provided"}, status=400)
-
-                # Update the concurrent job limits
-                updated_limits = await self.manager.edit_concurrent_limits(data)
-
-                if updated_limits:
-                    return web.json_response(
-                        {
-                            "success": True,
-                            "message": "Concurrent job limits updated successfully",
-                            "limits": updated_limits,
-                        }
-                    )
-                else:
-                    return web.json_response({"error": "Failed to update limits"}, status=400)
-
-            except Exception as e:
-                return web.json_response({"error": str(e)}, status=500)
-
-        app.router.add_get("/system/status", get_system_status)
-        app.router.add_post("/jobs/submit", submit_job)
-        app.router.add_get("/jobs", get_all_jobs)
-        app.router.add_get("/queue", get_queue_stats)
-        app.router.add_put("/pool/limits", edit_concurrent_limits)
-
-        return app
 
     @staticmethod
     def _detect_scheduler() -> SchedulerType:
