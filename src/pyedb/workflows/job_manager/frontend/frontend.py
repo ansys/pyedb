@@ -652,7 +652,7 @@ def job_submission_form(**props) -> rx.Component:
                         ),
                         rx.hstack(
                             rx.upload(
-                                rx.button("Browse", variant="soft"),
+                                rx.button("Browse", variant="soft", size="2"),
                                 id="upload_project",
                                 on_drop=State.handle_file_upload,
                             ),
@@ -1248,7 +1248,7 @@ def index() -> rx.Component:
                     system_status_card(),
                     active_jobs_grid(),
                     spacing="6",
-                    width="33%",
+                    width="800px",
                     align_items="stretch",
                 ),
                 # Middle Column
@@ -1256,7 +1256,7 @@ def index() -> rx.Component:
                     job_submission_form(),
                     job_list_table(),
                     spacing="6",
-                    width="34%",
+                    flex_grow=1,
                     align_items="stretch",
                 ),
                 # Right Column
@@ -1264,7 +1264,7 @@ def index() -> rx.Component:
                     local_resource_monitor(),
                     cluster_partitions(),
                     spacing="6",
-                    width="33%",
+                    width="800px",
                     align_items="stretch",
                 ),
                 spacing="6",
@@ -1297,7 +1297,7 @@ def index() -> rx.Component:
             "color": DESIGN_TOKENS["colors"]["text_primary"],
             "font_family": "'Inter', sans-serif",
         },
-        max_width="100%",
+        max_width="3600px",
     )
 
 
