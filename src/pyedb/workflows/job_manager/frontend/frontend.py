@@ -51,6 +51,7 @@ class State(rx.State):
     num_cores: int = 1
     memory_limit: str = "4GB"
     scheduler_type: str = "none"
+    download_folder: str = ""
     hfss_batch_options: Dict[str, Any] = {
         "create_starting_mesh": False,
         "default_process_priority": "Normal",
@@ -131,6 +132,10 @@ class State(rx.State):
         """Set setup name from input."""
         self.setup_name = value
 
+    def set_download_folder(self, value: str):
+        """Set download folder from input."""
+        self.download_folder = value
+
     def set_notification_message(self, value: str):
         """Set notification message."""
         self.notification_message = value
@@ -183,6 +188,16 @@ class State(rx.State):
             self.project_path = outfile
             self.notification_message = f"File {files[0].filename} uploaded."
             self.notification_type = "success"
+
+    async def handle_folder_upload(self, files: list[rx.UploadFile]):
+        """Handle folder uploads."""
+        if files:
+            file = files[0]
+            # We can't get the full path, so we'll just use the filename to indicate selection.
+            # The user will have to type the path.
+            self.download_folder = file.filename
+            self.notification_message = f"File {file.filename} selected to identify folder. Please verify the path."
+            self.notification_type = "info"
 
     async def connect_to_backend(self):
         """Initialize connection to backend API and WebSocket."""
@@ -247,6 +262,7 @@ class State(rx.State):
             "memory_limit_gb": int(self.memory_limit.replace("GB", "")),
             "scheduler_type": self.scheduler_type,
             "hfss_batch_options": self.hfss_batch_options,
+            "download_folder": self.download_folder,
         }
         if self.scheduler_type != "none":
             job_data.update(
@@ -271,6 +287,7 @@ class State(rx.State):
                         self.project_path = ""
                         self.design_name = ""
                         self.setup_name = ""
+                        self.download_folder = ""
                         self.show_new_job_modal = False
                     else:
                         self.notification_message = f"Job submission failed: {result.get('error')}"
@@ -517,17 +534,15 @@ def job_card(job: Dict[str, Any]) -> rx.Component:
             rx.vstack(
                 rx.button(
                     rx.icon("eye"),
-                    on_click=State.toggle_job_details(job.get("jobid", "")),
+                    on_click=lambda: State.toggle_job_details(job.get("jobid", "")),
                     variant="ghost",
-                    size="2",
                 ),
                 rx.cond(
                     (job.get("status") == "queued") | (job.get("status") == "running"),
                     rx.button(
                         rx.icon("x"),
-                        on_click=State.cancel_job(job.get("jobid", "")),
+                        on_click=lambda: State.cancel_job(job.get("jobid", "")),
                         variant="ghost",
-                        size="2",
                         color_scheme="red",
                     ),
                 ),
@@ -538,7 +553,7 @@ def job_card(job: Dict[str, Any]) -> rx.Component:
             width="100%",
         ),
         style=CARD_STYLE,
-        on_click=State.toggle_job_details(job.get("jobid", "")),
+        on_click=lambda: State.toggle_job_details(job.get("jobid", "")),
     )
 
 
@@ -607,9 +622,8 @@ def job_details_panel(**props) -> rx.Component:
                     ),
                     rx.button(
                         rx.icon("x"),
-                        on_click=State.toggle_job_details(""),
+                        on_click=lambda: State.toggle_job_details(""),
                         variant="ghost",
-                        size="2",
                     ),
                     justify_content="space-between",
                     width="100%",
@@ -693,9 +707,10 @@ def job_submission_form() -> rx.Component:
                         ),
                         rx.hstack(
                             rx.upload(
-                                rx.button("Browse", variant="soft", size="2"),
+                                rx.button("Browse", variant="soft"),
                                 id="upload_project",
                                 on_drop=State.handle_file_upload,
+                                style={"border": "0px", "padding": "0px"},
                             ),
                             rx.input(
                                 value=State.project_path,
@@ -711,23 +726,21 @@ def job_submission_form() -> rx.Component:
                                     "height": "40px",
                                 },
                             ),
-                            spacing="2",
-                            width="100%",
                         ),
                         spacing="2",
                         width="100%",
                     ),
-                    rx.hstack(
-                        rx.vstack(
-                            rx.text(
-                                "Design Name (optional)",
-                                font_size="14px",
-                                color=DESIGN_TOKENS["colors"]["text_secondary"],
-                            ),
+                    rx.vstack(
+                        rx.text(
+                            "Download folder (optional)",
+                            font_size="14px",
+                            color=DESIGN_TOKENS["colors"]["text_secondary"],
+                        ),
+                        rx.hstack(
                             rx.input(
-                                placeholder="Enter design name...",
-                                value=State.design_name,
-                                on_change=State.set_design_name,
+                                placeholder="Enter a folder...",
+                                value=State.download_folder,
+                                on_change=State.set_download_folder,
                                 style={
                                     "background": "rgba(255, 255, 255, 0.05)",
                                     "border": f"1px solid {DESIGN_TOKENS['colors']['border']}",
@@ -741,36 +754,8 @@ def job_submission_form() -> rx.Component:
                                     },
                                 },
                             ),
-                            spacing="2",
-                            flex="1",
                         ),
-                        rx.vstack(
-                            rx.text(
-                                "Setup Name (optional)",
-                                font_size="14px",
-                                color=DESIGN_TOKENS["colors"]["text_secondary"],
-                            ),
-                            rx.input(
-                                placeholder="Enter setup name...",
-                                value=State.setup_name,
-                                on_change=State.set_setup_name,
-                                style={
-                                    "background": "rgba(255, 255, 255, 0.05)",
-                                    "border": f"1px solid {DESIGN_TOKENS['colors']['border']}",
-                                    "border_radius": "8px",
-                                    "color": DESIGN_TOKENS["colors"]["text_primary"],
-                                    "padding": "8px 12px",
-                                    "font_size": "14px",
-                                    "height": "40px",
-                                    "_placeholder": {
-                                        "color": DESIGN_TOKENS["colors"]["text_muted"],
-                                    },
-                                },
-                            ),
-                            spacing="2",
-                            flex="1",
-                        ),
-                        spacing="4",
+                        spacing="2",
                         width="100%",
                     ),
                     rx.hstack(
@@ -886,7 +871,7 @@ def job_submission_form() -> rx.Component:
                         rx.dialog.close(
                             rx.button(
                                 "Cancel",
-                                on_click=State.set_show_new_job_modal(False),
+                                on_click=lambda: State.set_show_new_job_modal(False),
                                 variant="soft",
                                 color_scheme="gray",
                             )
@@ -1179,15 +1164,13 @@ def settings_modal() -> rx.Component:
                     rx.hstack(
                         rx.button(
                             "Cancel",
-                            on_click=State.set_show_settings(False),
+                            on_click=lambda: State.set_show_settings(False),
                             variant="ghost",
-                            size="3",
                         ),
                         rx.button(
                             "Save Changes",
                             on_click=State.update_concurrent_limits,
                             style=PRIMARY_BUTTON_STYLE,
-                            size="3",
                         ),
                         spacing="3",
                         justify="end",
@@ -1242,9 +1225,8 @@ def notification_toast() -> rx.Component:
                 ),
                 rx.button(
                     rx.icon("x"),
-                    on_click=State.set_notification_message(""),
+                    on_click=lambda: State.set_notification_message(""),
                     variant="ghost",
-                    size="1",
                 ),
                 justify_content="space-between",
                 align_items="center",
@@ -1287,9 +1269,8 @@ def header() -> rx.Component:
                 ),
                 rx.button(
                     rx.icon("settings"),
-                    on_click=State.set_show_settings(True),
+                    on_click=lambda: State.set_show_settings(True),
                     variant="ghost",
-                    size="3",
                 ),
                 spacing="4",
                 align_items="center",
@@ -1313,7 +1294,7 @@ def index() -> rx.Component:
             rx.hstack(
                 rx.hstack(
                     rx.image(src="/ansys-logo.png", height="40px"),
-                    rx.heading("Ansys Job Manager", size="8", color=DESIGN_TOKENS["colors"]["text_primary"]),
+                    rx.heading("Ansys Job Manager", color=DESIGN_TOKENS["colors"]["text_primary"]),
                     spacing="4",
                     align_items="center",
                 ),
@@ -1324,13 +1305,11 @@ def index() -> rx.Component:
                         State.scheduler_type,
                         color_scheme="blue",
                         variant="soft",
-                        size="2",
                     ),
                     rx.button(
                         rx.icon("settings"),
-                        on_click=State.set_show_settings(True),
+                        on_click=lambda: State.set_show_settings(True),
                         variant="ghost",
-                        size="2",
                     ),
                     spacing="4",
                     align_items="center",
@@ -1353,13 +1332,12 @@ def index() -> rx.Component:
                 # Middle Column
                 rx.vstack(
                     rx.hstack(
-                        rx.heading("Job Queue", size="8"),
+                        rx.heading("Job Queue"),
                         rx.spacer(),
                         rx.button(
                             "Create New Job",
-                            on_click=State.set_show_new_job_modal(True),
+                            on_click=lambda: State.set_show_new_job_modal(True),
                             style=PRIMARY_BUTTON_STYLE,
-                            size="3",
                         ),
                         width="100%",
                         align_items="center",
