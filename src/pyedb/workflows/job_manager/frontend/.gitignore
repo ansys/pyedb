@@ -1,6 +1,0 @@
-assets/external/
-*.db
-__pycache__/
-.states
-.web
-*.py[cod]
