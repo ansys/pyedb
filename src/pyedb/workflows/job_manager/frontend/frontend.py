@@ -68,8 +68,15 @@ class State(rx.State):
     # UI state
     show_job_details: bool = False
     show_settings: bool = False
+    show_new_job_modal: bool = False
     notification_message: str = ""
     notification_type: str = "info"  # info, success, warning, error
+
+    # Scheduler options
+    node_number: int = 1
+    cores_per_node: int = 1
+    tasks_per_node: int = 1
+    partition_name: str = ""
 
     # Add these setter methods here (they are NOT async)
     def set_max_concurrent_jobs(self, value: str):
@@ -100,7 +107,7 @@ class State(rx.State):
         except ValueError:
             self.num_cores = 1
 
-    def set_max_cpu_percent(self, value: list):
+    def set_max_cpu_percent(self, value: list[float]):
         """Set max CPU percent from slider."""
         if value and len(value) > 0:
             self.max_cpu_percent = float(value[0])
@@ -131,6 +138,35 @@ class State(rx.State):
     def set_show_settings(self, value: bool):
         """Toggle settings modal."""
         self.show_settings = value
+
+    def set_show_new_job_modal(self, value: bool):
+        """Toggle new job modal."""
+        self.show_new_job_modal = value
+
+    def set_node_number(self, value: str):
+        """Set node number from string input."""
+        try:
+            self.node_number = int(value) if value else 1
+        except ValueError:
+            self.node_number = 1
+
+    def set_cores_per_node(self, value: str):
+        """Set cores per node from string input."""
+        try:
+            self.cores_per_node = int(value) if value else 1
+        except ValueError:
+            self.cores_per_node = 1
+
+    def set_tasks_per_node(self, value: str):
+        """Set tasks per node from string input."""
+        try:
+            self.tasks_per_node = int(value) if value else 1
+        except ValueError:
+            self.tasks_per_node = 1
+
+    def set_partition_name(self, value: str):
+        """Set partition name from input."""
+        self.partition_name = value
 
     def browse_project_file(self):
         """Trigger file browser (legacy method - now using rx.upload)."""
@@ -212,6 +248,15 @@ class State(rx.State):
             "scheduler_type": self.scheduler_type,
             "hfss_batch_options": self.hfss_batch_options,
         }
+        if self.scheduler_type != "none":
+            job_data.update(
+                {
+                    "node_number": self.node_number,
+                    "cores_per_node": self.cores_per_node,
+                    "tasks_per_node": self.tasks_per_node,
+                    "partition_name": self.partition_name,
+                }
+            )
 
         try:
             async with httpx.AsyncClient() as client:
@@ -222,10 +267,11 @@ class State(rx.State):
                         self.notification_message = f"Job {result['job_id']} submitted successfully"
                         self.notification_type = "success"
                         await self.load_initial_data()
-                        # Clear form
+                        # Clear form and close modal
                         self.project_path = ""
                         self.design_name = ""
                         self.setup_name = ""
+                        self.show_new_job_modal = False
                     else:
                         self.notification_message = f"Job submission failed: {result.get('error')}"
                         self.notification_type = "error"
@@ -632,16 +678,11 @@ def job_details_panel(**props) -> rx.Component:
     )
 
 
-def job_submission_form(**props) -> rx.Component:
-    """Job submission form with manual path entry."""
-    return rx.box(
-        rx.vstack(
-            rx.text(
-                "Submit New Job",
-                font_size="24px",
-                font_weight="700",
-                color=DESIGN_TOKENS["colors"]["text_primary"],
-            ),
+def job_submission_form() -> rx.Component:
+    """Job submission form modal."""
+    return rx.dialog.root(
+        rx.dialog.content(
+            rx.dialog.title("Submit New Job"),
             rx.form(
                 rx.vstack(
                     rx.vstack(
@@ -779,6 +820,49 @@ def job_submission_form(**props) -> rx.Component:
                         width="100%",
                         align_items="end",
                     ),
+                    rx.cond(
+                        State.scheduler_type != "none",
+                        rx.vstack(
+                            rx.text("Scheduler Options", font_size="16px", font_weight="600"),
+                            rx.hstack(
+                                rx.vstack(
+                                    rx.text("Nodes", font_size="14px"),
+                                    rx.input(
+                                        type="number",
+                                        value=State.node_number,
+                                        on_change=State.set_node_number,
+                                    ),
+                                ),
+                                rx.vstack(
+                                    rx.text("Cores/Node", font_size="14px"),
+                                    rx.input(
+                                        type="number",
+                                        value=State.cores_per_node,
+                                        on_change=State.set_cores_per_node,
+                                    ),
+                                ),
+                                rx.vstack(
+                                    rx.text("Tasks/Node", font_size="14px"),
+                                    rx.input(
+                                        type="number",
+                                        value=State.tasks_per_node,
+                                        on_change=State.set_tasks_per_node,
+                                    ),
+                                ),
+                                rx.vstack(
+                                    rx.text("Partition", font_size="14px"),
+                                    rx.input(
+                                        value=State.partition_name,
+                                        on_change=State.set_partition_name,
+                                    ),
+                                ),
+                                spacing="4",
+                                width="100%",
+                            ),
+                            spacing="4",
+                            width="100%",
+                        ),
+                    ),
                     rx.text("HFSS Batch Options", font_size="16px", font_weight="600"),
                     rx.hstack(
                         rx.checkbox(
@@ -798,23 +882,38 @@ def job_submission_form(**props) -> rx.Component:
                         ),
                         spacing="4",
                     ),
-                    rx.button(
-                        "Submit Job",
-                        on_click=State.submit_job,
-                        style=PRIMARY_BUTTON_STYLE,
+                    rx.hstack(
+                        rx.dialog.close(
+                            rx.button(
+                                "Cancel",
+                                on_click=State.set_show_new_job_modal(False),
+                                variant="soft",
+                                color_scheme="gray",
+                            )
+                        ),
+                        rx.button(
+                            "Submit Job",
+                            on_click=State.submit_job,
+                            style=PRIMARY_BUTTON_STYLE,
+                            loading=State.loading,
+                        ),
+                        spacing="3",
+                        justify="end",
                         width="100%",
-                        loading=State.loading,
-                        size="3",
                     ),
                     spacing="4",
                     width="100%",
                 ),
             ),
-            spacing="4",
-            width="100%",
+            style={
+                "background": DESIGN_TOKENS["colors"]["surface"],
+                "border": f"1px solid {DESIGN_TOKENS['colors']['border']}",
+                "border_radius": "16px",
+                "padding": "24px",
+                "min_width": "600px",
+            },
         ),
-        style=CARD_STYLE,
-        **props,
+        open=State.show_new_job_modal,
     )
 
 
@@ -1253,7 +1352,18 @@ def index() -> rx.Component:
                 ),
                 # Middle Column
                 rx.vstack(
-                    job_submission_form(),
+                    rx.hstack(
+                        rx.heading("Job Queue", size="8"),
+                        rx.spacer(),
+                        rx.button(
+                            "Create New Job",
+                            on_click=State.set_show_new_job_modal(True),
+                            style=PRIMARY_BUTTON_STYLE,
+                            size="3",
+                        ),
+                        width="100%",
+                        align_items="center",
+                    ),
                     job_list_table(),
                     spacing="6",
                     width="60%",
@@ -1274,19 +1384,8 @@ def index() -> rx.Component:
             # Job details panel appears full-width below grid when toggled.
             job_details_panel(width="100%"),
             settings_modal(),
-            rx.cond(
-                State.notification_message != "",
-                rx.callout(
-                    State.notification_message,
-                    icon="info",
-                    style={
-                        "position": "fixed",
-                        "bottom": "20px",
-                        "right": "20px",
-                        "z_index": "1000",
-                    },
-                ),
-            ),
+            job_submission_form(),
+            notification_toast(),
             spacing="6",
             width="100%",
             padding="0 24px",
