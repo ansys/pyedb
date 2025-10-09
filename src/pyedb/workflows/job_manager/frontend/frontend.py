@@ -6,6 +6,7 @@ Modern, responsive UI with glass morphism design, dark theme, and real-time upda
 Integrates with the JobManager backend via REST API and WebSocket connections.
 """
 
+import asyncio
 from enum import Enum
 import platform
 from typing import Any, Dict, List
@@ -217,6 +218,12 @@ class State(rx.State):
             self.notification_type = "error"
         finally:
             self.loading = False
+
+    async def poll_backend(self):
+        """Poll the backend periodically for updates."""
+        while True:
+            await self.connect_to_backend()
+            await asyncio.sleep(5)
 
     async def load_initial_data(self):
         """Load jobs, queue stats, and system status."""
@@ -1368,7 +1375,7 @@ def index() -> rx.Component:
             width="100%",
             padding="0 24px",
         ),
-        on_mount=State.connect_to_backend,
+        on_mount=State.poll_backend,
         style={
             "background": DESIGN_TOKENS["colors"]["background"],
             "color": DESIGN_TOKENS["colors"]["text_primary"],
