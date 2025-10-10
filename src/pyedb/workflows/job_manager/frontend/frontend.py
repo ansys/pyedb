@@ -37,7 +37,7 @@ class State(rx.State):
     # Job management
     jobs: List[Dict[str, Any]] = []
     selected_job_id: str = ""
-    queue_stats: Dict[str, int] = {}
+    queue_stats: Dict[str, Any] = {}
 
     # System monitoring
     system_status: Dict[str, Any] = {}
@@ -143,6 +143,8 @@ class State(rx.State):
 
     def set_show_settings(self, value: bool):
         """Toggle settings modal."""
+        # self.show_settings = value
+        print("set_show_settings ->", value)
         self.show_settings = value
 
     def set_show_new_job_modal(self, value: bool):
@@ -749,24 +751,22 @@ def job_submission_form() -> rx.Component:
                             font_size="14px",
                             color=DESIGN_TOKENS["colors"]["text_secondary"],
                         ),
-                        rx.hstack(
-                            rx.input(
-                                placeholder="Enter a folder...",
-                                value=State.download_folder,
-                                on_change=State.set_download_folder,
-                                style={
-                                    "background": "rgba(255, 255, 255, 0.05)",
-                                    "border": f"1px solid {DESIGN_TOKENS['colors']['border']}",
-                                    "border_radius": "8px",
-                                    "color": DESIGN_TOKENS["colors"]["text_primary"],
-                                    "padding": "8px 12px",
-                                    "font_size": "14px",
-                                    "height": "40px",
-                                    "_placeholder": {
-                                        "color": DESIGN_TOKENS["colors"]["text_muted"],
-                                    },
+                        rx.input(
+                            placeholder="Enter a folder...",
+                            value=State.download_folder,
+                            on_change=State.set_download_folder,
+                            style={
+                                "background": "rgba(255, 255, 255, 0.05)",
+                                "border": f"1px solid {DESIGN_TOKENS['colors']['border']}",
+                                "border_radius": "8px",
+                                "color": DESIGN_TOKENS["colors"]["text_primary"],
+                                "padding": "8px 12px",
+                                "font_size": "14px",
+                                "height": "40px",
+                                "_placeholder": {
+                                    "color": DESIGN_TOKENS["colors"]["text_muted"],
                                 },
-                            ),
+                            },
                         ),
                         spacing="2",
                         width="100%",
@@ -1068,140 +1068,137 @@ def system_status_card(**props) -> rx.Component:
 
 def settings_modal() -> rx.Component:
     """Settings modal for resource limits."""
-    return rx.cond(
-        State.show_settings,
-        rx.dialog.root(
-            rx.dialog.content(
-                rx.dialog.title(
-                    "Resource Limits",
-                    color=DESIGN_TOKENS["colors"]["text_primary"],
+    return rx.dialog.root(
+        rx.dialog.content(
+            rx.dialog.title(
+                "Resource Limits",
+                color=DESIGN_TOKENS["colors"]["text_primary"],
+            ),
+            rx.vstack(
+                rx.vstack(
+                    rx.text(
+                        "Max Concurrent Jobs",
+                        font_size="14px",
+                        color=DESIGN_TOKENS["colors"]["text_secondary"],
+                    ),
+                    rx.input(
+                        type="number",
+                        value=State.max_concurrent_jobs,
+                        on_change=State.set_max_concurrent_jobs,
+                        min="1",
+                        max="20",
+                        style={
+                            "background": "rgba(255, 255, 255, 0.05)",
+                            "border": f"1px solid {DESIGN_TOKENS['colors']['border']}",
+                            "border_radius": "8px",
+                            "color": DESIGN_TOKENS["colors"]["text_primary"],
+                            "padding": "8px 12px",
+                            "font_size": "14px",
+                            "height": "40px",
+                            "width": "100px",
+                            "text_align": "center",
+                        },
+                    ),
+                    spacing="2",
                 ),
                 rx.vstack(
-                    rx.vstack(
-                        rx.text(
-                            "Max Concurrent Jobs",
-                            font_size="14px",
-                            color=DESIGN_TOKENS["colors"]["text_secondary"],
-                        ),
-                        rx.input(
-                            type="number",
-                            value=State.max_concurrent_jobs,
-                            on_change=State.set_max_concurrent_jobs,
-                            min="1",
-                            max="20",
-                            style={
-                                "background": "rgba(255, 255, 255, 0.05)",
-                                "border": f"1px solid {DESIGN_TOKENS['colors']['border']}",
-                                "border_radius": "8px",
-                                "color": DESIGN_TOKENS["colors"]["text_primary"],
-                                "padding": "8px 12px",
-                                "font_size": "14px",
-                                "height": "40px",
-                                "width": "100px",
-                                "text_align": "center",
-                            },
-                        ),
-                        spacing="2",
+                    rx.text("Max CPU %", font_size="14px", color=DESIGN_TOKENS["colors"]["text_secondary"]),
+                    rx.slider(
+                        default_value=[75],
+                        value=[State.max_cpu_percent],
+                        on_change=State.set_max_cpu_percent,
+                        min_=10,
+                        max_=100,
+                        step=5,
+                        width="100%",
+                        style={
+                            "height": "20px",
+                        },
                     ),
-                    rx.vstack(
-                        rx.text("Max CPU %", font_size="14px", color=DESIGN_TOKENS["colors"]["text_secondary"]),
-                        rx.slider(
-                            default_value=[75],
-                            value=[State.max_cpu_percent],
-                            on_change=State.set_max_cpu_percent,
-                            min_=10,
-                            max_=100,
-                            step=5,
-                            width="100%",
-                            style={
-                                "height": "20px",
-                            },
-                        ),
-                        rx.text(
-                            f"Value: {State.max_cpu_percent}%",
-                            font_size="12px",
-                            color=DESIGN_TOKENS["colors"]["text_muted"],
-                        ),
-                        spacing="2",
+                    rx.text(
+                        f"Value: {State.max_cpu_percent}%",
+                        font_size="12px",
+                        color=DESIGN_TOKENS["colors"]["text_muted"],
                     ),
-                    rx.vstack(
-                        rx.text("Min Memory (GB)", font_size="14px", color=DESIGN_TOKENS["colors"]["text_secondary"]),
-                        rx.input(
-                            type="number",
-                            value=State.min_memory_gb,
-                            on_change=State.set_min_memory_gb,
-                            min="1",
-                            max="128",
-                            step="0.5",
-                            style={
-                                "background": "rgba(255, 255, 255, 0.05)",
-                                "border": f"1px solid {DESIGN_TOKENS['colors']['border']}",
-                                "border_radius": "8px",
-                                "color": DESIGN_TOKENS["colors"]["text_primary"],
-                                "padding": "8px 12px",
-                                "font_size": "14px",
-                                "height": "40px",
-                                "width": "100px",
-                                "text_align": "center",
-                            },
-                        ),
-                        spacing="2",
-                    ),
-                    rx.vstack(
-                        rx.text(
-                            "Min Disk Space (GB)",
-                            font_size="14px",
-                            color=DESIGN_TOKENS["colors"]["text_secondary"],
-                        ),
-                        rx.input(
-                            type="number",
-                            value=State.min_disk_gb,
-                            on_change=State.set_min_disk_gb,
-                            min="1",
-                            max="1000",
-                            step="1",
-                            style={
-                                "background": "rgba(255, 255, 255, 0.05)",
-                                "border": f"1px solid {DESIGN_TOKENS['colors']['border']}",
-                                "border_radius": "8px",
-                                "color": DESIGN_TOKENS["colors"]["text_primary"],
-                                "padding": "8px 12px",
-                                "font_size": "14px",
-                                "height": "40px",
-                                "width": "100px",
-                                "text_align": "center",
-                            },
-                        ),
-                        spacing="2",
-                    ),
-                    rx.hstack(
-                        rx.button(
-                            "Cancel",
-                            on_click=lambda: State.set_show_settings(False),
-                            variant="ghost",
-                        ),
-                        rx.button(
-                            "Save Changes",
-                            on_click=State.update_concurrent_limits,
-                            style=PRIMARY_BUTTON_STYLE,
-                        ),
-                        spacing="3",
-                        justify="end",
-                    ),
-                    spacing="6",
-                    width="100%",
+                    spacing="2",
                 ),
-                style={
-                    "background": DESIGN_TOKENS["colors"]["surface"],
-                    "border": f"1px solid {DESIGN_TOKENS['colors']['border']}",
-                    "border_radius": "16px",
-                    "padding": "24px",
-                    "min_width": "500px",
-                    "max_width": "600px",
-                },
+                rx.vstack(
+                    rx.text("Min Memory (GB)", font_size="14px", color=DESIGN_TOKENS["colors"]["text_secondary"]),
+                    rx.input(
+                        type="number",
+                        value=State.min_memory_gb,
+                        on_change=State.set_min_memory_gb,
+                        min="1",
+                        max="128",
+                        step="0.5",
+                        style={
+                            "background": "rgba(255, 255, 255, 0.05)",
+                            "border": f"1px solid {DESIGN_TOKENS['colors']['border']}",
+                            "border_radius": "8px",
+                            "color": DESIGN_TOKENS["colors"]["text_primary"],
+                            "padding": "8px 12px",
+                            "font_size": "14px",
+                            "height": "40px",
+                            "width": "100px",
+                            "text_align": "center",
+                        },
+                    ),
+                    spacing="2",
+                ),
+                rx.vstack(
+                    rx.text(
+                        "Min Disk Space (GB)",
+                        font_size="14px",
+                        color=DESIGN_TOKENS["colors"]["text_secondary"],
+                    ),
+                    rx.input(
+                        type="number",
+                        value=State.min_disk_gb,
+                        on_change=State.set_min_disk_gb,
+                        min="1",
+                        max="1000",
+                        step="1",
+                        style={
+                            "background": "rgba(255, 255, 255, 0.05)",
+                            "border": f"1px solid {DESIGN_TOKENS['colors']['border']}",
+                            "border_radius": "8px",
+                            "color": DESIGN_TOKENS["colors"]["text_primary"],
+                            "padding": "8px 12px",
+                            "font_size": "14px",
+                            "height": "40px",
+                            "width": "100px",
+                            "text_align": "center",
+                        },
+                    ),
+                    spacing="2",
+                ),
+                rx.hstack(
+                    rx.button(
+                        "Cancel",
+                        on_click=lambda: State.set_show_settings(False),
+                        variant="ghost",
+                    ),
+                    rx.button(
+                        "Save Changes",
+                        on_click=State.update_concurrent_limits,
+                        style=PRIMARY_BUTTON_STYLE,
+                    ),
+                    spacing="3",
+                    justify="end",
+                ),
+                spacing="6",
+                width="100%",
             ),
-            open=True,
+            style={
+                "background": DESIGN_TOKENS["colors"]["surface"],
+                "border": f"1px solid {DESIGN_TOKENS['colors']['border']}",
+                "border_radius": "16px",
+                "padding": "24px",
+                "min_width": "500px",
+                "max_width": "600px",
+            },
         ),
+        open=State.show_settings,
     )
 
 
@@ -1300,10 +1297,12 @@ def header() -> rx.Component:
 
 
 def index() -> rx.Component:
-    """Main dashboard page with responsive 3x2 grid (stacks on small screens)."""
+    """Main dashboard page with responsive 3-column layout."""
     return rx.box(
         rx.vstack(
-            # Header (unchanged structure / slight text change)
+            # ------------------------------------------------------------------
+            #  HEADER
+            # ------------------------------------------------------------------
             rx.hstack(
                 rx.hstack(
                     rx.image(src="/ansys-logo.png", height="40px"),
@@ -1321,7 +1320,7 @@ def index() -> rx.Component:
                     ),
                     rx.button(
                         rx.icon("settings"),
-                        on_click=lambda: State.set_show_settings(True),
+                        on_click=State.set_show_settings(True),
                         variant="ghost",
                     ),
                     spacing="4",
@@ -1332,9 +1331,11 @@ def index() -> rx.Component:
                 border_bottom=f"1px solid {DESIGN_TOKENS['colors']['border']}",
                 align_items="center",
             ),
-            # Responsive 3-column layout using hstack and vstack
+            # ------------------------------------------------------------------
+            #  3-COLUMN LAYOUT
+            # ------------------------------------------------------------------
             rx.hstack(
-                # Left Column
+                # LEFT ----------------------------------------------------------
                 rx.vstack(
                     system_status_card(),
                     active_jobs_grid(),
@@ -1342,7 +1343,7 @@ def index() -> rx.Component:
                     width="20%",
                     align_items="stretch",
                 ),
-                # Middle Column
+                # MIDDLE --------------------------------------------------------
                 rx.vstack(
                     rx.hstack(
                         rx.heading("Job Queue"),
@@ -1360,7 +1361,7 @@ def index() -> rx.Component:
                     width="60%",
                     align_items="stretch",
                 ),
-                # Right Column
+                # RIGHT ---------------------------------------------------------
                 rx.vstack(
                     local_resource_monitor(),
                     cluster_partitions(),
@@ -1370,10 +1371,15 @@ def index() -> rx.Component:
                 ),
                 spacing="6",
                 width="100%",
-                align_items="start",  # Align columns to the top
+                align_items="start",
             ),
-            # Job details panel appears full-width below grid when toggled.
+            # ------------------------------------------------------------------
+            #  DETAILS PANEL (conditional, full-width)
+            # ------------------------------------------------------------------
             job_details_panel(width="100%"),
+            # ------------------------------------------------------------------
+            #  MODALS / OVERLAYS (always mounted, visibility via `open`)
+            # ------------------------------------------------------------------
             settings_modal(),
             job_submission_form(),
             notification_toast(),
@@ -1406,3 +1412,24 @@ app = rx.App(
     },
 )
 app.add_page(index, title="Ansys Job Manager")
+
+
+# ------------------------------------------------------------------
+#  DEBUG PAGE – absolute minimum
+# ------------------------------------------------------------------
+def debug_page() -> rx.Component:
+    return rx.box(
+        rx.text("Debug – click the button"),
+        rx.button(
+            "Fire setter",
+            on_click=State.set_show_settings(True),  # only the setter
+        ),
+        rx.dialog.root(
+            rx.dialog.content(rx.heading("Settings dialog")),
+            open=State.show_settings,
+        ),
+        padding="4em",
+    )
+
+
+app.add_page(debug_page, route="/debug")
