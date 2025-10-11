@@ -15,7 +15,16 @@ class JobManagerFrontend:
     def __init__(self, backend_url: str = "http://localhost:8080"):
         self.backend_url = backend_url
         self.jobs = []
-        self.resources = {}
+        self.resources = {
+            "cpu_percent": 0,
+            "memory_percent": 0,
+            "disk_usage_percent": 0,
+            "memory_used_gb": 0,
+            "memory_total_gb": 0,
+            "disk_free_gb": 0,
+            "disk_used_gb": 0,
+            "disk_total_gb": 0,
+        }
         self.queue_stats = {}
         self.partitions = []
         self.system_status = {}
@@ -60,7 +69,8 @@ class JobManagerFrontend:
             async with aiohttp.ClientSession() as session:
                 async with session.get(f"{self.backend_url}/resources") as response:
                     if response.status == 200:
-                        self.resources = await response.json()
+                        data = await response.json()
+                        self.resources.update(data)
         except Exception as e:
             print(f"Error fetching resources: {e}")
 
@@ -454,7 +464,7 @@ def setup_ui():
                                     ui.label().bind_text_from(
                                         frontend.resources, "cpu_percent", lambda x: f"{x:.1f}%" if x else "0%"
                                     )
-                                ui.linear_progress().bind_value_from(
+                                ui.linear_progress(show_value=False).bind_value_from(
                                     frontend.resources, "cpu_percent", lambda x: x / 100 if x else 0
                                 ).classes("w-full")
 
@@ -469,7 +479,7 @@ def setup_ui():
                                         if x
                                         else "0 GB",
                                     )
-                                ui.linear_progress().bind_value_from(
+                                ui.linear_progress(show_value=False).bind_value_from(
                                     frontend.resources, "memory_percent", lambda x: x / 100 if x else 0
                                 ).classes("w-full")
 
@@ -482,7 +492,7 @@ def setup_ui():
                                         "disk_free_gb",
                                         lambda x: f"{x} GB free" if x else "0 GB free",
                                     )
-                                ui.linear_progress().bind_value_from(
+                                ui.linear_progress(show_value=False).bind_value_from(
                                     frontend.resources, "disk_usage_percent", lambda x: x / 100 if x else 0
                                 ).classes("w-full")
 
