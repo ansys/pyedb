@@ -29,11 +29,23 @@ from typing import Optional
 import uuid
 
 from aiohttp import web
-import socketio
 
 from pyedb.generic.general_methods import is_linux
-from pyedb.workflows.job_manager.backend.job_submission import SchedulerType, create_hfss_config
+from pyedb.workflows.job_manager.backend.job_submission import (
+    HFSS3DLayoutBatchOptions,
+    SchedulerType,
+    create_hfss_config,
+)
 from pyedb.workflows.job_manager.backend.service import JobManager, ResourceLimits, SchedulerManager
+
+
+@web.middleware
+async def cors_middleware(request, handler):
+    response = await handler(request)
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    return response
 
 
 class JobManagerHandler:
@@ -66,6 +78,8 @@ class JobManagerHandler:
         # --- NEW: Setup aiohttp and Socket.IO server ---
         self.sio = self.manager.sio
         self.app = self.manager.app
+        self.app.middlewares.append(cors_middleware)
+        self._add_routes()
         # -----------------------------------------------
 
         self.runner: Optional[web.AppRunner] = None
@@ -79,6 +93,46 @@ class JobManagerHandler:
 
         self.scheduler_type = self._detect_scheduler()
         self._sch_mgr: Optional[SchedulerManager] = None
+        if self.scheduler_type != SchedulerType.NONE:
+            self._sch_mgr = SchedulerManager(self.scheduler_type)
+
+    def _add_routes(self):
+        self.app.router.add_get("/api/jobs", self.get_jobs)
+        self.app.router.add_get("/api/scheduler_type", self.get_scheduler_type)
+        self.app.router.add_get("/api/cluster_partitions", self.get_cluster_partitions)
+        self.app.router.add_post("/api/submit", self.submit_job)
+        self.app.router.add_post("/api/cancel/{job_id}", self.cancel_job)
+
+    async def get_jobs(self, request):
+        return web.json_response(list(self.manager.jobs.values()))
+
+    async def get_scheduler_type(self, request):
+        return web.json_response({"scheduler_type": self.scheduler_type.value})
+
+    async def get_cluster_partitions(self, request):
+        if self._sch_mgr:
+            partitions = await self._sch_mgr.get_partitions()
+            return web.json_response(partitions)
+        return web.json_response([])
+
+    async def submit_job(self, request):
+        data = await request.json()
+        project_path = data.get("project_path")
+        options_data = data.get("batch_options", {})
+        batch_options = HFSS3DLayoutBatchOptions(**options_data)
+
+        config = self.create_simulation_config(
+            project_path=project_path,
+            scheduler_type=self.scheduler_type,
+        )
+        config.batch_options = batch_options
+        job_id = await self.manager.submit_job(config)
+        return web.json_response({"job_id": job_id})
+
+    async def cancel_job(self, request):
+        job_id = request.match_info["job_id"]
+        await self.manager.cancel(job_id)
+        return web.json_response({"status": "cancelled"})
 
     @staticmethod
     def _detect_scheduler() -> SchedulerType:
