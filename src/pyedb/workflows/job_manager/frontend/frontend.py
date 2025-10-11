@@ -29,6 +29,8 @@ class JobManagerFrontend:
         await self.fetch_queue_stats()
         if self.scheduler_type != "none":
             await self.fetch_partitions()
+        else:
+            self.partitions = []
 
     async def fetch_system_status(self):
         """Fetch system status and scheduler type"""
@@ -403,6 +405,7 @@ def setup_ui():
         with ui.column().classes("w-full p-4"):
             # System Overview Cards
             with ui.grid(columns=4).classes("w-full gap-6"):
+                # This part remains the same as it was, creating the top overview cards.
                 # Queue Status Card
                 with ui.card().classes("custom-card"):
                     with ui.column().classes("items-center justify-center p-4 gap-2"):
@@ -429,8 +432,7 @@ def setup_ui():
                         ui.label().bind_text_from(frontend.queue_stats, "max_concurrent").classes(
                             "text-3xl font-bold text-orange-400"
                         )
-
-                # Submit Job Card
+                # Submit Job Card (moved to the right column below)
                 with ui.card().classes("custom-card cursor-pointer") as card:
                     card.on("click", lambda: job_dialog.open())
                     with ui.column().classes("items-center justify-center p-4 gap-2"):
@@ -438,52 +440,59 @@ def setup_ui():
                         ui.label("Submit New Job").classes("text-lg font-semibold text-center")
                         ui.label("Click to open job submission form").classes("text-sm text-gray-400 text-center")
 
-            # Resource Monitoring Section
-            with ui.row().classes("w-full gap-6"):
-                # Local Resources
-                with ui.card().classes("custom-card flex-1"):
-                    ui.label("Local Resources").classes("text-xl font-bold mb-4")
-                    with ui.column().classes("w-full gap-4"):
-                        # CPU Usage
-                        with ui.card().classes("stat-card"):
-                            with ui.row().classes("justify-between items-center"):
-                                ui.label("CPU Usage").classes("font-semibold")
-                                ui.label().bind_text_from(
-                                    frontend.resources, "cpu_percent", lambda x: f"{x:.1f}%" if x else "0%"
-                                )
-                            ui.linear_progress().bind_value_from(
-                                frontend.resources, "cpu_percent", lambda x: x / 100 if x else 0
-                            ).classes("w-full")
+            # Main layout with 3 columns, job queue is larger
+            with ui.grid(columns=12).classes("w-full gap-6 mt-6"):
+                # Column 1: Local Resources (25% width)
+                with ui.column().classes("col-span-3"):
+                    with ui.card().classes("custom-card h-full"):
+                        ui.label("Local Resources").classes("text-xl font-bold mb-4")
+                        with ui.column().classes("w-full gap-4"):
+                            # CPU Usage
+                            with ui.card().classes("stat-card"):
+                                with ui.row().classes("justify-between items-center"):
+                                    ui.label("CPU Usage").classes("font-semibold")
+                                    ui.label().bind_text_from(
+                                        frontend.resources, "cpu_percent", lambda x: f"{x:.1f}%" if x else "0%"
+                                    )
+                                ui.linear_progress().bind_value_from(
+                                    frontend.resources, "cpu_percent", lambda x: x / 100 if x else 0
+                                ).classes("w-full")
 
-                        # Memory Usage
-                        with ui.card().classes("stat-card"):
-                            with ui.row().classes("justify-between items-center"):
-                                ui.label("Memory").classes("font-semibold")
-                                ui.label().bind_text_from(
-                                    frontend.resources,
-                                    "memory_used_gb",
-                                    lambda x: f"{x} GB / {frontend.resources.get('memory_total_gb', 0)} GB"
-                                    if x
-                                    else "0 GB",
-                                )
-                            ui.linear_progress().bind_value_from(
-                                frontend.resources, "memory_percent", lambda x: x / 100 if x else 0
-                            ).classes("w-full")
+                            # Memory Usage
+                            with ui.card().classes("stat-card"):
+                                with ui.row().classes("justify-between items-center"):
+                                    ui.label("Memory").classes("font-semibold")
+                                    ui.label().bind_text_from(
+                                        frontend.resources,
+                                        "memory_used_gb",
+                                        lambda x: f"{x} GB / {frontend.resources.get('memory_total_gb', 0)} GB"
+                                        if x
+                                        else "0 GB",
+                                    )
+                                ui.linear_progress().bind_value_from(
+                                    frontend.resources, "memory_percent", lambda x: x / 100 if x else 0
+                                ).classes("w-full")
 
-                        # Disk Usage
-                        with ui.card().classes("stat-card"):
-                            with ui.row().classes("justify-between items-center"):
-                                ui.label("Disk Space").classes("font-semibold")
-                                ui.label().bind_text_from(
-                                    frontend.resources, "disk_free_gb", lambda x: f"{x} GB free" if x else "0 GB free"
-                                )
-                            ui.linear_progress().bind_value_from(
-                                frontend.resources, "disk_usage_percent", lambda x: x / 100 if x else 0
-                            ).classes("w-full")
+                            # Disk Usage
+                            with ui.card().classes("stat-card"):
+                                with ui.row().classes("justify-between items-center"):
+                                    ui.label("Disk Space").classes("font-semibold")
+                                    ui.label().bind_text_from(
+                                        frontend.resources,
+                                        "disk_free_gb",
+                                        lambda x: f"{x} GB free" if x else "0 GB free",
+                                    )
+                                ui.linear_progress().bind_value_from(
+                                    frontend.resources, "disk_usage_percent", lambda x: x / 100 if x else 0
+                                ).classes("w-full")
 
-                # Cluster Partitions (if available)
-                if frontend.scheduler_type != "none":
-                    with ui.card().classes("custom-card flex-1"):
+                # Column 2: Job Queue (50% width)
+                with ui.column().classes("col-span-6"):
+                    create_jobs_section()
+
+                # Column 3: Cluster Partitions (25% width)
+                with ui.column().classes("col-span-3"):
+                    with ui.card().classes("custom-card h-full"):
                         ui.label("Cluster Partitions").classes("text-xl font-bold mb-4")
                         with ui.column().classes("w-full gap-4"):
                             if frontend.partitions:
