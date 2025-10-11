@@ -270,7 +270,7 @@ class HFSS3DLayoutBatchOptions(BaseModel):
     create_starting_mesh: bool = False
     default_process_priority: str = "Normal"
     enable_gpu: bool = False
-    mpi_vendor: str = Field(default_factory=lambda: "Intel" if platform.system() == "Windows" else "OpenMPI")
+    mpi_vendor: str = "Intel"
     mpi_version: str = "Default"
     remote_spawn_command: str = "Scheduler"
     solve_adaptive_only: bool = False
@@ -298,12 +298,8 @@ class HFSS3DLayoutBatchOptions(BaseModel):
         if self.default_process_priority not in valid_priorities:
             raise ValueError(f"Priority must be one of: {valid_priorities}")
 
-        # Platform-specific MPI vendor validation
-        if platform.system() == "Windows":
-            valid_mpi_vendors = ["Intel", "MSMPI", "PlatformMPI", "Default"]
-        else:
-            valid_mpi_vendors = ["OpenMPI", "MPICH", "Intel", "Default"]
-
+        # MPI vendor validation - ANSYS expects specific string values
+        valid_mpi_vendors = ["Microsoft", "Intel", "Open MPI", "Default"]
         if self.mpi_vendor not in valid_mpi_vendors:
             raise ValueError(f"MPI vendor must be one of: {valid_mpi_vendors}")
 
@@ -630,7 +626,8 @@ class HFSSSimulationConfig(BaseModel):
         # Add machinelist parameter - use simplified format when -auto is enabled
         if self.distributed or self.auto:
             if self.auto:
-                # For -auto mode, ANSYS always expects simplified format: hostname:-1
+                # For -auto mode, ANSYS requires -1 for each machine (meaning use all cores)
+                # regardless of what the user specified - this is an ANSYS requirement
                 if self.machine_nodes:
                     simplified_nodes = [f"{node.hostname}:-1" for node in self.machine_nodes]
                     parts.append(f"-machinelist list={','.join(simplified_nodes)}")

@@ -100,13 +100,29 @@ class JobManagerHandler:
 
     def _add_routes(self):
         self.app.router.add_get("/api/jobs", self.get_jobs)
+        self.app.router.add_get("/api/queue", self.get_queue_status)
+        self.app.router.add_get("/api/resources", self.get_resources)
         self.app.router.add_get("/api/scheduler_type", self.get_scheduler_type)
         self.app.router.add_get("/api/cluster_partitions", self.get_cluster_partitions)
         self.app.router.add_post("/api/submit", self.submit_job)
         self.app.router.add_post("/api/cancel/{job_id}", self.cancel_job)
 
     async def get_jobs(self, request):
-        return web.json_response(list(self.manager.jobs.values()))
+        jobs_data = []
+        for job_id, job_info in self.manager.jobs.items():
+            jobs_data.append(
+                {
+                    "id": job_id,
+                    "config": job_info.config.to_dict(),
+                    "status": job_info.status.value,
+                    "start_time": job_info.start_time.isoformat() if job_info.start_time else None,
+                    "end_time": job_info.end_time.isoformat() if job_info.end_time else None,
+                    "return_code": job_info.return_code,
+                    "scheduler_job_id": job_info.scheduler_job_id,
+                    "priority": job_info.priority,
+                }
+            )
+        return web.json_response(jobs_data)
 
     async def get_scheduler_type(self, request):
         return web.json_response({"scheduler_type": self.scheduler_type.value})
@@ -121,6 +137,16 @@ class JobManagerHandler:
         data = await request.json()
         project_path = data.get("project_path")
         options_data = data.get("batch_options", {})
+
+        # Extract machine configuration from the UI data
+        machine_nodes_data = data.get("machine_nodes", [])
+        machine_nodes = []
+        if machine_nodes_data:
+            from pyedb.workflows.job_manager.backend.job_submission import MachineNode
+
+            for node_data in machine_nodes_data:
+                machine_nodes.append(MachineNode(**node_data))
+
         batch_options = HFSS3DLayoutBatchOptions(**options_data)
 
         config = self.create_simulation_config(
@@ -128,14 +154,31 @@ class JobManagerHandler:
             ansys_edt_path=self.ansys_path,  # Use the detected ANSYS path
             scheduler_type=self.scheduler_type,
         )
-        config.batch_options = batch_options
+
+        # Set the machine nodes if provided
+        if machine_nodes:
+            config.machine_nodes = machine_nodes
+
+        # Properly assign batch options
+        config.layout_options = batch_options
+
         job_id = await self.manager.submit_job(config)
-        return web.json_response({"job_id": job_id})
+        return web.json_response({"job_id": job_id, "status": "submitted"})
+
+    async def get_queue_status(self, request):
+        """Get current queue status for UI display"""
+        queue_stats = self.manager.job_pool.get_queue_stats()
+        return web.json_response(queue_stats)
+
+    async def get_resources(self, request):
+        """Get current resource usage for UI display"""
+        resources = self.manager.resource_monitor.current_usage
+        return web.json_response(resources)
 
     async def cancel_job(self, request):
         job_id = request.match_info["job_id"]
-        await self.manager.cancel(job_id)
-        return web.json_response({"status": "cancelled"})
+        success = await self.manager.cancel_job(job_id)
+        return web.json_response({"status": "cancelled" if success else "failed", "success": success})
 
     @staticmethod
     def _detect_scheduler() -> SchedulerType:
