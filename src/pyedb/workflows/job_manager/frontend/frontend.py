@@ -450,10 +450,10 @@ def setup_ui():
                         ui.label("Submit New Job").classes("text-lg font-semibold text-center")
                         ui.label("Click to open job submission form").classes("text-sm text-gray-400 text-center")
 
-            # Main layout with 3 columns, job queue is larger
-            with ui.grid(columns=12).classes("w-full gap-6 mt-6"):
-                # Column 1: Local Resources (25% width)
-                with ui.column().classes("col-span-3"):
+            # Main layout with 2 columns, no job queue in middle
+            with ui.grid(columns=2).classes("w-full gap-6 mt-6"):
+                # Column 1: Local Resources (50% width)
+                with ui.column().classes("w-full"):
                     with ui.card().classes("custom-card h-full"):
                         ui.label("Local Resources").classes("text-xl font-bold mb-4")
                         with ui.column().classes("w-full gap-4"):
@@ -496,12 +496,8 @@ def setup_ui():
                                     frontend.resources, "disk_usage_percent", lambda x: x / 100 if x else 0
                                 ).classes("w-full")
 
-                # Column 2: Job Queue (50% width)
-                with ui.column().classes("col-span-6"):
-                    create_jobs_section()
-
-                # Column 3: Cluster Partitions (25% width)
-                with ui.column().classes("col-span-3"):
+                # Column 2: Cluster Partitions (50% width)
+                with ui.column().classes("w-full"):
                     with ui.card().classes("custom-card h-full"):
                         ui.label("Cluster Partitions").classes("text-xl font-bold mb-4")
                         with ui.column().classes("w-full gap-4"):
