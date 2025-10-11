@@ -62,15 +62,17 @@ class JobManagerHandler:
 
             installed_versions = installed_ansys_em_versions()
             if not version:
-                self.ansys_path = list(installed_versions.values())[-1]  # latest
+                self.ansys_path = os.path.join(list(installed_versions.values())[-1], "ansysedt.exe")  # latest
             else:
                 if version not in installed_versions:
                     raise ValueError(f"ANSYS release {version} not found")
-                self.ansys_path = installed_versions[version]
+                self.ansys_path = os.path.join(installed_versions[version], "ansysedt.exe")
 
         self.manager = JobManager()
         self.manager.resource_limits = ResourceLimits(max_concurrent_jobs=2)
         self.manager.jobs = {}  # In-memory job store for demonstration
+        # Pass the detected ANSYS path to the manager
+        self.manager.ansys_path = self.ansys_path
 
         self.host, self.port = host, port
         self._url = f"http://{host}:{port}"
@@ -123,6 +125,7 @@ class JobManagerHandler:
 
         config = self.create_simulation_config(
             project_path=project_path,
+            ansys_edt_path=self.ansys_path,  # Use the detected ANSYS path
             scheduler_type=self.scheduler_type,
         )
         config.batch_options = batch_options

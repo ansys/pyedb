@@ -390,6 +390,7 @@ class JobManager:
         self.resource_limits = resource_limits or ResourceLimits()
         self.job_pool = JobPoolManager(self.resource_limits)
         self.resource_monitor = ResourceMonitor()
+        self.ansys_path = None  # Will be set by JobManagerHandler
 
         # Initialize scheduler manager
         self.scheduler_type = scheduler_type
@@ -764,9 +765,32 @@ class JobManager:
                 await self.sio.emit("job_scheduled", {"job_id": job_id, "scheduler_job_id": job_info.scheduler_job_id})
 
             else:
+                # Ensure we use the JobManager's detected ANSYS path if config path is missing or invalid
+                if not job_info.config.ansys_edt_path or not os.path.exists(job_info.config.ansys_edt_path):
+                    if self.ansys_path and os.path.exists(self.ansys_path):
+                        job_info.config.ansys_edt_path = self.ansys_path
+                        logger.info(f"Using JobManager's detected ANSYS path: {self.ansys_path}")
+                    else:
+                        raise FileNotFoundError(
+                            f"ANSYS executable not found. Config path: {job_info.config.ansys_edt_path}, "
+                            f"Manager path: {self.ansys_path}"
+                        )
+
+                # Generate command with the correct ANSYS path
+                command_str = job_info.config.generate_command_string()
+
+                # Log the command being executed for debugging
+                logger.info(f"Executing command for job {job_id}: {command_str}")
+                logger.info(f"ANSYS executable path: {job_info.config.ansys_edt_path}")
+                logger.info(f"Project path: {job_info.config.project_path}")
+
+                # Check if project file exists
+                if not os.path.exists(job_info.config.project_path):
+                    raise FileNotFoundError(f"Project file not found: {job_info.config.project_path}")
+
                 # Run locally - using asyncio subprocess for better control
                 process = await asyncio.create_subprocess_shell(
-                    job_info.config.generate_command_string(),
+                    command_str,
                     stdout=asyncio.subprocess.PIPE,
                     stderr=asyncio.subprocess.PIPE,
                     shell=True,

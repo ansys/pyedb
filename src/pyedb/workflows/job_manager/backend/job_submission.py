@@ -53,7 +53,7 @@ import shutil
 import subprocess
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
 
 class SchedulerType(enum.Enum):
@@ -77,6 +77,8 @@ class SchedulerType(enum.Enum):
     NONE = "none"
     LSF = "lsf"
     SLURM = "slurm"
+    PBS = "pbs"
+    WINDOWS_HPC = "windows_hpc"
 
 
 class SchedulerOptions(BaseModel):
@@ -144,7 +146,7 @@ class SchedulerOptions(BaseModel):
     email_notification: Optional[str] = None
     run_as_administrator: bool = False
 
-    def validate(self) -> None:
+    def validate_fields(self) -> None:
         """
         Validate all scheduler options for correctness and consistency.
 
@@ -207,9 +209,9 @@ class MachineNode(BaseModel):
     def __init__(self, **data):
         """Initialize and validate parameters."""
         super().__init__(**data)
-        self.validate()
+        self.validate_fields()
 
-    def validate(self) -> None:
+    def validate_fields(self) -> None:
         """
         Validate machine node parameters for correctness.
 
@@ -278,9 +280,9 @@ class HFSS3DLayoutBatchOptions(BaseModel):
     def __init__(self, **data):
         """Initialize and validate options."""
         super().__init__(**data)
-        self.validate()
+        self.validate_fields()
 
-    def validate(self) -> None:
+    def validate_fields(self) -> None:
         """
         Validate all HFSS 3D layout options for correctness.
 
@@ -397,17 +399,12 @@ class HFSSSimulationConfig(BaseModel):
     scheduler_type: SchedulerType = SchedulerType.NONE
     scheduler_options: SchedulerOptions = Field(default_factory=SchedulerOptions)
 
-    @validator("*", pre=True, always=True)
-    def validate_all_fields(self, v):
-        """Pydantic validator to ensure all fields are properly validated."""
-        return v
-
     def __init__(self, **data):
         """Initialize and validate the configuration."""
         super().__init__(**data)
-        self.validate()
+        self.validate_fields()
 
-    def validate(self) -> None:
+    def validate_fields(self) -> None:
         """
         Validate all options and raise ``ValueError`` on violation.
         Checks ranges, formats, and scheduler-specific rules.
@@ -429,7 +426,7 @@ class HFSSSimulationConfig(BaseModel):
         #    raise ValueError("Windows HPC scheduler is only available on Windows platforms")
 
         # Validate scheduler options
-        self.scheduler_options.validate()
+        self.scheduler_options.validate_fields()
 
     def generate_machinelist_string(self) -> str:
         """
@@ -926,17 +923,17 @@ class HFSSSimulationConfig(BaseModel):
             "ansys_edt_path": self.ansys_edt_path,
             "jobid": self.jobid,
             "distributed": self.distributed,
-            "machine_nodes": [node.dict() for node in self.machine_nodes],
+            "machine_nodes": [node.model_dump() for node in self.machine_nodes],
             "auto": self.auto,
             "non_graphical": self.non_graphical,
             "monitor": self.monitor,
-            "layout_options": self.layout_options.dict(),
+            "layout_options": self.layout_options.model_dump(),
             "project_path": self.project_path,
             "design_name": self.design_name,
             "design_mode": self.design_mode,
             "setup_name": self.setup_name,
             "scheduler_type": self.scheduler_type.value,
-            "scheduler_options": self.scheduler_options.dict(),
+            "scheduler_options": self.scheduler_options.model_dump(),
             "platform": platform.system(),
             "timestamp": datetime.now().isoformat(),
             "version": "1.0.0",
