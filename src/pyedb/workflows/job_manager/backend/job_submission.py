@@ -43,7 +43,6 @@ SLURM cluster::
     slurm_job_12345
 """  # noqa: D205,D400 (summary line is intentionally long)
 
-from dataclasses import asdict, dataclass, field
 from datetime import datetime
 import enum
 import os
@@ -80,7 +79,6 @@ class SchedulerType(enum.Enum):
     SLURM = "slurm"
 
 
-@dataclass
 class SchedulerOptions(BaseModel):
     """
     Resource requirements and scheduler-specific directives.
@@ -180,8 +178,7 @@ class SchedulerOptions(BaseModel):
             raise ValueError("Time must be in HH:MM:SS, days.HH:MM:SS, or minutes format")
 
 
-@dataclass
-class MachineNode:
+class MachineNode(BaseModel):
     """
     Compute-node descriptor for distributed HFSS runs.
 
@@ -207,8 +204,9 @@ class MachineNode:
     max_cores: int = 20
     utilization: int = 90
 
-    def __post_init__(self):
-        """Automatically validate parameters after initialization."""
+    def __init__(self, **data):
+        """Initialize and validate parameters."""
+        super().__init__(**data)
         self.validate()
 
     def validate(self) -> None:
@@ -239,8 +237,7 @@ class MachineNode:
         return f"{self.hostname}:{self.cores}:{self.max_cores}:{self.utilization}%"
 
 
-@dataclass
-class HFSS3DLayoutBatchOptions:
+class HFSS3DLayoutBatchOptions(BaseModel):
     """
     HFSS-specific solver flags and environment settings.
 
@@ -271,15 +268,16 @@ class HFSS3DLayoutBatchOptions:
     create_starting_mesh: bool = False
     default_process_priority: str = "Normal"
     enable_gpu: bool = False
-    mpi_vendor: str = field(default_factory=lambda: "Intel" if platform.system() == "Windows" else "OpenMPI")
+    mpi_vendor: str = Field(default_factory=lambda: "Intel" if platform.system() == "Windows" else "OpenMPI")
     mpi_version: str = "Default"
     remote_spawn_command: str = "Scheduler"
     solve_adaptive_only: bool = False
     validate_only: bool = False
-    temp_directory: str = field(default_factory=lambda: "/tmp" if platform.system() != "Windows" else "D:\\Temp")
+    temp_directory: str = Field(default_factory=lambda: "/tmp" if platform.system() != "Windows" else "D:\\Temp")
 
-    def __post_init__(self):
-        """Automatically validate options after initialization."""
+    def __init__(self, **data):
+        """Initialize and validate options."""
+        super().__init__(**data)
         self.validate()
 
     def validate(self) -> None:
@@ -381,14 +379,14 @@ class HFSSSimulationConfig(BaseModel):
 
     ansys_edt_path: str = ""
     solver: str = "Hfss3DLayout"
-    jobid: str = field(default_factory=lambda: f"LOCAL_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+    jobid: str = Field(default_factory=lambda: f"LOCAL_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
     distributed: bool = True
-    machine_nodes: List[MachineNode] = field(default_factory=lambda: [MachineNode()])
+    machine_nodes: List[MachineNode] = Field(default_factory=lambda: [MachineNode()])
     auto: bool = True
     non_graphical: bool = True
     monitor: bool = True
-    layout_options: HFSS3DLayoutBatchOptions = field(default_factory=HFSS3DLayoutBatchOptions)
-    project_path: str = field(
+    layout_options: HFSS3DLayoutBatchOptions = Field(default_factory=HFSS3DLayoutBatchOptions)
+    project_path: str = Field(
         default_factory=lambda: "/tmp/simulation.aedt"
         if platform.system() != "Windows"
         else "D:\\Temp\\simulation.aedt"
@@ -397,10 +395,16 @@ class HFSSSimulationConfig(BaseModel):
     design_mode: str = ""
     setup_name: str = ""
     scheduler_type: SchedulerType = SchedulerType.NONE
-    scheduler_options: SchedulerOptions = field(default_factory=SchedulerOptions)
+    scheduler_options: SchedulerOptions = Field(default_factory=SchedulerOptions)
 
-    def __post_init__(self):
-        """Automatically validate complete configuration after initialization."""
+    @validator("*", pre=True, always=True)
+    def validate_all_fields(self, v):
+        """Pydantic validator to ensure all fields are properly validated."""
+        return v
+
+    def __init__(self, **data):
+        """Initialize and validate the configuration."""
+        super().__init__(**data)
         self.validate()
 
     def validate(self) -> None:
@@ -915,24 +919,24 @@ class HFSSSimulationConfig(BaseModel):
         Returns
         -------
         dict
-            Contains all fields including nested dataclasses and enums.
+            Contains all fields including nested BaseModels and enums.
         """
         return {
             "solver": self.solver,
             "ansys_edt_path": self.ansys_edt_path,
             "jobid": self.jobid,
             "distributed": self.distributed,
-            "machine_nodes": [asdict(node) for node in self.machine_nodes],
+            "machine_nodes": [node.dict() for node in self.machine_nodes],
             "auto": self.auto,
             "non_graphical": self.non_graphical,
             "monitor": self.monitor,
-            "layout_options": asdict(self.layout_options),
+            "layout_options": self.layout_options.dict(),
             "project_path": self.project_path,
             "design_name": self.design_name,
             "design_mode": self.design_mode,
             "setup_name": self.setup_name,
             "scheduler_type": self.scheduler_type.value,
-            "scheduler_options": asdict(self.scheduler_options),
+            "scheduler_options": self.scheduler_options.dict(),
             "platform": platform.system(),
             "timestamp": datetime.now().isoformat(),
             "version": "1.0.0",
@@ -955,7 +959,14 @@ class HFSSSimulationConfig(BaseModel):
         """
         machine_nodes = [MachineNode(**node_data) for node_data in data.get("machine_nodes", [])]
         layout_options = HFSS3DLayoutBatchOptions(**data.get("layout_options", {}))
-        scheduler_options = SchedulerOptions(**data.get("scheduler_options", {}))
+
+        # Handle scheduler_options creation with proper defaults
+        scheduler_options_data = data.get("scheduler_options", {})
+        if not scheduler_options_data:
+            # Create default scheduler options for local execution
+            scheduler_options = SchedulerOptions()
+        else:
+            scheduler_options = SchedulerOptions(**scheduler_options_data)
 
         return cls(
             solver=data.get("solver", "Hfss3DLayout"),

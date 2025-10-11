@@ -99,7 +99,19 @@ class JobManagerFrontend:
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(f"{self.backend_url}/jobs/submit", json=job_data) as response:
-                    return response.status == 200
+                    print(f"DEBUG: Backend response status: {response.status}")
+                    response_text = await response.text()
+                    print(f"DEBUG: Backend response body: {response_text}")
+
+                    if response.status == 200:
+                        return True
+                    else:
+                        try:
+                            error_data = await response.json()
+                            print(f"DEBUG: Backend error data: {error_data}")
+                        except:
+                            print(f"DEBUG: Could not parse backend error as JSON")
+                        return False
         except Exception as e:
             print(f"Error submitting job: {e}")
             return False
@@ -310,7 +322,14 @@ def setup_ui():
                 with ui.column().classes("w-full"):
                     ui.label("Compute Resources").classes("font-semibold")
 
-                    if frontend.scheduler_type == "none":
+                    # Initialize all variables to avoid NameError
+                    cpus = None
+                    nodes = None
+                    cpus_per_node = None
+                    tasks_per_node = None
+                    queue = None
+
+                    if frontend.scheduler_type in ["none", "local"]:
                         # Local execution options
                         with ui.grid(columns=2).classes("w-full gap-4"):
                             cpus = ui.number(label="CPU Cores", value=1, min=1, max=64).classes("input-modern w-full")
@@ -349,10 +368,37 @@ def setup_ui():
 
                 # Submit button
                 async def submit_job_handler():
+                    # Debug: Print the current scheduler type
+                    print(f"DEBUG: Current scheduler type: '{frontend.scheduler_type}'")
+                    print(f"DEBUG: Scheduler type repr: {repr(frontend.scheduler_type)}")
+
+                    # Create job configuration in the format expected by HFSSSimulationConfig
+                    from datetime import datetime
+
+                    # Generate a unique job ID
+                    job_id = f"JOB_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+
+                    # Determine scheduler type
+                    scheduler_type_lower = str(frontend.scheduler_type).lower().strip()
+                    is_local_mode = scheduler_type_lower in ["none", "local"]
+
+                    print(f"DEBUG: Is local mode: {is_local_mode}")
+                    print(f"DEBUG: cpus is None: {cpus is None}")
+
+                    # Build the config in HFSSSimulationConfig format
                     job_config = {
                         "config": {
                             "project_path": project_path.value,
-                            "scheduler_type": frontend.scheduler_type,
+                            "jobid": job_id,
+                            "solver": "Hfss3DLayout",
+                            "distributed": True,
+                            "auto": True,
+                            "non_graphical": True,
+                            "monitor": True,
+                            "design_name": "",
+                            "design_mode": "",
+                            "setup_name": "",
+                            "scheduler_type": "none" if is_local_mode else frontend.scheduler_type.upper(),
                             "layout_options": {
                                 "create_starting_mesh": create_starting_mesh.value,
                                 "enable_gpu": enable_gpu.value,
@@ -364,23 +410,58 @@ def setup_ui():
                         }
                     }
 
-                    # Add scheduler-specific options
-                    if frontend.scheduler_type == "none":
-                        job_config["config"]["machine_nodes"] = [
-                            {
-                                "hostname": "localhost",
-                                "cores": int(cpus.value),
-                                "max_cores": int(cpus.value),
-                                "utilization": 90,
-                            }
-                        ]
+                    if is_local_mode:
+                        # Local execution - use machine_nodes only, let backend create default scheduler_options
+                        if cpus is not None:
+                            job_config["config"]["machine_nodes"] = [
+                                {
+                                    "hostname": "localhost",
+                                    "cores": int(cpus.value),
+                                    "max_cores": int(cpus.value),
+                                    "utilization": 90,
+                                }
+                            ]
+
+                            # Don't include scheduler_options for local execution - let backend use defaults
+                            # This avoids the Pydantic compatibility issue
+                            print(f"DEBUG: Using local execution with {cpus.value} cores (no scheduler_options)")
+                        else:
+                            ui.notify("CPU cores field is required for local execution", type="negative")
+                            return
                     else:
-                        job_config["config"]["scheduler_options"] = {
-                            "nodes": int(nodes.value),
-                            "tasks_per_node": int(tasks_per_node.value),
-                            "cores_per_node": int(cpus_per_node.value),
-                            "queue": queue.value,
-                        }
+                        # Cluster execution - use scheduler_options
+                        print(f"DEBUG: Using cluster execution")
+                        print(f"DEBUG: nodes is None: {nodes is None}")
+                        print(f"DEBUG: tasks_per_node is None: {tasks_per_node is None}")
+                        print(f"DEBUG: cpus_per_node is None: {cpus_per_node is None}")
+                        print(f"DEBUG: queue is None: {queue is None}")
+
+                        if all(field is not None for field in [nodes, tasks_per_node, cpus_per_node, queue]):
+                            job_config["config"]["scheduler_options"] = {
+                                "queue": queue.value,
+                                "time": "24:00:00",
+                                "nodes": int(nodes.value),
+                                "tasks_per_node": int(tasks_per_node.value),
+                                "cores_per_node": int(cpus_per_node.value),
+                                "memory": "4GB",
+                                "account": None,
+                                "reservation": None,
+                                "qos": None,
+                                "constraints": None,
+                                "exclusive": False,
+                                "gpus": 0,
+                                "gpu_type": None,
+                                "priority": "Normal",
+                                "email_notification": None,
+                                "run_as_administrator": False,
+                            }
+                        else:
+                            ui.notify("All cluster fields are required for cluster execution", type="negative")
+                            return
+
+                    # Debug: Print the complete job config being sent
+                    print(f"DEBUG: Complete job config being sent:")
+                    print(f"DEBUG: {json.dumps(job_config, indent=2)}")
 
                     success = await frontend.submit_job(job_config)
                     if success:
@@ -570,53 +651,68 @@ def setup_ui():
             with ui.element("div").classes("w-full overflow-y-auto min-h-96 max-h-96") as jobs_container:
 
                 def update_jobs_display():
-                    jobs_container.clear()
-                    with jobs_container:
-                        if frontend.jobs:
-                            for job in frontend.jobs:
-                                with ui.card().classes("job-item w-full mb-2"):
-                                    with ui.row().classes("items-center justify-between w-full"):
-                                        with ui.column().classes("gap-1 flex-1"):
-                                            ui.label(job.get("id", "Unknown")).classes("font-semibold text-sm")
-                                            ui.label(
-                                                f"Design: {job.get('config', {}).get('design_name', 'N/A')}"
-                                            ).classes("text-xs text-gray-400")
+                    try:
+                        # Multiple layers of client validation
+                        if not (hasattr(ui, "context") and ui.context.client is not None):
+                            return
+                        if not hasattr(jobs_container, "client") or jobs_container.client is None:
+                            return
+                        if jobs_container.client != ui.context.client:
+                            return
 
-                                        # Status badge
-                                        status = job.get("status", "unknown")
-                                        status_color = {
-                                            "queued": "status-queued",
-                                            "running": "status-running",
-                                            "completed": "status-completed",
-                                            "failed": "status-failed",
-                                            "cancelled": "status-cancelled",
-                                        }.get(status, "status-queued")
+                        jobs_container.clear()
+                        with jobs_container:
+                            if frontend.jobs:
+                                for job in frontend.jobs:
+                                    with ui.card().classes("job-item w-full mb-2"):
+                                        with ui.row().classes("items-center justify-between w-full"):
+                                            with ui.column().classes("gap-1 flex-1"):
+                                                ui.label(job.get("id", "Unknown")).classes("font-semibold text-sm")
+                                                ui.label(
+                                                    f"Design: {job.get('config', {}).get('design_name', 'N/A')}"
+                                                ).classes("text-xs text-gray-400")
 
-                                        with ui.row().classes("items-center gap-2"):
-                                            ui.element("span").classes(f"status-badge {status_color}").bind_text_from(
-                                                job, "status"
-                                            )
+                                            # Status badge
+                                            status = job.get("status", "unknown")
+                                            status_color = {
+                                                "queued": "status-queued",
+                                                "running": "status-running",
+                                                "completed": "status-completed",
+                                                "failed": "status-failed",
+                                                "cancelled": "status-cancelled",
+                                            }.get(status, "status-queued")
 
-                                            # Cancel button for running/queued jobs
-                                            if status in ["queued", "running"]:
-                                                ui.button(
-                                                    icon="cancel",
-                                                    on_click=lambda j=job: frontend.cancel_job(j["id"]),
-                                                ).classes("bg-red-500 hover:bg-red-600 text-white p-1").style(
-                                                    "min-width: 28px; min-height: 28px"
-                                                )
+                                            with ui.row().classes("items-center gap-2"):
+                                                ui.label(status).classes(f"status-badge {status_color}")
 
-                                        # Job timings (compact)
-                                        if job.get("start_time") or job.get("end_time"):
-                                            with ui.column().classes("text-right text-xs text-gray-400"):
-                                                if job.get("start_time"):
-                                                    ui.label(f"Started: {job['start_time'][:10]}")  # Show only date
+                                                # Cancel button for running/queued jobs
+                                                if status in ["queued", "running"]:
+                                                    ui.button(
+                                                        icon="cancel",
+                                                        on_click=lambda j=job: frontend.cancel_job(j["id"]),
+                                                    ).classes("bg-red-500 hover:bg-red-600 text-white p-1").style(
+                                                        "min-width: 28px; min-height: 28px"
+                                                    )
+
+                                            # Job timings (compact)
+                                            if job.get("start_time") or job.get("end_time"):
+                                                with ui.column().classes("text-right text-xs text-gray-400"):
+                                                    if job.get("start_time"):
+                                                        ui.label(f"Started: {job['start_time'][:10]}")  # Show only date
+                            else:
+                                # Empty state that maintains the container size
+                                with ui.column().classes("w-full h-full items-center justify-center"):
+                                    ui.icon("inbox", size="3rem").classes("text-gray-400 mb-4")
+                                    ui.label("No jobs in queue").classes("text-gray-500 text-center text-lg")
+                                    ui.label("Submit a new job to get started").classes(
+                                        "text-gray-400 text-center text-sm"
+                                    )
+                    except Exception as e:
+                        # Handle all UI client deletion errors gracefully
+                        if "client this element belongs to has been deleted" in str(e):
+                            return  # Silently ignore UI client deletion errors
                         else:
-                            # Empty state that maintains the container size
-                            with ui.column().classes("w-full h-full items-center justify-center"):
-                                ui.icon("inbox", size="3rem").classes("text-gray-400 mb-4")
-                                ui.label("No jobs in queue").classes("text-gray-500 text-center text-lg")
-                                ui.label("Submit a new job to get started").classes("text-gray-400 text-center text-sm")
+                            print(f"Error in update_jobs_display: {e}")  # Log other errors
 
                 # Bind the update function to jobs changes
                 frontend.jobs_container = jobs_container
@@ -632,49 +728,62 @@ def setup_ui():
                 with ui.element("div").classes("w-full") as jobs_container:
 
                     def update_jobs_display():
-                        jobs_container.clear()
-                        with jobs_container:
-                            if frontend.jobs:
-                                for job in frontend.jobs:
-                                    with ui.card().classes("job-item w-full"):
-                                        with ui.row().classes("items-center justify-between w-full"):
-                                            with ui.column().classes("gap-1"):
-                                                ui.label(job.get("id", "Unknown")).classes("font-semibold text-lg")
-                                                ui.label(
-                                                    f"Design: {job.get('config', {}).get('design_name', 'N/A')}"
-                                                ).classes("text-sm text-gray-400")
+                        try:
+                            # Multiple layers of client validation
+                            if not (hasattr(ui, "context") and ui.context.client is not None):
+                                return
+                            if not hasattr(jobs_container, "client") or jobs_container.client is None:
+                                return
+                            if jobs_container.client != ui.context.client:
+                                return
 
-                                            # Status badge
-                                            status = job.get("status", "unknown")
-                                            status_color = {
-                                                "queued": "status-queued",
-                                                "running": "status-running",
-                                                "completed": "status-completed",
-                                                "failed": "status-failed",
-                                                "cancelled": "status-cancelled",
-                                            }.get(status, "status-queued")
+                            jobs_container.clear()
+                            with jobs_container:
+                                if frontend.jobs:
+                                    for job in frontend.jobs:
+                                        with ui.card().classes("job-item w-full"):
+                                            with ui.row().classes("items-center justify-between w-full"):
+                                                with ui.column().classes("gap-1"):
+                                                    ui.label(job.get("id", "Unknown")).classes("font-semibold text-lg")
+                                                    ui.label(
+                                                        f"Design: {job.get('config', {}).get('design_name', 'N/A')}"
+                                                    ).classes("text-sm text-gray-400")
 
-                                            with ui.row().classes("items-center gap-4"):
-                                                ui.element("span").classes(
-                                                    f"status-badge {status_color}"
-                                                ).bind_text_from(job, "status")
+                                                # Status badge
+                                                status = job.get("status", "unknown")
+                                                status_color = {
+                                                    "queued": "status-queued",
+                                                    "running": "status-running",
+                                                    "completed": "status-completed",
+                                                    "failed": "status-failed",
+                                                    "cancelled": "status-cancelled",
+                                                }.get(status, "status-queued")
 
-                                                # Cancel button for running/queued jobs
-                                                if status in ["queued", "running"]:
-                                                    ui.button(
-                                                        "Cancel",
-                                                        icon="cancel",
-                                                        on_click=lambda j=job: frontend.cancel_job(j["id"]),
-                                                    ).classes("bg-red-500 hover:bg-red-600 text-white")
+                                                with ui.row().classes("items-center gap-4"):
+                                                    ui.label(status).classes(f"status-badge {status_color}")
 
-                                            # Job timings
-                                            with ui.column().classes("text-right text-sm text-gray-400"):
-                                                if job.get("start_time"):
-                                                    ui.label(f"Started: {job['start_time']}")
-                                                if job.get("end_time"):
-                                                    ui.label(f"Ended: {job['end_time']}")
+                                                    # Cancel button for running/queued jobs
+                                                    if status in ["queued", "running"]:
+                                                        ui.button(
+                                                            "Cancel",
+                                                            icon="cancel",
+                                                            on_click=lambda j=job: frontend.cancel_job(j["id"]),
+                                                        ).classes("bg-red-500 hover:bg-red-600 text-white")
+
+                                                # Job timings
+                                                with ui.column().classes("text-right text-sm text-gray-400"):
+                                                    if job.get("start_time"):
+                                                        ui.label(f"Started: {job['start_time']}")
+                                                    if job.get("end_time"):
+                                                        ui.label(f"Ended: {job['end_time']}")
+                                else:
+                                    ui.label("No jobs in queue").classes("text-gray-500 text-center p-8")
+                        except Exception as e:
+                            # Handle all UI client deletion errors gracefully
+                            if "client this element belongs to has been deleted" in str(e):
+                                return  # Silently ignore UI client deletion errors
                             else:
-                                ui.label("No jobs in queue").classes("text-gray-500 text-center p-8")
+                                print(f"Error in update_jobs_display: {e}")  # Log other errors
 
                     # Bind the update function to jobs changes
                     frontend.jobs_container = jobs_container
@@ -705,9 +814,38 @@ def setup_ui():
         with ui.footer().classes("bg-gray-800 h-8"):
             ui.label("Footer")
 
-        # Setup auto-refresh for jobs display
-        ui.timer(2, frontend.fetch_all_data)
-        ui.timer(2, lambda: frontend.update_jobs_display() if hasattr(frontend, "update_jobs_display") else None)
+        # Setup auto-refresh with robust client validation
+        def safe_fetch_all_data():
+            try:
+                # Check if we have valid UI context before making async calls
+                if hasattr(ui, "context") and ui.context.client is not None:
+                    return frontend.fetch_all_data()
+            except Exception as e:
+                pass  # Silently ignore all errors related to client disconnection
+
+        def safe_update_jobs():
+            try:
+                # Multiple layers of validation before updating UI
+                if (
+                    hasattr(ui, "context")
+                    and ui.context.client is not None
+                    and hasattr(frontend, "update_jobs_display")
+                    and hasattr(frontend, "jobs_container")
+                ):
+                    # Additional check on the container itself
+                    container = getattr(frontend, "jobs_container", None)
+                    if container and hasattr(container, "client") and container.client is not None:
+                        frontend.update_jobs_display()
+            except Exception as e:
+                pass  # Silently ignore all errors related to client disconnection
+
+        # Store timer references so we can cancel them if needed
+        fetch_timer = ui.timer(2, safe_fetch_all_data)
+        update_timer = ui.timer(2, safe_update_jobs)
+
+        # Store timers in frontend for potential cleanup
+        frontend._fetch_timer = fetch_timer
+        frontend._update_timer = update_timer
 
 
 if __name__ in {"__main__", "__mp_main__"}:
@@ -717,6 +855,6 @@ if __name__ in {"__main__", "__mp_main__"}:
         favicon="💼",
         dark=True,
         reload=False,
-        port=8081,
+        port=8082,
         native=False,  # Set to True for desktop app feel
     )
