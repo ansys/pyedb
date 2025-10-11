@@ -619,20 +619,31 @@ class HFSSSimulationConfig(BaseModel):
         # Basic job parameters
         parts.append(f"-jobid {self.jobid}")
 
-        # Distributed computing configuration
-        if self.distributed:
-            parts.append("-distributed")
-            if self.scheduler_type != SchedulerType.NONE:
-                total_cores = self._num_cores_for_scheduler()
-                parts.append(f"-machinelist numcores={total_cores}")
-            else:
-                # local run – keep old behaviour
-                machinelist = self.generate_machinelist_string()
-                parts.append(f"-machinelist {machinelist}")
-
         # Execution mode flags
         if self.auto:
             parts.append("-auto")
+
+        # Distributed computing configuration
+        if self.distributed:
+            parts.append("-distributed")
+
+        # Add machinelist parameter - use simplified format when -auto is enabled
+        if self.distributed or self.auto:
+            if self.auto:
+                # For -auto mode, ANSYS always expects simplified format: hostname:-1
+                if self.machine_nodes:
+                    simplified_nodes = [f"{node.hostname}:-1" for node in self.machine_nodes]
+                    parts.append(f"-machinelist list={','.join(simplified_nodes)}")
+                else:
+                    # Default to localhost with all cores
+                    parts.append("-machinelist list=localhost:-1")
+            elif self.scheduler_type != SchedulerType.NONE:
+                total_cores = self._num_cores_for_scheduler()
+                parts.append(f"-machinelist numcores={total_cores}")
+            else:
+                # local distributed run without auto – use old behaviour
+                machinelist = self.generate_machinelist_string()
+                parts.append(f"-machinelist {machinelist}")
 
         if self.non_graphical:
             parts.append("-ng")
