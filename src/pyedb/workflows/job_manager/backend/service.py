@@ -385,11 +385,19 @@ class JobManager:
         Host constraints.  Default instance.
     """
 
-    def __init__(self, resource_limits: ResourceLimits = None):
+    def __init__(self, resource_limits: ResourceLimits = None, scheduler_type: SchedulerType = SchedulerType.NONE):
         self.jobs: Dict[str, JobInfo] = {}
         self.resource_limits = resource_limits or ResourceLimits()
         self.job_pool = JobPoolManager(self.resource_limits)
         self.resource_monitor = ResourceMonitor()
+
+        # Initialize scheduler manager
+        self.scheduler_type = scheduler_type
+        if scheduler_type in {SchedulerType.SLURM, SchedulerType.LSF}:
+            self._sch_mgr = SchedulerManager(scheduler_type)
+        else:
+            self._sch_mgr = None
+
         # Correct SocketIO initialization
         self.sio = socketio.AsyncServer(async_mode="aiohttp", cors_allowed_origins="*")
         self.app = web.Application()
