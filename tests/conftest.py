@@ -190,6 +190,9 @@ class EdbExamples:
         local_scratch.copyfolder(example_project, target_path)
         return target_path
 
+    def get_log_file_example(self):
+        return os.path.join(self.example_models_path, "test.log")
+
 
 @pytest.fixture(scope="class", autouse=True)
 def target_path(local_scratch):
