@@ -363,7 +363,7 @@ def setup_ui():
                         ).classes("input-modern w-full")
 
                         mpi_vendor = ui.select(
-                            label="MPI Vendor", options=["Intel", "OpenMPI", "MPICH", "Default"], value="Default"
+                            label="MPI Vendor", options=["Intel", "Microsoft", "Open MPI"], value="Intel"
                         ).classes("input-modern w-full")
 
                 # Submit button

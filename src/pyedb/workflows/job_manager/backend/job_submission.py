@@ -267,7 +267,7 @@ class HFSS3DLayoutBatchOptions(BaseModel):
         Scratch path.  Auto-detected.
     """
 
-    create_starting_mesh: bool = False
+    create_starting_mesh: bool = True
     default_process_priority: str = "Normal"
     enable_gpu: bool = False
     mpi_vendor: str = "Intel"
@@ -299,7 +299,7 @@ class HFSS3DLayoutBatchOptions(BaseModel):
             raise ValueError(f"Priority must be one of: {valid_priorities}")
 
         # MPI vendor validation - ANSYS expects specific string values
-        valid_mpi_vendors = ["Microsoft", "Intel", "Open MPI", "Default"]
+        valid_mpi_vendors = ["Microsoft", "Intel", "Open MPI"]
         if self.mpi_vendor not in valid_mpi_vendors:
             raise ValueError(f"MPI vendor must be one of: {valid_mpi_vendors}")
 
@@ -316,7 +316,7 @@ class HFSS3DLayoutBatchOptions(BaseModel):
             Key-value pairs suitable for the ``-batchoptions`` switch.
         """
         return {
-            "HFSS 3D Layout Design/CreateStartingMesh": "1" if self.create_starting_mesh else "1",
+            "HFSS 3D Layout Design/CreateStartingMesh": "1" if self.create_starting_mesh else "0",
             "HFSS 3D Layout Design/DefaultProcessPriority": self.default_process_priority,
             "HFSS 3D Layout Design/EnableGPU": "1" if self.enable_gpu else "0",
             "HFSS 3D Layout Design/MPIVendor": self.mpi_vendor,
