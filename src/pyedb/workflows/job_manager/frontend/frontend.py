@@ -25,7 +25,7 @@ class JobManagerFrontend:
             "disk_used_gb": 0,
             "disk_total_gb": 0,
         }
-        self.queue_stats = {}
+        self.queue_stats = {"total_queued": 0, "running_jobs": 0, "max_concurrent": 2}
         self.partitions = []
         self.system_status = {}
         self.scheduler_type = "none"
@@ -80,7 +80,8 @@ class JobManagerFrontend:
             async with aiohttp.ClientSession() as session:
                 async with session.get(f"{self.backend_url}/queue") as response:
                     if response.status == 200:
-                        self.queue_stats = await response.json()
+                        new = await response.json()
+                        self.queue_stats.update(new)
         except Exception as e:
             print(f"Error fetching queue stats: {e}")
 
@@ -550,10 +551,17 @@ def setup_ui():
                     ui.button("Cancel", on_click=dialog.close).classes("bg-gray-500 text-white")
 
                     async def save_max_concurrent():
-                        # In a real implementation, you'd send this to the backend
-                        frontend.queue_stats["max_concurrent"] = int(new_value.value)
-                        ui.notify(f"Max concurrent jobs set to {new_value.value}", type="positive")
-                        dialog.close()
+                        new_limit = int(new_value.value)
+                        async with aiohttp.ClientSession() as session:
+                            resp = await session.put(
+                                f"{frontend.backend_url}/pool/limits", json={"max_concurrent_jobs": new_limit}
+                            )
+                            if resp.status == 200:
+                                ui.notify(f"Max concurrent set to {new_limit}", type="positive")
+                                dialog.close()
+                            else:
+                                text = await resp.text()
+                                ui.notify(f"Failed to update limit: {text}", type="negative")
 
                     ui.button("Save", on_click=save_max_concurrent).classes("btn-modern")
 

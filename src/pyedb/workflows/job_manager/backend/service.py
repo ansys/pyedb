@@ -387,7 +387,9 @@ class JobManager:
 
     def __init__(self, resource_limits: ResourceLimits = None, scheduler_type: SchedulerType = SchedulerType.NONE):
         self.jobs: Dict[str, JobInfo] = {}
-        self.resource_limits = resource_limits or ResourceLimits()
+        if resource_limits is None:
+            resource_limits = ResourceLimits()
+        self.resource_limits = resource_limits
         self.job_pool = JobPoolManager(self.resource_limits)
         self.resource_monitor = ResourceMonitor()
         self.ansys_path = None  # Will be set by JobManagerHandler
@@ -590,7 +592,9 @@ class JobManager:
 
         Used by the dashboard progress bar.
         """
-        return web.json_response(self.job_pool.get_queue_stats())
+        stats = self.job_pool.get_queue_stats()
+        logger.info(f"/queue endpoint returning max_concurrent = {stats['max_concurrent']}")
+        return web.json_response(stats)
 
     async def handle_set_priority(self, request):
         """
@@ -923,6 +927,7 @@ class JobManager:
 
                     old_limits[field] = old_value
                     setattr(self.resource_limits, field, new_value)
+                    self.job_pool.resource_limits = self.resource_limits
                     updated = True
 
             if updated:
