@@ -57,7 +57,7 @@ class JobManagerFrontend:
         """Fetch job list"""
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(f"{self.backend_url}/jobs") as response:
+                async with session.get(f"{self.backend_url}/api/jobs") as response:
                     if response.status == 200:
                         self.jobs = await response.json()
         except Exception as e:
@@ -67,7 +67,7 @@ class JobManagerFrontend:
         """Fetch resource usage"""
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(f"{self.backend_url}/resources") as response:
+                async with session.get(f"{self.backend_url}/api/resources") as response:
                     if response.status == 200:
                         data = await response.json()
                         self.resources.update(data)
@@ -78,7 +78,7 @@ class JobManagerFrontend:
         """Fetch queue statistics"""
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(f"{self.backend_url}/queue") as response:
+                async with session.get(f"{self.backend_url}/api/queue") as response:
                     if response.status == 200:
                         new = await response.json()
                         self.queue_stats.update(new)
@@ -89,7 +89,7 @@ class JobManagerFrontend:
         """Fetch cluster partitions"""
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(f"{self.backend_url}/scheduler/partitions") as response:
+                async with session.get(f"{self.backend_url}/api/scheduler/partitions") as response:
                     if response.status == 200:
                         self.partitions = await response.json()
         except Exception as e:
@@ -109,14 +109,99 @@ class JobManagerFrontend:
             return False
 
     async def cancel_job(self, job_id: str) -> bool:
-        """Cancel a job"""
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.post(f"{self.backend_url}/jobs/{job_id}/cancel") as response:
-                    return response.status == 200
+                async with session.post(f"{self.backend_url}/api/cancel/{job_id}") as resp:
+                    return resp.status == 200
         except Exception as e:
             print(f"Error cancelling job: {e}")
             return False
+
+    async def fetch_job_log(self, job_id: str) -> Optional[dict]:
+        """Return the log dictionary for a single job."""
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f"{self.backend_url}/api/jobs/{job_id}/log") as resp:
+                    if resp.status == 204:  # backend has no content yet
+                        return None
+                    resp.raise_for_status()
+                    return await resp.json()
+        except Exception as e:
+            print(f"Error fetching log for {job_id}: {e}")
+            return None
+
+    def create_log_card(self, job: dict) -> ui.expansion:
+        """Compact live-log card – only relevant figures, no flicker."""
+        job_id = job["id"]
+
+        # reusable label holders
+        prj_name = ui.label("—").classes("text-sm font-bold")
+        init_tet = ui.label("—").classes("text-xs")
+        passes = ui.label("—").classes("text-xs")
+        delta_s = ui.label("—").classes("text-xs")
+        memory = ui.label("—").classes("text-xs")
+        tetra = ui.label("—").classes("text-xs")
+        sweep_pts = ui.label("—").classes("text-xs")
+        conv_badge = ui.label("Not converged").classes("status-badge status-queued")
+
+        with ui.expansion(f"{job_id}  –  live data", icon="analytics") as card:
+            card.classes("w-full custom-card mt-2").style("min-height: 160px")
+            with ui.grid(columns=4).classes("gap-x-4 gap-y-1 items-center"):
+                ui.label("Project:").classes("text-xs text-gray-400")
+                prj_name.classes("col-span-3")
+
+                ui.label("Init tet:").classes("text-xs text-gray-400")
+                init_tet.classes("col-span-3")
+
+                ui.label("Passes:").classes("text-xs text-gray-400")
+                passes.classes("col-span-3")
+
+                ui.label("ΔS:").classes("text-xs text-gray-400")
+                delta_s.classes("col-span-3")
+
+                ui.label("Memory:").classes("text-xs text-gray-400")
+                memory.classes("col-span-3")
+
+                ui.label("Tetra:").classes("text-xs text-gray-400")
+                tetra.classes("col-span-3")
+
+                ui.label("Sweep:").classes("text-xs text-gray-400")
+                sweep_pts.classes("col-span-3")
+
+                ui.label("Status:").classes("text-xs text-gray-400")
+                conv_badge.classes("col-span-3")
+
+        async def refresh():
+            data = await self.fetch_job_log(job_id)
+            if not data:  # 204 / not ready
+                return
+
+            prj = data.get("project", {})
+            prj_name.set_text(prj.get("name", "—"))
+
+            init = data.get("init_mesh", {})
+            init_tet.set_text(f"{init.get('tetrahedra', 0):,}")
+
+            ads = data.get("adaptive", [])
+            passes.set_text(str(len(ads)))
+
+            if ads:
+                latest = ads[-1]
+                delta_s.set_text(f"{latest.get('delta_s', '—'):.4f}" if latest.get("delta_s") else "—")
+                memory.set_text(f"{latest.get('memory_mb', 0):.0f} MB")
+                tetra.set_text(f"{latest.get('tetrahedra', 0):,}")
+
+                conv = latest.get("converged", False)
+                conv_badge.set_text("Converged" if conv else "Not converged")
+                conv_badge.classes(remove="status-queued status-completed")
+                conv_badge.classes("status-completed" if conv else "status-queued")
+
+            sw = data.get("sweep", {})
+            pts = sw.get("points_solved", 0) if sw else 0
+            sweep_pts.set_text(f"{pts} pts" if pts else "—")
+
+        ui.timer(2, refresh, active=job.get("status") in {"queued", "running"})
+        return card
 
 
 # Create frontend instance
@@ -678,7 +763,7 @@ def setup_ui():
                                                     ).classes("bg-red-500 hover:bg-red-600 text-white p-1").style(
                                                         "min-width: 28px; min-height: 28px"
                                                     )
-
+                                            frontend.create_log_card(job)
                                             # Job timings (compact)
                                             if job.get("start_time") or job.get("end_time"):
                                                 with ui.column().classes("text-right text-xs text-gray-400"):
