@@ -130,78 +130,82 @@ class JobManagerFrontend:
             print(f"Error fetching log for {job_id}: {e}")
             return None
 
-    def create_log_card(self, job: dict) -> ui.expansion:
-        """Compact live-log card – only relevant figures, no flicker."""
+    def create_log_card(self, job: dict) -> ui.row:
         job_id = job["id"]
 
-        # reusable label holders
-        prj_name = ui.label("—").classes("text-sm font-bold")
-        init_tet = ui.label("—").classes("text-xs")
-        passes = ui.label("—").classes("text-xs")
-        delta_s = ui.label("—").classes("text-xs")
-        memory = ui.label("—").classes("text-xs")
-        tetra = ui.label("—").classes("text-xs")
-        sweep_pts = ui.label("—").classes("text-xs")
-        conv_badge = ui.label("Not converged").classes("status-badge status-queued")
+        with ui.row().classes("items-center gap-3 mt-2") as row:
+            # Project
+            with ui.column().classes("items-center"):
+                ui.label("Project").classes("text-2xs text-gray-500")
+                prj_lbl = ui.label("—").classes("text-xs font-bold")
 
-        with ui.expansion(f"{job_id}  –  live data", icon="analytics") as card:
-            card.classes("w-full custom-card mt-2").style("min-height: 160px")
-            with ui.grid(columns=4).classes("gap-x-4 gap-y-1 items-center"):
-                ui.label("Project:").classes("text-xs text-gray-400")
-                prj_name.classes("col-span-3")
+            # Init tet
+            with ui.column().classes("items-center"):
+                ui.label("Init tet").classes("text-2xs text-gray-500")
+                init_lbl = ui.label("—").classes("text-xs")
 
-                ui.label("Init tet:").classes("text-xs text-gray-400")
-                init_tet.classes("col-span-3")
+            # Passes
+            with ui.column().classes("items-center"):
+                ui.label("Passes").classes("text-2xs text-gray-500")
+                pass_lbl = ui.label("—").classes("text-xs")
 
-                ui.label("Passes:").classes("text-xs text-gray-400")
-                passes.classes("col-span-3")
+            # ΔS
+            with ui.column().classes("items-center"):
+                ui.label("ΔS").classes("text-2xs text-gray-500")
+                ds_lbl = ui.label("—").classes("text-xs")
 
-                ui.label("ΔS:").classes("text-xs text-gray-400")
-                delta_s.classes("col-span-3")
+            # Memory
+            with ui.column().classes("items-center"):
+                ui.label("Memory").classes("text-2xs text-gray-500")
+                mem_lbl = ui.label("—").classes("text-xs")
 
-                ui.label("Memory:").classes("text-xs text-gray-400")
-                memory.classes("col-span-3")
+            # Tetra
+            with ui.column().classes("items-center"):
+                ui.label("Tetra").classes("text-2xs text-gray-500")
+                tet_lbl = ui.label("—").classes("text-xs")
 
-                ui.label("Tetra:").classes("text-xs text-gray-400")
-                tetra.classes("col-span-3")
+            # Sweep
+            with ui.column().classes("items-center"):
+                ui.label("Sweep").classes("text-2xs text-gray-500")
+                swp_lbl = ui.label("—").classes("text-xs")
 
-                ui.label("Sweep:").classes("text-xs text-gray-400")
-                sweep_pts.classes("col-span-3")
+            # Status badge
+            with ui.column().classes("items-center"):
+                ui.label("Status").classes("text-2xs text-gray-500")
+                conv_bdg = ui.label("Not converged").classes("status-badge status-queued")
 
-                ui.label("Status:").classes("text-xs text-gray-400")
-                conv_badge.classes("col-span-3")
-
+        # ---------- timer-driven update ----------
         async def refresh():
             data = await self.fetch_job_log(job_id)
             if not data:  # 204 / not ready
                 return
 
             prj = data.get("project", {})
-            prj_name.set_text(prj.get("name", "—"))
+            prj_lbl.set_text(prj.get("name", "—"))
 
             init = data.get("init_mesh", {})
-            init_tet.set_text(f"{init.get('tetrahedra', 0):,}")
+            init_lbl.set_text(f"{init.get('tetrahedra', 0):,}")
 
             ads = data.get("adaptive", [])
-            passes.set_text(str(len(ads)))
+            pass_lbl.set_text(str(len(ads)))
 
             if ads:
                 latest = ads[-1]
-                delta_s.set_text(f"{latest.get('delta_s', '—'):.4f}" if latest.get("delta_s") else "—")
-                memory.set_text(f"{latest.get('memory_mb', 0):.0f} MB")
-                tetra.set_text(f"{latest.get('tetrahedra', 0):,}")
+                ds_lbl.set_text(f"{latest.get('delta_s', '—'):.4f}" if latest.get("delta_s") else "—")
+                mem_lbl.set_text(f"{latest.get('memory_mb', 0):.0f} MB")
+                tet_lbl.set_text(f"{latest.get('tetrahedra', 0):,}")
 
                 conv = latest.get("converged", False)
-                conv_badge.set_text("Converged" if conv else "Not converged")
-                conv_badge.classes(remove="status-queued status-completed")
-                conv_badge.classes("status-completed" if conv else "status-queued")
+                conv_bdg.set_text("Converged" if conv else "Not converged")
+                conv_bdg.classes(remove="status-queued status-completed")
+                conv_bdg.classes("status-completed" if conv else "status-queued")
 
             sw = data.get("sweep", {})
             pts = sw.get("points_solved", 0) if sw else 0
-            sweep_pts.set_text(f"{pts} pts" if pts else "—")
+            swp_lbl.set_text(f"{pts} pts" if pts else "—")
 
         ui.timer(2, refresh, active=job.get("status") in {"queued", "running"})
-        return card
+        return row
 
 
 # Create frontend instance
