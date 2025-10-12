@@ -316,7 +316,7 @@ class HFSS3DLayoutBatchOptions(BaseModel):
             Key-value pairs suitable for the ``-batchoptions`` switch.
         """
         return {
-            "HFSS 3D Layout Design/CreateStartingMesh": "1" if self.create_starting_mesh else "0",
+            "HFSS 3D Layout Design/CreateStartingMesh": "1" if self.create_starting_mesh else "1",
             "HFSS 3D Layout Design/DefaultProcessPriority": self.default_process_priority,
             "HFSS 3D Layout Design/EnableGPU": "1" if self.enable_gpu else "0",
             "HFSS 3D Layout Design/MPIVendor": self.mpi_vendor,
@@ -387,7 +387,7 @@ class HFSSSimulationConfig(BaseModel):
     project_path: str = Field(
         default_factory=lambda: "/tmp/simulation.aedt"
         if platform.system() != "Windows"
-        else "D:\\Temp\\simulation.aedt"
+        else "C:\\Temp\\simulation.aedt"
     )
     design_name: str = ""
     design_mode: str = ""
@@ -615,7 +615,10 @@ class HFSSSimulationConfig(BaseModel):
         # Basic job parameters
         parts.append(f"-jobid {self.jobid}")
 
-        # Execution mode flags
+        # Never add “-auto” when we are NOT using a scheduler
+        if self.scheduler_type != SchedulerType.NONE:
+            self.auto = False
+
         if self.auto:
             parts.append("-auto")
 
@@ -631,15 +634,13 @@ class HFSSSimulationConfig(BaseModel):
                 if self.machine_nodes:
                     simplified_nodes = [f"{node.hostname}:-1" for node in self.machine_nodes]
                     parts.append(f"-machinelist list={','.join(simplified_nodes)}")
-                else:
-                    # Default to localhost with all cores
-                    parts.append("-machinelist list=localhost:-1")
             elif self.scheduler_type != SchedulerType.NONE:
                 total_cores = self._num_cores_for_scheduler()
                 parts.append(f"-machinelist numcores={total_cores}")
             else:
-                # local distributed run without auto – use old behaviour
+                # running locally with custom machinelist
                 machinelist = self.generate_machinelist_string()
+                self.n
                 parts.append(f"-machinelist {machinelist}")
 
         if self.non_graphical:
