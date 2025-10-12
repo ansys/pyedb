@@ -27,6 +27,17 @@ def _to_sec(mm_ss: str) -> int:
     return 0
 
 
+def _as_dict(obj: Any) -> Any:
+    """Recursively convert dataclasses / lists / primitives to plain Python types."""
+    if hasattr(obj, "__dataclass_fields__"):
+        return {f: _as_dict(getattr(obj, f)) for f in obj.__dataclass_fields__}
+    if isinstance(obj, list):
+        return [_as_dict(i) for i in obj]
+    if isinstance(obj, Path):
+        return str(obj)
+    return obj
+
+
 @dataclass(slots=True)
 class ProjectInfo:
     name: str
@@ -195,6 +206,9 @@ class ParsedLog:
     init_mesh: InitMesh
     adaptive: List[AdaptivePass]
     sweep: Optional[Sweep]
+
+    def to_dict(self) -> dict:
+        return _as_dict(self)
 
     def is_converged(self) -> bool:
         """True if at least one adaptive pass reached convergence."""

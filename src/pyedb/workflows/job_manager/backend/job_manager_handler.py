@@ -40,6 +40,7 @@ from pyedb.workflows.job_manager.backend.job_submission import (
     create_hfss_config,
 )
 from pyedb.workflows.job_manager.backend.service import JobManager, ResourceLimits, SchedulerManager
+from pyedb.workflows.log_parser.hfss_log_parser import HFSSLogParser
 
 
 @web.middleware
@@ -109,6 +110,28 @@ class JobManagerHandler:
         self.app.router.add_get("/api/cluster_partitions", self.get_cluster_partitions)
         self.app.router.add_post("/api/submit", self.submit_job)
         self.app.router.add_post("/api/cancel/{job_id}", self.cancel_job)
+        self.app.router.add_get("/api/jobs/{job_id}/log", self.get_job_log)
+
+    def _find_latest_log(self, project_path: str) -> Path | None:
+        """
+        Return the newest *.log file inside the newest *.aedb.batchinfo folder
+        that ANSYS creates next to the project.
+        """
+        proj = Path(project_path).resolve()
+        base = proj.with_suffix("")  # strip .aedt / .aedb
+        batch_parent = proj.parent  # folder that contains the project
+
+        # all timestamped folders:  <proj>.aedb.batchinfo.<timestamp>
+        batch_folders = sorted(
+            batch_parent.glob(f"{base.name}.aedb.batchinfo*"), key=lambda p: p.stat().st_mtime, reverse=True
+        )
+        for bf in batch_folders:
+            # newest *.log inside that folder
+            try:
+                return max(bf.glob("*.log"), key=lambda p: p.stat().st_mtime)
+            except ValueError:  # no *.log here
+                continue
+        return None
 
     async def get_jobs(self, request):
         jobs_data = []
@@ -135,6 +158,30 @@ class JobManagerHandler:
             partitions = await self._sch_mgr.get_partitions()
             return web.json_response(partitions)
         return web.json_response([])
+
+    # job_manager_handler.py  (add as a new coroutine)
+
+    async def get_job_log(self, request):
+        """
+        Return parsed HFSS log for a finished job.
+        204 No Content when log is not available yet.
+        """
+        job_id = request.match_info["job_id"]
+        job_info = self.manager.jobs.get(job_id)
+        if not job_info:
+            return web.json_response({"error": "Job not found"}, status=404)
+
+        log_file = self._find_latest_log(job_info.config.project_path)
+        if not log_file or not log_file.exists():
+            return web.Response(status=204)  # No Content
+
+        try:
+            parsed = HFSSLogParser(log_file).parse()
+            # Convert dataclasses to plain dicts/lists
+            return web.json_response(parsed.to_dict())
+        except Exception as exc:
+            logger.exception("Failed to parse log")
+            return web.json_response({"error": str(exc)}, status=500)
 
     async def submit_job(self, request):
         data = await request.json()
