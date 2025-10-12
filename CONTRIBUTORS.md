@@ -21,6 +21,7 @@
 * [Hui Zhou](https://github.com/hui-zhou-a)
 * [Isaac Waldron](https://github.com/isaacwaldron)
 * [JDufrenneAnsys](https://github.com/JDufrenneAnsys)
+* [Jorge Martínez](https://github.com/jorgepiloto)
 * [Kathy Pippert](https://github.com/PipKat)
 * [Massimo Capodiferro](https://github.com/maxcapodi78)
 * [Maxime Rey](https://github.com/MaxJPRey)
