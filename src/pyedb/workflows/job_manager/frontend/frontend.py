@@ -100,18 +100,9 @@ class JobManagerFrontend:
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(f"{self.backend_url}/jobs/submit", json=job_data) as response:
-                    print(f"DEBUG: Backend response status: {response.status}")
-                    response_text = await response.text()
-                    print(f"DEBUG: Backend response body: {response_text}")
-
                     if response.status == 200:
                         return True
                     else:
-                        try:
-                            error_data = await response.json()
-                            print(f"DEBUG: Backend error data: {error_data}")
-                        except:
-                            print(f"DEBUG: Could not parse backend error as JSON")
                         return False
         except Exception as e:
             print(f"Error submitting job: {e}")
@@ -383,9 +374,6 @@ def setup_ui():
                     scheduler_type_lower = str(frontend.scheduler_type).lower().strip()
                     is_local_mode = scheduler_type_lower in ["none", "local"]
 
-                    print(f"DEBUG: Is local mode: {is_local_mode}")
-                    print(f"DEBUG: cpus is None: {cpus is None}")
-
                     # Build the config in HFSSSimulationConfig format
                     job_config = {
                         "config": {
@@ -425,18 +413,11 @@ def setup_ui():
 
                             # Don't include scheduler_options for local execution - let backend use defaults
                             # This avoids the Pydantic compatibility issue
-                            print(f"DEBUG: Using local execution with {cpus.value} cores (no scheduler_options)")
                         else:
                             ui.notify("CPU cores field is required for local execution", type="negative")
                             return
                     else:
                         # Cluster execution - use scheduler_options
-                        print(f"DEBUG: Using cluster execution")
-                        print(f"DEBUG: nodes is None: {nodes is None}")
-                        print(f"DEBUG: tasks_per_node is None: {tasks_per_node is None}")
-                        print(f"DEBUG: cpus_per_node is None: {cpus_per_node is None}")
-                        print(f"DEBUG: queue is None: {queue is None}")
-
                         if all(field is not None for field in [nodes, tasks_per_node, cpus_per_node, queue]):
                             job_config["config"]["scheduler_options"] = {
                                 "queue": queue.value,
@@ -459,10 +440,6 @@ def setup_ui():
                         else:
                             ui.notify("All cluster fields are required for cluster execution", type="negative")
                             return
-
-                    # Debug: Print the complete job config being sent
-                    print(f"DEBUG: Complete job config being sent:")
-                    print(f"DEBUG: {json.dumps(job_config, indent=2)}")
 
                     success = await frontend.submit_job(job_config)
                     if success:
