@@ -60,33 +60,42 @@ class JobManagerHandler:
 
     def __init__(self, edb=None, version=None, host="localhost", port=8080):
         if edb:
-            self.ansys_path = os.path.join(edb.base_path, "ansysedt" if is_linux else "ansysedt.exe")
+            if is_linux():
+                self.ansys_path = os.path.join(edb.base_path, "ansysedt" if is_linux else "ansysedt")
+            else:
+                self.ansys_path = os.path.join(edb.base_path, "ansysedt" if is_linux else "ansysedt.exe")
         else:
             from pyedb.generic.general_methods import installed_ansys_em_versions
 
             installed_versions = installed_ansys_em_versions()
             if not version:
-                self.ansys_path = os.path.join(list(installed_versions.values())[-1], "ansysedt.exe")  # latest
+                if is_linux:
+                    self.ansys_path = os.path.join(list(installed_versions.values())[-1], "ansysedt")  # latest
+                else:
+                    self.ansys_path = os.path.join(list(installed_versions.values())[-1], "ansysedt.exe")  # latest
             else:
                 if version not in installed_versions:
                     raise ValueError(f"ANSYS release {version} not found")
-                self.ansys_path = os.path.join(installed_versions[version], "ansysedt.exe")
+                if is_linux:
+                    self.ansys_path = os.path.join(installed_versions[version], "ansysedt")
+                else:
+                    self.ansys_path = os.path.join(installed_versions[version], "ansysedt.exe")
 
         self.manager = JobManager()
         self.manager.resource_limits = ResourceLimits(max_concurrent_jobs=2)
-        self.manager.jobs = {}  # In-memory job store for demonstration
+        self.manager.jobs = {}  # In-memory job store -TODO add persistence database
         # Pass the detected ANSYS path to the manager
         self.manager.ansys_path = self.ansys_path
 
         self.host, self.port = host, port
         self._url = f"http://{host}:{port}"
 
-        # --- NEW: Setup aiohttp and Socket.IO server ---
+        # Setup aiohttp and Socket.IO server ---
         self.sio = self.manager.sio
         self.app = self.manager.app
         self.app.middlewares.append(cors_middleware)
         self._add_routes()
-        # -----------------------------------------------
+        # ----------------------------------------
 
         self.runner: Optional[web.AppRunner] = None
         self.site = None
@@ -180,7 +189,6 @@ class JobManagerHandler:
             # Convert dataclasses to plain dicts/lists
             return web.json_response(parsed.to_dict())
         except Exception as exc:
-            logger.exception("Failed to parse log")
             return web.json_response({"error": str(exc)}, status=500)
 
     async def submit_job(self, request):
