@@ -21,6 +21,7 @@ from asyncio import run_coroutine_threadsafe
 import atexit
 import concurrent.futures as _futs
 import os
+from pathlib import Path
 import platform
 import shutil
 import sys
@@ -33,6 +34,8 @@ from aiohttp import web
 from pyedb.generic.general_methods import is_linux
 from pyedb.workflows.job_manager.backend.job_submission import (
     HFSS3DLayoutBatchOptions,
+    HFSSSimulationConfig,
+    MachineNode,
     SchedulerType,
     create_hfss_config,
 )
@@ -151,8 +154,9 @@ class JobManagerHandler:
 
         config = self.create_simulation_config(
             project_path=project_path,
-            ansys_edt_path=self.ansys_path,  # Use the detected ANSYS path
+            ansys_edt_path=self.ansys_path,
             scheduler_type=self.scheduler_type,
+            cpu_cores=data.get("cpus", 1),
         )
 
         # Set the machine nodes if provided
@@ -235,18 +239,49 @@ class JobManagerHandler:
         self._loop.run_until_complete(self._start_site())
         self._loop.run_forever()
 
-    def create_simulation_config(self, project_path, ansys_edt_path=None, jobid=None, scheduler_type=None):
+    def create_simulation_config(
+        self,
+        project_path: str,
+        ansys_edt_path: str | None = None,
+        jobid: str | None = None,
+        scheduler_type: SchedulerType | None = None,
+        cpu_cores: int = 1,
+    ) -> HFSSSimulationConfig:
+        """Create a validated HFSSSimulationConfig.
+
+        Parameters
+        ----------
+        cpu_cores : int
+            Number of logical cores the user requested in the UI.
+            Used only when scheduler_type == NONE (local run).
+            :param ansys_edt_path:
+        """
         if not project_path:
             raise ValueError("Project path must be provided")
-        if not ansys_edt_path:
+
+        if ansys_edt_path is None:
             ansys_edt_path = self.ansys_path
-        if not jobid:
-            jobid = os.path.splitext(os.path.basename(project_path))[0] + f"_{uuid.uuid4().hex[:6]}"
-        if not scheduler_type:
-            scheduler_type = SchedulerType.NONE
+        if jobid is None:
+            jobid = f"{Path(project_path).stem}_{uuid.uuid4().hex[:6]}"
+        if scheduler_type is None:
+            scheduler_type = self.scheduler_type
+
+        # Build ONE machine-node that carries the requested CPU count
+        machine_nodes = [
+            MachineNode(
+                hostname="localhost",
+                cores=cpu_cores,  # <-- honour UI choice
+                max_cores=cpu_cores,
+                utilization=90,
+            )
+        ]
 
         return create_hfss_config(
-            ansys_edt_path=ansys_edt_path, jobid=jobid, project_path=project_path, scheduler_type=scheduler_type
+            ansys_edt_path=ansys_edt_path,
+            jobid=jobid,
+            project_path=project_path,
+            scheduler_type=scheduler_type,
+            machine_nodes=machine_nodes,
         )
 
 

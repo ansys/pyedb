@@ -615,58 +615,56 @@ class HFSSSimulationConfig(BaseModel):
         # Basic job parameters
         parts.append(f"-jobid {self.jobid}")
 
-        # Never add “-auto” when we are NOT using a scheduler
-        if self.scheduler_type != SchedulerType.NONE:
-            self.auto = False
+        # ------------------------------------------------------------------
+        # LOCAL MODE: enforce no -auto and explicit cores
+        # ------------------------------------------------------------------
+        if self.scheduler_type == SchedulerType.NONE:
+            self.auto = False  # never use -auto for local runs
+            if self.machine_nodes:
+                simplified = [
+                    f"{node.hostname}:{node.cores}:{node.max_cores}:{node.utilization}%" for node in self.machine_nodes
+                ]
+                parts.append(f"-machinelist list={','.join(simplified)}")
+            # Skip all later machinelist logic for local runs
+        # ------------------------------------------------------------------
+        # CLUSTER MODE: existing logic
+        # ------------------------------------------------------------------
+        else:
+            if self.scheduler_type != SchedulerType.NONE:
+                self.auto = False  # keep existing cluster guard
 
-        if self.auto:
-            parts.append("-auto")
-
-        # Distributed computing configuration
-        if self.distributed:
-            parts.append("-distributed")
-
-        # Add machinelist parameter - use simplified format when -auto is enabled
-        if self.distributed or self.auto:
             if self.auto:
-                # For -auto mode, ANSYS requires -1 for each machine (meaning use all cores)
-                # regardless of what the user specified - this is an ANSYS requirement
-                if self.machine_nodes:
-                    simplified_nodes = [f"{node.hostname}:-1" for node in self.machine_nodes]
-                    parts.append(f"-machinelist list={','.join(simplified_nodes)}")
-            elif self.scheduler_type != SchedulerType.NONE:
+                parts.append("-auto")
+
+            if self.distributed:
+                parts.append("-distributed")
                 total_cores = self._num_cores_for_scheduler()
                 parts.append(f"-machinelist numcores={total_cores}")
-            else:
-                # running locally with custom machinelist
-                machinelist = self.generate_machinelist_string()
-                self.n
-                parts.append(f"-machinelist {machinelist}")
 
+        # Common flags
         if self.non_graphical:
             parts.append("-ng")
-
         if self.monitor:
             parts.append("-monitor")
 
-        # Batch options with proper quoting
-        batch_options = self.generate_batch_options_string()
+        # Batch options
+        batch_opts = self.generate_batch_options_string()
         if platform.system() == "Windows":
-            parts.append(f'-batchoptions "{batch_options}"')
+            parts.append(f'-batchoptions "{batch_opts}"')
         else:
-            parts.append(f"-batchoptions {shlex.quote(batch_options)}")
+            parts.append(f"-batchoptions {shlex.quote(batch_opts)}")
 
-        # Design specification and project path
-        design_string = self.generate_design_string()
+        # Project and design
+        design_str = self.generate_design_string()
         if platform.system() == "Windows":
-            project_path_quoted = f'"{self.project_path}"'
+            proj_quoted = f'"{self.project_path}"'
         else:
-            project_path_quoted = shlex.quote(self.project_path)
+            proj_quoted = shlex.quote(self.project_path)
 
         if self.design_name:
-            parts.append(f"-batchsolve {design_string} {project_path_quoted}")
+            parts.append(f"-batchsolve {design_str} {proj_quoted}")
         else:
-            parts.append(f"-batchsolve {project_path_quoted}")
+            parts.append(f"-batchsolve {proj_quoted}")
 
         return " ".join(parts)
 
