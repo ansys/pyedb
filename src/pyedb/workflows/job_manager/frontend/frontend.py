@@ -134,7 +134,7 @@ class JobManagerFrontend:
 
     def create_log_card(self, job: dict) -> ui.row:
         job_id = job["id"]
-
+        cache = job.setdefault("_cache", {})  # reuse existing cache if any
         with ui.row().classes("items-center gap-3 mt-2") as row:
             # Project
             with ui.column().classes("items-center"):
@@ -176,38 +176,52 @@ class JobManagerFrontend:
                 ui.label("Status").classes("text-2xs text-gray-500")
                 conv_bdg = ui.label("Not converged").classes("status-badge status-queued")
 
-        # ---------- timer-driven update ----------
-        async def refresh():
-            data = await self.fetch_job_log(job_id)
-            if not data:  # 204 / not ready
-                return
+            # ---------- 2. timer-driven update ----------
+            async def refresh():
+                data = await self.fetch_job_log(job_id)
 
-            prj = data.get("project", {})
-            prj_lbl.set_text(prj.get("name", "—"))
+                # use live data or fall back to cached data
+                src = data if data else cache
+                if not src:  # nothing to display yet
+                    return
 
-            init = data.get("init_mesh", {})
-            init_lbl.set_text(f"{init.get('tetrahedra', 0):,}")
+                # store live data for later reuse
+                if data:
+                    cache.clear()
+                    cache.update(data)
 
-            ads = data.get("adaptive", [])
-            pass_lbl.set_text(str(len(ads)))
+                # ---------- 3. draw badges ----------
+                prj = src.get("project", {})
+                prj_lbl.set_text(prj.get("name", "—"))
 
-            if ads:
-                latest = ads[-1]
-                ds_lbl.set_text(f"{latest.get('delta_s', '—'):.4f}" if latest.get("delta_s") else "—")
-                mem_lbl.set_text(f"{latest.get('memory_mb', 0):.0f} MB")
-                tet_lbl.set_text(f"{latest.get('tetrahedra', 0):,}")
+                init = src.get("init_mesh", {})
+                init_lbl.set_text(f"{init.get('tetrahedra', 0):,}")
 
-                conv = latest.get("converged", False)
-                conv_bdg.set_text("Converged" if conv else "Not converged")
-                conv_bdg.classes(remove="status-queued status-completed")
-                conv_bdg.classes("status-completed" if conv else "status-queued")
+                ads = src.get("adaptive", [])
+                pass_lbl.set_text(str(len(ads)))
 
-            sw = data.get("sweep", {})
-            pts = sw.get("points_solved", 0) if sw else 0
-            swp_lbl.set_text(f"{pts} pts" if pts else "—")
+                if ads:
+                    latest = ads[-1]
+                    ds_lbl.set_text(f"{latest.get('delta_s', '—'):.4f}" if latest.get("delta_s") else "—")
+                    mem_lbl.set_text(f"{latest.get('memory_mb', 0):.0f} MB")
+                    tet_lbl.set_text(f"{latest.get('tetrahedra', 0):,}")
 
-        ui.timer(2, refresh, active=job.get("status") in {"queued", "running"})
-        return row
+                    conv = latest.get("converged", False)
+                    conv_bdg.set_text("Converged" if conv else "Not converged")
+                    conv_bdg.classes(remove="status-queued status-completed")
+                    conv_bdg.classes("status-completed" if conv else "status-queued")
+
+                sw = src.get("sweep", {})
+                if sw:
+                    total = sw.get("frequencies", 0)
+                    solved = len(sw.get("solved", []))
+                    swp_lbl.set_text(f"{solved}/{total} pts")
+                else:
+                    swp_lbl.set_text("—")
+
+            # ---------- 4. keep timer alive while card exists ----------
+            ui.timer(frontend.refresh_period, refresh, active=True)  # always active until card is destroyed
+            return row
 
 
 # Setup auto-refresh with robust client validation
@@ -606,6 +620,7 @@ def setup_ui():
                             "config": job_config["config"],
                             "start_time": None,
                             "end_time": None,
+                            "_cache": {},
                         }
                         frontend.jobs.insert(0, new_job)  # show on top
                         frontend.update_jobs_display()  # redraw NOW
