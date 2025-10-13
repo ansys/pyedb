@@ -29,6 +29,8 @@ class JobManagerFrontend:
         self.partitions = []
         self.system_status = {}
         self.scheduler_type = "none"
+        self.auto_refresh = True
+        self.refresh_period = 5
 
     async def fetch_all_data(self):
         """Fetch all data from backend"""
@@ -208,6 +210,30 @@ class JobManagerFrontend:
         return row
 
 
+# Setup auto-refresh with robust client validation
+def safe_fetch_all_data():
+    try:
+        if hasattr(ui, "context") and ui.context.client is not None:
+            return frontend.fetch_all_data()
+    except Exception:
+        pass
+
+
+def safe_update_jobs():
+    try:
+        if (
+            hasattr(ui, "context")
+            and ui.context.client is not None
+            and hasattr(frontend, "update_jobs_display")
+            and hasattr(frontend, "jobs_container")
+        ):
+            container = getattr(frontend, "jobs_container", None)
+            if container and hasattr(container, "client") and container.client is not None:
+                frontend.update_jobs_display()
+    except Exception:
+        pass
+
+
 # Create frontend instance
 frontend = JobManagerFrontend()
 
@@ -341,13 +367,13 @@ def setup_ui():
     """
 
     def create_resource_card(title: str, usage_percent: float, used: str, total: str, color: str = "primary"):
-        """Create a modern resource usage card"""
+        """Create a modern resource-usage card with auto-refresh controls."""
         with ui.card().classes("custom-card w-full"):
+            # ---------- title & gauge ----------
             with ui.row().classes("items-center justify-between w-full"):
                 ui.label(title).classes("text-lg font-semibold text-gray-200")
                 ui.label(f"{usage_percent:.1f}%").classes("font-mono text-sm text-gray-300")
 
-            # Progress bar
             with ui.element("div").classes("progress-bar"):
                 with ui.element("div").classes("progress-fill") as progress_fill:
                     progress_fill.style(f"width: {usage_percent}%; background: {color};")
@@ -355,6 +381,48 @@ def setup_ui():
             with ui.row().classes("justify-between text-sm w-full"):
                 ui.label(f"Used: {used}").classes("text-gray-400")
                 ui.label(f"Total: {total}").classes("text-gray-400")
+
+            # Auto-refresh controls
+            with ui.row().classes("items-center gap-3 mt-3 w-full"):
+                toggle = (
+                    ui.button(
+                        icon="pause" if frontend.auto_refresh else "play_arrow", on_click=lambda: toggle_refresh()
+                    )
+                    .props("round dense")
+                    .classes("btn-modern")
+                    .style("min-width: 32px; min-height: 32px")
+                )
+
+                ui.label("Period (s)").classes("text-xs text-gray-400")
+                period_inp = ui.number(
+                    value=frontend.refresh_period, min=1, max=60, step=1, on_change=lambda: set_period()
+                ).classes("input-modern w-16")
+
+                # manual refresh
+                ui.button("Refresh", icon="refresh", on_click=frontend.fetch_all_data).classes("btn-modern")
+
+        # ---------- local helpers ----------
+        def toggle_refresh():
+            frontend.auto_refresh = not frontend.auto_refresh
+            toggle.props(f"icon={'pause' if frontend.auto_refresh else 'play_arrow'}")
+            restart_timers()  # apply immediately
+
+        def set_period():
+            frontend.refresh_period = period_inp.value
+            restart_timers()  # apply immediately
+
+        def restart_timers():
+            # cancel old timers
+            if hasattr(frontend, "_fetch_timer"):
+                frontend._fetch_timer.cancel()
+            if hasattr(frontend, "_update_timer"):
+                frontend._update_timer.cancel()
+            # create new ones with new period / state
+            if frontend.auto_refresh:
+                frontend._fetch_timer = ui.timer(frontend.refresh_period, safe_fetch_all_data)
+                frontend._update_timer = ui.timer(frontend.refresh_period, safe_update_jobs)
+
+        return
 
     def create_job_dialog():
         """Create job submission dialog"""
@@ -532,6 +600,15 @@ def setup_ui():
 
                     success = await frontend.submit_job(job_config)
                     if success:
+                        new_job = {
+                            "id": job_id,
+                            "status": "queued",
+                            "config": job_config["config"],
+                            "start_time": None,
+                            "end_time": None,
+                        }
+                        frontend.jobs.insert(0, new_job)  # show on top
+                        frontend.update_jobs_display()  # redraw NOW
                         ui.notify("Job submitted successfully!", type="positive")
                         dialog.close()
                     else:
@@ -654,6 +731,20 @@ def setup_ui():
                                     frontend.resources, "cpu_percent", lambda x: x / 100 if x else 0
                                 ).classes("w-full")
 
+                                def toggle_refresh():
+                                    frontend.auto_refresh = not frontend.auto_refresh
+                                    toggle.props(f"icon={'pause' if frontend.auto_refresh else 'play_arrow'}")
+                                    restart_timers()
+
+                                def restart_timers():
+                                    if hasattr(frontend, "_fetch_timer"):
+                                        frontend._fetch_timer.cancel()
+                                    if hasattr(frontend, "_update_timer"):
+                                        frontend._update_timer.cancel()
+                                    if frontend.auto_refresh:
+                                        frontend._fetch_timer = ui.timer(frontend.refresh_period, safe_fetch_all_data)
+                                        frontend._update_timer = ui.timer(frontend.refresh_period, safe_update_jobs)
+
                             # Memory Usage
                             with ui.card().classes("stat-card"):
                                 with ui.row().classes("justify-between items-center"):
@@ -679,6 +770,50 @@ def setup_ui():
                                 ui.linear_progress(show_value=False).bind_value_from(
                                     frontend.resources, "disk_usage_percent", lambda x: x / 100 if x else 0
                                 ).classes("w-full")
+
+                            # ------------------------------------------------------------------
+                            #  NEW CARD – auto-refresh controls (icon centered + label + slider)
+                            # ------------------------------------------------------------------
+                            with ui.card().classes("stat-card mt-2"):
+                                with ui.row().classes("items-center gap-4"):  # single row
+                                    # 1) Toggle stack
+                                    with ui.column().classes("items-center"):
+                                        ui.label("Auto Update").classes("text-2xs text-gray-400 mb-1 mt-3")
+                                        toggle = (
+                                            ui.button(
+                                                icon="play_arrow" if not frontend.auto_refresh else "pause",
+                                                on_click=lambda: toggle_refresh(),
+                                            )
+                                            .props("round dense")
+                                            .classes("btn-modern")
+                                            .style(
+                                                "width:28px; height:28px; min-width:28px; min-height:28px; "
+                                                "display:flex; align-items:center; justify-content:center"
+                                            )
+                                        )
+
+                                    # 2) Period stack (label → value → slider)
+                                    with ui.column().classes("items-center mt-6"):
+                                        ui.label("Period (s)").classes("text-2xs text-gray-400 leading-none")
+                                        ui.label().bind_text_from(frontend, "refresh_period").classes(
+                                            "text-xs text-gray-200 leading-none"
+                                        )
+                                        period_slider = (
+                                            ui.slider(
+                                                value=frontend.refresh_period,
+                                                min=1,
+                                                max=30,
+                                                step=1,
+                                                on_change=lambda: set_period_from_slider(),
+                                            )
+                                            .classes("w-24 -mt-4")
+                                            .style("height:28px")
+                                        )
+
+                                    # ---------- tiny helper for slider ----------
+                                    def set_period_from_slider():
+                                        frontend.refresh_period = period_slider.value
+                                        restart_timers()
 
                 # Column 2: Job Queue (70% width = 14 grid columns)
                 with ui.column().classes("col-span-14"):
@@ -863,7 +998,7 @@ def setup_ui():
                     frontend.jobs_container = jobs_container
                     frontend.update_jobs_display = update_jobs_display
 
-    # Setup the main application
+    # Main application
     @ui.page("/")
     def main_page():
         # JavaScript for file selection
@@ -888,38 +1023,14 @@ def setup_ui():
         with ui.footer().classes("bg-gray-800 h-8"):
             ui.label("Footer")
 
-        # Setup auto-refresh with robust client validation
-        def safe_fetch_all_data():
-            try:
-                # Check if we have valid UI context before making async calls
-                if hasattr(ui, "context") and ui.context.client is not None:
-                    return frontend.fetch_all_data()
-            except Exception as e:
-                pass  # Silently ignore all errors related to client disconnection
-
-        def safe_update_jobs():
-            try:
-                # Multiple layers of validation before updating UI
-                if (
-                    hasattr(ui, "context")
-                    and ui.context.client is not None
-                    and hasattr(frontend, "update_jobs_display")
-                    and hasattr(frontend, "jobs_container")
-                ):
-                    # Additional check on the container itself
-                    container = getattr(frontend, "jobs_container", None)
-                    if container and hasattr(container, "client") and container.client is not None:
-                        frontend.update_jobs_display()
-            except Exception as e:
-                pass  # Silently ignore all errors related to client disconnection
-
-        # Store timer references so we can cancel them if needed
-        fetch_timer = ui.timer(2, safe_fetch_all_data)
-        update_timer = ui.timer(2, safe_update_jobs)
-
-        # Store timers in frontend for potential cleanup
-        frontend._fetch_timer = fetch_timer
-        frontend._update_timer = update_timer
+        # Per-client -> browser tab closed, reload
+        client = ui.context.client
+        client.on_connect(
+            lambda: (
+                ui.timer(frontend.refresh_period, safe_fetch_all_data),
+                ui.timer(frontend.refresh_period, safe_update_jobs),
+            )
+        )
 
 
 if __name__ in {"__main__", "__mp_main__"}:
