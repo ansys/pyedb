@@ -11,6 +11,149 @@ from nicegui import app, ui
 from nicegui.elements.mixins.value_element import ValueElement
 
 
+# ------------------------------------------------------------------
+#  Pure helpers – build once, refresh many
+# ------------------------------------------------------------------
+def _build_badges() -> dict:
+    """Create the badge row once and return {widget:..., ui_row:...}"""
+    from nicegui import ui
+
+    row = ui.row().classes("items-center gap-3 mt-2")
+    widgets = {"ui_row": row}  # keep the row itself for later .update()
+
+    with row:
+        for key, label in (
+            ("prj", "Project"),
+            ("init", "Init tet"),
+            ("pass", "Passes"),
+            ("ds", "ΔS"),
+            ("mem", "Memory"),
+            ("tet", "Tetra"),
+            ("swp", "Sweep"),
+            ("conv", "Status"),
+        ):
+            with ui.column().classes("items-center"):
+                ui.label(label).classes("text-2xs text-gray-500")
+                widgets[key] = ui.label("—").classes("text-xs font-bold" if key == "prj" else "text-xs")
+                if key == "conv":
+                    widgets["conv_bdg"] = widgets[key]  # alias for convenience
+    return widgets
+
+
+def _refresh_badges(job: dict, w: dict):
+    """Update text/classes on the *existing* widgets."""
+    data = job.get("_cache") or {}
+    if not data:  # nothing yet – keep old values
+        return
+
+    # Project
+    prj = data.get("project", {})
+    w["prj"].set_text(prj.get("name", "—"))
+
+    # Init mesh
+    init = data.get("init_mesh", {})
+    w["init"].set_text(f"{init.get('tetrahedra', 0):,}")
+
+    # Adaptive passes
+    ads = data.get("adaptive", [])
+    w["pass"].set_text(str(len(ads)))
+
+    if ads:
+        latest = ads[-1]
+        w["ds"].set_text(f"{latest.get('delta_s', '—'):.4f}" if latest.get("delta_s") else "—")
+        w["mem"].set_text(f"{latest.get('memory_mb', 0):.0f} MB")
+        w["tet"].set_text(f"{latest.get('tetrahedra', 0):,}")
+
+        conv = latest.get("converged", False)
+        w["conv_bdg"].set_text("Converged" if conv else "Not converged")
+        w["conv_bdg"].classes(remove="status-queued status-completed")
+        w["conv_bdg"].classes("status-completed" if conv else "status-queued")
+
+    # Sweep
+    sw = data.get("sweep", {})
+    if sw:
+        total = sw.get("frequencies", 0)
+        solved = len(sw.get("solved", []))
+        w["swp"].set_text(f"{solved}/{total} pts")
+    else:
+        w["swp"].set_text("—")
+
+
+def _build_or_refresh_badges(job: dict, frontend: "JobManagerFrontend") -> None:
+    """
+    Build the badge row INSIDE the current card and start a timer
+    that updates the TEXT only – no permanent row reference is kept.
+    The timer cancels itself when the job disappears or finishes.
+    """
+
+    # ---------- 1.  build row (every rebuild) ----------
+    with ui.row().classes("items-center gap-3 mt-2"):
+        widgets = {}
+        for key, lbl in (
+            ("prj", "Project"),
+            ("init", "Init tet"),
+            ("pass", "Passes"),
+            ("ds", "ΔS"),
+            ("mem", "Memory"),
+            ("tet", "Tetra"),
+            ("swp", "Sweep"),
+            ("conv", "Status"),
+        ):
+            with ui.column().classes("items-center"):
+                ui.label(lbl).classes("text-2xs text-gray-500")
+                widgets[key] = ui.label("—").classes("text-xs font-bold" if key == "prj" else "text-xs")
+                if key == "conv":
+                    widgets["conv_bdg"] = widgets[key]
+
+    job["_badge_widgets"] = widgets  # keep only the **text** objects
+    if "_cache" not in job:
+        job["_cache"] = {}
+
+    # 2.  fill with **last known data** immediately
+    _refresh_badges(job, widgets)
+
+    # 3.  start/update timer
+    _ensure_badge_timer(job, frontend)
+
+
+def _ensure_badge_timer(job: dict, frontend: "JobManagerFrontend") -> None:
+    """Timer refreshes LABELS; cancels itself when card/job vanishes."""
+    timer_name = "_badge_timer"
+
+    # cancel previous timer if still running
+    old_timer = job.pop(timer_name, None)
+    if old_timer:
+        old_timer.cancel()
+
+    # ----------  NEW:  one-shot fetch for finished jobs  ----------
+    if job.get("status") in ("completed", "failed", "cancelled"):
+        # cache still empty?  try to load final log **once**
+        if not job.get("_cache"):
+
+            async def _once():
+                data = await frontend.fetch_job_log(job["id"])
+                if data:
+                    job["_cache"] = data
+                    _refresh_badges(job, job["_badge_widgets"])
+
+            # schedule it **now** – NiceGUI will run it in the event-loop
+            ui.timer(0.1, _once, once=True)
+        return
+
+    async def refresh():
+        # fetch new log data
+        data = await frontend.fetch_job_log(job["id"])
+        if data:
+            job["_cache"].clear()
+            job["_cache"].update(data)
+
+        # update the **text** objects (still alive while card exists)
+        _refresh_badges(job, job["_badge_widgets"])
+
+    # NiceGUI timer – automatically dies when the client (tab) is closed
+    job[timer_name] = ui.timer(frontend.refresh_period, refresh, active=True)
+
+
 class JobManagerFrontend:
     def __init__(self, backend_url: str = "http://localhost:8080"):
         self.backend_url = backend_url
@@ -131,97 +274,6 @@ class JobManagerFrontend:
         except Exception as e:
             print(f"Error fetching log for {job_id}: {e}")
             return None
-
-    def create_log_card(self, job: dict) -> ui.row:
-        job_id = job["id"]
-        cache = job.setdefault("_cache", {})  # reuse existing cache if any
-        with ui.row().classes("items-center gap-3 mt-2") as row:
-            # Project
-            with ui.column().classes("items-center"):
-                ui.label("Project").classes("text-2xs text-gray-500")
-                prj_lbl = ui.label("—").classes("text-xs font-bold")
-
-            # Init tet
-            with ui.column().classes("items-center"):
-                ui.label("Init tet").classes("text-2xs text-gray-500")
-                init_lbl = ui.label("—").classes("text-xs")
-
-            # Passes
-            with ui.column().classes("items-center"):
-                ui.label("Passes").classes("text-2xs text-gray-500")
-                pass_lbl = ui.label("—").classes("text-xs")
-
-            # ΔS
-            with ui.column().classes("items-center"):
-                ui.label("ΔS").classes("text-2xs text-gray-500")
-                ds_lbl = ui.label("—").classes("text-xs")
-
-            # Memory
-            with ui.column().classes("items-center"):
-                ui.label("Memory").classes("text-2xs text-gray-500")
-                mem_lbl = ui.label("—").classes("text-xs")
-
-            # Tetra
-            with ui.column().classes("items-center"):
-                ui.label("Tetra").classes("text-2xs text-gray-500")
-                tet_lbl = ui.label("—").classes("text-xs")
-
-            # Sweep
-            with ui.column().classes("items-center"):
-                ui.label("Sweep").classes("text-2xs text-gray-500")
-                swp_lbl = ui.label("—").classes("text-xs")
-
-            # Status badge
-            with ui.column().classes("items-center"):
-                ui.label("Status").classes("text-2xs text-gray-500")
-                conv_bdg = ui.label("Not converged").classes("status-badge status-queued")
-
-            # ---------- 2. timer-driven update ----------
-            async def refresh():
-                data = await self.fetch_job_log(job_id)
-
-                # use live data or fall back to cached data
-                src = data if data else cache
-                if not src:  # nothing to display yet
-                    return
-
-                # store live data for later reuse
-                if data:
-                    cache.clear()
-                    cache.update(data)
-
-                # ---------- 3. draw badges ----------
-                prj = src.get("project", {})
-                prj_lbl.set_text(prj.get("name", "—"))
-
-                init = src.get("init_mesh", {})
-                init_lbl.set_text(f"{init.get('tetrahedra', 0):,}")
-
-                ads = src.get("adaptive", [])
-                pass_lbl.set_text(str(len(ads)))
-
-                if ads:
-                    latest = ads[-1]
-                    ds_lbl.set_text(f"{latest.get('delta_s', '—'):.4f}" if latest.get("delta_s") else "—")
-                    mem_lbl.set_text(f"{latest.get('memory_mb', 0):.0f} MB")
-                    tet_lbl.set_text(f"{latest.get('tetrahedra', 0):,}")
-
-                    conv = latest.get("converged", False)
-                    conv_bdg.set_text("Converged" if conv else "Not converged")
-                    conv_bdg.classes(remove="status-queued status-completed")
-                    conv_bdg.classes("status-completed" if conv else "status-queued")
-
-                sw = src.get("sweep", {})
-                if sw:
-                    total = sw.get("frequencies", 0)
-                    solved = len(sw.get("solved", []))
-                    swp_lbl.set_text(f"{solved}/{total} pts")
-                else:
-                    swp_lbl.set_text("—")
-
-            # ---------- 4. keep timer alive while card exists ----------
-            ui.timer(frontend.refresh_period, refresh, active=True)  # always active until card is destroyed
-            return row
 
 
 # Setup auto-refresh with robust client validation
@@ -867,16 +919,13 @@ def setup_ui():
                                 ui.label("No partitions available").classes("text-gray-500 text-center p-2 text-sm")
 
     def create_jobs_section_inline():
-        """Create compact jobs monitoring section for inline layout"""
         with ui.card().classes("custom-card h-full w-full"):
             ui.label("Job Queue").classes("text-lg font-bold mb-3")
 
-            # Jobs table with scrollable container - ensure it takes full width and has minimum height
             with ui.element("div").classes("w-full overflow-y-auto min-h-96 max-h-96") as jobs_container:
 
                 def update_jobs_display():
                     try:
-                        # Multiple layers of client validation
                         if not (hasattr(ui, "context") and ui.context.client is not None):
                             return
                         if not hasattr(jobs_container, "client") or jobs_container.client is None:
@@ -889,6 +938,7 @@ def setup_ui():
                             if frontend.jobs:
                                 for job in frontend.jobs:
                                     with ui.card().classes("job-item w-full mb-2"):
+                                        # ----------  header row  ----------
                                         with ui.row().classes("items-center justify-between w-full"):
                                             with ui.column().classes("gap-1 flex-1"):
                                                 ui.label(job.get("id", "Unknown")).classes("font-semibold text-sm")
@@ -896,7 +946,6 @@ def setup_ui():
                                                     f"Design: {job.get('config', {}).get('design_name', 'N/A')}"
                                                 ).classes("text-xs text-gray-400")
 
-                                            # Status badge
                                             status = job.get("status", "unknown")
                                             status_color = {
                                                 "queued": "status-queued",
@@ -909,7 +958,6 @@ def setup_ui():
                                             with ui.row().classes("items-center gap-2"):
                                                 ui.label(status).classes(f"status-badge {status_color}")
 
-                                                # Cancel button for running/queued jobs
                                                 if status in ["queued", "running"]:
                                                     ui.button(
                                                         icon="cancel",
@@ -917,14 +965,16 @@ def setup_ui():
                                                     ).classes("bg-red-500 hover:bg-red-600 text-white p-1").style(
                                                         "min-width: 28px; min-height: 28px"
                                                     )
-                                            frontend.create_log_card(job)
-                                            # Job timings (compact)
-                                            if job.get("start_time") or job.get("end_time"):
-                                                with ui.column().classes("text-right text-xs text-gray-400"):
-                                                    if job.get("start_time"):
-                                                        ui.label(f"Started: {job['start_time'][:10]}")  # Show only date
+
+                                        # ----------  badge row (kept inside this card)  ----------
+                                        _build_or_refresh_badges(job, frontend)
+
+                                        # ----------  optional timings  ----------
+                                        if job.get("start_time") or job.get("end_time"):
+                                            with ui.column().classes("text-right text-xs text-gray-400 mt-2"):
+                                                if job.get("start_time"):
+                                                    ui.label(f"Started: {job['start_time'][:10]}")
                             else:
-                                # Empty state that maintains the container size
                                 with ui.column().classes("w-full h-full items-center justify-center"):
                                     ui.icon("inbox", size="3rem").classes("text-gray-400 mb-4")
                                     ui.label("No jobs in queue").classes("text-gray-500 text-center text-lg")
@@ -932,13 +982,11 @@ def setup_ui():
                                         "text-gray-400 text-center text-sm"
                                     )
                     except Exception as e:
-                        # Handle all UI client deletion errors gracefully
                         if "client this element belongs to has been deleted" in str(e):
-                            return  # Silently ignore UI client deletion errors
+                            return
                         else:
-                            print(f"Error in update_jobs_display: {e}")  # Log other errors
+                            print(f"Error in update_jobs_display: {e}")
 
-                # Bind the update function to jobs changes
                 frontend.jobs_container = jobs_container
                 frontend.update_jobs_display = update_jobs_display
 
