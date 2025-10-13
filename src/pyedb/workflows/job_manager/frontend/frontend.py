@@ -784,7 +784,7 @@ def setup_ui():
             with ui.grid(columns=20).classes("w-full gap-4"):
                 # Column 1: Local Resources (15% width = 3 grid columns)
                 with ui.column().classes("col-span-3"):
-                    with ui.card().classes("custom-card h-full"):
+                    with ui.card().classes("custom-card h-140"):
                         ui.label("Local Resources").classes("text-base font-bold mb-3")
                         with ui.column().classes("w-full gap-2"):
                             # CPU Usage
@@ -888,7 +888,7 @@ def setup_ui():
 
                 # Column 3: Cluster Partitions (15% width = 3 grid columns)
                 with ui.column().classes("col-span-3"):
-                    with ui.card().classes("custom-card h-full"):
+                    with ui.card().classes("custom-card h-140"):
                         ui.label("Cluster Partitions").classes("text-base font-bold mb-3")
                         with ui.column().classes("w-full gap-2"):
                             if frontend.partitions:
@@ -922,7 +922,7 @@ def setup_ui():
         with ui.card().classes("custom-card h-full w-full"):
             ui.label("Job Queue").classes("text-lg font-bold mb-3")
 
-            with ui.element("div").classes("w-full overflow-y-auto min-h-96 max-h-96") as jobs_container:
+            with ui.element("div").classes("w-full overflow-y-auto") as jobs_container:
 
                 def update_jobs_display():
                     try:
