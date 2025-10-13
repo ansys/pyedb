@@ -1025,6 +1025,10 @@ def setup_ui():
 
         # Per-client -> browser tab closed, reload
         client = ui.context.client
+        # 1. create timers RIGHT NOW for this client
+        ui.timer(frontend.refresh_period, safe_fetch_all_data)
+        ui.timer(frontend.refresh_period, safe_update_jobs)
+        # 2. still register the callback so *new* clients get timers as well
         client.on_connect(
             lambda: (
                 ui.timer(frontend.refresh_period, safe_fetch_all_data),
