@@ -784,7 +784,7 @@ def setup_ui():
             with ui.grid(columns=20).classes("w-full gap-4"):
                 # Column 1: Local Resources (15% width = 3 grid columns)
                 with ui.column().classes("col-span-3"):
-                    with ui.card().classes("custom-card h-140"):
+                    with ui.card().classes("custom-card w-full"):
                         ui.label("Local Resources").classes("text-base font-bold mb-3")
                         with ui.column().classes("w-full gap-2"):
                             # CPU Usage
@@ -888,7 +888,7 @@ def setup_ui():
 
                 # Column 3: Cluster Partitions (15% width = 3 grid columns)
                 with ui.column().classes("col-span-3"):
-                    with ui.card().classes("custom-card h-140"):
+                    with ui.card().classes("custom-card w-full"):
                         ui.label("Cluster Partitions").classes("text-base font-bold mb-3")
                         with ui.column().classes("w-full gap-2"):
                             if frontend.partitions:

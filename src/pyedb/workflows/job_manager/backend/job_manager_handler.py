@@ -60,7 +60,7 @@ class JobManagerHandler:
 
     def __init__(self, edb=None, version=None, host="localhost", port=8080):
         if edb:
-            if is_linux():
+            if is_linux:
                 self.ansys_path = os.path.join(edb.base_path, "ansysedt" if is_linux else "ansysedt")
             else:
                 self.ansys_path = os.path.join(edb.base_path, "ansysedt" if is_linux else "ansysedt.exe")
