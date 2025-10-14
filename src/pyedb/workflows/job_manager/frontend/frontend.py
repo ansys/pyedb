@@ -1,43 +1,13 @@
 # frontend.py
-import asyncio
 from datetime import datetime
-import json
-import threading
-import time
-from typing import Any, Dict, List, Optional
+from typing import Dict, Optional
 
 import aiohttp
-from nicegui import app, ui
-from nicegui.elements.mixins.value_element import ValueElement
-
+from nicegui import ui
 
 # ------------------------------------------------------------------
-#  Pure helpers – build once, refresh many
+#  Badge helpers for job monitoring
 # ------------------------------------------------------------------
-def _build_badges() -> dict:
-    """Create the badge row once and return {widget:..., ui_row:...}"""
-    from nicegui import ui
-
-    row = ui.row().classes("items-center gap-3 mt-2")
-    widgets = {"ui_row": row}  # keep the row itself for later .update()
-
-    with row:
-        for key, label in (
-            ("prj", "Project"),
-            ("init", "Init tet"),
-            ("pass", "Passes"),
-            ("ds", "ΔS"),
-            ("mem", "Memory"),
-            ("tet", "Tetra"),
-            ("swp", "Sweep"),
-            ("conv", "Status"),
-        ):
-            with ui.column().classes("items-center"):
-                ui.label(label).classes("text-2xs text-gray-500")
-                widgets[key] = ui.label("—").classes("text-xs font-bold" if key == "prj" else "text-xs")
-                if key == "conv":
-                    widgets["conv_bdg"] = widgets[key]  # alias for convenience
-    return widgets
 
 
 def _refresh_badges(job: dict, w: dict):
@@ -292,27 +262,30 @@ class JobManagerFrontend:
 
 
 # Setup auto-refresh with robust client validation
-def safe_fetch_all_data():
+def _is_client_valid(container=None) -> bool:
+    """Check if the UI client is valid and optionally check container validity."""
     try:
-        if hasattr(ui, "context") and ui.context.client is not None:
-            return frontend.fetch_all_data()
+        if not (hasattr(ui, "context") and ui.context.client is not None):
+            return False
+        if container:
+            return (
+                hasattr(container, "client") and container.client is not None and container.client == ui.context.client
+            )
+        return True
     except Exception:
-        pass
+        return False
+
+
+def safe_fetch_all_data():
+    if _is_client_valid():
+        return frontend.fetch_all_data()
 
 
 def safe_update_jobs():
-    try:
-        if (
-            hasattr(ui, "context")
-            and ui.context.client is not None
-            and hasattr(frontend, "update_jobs_display")
-            and hasattr(frontend, "jobs_container")
-        ):
-            container = getattr(frontend, "jobs_container", None)
-            if container and hasattr(container, "client") and container.client is not None:
-                frontend.update_jobs_display()
-    except Exception:
-        pass
+    if _is_client_valid() and hasattr(frontend, "update_jobs_display") and hasattr(frontend, "jobs_container"):
+        container = getattr(frontend, "jobs_container", None)
+        if _is_client_valid(container):
+            frontend.update_jobs_display()
 
 
 # Create frontend instance
@@ -486,18 +459,17 @@ def setup_ui():
         def toggle_refresh():
             frontend.auto_refresh = not frontend.auto_refresh
             toggle.props(f"icon={'pause' if frontend.auto_refresh else 'play_arrow'}")
-            restart_timers()  # apply immediately
+            _restart_timers()
 
         def set_period():
             frontend.refresh_period = period_inp.value
-            restart_timers()  # apply immediately
+            _restart_timers()
 
-        def restart_timers():
+        def _restart_timers():
             # cancel old timers
-            if hasattr(frontend, "_fetch_timer"):
-                frontend._fetch_timer.cancel()
-            if hasattr(frontend, "_update_timer"):
-                frontend._update_timer.cancel()
+            for timer_attr in ["_fetch_timer", "_update_timer"]:
+                if hasattr(frontend, timer_attr):
+                    getattr(frontend, timer_attr).cancel()
             # create new ones with new period / state
             if frontend.auto_refresh:
                 frontend._fetch_timer = ui.timer(frontend.refresh_period, safe_fetch_all_data)
@@ -552,17 +524,12 @@ def setup_ui():
                 with ui.column().classes("w-full"):
                     ui.label("Compute Resources").classes("font-semibold")
 
-                    # Initialize all variables to avoid NameError
-                    cpus = None
-                    nodes = None
-                    cpus_per_node = None
-                    tasks_per_node = None
-                    queue = None
-
                     if frontend.scheduler_type in ["none", "local"]:
                         # Local execution options
                         with ui.grid(columns=2).classes("w-full gap-4"):
                             cpus = ui.number(label="CPU Cores", value=1, min=1, max=64).classes("input-modern w-full")
+                        # Set unused variables to None for consistency
+                        nodes = cpus_per_node = tasks_per_node = queue = None
                     else:
                         # Cluster execution options
                         with ui.grid(columns=2).classes("w-full gap-4"):
@@ -579,6 +546,8 @@ def setup_ui():
                             queue = ui.select(
                                 label="Queue", options=[p["name"] for p in frontend.partitions], value=None
                             ).classes("input-modern w-full")
+                        # Set unused variable to None
+                        cpus = None
 
                 # Batch options section
                 with ui.expansion("Advanced Batch Options", icon="settings").classes("w-full"):
@@ -598,13 +567,6 @@ def setup_ui():
 
                 # Submit button
                 async def submit_job_handler():
-                    # Debug: Print the current scheduler type
-                    print(f"DEBUG: Current scheduler type: '{frontend.scheduler_type}'")
-                    print(f"DEBUG: Scheduler type repr: {repr(frontend.scheduler_type)}")
-
-                    # Create job configuration in the format expected by HFSSSimulationConfig
-                    from datetime import datetime
-
                     # Generate a unique job ID
                     job_id = f"JOB_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
@@ -966,15 +928,10 @@ def setup_ui():
 
                 def update_jobs_display():
                     try:
-                        if not (hasattr(ui, "context") and ui.context.client is not None):
+                        if not _is_client_valid(jobs_container):
                             return
-                        if not hasattr(jobs_container, "client") or jobs_container.client is None:
-                            return
-                        if jobs_container.client != ui.context.client:
-                            return
+
                         jobs_container.clear()
-                        for j in frontend.jobs:
-                            print("[FILTER]   job.id :", j.get("id"), "  job.user :", repr(j.get("user")))
                         visible_jobs = [
                             j
                             for j in frontend.jobs
@@ -982,8 +939,6 @@ def setup_ui():
                             or frontend.job_filter == "*"
                             or (j.get("user") or "").lower() == frontend.job_filter.lower()
                         ]
-                        #
-                        # visible_jobs = frontend.jobs
                         with jobs_container:
                             if visible_jobs:
                                 for job in visible_jobs:
@@ -1039,87 +994,6 @@ def setup_ui():
 
                 frontend.jobs_container = jobs_container
                 frontend.update_jobs_display = update_jobs_display
-
-    def create_jobs_section():
-        """Create jobs monitoring section (kept for compatibility)"""
-        with ui.column().classes("w-full p-6"):
-            with ui.card().classes("custom-card w-full"):
-                ui.label("Job Queue").classes("text-xl font-bold mb-4")
-
-                # Jobs table
-                with ui.element("div").classes("w-full") as jobs_container:
-
-                    def update_jobs_display():
-                        try:
-                            # Multiple layers of client validation
-                            if not (hasattr(ui, "context") and ui.context.client is not None):
-                                return
-                            if not hasattr(jobs_container, "client") or jobs_container.client is None:
-                                return
-                            if jobs_container.client != ui.context.client:
-                                return
-                            for j in frontend.jobs:
-                                print("[FILTER]   job.id :", j.get("id"), "  job.user :", repr(j.get("user")))
-                            visible_jobs = [
-                                j
-                                for j in frontend.jobs
-                                if not frontend.job_filter
-                                or frontend.job_filter == "*"
-                                or (j.get("user") or "").lower() == frontend.job_filter.lower()
-                            ]
-                            #
-                            # visible_jobs = frontend.jobs
-                            jobs_container.clear()
-                            with jobs_container:
-                                if visible_jobs:
-                                    for job in visible_jobs:
-                                        with ui.card().classes("job-item w-full mb-2"):
-                                            with ui.row().classes("items-center justify-between w-full"):
-                                                with ui.column().classes("gap-1"):
-                                                    ui.label(job.get("id", "Unknown")).classes("font-semibold text-lg")
-                                                    ui.label(
-                                                        f"Design: {job.get('config', {}).get('design_name', 'N/A')}"
-                                                    ).classes("text-sm text-gray-400")
-
-                                                # Status badge
-                                                status = job.get("status", "unknown")
-                                                status_color = {
-                                                    "queued": "status-queued",
-                                                    "running": "status-running",
-                                                    "completed": "status-completed",
-                                                    "failed": "status-failed",
-                                                    "cancelled": "status-cancelled",
-                                                }.get(status, "status-queued")
-
-                                                with ui.row().classes("items-center gap-4"):
-                                                    ui.label(status).classes(f"status-badge {status_color}")
-
-                                                    # Cancel button for running/queued jobs
-                                                    if status in ["queued", "running"]:
-                                                        ui.button(
-                                                            "Cancel",
-                                                            icon="cancel",
-                                                            on_click=lambda j=job: frontend.cancel_job(j["id"]),
-                                                        ).classes("bg-red-500 hover:bg-red-600 text-white")
-
-                                                # Job timings
-                                                with ui.column().classes("text-right text-sm text-gray-400"):
-                                                    if job.get("start_time"):
-                                                        ui.label(f"Started: {job['start_time']}")
-                                                    if job.get("end_time"):
-                                                        ui.label(f"Ended: {job['end_time']}")
-                                else:
-                                    ui.label("No jobs in queue").classes("text-gray-500 text-center p-8")
-                        except Exception as e:
-                            # Handle all UI client deletion errors gracefully
-                            if "client this element belongs to has been deleted" in str(e):
-                                return  # Silently ignore UI client deletion errors
-                            else:
-                                print(f"Error in update_jobs_display: {e}")  # Log other errors
-
-                    # Bind the update function to jobs changes
-                    frontend.jobs_container = jobs_container
-                    frontend.update_jobs_display = update_jobs_display
 
     # Main application
     @ui.page("/")
