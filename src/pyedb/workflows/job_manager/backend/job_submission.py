@@ -378,6 +378,7 @@ class HFSSSimulationConfig(BaseModel):
     ansys_edt_path: str = ""
     solver: str = "Hfss3DLayout"
     jobid: str = Field(default_factory=lambda: f"LOCAL_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+    user: str = "unknown"
     distributed: bool = True
     machine_nodes: List[MachineNode] = Field(default_factory=lambda: [MachineNode()])
     auto: bool = True
@@ -976,6 +977,7 @@ class HFSSSimulationConfig(BaseModel):
             solver=data.get("solver", "Hfss3DLayout"),
             ansys_edt_path=data.get("ansys_edt_path", ""),
             jobid=data.get("jobid", f"RSM_{datetime.now().strftime('%Y%m%d_%H%M%S')}"),
+            user=data.get("user"),
             distributed=data.get("distributed", True),
             machine_nodes=machine_nodes,
             auto=data.get("auto", True),

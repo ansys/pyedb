@@ -174,6 +174,21 @@ class JobManagerFrontend:
         self.scheduler_type = "none"
         self.auto_refresh = True
         self.refresh_period = 5
+        self.job_filter: str = ""  # username or "" (=all)
+        self.status_filter: str = "running"
+        self.jobs_container = None  # will hold the NiceGUI element
+        self.update_jobs_display = None  # will hold the callable
+
+    async def fetch_login(self) -> str:
+        """Return the login name of the current session."""
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f"{self.backend_url}/api/me") as resp:
+                    if resp.status == 200:
+                        return (await resp.json()).get("username", "unknown")
+        except Exception as e:
+            print("cannot fetch user:", e)
+        return "unknown"
 
     async def fetch_all_data(self):
         """Fetch all data from backend"""
@@ -600,6 +615,7 @@ def setup_ui():
                     # Build the config in HFSSSimulationConfig format
                     job_config = {
                         "config": {
+                            "user": frontend.job_filter.lower(),
                             "project_path": project_path.value,
                             "jobid": job_id,
                             "solver": "Hfss3DLayout",
@@ -666,6 +682,7 @@ def setup_ui():
 
                     success = await frontend.submit_job(job_config)
                     if success:
+                        # 1. optimistic local insert for instant feedback
                         new_job = {
                             "id": job_id,
                             "status": "queued",
@@ -673,9 +690,18 @@ def setup_ui():
                             "start_time": None,
                             "end_time": None,
                             "_cache": {},
+                            "user": frontend.job_filter.lower(),
                         }
-                        frontend.jobs.insert(0, new_job)  # show on top
-                        frontend.update_jobs_display()  # redraw NOW
+                        frontend.jobs.insert(0, new_job)
+
+                        # 2. draw it NOW
+                        safe_update_jobs()
+
+                        # 3. ----------  NEW  ----------  authoritative list from server
+                        await frontend.fetch_jobs()  # re-fetch /api/jobs
+                        safe_update_jobs()  # re-draw (keeps UI identical to server)
+                        # ----------------------------------------------
+
                         ui.notify("Job submitted successfully!", type="positive")
                         dialog.close()
                     else:
@@ -778,116 +804,132 @@ def setup_ui():
             dialog.open()
 
     def create_main_dashboard(job_dialog):
-        """Create main dashboard with compact layout"""
+        """Create main dashboard with exact ASCII layout:
+
+        Local resources      |      job filter       |   cluster Partitions
+                             |      job queue        |
+        """
         with ui.column().classes("w-full p-4"):
-            # Main layout with 3 columns: Local Resources (15%) - Job Queue (70%) - Cluster Partitions (15%)
+            # 20-unit grid → 4  |  12  |  4
             with ui.grid(columns=20).classes("w-full gap-4"):
-                # Column 1: Local Resources (15% width = 3 grid columns)
-                with ui.column().classes("col-span-3"):
+                # ------------------------------------------------------------------
+                # Column 1 : Local Resources  (4 units)
+                # ------------------------------------------------------------------
+                with ui.column().classes("col-span-4"):
                     with ui.card().classes("custom-card w-full"):
                         ui.label("Local Resources").classes("text-base font-bold mb-3")
-                        with ui.column().classes("w-full gap-2"):
-                            # CPU Usage
-                            with ui.card().classes("stat-card"):
-                                with ui.row().classes("justify-between items-center"):
-                                    ui.label("CPU").classes("font-semibold text-sm")
-                                    ui.label().bind_text_from(
-                                        frontend.resources, "cpu_percent", lambda x: f"{x:.1f}%" if x else "0%"
-                                    ).classes("text-sm")
-                                ui.linear_progress(show_value=False).bind_value_from(
-                                    frontend.resources, "cpu_percent", lambda x: x / 100 if x else 0
-                                ).classes("w-full")
+                        # CPU
+                        with ui.card().classes("stat-card"):
+                            with ui.row().classes("justify-between items-center"):
+                                ui.label("CPU").classes("font-semibold text-sm")
+                                ui.label().bind_text_from(
+                                    frontend.resources, "cpu_percent", lambda x: f"{x:.1f}%" if x else "0%"
+                                ).classes("text-sm")
+                            ui.linear_progress(show_value=False).bind_value_from(
+                                frontend.resources, "cpu_percent", lambda x: x / 100 if x else 0
+                            ).classes("w-full")
 
-                                def toggle_refresh():
-                                    frontend.auto_refresh = not frontend.auto_refresh
-                                    toggle.props(f"icon={'pause' if frontend.auto_refresh else 'play_arrow'}")
-                                    restart_timers()
+                        # Memory
+                        with ui.card().classes("stat-card"):
+                            with ui.row().classes("justify-between items-center"):
+                                ui.label("Memory").classes("font-semibold text-sm")
+                                ui.label().bind_text_from(
+                                    frontend.resources, "memory_used_gb", lambda x: f"{x} GB" if x else "0 GB"
+                                ).classes("text-sm")
+                            ui.linear_progress(show_value=False).bind_value_from(
+                                frontend.resources, "memory_percent", lambda x: x / 100 if x else 0
+                            ).classes("w-full")
 
-                                def restart_timers():
-                                    if hasattr(frontend, "_fetch_timer"):
-                                        frontend._fetch_timer.cancel()
-                                    if hasattr(frontend, "_update_timer"):
-                                        frontend._update_timer.cancel()
-                                    if frontend.auto_refresh:
-                                        frontend._fetch_timer = ui.timer(frontend.refresh_period, safe_fetch_all_data)
-                                        frontend._update_timer = ui.timer(frontend.refresh_period, safe_update_jobs)
+                        # Disk
+                        with ui.card().classes("stat-card"):
+                            with ui.row().classes("justify-between items-center"):
+                                ui.label("Disk").classes("font-semibold text-sm")
+                                ui.label().bind_text_from(
+                                    frontend.resources, "disk_free_gb", lambda x: f"{x} GB free" if x else "0 GB free"
+                                ).classes("text-sm")
+                            ui.linear_progress(show_value=False).bind_value_from(
+                                frontend.resources, "disk_usage_percent", lambda x: x / 100 if x else 0
+                            ).classes("w-full")
 
-                            # Memory Usage
-                            with ui.card().classes("stat-card"):
-                                with ui.row().classes("justify-between items-center"):
-                                    ui.label("Memory").classes("font-semibold text-sm")
-                                    ui.label().bind_text_from(
-                                        frontend.resources,
-                                        "memory_used_gb",
-                                        lambda x: f"{x} GB" if x else "0 GB",
-                                    ).classes("text-sm")
-                                ui.linear_progress(show_value=False).bind_value_from(
-                                    frontend.resources, "memory_percent", lambda x: x / 100 if x else 0
-                                ).classes("w-full")
-
-                            # Disk Usage
-                            with ui.card().classes("stat-card"):
-                                with ui.row().classes("justify-between items-center"):
-                                    ui.label("Disk").classes("font-semibold text-sm")
-                                    ui.label().bind_text_from(
-                                        frontend.resources,
-                                        "disk_free_gb",
-                                        lambda x: f"{x} GB free" if x else "0 GB free",
-                                    ).classes("text-sm")
-                                ui.linear_progress(show_value=False).bind_value_from(
-                                    frontend.resources, "disk_usage_percent", lambda x: x / 100 if x else 0
-                                ).classes("w-full")
-
-                            # ------------------------------------------------------------------
-                            #  NEW CARD – auto-refresh controls (icon centered + label + slider)
-                            # ------------------------------------------------------------------
-                            with ui.card().classes("stat-card mt-2"):
-                                with ui.row().classes("items-center gap-4"):  # single row
-                                    # 1) Toggle stack
-                                    with ui.column().classes("items-center"):
-                                        ui.label("Auto Update").classes("text-2xs text-gray-400 mb-1 mt-3")
-                                        toggle = (
-                                            ui.button(
-                                                icon="play_arrow" if not frontend.auto_refresh else "pause",
-                                                on_click=lambda: toggle_refresh(),
-                                            )
-                                            .props("round dense")
-                                            .classes("btn-modern")
-                                            .style(
-                                                "width:28px; height:28px; min-width:28px; min-height:28px; "
-                                                "display:flex; align-items:center; justify-content:center"
-                                            )
+                        # Auto-refresh mini-card
+                        with ui.card().classes("stat-card mt-2"):
+                            with ui.row().classes("items-center gap-4"):
+                                with ui.column().classes("items-center"):
+                                    ui.label("Auto Update").classes("text-2xs text-gray-400 mb-1 mt-3")
+                                    toggle = (
+                                        ui.button(
+                                            icon="play_arrow" if not frontend.auto_refresh else "pause",
+                                            on_click=lambda: toggle_refresh(),
                                         )
-
-                                    # 2) Period stack (label → value → slider)
-                                    with ui.column().classes("items-center mt-6"):
-                                        ui.label("Period (s)").classes("text-2xs text-gray-400 leading-none")
-                                        ui.label().bind_text_from(frontend, "refresh_period").classes(
-                                            "text-xs text-gray-200 leading-none"
+                                        .props("round dense")
+                                        .classes("btn-modern")
+                                        .style(
+                                            "width:28px; height:28px; min-width:28px; min-height:28px; "
+                                            "display:flex; align-items:center; justify-content:center"
                                         )
-                                        period_slider = (
-                                            ui.slider(
-                                                value=frontend.refresh_period,
-                                                min=1,
-                                                max=30,
-                                                step=1,
-                                                on_change=lambda: set_period_from_slider(),
-                                            )
-                                            .classes("w-24 -mt-4")
-                                            .style("height:28px")
+                                    )
+
+                                with ui.column().classes("items-center mt-6"):
+                                    ui.label("Period (s)").classes("text-2xs text-gray-400 leading-none")
+                                    ui.label().bind_text_from(frontend, "refresh_period").classes(
+                                        "text-xs text-gray-200 leading-none"
+                                    )
+                                    period_slider = (
+                                        ui.slider(
+                                            value=frontend.refresh_period,
+                                            min=1,
+                                            max=30,
+                                            step=1,
+                                            on_change=lambda: setattr(frontend, "refresh_period", period_slider.value),
                                         )
+                                        .classes("w-24 -mt-4")
+                                        .style("height:28px")
+                                    )
 
-                                    # ---------- tiny helper for slider ----------
-                                    def set_period_from_slider():
-                                        frontend.refresh_period = period_slider.value
-                                        restart_timers()
+                # ------------------------------------------------------------------
+                # Column 2 : Job Filter + Job Queue  (12 units)
+                # ------------------------------------------------------------------
+                with ui.column().classes("col-span-12"):
+                    # Filter card
+                    with ui.card().classes("custom-card w-full mb-4"):
+                        ui.label("Filter Jobs").classes("text-base font-bold mb-2")
+                        with ui.row().classes("items-center gap-3"):
+                            ui.label("User:").classes("text-sm text-gray-300")
+                            user_select = (
+                                ui.select(options=["*"], value="*")
+                                .props("dense outlined hide-bottom-space")
+                                .classes("w-40")
+                            )
 
-                # Column 2: Job Queue (70% width = 14 grid columns)
-                with ui.column().classes("col-span-14"):
+                            async def refresh_user_list():
+                                # ensure login name is in the list even when 0 jobs
+                                login = await frontend.fetch_login()
+                                users = sorted({j.get("user") or "" for j in frontend.jobs if j.get("user")})
+                                all_users = ["*"] + [u for u in users if u != login] + [login]
+                                user_select.set_options(all_users)
+                                # pick default only once
+                                if not frontend.job_filter:
+                                    frontend.job_filter = login
+                                user_select.value = frontend.job_filter
+
+                            user_select.on(
+                                "update:model-value",
+                                lambda e: setattr(frontend, "job_filter", e.args.lower() if e.args else ""),
+                            )
+                            ui.button("⟳", on_click=refresh_user_list).props("round dense flat size=lm").classes(
+                                "bg-primary/20 text-primary"
+                            ).style("height: 28px; width: 28px; min-height: 28px; min-width: 28px")
+
+                        # fire once immediately so the queue is filtered on first paint
+                        ui.timer(0.1, refresh_user_list, once=True)
+
+                    # Job Queue card (inline version)
                     create_jobs_section_inline()
 
-                # Column 3: Cluster Partitions (15% width = 3 grid columns)
-                with ui.column().classes("col-span-3"):
+                # ------------------------------------------------------------------
+                # Column 3 : Cluster Partitions  (4 units)
+                # ------------------------------------------------------------------
+                with ui.column().classes("col-span-4"):
                     with ui.card().classes("custom-card w-full"):
                         ui.label("Cluster Partitions").classes("text-base font-bold mb-3")
                         with ui.column().classes("w-full gap-2"):
@@ -900,14 +942,12 @@ def setup_ui():
                                                 f"{partition.get('cores_used', 0)}/{partition.get('cores_total', 1)}"
                                             ).classes("text-xs")
 
-                                        # CPU usage
                                         ui.linear_progress().bind_value_from(
                                             partition,
                                             lambda p=partition: p.get("cores_used", 0)
                                             / max(p.get("cores_total", 1), 1),
                                         ).classes("w-full mb-1")
 
-                                        # Memory usage
                                         with ui.row().classes("justify-between text-xs"):
                                             ui.label("Mem:")
                                             ui.label().bind_text_from(
@@ -932,11 +972,21 @@ def setup_ui():
                             return
                         if jobs_container.client != ui.context.client:
                             return
-
                         jobs_container.clear()
+                        for j in frontend.jobs:
+                            print("[FILTER]   job.id :", j.get("id"), "  job.user :", repr(j.get("user")))
+                        visible_jobs = [
+                            j
+                            for j in frontend.jobs
+                            if not frontend.job_filter
+                            or frontend.job_filter == "*"
+                            or (j.get("user") or "").lower() == frontend.job_filter.lower()
+                        ]
+                        #
+                        # visible_jobs = frontend.jobs
                         with jobs_container:
-                            if frontend.jobs:
-                                for job in frontend.jobs:
+                            if visible_jobs:
+                                for job in visible_jobs:
                                     with ui.card().classes("job-item w-full mb-2"):
                                         # ----------  header row  ----------
                                         with ui.row().classes("items-center justify-between w-full"):
@@ -1008,12 +1058,22 @@ def setup_ui():
                                 return
                             if jobs_container.client != ui.context.client:
                                 return
-
+                            for j in frontend.jobs:
+                                print("[FILTER]   job.id :", j.get("id"), "  job.user :", repr(j.get("user")))
+                            visible_jobs = [
+                                j
+                                for j in frontend.jobs
+                                if not frontend.job_filter
+                                or frontend.job_filter == "*"
+                                or (j.get("user") or "").lower() == frontend.job_filter.lower()
+                            ]
+                            #
+                            # visible_jobs = frontend.jobs
                             jobs_container.clear()
                             with jobs_container:
-                                if frontend.jobs:
-                                    for job in frontend.jobs:
-                                        with ui.card().classes("job-item w-full"):
+                                if visible_jobs:
+                                    for job in visible_jobs:
+                                        with ui.card().classes("job-item w-full mb-2"):
                                             with ui.row().classes("items-center justify-between w-full"):
                                                 with ui.column().classes("gap-1"):
                                                     ui.label(job.get("id", "Unknown")).classes("font-semibold text-lg")
@@ -1098,6 +1158,12 @@ def setup_ui():
                 ui.timer(frontend.refresh_period, safe_update_jobs),
             )
         )
+
+        # ----------  NEW – one-shot fetch of real login  ----------
+        async def init_login():
+            frontend.job_filter = (await frontend.fetch_login()).lower()
+
+        ui.timer(0.1, init_login, once=True)
 
 
 if __name__ in {"__main__", "__mp_main__"}:

@@ -20,6 +20,7 @@ import asyncio
 from asyncio import run_coroutine_threadsafe
 import atexit
 import concurrent.futures as _futs
+import getpass
 import os
 from pathlib import Path
 import platform
@@ -120,6 +121,7 @@ class JobManagerHandler:
         self.app.router.add_post("/api/submit", self.submit_job)
         self.app.router.add_post("/api/cancel/{job_id}", self.cancel_job)
         self.app.router.add_get("/api/jobs/{job_id}/log", self.get_job_log)
+        self.app.router.add_get("/api/me", self.get_me)
 
     def _find_latest_log(self, project_path: str) -> Path | None:
         """
@@ -142,12 +144,19 @@ class JobManagerHandler:
                 continue
         return None
 
+    async def get_me(self, request):
+        """Return the login name of the process that owns the server."""
+        import getpass
+
+        return web.json_response({"username": getpass.getuser()})
+
     async def get_jobs(self, request):
         jobs_data = []
         for job_id, job_info in self.manager.jobs.items():
             jobs_data.append(
                 {
                     "id": job_id,
+                    "user": job_info.config.user or getpass.getuser(),
                     "config": job_info.config.to_dict(),
                     "status": job_info.status.value,
                     "start_time": job_info.start_time.isoformat() if job_info.start_time else None,
@@ -193,6 +202,13 @@ class JobManagerHandler:
 
     async def submit_job(self, request):
         data = await request.json()
+
+        # ------------------------------------------------------------------
+        # NEW: pick the user that the UI sent (fallback to server account)
+        # ------------------------------------------------------------------
+        submitted_user = data.get("user") or getpass.getuser()
+        # ------------------------------------------------------------------
+
         project_path = data.get("project_path")
         options_data = data.get("batch_options", {})
 
@@ -212,7 +228,14 @@ class JobManagerHandler:
             ansys_edt_path=self.ansys_path,
             scheduler_type=self.scheduler_type,
             cpu_cores=data.get("cpus", 1),
+            user=getpass.getuser(),  # <-- keep this default
         )
+
+        # ------------------------------------------------------------------
+        # NEW: overwrite with the real submitter
+        # ------------------------------------------------------------------
+        config.user = submitted_user
+        # ------------------------------------------------------------------
 
         # Set the machine nodes if provided
         if machine_nodes:
@@ -301,6 +324,7 @@ class JobManagerHandler:
         jobid: str | None = None,
         scheduler_type: SchedulerType | None = None,
         cpu_cores: int = 1,
+        user: str = "unknown",
     ) -> HFSSSimulationConfig:
         """Create a validated HFSSSimulationConfig.
 
@@ -331,13 +355,15 @@ class JobManagerHandler:
             )
         ]
 
-        return create_hfss_config(
+        cfg = create_hfss_config(
             ansys_edt_path=ansys_edt_path,
             jobid=jobid,
             project_path=project_path,
             scheduler_type=scheduler_type,
             machine_nodes=machine_nodes,
         )
+        cfg.user = user
+        return cfg
 
 
 if __name__ == "__main__":
