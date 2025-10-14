@@ -195,10 +195,6 @@ class JobManagerHandler:
 
         try:
             parsed = HFSSLogParser(log_file).parse()
-            print("RAW adaptive list")
-            for p in parsed.adaptive:
-                print(p)  # show every pass
-            print("HFSSLogParser.is_converged() ->", parsed.adaptive[-1].converged if parsed.adaptive else False)
             out = parsed.to_dict()
             out["log_parser"] = {
                 "is_converged": parsed.adaptive[-1].converged if parsed.adaptive else False,

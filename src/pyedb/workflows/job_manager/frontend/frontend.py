@@ -35,7 +35,6 @@ def _refresh_badges(job: dict, w: dict):
         w["tet"].set_text(f"{latest.get('tetrahedra', 0):,}")
 
         conv = data.get("log_parser", {}).get("is_converged", False)
-        print("BADGE uses", conv, "from", data.get("log_parser"))  # <-- temporary
         w["conv_bdg"].set_text("Converged" if conv else "Not converged")
         w["conv_bdg"].classes(remove="status-queued status-completed")
         w["conv_bdg"].classes("status-completed" if conv else "status-queued")
