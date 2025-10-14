@@ -81,9 +81,9 @@ class JobManagerHandler:
                     self.ansys_path = os.path.join(installed_versions[version], "ansysedt")
                 else:
                     self.ansys_path = os.path.join(installed_versions[version], "ansysedt.exe")
-
-        self.manager = JobManager()
-        self.manager.resource_limits = ResourceLimits(max_concurrent_jobs=2)
+        self.scheduler_type = self._detect_scheduler()
+        self.manager = JobManager(scheduler_type=self.scheduler_type)
+        self.manager.resource_limits = ResourceLimits(max_concurrent_jobs=1)
         self.manager.jobs = {}  # In-memory job store -TODO add persistence database
         # Pass the detected ANSYS path to the manager
         self.manager.ansys_path = self.ansys_path
@@ -122,6 +122,7 @@ class JobManagerHandler:
         self.app.router.add_post("/api/cancel/{job_id}", self.cancel_job)
         self.app.router.add_get("/api/jobs/{job_id}/log", self.get_job_log)
         self.app.router.add_get("/api/me", self.get_me)
+        self.app.router.add_get("/system/status", self.get_system_status)
 
     def _find_latest_log(self, project_path: str) -> Path | None:
         """
@@ -143,6 +144,18 @@ class JobManagerHandler:
             except ValueError:  # no *.log here
                 continue
         return None
+
+    async def get_system_status(self, request):
+        """Return the real scheduler that was detected at start-up."""
+        return web.json_response(
+            {
+                "mode": self.scheduler_type.value,  # ← real value: "slurm", "lsf", "none"
+                "scheduler_detection": {
+                    "active_scheduler": self.scheduler_type.name,
+                    "detected_by": "JobManagerHandler",
+                },
+            }
+        )
 
     async def get_me(self, request):
         """Return the login name of the process that owns the server."""

@@ -457,7 +457,7 @@ class JobManager:
         queued_jobs = sum(1 for job in self.jobs.values() if job.status == JobStatus.QUEUED)
         status = {
             "scheduler_detection": {
-                "active_scheduler": "Not implemented in JobManager",
+                "active_scheduler": self.scheduler_type.name,
                 "detected_by": "JobManager",
                 "backend_available": True,
             },
@@ -466,7 +466,7 @@ class JobManager:
                 "last_update": self.resource_monitor.current_usage.get("timestamp", "Never"),
                 **self.resource_monitor.current_usage,
             },
-            "mode": "local",  # Simplified for now
+            "mode": self.scheduler_type.value,
             "local_pool": {
                 "running_jobs": running_jobs,
                 "queued_jobs": queued_jobs,
