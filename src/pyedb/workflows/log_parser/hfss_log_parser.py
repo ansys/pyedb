@@ -126,9 +126,10 @@ class AdaptiveBlockParser(BlockParser):
         passes: List[AdaptivePass] = []
         current: Optional[AdaptivePass] = None
         last_converge_pass: Optional[int] = None
+        adaptive_converged_line_found = False
 
-        for line in self.lines:
-            # ---- new adaptive pass ------------------------------------------
+        for lineno, line in enumerate(self.lines, 1):
+            # ---- new adaptive pass ----------------------------------
             if m := re.search(r"Adaptive Pass (?P<n>\d+).*Frequency: (?P<f>[\d.kMGHz]+)", line, re.I):
                 current = AdaptivePass(
                     pass_nr=int(m["n"]),
@@ -144,7 +145,7 @@ class AdaptiveBlockParser(BlockParser):
             if not current:
                 continue
 
-            # ---- collect details ------------------------------------------
+            # ---- collect details ------------------------------------
             if m := re.search(r"Tetrahedra: (?P<tet>\d+)", line):
                 current.tetrahedra = int(m["tet"])
             if m := re.search(r"Matrix size: (?P<sz>\d+)", line):
@@ -156,14 +157,19 @@ class AdaptiveBlockParser(BlockParser):
             if m := re.search(r"Elapsed time.*:\s*(?P<et>[\d:]+)", line):
                 current.elapsed_sec = _to_sec(m["et"])
 
-            # ---- per-pass finish ------------------------------------------
-            if m := re.search(r"\[converge].*pass number\D+(?P<n>\d+)", line, re.I):
-                last_converge_pass = int(m["n"])
+            # ---- store pass when [CONVERGE] appears -----------------
+            if m := re.search(r"\[CONVERGE].*pass number\D+(?P<n>\d+)", line, re.I):
                 passes.append(current)
+                last_converge_pass = int(m["n"])
                 current = None
 
-        # ---- mark the single converged pass after the loop --------------
-        if last_converge_pass is not None:
+            # ---- global convergence flag ----------------------------
+            if re.search(r"Adaptive\s+Passes\s+converged", line, re.I):
+                adaptive_converged_line_found = True
+                print(f"DEBUG: found convergence flag on line {lineno}: {line.strip()}")
+
+        # ---- final decision ----------------------------------------
+        if adaptive_converged_line_found and last_converge_pass is not None:
             for p in passes:
                 p.converged = p.pass_nr == last_converge_pass
         return passes
@@ -226,7 +232,7 @@ class ParsedLog:
 
     def is_converged(self) -> bool:
         """True if at least one adaptive pass reached convergence."""
-        return any(p.converged for p in self.adaptive)
+        return self.adaptive[-1].converged if self.adaptive else False
 
     def adaptive_passes(self) -> List[AdaptivePass]:
         """Alias to keep API explicit."""
