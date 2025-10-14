@@ -124,34 +124,48 @@ class InitMeshBlockParser(BlockParser):
 class AdaptiveBlockParser(BlockParser):
     def parse(self) -> List[AdaptivePass]:
         passes: List[AdaptivePass] = []
-        current: Dict[str, Any] = {}
+        current: Optional[AdaptivePass] = None
+        last_converge_pass: Optional[int] = None
+
         for line in self.lines:
+            # ---- new adaptive pass ------------------------------------------
             if m := re.search(r"Adaptive Pass (?P<n>\d+).*Frequency: (?P<f>[\d.kMGHz]+)", line, re.I):
-                current = {"pass": int(m["n"]), "freq": _to_hz(m["f"])}
-            if m := re.search(r"Tetrahedra: (?P<tet>\d+)", line):
-                current["tet"] = int(m["tet"])
-            if m := re.search(r"Matrix size: (?P<sz>\d+)", line):
-                current["matrix"] = int(m["sz"])
-            if m := re.search(r"Memory (?P<mem>[\d.]+) M", line):
-                current["mem"] = float(m["mem"])
-            if m := re.search(r"Max Mag\. Delta S:\s*(?P<ds>[\d.]+)", line):
-                current["delta_s"] = float(m["ds"])
-            if m := re.search(r"Elapsed time.*:\s*(?P<et>[\d:]+)", line):
-                current["elapsed"] = _to_sec(m["et"])
-            if "[CONVERGE]" in line and "Pass Number" in line:
-                current["converged"] = True
-                passes.append(
-                    AdaptivePass(
-                        pass_nr=current["pass"],
-                        freq_hz=current["freq"],
-                        tetrahedra=current["tet"],
-                        matrix_size=current["matrix"],
-                        memory_mb=current["mem"],
-                        delta_s=current.get("delta_s"),
-                        converged=current.get("converged", False),
-                        elapsed_sec=current.get("elapsed", 0),
-                    )
+                current = AdaptivePass(
+                    pass_nr=int(m["n"]),
+                    freq_hz=_to_hz(m["f"]),
+                    tetrahedra=0,
+                    matrix_size=0,
+                    memory_mb=0.0,
+                    delta_s=None,
+                    converged=False,
+                    elapsed_sec=0,
                 )
+
+            if not current:
+                continue
+
+            # ---- collect details ------------------------------------------
+            if m := re.search(r"Tetrahedra: (?P<tet>\d+)", line):
+                current.tetrahedra = int(m["tet"])
+            if m := re.search(r"Matrix size: (?P<sz>\d+)", line):
+                current.matrix_size = int(m["sz"])
+            if m := re.search(r"Memory (?P<mem>[\d.]+) M", line):
+                current.memory_mb = float(m["mem"])
+            if m := re.search(r"Max Mag\. Delta S:\s*(?P<ds>[\d.]+)", line):
+                current.delta_s = float(m["ds"])
+            if m := re.search(r"Elapsed time.*:\s*(?P<et>[\d:]+)", line):
+                current.elapsed_sec = _to_sec(m["et"])
+
+            # ---- per-pass finish ------------------------------------------
+            if m := re.search(r"\[converge].*pass number\D+(?P<n>\d+)", line, re.I):
+                last_converge_pass = int(m["n"])
+                passes.append(current)
+                current = None
+
+        # ---- mark the single converged pass after the loop --------------
+        if last_converge_pass is not None:
+            for p in passes:
+                p.converged = p.pass_nr == last_converge_pass
         return passes
 
 

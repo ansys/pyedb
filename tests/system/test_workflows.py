@@ -44,9 +44,12 @@ class TestClass:
 
         log_file = edb_examples.get_log_file_example()
         log_parser = HFSSLogParser(log_file).parse()
+        for nr, line in enumerate(Path(log_file).read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
+            if "converge" in line.lower():
+                print(f"{nr:04d}  {line.rstrip()}")
         assert len(log_parser.adaptive) == 8
         last_adaptive = log_parser.adaptive[-1]
-        assert last_adaptive.cobverged
+        assert last_adaptive.converged
         assert last_adaptive.delta_s == 0.017318
         assert last_adaptive.memory_mb == 263
         assert last_adaptive.tetrahedra == 65671
@@ -55,6 +58,6 @@ class TestClass:
         assert len(log_parser.sweep.solved) == 10
         # log parser methods
         assert log_parser.is_converged()
-        assert not log_parser.is_converged()  # project was stopped before completion
+        assert log_parser.is_converged()
         assert log_parser.adaptive_passes()
         assert log_parser.memory_on_convergence() == 263
