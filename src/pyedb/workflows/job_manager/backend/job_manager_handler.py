@@ -123,6 +123,7 @@ class JobManagerHandler:
         self.app.router.add_get("/api/jobs/{job_id}/log", self.get_job_log)
         self.app.router.add_get("/api/me", self.get_me)
         self.app.router.add_get("/system/status", self.get_system_status)
+        self.app.router.add_post("/jobs/submit", self.submit_job)
 
     def _find_latest_log(self, project_path: str) -> Path | None:
         """

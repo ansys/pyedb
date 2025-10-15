@@ -1105,32 +1105,28 @@ class SchedulerManager:
     #  SLURM helpers
     # --------------------------------------------------------------------- #
     async def _slurm_partitions(self) -> List[Dict[str, Any]]:
-        """
-        Parse ``sinfo -h -o %R %C %m``  →  PARTITION CPUS MEMORY
-        """
-        cmd = ["sinfo", "-h", "-o", "%R %C %m"]
+        cmd = ["sinfo", "-h", "-o", "%R %F %C %m"]  # PARTITION NODES(A/I/O/T) CPUS(A/I/O/T) MEMORY
         stdout = await self._run(cmd)
-        partitions = []
+        out = []
         for line in stdout.splitlines():
             if not line.strip():
                 continue
-            part, cpu_str, mem_mb = line.split()
-            alloc, idle, other, total = map(int, cpu_str.split("/"))
-            # Remove optional '+' or size suffix (M/G/T)
-            mem_mb_clean = mem_mb.rstrip("+MGTP").strip()
-            mem_total_gb = float(mem_mb_clean) / 1024
-            mem_used_gb = mem_total_gb * (alloc + other) / max(total, 1)
-
-            partitions.append(
+            part, node_str, cpu_str, mem_mb = line.split()
+            na, ni, no, nt = map(int, node_str.split("/"))
+            ca, ci, co, ct = map(int, cpu_str.split("/"))
+            mem_total = float(mem_mb.rstrip("+MGTP")) / 1024  # GB
+            out.append(
                 {
                     "name": part,
-                    "cores_total": total,
-                    "cores_used": alloc + other,
-                    "memory_total_gb": mem_total_gb,
-                    "memory_used_gb": mem_used_gb,
+                    "nodes_total": nt,
+                    "nodes_used": na + no,
+                    "cores_total": ct,
+                    "cores_used": ca + co,
+                    "memory_total_gb": mem_total,
+                    "memory_used_gb": mem_total * (na + no) / max(nt, 1),
                 }
             )
-        return partitions
+        return out
 
     async def _slurm_jobs(self) -> List[Dict[str, Any]]:
         """
@@ -1173,33 +1169,33 @@ class SchedulerManager:
     #  LSF helpers
     # --------------------------------------------------------------------- #
     async def _lsf_partitions(self) -> List[Dict[str, Any]]:
-        """
-        Combine ``bqueues -o 'queue_name max num_proc'`` and
-        ``bhosts -o 'host_name max_mem ncpus'`` to build per-queue stats.
-        """
-        # 1. Queues
-        queues_raw = await self._run(["bqueues", "-o", "queue_name:20 max:10 num_proc:10", "-noheader"])
-        queue_info = {}
-        for ln in queues_raw.splitlines():
+        # 1. queues → max slots
+        qraw = await self._run(["bqueues", "-o", "queue_name:20 max:10 num_proc:10", "-noheader"])
+        qinfo = {}
+        for ln in qraw.splitlines():
             if not ln.strip():
                 continue
-            name, max_slots, num_proc = ln.split()
-            queue_info[name] = {"cores_total": int(num_proc), "cores_used": 0, "mem_total_gb": 0.0, "mem_used_gb": 0.0}
+            name, max_s, num_p = ln.split()
+            qinfo[name] = {
+                "nodes_total": int(num_p),
+                "nodes_used": 0,
+                "cores_total": int(num_p),
+                "cores_used": 0,
+                "mem_total_gb": 0.0,
+                "mem_used_gb": 0.0,
+            }
 
-        # 2. Hosts
-        hosts_raw = await self._run(["bhosts", "-o", "host_name:20 max_mem:15 ncpus:10 r1m:10", "-noheader"])
-        for ln in hosts_raw.splitlines():
+        # 2. hosts → real cores + real memory
+        hraw = await self._run(["bhosts", "-o", "host_name:20 ncpus:10 max_mem:15", "-noheader"])
+        for ln in hraw.splitlines():
             if not ln.strip():
                 continue
-            host, max_mem, ncpus, r1m = ln.split()
-            max_mem_gb = int(max_mem) / (1024**2)  # KB → GB
-            used_mem_gb = float(r1m) / 1024  # 1-minute load ≈ used mem (rough)
-            # Distribute host resources evenly across all queues (simplification)
-            for q in queue_info:
-                queue_info[q]["mem_total_gb"] += max_mem_gb
-                queue_info[q]["mem_used_gb"] += used_mem_gb
-
-        return [{"name": q, **queue_info[q]} for q in queue_info]
+            host, ncpus, max_mem_kb = ln.split()
+            max_mem_gb = int(max_mem_kb) / 1024**2
+            for q in qinfo.values():
+                q["mem_total_gb"] += max_mem_gb
+                # LSF does not give per-host used mem; keep 0 for now
+        return [{"name": q, **qinfo[q]} for q in qinfo]
 
     async def _lsf_jobs(self) -> List[Dict[str, Any]]:
         """

@@ -219,11 +219,18 @@ class JobManagerFrontend:
         """Fetch cluster partitions"""
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(f"{self.backend_url}/api/scheduler/partitions") as response:
+                async with session.get(f"{self.backend_url}/api/cluster_partitions") as response:
                     if response.status == 200:
                         self.partitions = await response.json()
+                    else:
+                        self.partitions = []
         except Exception as e:
             print(f"Error fetching partitions: {e}")
+            self.partitions = []
+
+        # >>>  NEW: refresh the UI without rebuilding the card  <<<
+        if hasattr(self, "sync_partitions_to_ui"):
+            self.sync_partitions_to_ui()
 
     async def submit_job(self, job_data: Dict) -> bool:
         """Submit a new job"""
@@ -891,34 +898,77 @@ def setup_ui():
                 # ------------------------------------------------------------------
                 # Column 3 : Cluster Partitions  (4 units)
                 # ------------------------------------------------------------------
+                # ------------------------------------------------------------------
+                #  Column 3 : Cluster Partitions  (4 units)  ––  reactive, no blink
+                # ------------------------------------------------------------------
                 with ui.column().classes("col-span-4"):
                     with ui.card().classes("custom-card w-full"):
                         ui.label("Cluster Partitions").classes("text-base font-bold mb-3")
-                        with ui.column().classes("w-full gap-2"):
-                            if frontend.partitions:
-                                for partition in frontend.partitions:
-                                    with ui.card().classes("stat-card"):
-                                        with ui.row().classes("justify-between items-center"):
-                                            ui.label(partition.get("name", "Unknown")).classes("font-semibold text-sm")
-                                            ui.label(
-                                                f"{partition.get('cores_used', 0)}/{partition.get('cores_total', 1)}"
-                                            ).classes("text-xs")
 
-                                        ui.linear_progress().bind_value_from(
-                                            partition,
-                                            lambda p=partition: p.get("cores_used", 0)
-                                            / max(p.get("cores_total", 1), 1),
-                                        ).classes("w-full mb-1")
+                        # placeholder that will *always* exist – we only change its content
+                        partitions_placeholder = ui.column().classes("w-full gap-2")
 
-                                        with ui.row().classes("justify-between text-xs"):
-                                            ui.label("Mem:")
-                                            ui.label().bind_text_from(
-                                                partition,
-                                                lambda p=partition: f"{p.get('memory_used_gb', 0):.0f}/"
-                                                f"{p.get('memory_total_gb', 0):.0f} GB",
-                                            )
-                            else:
-                                ui.label("No partitions available").classes("text-gray-500 text-center p-2 text-sm")
+                        def sync_partitions_to_ui():
+                            partitions_placeholder.clear()
+                            with partitions_placeholder:
+                                if frontend.scheduler_type == "none":
+                                    ui.label("Local mode – no cluster").classes("text-gray-500 text-center p-2 text-sm")
+                                    return
+                                if not frontend.partitions:
+                                    ui.label("No partitions available").classes("text-gray-500 text-center p-2 text-sm")
+                                    return
+
+                                for p in frontend.partitions:
+                                    nt = p.get("nodes_total", 1)
+                                    nu = p.get("nodes_used", 0)
+                                    nf = nt - nu
+                                    ct = p.get("cores_total", 0)
+                                    cu = p.get("cores_used", 0)
+                                    cf = ct - cu
+                                    mt = p.get("memory_total_gb", 0.0)
+                                    mu = p.get("memory_used_gb", 0.0)
+                                    mf = mt - mu
+
+                                    cores_per_node = int(ct / max(nt, 1))
+
+                                    # colour logic
+                                    free_ratio = nf / max(nt, 1)
+                                    if free_ratio >= 0.5:
+                                        card_colour = "bg-green-900/30 border border-green-500/50"
+                                    elif free_ratio >= 0.2:
+                                        card_colour = "bg-orange-900/30 border border-orange-500/50"
+                                    else:
+                                        card_colour = "bg-red-900/30 border border-red-500/50"
+
+                                    with ui.card().classes(f"stat-card p-3 {card_colour}"):
+                                        # title
+                                        with ui.row().classes("justify-between items-center w-full"):
+                                            ui.label(p.get("name", "??")).classes("font-semibold text-sm")
+                                            ui.label(f"{nf}/{nt}  nodes").classes("text-xs")
+
+                                        # ---- nodes ----
+                                        with ui.row().classes("justify-between text-xs text-gray-400"):
+                                            ui.label("Nodes free")
+                                            ui.label(f"{nf}")
+
+                                        # ---- cores ----
+                                        with ui.row().classes("justify-between text-xs text-gray-400"):
+                                            ui.label("Cores free")
+                                            ui.label(f"{cf}")
+                                        ui.label(f"{cores_per_node}  cores/node").classes(
+                                            "text-2xs text-gray-500 text-right w-full"
+                                        )
+
+                                        # ---- memory ----
+                                        with ui.row().classes("justify-between text-xs text-gray-400"):
+                                            ui.label("Mem free")
+                                            ui.label(f"{mf:.0f} GB")
+
+                        # first paint
+                        sync_partitions_to_ui()
+
+                        # store handle so fetch_partitions() can trigger update
+                        frontend.sync_partitions_to_ui = sync_partitions_to_ui
 
     def create_jobs_section_inline():
         with ui.card().classes("custom-card h-full w-full"):
