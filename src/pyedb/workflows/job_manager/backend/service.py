@@ -761,18 +761,32 @@ class JobManager:
         try:
             # Run the simulation
             if job_info.config.scheduler_type != SchedulerType.NONE:
-                # Submit to external scheduler
+                #  Make sure the executable path is present
+                if not job_info.config.ansys_edt_path or not os.path.exists(job_info.config.ansys_edt_path):
+                    if self.ansys_path and os.path.exists(self.ansys_path):
+                        job_info.config = HFSSSimulationConfig(
+                            **{**job_info.config.model_dump(), "ansys_edt_path": self.ansys_path}
+                        )
+                        logger.info(f"Using JobManager's detected ANSYS path: {self.ansys_path}")
+                    else:
+                        raise FileNotFoundError(
+                            f"ANSYS executable not found. Config path: {job_info.config.ansys_edt_path}, "
+                            f"Manager path: {self.ansys_path}"
+                        )
+
+                # Now generate the script – the path is guaranteed to be non-empty
                 result = job_info.config.submit_to_scheduler()
                 job_info.scheduler_job_id = job_info.config._extract_job_id(result.stdout)
                 job_info.status = JobStatus.SCHEDULED
-
                 await self.sio.emit("job_scheduled", {"job_id": job_id, "scheduler_job_id": job_info.scheduler_job_id})
 
             else:
-                # Ensure we use the JobManager's detected ANSYS path if config path is missing or invalid
+                # ----------------  local mode – same guarantee  -----------------
                 if not job_info.config.ansys_edt_path or not os.path.exists(job_info.config.ansys_edt_path):
                     if self.ansys_path and os.path.exists(self.ansys_path):
-                        job_info.config.ansys_edt_path = self.ansys_path
+                        job_info.config = HFSSSimulationConfig(
+                            **{**job_info.config.model_dump(), "ansys_edt_path": self.ansys_path}
+                        )
                         logger.info(f"Using JobManager's detected ANSYS path: {self.ansys_path}")
                     else:
                         raise FileNotFoundError(

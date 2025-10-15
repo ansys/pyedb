@@ -220,53 +220,34 @@ class JobManagerHandler:
     async def submit_job(self, request):
         data = await request.json()
 
+        # 1.  decide which scheduler the UI *really* wants
         sched_type_str = data.get("config", {}).get("scheduler_type", "none")
         try:
             scheduler_type = SchedulerType(sched_type_str.lower())
         except ValueError:
-            scheduler_type = SchedulerType.NONE  # fallback
+            scheduler_type = SchedulerType.NONE
 
-        # ------------------------------------------------------------------
-        # NEW: pick the user that the UI sent (fallback to server account)
-        # ------------------------------------------------------------------
-        submitted_user = data.get("user") or getpass.getuser()
-        # ------------------------------------------------------------------
+        # 2.  inject the server-side ANSYS path (never trust the client)
+        data["config"]["ansys_edt_path"] = self.ansys_path
+        config = HFSSSimulationConfig.from_dict(data["config"])
 
-        project_path = data.get("project_path")
-        options_data = data.get("batch_options", {})
+        # 3.  overwrite scheduler type and user with authoritative values
+        config.scheduler_type = scheduler_type
+        config.user = data.get("user") or getpass.getuser()
 
-        # Extract machine configuration from the UI data
-        machine_nodes_data = data.get("machine_nodes", [])
-        machine_nodes = []
-        if machine_nodes_data:
-            from pyedb.workflows.job_manager.backend.job_submission import MachineNode
+        # 4.  optional machine nodes / batch options
+        if data.get("machine_nodes"):
+            config.machine_nodes = [MachineNode(**n) for n in data["machine_nodes"]]
+        if data.get("batch_options"):
+            config.layout_options = HFSS3DLayoutBatchOptions(**data["batch_options"])
 
-            for node_data in machine_nodes_data:
-                machine_nodes.append(MachineNode(**node_data))
+        # 5.  FINAL guarantee – path must be non-empty and exist
+        if not config.ansys_edt_path or not os.path.isfile(config.ansys_edt_path):
+            config.ansys_edt_path = self.ansys_path
+        # rebuild so every cached field (command string, scripts, …) is correct
+        config = HFSSSimulationConfig(**config.model_dump())
 
-        batch_options = HFSS3DLayoutBatchOptions(**options_data)
-
-        config = self.create_simulation_config(
-            project_path=project_path,
-            ansys_edt_path=self.ansys_path,
-            scheduler_type=self.scheduler_type,
-            cpu_cores=data.get("cpus", 1),
-            user=getpass.getuser(),  # <-- keep this default
-        )
-
-        # ------------------------------------------------------------------
-        # NEW: overwrite with the real submitter
-        # ------------------------------------------------------------------
-        config.user = submitted_user
-        # ------------------------------------------------------------------
-
-        # Set the machine nodes if provided
-        if machine_nodes:
-            config.machine_nodes = machine_nodes
-
-        # Properly assign batch options
-        config.layout_options = batch_options
-
+        # 6.  submit to the async manager and return the job id
         job_id = await self.manager.submit_job(config)
         return web.json_response({"job_id": job_id, "status": "submitted"})
 
