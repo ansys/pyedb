@@ -188,6 +188,7 @@ class EdbExamples:
         aedb = self._copy_file_folder_into_local_folder("dxf_swap/starting_edb/starting_edb.aedb")
         return Edb(edbpath=aedb, version=desktop_version, grpc=True)
 
+
 @pytest.fixture(scope="class", autouse=True)
 def target_path(local_scratch):
     example_project = os.path.join(example_models_path, test_subfolder, "example_package.aedb")
