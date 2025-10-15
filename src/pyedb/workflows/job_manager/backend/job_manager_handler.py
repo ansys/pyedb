@@ -47,7 +47,6 @@ from pyedb.workflows.job_manager.backend.service import JobManager, ResourceLimi
 from pyedb.workflows.log_parser.hfss_log_parser import HFSSLogParser
 
 
-@staticmethod
 def get_session(url: str) -> aiohttp.ClientSession:
     """
     Return a ready-to-use ``aiohttp.ClientSession`` configured
