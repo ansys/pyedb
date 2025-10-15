@@ -595,7 +595,7 @@ def setup_ui():
                             "design_name": "",
                             "design_mode": "",
                             "setup_name": "",
-                            "scheduler_type": "none" if is_local_mode else frontend.scheduler_type.upper(),
+                            "scheduler_type": scheduler_type_lower,
                             "layout_options": {
                                 "create_starting_mesh": create_starting_mesh.value,
                                 "enable_gpu": enable_gpu.value,

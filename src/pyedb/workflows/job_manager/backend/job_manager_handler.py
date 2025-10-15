@@ -220,6 +220,12 @@ class JobManagerHandler:
     async def submit_job(self, request):
         data = await request.json()
 
+        sched_type_str = data.get("config", {}).get("scheduler_type", "none")
+        try:
+            scheduler_type = SchedulerType(sched_type_str.lower())
+        except ValueError:
+            scheduler_type = SchedulerType.NONE  # fallback
+
         # ------------------------------------------------------------------
         # NEW: pick the user that the UI sent (fallback to server account)
         # ------------------------------------------------------------------
