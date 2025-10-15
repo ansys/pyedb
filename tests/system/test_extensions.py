@@ -650,21 +650,15 @@ class TestClass(BaseTestClass):
         # Area = 200 mm^2
         #assert polygon[0].area == 200
 
-    def test_dxf_swap_backend(
-        self,
-    ):
-        from pyedb import Edb
+    def test_dxf_swap_backend(self, edb_examples):
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf
 
-        edb_path = "example_models/dxf_swap/starting_edb/starting_edb.aedb"
         dxf_path = "example_models/dxf_swap/rectangle.dxf"
         layer_name = "Trace"
-
-        edb = Edb(edb_path, version="2025.2", grpc=True)
-
-        point_dxf = ["40mm", "25mm"]
+        edb = edb_examples.load_dxf_edb()
         point_aedt = ["170mm", "70mm"]
-
+        point_dxf = ["40mm", "25mm"]
         swap_polygon_with_dxf(edb, dxf_path, layer_name, point_dxf, point_aedt)
+        edb.save()
 
-        assert 1 == 1
+        assert len(edb.modeler.primitives_by_layer["Trace"]) == 3
