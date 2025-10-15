@@ -25,12 +25,15 @@ import os
 from pathlib import Path
 import platform
 import shutil
+import ssl
 import sys
 import threading
 from typing import Optional
 import uuid
 
+import aiohttp
 from aiohttp import web
+from yarl import URL
 
 from pyedb.generic.general_methods import is_linux
 from pyedb.workflows.job_manager.backend.job_submission import (
@@ -42,6 +45,47 @@ from pyedb.workflows.job_manager.backend.job_submission import (
 )
 from pyedb.workflows.job_manager.backend.service import JobManager, ResourceLimits, SchedulerManager
 from pyedb.workflows.log_parser.hfss_log_parser import HFSSLogParser
+
+
+@staticmethod
+def get_session(url: str) -> aiohttp.ClientSession:
+    """
+    Return a ready-to-use ``aiohttp.ClientSession`` configured
+    with sensible timeouts and a single connector that re-uses
+    TCP connections across requests.
+
+    Parameters
+    ----------
+    url : str
+        Target base URL (only used to decide whether TLS is required).
+        The session itself is **generic** and can be re-used for any host.
+
+    Returns
+    -------
+    aiohttp.ClientSession
+        A lightweight session instance.  The caller **may** keep it alive
+        for the lifetime of the application; closing it is optional
+        because the underlying connector is small and will be garbage-
+        collected when the session goes out of scope.
+    """
+    # Decide whether we need TLS by looking at the scheme
+    tls = URL(url).scheme == "https"
+
+    # One connector for connection pooling
+    connector = aiohttp.TCPConnector(
+        limit=20,  # max simultaneous connections
+        limit_per_host=5,  # max simultaneous connections per host
+        ssl=tls,
+    )
+
+    # Global timeout: total 30 s (connect + read + request)
+    timeout = aiohttp.ClientTimeout(total=30)
+
+    return aiohttp.ClientSession(
+        connector=connector,
+        timeout=timeout,
+        headers={"User-Agent": "pyedb-job-manager/1.0"},
+    )
 
 
 @web.middleware
