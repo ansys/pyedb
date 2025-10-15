@@ -44,7 +44,7 @@ use_grpc = os.getenv("USE_GRPC") in {"1", True}
 
 config = {
     "desktopVersion": "2025.2",
-    "use_grpc": use_grpc,
+    "use_grpc": True,
 }
 
 # Check for the local config file, override defaults if found
@@ -187,7 +187,6 @@ class EdbExamples:
     def load_dxf_edb(self):
         aedb = self._copy_file_folder_into_local_folder("dxf_swap/starting_edb/starting_edb.aedb")
         return Edb(edbpath=aedb, version=desktop_version, grpc=True)
-
 
 @pytest.fixture(scope="class", autouse=True)
 def target_path(local_scratch):

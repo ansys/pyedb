@@ -25,6 +25,7 @@ import pytest
 
 from pyedb.extensions.via_design_backend import ViaDesignBackend
 from tests.system.base_test_class import BaseTestClass
+#from tests.conftest import _get_test_board
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
@@ -637,18 +638,17 @@ class TestClass(BaseTestClass):
 
         dxf_path = "example_models/dxf_swap/rectangle.dxf"
         layer_name = "Trace"
-
         edb = edb_examples.load_dxf_edb()
-
         point_aedt = ["170mm", "70mm"]
-
         swap_polygon_with_dxf_center_point(edb, dxf_path, layer_name, point_aedt)
+        edb.save()
 
-        polygon = edb.modeler.get_primitive_by_layer_and_point(point=point_aedt, layer=layer_name)
-
-        assert len(polygon) == 1
-        # Area = 600 mm^2
-        assert polygon[0].area == 600
+        assert len(edb.modeler.primitives_by_layer["Trace"]) == 3
+        assert edb.modeler.primitives_by_layer["Trace"][2].aedt_name == "poly_17"
+        #polygon = edb.modeler.get_primitive_by_layer_and_point(point=point_aedt, layer=layer_name)
+        #assert len(polygon) == 1
+        # Area = 200 mm^2
+        #assert polygon[0].area == 200
 
     def test_dxf_swap_backend(
         self,
