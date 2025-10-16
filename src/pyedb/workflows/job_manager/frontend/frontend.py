@@ -778,6 +778,26 @@ def setup_ui():
         Local resources      |      job filter       |   cluster Partitions
                              |      job queue        |
         """
+
+        # ----------  helpers  ----------
+        def _restart_timers():
+            # cancel old timers
+            for timer_attr in ["_fetch_timer", "_update_timer"]:
+                if hasattr(frontend, timer_attr):
+                    getattr(frontend, timer_attr).cancel()
+            # create new ones with new period / state
+            if frontend.auto_refresh:
+                frontend._fetch_timer = ui.timer(frontend.refresh_period, safe_fetch_all_data)
+                frontend._update_timer = ui.timer(frontend.refresh_period, safe_update_jobs)
+
+        def toggle_refresh():
+            frontend.auto_refresh = not frontend.auto_refresh
+            # We need to find the toggle button to update its icon.
+            # This is a bit tricky as we don't have a direct reference.
+            # For now, we rely on the UI updating on the next refresh.
+            # A better solution would be to pass the toggle button to this function.
+            _restart_timers()
+
         with ui.column().classes("w-full p-4"):
             # 20-unit grid → 4  |  12  |  4
             with ui.grid(columns=20).classes("w-full gap-4"):
