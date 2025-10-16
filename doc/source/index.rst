@@ -40,7 +40,6 @@ Reference
    examples/index
    workflows/index
    grpc_api/index
-   workflows/index
    glossary
    troubleshooting
 
