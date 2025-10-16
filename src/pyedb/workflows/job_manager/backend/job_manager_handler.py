@@ -1,6 +1,5 @@
 """
-``job_manager_handler`` --- Thread-safe façade for the async ANSYS Job Manager
-================================================================================
+Thread-safe façade for the async ANSYS Job Manager.
 
 This module exposes a **synchronous, production-grade** entry point to the
 **asynchronous** job manager service. A background daemon thread hosts an
@@ -14,6 +13,20 @@ The handler guarantees:
 * **Thread-safe** job submission and cancellation.
 * **Global timeout** support for batched workloads.
 * **Zero configuration** when used with PyEDB ``Edb`` objects.
+
+Examples
+--------
+>>> handler = JobManagerHandler()
+>>> handler.start_service()
+>>> config = handler.create_simulation_config("/path/to/project.aedt")
+>>> job_id = asyncio.run(handler.submit_job(config))
+>>> handler.close()
+
+For command-line usage:
+
+.. code-block:: bash
+
+    python -m pyedb.workflows.job_manager.backend.job_manager_handler --host localhost --port 8080
 """
 
 import asyncio
@@ -49,12 +62,25 @@ from pyedb.workflows.log_parser.hfss_log_parser import HFSSLogParser
 
 def get_session(url: str) -> aiohttp.ClientSession:
     """
-    Return an aiohttp.ClientSession.
+    Return an aiohttp.ClientSession with appropriate TLS configuration.
 
     Parameters
     ----------
     url : str
         Base URL; used only to decide whether TLS verification is required.
+
+    Returns
+    -------
+    aiohttp.ClientSession
+        Configured client session with timeout and SSL context.
+
+    Notes
+    -----
+    The session is configured with:
+    - 30-second total timeout
+    - TLS verification for HTTPS URLs
+    - Connection pooling (limit=20, limit_per_host=10)
+    - Appropriate User-Agent header
     """
     timeout = aiohttp.ClientTimeout(total=30)
 
@@ -84,6 +110,21 @@ def get_session(url: str) -> aiohttp.ClientSession:
 
 @web.middleware
 async def cors_middleware(request, handler):
+    """
+    CORS middleware for aiohttp server.
+
+    Parameters
+    ----------
+    request : aiohttp.web.Request
+        Incoming HTTP request
+    handler : callable
+        Next handler in the middleware chain
+
+    Returns
+    -------
+    aiohttp.web.Response
+        Response with CORS headers added
+    """
     response = await handler(request)
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
@@ -94,7 +135,52 @@ async def cors_middleware(request, handler):
 class JobManagerHandler:
     """
     Synchronous façade that controls an **async** Job Manager service.
-    This class now includes the aiohttp server and WebSocket implementation.
+
+    This class provides a thread-safe interface to manage asynchronous job
+    execution while running the aiohttp server in a background thread.
+
+    Parameters
+    ----------
+    edb : Optional[Edb]
+        PyEDB instance for automatic ANSYS path detection
+    version : Optional[str]
+        Specific ANSYS version to use (e.g., "2023.1")
+    host : str
+        Hostname or IP address to bind the server
+    port : int
+        TCP port to listen on
+
+    Attributes
+    ----------
+    ansys_path : str
+        Path to ANSYS EDT executable
+    scheduler_type : SchedulerType
+        Detected scheduler type (SLURM, LSF, or NONE)
+    manager : JobManager
+        Underlying async job manager instance
+    host : str
+        Server hostname
+    port : int
+        Server port
+    url : str
+        Full server URL
+    started : bool
+        Whether the service is currently running
+
+    Raises
+    ------
+    ValueError
+        If specified ANSYS version is not found
+    RuntimeError
+        If service fails to start within timeout
+
+    Examples
+    --------
+    >>> handler = JobManagerHandler()
+    >>> handler.start_service()
+    >>> print(f"Server running at {handler.url}")
+    >>> # Submit jobs via REST API or handler methods
+    >>> handler.close()
     """
 
     def __init__(self, edb=None, version=None, host="localhost", port=8080):
@@ -151,6 +237,7 @@ class JobManagerHandler:
             self._sch_mgr = SchedulerManager(self.scheduler_type)
 
     def _add_routes(self):
+        """Add REST API routes to the aiohttp application."""
         self.app.router.add_get("/api/jobs", self.get_jobs)
         self.app.router.add_get("/api/queue", self.get_queue_status)
         self.app.router.add_get("/api/resources", self.get_resources)
@@ -165,8 +252,22 @@ class JobManagerHandler:
 
     def _find_latest_log(self, project_path: str) -> Path | None:
         """
-        Return the newest *.log file inside the newest *.aedb.batchinfo folder
-        that ANSYS creates next to the project.
+        Find the newest log file in batchinfo directories.
+
+        Parameters
+        ----------
+        project_path : str
+            Path to the AEDT project file
+
+        Returns
+        -------
+        Path or None
+            Path to the newest log file, or None if no logs found
+
+        Notes
+        -----
+        Searches for pattern: <project>.aedb.batchinfo.<timestamp>/*.log
+        and returns the most recently modified log file.
         """
         proj = Path(project_path).resolve()
         base = proj.with_suffix("")  # strip .aedt / .aedb
@@ -185,7 +286,19 @@ class JobManagerHandler:
         return None
 
     async def get_system_status(self, request):
-        """Return the real scheduler that was detected at start-up."""
+        """
+        Get system status and scheduler information.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request object
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON response with system status
+        """
         return web.json_response(
             {
                 "mode": self.scheduler_type.value,  # ← real value: "slurm", "lsf", "none"
@@ -197,12 +310,37 @@ class JobManagerHandler:
         )
 
     async def get_me(self, request):
-        """Return the login name of the process that owns the server."""
+        """
+        Get current user information.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request object
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON response with username
+        """
         import getpass
 
         return web.json_response({"username": getpass.getuser()})
 
     async def get_jobs(self, request):
+        """
+        Get list of all jobs with their current status.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request object
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON array of job objects
+        """
         jobs_data = []
         for job_id, job_info in self.manager.jobs.items():
             jobs_data.append(
@@ -221,20 +359,56 @@ class JobManagerHandler:
         return web.json_response(jobs_data)
 
     async def get_scheduler_type(self, request):
+        """
+        Get detected scheduler type.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request object
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON response with scheduler type
+        """
         return web.json_response({"scheduler_type": self.scheduler_type.value})
 
     async def get_cluster_partitions(self, request):
+        """
+        Get available cluster partitions/queues.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request object
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON array of partition information
+        """
         if self._sch_mgr:
             partitions = await self._sch_mgr.get_partitions()
             return web.json_response(partitions)
         return web.json_response([])
 
-    # job_manager_handler.py  (add as a new coroutine)
-
     async def get_job_log(self, request):
         """
-        Return parsed HFSS log for a finished job.
-        204 No Content when log is not available yet.
+        Get parsed HFSS log for a finished job.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request with job_id in URL path
+
+        Returns
+        -------
+        aiohttp.web.Response
+            - 200: JSON with parsed log data
+            - 204: No log available yet
+            - 404: Job not found
+            - 500: Log parsing error
         """
         job_id = request.match_info["job_id"]
         job_info = self.manager.jobs.get(job_id)
@@ -256,6 +430,36 @@ class JobManagerHandler:
             return web.json_response({"error": str(exc)}, status=500)
 
     async def submit_job(self, request):
+        """
+        Submit a new simulation job.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request with JSON payload containing job configuration
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON response with job ID and status
+
+        Notes
+        -----
+        Expected JSON payload:
+
+        .. code-block:: json
+
+            {
+                "config": {
+                    "scheduler_type": "slurm|lsf|none",
+                    "project_path": "/path/to/project.aedt",
+                    ... other HFSS config fields
+                },
+                "user": "username",
+                "machine_nodes": [...],
+                "batch_options": {...}
+            }
+        """
         data = await request.json()
 
         # 1.  decide which scheduler the UI *really* wants
@@ -290,22 +494,73 @@ class JobManagerHandler:
         return web.json_response({"job_id": job_id, "status": "submitted"})
 
     async def get_queue_status(self, request):
-        """Get current queue status for UI display"""
+        """
+        Get current queue status for UI display.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request object
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON with queue statistics
+        """
         queue_stats = self.manager.job_pool.get_queue_stats()
         return web.json_response(queue_stats)
 
     async def get_resources(self, request):
-        """Get current resource usage for UI display"""
+        """
+        Get current resource usage for UI display.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request object
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON with current resource usage
+        """
         resources = self.manager.resource_monitor.current_usage
         return web.json_response(resources)
 
     async def cancel_job(self, request):
+        """
+        Cancel a running or queued job.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request with job_id in URL path
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON response with cancellation status
+        """
         job_id = request.match_info["job_id"]
         success = await self.manager.cancel_job(job_id)
         return web.json_response({"status": "cancelled" if success else "failed", "success": success})
 
     @staticmethod
     def _detect_scheduler() -> SchedulerType:
+        """
+        Detect available job scheduler on the system.
+
+        Returns
+        -------
+        SchedulerType
+            Detected scheduler type (SLURM, LSF, or NONE)
+
+        Notes
+        -----
+        Detection logic:
+        - Windows: Always returns NONE
+        - Linux: Checks for 'sinfo' (SLURM) or 'bhosts' (LSF) commands
+        """
         if platform.system() == "Windows":
             return SchedulerType.NONE
         for cmd, enum in (("sinfo", SchedulerType.SLURM), ("bhosts", SchedulerType.LSF)):
@@ -315,9 +570,30 @@ class JobManagerHandler:
 
     @property
     def url(self) -> str:
+        """
+        Get the server URL.
+
+        Returns
+        -------
+        str
+            Full server URL (http://host:port)
+        """
         return self._url
 
     def start_service(self) -> None:
+        """
+        Start the job manager service in a background thread.
+
+        Raises
+        ------
+        RuntimeError
+            If service fails to start within 10 seconds
+
+        Notes
+        -----
+        This method is non-blocking and returns immediately.
+        The service runs in a daemon thread with its own event loop.
+        """
         if self.started:
             return
         self._thread = threading.Thread(target=self._run_event_loop, daemon=True)
@@ -326,6 +602,11 @@ class JobManagerHandler:
             raise RuntimeError("Job-Manager service failed to start within 10 s")
 
     async def _start_site(self) -> None:
+        """
+        Internal method to start the aiohttp server.
+
+        This method runs in the background thread's event loop.
+        """
         self.runner = web.AppRunner(self.app)
         await self.runner.setup()
         self.site = web.TCPSite(self.runner, self.host, self.port)
@@ -334,6 +615,14 @@ class JobManagerHandler:
         self._start_event.set()
 
     def close(self) -> None:
+        """
+        Gracefully shutdown the job manager service.
+
+        Notes
+        -----
+        This method is automatically called on program exit via atexit,
+        but can also be called explicitly for clean shutdown.
+        """
         if not self.started or not self._loop:
             return
         coro = self.stop_service()
@@ -344,6 +633,11 @@ class JobManagerHandler:
         self.started = False
 
     async def stop_service(self) -> None:
+        """
+        Stop the aiohttp server and cleanup resources.
+
+        This is the async version of close() that runs in the event loop.
+        """
         if not self.started:
             return
         self._shutdown = True
@@ -354,6 +648,12 @@ class JobManagerHandler:
         self.started = False
 
     def _run_event_loop(self) -> None:
+        """
+        Run the asyncio event loop in the background thread.
+
+        This method is the target of the background thread and runs
+        until the service is shut down.
+        """
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
         self._loop.run_until_complete(self._start_site())
@@ -368,14 +668,38 @@ class JobManagerHandler:
         cpu_cores: int = 1,
         user: str = "unknown",
     ) -> HFSSSimulationConfig:
-        """Create a validated HFSSSimulationConfig.
+        """
+        Create a validated HFSSSimulationConfig.
 
         Parameters
         ----------
+        project_path : str
+            Path to the AEDT project file
+        ansys_edt_path : str, optional
+            Path to ANSYS EDT executable. Uses detected path if None.
+        jobid : str, optional
+            Job identifier. Auto-generated if None.
+        scheduler_type : SchedulerType, optional
+            Scheduler type. Uses detected scheduler if None.
         cpu_cores : int
-            Number of logical cores the user requested in the UI.
-            Used only when scheduler_type == NONE (local run).
-            :param ansys_edt_path:
+            Number of CPU cores for local execution
+        user : str
+            Username for job ownership
+
+        Returns
+        -------
+        HFSSSimulationConfig
+            Validated simulation configuration
+
+        Raises
+        ------
+        ValueError
+            If project_path is empty or invalid
+
+        Notes
+        -----
+        The cpu_cores parameter is only used when scheduler_type is NONE (local execution).
+        For cluster execution, cores are determined by the scheduler configuration.
         """
         if not project_path:
             raise ValueError("Project path must be provided")
@@ -410,7 +734,9 @@ class JobManagerHandler:
 
 if __name__ == "__main__":
     """
-    example
+    Command-line entry point for the job manager backend.
+
+    Example
     -------
     python -m pyedb.workflows.job_manager.backend.job_manager_handler --host localhost --port 8080
     """

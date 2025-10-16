@@ -1,8 +1,7 @@
 """
-``service`` --- Async job manager with pool scheduling and REST/WebSocket API
-=============================================================================
+Async job manager with pool scheduling and REST/WebSocket API.
 
-The module implements a **fully asynchronous** multi-tenant job manager that
+The module implements a **fully asynchronous** multi-tenant job manager that:
 
 * enforces **host resource limits** (CPU, memory, disk, concurrency),
 * maintains **priority queues** (negative → low, zero → normal, positive → high),
@@ -16,18 +15,24 @@ stand-alone micro-service (Docker, systemd, Kubernetes).
 
 Examples
 --------
-Stand-alone REST server::
+Stand-alone REST server:
+
+.. code-block:: bash
 
     python -m pyedb.workflows.job_manager.service
 
-Embedded inside PyEDB::
+Embedded inside PyEDB:
+
+.. code-block:: python
 
     from pyedb.workflows.job_manager.service import JobManager, ResourceLimits
 
     manager = JobManager(ResourceLimits(max_concurrent_jobs=4))
     await manager.submit_job(config, priority=10)
 
-The REST API is **self-documenting** at runtime::
+The REST API is **self-documenting** at runtime:
+
+.. code-block:: bash
 
     curl http://localhost:8080/resources
     curl http://localhost:8080/queue
@@ -65,19 +70,19 @@ class JobStatus(Enum):
 
     Members
     -------
-    PENDING : str
+    PENDING
         Initial state before queuing.
-    QUEUED : str
-        Awaiting resources.
-    SCHEDULED : str
+    QUEUED
+        Awaiting resources in local queue.
+    SCHEDULED
         Submitted to external scheduler.
-    RUNNING : str
+    RUNNING
         Currently executing.
-    COMPLETED : str
+    COMPLETED
         Normal termination.
-    FAILED : str
+    FAILED
         Non-zero exit code or exception.
-    CANCELLED : str
+    CANCELLED
         User-initiated abort.
     """
 
@@ -101,13 +106,13 @@ class ResourceLimits:
     Parameters
     ----------
     max_concurrent_jobs : int, optional
-        Simultaneous local jobs.  Default ``2``.
+        Simultaneous local jobs. Default is ``1``.
     max_cpu_percent : float, optional
-        CPU utilisation threshold (0-100).  Default ``80.0``.
+        CPU utilisation threshold (0-100). Default is ``80.0``.
     min_memory_gb : float, optional
-        Free RAM required to start.  Default ``2.0``.
+        Free RAM required to start (GB). Default is ``2.0``.
     min_disk_gb : float, optional
-        Free disk space required to start.  Default ``10.0``.
+        Free disk space required to start (GB). Default is ``10.0``.
     """
 
     max_concurrent_jobs: int = 1
@@ -162,16 +167,28 @@ class JobInfo:
 
 class ResourceMonitor:
     """
-    **Async** background task that samples host telemetry every *N* seconds
-    and keeps a **thread-safe** in-memory cache.
+    **Async** background task that samples host telemetry every *N* seconds.
 
-    The cache is used by :meth:`JobPoolManager.can_start_job` to throttle
-    submissions.
+    The monitor keeps a **thread-safe** in-memory cache used by
+    :meth:`JobPoolManager.can_start_job` to throttle submissions.
 
     Parameters
     ----------
     update_interval : int, optional
-        Sampling period in seconds.  Default ``5``.
+        Sampling period in seconds. Default is ``5``.
+
+    Attributes
+    ----------
+    current_usage : dict
+        Cached resource usage information with keys:
+        - cpu_percent: Current CPU usage percentage
+        - memory_percent: Current memory usage percentage
+        - memory_used_gb: Memory used in GB
+        - memory_total_gb: Total memory in GB
+        - memory_free_gb: Free memory in GB
+        - disk_usage_percent: Disk usage percentage
+        - disk_free_gb: Free disk space in GB
+        - timestamp: Last update timestamp
     """
 
     def __init__(self, update_interval: int = 5):
@@ -190,7 +207,9 @@ class ResourceMonitor:
     async def monitor_resources(self):
         """
         **Infinite** coroutine that updates :attr:`current_usage`.
-        Runs until the event-loop is shut down.
+
+        Runs until the event-loop is shut down. Samples CPU, memory, and disk
+        usage at regular intervals.
         """
         while True:
             try:
@@ -238,6 +257,17 @@ class JobPoolManager:
     ----------
     resource_limits : ResourceLimits
         Constraints used by :meth:`can_start_job`.
+
+    Attributes
+    ----------
+    job_queue : Deque[str]
+        FIFO queue for normal priority jobs
+    priority_queue : Dict[int, List[str]]
+        Priority-based queues (key=priority, value=job_ids)
+    running_jobs : Set[str]
+        Set of currently running job IDs
+    job_priorities : Dict[str, int]
+        Mapping of job_id to priority
     """
 
     def __init__(self, resource_limits: ResourceLimits):
@@ -256,7 +286,7 @@ class JobPoolManager:
         job_id : str
             Unique identifier.
         priority : int, optional
-            Negative (low), zero (normal), positive (high).  Default ``0``.
+            Negative (low), zero (normal), positive (high). Default is ``0``.
         """
         self.job_priorities[job_id] = priority
 
@@ -278,6 +308,11 @@ class JobPoolManager:
         -------
         str or None
             Job identifier or ``None`` if all queues are empty.
+
+        Notes
+        -----
+        Priority queues are checked first (highest to lowest), then the
+        normal FIFO queue.
         """
         # First check priority queues (highest priority first)
         for priority in sorted(self.priority_queue.keys(), reverse=True):
@@ -311,8 +346,9 @@ class JobPoolManager:
 
     def can_start_job(self, resource_monitor: ResourceMonitor) -> bool:
         """
-        **Boolean** predicate that decides whether a new job may be started
-        **without** violating resource limits.
+        **Boolean** predicate that decides whether a new job may be started.
+
+        Checks resource limits without violating constraints.
 
         Parameters
         ----------
@@ -354,8 +390,12 @@ class JobPoolManager:
         Returns
         -------
         dict
-            ``total_queued``, ``regular_queue_size``, ``priority_queues``,
-            ``running_jobs``, ``max_concurrent``.
+            Queue statistics with keys:
+            - total_queued: Total jobs in all queues
+            - regular_queue_size: Jobs in normal FIFO queue
+            - priority_queues: Dict of priority -> count
+            - running_jobs: Number of currently running jobs
+            - max_concurrent: Maximum concurrent jobs allowed
         """
         total_queued = len(self.job_queue)
         for jobs in self.priority_queue.values():
@@ -372,17 +412,38 @@ class JobPoolManager:
 
 class JobManager:
     """
-    **Async** job manager that combines:
+    **Async** job manager combining resource monitoring and job scheduling.
 
-    * :class:`ResourceMonitor` for telemetry,
-    * :class:`JobPoolManager` for scheduling,
-    * ``aiohttp`` web server for REST/Socket.IO,
-    * background task for **continuous** job processing.
+    This class provides the core functionality for:
+
+    * Resource monitoring via :class:`ResourceMonitor`
+    * Job scheduling via :class:`JobPoolManager`
+    * REST/Socket.IO API via aiohttp web server
+    * Background task for continuous job processing
 
     Parameters
     ----------
     resource_limits : ResourceLimits, optional
-        Host constraints.  Default instance.
+        Host constraints. Creates default instance if None.
+    scheduler_type : SchedulerType, optional
+        Type of job scheduler to use. Default is ``SchedulerType.NONE``.
+
+    Attributes
+    ----------
+    jobs : Dict[str, JobInfo]
+        Dictionary of all managed jobs
+    resource_limits : ResourceLimits
+        Current resource constraints
+    job_pool : JobPoolManager
+        Priority-aware job queue manager
+    resource_monitor : ResourceMonitor
+        Host resource usage monitor
+    ansys_path : str or None
+        Path to ANSYS EDT executable
+    sio : socketio.AsyncServer
+        Socket.IO server for real-time updates
+    app : web.Application
+        aiohttp web application
     """
 
     def __init__(self, resource_limits: ResourceLimits = None, scheduler_type: SchedulerType = SchedulerType.NONE):
@@ -417,7 +478,7 @@ class JobManager:
         self._ensure_monitor_running()
 
     def _ensure_monitor_running(self):
-        """Ensure resource monitoring task is running"""
+        """Ensure resource monitoring task is running."""
         try:
             loop = asyncio.get_running_loop()
             if self._monitor_task is None or self._monitor_task.done():
@@ -429,7 +490,8 @@ class JobManager:
     def setup_routes(self):
         """
         Internal method that wires aiohttp routes to class methods.
-        Called once from __init__.
+
+        Called once from __init__. Sets up all REST API endpoints.
         """
         self.app.router.add_get("/", self.handle_index)
         self.app.router.add_get("/jobs", self.handle_get_jobs)
@@ -449,7 +511,19 @@ class JobManager:
             self.app.router.add_static("/static", "static")
 
     async def handle_get_system_status(self, request):
-        """Endpoint to provide system and scheduler status."""
+        """
+        Get system and scheduler status.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request object
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON response with system status information
+        """
         # Ensure resource monitoring is active
         self._ensure_monitor_running()
 
@@ -476,7 +550,19 @@ class JobManager:
         return web.json_response(status)
 
     async def handle_get_partitions(self, request):
-        """Get scheduler partitions."""
+        """
+        Get scheduler partitions/queues.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request object
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON response with partition information or error
+        """
         if not self._sch_mgr:
             return web.json_response({"error": "Scheduler not supported"}, status=400)
         try:
@@ -486,7 +572,19 @@ class JobManager:
             return web.json_response({"error": str(e)}, status=500)
 
     async def handle_start_monitoring(self, request):
-        """Endpoint to manually start resource monitoring."""
+        """
+        Manually start resource monitoring.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request object
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON response indicating success or failure
+        """
         try:
             if self._monitor_task is None or self._monitor_task.done():
                 self._monitor_task = asyncio.create_task(self.resource_monitor.monitor_resources())
@@ -497,26 +595,49 @@ class JobManager:
             return web.json_response({"success": False, "error": str(e)}, status=500)
 
     async def handle_index(self, request):
-        """Serve the main web interface."""
+        """
+        Serve the main web interface.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request object
+
+        Returns
+        -------
+        aiohttp.web.FileResponse
+            Static HTML file
+        """
         return web.FileResponse("static/index.html")
 
     async def handle_submit_job(self, request):
         """
-        POST ``/jobs/submit`` — accept JSON, validate, enqueue, return
-        identifier.
+        Submit a new job for execution.
 
-        Payload::
-
-            {
-              "config": { ... HFSSSimulationConfig ... },
-              "priority": 10
-            }
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP POST request with JSON payload
 
         Returns
         -------
-        web.Response
-            200 → ``{"success": true, "job_id": "..."}``
-            400 → ``{"success": false, "error": "..."}``
+        aiohttp.web.Response
+            JSON response with job ID or error
+
+        Notes
+        -----
+        Expected JSON payload:
+
+        .. code-block:: json
+
+            {
+                "config": {
+                    "jobid": "job_123",
+                    "project_path": "/path/to/project.aedt",
+                    ... other HFSS config fields
+                },
+                "priority": 0
+            }
         """
         try:
             logger.info("🔍 ROUTE HIT: /jobs/submit")
@@ -538,13 +659,17 @@ class JobManager:
 
     async def handle_cancel_job(self, request):
         """
-        POST ``/jobs/{job_id}/cancel`` — idempotent cancellation.
+        Cancel a running or queued job.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request with job_id in URL path
 
         Returns
         -------
-        web.Response
-            200 → success flag
-            404 → job not found
+        aiohttp.web.Response
+            JSON response indicating success or failure
         """
         job_id = request.match_info.get("job_id")
 
@@ -559,10 +684,17 @@ class JobManager:
 
     async def handle_get_jobs(self, request):
         """
-        GET ``/jobs`` — return **paginated** list of all jobs (JSON).
+        Get list of all jobs.
 
-        Each record contains ``id``, ``status``, ``config``, ``start_time``,
-        ``end_time``, ``return_code``, ``scheduler_job_id``.
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request object
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON array of job objects with status information
         """
         jobs_data = []
         for job_id, job_info in self.jobs.items():
@@ -582,15 +714,33 @@ class JobManager:
 
     async def handle_get_resources(self, request):
         """
-        GET ``/resources`` — real-time host telemetry (JSON).
+        Get current resource usage.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request object
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON with current host resource usage
         """
         return web.json_response(self.resource_monitor.current_usage)
 
     async def handle_get_queue(self, request):
         """
-        GET ``/queue`` — queue statistics (JSON).
+        Get queue statistics.
 
-        Used by the dashboard progress bar.
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP request object
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON with queue statistics for dashboard display
         """
         stats = self.job_pool.get_queue_stats()
         logger.info(f"/queue endpoint returning max_concurrent = {stats['max_concurrent']}")
@@ -598,13 +748,17 @@ class JobManager:
 
     async def handle_set_priority(self, request):
         """
-        POST ``/jobs/{job_id}/priority`` — change priority and **re-queue**.
+        Change job priority and re-queue.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP POST request with JSON payload
 
         Returns
         -------
-        web.Response
-            200 → success
-            404 → job not found
+        aiohttp.web.Response
+            JSON response indicating success or failure
         """
         job_id = request.match_info.get("job_id")
 
@@ -626,7 +780,17 @@ class JobManager:
 
     async def handle_edit_concurrent_limits(self, request):
         """
-        PUT /pool/limits — edit concurrent job limits in the pool
+        Edit concurrent job limits.
+
+        Parameters
+        ----------
+        request : aiohttp.web.Request
+            HTTP PUT request with JSON payload
+
+        Returns
+        -------
+        aiohttp.web.Response
+            JSON response indicating success or failure
         """
         try:
             data = await request.json()
@@ -649,10 +813,10 @@ class JobManager:
 
     async def wait_until_all_done(self) -> None:
         """
-        **Coroutine** that blocks until **every** job reaches a terminal state
-        (completed, failed, or cancelled).
+        **Coroutine** that blocks until **every** job reaches a terminal state.
 
-        Safe to call from REST handlers or CLI scripts.
+        Safe to call from REST handlers or CLI scripts. Polls job status
+        until all jobs are completed, failed, or cancelled.
         """
         while True:
             # All jobs that are NOT in a terminal state
@@ -667,20 +831,27 @@ class JobManager:
 
     async def submit_job(self, config: HFSSSimulationConfig, priority: int = 0) -> str:
         """
-        **Async** entry point — validate config, enqueue, and return
-        identifier.
+        **Async** entry point for job submission.
 
         Parameters
         ----------
         config : HFSSSimulationConfig
-            Validated configuration.
+            Validated simulation configuration.
         priority : int, optional
-            Job priority.  Default ``0``.
+            Job priority. Default is ``0``.
 
         Returns
         -------
         str
             Unique job identifier (same as ``config.jobid``).
+
+        Notes
+        -----
+        This method:
+        1. Creates a JobInfo object with QUEUED status
+        2. Adds the job to the appropriate queue
+        3. Notifies web clients via Socket.IO
+        4. Starts the processing loop if not already running
         """
         job_id = config.jobid
 
@@ -705,10 +876,16 @@ class JobManager:
 
         return job_id
 
-    # In service.py, inside the JobManager class
-
     async def _process_jobs_continuously(self):
-        """Continuously process jobs until shutdown is requested."""
+        """
+        Continuously process jobs until shutdown is requested.
+
+        This is the main job processing loop that:
+        - Checks if new jobs can be started based on resource limits
+        - Dequeues the highest priority job
+        - Starts job execution in a separate task
+        - Sleeps when no jobs can be started or queue is empty
+        """
         logger.info("✅ Job processing loop started.")
         while not self._shutdown:
             while not self._shutdown:
@@ -739,7 +916,22 @@ class JobManager:
             await asyncio.sleep(0.2)
 
     async def _process_single_job(self, job_id: str):
-        """Process a single job from the pool."""
+        """
+        Process a single job from the pool.
+
+        Parameters
+        ----------
+        job_id : str
+            Job identifier to process
+
+        Notes
+        -----
+        This method handles:
+        - Local execution via subprocess
+        - Scheduler submission (SLURM/LSF)
+        - Status updates and notifications
+        - Error handling and cleanup
+        """
         job_info = self.jobs.get(job_id)
         if not job_info or job_info.status != JobStatus.QUEUED:
             self.job_pool.running_jobs.discard(job_id)
@@ -871,6 +1063,11 @@ class JobManager:
         bool
             ``True`` → cancellation succeeded, ``False`` → job not found or
             already terminal.
+
+        Notes
+        -----
+        For queued jobs: immediately removes from queue and marks as cancelled.
+        For running jobs: attempts to terminate the process and cleanup.
         """
         job_info = self.jobs.get(job_id)
         if not job_info:
@@ -907,12 +1104,21 @@ class JobManager:
         Parameters
         ----------
         update_data : dict
-            Fields to update in resource limits
+            Fields to update in resource limits. Valid fields:
+            - max_concurrent_jobs: Positive integer
+            - max_cpu_percent: Float between 0 and 100
+            - min_memory_gb: Non-negative float
+            - min_disk_gb: Non-negative float
 
         Returns
         -------
         dict or None
             Updated limits data or None if update failed
+
+        Raises
+        ------
+        ValueError
+            If any field validation fails
         """
         try:
             # Define allowed fields for editing
@@ -985,8 +1191,7 @@ async def submit_job_to_manager(
     config: HFSSSimulationConfig, priority: int = 0, manager_url: str = "http://localhost:8080"
 ) -> str:
     """
-    **Helper** coroutine that submits a job to a **remote** Job Manager
-    instance via REST.
+    **Helper** coroutine that submits a job to a **remote** Job Manager.
 
     Falls back to **local** execution if the HTTP call fails (offline mode).
 
@@ -995,9 +1200,9 @@ async def submit_job_to_manager(
     config : HFSSSimulationConfig
         Validated configuration.
     priority : int, optional
-        Job priority.  Default ``0``.
+        Job priority. Default is ``0``.
     manager_url : str, optional
-        Base URL of the manager.  Default ``"http://localhost:8080"``.
+        Base URL of the manager. Default is ``"http://localhost:8080"``.
 
     Returns
     -------
@@ -1008,6 +1213,11 @@ async def submit_job_to_manager(
     ------
     Exception
         If **both** remote and local execution fail.
+
+    Notes
+    -----
+    This function is useful for clients that want to submit jobs to a
+    remote manager but maintain offline capability.
     """
     try:
         async with aiohttp.ClientSession() as session:
@@ -1026,43 +1236,31 @@ async def submit_job_to_manager(
         return await config.run_simulation()
 
 
-# Usage example
-async def main():
-    # Create job manager with custom resource limits
-    resource_limits = ResourceLimits(
-        max_concurrent_jobs=3,  # Allow 3 simultaneous jobs
-        max_cpu_percent=75.0,  # Don't start jobs if CPU > 75%
-        min_memory_gb=4.0,  # Require 4GB free memory
-        min_disk_gb=20.0,  # Require 20GB free disk space
-    )
-
-    manager = JobManager(resource_limits)
-
-    # Submit jobs with different priorities
-    # config1 = HFSSSimulationConfig(jobid="high_prio", project_path="design1.aedt")
-    # await manager.submit_job(config1, priority=10)  # High priority
-    #
-    # config2 = HFSSSimulationConfig(jobid="normal_prio", project_path="design2.aedt")
-    # await manager.submit_job(config2, priority=0)  # Normal priority
-    #
-    # config3 = HFSSSimulationConfig(jobid="low_prio", project_path="design3.aedt")
-    # await manager.submit_job(config3, priority=-5)  # Low priority
-
-
 # --------------------------------------------------------------------------- #
 #  SchedulerManager  –  live SLURM / LSF introspection
 # --------------------------------------------------------------------------- #
 class SchedulerManager:
     """
-    Thin async wrapper around ``sinfo`` (SLURM) and ``bhosts`` / ``bqueues``
-    (LSF) that returns:
+    Thin async wrapper around cluster scheduler commands.
 
-    * List of partitions / queues
+    Provides live introspection of SLURM and LSF clusters including:
+
+    * List of partitions / queues with resource information
     * Per-partition: total & free cores, total & free memory
     * Global job table (running, pending, etc.)
 
     All methods are **coroutines** so they can be awaited from the REST layer
     without blocking the event-loop.
+
+    Parameters
+    ----------
+    scheduler_type : SchedulerType
+        Type of scheduler (SLURM or LSF only)
+
+    Raises
+    ------
+    ValueError
+        If scheduler_type is not SLURM or LSF
     """
 
     def __init__(self, scheduler_type: SchedulerType):
@@ -1070,23 +1268,24 @@ class SchedulerManager:
             raise ValueError("Only SLURM and LSF are supported")
         self.scheduler_type = scheduler_type
 
-    # --------------------------------------------------------------------- #
-    #  Public high-level API
-    # --------------------------------------------------------------------- #
     async def get_partitions(self) -> List[Dict[str, Any]]:
         """
-        Return a list with one dict per partition / queue::
+        Get list of scheduler partitions/queues with resource information.
 
-            [
-                {
-                    "name": "compute",
-                    "cores_total": 800,
-                    "cores_used": 120,
-                    "memory_total_gb": 3200.0,
-                    "memory_used_gb": 400.0,
-                },
-                ...,
-            ]
+        Returns
+        -------
+        List[Dict[str, Any]]
+            List of partition dictionaries with keys:
+            - name: Partition/queue name
+            - cores_total: Total available cores
+            - cores_used: Currently used cores
+            - memory_total_gb: Total memory in GB
+            - memory_used_gb: Currently used memory in GB
+
+        Raises
+        ------
+        RuntimeError
+            If scheduler command execution fails
         """
         if self.scheduler_type == SchedulerType.SLURM:
             return await self._slurm_partitions()
@@ -1095,30 +1294,32 @@ class SchedulerManager:
 
     async def get_jobs(self) -> List[Dict[str, Any]]:
         """
-        Return global job table (all users) with at least::
+        Get global job table (all users).
 
-            [
-                {
-                    "job_id": "12345",
-                    "partition": "compute",
-                    "user": "alice",
-                    "state": "RUNNING",  # or PENDING, COMPLETED, FAILED …
-                    "nodes": 2,
-                    "cpus": 64,
-                    "memory_gb": 128.0,
-                },
-                ...,
-            ]
+        Returns
+        -------
+        List[Dict[str, Any]]
+            List of job dictionaries with keys:
+            - job_id: Scheduler job ID
+            - partition: Partition/queue name
+            - user: Job owner username
+            - state: Job state (RUNNING, PENDING, etc.)
+            - nodes: Number of nodes allocated
+            - cpus: Number of CPUs allocated
+            - memory_gb: Memory allocated in GB
+
+        Raises
+        ------
+        RuntimeError
+            If scheduler command execution fails
         """
         if self.scheduler_type == SchedulerType.SLURM:
             return await self._slurm_jobs()
         else:
             return await self._lsf_jobs()
 
-    # --------------------------------------------------------------------- #
-    #  SLURM helpers
-    # --------------------------------------------------------------------- #
     async def _slurm_partitions(self) -> List[Dict[str, Any]]:
+        """Parse SLURM partition information from sinfo command."""
         cmd = ["sinfo", "-h", "-o", "%R %F %C %m"]  # PARTITION NODES(A/I/O/T) CPUS(A/I/O/T) MEMORY
         stdout = await self._run(cmd)
         out = []
@@ -1143,9 +1344,7 @@ class SchedulerManager:
         return out
 
     async def _slurm_jobs(self) -> List[Dict[str, Any]]:
-        """
-        Parse ``squeue -h -o %i %u %P %T %D %C %m``  →  JOBID USER PARTITION STATE NODES CPUS MEMORY
-        """
+        """Parse SLURM job information from squeue command."""
         cmd = ["squeue", "-h", "-o", "%i %u %P %T %D %C %m"]
         stdout = await self._run(cmd)
         jobs = []
@@ -1179,10 +1378,8 @@ class SchedulerManager:
             )
         return jobs
 
-    # --------------------------------------------------------------------- #
-    #  LSF helpers
-    # --------------------------------------------------------------------- #
     async def _lsf_partitions(self) -> List[Dict[str, Any]]:
+        """Parse LSF queue information from bqueues and bhosts commands."""
         # 1. queues → max slots
         qraw = await self._run(["bqueues", "-o", "queue_name:20 max:10 num_proc:10", "-noheader"])
         qinfo = {}
@@ -1212,9 +1409,7 @@ class SchedulerManager:
         return [{"name": q, **qinfo[q]} for q in qinfo]
 
     async def _lsf_jobs(self) -> List[Dict[str, Any]]:
-        """
-        Parse ``bjobs -u all -o 'jobid user queue stat slots mem' -noheader``
-        """
+        """Parse LSF job information from bjobs command."""
         cmd = ["bjobs", "-u", "all", "-o", "jobid:10 user:15 queue:15 stat:10 slots:10 mem:10", "-noheader"]
         stdout = await self._run(cmd)
         jobs = []
@@ -1235,13 +1430,24 @@ class SchedulerManager:
             )
         return jobs
 
-    # --------------------------------------------------------------------- #
-    #  Generic helper
-    # --------------------------------------------------------------------- #
     async def _run(self, cmd: List[str]) -> str:
         """
-        Run ``cmd`` via asyncio subprocess and return stripped stdout.
-        Raises RuntimeError on non-zero exit.
+        Run scheduler command and return output.
+
+        Parameters
+        ----------
+        cmd : List[str]
+            Command and arguments to execute
+
+        Returns
+        -------
+        str
+            Command stdout as string
+
+        Raises
+        ------
+        RuntimeError
+            If command returns non-zero exit code
         """
         proc = await asyncio.create_subprocess_exec(
             *cmd,
@@ -1252,6 +1458,35 @@ class SchedulerManager:
         if proc.returncode != 0:
             raise RuntimeError(f"{' '.join(cmd)} failed: {stderr.decode()}")
         return stdout.decode().strip()
+
+
+# Usage example
+async def main():
+    """
+    Example usage of the JobManager class.
+
+    This demonstrates how to create a job manager with custom resource
+    limits and submit jobs with different priorities.
+    """
+    # Create job manager with custom resource limits
+    resource_limits = ResourceLimits(
+        max_concurrent_jobs=3,  # Allow 3 simultaneous jobs
+        max_cpu_percent=75.0,  # Don't start jobs if CPU > 75%
+        min_memory_gb=4.0,  # Require 4GB free memory
+        min_disk_gb=20.0,  # Require 20GB free disk space
+    )
+
+    manager = JobManager(resource_limits)
+
+    # Submit jobs with different priorities
+    # config1 = HFSSSimulationConfig(jobid="high_prio", project_path="design1.aedt")
+    # await manager.submit_job(config1, priority=10)  # High priority
+    #
+    # config2 = HFSSSimulationConfig(jobid="normal_prio", project_path="design2.aedt")
+    # await manager.submit_job(config2, priority=0)  # Normal priority
+    #
+    # config3 = HFSSSimulationConfig(jobid="low_prio", project_path="design3.aedt")
+    # await manager.submit_job(config3, priority=-5)  # Low priority
 
 
 if __name__ == "__main__":
