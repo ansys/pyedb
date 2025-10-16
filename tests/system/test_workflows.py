@@ -40,11 +40,7 @@ class TestClass:
         self.local_scratch = local_scratch
 
     def test_hfss_log_parser(self, edb_examples):
-        from pyedb.workflows.log_parser.hfss_log_parser import HFSSLogParser
-
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Failing on GRPC")
-    def test_hfss_auto_setup(self, edb_examples):
-        from pyedb.workflows.sipi.hfss_auto_configuration import create_hfss_auto_configuration
+        from pyedb.workflows.utilities.hfss_log_parser import HFSSLogParser
 
         log_file = edb_examples.get_log_file_example()
         log_parser = HFSSLogParser(log_file).parse()
@@ -65,6 +61,11 @@ class TestClass:
         assert log_parser.is_converged()
         assert log_parser.adaptive_passes()
         assert log_parser.memory_on_convergence() == 263
+
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Failing on GRPC")
+    def test_hfss_auto_setup(self, edb_examples):
+        from pyedb.workflows.sipi.hfss_auto_configuration import create_hfss_auto_configuration
+
         edbapp = edb_examples.get_si_verse()
         hfss_auto_config = create_hfss_auto_configuration(source_edb_path=edbapp.edbpath, edb=edbapp)
         hfss_auto_config.grpc = edbapp.grpc
