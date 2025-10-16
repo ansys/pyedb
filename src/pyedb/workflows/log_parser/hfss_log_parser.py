@@ -276,7 +276,6 @@ class AdaptiveBlockParser(BlockParser):
             # ---- global convergence flag ----------------------------
             if re.search(r"Adaptive\s+Passes\s+converged", line, re.I):
                 adaptive_converged_line_found = True
-                print(f"DEBUG: found convergence flag on line {lineno}: {line.strip()}")
 
         # ---- final decision ----------------------------------------
         if adaptive_converged_line_found and last_converge_pass is not None:
