@@ -910,30 +910,29 @@ class JobManager:
         """
         logger.info("✅ Job processing loop started.")
         while not self._shutdown:
-            while not self._shutdown:
-                # --- START DEBUG LOGGING ---
-                can_start = self.job_pool.can_start_job(self.resource_monitor)
-                running_count = len(self.job_pool.running_jobs)
-                max_concurrent = self.resource_limits.max_concurrent_jobs
+            # --- START DEBUG LOGGING ---
+            can_start = self.job_pool.can_start_job(self.resource_monitor)
+            running_count = len(self.job_pool.running_jobs)
+            max_concurrent = self.resource_limits.max_concurrent_jobs
 
-                logger.info(
-                    f"Checking conditions: can_start={can_start}, "
-                    f"running_jobs={running_count}, max_concurrent={max_concurrent}"
-                )
-                # --- END DEBUG LOGGING ---
+            logger.info(
+                f"Checking conditions: can_start={can_start}, "
+                f"running_jobs={running_count}, max_concurrent={max_concurrent}"
+            )
+            # --- END DEBUG LOGGING ---
 
-                if can_start:
-                    next_job_id = self.job_pool.get_next_job()
-                    if next_job_id:
-                        logger.info(f"Dequeued job {next_job_id}. Starting...")
-                        self.job_pool.running_jobs.add(next_job_id)
-                        asyncio.create_task(self._process_single_job(next_job_id))
-                    else:
-                        logger.info("Queue is empty, sleeping.")
-                        await asyncio.sleep(1)
+            if can_start:
+                next_job_id = self.job_pool.get_next_job()
+                if next_job_id:
+                    logger.info(f"Dequeued job {next_job_id}. Starting...")
+                    self.job_pool.running_jobs.add(next_job_id)
+                    asyncio.create_task(self._process_single_job(next_job_id))
                 else:
-                    logger.warning("Cannot start new job, waiting...")
-                    await asyncio.sleep(5)
+                    logger.info("Queue is empty, sleeping.")
+                    await asyncio.sleep(1)
+            else:
+                logger.warning("Cannot start new job, waiting...")
+                await asyncio.sleep(5)
 
             await asyncio.sleep(0.2)
 
