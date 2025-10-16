@@ -1,4 +1,26 @@
-# ruff: noqa: E501  (line-length checked by doc-style, not linter)
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
 """
 ``job_submission`` --- Cross-platform HFSS simulation runner with enterprise scheduler support
 ==============================================================================================
@@ -425,6 +447,39 @@ class HFSSSimulationConfig(BaseModel):
         # Validate scheduler options
         self.scheduler_options.validate_fields()
 
+    def _build_ansys_command_for_launcher(self) -> str:
+        """
+        Build the *inner* ANSYS command that will be executed by srun.
+        Quotes are chosen so that the string survives one shell expansion
+        performed by sbatch.
+        """
+        # 1. executable
+        ansys_root = os.path.dirname(self.ansys_edt_path)
+        cmd_parts = [shlex.quote(self.ansys_edt_path)]
+
+        # 2. mandatory HFSS flags
+        cmd_parts.extend(["-distributed", f"-machinelist numcores={self._num_cores_for_scheduler()}"])
+        if self.auto:
+            cmd_parts.append("-auto")
+        if self.non_graphical:
+            cmd_parts.append("-ng")
+        if self.monitor:
+            cmd_parts.append("-monitor")
+
+        # 3. batch options  (single-quote protected for later sbatch)
+        batch_opts = self.generate_batch_options_string()  # already 'k'='v' 'k2'='v2'
+        cmd_parts.extend(["-batchoptions", batch_opts])
+
+        # 4. project & design
+        design_str = self.generate_design_string()
+        if self.design_name:
+            cmd_parts.extend(["-batchsolve", design_str, shlex.quote(self.project_path)])
+        else:
+            cmd_parts.extend(["-batchsolve", shlex.quote(self.project_path)])
+
+        # join to one string that srun will receive
+        return " ".join(cmd_parts)
+
     def generate_machinelist_string(self) -> str:
         """
         Return HFSS ``-machinelist`` argument.
@@ -468,61 +523,64 @@ class HFSSSimulationConfig(BaseModel):
 
     def generate_slurm_script(self) -> str:
         """
-        Return SLURM batch script (**not** written to disk).
-
-        Returns
-        -------
-        str
-            Multi-line string.
+        Returns the *single* sbatch command line (no here-doc, no file).
+        This string is ready for subprocess.run([...], shell=False)
         """
         opts = self.scheduler_options
-        script = [
-            "#!/bin/bash",
-            f"#SBATCH --job-name={self.jobid}",
-            f"#SBATCH --output={self.jobid}.%j.out",
-            f"#SBATCH --error={self.jobid}.%j.err",
-            f"#SBATCH --partition={opts.queue}",
-            f"#SBATCH --time={opts.time}",
-            f"#SBATCH --nodes={opts.nodes}",
-            f"#SBATCH --ntasks-per-node={opts.tasks_per_node}",
-            f"#SBATCH --cpus-per-task={opts.cores_per_node}",
-        ]
+        ansys_root = os.path.dirname(self.ansys_edt_path)
+        launcher = os.path.join(ansys_root, "schedulers/scripts/utils/ansysedt_launcher.sh")
+        wrapper = os.path.join(ansys_root, "schedulers/scripts/utils/slurm_srun_wrapper.sh")
+        common = os.path.join(ansys_root, "common")
 
-        # Optional SLURM directives
+        # build the inner ANSYS command
+        ansys_cmd = self._build_ansys_command_for_launcher()
+
+        # base sbatch
+        sbatch_parts = [
+            "sbatch",
+            "--export=NONE",
+            f"--chdir={shlex.quote(os.path.dirname(os.path.abspath(self.project_path)))}",
+            f"--job-name={self.jobid}",
+            f"--partition={opts.queue}",
+            f"--nodes={opts.nodes}",
+            f"--ntasks={self._num_cores_for_scheduler()}",
+        ]
         if opts.memory:
-            script.append(f"#SBATCH --mem={opts.memory}")
+            sbatch_parts.append(f"--mem={opts.memory}")
         if opts.account:
-            script.append(f"#SBATCH --account={opts.account}")
+            sbatch_parts.append(f"--account={opts.account}")
         if opts.reservation:
-            script.append(f"#SBATCH --reservation={opts.reservation}")
+            sbatch_parts.append(f"--reservation={opts.reservation}")
         if opts.qos:
-            script.append(f"#SBATCH --qos={opts.qos}")
+            sbatch_parts.append(f"--qos={opts.qos}")
         if opts.constraints:
-            script.append(f"#SBATCH --constraint={opts.constraints}")
+            sbatch_parts.append(f"--constraint={opts.constraints}")
         if opts.exclusive:
-            script.append("#SBATCH --exclusive")
+            sbatch_parts.append("--exclusive")
         if opts.gpus > 0:
             gpu_type = f":{opts.gpu_type}" if opts.gpu_type else ""
-            script.append(f"#SBATCH --gpus={opts.gpus}{gpu_type}")
+            sbatch_parts.append(f"--gpus={opts.gpus}{gpu_type}")
 
-        # Script body
-        script.extend(
+        # environment variables + srun
+        env_vars = " ".join(
             [
-                "",
-                "# Load ANSYS module and set up environment",
-                "module load ansys",
-                "export ANSYS_LICENSE_SERVER=1055@license-server",
-                "",
-                "# Run HFSS simulation",
-                self.generate_command_string(),
-                "",
-                "# Simulation completion handling",
-                "echo 'HFSS simulation completed at $(date)'",
-                "exit 0",
+                "/usr/bin/env",
+                f"ANSYSEM_GENERIC_MPI_WRAPPER={wrapper}",
+                f"ANSYSEM_COMMON_PREFIX={common}",
+                "ANSOFT_PASS_DEBUG_ENV_TO_REMOTE_ENGINES=1",
+                "srun",
+                "--overcommit",
+                "--export=ALL",
+                "-n 1 -N 1",
+                "--cpu-bind=none",
+                "--mem-per-cpu=0",
+                "--overlap",
+                ansys_cmd,
             ]
         )
 
-        return "\n".join(script)
+        # final command:  sbatch ...  launcher.sh  env ... srun ... ansys_cmd
+        return " ".join(sbatch_parts + [launcher, env_vars])
 
     def generate_lsf_script(self) -> str:
         """
