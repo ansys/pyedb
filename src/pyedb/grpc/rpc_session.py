@@ -156,7 +156,7 @@ class RpcSession:
             try:
                 if "edb_rpc" in p.info["name"].lower():
                     proc.append(p.info["pid"])
-            except (psutil.NoSuchProcess, psutil.AccessDenied):
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 continue
 
         time.sleep(latency_delay)

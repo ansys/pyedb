@@ -950,7 +950,7 @@ class HFSSSimulationConfig(BaseModel):
 
         if self.distributed:
             command.extend(["-distributed"])
-            command.extend(["-distributed"])
+            # Removed duplicate -distributed flag
             if self.scheduler_type != SchedulerType.NONE:
                 total_cores = self._num_cores_for_scheduler()
                 command.extend(["-machinelist", f"numcores={total_cores}"])
