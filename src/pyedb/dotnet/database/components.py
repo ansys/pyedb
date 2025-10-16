@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -961,7 +961,7 @@ class Components(object):
         if not isinstance(port_type, int):
             if port_type == "circuit_port":
                 port_type = SourceType.CircPort
-            elif port_type == "coaxial_port":
+            elif port_type in ["coaxial_port", "coax_port"]:
                 port_type = SourceType.CoaxPort
             elif port_type == "lumped_port":
                 port_type = SourceType.LumpedPort
@@ -1011,49 +1011,47 @@ class Components(object):
                 return False
             pad_params = self._padstack.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
 
-            # If at least one of the solderball arguments is not None, calculate the rest and set solderballs
-            if not (not solder_balls_height and not solder_balls_size and not solder_balls_mid_size):
-                if not solder_balls_height:
-                    solder_balls_height = self.instances[component.GetName()].solder_ball_height
-                if not solder_balls_size:
-                    solder_balls_size = self.instances[component.GetName()].solder_ball_diameter[0]
-                if not solder_balls_mid_size:
-                    solder_balls_mid_size = self.instances[component.GetName()].solder_ball_diameter[1]
+            if not solder_balls_height:
+                solder_balls_height = self.instances[component.GetName()].solder_ball_height
+            if not solder_balls_size:
+                solder_balls_size = self.instances[component.GetName()].solder_ball_diameter[0]
+            if not solder_balls_mid_size:
+                solder_balls_mid_size = self.instances[component.GetName()].solder_ball_diameter[1]
 
-                if not pad_params[0] == 7:
-                    if not solder_balls_size:  # pragma no cover
-                        sball_diam = min([self._pedb.edb_value(val).ToDouble() for val in pad_params[1]])
-                        sball_mid_diam = sball_diam
-                    else:  # pragma no cover
-                        sball_diam = solder_balls_size
-                        if solder_balls_mid_size:
-                            sball_mid_diam = solder_balls_mid_size
-                        else:
-                            sball_mid_diam = solder_balls_size
-                    if not solder_balls_height:  # pragma no cover
-                        solder_balls_height = 2 * sball_diam / 3
+            if not pad_params[0] == 7:
+                if not solder_balls_size:  # pragma no cover
+                    sball_diam = min([self._pedb.edb_value(val).ToDouble() for val in pad_params[1]])
+                    sball_mid_diam = sball_diam
                 else:  # pragma no cover
-                    if not solder_balls_size:
-                        bbox = pad_params[1]
-                        sball_diam = min([abs(bbox[2] - bbox[0]), abs(bbox[3] - bbox[1])]) * 0.8
-                    else:
-                        sball_diam = solder_balls_size
-                    if not solder_balls_height:
-                        solder_balls_height = 2 * sball_diam / 3
+                    sball_diam = solder_balls_size
                     if solder_balls_mid_size:
                         sball_mid_diam = solder_balls_mid_size
                     else:
-                        sball_mid_diam = sball_diam
-                sball_shape = "Cylinder"
-                if not sball_diam == sball_mid_diam:
-                    sball_shape = "Spheroid"
-                self.set_solder_ball(
-                    component=component,
-                    sball_height=solder_balls_height,
-                    sball_diam=sball_diam,
-                    sball_mid_diam=sball_mid_diam,
-                    shape=sball_shape,
-                )
+                        sball_mid_diam = solder_balls_size
+                if not solder_balls_height:  # pragma no cover
+                    solder_balls_height = 2 * sball_diam / 3
+            else:  # pragma no cover
+                if not solder_balls_size:
+                    bbox = pad_params[1]
+                    sball_diam = min([abs(bbox[2] - bbox[0]), abs(bbox[3] - bbox[1])]) * 0.8
+                else:
+                    sball_diam = solder_balls_size
+                if not solder_balls_height:
+                    solder_balls_height = 2 * sball_diam / 3
+                if solder_balls_mid_size:
+                    sball_mid_diam = solder_balls_mid_size
+                else:
+                    sball_mid_diam = sball_diam
+            sball_shape = "Cylinder"
+            if not sball_diam == sball_mid_diam:
+                sball_shape = "Spheroid"
+            self.set_solder_ball(
+                component=component,
+                sball_height=solder_balls_height,
+                sball_diam=sball_diam,
+                sball_mid_diam=sball_mid_diam,
+                shape=sball_shape,
+            )
 
             for pin in cmp_pins:
                 self._padstack.create_coax_port(padstackinstance=pin, name=port_name)
@@ -1518,8 +1516,6 @@ class Components(object):
                 if componentDefinitionPin.IsNull():
                     self._logger.error("Failed to create component definition pin {}-{}".format(name, pin.GetName()))
                     return None
-        else:
-            self._logger.warning("Found existing component definition for footprint {}".format(name))
         return componentDefinition
 
     def create_rlc_component(
@@ -2378,7 +2374,11 @@ class Components(object):
                     continue
                 part_name = comp.partname
                 comp_type = comp.type
-                if comp_type == "Resistor":
+                if not comp.model:
+                    print("")
+                elif comp.model.model_type != "PinPairModel":
+                    value = ""
+                elif comp_type == "Resistor":
                     value = str(comp.res_value)
                 elif comp_type == "Capacitor":
                     value = str(comp.cap_value)

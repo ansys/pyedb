@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -486,22 +486,22 @@ class SourceExcitation:
 
     def create_port_on_component(
         self,
-        component: Union[str, List[str]],
+        component: Union[str, Component],
         net_list: Union[str, List[str]],
-        port_type: SourceType,
+        port_type: str = "coax_port",
         do_pingroup: Optional[bool] = True,
         reference_net: Optional[str] = None,
         port_name: Optional[List[str]] = None,
-        solder_balls_height: Optional[float] = None,
-        solder_balls_size: Optional[float] = None,
-        solder_balls_mid_size: Optional[float] = None,
+        solder_balls_height: Union[float, str] = None,
+        solder_balls_size: Union[float, str] = None,
+        solder_balls_mid_size: Union[float, str] = None,
         extend_reference_pins_outside_component: Optional[bool] = False,
     ) -> List[str]:
         """Create ports on a component.
 
         Parameters
         ----------
-        component : str or  self._pedb.component
+        component : str or Component
             EDB component or str component name.
         net_list : str or list of string.
             List of nets where ports must be created on the component.
@@ -565,8 +565,11 @@ class SourceExcitation:
                     net_name = net.name
                     if net_name:
                         net_list.append(net_name)
-                except:
-                    pass
+                except Exception as e:
+                    self._logger.warning(
+                        f"A(n) {type(e).__name__} error occurred while attempting to append 'name' "
+                        f"of net {net} to list of nets {net_list}: {str(e)}"
+                    )
         if isinstance(reference_net, str) or isinstance(reference_net, Net):
             reference_net = [reference_net]
         _reference_net = [ref.name for ref in reference_net if isinstance(ref, Net)]
@@ -2658,7 +2661,7 @@ class SourceExcitation:
             for __pin in pins_name:
                 if __pin in pins:
                     pin = pins[__pin]
-                    term_name = f"{pin.component.name}_{pin.net.name}_{pin.component}"
+                    term_name = f"{pin.component.name}_{pin.net.name}_{pin.component.name}"
                     start_layer, stop_layer = pin.get_layer_range()
                     if start_layer:
                         positive_terminal = PadstackInstanceTerminal.create(

@@ -7,4 +7,6 @@ This section describes PyEDB workflows features.
    :maxdepth: 2
 
    job_manager/index
-   log_parser/index
+   sipi/index
+   utilities/index
+

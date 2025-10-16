@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -116,101 +116,6 @@ class TestClass(BaseTestClass):
                 if p == "thermal_modifier":
                     continue
                 assert value == target_mat[p]
-        edbapp.close(terminate_rpc_session=False)
-
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
-    def test_01_setups(self, edb_examples):
-        data = {
-            "setups": [
-                {
-                    "name": "hfss_setup_1",
-                    "type": "hfss",
-                    "f_adapt": "5GHz",
-                    "max_num_passes": 10,
-                    "max_mag_delta_s": 0.02,
-                    "mesh_operations": [
-                        {
-                            "name": "mop_1",
-                            "type": "length",
-                            "max_length": "3mm",
-                            "max_elements": 100,
-                            "restrict_length": True,
-                            "refine_inside": False,
-                            "nets_layers_list": {"GND": ["1_Top", "16_Bottom"]},
-                        }
-                    ],
-                },
-            ]
-        }
-
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        for setup in data["setups"]:
-            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
-            for p, value in setup.items():
-                if p == "max_num_passes":
-                    assert value == int(target[p])
-                elif p == "max_mag_delta_s":
-                    assert value == float(target[p])
-                elif p == "freq_sweep":
-                    pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
-                elif p == "mesh_operations":
-                    for mop in value:
-                        target_mop = [i for i in target["mesh_operations"] if i["name"] == mop["name"]][0]
-                        for mop_p_name, mop_value in mop.items():
-                            assert mop_value == target_mop[mop_p_name]
-                else:
-                    assert value == target[p]
-        edbapp.close(terminate_rpc_session=False)
-
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
-    def test_01a_setups_frequency_sweeps(self, edb_examples):
-        data = {
-            "setups": [
-                {
-                    "name": "hfss_setup_1",
-                    "type": "hfss",
-                    "f_adapt": "5GHz",
-                    "max_num_passes": 10,
-                    "max_mag_delta_s": 0.02,
-                    "freq_sweep": [
-                        {
-                            "name": "sweep1",
-                            "type": "interpolation",
-                            "frequencies": [
-                                {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"},
-                                {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
-                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11},
-                            ],
-                        },
-                        {
-                            "name": "sweep2",
-                            "type": "discrete",
-                            "frequencies": [
-                                "LIN 0.05GHz 0.2GHz 0.01GHz",
-                                "DEC 1e-06GHz 0.0001GHz 10",
-                                "LINC 0.01GHz 0.02GHz 11",
-                            ],
-                        },
-                    ],
-                },
-            ]
-        }
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        setup = data_from_db["setups"][0]
-        assert setup["name"] == "hfss_setup_1"
-        sweep1 = setup["freq_sweep"][0]
-        assert sweep1["name"] == "sweep1"
-        assert sweep1["frequencies"] == [
-            "LIN 0.05GHz 0.2GHz 0.01GHz",
-            "DEC 1e-06GHz 0.0001GHz 10",
-            "LINC 0.01GHz 0.02GHz 11",
-        ]
-        sweep2 = setup["freq_sweep"][1]
-        assert sweep2["type"] == "discrete"
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
@@ -1672,4 +1577,139 @@ class TestClassTerminals(BaseTestClass):
         port1 = edbapp.ports["bundle_terminal"]
         assert port1.terminals[0].name == "bundle_terminal:T1"
         assert port1.terminals[1].name == "bundle_terminal:T2"
+        edbapp.close(terminate_rpc_session=False)
+
+
+@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+class TestClassSetups(BaseTestClass):
+    @pytest.fixture(autouse=True)
+    def init(self, edb_examples):
+        """init runs before each test."""
+        self.terminal1 = {
+            "name": "terminal1",
+            "impedance": 1,
+            "is_circuit_port": False,
+            "boundary_type": "PortBoundary",
+            "hfss_type": "Wave",
+            "terminal_type": "padstack_instance",
+            "padstack_instance": "U7-M7",
+            "layer": None,
+        }
+
+    def test_01_setups(self, edb_examples):
+        data = {
+            "setups": [
+                {
+                    "name": "hfss_setup_1",
+                    "type": "hfss",
+                    "f_adapt": "5GHz",
+                    "max_num_passes": 10,
+                    "max_mag_delta_s": 0.02,
+                    "mesh_operations": [
+                        {
+                            "name": "mop_1",
+                            "type": "length",
+                            "max_length": "3mm",
+                            "max_elements": 100,
+                            "restrict_length": True,
+                            "refine_inside": False,
+                            "nets_layers_list": {"GND": ["1_Top", "16_Bottom"]},
+                        }
+                    ],
+                },
+            ]
+        }
+
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        for setup in data["setups"]:
+            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
+            for p, value in setup.items():
+                if p == "max_num_passes":
+                    assert value == int(target[p])
+                elif p == "max_mag_delta_s":
+                    assert value == float(target[p])
+                elif p == "freq_sweep":
+                    pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
+                elif p == "mesh_operations":
+                    for mop in value:
+                        target_mop = [i for i in target["mesh_operations"] if i["name"] == mop["name"]][0]
+                        for mop_p_name, mop_value in mop.items():
+                            assert mop_value == target_mop[mop_p_name]
+                else:
+                    assert value == target[p]
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_auto_mesh_operation(self, edb_examples):
+        data = {
+            "terminals": [self.terminal1],
+            "setups": [
+                {
+                    "name": "hfss_setup_1",
+                    "type": "hfss",
+                    "f_adapt": "5GHz",
+                    "max_num_passes": 10,
+                    "max_mag_delta_s": 0.02,
+                    "auto_mesh_operation": {
+                        "trace_ratio_seeding": 3,
+                        "signal_via_side_number": 12,
+                        "power_ground_via_side_number": 6,
+                    },
+                },
+            ],
+        }
+
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        assert data_from_db["setups"][0]["mesh_operations"][0]["name"] == "hfss_setup_1_AutoMeshOp"
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_01a_setups_frequency_sweeps(self, edb_examples):
+        data = {
+            "setups": [
+                {
+                    "name": "hfss_setup_1",
+                    "type": "hfss",
+                    "f_adapt": "5GHz",
+                    "max_num_passes": 10,
+                    "max_mag_delta_s": 0.02,
+                    "freq_sweep": [
+                        {
+                            "name": "sweep1",
+                            "type": "interpolation",
+                            "frequencies": [
+                                {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"},
+                                {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
+                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11},
+                            ],
+                        },
+                        {
+                            "name": "sweep2",
+                            "type": "discrete",
+                            "frequencies": [
+                                "LIN 0.05GHz 0.2GHz 0.01GHz",
+                                "DEC 1e-06GHz 0.0001GHz 10",
+                                "LINC 0.01GHz 0.02GHz 11",
+                            ],
+                        },
+                    ],
+                },
+            ]
+        }
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        setup = data_from_db["setups"][0]
+        assert setup["name"] == "hfss_setup_1"
+        sweep1 = setup["freq_sweep"][0]
+        assert sweep1["name"] == "sweep1"
+        assert sweep1["frequencies"] == [
+            "LIN 0.05GHz 0.2GHz 0.01GHz",
+            "DEC 1e-06GHz 0.0001GHz 10",
+            "LINC 0.01GHz 0.02GHz 11",
+        ]
+        sweep2 = setup["freq_sweep"][1]
+        assert sweep2["type"] == "discrete"
         edbapp.close(terminate_rpc_session=False)

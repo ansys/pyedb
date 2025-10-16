@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -262,7 +262,7 @@ class Step(object):
                 start_layer, stop_layer = padstack_instance.get_layer_range()
             for layer_name in self.layer_ranges(start_layer, stop_layer):
                 if layer_name not in layers:
-                    layer_feature = LayerFeature(self._ipc)
+                    layer_feature = LayerFeature(self._ipc, self._pedb)
                     layer_feature.layer_name = layer_name
                     # layer_feature.color = self._ipc._pedb.stackup[layer_name].color
                     layer_feature.color = layer_colors[layer_name]

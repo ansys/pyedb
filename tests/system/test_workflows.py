@@ -42,6 +42,10 @@ class TestClass:
     def test_hfss_log_parser(self, edb_examples):
         from pyedb.workflows.log_parser.hfss_log_parser import HFSSLogParser
 
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Failing on GRPC")
+    def test_hfss_auto_setup(self, edb_examples):
+        from pyedb.workflows.sipi.hfss_auto_configuration import create_hfss_auto_configuration
+
         log_file = edb_examples.get_log_file_example()
         log_parser = HFSSLogParser(log_file).parse()
         for nr, line in enumerate(Path(log_file).read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
@@ -61,3 +65,13 @@ class TestClass:
         assert log_parser.is_converged()
         assert log_parser.adaptive_passes()
         assert log_parser.memory_on_convergence() == 263
+        edbapp = edb_examples.get_si_verse()
+        hfss_auto_config = create_hfss_auto_configuration(source_edb_path=edbapp.edbpath, edb=edbapp)
+        hfss_auto_config.grpc = edbapp.grpc
+        hfss_auto_config.ansys_version = edbapp.version
+        hfss_auto_config.auto_populate_batch_groups(["PCIe_Gen4_RX", "PCIe_Gen4_TX"])
+        hfss_auto_config.add_simulation_setup(
+            meshing_frequency="10GHz", start_frequency="0GHz", stop_frequency="40GHz", frequency_step="0.05GHz"
+        )
+        hfss_auto_config.create_projects()
+        assert sum(1 for item in Path(hfss_auto_config.batch_group_folder).iterdir() if item.is_dir()) == 2

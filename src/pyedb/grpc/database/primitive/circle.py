@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -21,17 +21,56 @@
 # SOFTWARE.
 
 
+from typing import Union
+
 from ansys.edb.core.primitive.circle import Circle as GrpcCircle
 
+from pyedb.grpc.database.layers.layer import Layer
+from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
 
 class Circle(GrpcCircle, Primitive):
-    def __init__(self, pedb, edb_object):
-        GrpcCircle.__init__(self, edb_object.msg)
-        Primitive.__init__(self, pedb, edb_object)
+    def __init__(self, pedb, edb_object=None):
+        if edb_object:
+            GrpcCircle.__init__(self, edb_object.msg)
+            Primitive.__init__(self, pedb, edb_object)
         self._pedb = pedb
+
+    def create(
+        self,
+        layout=None,
+        layer: Union[str, Layer] = None,
+        net: Union[str, Net, None] = None,
+        center_x: float = None,
+        center_y: float = None,
+        radius: float = 0.0,
+    ):
+        if not layout:
+            layout = self._pedb.active_layout
+        if not layer:
+            raise ValueError("Layer must be provided to create a circle.")
+        if center_x is None or center_y is None:
+            raise ValueError("Center x and y values must be provided to create a circle.")
+        edb_object = GrpcCircle.create(
+            layout=layout,
+            layer=layer,
+            net=net,
+            center_x=Value(center_x),
+            center_y=Value(center_y),
+            radius=Value(radius),
+        )
+        new_circle = Circle(self._pedb, edb_object)
+        GrpcCircle.__init__(self, edb_object.msg)
+        Primitive.__init__(self, self._pedb, edb_object)
+        self._pedb.modeler._add_primitive(new_circle)
+        return new_circle
+
+    def delete(self):
+        """Delete the circle from the layout."""
+        self._pedb.modeler._remove_primitive(self)
+        super().delete()
 
     def get_parameters(self) -> tuple[float, float, float]:
         """Returns parameters.

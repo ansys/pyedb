@@ -1,31 +1,38 @@
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import os
-import warnings
 
-try:
-    import numpy  # noqa: F401
-except ImportError:
-    warnings.warn(
-        "The NumPy module is required to run some functionalities of PostProcess.\n"
-        "Install with \n\npip install numpy\n\nRequires CPython."
-    )
-try:
-    from matplotlib.patches import PathPatch
-    from matplotlib.path import Path
+from matplotlib.patches import PathPatch
+from matplotlib.path import Path
+import numpy  # noqa: F401
 
-    # Use matplotlib agg backend (non-interactive) when the CI is running.
-    if bool(int(os.getenv("PYEDB_CI_NO_DISPLAY", "0"))):  # pragma: no cover
-        import matplotlib
+# Use matplotlib agg backend (non-interactive) when the CI is running.
+if bool(int(os.getenv("PYEDB_CI_NO_DISPLAY", "0"))):  # pragma: no cover
+    import matplotlib
 
-        matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
+    matplotlib.use("Agg")
 
-except ImportError:
-    warnings.warn(
-        "The Matplotlib module is required to run some functionalities of PostProcess.\n"
-        "Install with \n\npip install matplotlib\n\nRequires CPython."
-    )
-except:
-    pass
+import matplotlib.pyplot as plt
 
 
 def plot_matplotlib(

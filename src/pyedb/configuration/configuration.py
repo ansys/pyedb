@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -132,7 +132,6 @@ class Configuration:
         self.__apply_with_logging("Updating components", self.cfg_data.components.apply)
         self.__apply_with_logging("Creating pin groups", self.cfg_data.pin_groups.apply)
         self.__apply_with_logging("Placing sources", self.cfg_data.sources.apply)
-        self.__apply_with_logging("Creating setups", self.cfg_data.setups.apply)
 
         self.__apply_with_logging("Applying materials", self.apply_materials)
         self.__apply_with_logging("Updating stackup", self.apply_stackup)
@@ -151,6 +150,7 @@ class Configuration:
         self.apply_terminals()
         self.__apply_with_logging("Placing probes", self.cfg_data.probes.apply)
         self.apply_operations()
+        self.cfg_data.setups.apply()
 
         return True
 
@@ -249,9 +249,10 @@ class Configuration:
                 c.pyedb_obj = obj
                 c.set_parameters_to_edb()
 
-        primitives = self._pedb.layout.find_primitive(**modeler.primitives_to_delete)
-        for i in primitives:
-            i.delete()
+        if len([i for i in modeler.primitives_to_delete.values() if len(i) > 0]):
+            primitives = self._pedb.layout.find_primitive(**modeler.primitives_to_delete)
+            for i in primitives:
+                i.delete()
 
     def apply_variables(self):
         """Set variables into database."""

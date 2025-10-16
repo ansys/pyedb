@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -60,12 +60,12 @@ from itertools import combinations
 import os
 import re
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 import tempfile
 import time
 import traceback
-from typing import Dict, List, Union
+from typing import Dict, List, Tuple, Union
 import warnings
 from zipfile import ZipFile as zpf
 
@@ -129,13 +129,14 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
 from pyedb.grpc.database.terminal.terminal import Terminal
-from pyedb.grpc.database.utility.constants import get_terminal_supported_boundary_types
 from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
+from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
 from pyedb.workflows.job_manager.backend.job_manager_handler import JobManagerHandler
+from pyedb.workflows.utilities.cutout import Cutout
 
 os.environ["no_proxy"] = "localhost,127.0.0.1"
 
@@ -218,8 +219,8 @@ class Edb(EdbInit):
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
-        self.edbversion = edbversion
-        if not float(self.edbversion) >= 2025.2:
+        self.version = edbversion
+        if not float(self.version) >= 2025.2:
             raise "EDB gRPC is only supported with ANSYS release 2025R2 and higher."
         self.logger.info("Using PyEDB with gRPC as Beta until ANSYS 2025R2 official release.")
         self.isaedtowned = isaedtowned
@@ -375,6 +376,30 @@ class Edb(EdbInit):
     @property
     def ansys_em_path(self):
         return self.base_path
+
+    @staticmethod
+    def number_with_units(value, units=None):
+        """Convert a number to a string with units. If value is a string, it's returned as is.
+
+        Parameters
+        ----------
+        value : float, int, str
+            Input number or string.
+        units : optional
+            Units for formatting. The default is ``None``, which uses ``"meter"``.
+
+        Returns
+        -------
+        str
+           String concatenating the value and unit.
+
+        """
+        if units is None:
+            units = "meter"
+        if isinstance(value, str):
+            return value
+        else:
+            return "{0}{1}".format(value, units)
 
     def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
@@ -633,7 +658,7 @@ class Edb(EdbInit):
             if self.db.is_null:
                 self.logger.warning("Error Opening db")
                 self._active_cell = None
-            self.logger.info(f"Database {os.path.split(self.edbpath)[-1]} Opened in {self.edbversion}")
+            self.logger.info(f"Database {os.path.split(self.edbpath)[-1]} Opened in {self.version}")
             self._active_cell = None
             if self.cellname:
                 for cell in self.active_db.circuit_cells:
@@ -774,6 +799,11 @@ class Edb(EdbInit):
 
         This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         input_file : str
@@ -816,16 +846,16 @@ class Edb(EdbInit):
         self._nets = None
         aedb_name = os.path.splitext(os.path.basename(input_file))[0] + ".aedb"
         if anstranslator_full_path and os.path.exists(anstranslator_full_path):
-            command = anstranslator_full_path
+            executable_path = anstranslator_full_path
         else:
-            command = os.path.join(self.base_path, "anstranslator")
+            executable_path = os.path.join(self.base_path, "anstranslator")
             if is_windows:
-                command += ".exe"
+                executable_path += ".exe"
 
         if not working_dir:
             working_dir = os.path.dirname(input_file)
         cmd_translator = [
-            command,
+            executable_path,
             input_file,
             os.path.join(working_dir, aedb_name),
             "-l={}".format(os.path.join(working_dir, "Translator.log")),
@@ -843,7 +873,10 @@ class Edb(EdbInit):
             cmd_translator.append('-t="{}"'.format(tech_file))
         if layer_filter:
             cmd_translator.append('-f="{}"'.format(layer_filter))
-        subprocess.run(cmd_translator)
+        try:
+            subprocess.run(cmd_translator, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError("An error occurred while translating board file to ``edb.def`` file") from e
         if not os.path.exists(os.path.join(working_dir, aedb_name)):
             self.logger.error("Translator failed to translate.")
             return False
@@ -1353,6 +1386,11 @@ class Edb(EdbInit):
     ):
         """Import GDS file.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         inputGDS : str
@@ -1371,7 +1409,7 @@ class Edb(EdbInit):
             Layer filter file.
         """
         control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(inputGDS)[-1][:-3] + "xml")
-        if float(self.edbversion) < 2024.1:
+        if float(self.version) < 2024.1:
             if not is_linux and tech_file:
                 self.logger.error("Technology files are supported only in Linux. Use control file instead.")
                 return False
@@ -1416,257 +1454,28 @@ class Edb(EdbInit):
                     f'-f="{layer_filter}"',
                 ]
 
-            result = subprocess.run(command, capture_output=True, text=True, shell=True)
-            print(result.stdout)
-            print(command)
+            try:
+                result = subprocess.run(command, capture_output=True, text=True, check=True)  # nosec
+                print(result.stdout)
+                print(command)
+            except subprocess.CalledProcessError as e:  # nosec
+                raise RuntimeError("An error occurred while converting file") from e
             temp_inputGDS = inputGDS.split(".gds")[0]
             self.edbpath = temp_inputGDS + ".aedb"
             return self.open()
 
-    def _create_extent(
-        self,
-        net_signals,
-        extent_type,
-        expansion_size,
-        use_round_corner,
-        use_pyaedt_extent=False,
-        smart_cut=False,
-        reference_list=[],
-        include_pingroups=True,
-        pins_to_preserve=None,
-        inlcude_voids_in_extents=False,
-    ):
-        from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType
-
-        if extent_type in [
-            "Conforming",
-            "Conformal",
-            GrpcExtentType.CONFORMING,
-            1,
-        ]:
-            if use_pyaedt_extent:
-                _poly = self._create_conformal(
-                    net_signals,
-                    expansion_size,
-                    1e-12,
-                    use_round_corner,
-                    expansion_size,
-                    smart_cut,
-                    reference_list,
-                    pins_to_preserve,
-                    inlcude_voids_in_extents=inlcude_voids_in_extents,
-                )
-            else:
-                _poly = self.layout.expanded_extent(
-                    net_signals,
-                    GrpcExtentType.CONFORMING,
-                    expansion_size,
-                    False,
-                    use_round_corner,
-                    1,
-                )
-        elif extent_type in [
-            "Bounding",
-            GrpcExtentType.BOUNDING_BOX,
-            0,
-        ]:
-            _poly = self.layout.expanded_extent(
-                net_signals,
-                GrpcExtentType.BOUNDING_BOX,
-                expansion_size,
-                False,
-                use_round_corner,
-                1,
-            )
-        else:
-            if use_pyaedt_extent:
-                _poly = self._create_convex_hull(
-                    net_signals,
-                    expansion_size,
-                    1e-12,
-                    use_round_corner,
-                    expansion_size,
-                    smart_cut,
-                    reference_list,
-                    pins_to_preserve,
-                )
-            else:
-                _poly = self.layout.expanded_extent(
-                    net_signals,
-                    GrpcExtentType.CONFORMING,
-                    expansion_size,
-                    False,
-                    use_round_corner,
-                    1,
-                )
-                if not isinstance(_poly, list):
-                    _poly = [_poly]
-                _poly = GrpcPolygonData.convex_hull(_poly)
-        return _poly
-
-    def _create_conformal(
-        self,
-        net_signals,
-        expansion_size,
-        tolerance,
-        round_corner,
-        round_extension,
-        smart_cutout=False,
-        reference_list=[],
-        pins_to_preserve=None,
-        inlcude_voids_in_extents=False,
-    ):
-        names = []
-        _polys = []
-        for net in net_signals:
-            names.append(net.name)
-        if pins_to_preserve:
-            insts = self.padstacks.instances
-            for i in pins_to_preserve:
-                p = insts[i].position
-                pos_1 = [i - expansion_size for i in p]
-                pos_2 = [i + expansion_size for i in p]
-                plane = self.modeler.Shape("rectangle", pointA=pos_1, pointB=pos_2)
-                rectangle_data = self.modeler.shape_to_polygon_data(plane)
-                _polys.append(rectangle_data)
-
-        for prim in self.modeler.primitives:
-            if prim is not None and prim.net_name in names:
-                _polys.append(prim)
-        if smart_cutout:
-            objs_data = self._smart_cut(reference_list, expansion_size)
-            _polys.extend(objs_data)
-        k = 0
-        delta = expansion_size / 5
-        while k < 10:
-            unite_polys = []
-            for i in _polys:
-                if "PolygonData" not in str(i):
-                    obj_data = i.polygon_data.expand(
-                        expansion_size,
-                        round_corner,
-                        round_extension,
-                        tolerance,
-                    )
-                else:
-                    obj_data = i.expand(
-                        expansion_size,
-                        round_corner,
-                        round_extension,
-                        tolerance,
-                    )
-                if inlcude_voids_in_extents and "PolygonData" not in str(i) and i.has_voids and obj_data:
-                    for void in i.voids:
-                        void_data = void.polygon_data.expand(
-                            -1 * expansion_size,
-                            round_corner,
-                            round_extension,
-                            tolerance,
-                        )
-                        if void_data:
-                            for v in list(void_data):
-                                obj_data[0].holes.append(v)
-                if obj_data:
-                    if not inlcude_voids_in_extents:
-                        unite_polys.extend(list(obj_data))
-                    else:
-                        voids_poly = []
-                        try:
-                            if i.has_voids:
-                                area = i.area()
-                                for void in i.voids:
-                                    void_polydata = void.polygon_data
-                                    if void_polydata.area() >= 0.05 * area:
-                                        voids_poly.append(void_polydata)
-                                if voids_poly:
-                                    obj_data = obj_data[0].subtract(list(obj_data), voids_poly)
-                        except:
-                            pass
-                        finally:
-                            unite_polys.extend(list(obj_data))
-            _poly_unite = GrpcPolygonData.unite(unite_polys)
-            if len(_poly_unite) == 1:
-                self.logger.info("Correctly computed Extension at first iteration.")
-                return _poly_unite[0]
-            k += 1
-            expansion_size += delta
-        if len(_poly_unite) == 1:
-            self.logger.info(f"Correctly computed Extension in {k} iterations.")
-            return _poly_unite[0]
-        else:
-            self.logger.info("Failed to Correctly computed Extension.")
-            areas = [i.area() for i in _poly_unite]
-            return _poly_unite[areas.index(max(areas))]
-
-    def _smart_cut(self, reference_list=[], expansion_size=1e-12):
-        from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-
-        _polys = []
-        boundary_types = [
-            "port",
-        ]
-        terms = [term for term in self.layout.terminals if term.boundary_type in [0, 3, 4, 7, 8]]
-        locations = []
-        for term in terms:
-            if term.type == "PointTerminal" and term.net.name in reference_list:
-                pd = term.get_parameters()[1]
-                locations.append([Value(pd.x), Value(pd.y)])
-        for point in locations:
-            pointA = GrpcPointData([point[0] - expansion_size, point[1] - expansion_size])
-            pointB = GrpcPointData([point[0] + expansion_size, point[1] + expansion_size])
-            points = [pointA, GrpcPointData([pointB.x, pointA.y]), pointB, GrpcPointData([pointA.x, pointB.y])]
-            _polys.append(GrpcPolygonData(points=points))
-        return _polys
-
-    def _create_convex_hull(
-        self,
-        net_signals,
-        expansion_size,
-        tolerance,
-        round_corner,
-        round_extension,
-        smart_cut=False,
-        reference_list=[],
-        pins_to_preserve=None,
-    ):
-        names = []
-        _polys = []
-        for net in net_signals:
-            names.append(net.name)
-        if pins_to_preserve:
-            insts = self.padstacks.instances
-            for i in pins_to_preserve:
-                p = insts[i].position
-                pos_1 = [i - 1e-12 for i in p]
-                pos_2 = [i + 1e-12 for i in p]
-                pos_3 = [pos_2[0], pos_1[1]]
-                pos_4 = pos_1[0], pos_2[1]
-                rectangle_data = GrpcPolygonData(points=[pos_1, pos_3, pos_2, pos_4])
-                _polys.append(rectangle_data)
-        for prim in self.modeler.primitives:
-            if not prim.is_null and not prim.net.is_null:
-                if prim.net.name in names:
-                    _polys.append(prim.polygon_data)
-        if smart_cut:
-            objs_data = self._smart_cut(reference_list, expansion_size)
-            _polys.extend(objs_data)
-        _poly = GrpcPolygonData.convex_hull(_polys)
-        _poly = _poly.expand(
-            offset=expansion_size, round_corner=round_corner, max_corner_ext=round_extension, tol=tolerance
-        )[0]
-        return _poly
-
+    @deprecate_argument_name({"signal_list": "signal_nets", "reference_list": "reference_nets"})
     def cutout(
         self,
-        signal_list=None,
-        reference_list=None,
+        signal_nets=None,
+        reference_nets=None,
         extent_type="ConvexHull",
         expansion_size=0.002,
         use_round_corner=False,
         output_aedb_path=None,
         open_cutout_at_end=True,
         use_pyaedt_cutout=True,
-        number_of_threads=4,
+        number_of_threads=1,
         use_pyaedt_extent_computing=True,
         extent_defeature=0,
         remove_single_pin_components=False,
@@ -1683,757 +1492,142 @@ class Edb(EdbInit):
         keep_lines_as_path=False,
         include_voids_in_extents=False,
     ):
-        """Create layout cutout with various options.
+        """Create a cutout using an approach entirely based on PyAEDT.
+        This method replaces all legacy cutout methods in PyAEDT.
+        It does in sequence:
+        - delete all nets not in list,
+        - create a extent of the nets,
+        - check and delete all vias not in the extent,
+        - check and delete all the primitives not in extent,
+        - check and intersect all the primitives that intersect the extent.
 
         Parameters
         ----------
-        signal_list : list, optional
-            Signal nets to include.
-        reference_list : list, optional
-            Reference nets to include.
+         signal_nets : list
+            List of signal strings.
+        reference_nets : list, optional
+            List of references to add. The default is ``["GND"]``.
         extent_type : str, optional
-            Cutout type ("Conforming", "ConvexHull", "Bounding").
-        expansion_size : float, optional
-            Boundary expansion size (meters).
+            Type of the extension. Options are ``"Conforming"``, ``"ConvexHull"``, and
+            ``"Bounding"``. The default is ``"Conforming"``.
+        expansion_size : float, str, optional
+            Expansion size ratio in meters. The default is ``0.002``.
         use_round_corner : bool, optional
-            Use rounded corners. Default False.
+            Whether to use round corners. The default is ``False``.
         output_aedb_path : str, optional
-            Output AEDB path.
+            Full path and name for the new AEDB file. If None, then current aedb will be cutout.
         open_cutout_at_end : bool, optional
-            Open cutout when finished. Default True.
+            Whether to open the cutout at the end. The default is ``True``.
         use_pyaedt_cutout : bool, optional
-            Use PyAEDT cutout method. Default True.
+            Whether to use new PyAEDT cutout method or EDB API method.
+            New method is faster than native API method since it benefits of multithread.
         number_of_threads : int, optional
-            Thread count for PyAEDT cutout.
+            Number of thread to use. Default is 4. Valid only if ``use_pyaedt_cutout`` is set to ``True``.
         use_pyaedt_extent_computing : bool, optional
-            Use PyAEDT extent computation. Default True.
+            Whether to use legacy extent computing (experimental) or EDB API.
         extent_defeature : float, optional
-            Geometry simplification factor.
+            Defeature the cutout before applying it to produce simpler geometry for mesh (Experimental).
+            It applies only to Conforming bounding box. Default value is ``0`` which disable it.
         remove_single_pin_components : bool, optional
-            Remove single-pin components. Default False.
-        custom_extent : list, optional
-            Custom polygon points for cutout.
-        custom_extent_units : str, optional
-            Units for custom_extent points.
+            Remove all Single Pin RLC after the cutout is completed. Default is `False`.
+        custom_extent : list
+            Points list defining the cutout shape. This setting will override `extent_type` field.
+        custom_extent_units : str
+            Units of the point list. The default is ``"mm"``. Valid only if `custom_extend` is provided.
         include_partial_instances : bool, optional
-            Include partial padstack instances. Default False.
-        keep_voids : bool, optional
-            Preserve voids in cutout. Default True.
+            Whether to include padstack instances that have bounding boxes intersecting with point list polygons.
+            This operation may slow down the cutout export.Valid only if `custom_extend` and
+            `use_pyaedt_cutout` is provided.
+        keep_voids : bool
+            Boolean used for keep or not the voids intersecting the polygon used for clipping the layout.
+            Default value is ``True``, ``False`` will remove the voids.Valid only if `custom_extend` is provided.
         check_terminals : bool, optional
-            Verify terminal references. Default False.
+            Whether to check for all reference terminals and increase extent to include them into the cutout.
+            This applies to components which have a model (spice, touchstone or netlist) associated.
         include_pingroups : bool, optional
-            Include pin groups. Default False.
+            Whether to check for all pingroups terminals and increase extent to include them into the cutout.
+            It requires ``check_terminals``.
         expansion_factor : int, optional
-            Auto-expansion factor. Default 0 (disabled).
+            The method computes a float representing the largest number between
+            the dielectric thickness or trace width multiplied by the expansion_factor factor.
+            The trace width search is limited to nets with ports attached. Works only if `use_pyaedt_cutout`.
+            Default is `0` to disable the search.
         maximum_iterations : int, optional
-            Max auto-expansion iterations. Default 10.
+            Maximum number of iterations before stopping a search for a cutout with an error.
+            Default is `10`.
         preserve_components_with_model : bool, optional
-            Keep components with models. Default False.
+            Whether to preserve all pins of components that have associated models (Spice or NPort).
+            This parameter is applicable only for a PyAEDT cutout (except point list).
         simple_pad_check : bool, optional
-            Use simplified pad checking. Default True.
+            Whether to use the center of the pad to find the intersection with extent or use the bounding box.
+            Second method is much slower and requires to disable multithread on padstack removal.
+            Default is `True`.
         keep_lines_as_path : bool, optional
-            Preserve paths as lines. Default False.
+            Whether to keep the lines as Path after they are cutout or convert them to PolygonData.
+            This feature works only in Electronics Desktop (3D Layout).
+            If the flag is set to ``True`` it can cause issues in SiWave once the Edb is imported.
+            Default is ``False`` to generate PolygonData of cut lines.
         include_voids_in_extents : bool, optional
-            Include voids in extent calculation. Default False.
+            Whether to compute and include voids in pyaedt extent before the cutout. Cutout time can be affected.
+            It works only with Conforming cutout.
+            Default is ``False`` to generate extent without voids.
+
 
         Returns
         -------
-        list or bool
-            Cutout boundary points if successful, False otherwise.
+        List
+            List of coordinate points defining the extent used for clipping the design. If it failed return an empty
+            list.
 
         Examples
         --------
-        >>> # Create a basic cutout:
-        >>> edb.cutout(signal_list=["Net1"], reference_list=["GND"])
-        >>> # Create cutout with custom polygon:
-        >>> custom_poly = [[0, 0], [10e-3, 0], [10e-3, 10e-3], [0, 10e-3]]
-        >>> edb.cutout(custom_extent=custom_poly)
-        """
-        if expansion_factor > 0:
-            expansion_size = self.calculate_initial_extent(expansion_factor)
-        if signal_list is None:
-            signal_list = []
-        if isinstance(reference_list, str):
-            reference_list = [reference_list]
-        elif reference_list is None:
-            reference_list = []
-        if not use_pyaedt_cutout and custom_extent:
-            return self._create_cutout_on_point_list(
-                custom_extent,
-                units=custom_extent_units,
-                output_aedb_path=output_aedb_path,
-                open_cutout_at_end=open_cutout_at_end,
-                nets_to_include=signal_list + reference_list,
-                include_partial_instances=include_partial_instances,
-                keep_voids=keep_voids,
-            )
-        elif not use_pyaedt_cutout:
-            return self._create_cutout_legacy(
-                signal_list=signal_list,
-                reference_list=reference_list,
-                extent_type=extent_type,
-                expansion_size=expansion_size,
-                use_round_corner=use_round_corner,
-                output_aedb_path=output_aedb_path,
-                open_cutout_at_end=open_cutout_at_end,
-                use_pyaedt_extent_computing=use_pyaedt_extent_computing,
-                check_terminals=check_terminals,
-                include_pingroups=include_pingroups,
-                inlcude_voids_in_extents=include_voids_in_extents,
-            )
-        else:
-            legacy_path = self.edbpath
-            if expansion_factor > 0 and not custom_extent:
-                start = time.time()
-                self.save_edb()
-                dummy_path = self.edbpath.replace(".aedb", "_smart_cutout_temp.aedb")
-                working_cutout = False
-                i = 1
-                expansion = expansion_size
-                while i <= maximum_iterations:
-                    self.logger.info("-----------------------------------------")
-                    self.logger.info(f"Trying cutout with {expansion * 1e3}mm expansion size")
-                    self.logger.info("-----------------------------------------")
-                    result = self._create_cutout_multithread(
-                        signal_list=signal_list,
-                        reference_list=reference_list,
-                        extent_type=extent_type,
-                        expansion_size=expansion,
-                        use_round_corner=use_round_corner,
-                        number_of_threads=number_of_threads,
-                        custom_extent=custom_extent,
-                        output_aedb_path=dummy_path,
-                        remove_single_pin_components=remove_single_pin_components,
-                        use_pyaedt_extent_computing=use_pyaedt_extent_computing,
-                        extent_defeature=extent_defeature,
-                        custom_extent_units=custom_extent_units,
-                        check_terminals=check_terminals,
-                        include_pingroups=include_pingroups,
-                        preserve_components_with_model=preserve_components_with_model,
-                        include_partial=include_partial_instances,
-                        simple_pad_check=simple_pad_check,
-                        keep_lines_as_path=keep_lines_as_path,
-                        inlcude_voids_in_extents=include_voids_in_extents,
-                    )
-                    if self.are_port_reference_terminals_connected():
-                        if output_aedb_path:
-                            self.save_edb_as(output_aedb_path)
-                        else:
-                            self.save_edb_as(legacy_path)
-                        working_cutout = True
-                        break
-                    self.close_edb()
-                    self.edbpath = legacy_path
-                    self.open()
-                    i += 1
-                    expansion = expansion_size * i
-                if working_cutout:
-                    msg = f"Cutout completed in {i} iterations with expansion size of {expansion * 1e3}mm"
-                    self.logger.info_timer(msg, start)
-                else:
-                    msg = f"Cutout failed after {i} iterations and expansion size of {expansion * 1e3}mm"
-                    self.logger.info_timer(msg, start)
-                    return False
-            else:
-                result = self._create_cutout_multithread(
-                    signal_list=signal_list,
-                    reference_list=reference_list,
-                    extent_type=extent_type,
-                    expansion_size=expansion_size,
-                    use_round_corner=use_round_corner,
-                    number_of_threads=number_of_threads,
-                    custom_extent=custom_extent,
-                    output_aedb_path=output_aedb_path,
-                    remove_single_pin_components=remove_single_pin_components,
-                    use_pyaedt_extent_computing=use_pyaedt_extent_computing,
-                    extent_defeature=extent_defeature,
-                    custom_extent_units=custom_extent_units,
-                    check_terminals=check_terminals,
-                    include_pingroups=include_pingroups,
-                    preserve_components_with_model=preserve_components_with_model,
-                    include_partial=include_partial_instances,
-                    simple_pad_check=simple_pad_check,
-                    keep_lines_as_path=keep_lines_as_path,
-                    inlcude_voids_in_extents=include_voids_in_extents,
-                )
-            if result and not open_cutout_at_end and self.edbpath != legacy_path:
-                self.save_edb()
-                self.close_edb()
-                self.edbpath = legacy_path
-                self.open_edb()
-        return result
+        >>> from pyedb import Edb
+        >>> edb = Edb(r"C:\\test.aedb", version="2022.2")
+        >>> edb.logger.info_timer("Edb Opening")
+        >>> edb.logger.reset_timer()
+        >>> start = time.time()
+        >>> signal_list = []
+        >>> for net in edb.nets.netlist:
+        >>>      if "3V3" in net:
+        >>>           signal_list.append(net)
+        >>> power_list = ["PGND"]
+        >>> edb.cutout(signal_nets=signal_list, reference_nets=power_list, extent_type="Conforming")
+        >>> end_time = str((time.time() - start) / 60)
+        >>> edb.logger.info("Total legacy cutout time in min %s", end_time)
+        >>> edb.nets.plot(signal_list, None, color_by_net=True)
+        >>> edb.nets.plot(power_list, None, color_by_net=True)
+        >>> edb.save()
+        >>> edb.close()
 
-    def _create_cutout_legacy(
-        self,
-        signal_list=[],
-        reference_list=["GND"],
-        extent_type="Conforming",
-        expansion_size=0.002,
-        use_round_corner=False,
-        output_aedb_path=None,
-        open_cutout_at_end=True,
-        use_pyaedt_extent_computing=False,
-        remove_single_pin_components=False,
-        check_terminals=False,
-        include_pingroups=True,
-        inlcude_voids_in_extents=False,
-    ):
-        expansion_size = Value(expansion_size)
-
-        # validate nets in layout
-        net_signals = [net for net in self.layout.nets if net.name in signal_list]
-
-        # validate references in layout
-        _netsClip = [net for net in self.layout.nets if net.name in reference_list]
-
-        _poly = self._create_extent(
-            net_signals,
-            extent_type,
-            expansion_size,
-            use_round_corner,
-            use_pyaedt_extent_computing,
-            smart_cut=check_terminals,
-            reference_list=reference_list,
-            include_pingroups=include_pingroups,
-            inlcude_voids_in_extents=inlcude_voids_in_extents,
-        )
-        _poly1 = GrpcPolygonData(arcs=_poly.arc_data, closed=True)
-        if inlcude_voids_in_extents:
-            for hole in _poly.holes:
-                if hole.area() >= 0.05 * _poly1.area():
-                    _poly1.holes.append(hole)
-        _poly = _poly1
-        # Create new cutout cell/design
-        included_nets_list = signal_list + reference_list
-        included_nets = [net for net in self.layout.nets if net.name in included_nets_list]
-        _cutout = self.active_cell.cutout(included_nets, _netsClip, _poly, True)
-        # _cutout.simulation_setups = self.active_cell.simulation_setups see bug #433 status.
-        _dbCells = [_cutout]
-        if output_aedb_path:
-            from ansys.edb.core.database import Database as GrpcDatabase
-
-            db2 = GrpcDatabase.create(output_aedb_path)
-            db2.copy_cells(_dbCells)  # Copies cutout cell/design to db2 project
-            if len(list(db2.top_circuit_cells)) > 0:
-                for net in db2.top_circuit_cells[0].layout.nets:
-                    if not net.name in included_nets_list:
-                        net.delete()
-                db2.save()
-            for c in self.active_db.top_circuit_cells:
-                if c.name == _cutout.name:
-                    c.delete()
-            if open_cutout_at_end:  # pragma: no cover
-                self._db = db2
-                self.edbpath = output_aedb_path
-                self._active_cell = self.top_circuit_cells[0]
-                self.edbpath = self.directory
-                self._init_objects()
-                if remove_single_pin_components:
-                    self.components.delete_single_pin_rlc()
-                    self.logger.info_timer("Single Pins components deleted")
-                    self.components.refresh_components()
-            else:
-                if remove_single_pin_components:
-                    try:
-                        from ansys.edb.core.hierarchy.component_group import (
-                            ComponentGroup as GrpcComponentGroup,
-                        )
-
-                        layout = db2.circuit_cells[0].layout
-                        _cmps = [l for l in layout.groups if isinstance(l, GrpcComponentGroup) and l.num_pins < 2]
-                        for _cmp in _cmps:
-                            _cmp.delete()
-                    except:
-                        self.logger.error("Failed to remove single pin components.")
-                db2.close()
-                source = os.path.join(output_aedb_path, "edb.def.tmp")
-                target = os.path.join(output_aedb_path, "edb.def")
-                self._wait_for_file_release(file_to_release=output_aedb_path)
-                if os.path.exists(source) and not os.path.exists(target):
-                    try:
-                        shutil.copy(source, target)
-                    except:
-                        pass
-        elif open_cutout_at_end:
-            self._active_cell = _cutout
-            self._init_objects()
-            if remove_single_pin_components:
-                self.components.delete_single_pin_rlc()
-                self.logger.info_timer("Single Pins components deleted")
-                self.components.refresh_components()
-        return [[Value(pt.x), Value(pt.y)] for pt in _poly.without_arcs().points]
-
-    def _create_cutout_multithread(
-        self,
-        signal_list=[],
-        reference_list=["GND"],
-        extent_type="Conforming",
-        expansion_size=0.002,
-        use_round_corner=False,
-        number_of_threads=4,
-        custom_extent=None,
-        output_aedb_path=None,
-        remove_single_pin_components=False,
-        use_pyaedt_extent_computing=False,
-        extent_defeature=0.0,
-        custom_extent_units="mm",
-        check_terminals=False,
-        include_pingroups=True,
-        preserve_components_with_model=False,
-        include_partial=False,
-        simple_pad_check=True,
-        keep_lines_as_path=False,
-        inlcude_voids_in_extents=False,
-    ):
-        from concurrent.futures import ThreadPoolExecutor
-
-        if output_aedb_path:
-            self.save_edb_as(output_aedb_path)
-        self.logger.info("Cutout Multithread started.")
-        expansion_size = Value(expansion_size)
-
-        timer_start = self.logger.reset_timer()
-        if custom_extent:
-            if not reference_list and not signal_list:
-                reference_list = self.nets.netlist[::]
-                all_list = reference_list
-            else:
-                reference_list = reference_list + signal_list
-                all_list = reference_list
-        else:
-            all_list = signal_list + reference_list
-        pins_to_preserve = []
-        nets_to_preserve = []
-        if preserve_components_with_model:
-            for el in self.components.instances.values():
-                if el.model_type in [
-                    "SPICEModel",
-                    "SParameterModel",
-                    "NetlistModel",
-                ] and list(set(el.nets[:]) & set(signal_list[:])):
-                    pins_to_preserve.extend([i.edb_uid for i in el.pins.values()])
-                    nets_to_preserve.extend(el.nets)
-        if include_pingroups:
-            for pingroup in self.layout.pin_groups:
-                for pin_name, pin in pingroup.pins.items():
-                    if pin_name in reference_list:
-                        pins_to_preserve.append(pin.edb_uid)
-        if check_terminals:
-            terms = [
-                term for term in self.layout.terminals if term.boundary_type in get_terminal_supported_boundary_types()
-            ]
-            for term in terms:
-                if isinstance(term, PadstackInstanceTerminal):
-                    if term.net.name in reference_list:
-                        pins_to_preserve.append(term.edb_uid)
-        delete_list = []
-
-        for i in self.nets.nets.values():
-            name = i.name
-            if name not in all_list and name not in nets_to_preserve:
-                delete_list.append(i)
-                # i.delete()
-        for i in delete_list:
-            i.delete()
-        reference_pinsts = []
-        reference_prims = []
-        reference_paths = []
-        delete_list = []
-        for i in self.padstacks.instances.values():
-            net_name = i.net_name
-            id = i.id
-            if net_name not in all_list and id not in pins_to_preserve:
-                delete_list.append(i)
-                # i.delete()
-            elif net_name in reference_list and id not in pins_to_preserve:
-                reference_pinsts.append(i)
-        for i in self.modeler.primitives:
-            if not i.is_null and not i.net.is_null:
-                if i.net.name not in all_list:
-                    # i.delete()
-                    delete_list.append(i)
-                elif i.net.name in reference_list and not i.is_void:
-                    if keep_lines_as_path and isinstance(i, Path):
-                        reference_paths.append(i)
-                    else:
-                        reference_prims.append(i)
-        self.logger.info_timer("Net clean up")
-        self.logger.reset_timer()
-        for i in delete_list:
-            i.delete()
-        if custom_extent and isinstance(custom_extent, list):
-            if custom_extent[0] != custom_extent[-1]:
-                custom_extent.append(custom_extent[0])
-            custom_extent = [
-                [
-                    self.number_with_units(i[0], custom_extent_units),
-                    self.number_with_units(i[1], custom_extent_units),
-                ]
-                for i in custom_extent
-            ]
-            _poly = GrpcPolygonData(points=custom_extent)
-        elif custom_extent:
-            _poly = custom_extent
-        else:
-            net_signals = [net for net in self.layout.nets if net.name in signal_list]
-            _poly = self._create_extent(
-                net_signals,
-                extent_type,
-                expansion_size,
-                use_round_corner,
-                use_pyaedt_extent_computing,
-                smart_cut=check_terminals,
-                reference_list=reference_list,
-                include_pingroups=include_pingroups,
-                pins_to_preserve=pins_to_preserve,
-                inlcude_voids_in_extents=inlcude_voids_in_extents,
-            )
-            from ansys.edb.core.geometry.polygon_data import (
-                ExtentType as GrpcExtentType,
-            )
-
-            if extent_type in ["Conformal", "Conforming", GrpcExtentType.CONFORMING, 1]:
-                if extent_defeature > 0:
-                    _poly = _poly.defeature(extent_defeature)
-                _poly1 = GrpcPolygonData(arcs=_poly.arc_data, closed=True)
-                if inlcude_voids_in_extents:
-                    for hole in list(_poly.holes):
-                        if hole.area() >= 0.05 * _poly1.area():
-                            _poly1.holes.append(hole)
-                    self.logger.info(f"Number of voids included:{len(list(_poly1.holes))}")
-                _poly = _poly1
-        if not _poly.points:
-            self._logger.error("Failed to create Extent.")
-            return []
-        self.logger.info_timer("Expanded Net Polygon Creation")
-        self.logger.reset_timer()
-        _poly_list = [_poly]
-        prims_to_delete = []
-        poly_to_create = []
-        pins_to_delete = []
-
-        def intersect(poly1, poly2):
-            if not isinstance(poly2, list):
-                poly2 = [poly2]
-            return poly1.intersect(poly1, poly2)
-
-        def subtract(poly, voids):
-            return poly.subtract(poly, voids)
-
-        def clip_path(path):
-            pdata = path.polygon_data
-            int_data = _poly.intersection_type(pdata)
-            if int_data == 0:
-                prims_to_delete.append(path)
-                return
-            result = path.set_clip_info(_poly, True)
-            if not result:
-                self.logger.info(f"Failed to clip path {path.id}. Clipping as polygon.")
-                reference_prims.append(path)
-
-        def clean_prim(prim_1):  # pragma: no cover
-            pdata = prim_1.polygon_data
-            int_data = _poly.intersection_type(pdata)
-            if int_data == 2:
-                if not inlcude_voids_in_extents:
-                    return
-                skip = False
-                for hole in list(_poly.Holes):
-                    if hole.intersection_type(pdata) == 0:
-                        prims_to_delete.append(prim_1)
-                        return
-                    elif hole.intersection_type(pdata) == 1:
-                        skip = True
-                if skip:
-                    return
-            elif int_data == 0:
-                prims_to_delete.append(prim_1)
-                return
-            list_poly = intersect(_poly, pdata)
-            if list_poly:
-                net = prim_1.net.name
-                voids = prim_1.voids
-                for p in list_poly:
-                    if not p.points:
-                        continue
-                    list_void = []
-                    if voids:
-                        voids_data = [void.polygon_data for void in voids]
-                        list_prims = subtract(p, voids_data)
-                        for prim in list_prims:
-                            if prim.points:
-                                poly_to_create.append([prim, prim_1.layer.name, net, list_void])
-                    else:
-                        poly_to_create.append([p, prim_1.layer.name, net, list_void])
-
-            prims_to_delete.append(prim_1)
-
-        def pins_clean(pinst):
-            if not pinst.in_polygon(_poly, include_partial=include_partial, simple_check=simple_pad_check):
-                pins_to_delete.append(pinst)
-
-        if not simple_pad_check:
-            pad_cores = 1
-        else:
-            pad_cores = number_of_threads
-        with ThreadPoolExecutor(pad_cores) as pool:
-            pool.map(lambda item: pins_clean(item), reference_pinsts)
-
-        for pin in pins_to_delete:
-            pin.delete()
-
-        self.logger.info_timer(f"Padstack Instances removal completed. {len(pins_to_delete)} instances removed.")
-        self.logger.reset_timer()
-
-        for item in reference_paths:
-            clip_path(item)
-        for prim in reference_prims:  # removing multithreading as failing with new layer from primitive
-            clean_prim(prim)
-
-        for el in poly_to_create:
-            self.modeler.create_polygon(el[0], el[1], net_name=el[2], voids=el[3])
-
-        for prim in prims_to_delete:
-            prim.delete()
-
-        self.logger.info_timer(f"Primitives cleanup completed. {len(prims_to_delete)} primitives deleted.")
-        self.logger.reset_timer()
-
-        i = 0
-        for _, val in self.components.instances.items():
-            if val.numpins == 0:
-                val.delete()
-                i += 1
-                i += 1
-        self.logger.info(f"Deleted {i} additional components")
-        if remove_single_pin_components:
-            self.components.delete_single_pin_rlc()
-            self.logger.info_timer("Single Pins components deleted")
-
-        self.components.refresh_components()
-        if output_aedb_path:
-            self.save_edb()
-        self.logger.info_timer("Cutout completed.", timer_start)
-        self.logger.reset_timer()
-        return [[Value(pt.x), Value(pt.y)] for pt in _poly.without_arcs().points]
-
-    def get_conformal_polygon_from_netlist(self, netlist=None) -> Union[bool, Polygon]:
-        """Returns conformal polygon data based on a netlist.
-
-        Parameters
-        ----------
-        netlist : List of net names.
-            list[str]
-
-        Returns
-        -------
-        :class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
-        """
-        from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType
-
-        temp_edb_path = self.edbpath[:-5] + "_temp_aedb.aedb"
-        shutil.copytree(self.edbpath, temp_edb_path)
-        temp_edb = Edb(temp_edb_path)
-        for via in list(temp_edb.padstacks.instances.values()):
-            via.pin.delete()
-        if netlist:
-            nets = [net for net in temp_edb.layout.nets if net.name in netlist]
-            _poly = temp_edb.layout.expanded_extent(nets, GrpcExtentType.CONFORMING, 0.0, True, True, 1)
-        else:
-            nets = [net for net in temp_edb.layout.nets if "gnd" in net.name.lower()]
-            _poly = temp_edb.layout.expanded_extent(nets, GrpcExtentType.CONFORMING, 0.0, True, True, 1)
-            temp_edb.close()
-        if _poly:
-            return _poly
-        else:
-            return False
-
-    def number_with_units(self, value, units=None) -> str:
-        """Convert a number to a string with units. If value is a string, it's returned as is.
-
-        Parameters
-        ----------
-        value : float, int, str
-            Input number or string.
-        units : optional
-            Units for formatting. The default is ``None``, which uses ``"meter"``.
-
-        Returns
-        -------
-        str
-           String concatenating the value and unit.
 
         """
-        if units is None:
-            units = "meter"
-        if isinstance(value, str):
-            return value
-        else:
-            return f"{value}{units}"
-
-    def _create_cutout_on_point_list(
-        self,
-        point_list,
-        units="mm",
-        output_aedb_path=None,
-        open_cutout_at_end=True,
-        nets_to_include=None,
-        include_partial_instances=False,
-        keep_voids=True,
-    ):
-        from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-
-        if point_list[0] != point_list[-1]:
-            point_list.append(point_list[0])
-        point_list = [[self.number_with_units(i[0], units), self.number_with_units(i[1], units)] for i in point_list]
-        polygon_data = GrpcPolygonData(points=[GrpcPointData(pt) for pt in point_list])
-        _ref_nets = []
-        if nets_to_include:
-            self.logger.info(f"Creating cutout on {len(nets_to_include)} nets.")
-        else:
-            self.logger.info("Creating cutout on all nets.")  # pragma: no cover
-
-        # Check Padstack Instances overlapping the cutout
-        pinstance_to_add = []
-        if include_partial_instances:
-            if nets_to_include:
-                pinst = [i for i in list(self.padstacks.instances.values()) if i.net_name in nets_to_include]
-            else:
-                pinst = [i for i in list(self.padstacks.instances.values())]
-            for p in pinst:
-                pin_position = p.position  # check bug #434 status
-                if polygon_data.is_inside(p.position):  # check bug #434 status
-                    pinstance_to_add.append(p)
-        # validate references in layout
-        for _ref in self.nets.nets:
-            if nets_to_include:
-                if _ref in nets_to_include:
-                    _ref_nets.append(self.nets.nets[_ref])
-            else:
-                _ref_nets.append(self.nets.nets[_ref])  # pragma: no cover
-        if keep_voids:
-            voids = [p for p in self.modeler.circles if p.is_void]
-            voids2 = [p for p in self.modeler.polygons if p.is_void]
-            voids.extend(voids2)
-        else:
-            voids = []
-        voids_to_add = []
-        for circle in voids:
-            if polygon_data.get_intersection_type(circle.polygon_data) >= 3:
-                voids_to_add.append(circle)
-
-        _netsClip = _ref_nets
-        # Create new cutout cell/design
-        _cutout = self.active_cell.cutout(_netsClip, _netsClip, polygon_data)
-        layout = _cutout.layout
-        cutout_obj_coll = layout.padstack_instances
-        ids = []
-        for lobj in cutout_obj_coll:
-            ids.append(lobj.id)
-        if include_partial_instances:
-            from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-            from ansys.edb.core.primitive.padstack_instance import (
-                PadstackInstance as GrpcPadstackInstance,
-            )
-
-            p_missing = [i for i in pinstance_to_add if i.id not in ids]
-            self.logger.info(f"Added {len(p_missing)} padstack instances after cutout")
-            for p in p_missing:
-                position = GrpcPointData(p.position)
-                net = self.nets.find_or_create_net(p.net_name)
-                rotation = Value(p.rotation)
-                sign_layers = list(self.stackup.signal_layers.keys())
-                if not p.start_layer:  # pragma: no cover
-                    fromlayer = self.stackup.signal_layers[sign_layers[0]]
-                else:
-                    fromlayer = self.stackup.signal_layers[p.start_layer]
-
-                if not p.stop_layer:  # pragma: no cover
-                    tolayer = self.stackup.signal_layers[sign_layers[-1]]
-                else:
-                    tolayer = self.stackup.signal_layers[p.stop_layer]
-                for pad in list(self.padstacks.definitions.keys()):
-                    if pad == p.padstack_definition:
-                        padstack = self.padstacks.definitions[pad]
-                        padstack_instance = GrpcPadstackInstance.create(
-                            layout=_cutout.layout,
-                            net=net,
-                            name=p.name,
-                            padstack_def=padstack,
-                            position_x=position.x,
-                            position_y=position.y,
-                            rotation=rotation,
-                            top_layer=fromlayer,
-                            bottom_layer=tolayer,
-                            layer_map=None,
-                            solder_ball_layer=None,
-                        )
-                        padstack_instance.is_layout_pin = p.is_pin
-                        break
-
-        for void_circle in voids_to_add:
-            if isinstance(void_circle, Circle):
-                res = void_circle.get_parameters()
-                cloned_circle = Circle.create(
-                    layout=layout,
-                    layer=void_circle.layer.name,
-                    net=void_circle.net,
-                    center_x=res[0].x,
-                    center_y=res[0].y,
-                    radius=res[1],
-                )
-                cloned_circle.is_negative = True
-            elif isinstance(void_circle, Polygon):
-                cloned_polygon = Polygon.create(
-                    layout,
-                    void_circle.layer.name,
-                    void_circle.net,
-                    void_circle.polygon_data,
-                )
-                cloned_polygon.is_negative = True
-        layers = [i for i in list(self.stackup.signal_layers.keys())]
-        for layer in layers:
-            layer_primitves = self.modeler.get_primitives(layer_name=layer)
-            if len(layer_primitves) == 0:
-                self.modeler.create_polygon(point_list, layer, net_name="DUMMY")
-        self.logger.info(f"Cutout {_cutout.name} created correctly")
-        for _setup in self.active_cell.simulation_setups:
-            # Add the create Simulation setup to cutout cell
-            # might need to add a clone setup method.
-            pass
-
-        _dbCells = [_cutout]
-        if output_aedb_path:
-            from ansys.edb.core.database import Database as GrpcDatabase
-
-            db2 = GrpcDatabase.create(output_aedb_path)
-            db2.save()
-            cell_copied = db2.copy_cells(_dbCells)  # Copies cutout cell/design to db2 project
-            cell = cell_copied[0]
-            cell.name = os.path.basename(output_aedb_path[:-5])
-            db2.save()
-            for c in list(self.active_db.top_circuit_cells):
-                if c.name == _cutout.name:
-                    c.delete()
-            if open_cutout_at_end:  # pragma: no cover
-                db2.save()
-                self._db = db2
-                self.edbpath = output_aedb_path
-                self._active_cell = cell
-                self.edbpath = self.directory
-                self._init_objects()
-            else:
-                db2.close()
-                source = os.path.join(output_aedb_path, "edb.def.tmp")
-                target = os.path.join(output_aedb_path, "edb.def")
-                self._wait_for_file_release(file_to_release=output_aedb_path)
-                if os.path.exists(source) and not os.path.exists(target):
-                    try:
-                        shutil.copy(source, target)
-                        self.logger.warning("aedb def file manually created.")
-                    except:
-                        pass
-        return [[Value(pt.x), Value(pt.y)] for pt in polygon_data.without_arcs().points]
+        cutout = Cutout(self)
+        cutout.expansion_size = expansion_size
+        cutout.signals = signal_nets
+        cutout.references = reference_nets
+        cutout.extent_type = extent_type
+        cutout.expansion_size = expansion_size
+        cutout.use_round_corner = use_round_corner
+        cutout.output_file = output_aedb_path
+        cutout.open_cutout_at_end = open_cutout_at_end
+        cutout.use_pyaedt_cutout = use_pyaedt_cutout
+        cutout.number_of_threads = number_of_threads
+        cutout.use_pyaedt_extent_computing = use_pyaedt_extent_computing
+        cutout.extent_defeatured = extent_defeature
+        cutout.remove_single_pin_components = remove_single_pin_components
+        cutout.custom_extent = custom_extent
+        cutout.custom_extent_units = custom_extent_units
+        cutout.include_partial_instances = include_partial_instances
+        cutout.keep_voids = keep_voids
+        cutout.check_terminals = check_terminals
+        cutout.include_pingroups = include_pingroups
+        cutout.expansion_factor = expansion_factor
+        cutout.maximum_iterations = maximum_iterations
+        cutout.preserve_components_with_model = preserve_components_with_model
+        cutout.simple_pad_check = simple_pad_check
+        cutout.keep_lines_as_path = keep_lines_as_path
+        cutout.include_voids_in_extents = include_voids_in_extents
+        return cutout.run()
 
     @staticmethod
     def write_export3d_option_config_file(path_to_output, config_dictionaries=None):
@@ -2611,8 +1805,10 @@ class Edb(EdbInit):
         process = SiwaveSolve(self)
         try:
             self.close()
-        except:
-            pass
+        except Exception as e:
+            self.logger.warning(
+                f"A(n) {type(e).__name__} error occurred while attempting to close the database {self}: {str(e)}"
+            )
         process.solve()
         return self.edbpath[:-5] + ".siw"
 
@@ -2662,8 +1858,10 @@ class Edb(EdbInit):
         process = SiwaveSolve(self)
         try:
             self.close()
-        except:
-            pass
+        except Exception as e:
+            self.logger.warning(
+                f"A(n) {type(e).__name__} error occurred while attempting to close the database {self}: {str(e)}"
+            )
         return process.export_dc_report(
             siwave_project,
             solution_name,
@@ -2870,55 +2068,51 @@ class Edb(EdbInit):
         self.logger.reset_timer()
         if not common_reference:
             ref_terminals = [term for term in all_sources if term.is_reference_terminal]
-            common_reference = list(
-                set([i.reference_terminal.net.name for i in all_sources if i.is_reference_terminal])
-            )
+            common_reference = list(set([i.net.name for i in ref_terminals]))
             if len(common_reference) > 1:
-                self.logger.error("More than 1 reference found.")
-                return False
+                raise ValueError("Multiple reference nets found. Please specify one.")
             if not common_reference:
-                self.logger.error("No Reference found.")
-                return False
-
+                raise ValueError("No reference net found. Please specify one.")
             common_reference = common_reference[0]
         all_sources = [i for i in all_sources if i.net.name != common_reference]
-
-        setList = [
-            set(i.reference_object.get_connected_object_id_set())
-            for i in all_sources
-            if i.reference_object and i.reference_net.name == common_reference
-        ]
-        if len(setList) != len(all_sources):
+        layout_inst = self.layout.layout_instance
+        layout_obj_inst = layout_inst.get_layout_obj_instance_in_context(all_sources[0], None)  # 2nd arg was []
+        connected_objects = [loi.layout_obj.id for loi in layout_inst.get_connected_objects(layout_obj_inst, True)]
+        connected_primitives = [self.modeler.get_primitive(obj, edb_uid=False) for obj in connected_objects]
+        connected_primitives = [item for item in connected_primitives if item is not None]
+        set_list = list(set([obj.net_name for obj in connected_primitives]))
+        if len(set_list) != len(all_sources):
             self.logger.error("No Reference found.")
             return False
         cmps = [
             i
             for i in list(self.components.resistors.values())
-            if i.numpins == 2 and common_reference in i.nets and self._decompose_variable_value(i.res_value) <= 1
+            if i.num_pins == 2 and common_reference in i.nets and i.res_value <= 1
         ]
         cmps.extend(
-            [i for i in list(self.components.inductors.values()) if i.numpins == 2 and common_reference in i.nets]
+            [i for i in list(self.components.inductors.values()) if i.num_pins == 2 and common_reference in i.nets]
         )
 
         for cmp in cmps:
             found = False
-            ids = [i.id for i in cmp.pinlist]
-            for list_obj in setList:
+            ids = [v.id for i, v in cmp.pins.items()]
+            for list_obj in set_list:
                 if len(set(ids).intersection(list_obj)) == 1:
-                    for list_obj2 in setList:
+                    for list_obj2 in set_list:
                         if list_obj2 != list_obj and len(set(ids).intersection(list_obj)) == 1:
                             if (ids[0] in list_obj and ids[1] in list_obj2) or (
                                 ids[1] in list_obj and ids[0] in list_obj2
                             ):
-                                setList[setList.index(list_obj)] = list_obj.union(list_obj2)
-                                setList[setList.index(list_obj2)] = list_obj.union(list_obj2)
+                                set_list[set_list.index(list_obj)] = list_obj.union(list_obj2)
+                                set_list[set_list.index(list_obj2)] = list_obj.union(list_obj2)
                                 found = True
                                 break
                     if found:
                         break
 
         # Get the set intersections for all the ID sets.
-        iDintersection = set.intersection(*setList)
+        set_list = set(set_list)
+        iDintersection = set.intersection(set_list)
         self.logger.info_timer(f"Terminal reference primitive IDs total intersections = {len(iDintersection)}\n\n")
 
         # If the intersections are non-zero, the terminal references are connected.
@@ -3052,7 +2246,7 @@ class Edb(EdbInit):
         if name in self.setups:
             self.logger.error("Setup name already used in the layout")
             return False
-        version = self.edbversion.split(".")
+        version = self.version.split(".")
         if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
             setup = GrpcRaptorXSimulationSetup.create(cell=self.active_cell, name=name)
             return RaptorXSimulationSetup(self, setup)
@@ -3243,7 +2437,7 @@ class Edb(EdbInit):
         defined_ports = {}
         project_connexions = None
         for edb_path, zone_info in zone_dict.items():
-            edb = Edb(edbversion=self.edbversion, edbpath=edb_path)
+            edb = Edb(edbversion=self.version, edbpath=edb_path)
             edb.cutout(
                 use_pyaedt_cutout=True,
                 custom_extent=zone_info[1],
@@ -3785,7 +2979,7 @@ class Edb(EdbInit):
                 "No padstack instances found inside evaluated voids during model creation for arbitrary waveports"
             )
             return False
-        cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion, restart_rpc_server=True)
+        cloned_edb = Edb(edbpath=output_edb, edbversion=self.version, restart_rpc_server=True)
 
         cloned_edb.stackup.add_layer(
             layer_name="ports",
@@ -3914,6 +3108,11 @@ class Edb(EdbInit):
     def compare(self, input_file, results=""):
         """Compares current open database with another one.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         input_file : str
@@ -3930,13 +3129,18 @@ class Edb(EdbInit):
         if not results:
             results = self.edbpath[:-5] + "_compare_results"
             os.mkdir(results)
-        command = os.path.join(self.base_path, "EDBDiff.exe")
+        executable_path = os.path.join(self.base_path, "EDBDiff.exe")
         if is_linux:
             mono_path = os.path.join(self.base_path, "common/mono/Linux64/bin/mono")
-            cmd_input = [mono_path, command, input_file, self.edbpath, results]
+            command = [mono_path, executable_path, input_file, self.edbpath, results]
         else:
-            cmd_input = [command, input_file, self.edbpath, results]
-        subprocess.run(cmd_input)
+            command = [executable_path, input_file, self.edbpath, results]
+        try:
+            subprocess.run(command, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError(
+                "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
+            )
 
         if not os.path.exists(os.path.join(results, "EDBDiff.csv")):
             self.logger.error("Comparison execution failed")

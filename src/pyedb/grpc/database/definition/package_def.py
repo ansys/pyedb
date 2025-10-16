@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -193,8 +193,11 @@ class PackageDef(GrpcPackageDef):
         """
         try:
             return HeatSink(self._pedb, super().heat_sink)
-        except:
-            pass
+        except Exception as e:
+            settings.logger.error(
+                f"A(n) {type(e).__name__} error occurred while attempting to access 'heatsink' "
+                f"property for object {self}: {str(e)}"
+            )
 
     @property
     @deprecated_property

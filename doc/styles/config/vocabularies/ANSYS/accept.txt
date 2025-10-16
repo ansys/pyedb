@@ -15,6 +15,7 @@ DC
 docstring
 [Dd]ocstrings
 [Ee][Dd][Bb]
+untrusted
 EDT
 [gG][dD][sS]
 HFSS
@@ -117,6 +118,13 @@ Getting Started
 [Aa][Pp][Ii]
 [Dd][Oo][Cc][Uu][Mm][Ee][Nn][Tt][Aa][Tt][Ii][Oo][Nn]
 [Mm][Aa][Tt][Pp][Ll][Oo][Tt][Ll][Ii][Ib]
+[Pp][Cc][Ii][Ee]
+[Ss]imulation[Ss]etup
+[Bb]atch[Gg]roup
+[Ee][Dd][Bb]
+[Cc]utout
+check_terminals
+[Dd]efeature
 [Aa]sync
 configs
 subprocess
