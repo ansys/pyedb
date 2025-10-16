@@ -409,8 +409,29 @@ class JobManagerHandler:
 
 
 if __name__ == "__main__":
-    # Simplified CLI for starting the service
-    handler = JobManagerHandler(host="localhost", port=8080)
+    """
+    example
+    -------
+    python -m pyedb.workflows.job_manager.backend.job_manager_handler --host localhost --port 8080
+    """
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Start the PyEDB job-manager backend.")
+    parser.add_argument(
+        "--host",
+        type=str,
+        default="localhost",
+        help="IP address or hostname to bind the server (default: localhost)",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8080,
+        help="TCP port to listen on (default: 8080)",
+    )
+    args = parser.parse_args()
+
+    handler = JobManagerHandler(host=args.host, port=args.port)
     handler.start_service()
     print(f"✅ Job-manager backend listening on http://{handler.host}:{handler.port}")
     try:
