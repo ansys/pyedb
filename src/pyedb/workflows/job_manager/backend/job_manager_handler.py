@@ -80,7 +80,7 @@ from pyedb.workflows.job_manager.backend.job_submission import (
     create_hfss_config,
 )
 from pyedb.workflows.job_manager.backend.service import JobManager, ResourceLimits, SchedulerManager
-from pyedb.workflows.log_parser.hfss_log_parser import HFSSLogParser
+from pyedb.workflows.utilities.hfss_log_parser import HFSSLogParser
 
 
 def get_session(url: str) -> aiohttp.ClientSession:
