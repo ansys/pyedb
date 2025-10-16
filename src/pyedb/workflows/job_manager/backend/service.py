@@ -1007,11 +1007,11 @@ class JobManager:
                             f"Manager path: {self.ansys_path}"
                         )
 
-                # Generate command with the correct ANSYS path
-                command_str = job_info.config.generate_command_string()
+                # Generate command as list for secure execution
+                command_list = job_info.config.generate_command_list()
 
                 # Log the command being executed for debugging
-                logger.info(f"Executing command for job {job_id}: {command_str}")
+                logger.info(f"Executing command for job {job_id}: {' '.join(command_list)}")
                 logger.info(f"ANSYS executable path: {job_info.config.ansys_edt_path}")
                 logger.info(f"Project path: {job_info.config.project_path}")
 
@@ -1019,12 +1019,11 @@ class JobManager:
                 if not os.path.exists(job_info.config.project_path):
                     raise FileNotFoundError(f"Project file not found: {job_info.config.project_path}")
 
-                # Run locally - using asyncio subprocess for better control
-                process = await asyncio.create_subprocess_shell(
-                    command_str,
+                # Run locally - using asyncio subprocess for better control with secure command list
+                process = await asyncio.create_subprocess_exec(
+                    *command_list,
                     stdout=asyncio.subprocess.PIPE,
                     stderr=asyncio.subprocess.PIPE,
-                    shell=True,
                 )
 
                 job_info.process = process

@@ -73,6 +73,7 @@ import re
 import shlex
 import shutil
 import subprocess
+import tempfile
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field
@@ -297,7 +298,7 @@ class HFSS3DLayoutBatchOptions(BaseModel):
     remote_spawn_command: str = "Scheduler"
     solve_adaptive_only: bool = False
     validate_only: bool = False
-    temp_directory: str = Field(default_factory=lambda: "/tmp" if platform.system() != "Windows" else "D:\\Temp")
+    temp_directory: str = Field(default_factory=lambda: tempfile.gettempdir())
 
     def __init__(self, **data):
         """Initialize and validate options."""
@@ -407,11 +408,7 @@ class HFSSSimulationConfig(BaseModel):
     non_graphical: bool = True
     monitor: bool = True
     layout_options: HFSS3DLayoutBatchOptions = Field(default_factory=HFSS3DLayoutBatchOptions)
-    project_path: str = Field(
-        default_factory=lambda: "/tmp/simulation.aedt"
-        if platform.system() != "Windows"
-        else "C:\\Temp\\simulation.aedt"
-    )
+    project_path: str = Field(default_factory=lambda: os.path.join(tempfile.gettempdir(), "simulation.aedt"))
     design_name: str = ""
     design_mode: str = ""
     setup_name: str = ""
@@ -786,25 +783,35 @@ class HFSSSimulationConfig(BaseModel):
             f.write(script_content)
 
         # if self.scheduler_type != SchedulerType.WINDOWS_HPC:
-        os.chmod(script_path, 0o755)  # Make executable on Unix-like systems
-
-        # Construct scheduler submission command
+        os.chmod(script_path, 0o750)  # Make executable, restrict world access
         if self.scheduler_type == SchedulerType.SLURM:
             submit_cmd = ["sbatch", script_path]
         elif self.scheduler_type == SchedulerType.LSF:
-            submit_cmd = ["bsub", "<", script_path]
+            submit_cmd = ["bsub"]
         else:
-            raise ValueError(f"Unsupported scheduler: {self.scheduler_type}")
+            submit_cmd = ["bsub", "<", script_path]
 
         try:
             # Execute submission command with timeout
-            result = subprocess.run(
-                submit_cmd,
-                capture_output=True,
-                text=True,
-                timeout=30,
-                shell=(self.scheduler_type == SchedulerType.LSF),  # bsub needs shell for redirection
-            )
+            if self.scheduler_type == SchedulerType.LSF:
+                # For LSF, redirect script content via stdin instead of shell
+                with open(script_path, "r") as script_file:
+                    result = subprocess.run(
+                        submit_cmd,
+                        stdin=script_file,
+                        capture_output=True,
+                        text=True,
+                        timeout=30,
+                        shell=False,
+                    )
+            else:
+                result = subprocess.run(
+                    submit_cmd,
+                    capture_output=True,
+                    text=True,
+                    timeout=30,
+                    shell=False,
+                )
             return result
         except subprocess.TimeoutExpired:
             raise Exception(f"Scheduler submission timed out after 30 seconds")
