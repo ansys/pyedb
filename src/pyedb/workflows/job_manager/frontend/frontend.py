@@ -1,13 +1,8 @@
-# frontend.py
 from datetime import datetime
 from typing import Dict, Optional
 
 import aiohttp
 from nicegui import ui
-
-# ------------------------------------------------------------------
-#  Badge helpers for job monitoring
-# ------------------------------------------------------------------
 
 
 def _refresh_badges(job: dict, w: dict):

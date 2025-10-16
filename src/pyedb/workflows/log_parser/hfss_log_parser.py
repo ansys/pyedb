@@ -1,3 +1,26 @@
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -8,7 +31,15 @@ from typing import Any, Dict, List, Optional
 
 
 def _to_hz(text: str) -> float:
-    """Convert 3GHz / 100kHz / 10MHz → Hz."""
+    """
+    Convert a human-readable frequency string to hertz.
+
+    :param text: Frequency expression such as ``'3 GHz'``, ``'100 kHz'``, ``'10MHz'``.
+    :type text: str
+    :return: Numerical value in Hz. Returns :py:const:`math.nan` if the string
+             cannot be parsed.
+    :rtype: float
+    """
     m = re.match(r"(?P<val>[\d.]+)\s*(?P<unit>[kMG]?Hz)", text, re.I)
     if not m:
         return math.nan
@@ -18,7 +49,16 @@ def _to_hz(text: str) -> float:
 
 
 def _to_sec(mm_ss: str) -> int:
-    """Convert 'MM:SS' or 'H:MM:SS' or 'HH:MM:SS' → seconds."""
+    """
+    Convert an ANSYS time stamp to seconds.
+
+    Accepts ``MM:SS``, ``H:MM:SS`` or ``HH:MM:SS``.
+
+    :param mm_ss: Time stamp extracted from the log.
+    :type mm_ss: str
+    :return: Total elapsed seconds.
+    :rtype: int
+    """
     parts = mm_ss.strip().split(":")
     if len(parts) == 2:  # MM:SS
         return int(parts[0]) * 60 + int(parts[1])
@@ -40,6 +80,16 @@ def _as_dict(obj: Any) -> Any:
 
 @dataclass(slots=True)
 class ProjectInfo:
+    """
+    Basic meta-data extracted from the header of an HFSS batch log.
+
+    :ivar str name: Project name (without extension).
+    :ivar ~pathlib.Path file: Full path to the project file.
+    :ivar str design: Active design name (may be empty).
+    :ivar str user: OS user that launched the solve.
+    :ivar str cmd_line: Exact command line used for the run.
+    """
+
     name: str
     file: Path
     design: str = ""
@@ -49,6 +99,15 @@ class ProjectInfo:
 
 @dataclass(slots=True)
 class InitMesh:
+    """
+    Statistics reported during the initial tetrahedral meshing phase.
+
+    :ivar int tetrahedra: Number of tetrahedra created.
+    :ivar float memory_mb: Peak memory consumption in megabytes.
+    :ivar int real_time_sec: Wall clock time in seconds.
+    :ivar int cpu_time_sec: CPU time in seconds.
+    """
+
     tetrahedra: int
     memory_mb: float
     real_time_sec: int
@@ -57,6 +116,19 @@ class InitMesh:
 
 @dataclass(slots=True)
 class AdaptivePass:
+    """
+    Single adaptive solution pass (frequency, delta-S, memory, …).
+
+    :ivar int pass_nr: 1-based pass index.
+    :ivar float freq_hz: Target frequency in hertz.
+    :ivar int tetrahedra: Number of tetrahedra at *end* of pass.
+    :ivar int matrix_size: Order of the FEM matrix.
+    :ivar float memory_mb: Memory used in megabytes.
+    :ivar float delta_s: Maximum |ΔS| observed (``None`` until reported).
+    :ivar bool converged: ``True`` if this pass triggered convergence.
+    :ivar int elapsed_sec: Wall time spent in this pass.
+    """
+
     pass_nr: int
     freq_hz: float
     tetrahedra: int
@@ -69,6 +141,15 @@ class AdaptivePass:
 
 @dataclass(slots=True)
 class Sweep:
+    """
+    Frequency-sweep summary block.
+
+    :ivar str type: Sweep algorithm: ``Interpolating``, ``Discrete`` or ``Fast``.
+    :ivar int frequencies: Total number of frequency points requested.
+    :ivar list[float] solved: List of frequencies (Hz) actually solved.
+    :ivar int elapsed_sec: Wall clock time for the entire sweep.
+    """
+
     type: str
     frequencies: int
     solved: List[float]
@@ -86,7 +167,26 @@ class BlockParser:
 
 
 class ProjectBlockParser(BlockParser):
+    """
+    Extract project meta-data from the log header.
+
+    Example::
+
+        >>> block = ProjectBlockParser(lines)
+        >>> info = block.parse()
+        >>> info.name
+        'Patch_Antenna'
+    """
+
     def parse(self) -> ProjectInfo:
+        """
+        Parse the stored lines and return a :class:`ProjectInfo` instance.
+
+        :return: Populated data object.
+        :rtype: ProjectInfo
+        :raises ValueError: If mandatory fields (project name or file path)
+                            cannot be located.
+        """
         proj, design, user, cmd = "", "", "", ""
         for line in self.lines:
             if m := re.search(r"Project:(?P<proj>[^,]+),\s*Design:(?P<des>[^,]+)", line):
@@ -122,7 +222,17 @@ class InitMeshBlockParser(BlockParser):
 
 
 class AdaptiveBlockParser(BlockParser):
+    """
+    Build a list of :class:`AdaptivePass` objects from the adaptive section.
+    """
+
     def parse(self) -> List[AdaptivePass]:
+        """
+        Parse every adaptive pass and determine which one triggered convergence.
+
+        :return: Ordered list of passes (pass_nr always increases).
+        :rtype: list[AdaptivePass]
+        """
         passes: List[AdaptivePass] = []
         current: Optional[AdaptivePass] = None
         last_converge_pass: Optional[int] = None
@@ -176,7 +286,17 @@ class AdaptiveBlockParser(BlockParser):
 
 
 class SweepBlockParser(BlockParser):
+    """
+    Extract frequency-sweep summary (if present).
+    """
+
     def parse(self) -> Optional[Sweep]:
+        """
+        Return sweep information or ``None`` if the log contains no sweep block.
+
+        :return: Sweep summary object.
+        :rtype: Sweep | None
+        """
         sweep_type, freqs, solved, elapsed = "", 0, [], 0
         for line in self.lines:
             if m := re.search(r"Interpolating|Discrete|Fast", line):
@@ -193,6 +313,17 @@ class SweepBlockParser(BlockParser):
 
 
 class HFSSLogParser:
+    """
+    High-level façade that orchestrates all block parsers.
+
+    Typical usage::
+
+        >>> log = HFSSLogParser("/tmp/project.aedt.batchinfo.1234/hfss.log")
+        >>> data = log.parse()
+        >>> data.is_converged()
+        True
+    """
+
     BLOCK_MAP: Dict[str, type[BlockParser]] = {
         "project": ProjectBlockParser,
         "init_mesh": InitMeshBlockParser,
@@ -204,6 +335,14 @@ class HFSSLogParser:
         self.path = Path(log_path)
 
     def parse(self) -> ParsedLog:
+        """
+        Execute all sub-parsers and return a unified object.
+
+        :return: Structured representation of the entire log.
+        :rtype: ParsedLog
+        :raises FileNotFoundError: If *log_path* does not exist.
+        :raises ValueError: If a mandatory block cannot be parsed.
+        """
         text = self.path.read_text(encoding="utf-8", errors="ignore")
         lines = text.splitlines()
 
@@ -222,16 +361,35 @@ class HFSSLogParser:
 
 @dataclass(slots=True)
 class ParsedLog:
+    """
+    Root container returned by :meth:`HFSSLogParser.parse`.
+
+    :ivar ProjectInfo project: Project meta-data.
+    :ivar InitMesh init_mesh: Initial-mesh metrics.
+    :ivar list[AdaptivePass] adaptive: Adaptive passes in chronological order.
+    :ivar Sweep | None sweep: Frequency-sweep summary (``None`` if absent).
+    """
+
     project: ProjectInfo
     init_mesh: InitMesh
     adaptive: List[AdaptivePass]
     sweep: Optional[Sweep]
 
     def to_dict(self) -> dict:
+        """
+        Deep-convert the entire object to JSON-serialisable primitives.
+
+        :return: Plain ``dict`` / ``list`` / scalar structure.
+        :rtype: dict[str, Any]
+        """
         return _as_dict(self)
 
     def is_converged(self) -> bool:
-        """True if at least one adaptive pass reached convergence."""
+        """
+        Return ``True`` if the adaptive solver declared convergence.
+
+        :rtype: bool
+        """
         return self.adaptive[-1].converged if self.adaptive else False
 
     def adaptive_passes(self) -> List[AdaptivePass]:
@@ -239,7 +397,12 @@ class ParsedLog:
         return self.adaptive
 
     def memory_on_convergence(self) -> float:
-        """Memory (MB) of the **last** converged pass, or NaN."""
+        """
+        Memory (MB) consumed by the *last* converged adaptive pass.
+
+        :return: Megabytes, or :py:const:`math.nan` if no pass converged.
+        :rtype: float
+        """
         for p in reversed(self.adaptive):
             if p.converged:
                 return p.memory_mb
@@ -247,16 +410,26 @@ class ParsedLog:
 
     def is_completed(self) -> bool:
         """
-        Heuristic:  simulation is considered completed when
-        - at least one adaptive pass converged **and**
-        - a frequency-sweep block exists with elapsed time > 0
+        Heuristic indicating a successful end-to-end solve.
+
+        A simulation is considered complete when **both** of the following
+        conditions are satisfied:
+
+        1. At least one adaptive pass converged.
+        2. A frequency-sweep block exists with elapsed time greater than zero.
+
+        :rtype: bool
         """
         return self.is_converged() and self.sweep is not None and self.sweep.elapsed_sec > 0
 
     def errors(self) -> List[str]:
         """
-        Return **error** lines only (skip warnings).
-        ANSYS prefixes errors with [error] or *** ERROR ***.
+        Extract only **error** lines (warnings are ignored).
+
+        ANSYS marks errors with ``[error]`` or ``*** ERROR ***``.
+
+        :return: List of stripped error lines (empty if none).
+        :rtype: list[str]
         """
         errs: List[str] = []
         # we keep the raw lines inside the ProjectBlockParser – expose them
