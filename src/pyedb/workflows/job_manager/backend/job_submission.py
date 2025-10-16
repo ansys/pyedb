@@ -783,7 +783,7 @@ class HFSSSimulationConfig(BaseModel):
             f.write(script_content)
 
         # if self.scheduler_type != SchedulerType.WINDOWS_HPC:
-        os.chmod(script_path, 0o750)  # Make executable, restrict world access
+        os.chmod(script_path, 0o750)  # nosec B103 - 0o750 is secure: owner+group only, no world access
         if self.scheduler_type == SchedulerType.SLURM:
             submit_cmd = ["sbatch", script_path]
         elif self.scheduler_type == SchedulerType.LSF:
