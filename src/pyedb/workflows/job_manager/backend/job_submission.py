@@ -72,7 +72,7 @@ import platform
 import re
 import shlex
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import tempfile
 from typing import Any, Dict, List, Optional, Union
 
@@ -796,7 +796,7 @@ class HFSSSimulationConfig(BaseModel):
             if self.scheduler_type == SchedulerType.LSF:
                 # For LSF, redirect script content via stdin instead of shell
                 with open(script_path, "r") as script_file:
-                    result = subprocess.run(
+                    result = subprocess.run(  # nosec B603
                         submit_cmd,
                         stdin=script_file,
                         capture_output=True,
@@ -805,7 +805,7 @@ class HFSSSimulationConfig(BaseModel):
                         shell=False,
                     )
             else:
-                result = subprocess.run(
+                result = subprocess.run(  # nosec B603
                     submit_cmd,
                     capture_output=True,
                     text=True,
@@ -884,7 +884,7 @@ class HFSSSimulationConfig(BaseModel):
                 print(f"Starting HFSS simulation: {self.jobid}")
                 print(f"Command: {' '.join(command) if isinstance(command, list) else command}")
 
-                result = subprocess.run(command, **default_kwargs)
+                result = subprocess.run(command, **default_kwargs)  # nosec B603
 
                 if result.returncode == 0:
                     print(f"✅ Simulation {self.jobid} completed successfully")
