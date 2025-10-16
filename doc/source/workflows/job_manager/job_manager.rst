@@ -1,7 +1,7 @@
 .. _job_manager_backend:
 
 ================================================================================
-PyEDB Job Manager Backend – Production Documentation
+PyEDB job manager backend—production documentation
 ================================================================================
 
 .. contents:: Table of Contents
@@ -11,7 +11,7 @@ PyEDB Job Manager Backend – Production Documentation
 Overview
 --------
 
-The Job Manager Backend is a **hybrid async/sync service** that schedules and
+The job manager backend is a **hybrid async/sync service** that schedules and
 monitors HFSS / 3D-Layout simulations on:
 
 * Local workstations (sub-process)
@@ -59,7 +59,7 @@ job_submission.py
 ~~~~~~~~~~~~~~~~~
 **Cross-platform simulation launcher**
 
-* Immutable Pydantic models: ``HFSSSimulationConfig``, ``SchedulerOptions``, ``MachineNode``
+* Immutable data models: ``HFSSSimulationConfig``, ``SchedulerOptions``, ``MachineNode``
 * Generates ready-to-run shell commands or batch scripts (SLURM/LSF)
 * Entry point: ``create_hfss_config()`` → ``config.run_simulation()``
 
@@ -67,7 +67,7 @@ service.py
 ~~~~~~~~~~
 **Async job manager & REST layer**
 
-* ``JobManager``: priority queues, resource limits, Socket.IO push
+* ``JobManager``: priority queues, resource limits, Socket. IO push
 * ``ResourceMonitor``: async telemetry (CPU, RAM, disk)
 * ``SchedulerManager``: live cluster introspection (partitions, queues)
 * Self-hosted aiohttp application with REST + WebSocket endpoints
@@ -222,12 +222,12 @@ Deployment Notes
   workstation or cluster node size.
 
 * **TLS termination** should be handled by an upstream reverse proxy (nginx,
-  Traefik, etc.); the backend only speaks plain HTTP/WebSocket.
+  reverse proxy, etc.); the backend only speaks plain HTTP/WebSocket.
 
 -----------------
 See Also
 -----------------
 
-* :ref:`job_manager_handler_discussion` – architectural trade-offs
-* ``examples/job_manager/`` – full CLI & Jupyter demos
+* :ref:`job_manager_handler_discussion`—architectural trade-offs
+* ``examples/job_manager/``—full CLI & Jupyter demos
 * `ANSYS HFSS batch options documentation <https://ansyshelp.ansys.com>`_

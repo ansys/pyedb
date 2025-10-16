@@ -1,7 +1,7 @@
-Job Manager
+Job manager
 ===========
 
-This section describes Job Manager features.
+This section describes job manager features.
 
 .. toctree::
    :maxdepth: 2
