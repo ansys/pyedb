@@ -239,6 +239,10 @@ class AdaptiveBlockParser(BlockParser):
         adaptive_converged_line_found = False
 
         for lineno, line in enumerate(self.lines, 1):
+            # ---- Check for "Adaptive Passes converged" literal string (check every line) ----
+            if "Adaptive Passes converged" in line:
+                adaptive_converged_line_found = True
+
             # ---- new adaptive pass ----------------------------------
             if m := re.search(r"Adaptive Pass (?P<n>\d+).*Frequency: (?P<f>[\d.kMGHz]+)", line, re.I):
                 current = AdaptivePass(
@@ -272,10 +276,6 @@ class AdaptiveBlockParser(BlockParser):
                 passes.append(current)
                 last_converge_pass = int(m["n"])
                 current = None
-
-            # ---- global convergence flag ----------------------------
-            if re.search(r"Adaptive\s+Passes\s+converged", line, re.I):
-                adaptive_converged_line_found = True
 
         # ---- final decision ----------------------------------------
         if adaptive_converged_line_found and last_converge_pass is not None:
