@@ -390,20 +390,19 @@ class JobPoolManager:
             return False
 
         # Check CPU usage
-        # if resources["cpu_percent"] > self.resource_limits.max_cpu_percent:
-        #     logger.info(f"CPU usage too high ({resources['cpu_percent']}%), delaying job start")
-        #     return False
-        #
-        # # Check memory availability
-        # if resources["memory_free_gb"] < self.resource_limits.min_memory_gb:
-        #     logger.info(f"Insufficient memory ({resources['memory_free_gb']}GB free), delaying job start")
-        #     return False
-        #
-        # # Check disk space
-        # if resources["disk_free_gb"] < self.resource_limits.min_disk_gb:
-        #     logger.info(f"Insufficient disk space ({resources['disk_free_gb']}GB free), delaying job start")
-        #     return False
+        if resources["cpu_percent"] > self.resource_limits.max_cpu_percent:
+            logger.info(f"CPU usage too high ({resources['cpu_percent']}%), delaying job start")
+            return False
 
+        # Check memory availability
+        if resources["memory_free_gb"] < self.resource_limits.min_memory_gb:
+            logger.info(f"Insufficient memory ({resources['memory_free_gb']}GB free), delaying job start")
+            return False
+
+        # Check disk space
+        if resources["disk_free_gb"] < self.resource_limits.min_disk_gb:
+            logger.info(f"Insufficient disk space ({resources['disk_free_gb']}GB free), delaying job start")
+            return False
         return True
 
     def get_queue_stats(self) -> Dict[str, Any]:
