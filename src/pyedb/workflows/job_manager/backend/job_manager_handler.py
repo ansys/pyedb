@@ -49,41 +49,36 @@ from pyedb.workflows.log_parser.hfss_log_parser import HFSSLogParser
 
 def get_session(url: str) -> aiohttp.ClientSession:
     """
-    Return a ready-to-use ``aiohttp.ClientSession`` configured
-    with sensible timeouts and a single connector that re-uses
-    TCP connections across requests.
+    Return an aiohttp.ClientSession.
 
     Parameters
     ----------
     url : str
-        Target base URL (only used to decide whether TLS is required).
-        The session itself is **generic** and can be re-used for any host.
-
-    Returns
-    -------
-    aiohttp.ClientSession
-        A lightweight session instance.  The caller **may** keep it alive
-        for the lifetime of the application; closing it is optional
-        because the underlying connector is small and will be garbage-
-        collected when the session goes out of scope.
+        Base URL; used only to decide whether TLS verification is required.
     """
-    # Decide whether we need TLS by looking at the scheme
-    tls = URL(url).scheme == "https"
-
-    # One connector for connection pooling
-    connector = aiohttp.TCPConnector(
-        limit=20,  # max simultaneous connections
-        limit_per_host=5,  # max simultaneous connections per host
-        ssl=tls,
-    )
-
-    # Global timeout: total 30 s (connect + read + request)
     timeout = aiohttp.ClientTimeout(total=30)
 
+    # --- actually use the url ----------------------------------------------
+    tls = url.lower().startswith("https://")
+    ssl_context = ssl.create_default_context() if tls else False
+    # -----------------------------------------------------------------------
+
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:  # synchronous context
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
     return aiohttp.ClientSession(
-        connector=connector,
         timeout=timeout,
         headers={"User-Agent": "pyedb-job-manager/1.0"},
+        connector=aiohttp.TCPConnector(
+            limit=20,
+            limit_per_host=10,
+            ssl=ssl_context,
+            loop=loop,
+        ),
+        loop=loop,
     )
 
 
