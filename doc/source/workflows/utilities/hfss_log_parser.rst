@@ -1,10 +1,10 @@
 .. _hfss_log_parser_api:
 
 ==================================================================
-HFSS log parser -- ``pyedb.workflows.log_parser.hfss_log_parser``
+HFSS log parser -- ``pyedb.workflows.utilities.hfss_log_parser``
 ==================================================================
 
-.. automodule:: pyedb.workflows.log_parser.hfss_log_parser
+.. automodule:: pyedb.workflows.utilities.hfss_log_parser
    :no-members:
    :noindex:
 
