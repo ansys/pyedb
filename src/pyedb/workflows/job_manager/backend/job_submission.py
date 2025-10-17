@@ -350,6 +350,11 @@ class HFSS3DLayoutBatchOptions(BaseModel):
             "HFSS 3D Layout Design/RemoteSpawnCommand": self.remote_spawn_command,
             "HFSS 3D Layout Design/SolveAdaptiveOnly": "1" if self.solve_adaptive_only else "0",
             "HFSS 3D Layout Design/ValidateOnly": "1" if self.validate_only else "0",
+            "HFSS 3D Layout Design/RAMLimitPercent": "90",
+            "HFSS/RAMLimitPercent": "90",
+            "Maxwell 2D/RAMLimitPercent": "90",
+            "Maxwell 3D/RAMLimitPercent": "90",
+            "Q3D Extractor/RAMLimitPercent": "90",
         }
 
 
