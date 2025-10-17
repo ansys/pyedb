@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -33,7 +33,7 @@ class Model(ObjBase):
     @property
     def model_type(self):
         """Component model type."""
-        return self._edb_object.GetModelType()
+        return self._edb_object.GetModelType().ToString()
 
 
 class PinPairModel(Model):
@@ -73,30 +73,3 @@ class PinPairModel(Model):
         bool
         """
         return self._edb_object.SetPinPairRlc(pin_pair, pin_par_rlc)
-
-
-class SParameterModel(Model):
-    """Manages S-parameter model class."""
-
-    def __init__(self, pedb, edb_object=None):
-        super().__init__(pedb, edb_object)
-
-    def component_model_name(self):
-        self._edb_object.GetComponentModelName()
-
-
-class SPICEModel(Model):
-    """Manages SPICE model class."""
-
-    def __init__(self, pedb, edb_object=None):
-        super().__init__(pedb, edb_object)
-
-    @property
-    def model_name(self):
-        """SPICE model name."""
-        return self._edb_object.GetModelName()
-
-    @property
-    def spice_file_path(self):
-        """SPICE file path."""
-        return self._edb_object.GetSPICEFilePath()

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -224,8 +224,11 @@ class LayoutValidation:
                             if el.layout_obj.obj_type.value == 0:
                                 if not el.is_void:
                                     sum += el.area()
-                        except:
-                            pass
+                        except Exception as e:
+                            self._pedb._logger.warning(
+                                f"A(n) {type(e).__name__} error occurred while calculating area "
+                                f"for element {elem} - Default value of 0 is used: {str(e)}"
+                            )
                     return sum
 
                 if order_by_area:

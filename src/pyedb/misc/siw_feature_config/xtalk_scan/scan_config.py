@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -22,7 +22,6 @@
 
 from enum import Enum
 import os
-import xml.etree as ET
 
 from pyedb.generic.general_methods import ET
 from pyedb.misc.siw_feature_config.xtalk_scan.fd_xtalk_scan_config import (

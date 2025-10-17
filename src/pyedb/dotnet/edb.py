@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -32,7 +32,7 @@ import os
 from pathlib import Path
 import re
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 import time
 import traceback
@@ -98,10 +98,11 @@ from pyedb.generic.general_methods import generate_unique_name, is_linux, is_win
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
-from pyedb.misc.decorators import execution_timer
+from pyedb.misc.decorators import deprecate_argument_name, execution_timer
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflow import Workflow
+from pyedb.workflows.utilities.cutout import Cutout
 
 
 class Edb:
@@ -667,7 +668,8 @@ class Edb:
         #     self.standalone = False
 
         self.core.Database.SetRunAsStandAlone(self.standalone)
-
+        if self._db:  # pragma no cover
+            self._db.Close()
         self._db = self.core.Database.Create(self.edbpath)
 
         if not self._db:
@@ -754,6 +756,11 @@ class Edb:
 
         This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         input_file : str
@@ -790,16 +797,16 @@ class Edb:
         self._nets = None
         aedb_name = os.path.splitext(os.path.basename(input_file))[0] + ".aedb"
         if anstranslator_full_path and os.path.exists(anstranslator_full_path):
-            command = anstranslator_full_path
+            executable_path = anstranslator_full_path
         else:
-            command = os.path.join(self.base_path, "anstranslator")
+            executable_path = os.path.join(self.base_path, "anstranslator")
             if is_windows:
-                command += ".exe"
+                executable_path += ".exe"
 
         if not working_dir:
             working_dir = os.path.dirname(input_file)
         cmd_translator = [
-            command,
+            executable_path,
             input_file,
             os.path.join(working_dir, aedb_name),
             "-l={}".format(os.path.join(working_dir, "Translator.log")),
@@ -817,7 +824,10 @@ class Edb:
             cmd_translator.append('-t="{}"'.format(tech_file))
         if layer_filter:
             cmd_translator.append('-f="{}"'.format(layer_filter))
-        subprocess.run(cmd_translator)
+        try:
+            subprocess.run(cmd_translator, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError("An error occurred while translating board file to ``edb.def`` file") from e
         if not os.path.exists(os.path.join(working_dir, aedb_name)):
             raise RuntimeWarning(f"Translator failed. command : {' '.join(cmd_translator)}")
         else:
@@ -1900,8 +1910,11 @@ class Edb:
                                         convert_py_list_to_net_list(list(obj_data)),
                                         convert_py_list_to_net_list(voids_poly),
                                     )
-                        except:
-                            pass
+                        except Exception as e:
+                            self.logger.error(
+                                f"A(n) {type(e).__name__} error occurred in method _create_conformal of "
+                                f"class Edb at iteration {k} for data {i}: {str(e)}"
+                            )
                         finally:
                             unite_polys.extend(list(obj_data))
             _poly_unite = self.core.Geometry.PolygonData.Unite(convert_py_list_to_net_list(unite_polys))
@@ -1979,10 +1992,11 @@ class Edb:
         _poly = _poly.Expand(expansion_size, tolerance, round_corner, round_extension)[0]
         return _poly
 
+    @deprecate_argument_name({"signal_list": "signal_nets", "reference_list": "reference_nets"})
     def cutout(
         self,
-        signal_list=None,
-        reference_list=None,
+        signal_nets=None,
+        reference_nets=None,
         extent_type="ConvexHull",
         expansion_size=0.002,
         use_round_corner=False,
@@ -2017,9 +2031,9 @@ class Edb:
 
         Parameters
         ----------
-         signal_list : list
+         signal_nets : list
             List of signal strings.
-        reference_list : list, optional
+        reference_nets : list, optional
             List of references to add. The default is ``["GND"]``.
         extent_type : str, optional
             Type of the extension. Options are ``"Conforming"``, ``"ConvexHull"``, and
@@ -2105,7 +2119,7 @@ class Edb:
         >>>      if "3V3" in net:
         >>>           signal_list.append(net)
         >>> power_list = ["PGND"]
-        >>> edb.cutout(signal_list=signal_list, reference_list=power_list, extent_type="Conforming")
+        >>> edb.cutout(signal_nets=signal_list, reference_nets=power_list, extent_type="Conforming")
         >>> end_time = str((time.time() - start) / 60)
         >>> edb.logger.info("Total legacy cutout time in min %s", end_time)
         >>> edb.nets.plot(signal_list, None, color_by_net=True)
@@ -2115,119 +2129,33 @@ class Edb:
 
 
         """
-        if expansion_factor > 0:
-            expansion_size = self.calculate_initial_extent(expansion_factor)
-        if signal_list is None:
-            signal_list = []
-        if isinstance(reference_list, str):
-            reference_list = [reference_list]
-        elif reference_list is None:
-            reference_list = []
-        if not use_pyaedt_cutout and custom_extent:
-            return self._create_cutout_on_point_list(
-                custom_extent,
-                units=custom_extent_units,
-                output_aedb_path=output_aedb_path,
-                open_cutout_at_end=open_cutout_at_end,
-                nets_to_include=signal_list + reference_list,
-                include_partial_instances=include_partial_instances,
-                keep_voids=keep_voids,
-            )
-        elif not use_pyaedt_cutout:
-            return self._create_cutout_legacy(
-                signal_list=signal_list,
-                reference_list=reference_list,
-                extent_type=extent_type,
-                expansion_size=expansion_size,
-                use_round_corner=use_round_corner,
-                output_aedb_path=output_aedb_path,
-                open_cutout_at_end=open_cutout_at_end,
-                use_pyaedt_extent_computing=use_pyaedt_extent_computing,
-                check_terminals=check_terminals,
-                include_pingroups=include_pingroups,
-                inlcude_voids_in_extents=include_voids_in_extents,
-            )
-        else:
-            legacy_path = self.edbpath
-            if expansion_factor > 0 and not custom_extent:
-                start = time.time()
-                self.save()
-                dummy_path = self.edbpath.replace(".aedb", "_smart_cutout_temp.aedb")
-                working_cutout = False
-                i = 1
-                expansion = expansion_size
-                while i <= maximum_iterations:
-                    self.logger.info("-----------------------------------------")
-                    self.logger.info("Trying cutout with {}mm expansion size".format(expansion * 1e3))
-                    self.logger.info("-----------------------------------------")
-                    result = self._create_cutout_multithread(
-                        signal_list=signal_list,
-                        reference_list=reference_list,
-                        extent_type=extent_type,
-                        expansion_size=expansion,
-                        use_round_corner=use_round_corner,
-                        number_of_threads=number_of_threads,
-                        custom_extent=custom_extent,
-                        output_aedb_path=dummy_path,
-                        remove_single_pin_components=remove_single_pin_components,
-                        use_pyaedt_extent_computing=use_pyaedt_extent_computing,
-                        extent_defeature=extent_defeature,
-                        custom_extent_units=custom_extent_units,
-                        check_terminals=check_terminals,
-                        include_pingroups=include_pingroups,
-                        preserve_components_with_model=preserve_components_with_model,
-                        include_partial=include_partial_instances,
-                        simple_pad_check=simple_pad_check,
-                        keep_lines_as_path=keep_lines_as_path,
-                        inlcude_voids_in_extents=include_voids_in_extents,
-                    )
-                    if self.are_port_reference_terminals_connected():
-                        if output_aedb_path:
-                            self.save_as(output_aedb_path)
-                        else:
-                            self.save_as(legacy_path)
-                        working_cutout = True
-                        break
-                    self.close()
-                    self.edbpath = legacy_path
-                    self.open_edb()
-                    i += 1
-                    expansion = expansion_size * i
-                if working_cutout:
-                    msg = "Cutout completed in {} iterations with expansion size of {}mm".format(i, expansion * 1e3)
-                    self.logger.info_timer(msg, start)
-                else:
-                    msg = "Cutout failed after {} iterations and expansion size of {}mm".format(i, expansion * 1e3)
-                    self.logger.info_timer(msg, start)
-                    return False
-            else:
-                result = self._create_cutout_multithread(
-                    signal_list=signal_list,
-                    reference_list=reference_list,
-                    extent_type=extent_type,
-                    expansion_size=expansion_size,
-                    use_round_corner=use_round_corner,
-                    number_of_threads=number_of_threads,
-                    custom_extent=custom_extent,
-                    output_aedb_path=output_aedb_path,
-                    remove_single_pin_components=remove_single_pin_components,
-                    use_pyaedt_extent_computing=use_pyaedt_extent_computing,
-                    extent_defeature=extent_defeature,
-                    custom_extent_units=custom_extent_units,
-                    check_terminals=check_terminals,
-                    include_pingroups=include_pingroups,
-                    preserve_components_with_model=preserve_components_with_model,
-                    include_partial=include_partial_instances,
-                    simple_pad_check=simple_pad_check,
-                    keep_lines_as_path=keep_lines_as_path,
-                    inlcude_voids_in_extents=include_voids_in_extents,
-                )
-            if result and not open_cutout_at_end and self.edbpath != legacy_path:
-                self.save()
-                self.close()
-                self.edbpath = legacy_path
-                self.open_edb()
-            return result
+        cutout = Cutout(self)
+        cutout.expansion_size = expansion_size
+        cutout.signals = signal_nets
+        cutout.references = reference_nets
+        cutout.extent_type = extent_type
+        cutout.expansion_size = expansion_size
+        cutout.use_round_corner = use_round_corner
+        cutout.output_file = output_aedb_path
+        cutout.open_cutout_at_end = open_cutout_at_end
+        cutout.use_pyaedt_cutout = use_pyaedt_cutout
+        cutout.number_of_threads = number_of_threads
+        cutout.use_pyaedt_extent_computing = use_pyaedt_extent_computing
+        cutout.extent_defeatured = extent_defeature
+        cutout.remove_single_pin_components = remove_single_pin_components
+        cutout.custom_extent = custom_extent
+        cutout.custom_extent_units = custom_extent_units
+        cutout.include_partial_instances = include_partial_instances
+        cutout.keep_voids = keep_voids
+        cutout.check_terminals = check_terminals
+        cutout.include_pingroups = include_pingroups
+        cutout.expansion_factor = expansion_factor
+        cutout.maximum_iterations = maximum_iterations
+        cutout.preserve_components_with_model = preserve_components_with_model
+        cutout.simple_pad_check = simple_pad_check
+        cutout.keep_lines_as_path = keep_lines_as_path
+        cutout.include_voids_in_extents = include_voids_in_extents
+        return cutout.run()
 
     def _create_cutout_legacy(
         self,
@@ -2339,8 +2267,8 @@ class Edb:
                 if os.path.exists(source) and not os.path.exists(target):
                     try:
                         shutil.copy(source, target)
-                    except:
-                        pass
+                    except Exception as e:
+                        self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         elif open_cutout_at_end:
             self._active_cell = _cutout
             self._init_objects()
@@ -3025,8 +2953,8 @@ class Edb:
                     try:
                         shutil.copy(source, target)
                         self.logger.warning("aedb def file manually created.")
-                    except:
-                        pass
+                    except Exception as e:
+                        self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(polygonData.GetPolygonWithoutArcs().Points)]
 
     def create_cutout_on_point_list(
@@ -3747,7 +3675,7 @@ class Edb:
             return True
         self.logger.reset_timer()
         if not common_reference:
-            common_reference = list(set([i.reference_net_name for i in all_sources if i.reference_net_name]))
+            common_reference = list(set([i.reference_net_name for i in all_sources if i.reference_terminal.net_name]))
             if len(common_reference) > 1:
                 self.logger.error("More than 1 reference found.")
                 return False
@@ -4270,7 +4198,18 @@ class Edb:
             terminal.ref_terminal = ref_terminal
         if name:
             terminal.name = name
-        return self.ports[terminal.name]
+
+        if terminal.is_circuit_port:
+            port = CircuitPort(self, terminal._edb_object)
+        elif terminal.terminal_type == "BundleTerminal":
+            port = BundleWavePort(self, terminal._edb_object)
+        elif terminal.hfss_type == "Wave":
+            port = WavePort(self, terminal._edb_object)
+        elif terminal.terminal_type == "PadstackInstanceTerminal":
+            port = CoaxPort(self, terminal._edb_object)
+        else:
+            port = GapPort(self, terminal._edb_object)
+        return port
 
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
@@ -4881,6 +4820,11 @@ class Edb:
     def compare(self, input_file, results=""):
         """Compares current open database with another one.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         input_file : str
@@ -4896,16 +4840,16 @@ class Edb:
         if not results:
             results = self.edbpath[:-5] + "_compare_results"
             os.mkdir(results)
-        command = os.path.join(self.base_path, "EDBDiff.exe")
+        executable_path = os.path.join(self.base_path, "EDBDiff.exe")
         if is_linux:
             mono_path = os.path.join(self.base_path, "common/mono/Linux64/bin/mono")
-            cmd_input = [mono_path, command, input_file, self.edbpath, results]
+            command = [mono_path, executable_path, input_file, self.edbpath, results]
         else:
-            cmd_input = [command, input_file, self.edbpath, results]
-        p = subprocess.run(cmd_input)
-        if p.returncode == 0:
+            command = [executable_path, input_file, self.edbpath, results]
+        try:
+            subprocess.run(command, check=True)  # nosec
             return str(Path(self.base_path).joinpath("EDBDiff.exe"))
-        else:
+        except subprocess.CalledProcessError as e:  # nosec
             raise RuntimeError(
                 "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
-            )
+            ) from e

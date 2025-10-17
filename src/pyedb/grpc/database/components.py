@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -1010,8 +1010,6 @@ class Components(object):
                 if component_definition_pin.is_null:
                     self._logger.error(f"Failed to create component definition pin {name}-{pin.name}")
                     return None
-        else:
-            self._logger.warning("Found existing component definition for footprint {}".format(name))
         return component_definition
 
     def create(
@@ -1074,8 +1072,12 @@ class Components(object):
         if not compdef:
             return False
         new_cmp = GrpcComponentGroup.create(self._active_layout, component_name, compdef.name)
+        if new_cmp.is_null:
+            raise ValueError(f"Failed to create component {component_name}.")
         if hasattr(pins[0], "component") and pins[0].component:
-            hosting_component_location = pins[0].component.transform
+            hosting_component_location = None
+            if not pins[0].component.is_null:
+                hosting_component_location = pins[0].component.transform
         else:
             hosting_component_location = None
         if not len(pins) == len(compdef.component_pins):
@@ -1326,13 +1328,14 @@ class Components(object):
         """
         deleted_comps = []
         for comp, val in self.instances.items():
-            if val.numpins < 2 and val.type in ["Resistor", "Capacitor", "Inductor"]:
-                if deactivate_only:
-                    val.is_enabled = False
-                    val.model_type = "RLC"
-                else:
-                    val.edbcomponent.delete()
-                    deleted_comps.append(comp)
+            if hasattr(val, "pins") and val.pins:
+                if val.num_pins == 1 and val.type in ["Resistor", "Capacitor", "Inductor"]:
+                    if deactivate_only:
+                        val.is_enabled = False
+                        val.model_type = "RLC"
+                    else:
+                        val.edbcomponent.delete()
+                        deleted_comps.append(comp)
         if not deactivate_only:
             self.refresh_components()
         self._pedb.logger.info("Deleted {} components".format(len(deleted_comps)))
@@ -1467,13 +1470,15 @@ class Components(object):
             sball_shape = GrpcSolderballShape.SOLDERBALL_SPHEROID
 
         cmp_property = cmp.component_property
-        if cmp.type == GrpcComponentType.IC:
+        if cmp.component_type == GrpcComponentType.IC:
             ic_die_prop = cmp_property.die_property
             ic_die_prop.die_type = GrpcDieType.FLIPCHIP
+            if not cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
+                chip_orientation = "chip_up"
             if chip_orientation.lower() == "chip_up":
-                ic_die_prop.orientation = GrpDieOrientation.CHIP_UP
+                ic_die_prop.die_orientation = GrpDieOrientation.CHIP_UP
             else:
-                ic_die_prop.orientation = GrpDieOrientation.CHIP_DOWN
+                ic_die_prop.die_orientation = GrpDieOrientation.CHIP_DOWN
             cmp_property.die_property = ic_die_prop
 
         solder_ball_prop = cmp_property.solder_ball_property

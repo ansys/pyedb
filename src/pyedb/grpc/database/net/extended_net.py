@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,9 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.net.extended_net import ExtendedNet as GrpcExtendedNet
+from __future__ import annotations
 
-from pyedb.grpc.database.net.net import Net
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.net.net import Net
+from ansys.edb.core.net.extended_net import ExtendedNet as GrpcExtendedNet
 
 
 class ExtendedNets:
@@ -272,7 +276,7 @@ class ExtendedNet(GrpcExtendedNet):
         self._pedb = pedb
 
     @property
-    def nets(self):
+    def nets(self) -> dict[str, Net]:
         """Nets dictionary.
 
         Returns
@@ -280,6 +284,8 @@ class ExtendedNet(GrpcExtendedNet):
         Dict[str, :class:`Net <pyedb.grpc.database.net.net.Net>`]
             Dict[net name, Net object].
         """
+        from pyedb.grpc.database.net.net import Net
+
         return {net.name: Net(self._pedb, net) for net in super().nets}
 
     @property

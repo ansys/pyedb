@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -50,13 +50,9 @@ is_linux = os.name == "posix"
 is_windows = not is_linux
 _pythonver = sys.version_info[0]
 
+import xml.etree.cElementTree as ET  # nosec B405
 
-try:
-    import xml.etree.cElementTree as ET
-
-    ET.VERSION
-except ImportError:
-    ET = None
+ET.VERSION
 
 
 class GrpcApiError(Exception):
@@ -118,7 +114,6 @@ def _exception(ex_info, func, args, kwargs, message="Type Error"):
     if message_to_print:
         _write_mes("Last Electronics Desktop Message - " + message_to_print)
 
-    args_name = []
     try:
         args_dict = _get_args_dicts(func, args, kwargs)
         first_time_log = True
@@ -129,13 +124,13 @@ def _exception(ex_info, func, args, kwargs, message="Type Error"):
                     _write_mes("Method arguments: ")
                     first_time_log = False
                 _write_mes("    {} = {} ".format(el, args_dict[el]))
-    except:
-        pass
-    args = [func.__name__] + [i for i in args_name if i not in ["self"]]
+    except Exception:
+        settings.logger.error(f"An error occurred while parsing and logging an error with method {func.__name__}.")
+
     if not func.__name__.startswith("_"):
         _write_mes(
             "Check Online documentation on: https://edb.docs.pyansys.com/version/stable/search.html?q={}".format(
-                "+".join(args)
+                func.__name__
             )
         )
 
@@ -695,13 +690,9 @@ def read_csv_pandas(filename, encoding="utf-8"):  # pragma: no cover
     :class:`pandas.DataFrame`
 
     """
-    try:
-        import pandas as pd
+    import pandas as pd
 
-        return pd.read_csv(filename, encoding=encoding, header=0, na_values=".")
-    except ImportError:
-        logging.error("Pandas is not available. Install it.")
-        return None
+    return pd.read_csv(filename, encoding=encoding, header=0, na_values=".")
 
 
 def read_tab(filename):  # pragma: no cover
@@ -735,14 +726,10 @@ def read_xlsx(filename):  # pragma: no cover
     list
 
     """
-    try:
-        import pandas as pd
+    import pandas as pd
 
-        lines = pd.read_excel(filename)
-        return lines
-    except ImportError:
-        lines = []
-        return lines
+    lines = pd.read_excel(filename)
+    return lines
 
 
 def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL):  # pragma: no cover
@@ -872,11 +859,7 @@ def compute_fft(time_vals, value):  # pragma: no cover
     tuple
         Frequency and Values.
     """
-    try:
-        import numpy as np
-    except ImportError:
-        logging.error("NumPy is not available. Install it.")
-        return False
+    import numpy as np
 
     deltaT = time_vals[-1] - time_vals[0]
     num_points = len(time_vals)
@@ -925,11 +908,8 @@ def parse_excitation_file(
     tuple
         Frequency, magnitude and phase.
     """
-    try:
-        import numpy as np
-    except ImportError:
-        logging.error("NumPy is not available. Install it.")
-        return False
+    import numpy as np
+
     df = read_csv_pandas(file_name, encoding=encoding)
     if is_time_domain:
         time = df[df.keys()[0]].values * x_scale
@@ -1166,6 +1146,11 @@ def install_with_pip(package_name, package_path=None, upgrade=False, uninstall=F
     """Install a new package using pip.
     This method is useful for installing a package from the AEDT Console without launching the Python environment.
 
+    .. warning::
+        Do not execute this function with untrusted function argument, environment
+        variables or pyedb global settings.
+        See the :ref:`security guide<ref_security_consideration>` for details.
+
     Parameters
     ----------
     package_name : str
@@ -1178,10 +1163,12 @@ def install_with_pip(package_name, package_path=None, upgrade=False, uninstall=F
         Whether to install the package or uninstall the package.
     """
 
-    import subprocess
+    import subprocess  # nosec B404
 
-    executable = '"{}"'.format(sys.executable) if is_windows else sys.executable
+    if not package_name or not isinstance(package_name, str):
+        raise ValueError("A valid package name must be provided.")
 
+    executable = sys.executable
     commands = []
     if uninstall:
         commands.append([executable, "-m", "pip", "uninstall", "--yes", package_name])
@@ -1195,12 +1182,12 @@ def install_with_pip(package_name, package_path=None, upgrade=False, uninstall=F
             command.append("-U")
 
         commands.append(command)
+
     for command in commands:
-        if is_linux:
-            p = subprocess.Popen(command)
-        else:
-            p = subprocess.Popen(" ".join(command))
-        p.wait()
+        try:
+            subprocess.run(command, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError("An error occurred while installing with pip") from e
 
 
 class Help:  # pragma: no cover
