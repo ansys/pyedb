@@ -900,7 +900,7 @@ class Edb(EdbInit):
         command = os.path.join(self.base_path, "helic", "tools", "raptorh", "bin", "make-edb")
         if is_windows:
             command += ".exe"
-        elif is_linux and not os.environ["HELIC_ROOT"]:
+        else:
             os.environ["HELIC_ROOT"] = os.path.join(self.base_path, "helic")
         cmd_make_edb = [
             command,
