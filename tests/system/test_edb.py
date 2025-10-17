@@ -1983,7 +1983,7 @@ class TestClass(BaseTestClass):
         net_layer_info = mesh_op.net_layer_info[0]
         assert net_layer_info
         edbapp.close(terminate_rpc_session=False)
-     
+
     def test_import_vlctech(self, edb_examples):
         from pyedb import Edb
 
