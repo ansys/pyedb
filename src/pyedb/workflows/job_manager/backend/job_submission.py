@@ -466,9 +466,9 @@ class HFSSSimulationConfig(BaseModel):
         if self.monitor:
             cmd_parts.append("-monitor")
 
-        # 3. batch options  (single-quote protected for later sbatch)
-        batch_opts = self.generate_batch_options_string()  # already 'k'='v' 'k2'='v2'
-        cmd_parts.extend(["-batchoptions", batch_opts])
+        # 3. batch options  (quoted to protect spaces in keys)
+        batch_opts = self.generate_batch_options_string()  # "key1=val1 key2=val2"
+        cmd_parts.extend(["-batchoptions", shlex.quote(batch_opts)])
 
         # 4. project & design
         design_str = self.generate_design_string()
@@ -499,17 +499,18 @@ class HFSSSimulationConfig(BaseModel):
         """
         Generate HFSS batch options string from layout options.
         Converts HFSS3DLayoutOptions to command-line batch options format.
-        Format matches Ansys reference: ' '\''key'\''='\''value'\'''
+        Format matches Ansys reference: "key1=value1 key2=value2"
 
         Returns
         -------
         str
-            Batch options string with quoted key-value pairs.
+            Batch options string with space-separated key=value pairs.
 
         """
         options_dict = self.layout_options.to_batch_options_dict()
-        # Format: ' '\''key'\''='\''value'\'' for each option, matching Ansys reference
-        options_list = [f"' '\\'''{k}'\\''='\\'''{v}'\\'''" for k, v in options_dict.items()]
+        # Simple format: space-separated key=value pairs
+        # They will be properly quoted when used in the command
+        options_list = [f"{k}={v}" for k, v in options_dict.items()]
         return " ".join(options_list)
 
     def generate_design_string(self) -> str:
