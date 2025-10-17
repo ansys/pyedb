@@ -39,11 +39,11 @@ The handler guarantees:
 
 Examples
 --------
->>> handler = JobManagerHandler()
->>> handler.start_service()
->>> config = handler.create_simulation_config("/path/to/project.aedt")
->>> job_id = asyncio.run(handler.submit_job(config))
->>> handler.close()
+>>> handler = JobManagerHandler()  # doctest: +SKIP
+>>> handler.start_service()  # doctest: +SKIP
+>>> config = handler.create_simulation_config("/path/to/project.aedt")  # doctest: +SKIP
+>>> job_id = asyncio.run(handler.submit_job(config))  # doctest: +SKIP
+>>> handler.close()  # doctest: +SKIP
 
 For command-line usage:
 
@@ -199,11 +199,11 @@ class JobManagerHandler:
 
     Examples
     --------
-    >>> handler = JobManagerHandler()
-    >>> handler.start_service()
-    >>> print(f"Server running at {handler.url}")
+    >>> handler = JobManagerHandler()  # doctest: +SKIP
+    >>> handler.start_service()  # doctest: +SKIP
+    >>> print(f"Server running at {handler.url}")  # doctest: +SKIP
     >>> # Submit jobs via REST API or handler methods
-    >>> handler.close()
+    >>> handler.close()  # doctest: +SKIP
     """
 
     def __init__(self, edb=None, version=None, host="localhost", port=8080):
