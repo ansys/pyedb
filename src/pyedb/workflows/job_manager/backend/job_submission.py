@@ -67,6 +67,7 @@ SLURM cluster::
 
 from datetime import datetime
 import enum
+import logging
 import os
 import platform
 import re
@@ -77,6 +78,8 @@ import tempfile
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field
+
+logger = logging.getLogger("JobManager")
 
 
 class SchedulerType(enum.Enum):
@@ -496,6 +499,7 @@ class HFSSSimulationConfig(BaseModel):
         """
         Generate HFSS batch options string from layout options.
         Converts HFSS3DLayoutOptions to command-line batch options format.
+        Format matches Ansys reference: ' '\''key'\''='\''value'\'''
 
         Returns
         -------
@@ -504,7 +508,8 @@ class HFSSSimulationConfig(BaseModel):
 
         """
         options_dict = self.layout_options.to_batch_options_dict()
-        options_list = [f"'{k}'='{v}'" for k, v in options_dict.items()]
+        # Format: ' '\''key'\''='\''value'\'' for each option, matching Ansys reference
+        options_list = [f"' '\\'''{k}'\\''='\\'''{v}'\\'''" for k, v in options_dict.items()]
         return " ".join(options_list)
 
     def generate_design_string(self) -> str:
@@ -520,8 +525,8 @@ class HFSSSimulationConfig(BaseModel):
 
     def generate_slurm_script(self) -> str:
         """
-        Returns the *single* sbatch command line (no here-doc, no file).
-        This string is ready for subprocess.run([...], shell=False)
+        Returns a proper SLURM batch script with shebang.
+        This script can be written to a file and submitted via sbatch.
         """
         opts = self.scheduler_options
         ansys_root = os.path.dirname(self.ansys_edt_path)
@@ -532,52 +537,44 @@ class HFSSSimulationConfig(BaseModel):
         # build the inner ANSYS command
         ansys_cmd = self._build_ansys_command_for_launcher()
 
-        # base sbatch
-        sbatch_parts = [
-            "sbatch",
-            "--export=NONE",
-            f"--chdir={shlex.quote(os.path.dirname(os.path.abspath(self.project_path)))}",
-            f"--job-name={self.jobid}",
-            f"--partition={opts.queue}",
-            f"--nodes={opts.nodes}",
-            f"--ntasks={self._num_cores_for_scheduler()}",
+        # Build SLURM directives
+        sbatch_directives = [
+            "#!/bin/bash",
+            f"#SBATCH --export=NONE",
+            f"#SBATCH --chdir={os.path.dirname(os.path.abspath(self.project_path))}",
+            f"#SBATCH --job-name={self.jobid}",
+            f"#SBATCH --partition={opts.queue}",
+            f"#SBATCH --nodes={opts.nodes}",
+            f"#SBATCH --cpus-per-task=1",
+            f"#SBATCH --ntasks={self._num_cores_for_scheduler()}",
         ]
-        if opts.memory:
-            sbatch_parts.append(f"--mem={opts.memory}")
+        # Remove memory limitation - not in reference command
+        # if opts.memory:
+        #     sbatch_directives.append(f"#SBATCH --mem={opts.memory}")
         if opts.account:
-            sbatch_parts.append(f"--account={opts.account}")
+            sbatch_directives.append(f"#SBATCH --account={opts.account}")
         if opts.reservation:
-            sbatch_parts.append(f"--reservation={opts.reservation}")
+            sbatch_directives.append(f"#SBATCH --reservation={opts.reservation}")
         if opts.qos:
-            sbatch_parts.append(f"--qos={opts.qos}")
+            sbatch_directives.append(f"#SBATCH --qos={opts.qos}")
         if opts.constraints:
-            sbatch_parts.append(f"--constraint={opts.constraints}")
+            sbatch_directives.append(f"#SBATCH --constraint={opts.constraints}")
         if opts.exclusive:
-            sbatch_parts.append("--exclusive")
+            sbatch_directives.append("#SBATCH --exclusive")
         if opts.gpus > 0:
             gpu_type = f":{opts.gpu_type}" if opts.gpu_type else ""
-            sbatch_parts.append(f"--gpus={opts.gpus}{gpu_type}")
+            sbatch_directives.append(f"#SBATCH --gpus={opts.gpus}{gpu_type}")
 
-        # environment variables + srun
-        env_vars = " ".join(
-            [
-                "/usr/bin/env",
-                f"ANSYSEM_GENERIC_MPI_WRAPPER={wrapper}",
-                f"ANSYSEM_COMMON_PREFIX={common}",
-                "ANSOFT_PASS_DEBUG_ENV_TO_REMOTE_ENGINES=1",
-                "srun",
-                "--overcommit",
-                "--export=ALL",
-                "-n 1 -N 1",
-                "--cpu-bind=none",
-                "--mem-per-cpu=0",
-                "--overlap",
-                ansys_cmd,
-            ]
+        # Build the execution command
+        exec_cmd = (
+            f"{launcher} /usr/bin/env ANSYSEM_GENERIC_MPI_WRAPPER={wrapper} ANSYSEM_COMMON_PREFIX={common} "
+            f"ANSOFT_PASS_DEBUG_ENV_TO_REMOTE_ENGINES=1 srun --overcommit --export=ALL -n 1 -N 1 "
+            f"--cpu-bind=none --mem-per-cpu=0 --overlap {ansys_cmd}"
         )
 
-        # final command:  sbatch ...  launcher.sh  env ... srun ... ansys_cmd
-        return " ".join(sbatch_parts + [launcher, env_vars])
+        # Combine directives and command
+        script_lines = sbatch_directives + ["", exec_cmd]
+        return "\n".join(script_lines)
 
     def generate_lsf_script(self) -> str:
         """
@@ -791,6 +788,12 @@ class HFSSSimulationConfig(BaseModel):
         else:
             submit_cmd = ["bsub", "<", script_path]
 
+        # DEBUG: Print submission command and script content
+        logger.info(f"🔍 DEBUG: Submitting to {self.scheduler_type.value}")
+        logger.info(f"🔍 DEBUG: Submission command: {' '.join(submit_cmd)}")
+        logger.info(f"🔍 DEBUG: Script path: {script_path}")
+        logger.info(f"🔍 DEBUG: Script content:\n{'=' * 80}\n{script_content}\n{'=' * 80}")
+
         try:
             # Execute submission command with timeout
             if self.scheduler_type == SchedulerType.LSF:
@@ -812,6 +815,13 @@ class HFSSSimulationConfig(BaseModel):
                     timeout=30,
                     shell=False,
                 )
+
+            # DEBUG: Print submission result
+            logger.info(f"🔍 DEBUG: Submission result - Return code: {result.returncode}")
+            logger.info(f"🔍 DEBUG: Submission stdout: {result.stdout}")
+            if result.stderr:
+                logger.warning(f"🔍 DEBUG: Submission stderr: {result.stderr}")
+
             return result
         except subprocess.TimeoutExpired:
             raise Exception(f"Scheduler submission timed out after 30 seconds")

@@ -680,6 +680,8 @@ class JobManagerHandler:
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
         self._loop.run_until_complete(self._start_site())
+        # Ensure scheduler monitoring task is started
+        self.manager._ensure_scheduler_monitor_running()
         self._loop.run_forever()
 
     def create_simulation_config(

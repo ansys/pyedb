@@ -498,6 +498,9 @@ class JobManager:
         # Start resource monitoring immediately
         self._monitor_task = None
         self._ensure_monitor_running()
+        # Background task for scheduler monitoring
+        self._scheduler_monitor_task: Optional[asyncio.Task] = None
+        self._ensure_scheduler_monitor_running()
 
     def _ensure_monitor_running(self):
         """Ensure resource monitoring task is running."""
@@ -508,6 +511,139 @@ class JobManager:
         except RuntimeError:
             # No event loop running yet, will be started when JobManagerHandler starts
             pass
+
+    def _ensure_scheduler_monitor_running(self):
+        """Ensure scheduler monitoring task is running for Slurm/LSF jobs."""
+        if self._sch_mgr is None:
+            # No scheduler configured, skip monitoring
+            return
+        try:
+            loop = asyncio.get_running_loop()
+            if self._scheduler_monitor_task is None or self._scheduler_monitor_task.done():
+                self._scheduler_monitor_task = loop.create_task(self._monitor_scheduler_jobs())
+                logger.info(f"Started scheduler monitoring for {self.scheduler_type.value}")
+        except RuntimeError:
+            # No event loop running yet, will be started when JobManagerHandler starts
+            pass
+
+    async def _monitor_scheduler_jobs(self):
+        """
+        Continuously monitor jobs submitted to external schedulers (Slurm/LSF).
+
+        This background task polls the scheduler queue every 30 seconds and updates
+        job statuses based on the actual scheduler state.
+        """
+        logger.info(f"✅ Scheduler monitoring loop started for {self.scheduler_type.value}")
+
+        while not self._shutdown:
+            try:
+                # Find all jobs that are currently scheduled (submitted to external scheduler)
+                scheduled_jobs = {
+                    job_id: job_info
+                    for job_id, job_info in self.jobs.items()
+                    if job_info.status == JobStatus.SCHEDULED and job_info.scheduler_job_id
+                }
+
+                if not scheduled_jobs:
+                    # No jobs to monitor, sleep longer
+                    await asyncio.sleep(30)
+                    continue
+
+                # Get current scheduler job list
+                scheduler_jobs = await self._sch_mgr.get_jobs()
+                scheduler_job_ids = {job["job_id"] for job in scheduler_jobs}
+                scheduler_job_states = {job["job_id"]: job["state"] for job in scheduler_jobs}
+
+                logger.info(
+                    f"Monitoring {len(scheduled_jobs)} scheduled jobs. Scheduler has {len(scheduler_jobs)} jobs."
+                )
+
+                for job_id, job_info in scheduled_jobs.items():
+                    scheduler_job_id = job_info.scheduler_job_id
+
+                    if scheduler_job_id in scheduler_job_ids:
+                        # Job still exists in scheduler queue
+                        state = scheduler_job_states.get(scheduler_job_id, "UNKNOWN")
+
+                        # Map scheduler states to our JobStatus
+                        if state in ["RUNNING", "R"]:
+                            if job_info.status != JobStatus.RUNNING:
+                                job_info.status = JobStatus.RUNNING
+                                if not job_info.start_time:
+                                    job_info.start_time = datetime.now()
+                                await self.sio.emit(
+                                    "job_started",
+                                    {
+                                        "job_id": job_id,
+                                        "scheduler_job_id": scheduler_job_id,
+                                        "start_time": job_info.start_time.isoformat(),
+                                    },
+                                )
+                                logger.info(f"Job {job_id} (scheduler ID: {scheduler_job_id}) is now RUNNING")
+
+                        elif state in ["PENDING", "PD", "PEND"]:
+                            # Job is still pending/queued in scheduler
+                            logger.debug(f"Job {job_id} (scheduler ID: {scheduler_job_id}) is PENDING in scheduler")
+
+                        elif state in ["COMPLETING", "CG"]:
+                            # Job is completing, keep current status
+                            logger.debug(f"Job {job_id} (scheduler ID: {scheduler_job_id}) is COMPLETING")
+
+                    else:
+                        # Job no longer in scheduler queue - it has completed or failed
+                        # Check if we can find output files to determine success/failure
+                        job_info.end_time = datetime.now()
+                        self.job_pool.running_jobs.discard(job_id)
+
+                        # Try to determine if job completed successfully by checking output directory
+                        output_dir = job_info.config.working_directory
+                        log_file = os.path.join(output_dir, f"{job_info.config.jobid}.log")
+
+                        # Default to completed - scheduler jobs that finish typically completed
+                        # unless we can detect otherwise
+                        if os.path.exists(log_file):
+                            try:
+                                # Check if log indicates success or failure
+                                with open(log_file, "r") as f:
+                                    log_content = f.read()
+                                    if "error" in log_content.lower() or "failed" in log_content.lower():
+                                        job_info.status = JobStatus.FAILED
+                                        job_info.error = "Job failed based on log file content"
+                                    else:
+                                        job_info.status = JobStatus.COMPLETED
+                                        job_info.return_code = 0
+                            except Exception as e:
+                                logger.warning(f"Could not read log file for job {job_id}: {e}")
+                                job_info.status = JobStatus.COMPLETED
+                                job_info.return_code = 0
+                        else:
+                            # No log file found, assume completed
+                            job_info.status = JobStatus.COMPLETED
+                            job_info.return_code = 0
+
+                        await self.sio.emit(
+                            "job_completed",
+                            {
+                                "job_id": job_id,
+                                "scheduler_job_id": scheduler_job_id,
+                                "status": job_info.status.value,
+                                "end_time": job_info.end_time.isoformat(),
+                                "return_code": job_info.return_code,
+                            },
+                        )
+
+                        logger.info(
+                            f"Job {job_id} (scheduler ID: {scheduler_job_id}) completed with status "
+                            f"{job_info.status.value}"
+                        )
+
+            except Exception as e:
+                logger.error(f"Error in scheduler monitoring loop: {e}")
+
+            # Poll every 30 seconds
+            await asyncio.sleep(30)
+
+        logger.info("Scheduler monitoring loop stopped")
 
     def setup_routes(self):
         """
