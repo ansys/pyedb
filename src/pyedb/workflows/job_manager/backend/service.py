@@ -546,7 +546,7 @@ class JobManager:
 
                 if not scheduled_jobs:
                     # No jobs to monitor, sleep longer
-                    await asyncio.sleep(30)
+                    await asyncio.sleep(10)
                     continue
 
                 # Get current scheduler job list
@@ -640,8 +640,8 @@ class JobManager:
             except Exception as e:
                 logger.error(f"Error in scheduler monitoring loop: {e}")
 
-            # Poll every 30 seconds
-            await asyncio.sleep(30)
+            # Poll every 5 seconds for responsive status updates
+            await asyncio.sleep(5)
 
         logger.info("Scheduler monitoring loop stopped")
 
@@ -1127,6 +1127,9 @@ class JobManager:
                 result = job_info.config.submit_to_scheduler()
                 job_info.scheduler_job_id = job_info.config._extract_job_id(result.stdout)
                 job_info.status = JobStatus.SCHEDULED
+                logger.info(
+                    f"Job {job_id} submitted to scheduler with ID: {job_info.scheduler_job_id}, status: SCHEDULED"
+                )
                 await self.sio.emit("job_scheduled", {"job_id": job_id, "scheduler_job_id": job_info.scheduler_job_id})
 
             else:
@@ -1235,6 +1238,25 @@ class JobManager:
             job_info.status = JobStatus.CANCELLED
             job_info.end_time = datetime.now()
             return True
+
+        elif job_info.status == JobStatus.SCHEDULED:
+            # Cancel job in external scheduler
+            if job_info.scheduler_job_id:
+                try:
+                    success = await self._sch_mgr.cancel_job(job_info.scheduler_job_id)
+                    if success:
+                        job_info.status = JobStatus.CANCELLED
+                        job_info.end_time = datetime.now()
+                        self.job_pool.running_jobs.discard(job_id)
+                        logger.info(f"Cancelled scheduler job {job_id} (scheduler ID: {job_info.scheduler_job_id})")
+                        return True
+                    else:
+                        logger.warning(f"Failed to cancel scheduler job {job_info.scheduler_job_id}")
+                        return False
+                except Exception as e:
+                    logger.error(f"Error cancelling scheduler job {job_id}: {e}")
+                    return False
+            return False
 
         elif job_info.status == JobStatus.RUNNING and job_info.process:
             try:
