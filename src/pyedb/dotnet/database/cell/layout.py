@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -31,9 +31,7 @@ from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.database.cell.primitive.path import Path
 from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
 from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
-from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal,
-)
+from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.cell.voltage_regulator import VoltageRegulator
@@ -136,6 +134,9 @@ class Layout(ObjBase):
         -----
         Method returns the expansion of the contour, so any voids within expanded objects are ignored.
         """
+        if isinstance(nets, list) and all(isinstance(item, str) for item in nets):
+            nets = [self._pedb.nets.nets[i] for i in nets if i in self.nets]
+
         nets = [i._edb_object for i in nets]
         return self._edb_object.GetExpandedExtentFromNets(
             convert_py_list_to_net_list(nets),

@@ -1,6 +1,28 @@
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import os.path
 from pathlib import Path
-import subprocess
+import subprocess  # nosec B404
 
 from pyedb.generic.general_methods import is_linux
 
@@ -48,6 +70,11 @@ class SiwaveSolve(object):
     def solve_siwave(self, edbpath, analysis_type):
         """Solve an SIWave setup. Only non-graphical batch mode is supported.
 
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
         Parameters
         ----------
         analysis_type: str
@@ -67,11 +94,19 @@ class SiwaveSolve(object):
             "-useSubdir",
         ]
         try:
-            subprocess.run(command, check=True)
-        except subprocess.CalledProcessError as e:
+            subprocess.run(command, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
             raise RuntimeError(f"An error occurred when launching the solver. Please check input paths") from e
 
     def solve(self, num_of_cores=4):
+        """Solve using siwave_ng.exe
+
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
+
+        """
         exec_file = os.path.splitext(self._pedb.edbpath)[0] + ".exec"
         if os.path.exists(exec_file):
             with open(exec_file, "r+") as f:
@@ -87,15 +122,20 @@ class SiwaveSolve(object):
                     f = open(exec_file, "w")
                     f.writelines(content)
         command = [self.__siwave_ng_exe_path, self._pedb.edbpath, exec_file, "-formatOutput -useSubdir"]
-        command_ = command if os.name == "posix" else " ".join(command)
-        # p = subprocess.Popen(command_)
-        p = subprocess.Popen(command)
-        p.wait()
+        try:
+            subprocess.run(command, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError("An error occurred while solving") from e
 
     def export_3d_cad(
         self, format_3d="Q3D", output_folder=None, net_list=None, num_cores=4, aedt_file_name=None, hidden=False
     ):  # pragma: no cover
         """Export edb to Q3D or HFSS
+
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
 
         Parameters
         ----------
@@ -145,10 +185,10 @@ class SiwaveSolve(object):
         command += ["-RunScriptAndExit", scriptname]
         print(command)
         try:
-            result = subprocess.run(command, check=True, capture_output=True)
+            result = subprocess.run(command, check=True, capture_output=True)  # nosec
             print(result.stdout.decode())
-        except subprocess.CalledProcessError as e:
-            print(f"Error occurred: {e.stderr.decode()}")
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError("An error occurred while exporting 3D CAD") from e
         return os.path.join(output_folder, aedt_file_name)
 
     def export_dc_report(
@@ -166,6 +206,11 @@ class SiwaveSolve(object):
         hidden=True,
     ):
         """Close EDB and solve it with Siwave.
+
+        .. warning::
+            Do not execute this function with untrusted function argument, environment
+            variables or pyedb global settings.
+            See the :ref:`security guide<ref_security_consideration>` for details.
 
         Parameters
         ----------
@@ -263,6 +308,8 @@ class SiwaveSolve(object):
         command.append("-RunScriptAndExit")
         command.append(scriptname)
         print(command)
-        p = subprocess.Popen(command)
-        p.wait()
+        try:
+            subprocess.run(command, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError("An error occurred while solving with Siwave") from e
         return output_list

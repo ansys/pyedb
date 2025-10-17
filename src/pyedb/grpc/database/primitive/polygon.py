@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -337,6 +337,8 @@ class Polygon(GrpcPolygon, Primitive):
             return False
 
     def add_void(self, polygon):
-        if isinstance(polygon, list) or isinstance(polygon, GrpcPolygonData):
-            polygon = self._pedb.modeler.create_polygon(points=polygon, layer_name=self.layer.name)
-        return self._edb_object.add_void(polygon)
+        if isinstance(polygon, list):
+            polygon = self._pedb.modeler.create_polygon(
+                points=polygon, layer_name=self.layer.name, net_name=self.net_name
+            )
+        self._edb_object.add_void(polygon)
