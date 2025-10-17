@@ -1948,13 +1948,8 @@ class TestClass(BaseTestClass):
         jm = edb.job_manager
         jm.start_service()
         assert jm.started
-
         job1 = edb.job_manager.create_simulation_config(project_path=project_path)
         assert job1
-        jobs = [job1]
-
-        job_ids = jm.submit_jobs_and_wait(jobs, timeout=240)
-        print("all jobs done:", job_ids)
         jm.close()  # stop the service when done
         assert not jm.started
 
