@@ -80,6 +80,8 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field
 
+from pyedb.generic.general_methods import installed_ansys_em_versions, is_linux
+
 logger = logging.getLogger("JobManager")
 
 
@@ -434,9 +436,9 @@ class HFSSSimulationConfig(BaseModel):
     """
 
     model_config = {"populate_by_name": True, "exclude_defaults": False}
-    ansys_edt_path: str = ""
+    ansys_edt_path: str = None
     solver: str = "Hfss3DLayout"
-    jobid: str = Field(default_factory=lambda: f"LOCAL_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+    jobid: str = None
     user: str = "unknown"
     distributed: bool = True
     machine_nodes: List[MachineNode] = Field(default_factory=lambda: [MachineNode()])
@@ -454,6 +456,19 @@ class HFSSSimulationConfig(BaseModel):
     def __init__(self, **data):
         """Initialize and validate the configuration."""
         super().__init__(**data)
+        if not self.ansys_edt_path:
+            installed_versions = installed_ansys_em_versions()
+            if not installed_versions:
+                raise ValueError(
+                    "No installed Ansys EM versions found. Please specify ansys_edt_path. Or "
+                    "add ansysedt full path to the configuration."
+                )
+            if is_linux:
+                self.ansys_edt_path = os.path.join(list(installed_versions.values())[-1], "ansysedt")  # latest
+            else:
+                self.ansys_edt_path = os.path.join(list(installed_versions.values())[-1], "ansysedt.exe")  # latest
+        if not self.jobid:
+            self.jobid = f"JOB_ID_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         self.validate_fields()
 
     def validate_fields(self) -> None:
@@ -1112,11 +1127,11 @@ class HFSSSimulationConfig(BaseModel):
 
 
 def create_hfss_config(
-    ansys_edt_path: str,
-    jobid: str,
     project_path: str,
-    design_name: str = "",
-    setup_name: str = "",
+    jobid: Optional[str] = "",
+    ansys_edt_path: Optional[str] = "",
+    design_name: Optional[str] = "",
+    setup_name: Optional[str] = "",
     machine_nodes: Optional[List[MachineNode]] = None,
     scheduler_type: SchedulerType = SchedulerType.NONE,
     scheduler_options: Optional[SchedulerOptions] = None,
@@ -1128,9 +1143,10 @@ def create_hfss_config(
 
     Parameters
     ----------
-    ansys_edt_path : str
-        Absolute path to ``ansysedt`` executable.
-    jobid : str
+    ansys_edt_path : str, Optional
+        Absolute path to ``ansysedt`` executable. If not provided the latest
+        installed version will be used.
+    jobid : str, Optional
         Unique job identifier (letters, digits, ``_``, ``-`` only).
     project_path : str
         Absolute path to ``.aedt`` or ``.aedb`` project.

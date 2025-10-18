@@ -69,7 +69,6 @@ import uuid
 
 import aiohttp
 from aiohttp import web
-from yarl import URL
 
 from pyedb.generic.general_methods import is_linux
 from pyedb.workflows.job_manager.backend.job_submission import (

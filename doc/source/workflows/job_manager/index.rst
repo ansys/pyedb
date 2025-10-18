@@ -7,3 +7,4 @@ This section describes job manager features.
    :maxdepth: 2
 
    job_manager
+   submit_local_job
