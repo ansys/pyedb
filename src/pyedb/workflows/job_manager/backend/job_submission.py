@@ -296,7 +296,7 @@ class HFSS3DLayoutBatchOptions(BaseModel):
         Scratch path.  Auto-detected.
     """
 
-    create_starting_mesh: bool = True
+    create_starting_mesh: bool = False
     default_process_priority: str = "Normal"
     enable_gpu: bool = False
     mpi_vendor: str = "Intel"
