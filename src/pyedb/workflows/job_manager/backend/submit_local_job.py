@@ -38,17 +38,19 @@ python submit_job.py --help
 python submit_local_job.py \
     --host 127.0.0.1 \
     --port 8080 \
-    --project-path "D:\Temp\test_jobs\test1.aedb" \
+    --project-path "D:\\Temp\\test_jobs\\test1.aedb" \
     --num-cores 8
 
 # Use defaults (localhost:8080, 8 cores)
-python submit_local_job.py --project-path "D:\Temp\test_jobs\test1.aedb"
+python submit_local_job.py --project-path "D:\\Temp\\test_jobs\\test1.aedb"
 """
 
 import argparse
 import asyncio
+import logging
 from pathlib import Path
 import sys
+from typing import Any, cast
 
 import aiohttp
 
@@ -56,6 +58,8 @@ from pyedb.workflows.job_manager.backend.job_submission import (
     MachineNode,
     create_hfss_config,
 )
+
+logger = logging.getLogger(__name__)
 
 
 async def submit_job(*, host: str, port: int, project_path: str, num_cores: int) -> None:
@@ -66,19 +70,41 @@ async def submit_job(*, host: str, port: int, project_path: str, num_cores: int)
     # Ensure we have at least one machine node and configure it
     if not cfg.machine_nodes:
         cfg.machine_nodes.append(MachineNode())
-    cfg.machine_nodes[0].cores = num_cores
-    cfg.machine_nodes[0].max_cores = num_cores
 
-    async with aiohttp.ClientSession() as session:
-        async with session.post(
-            f"{backend_url}/jobs/submit",
-            json={
-                "config": cfg.model_dump(mode="json", exclude_defaults=False),
-                "priority": 0,
-            },
-        ) as resp:
-            print("Status :", resp.status)
-            print("Reply  :", await resp.json())
+    # Use a typed reference to avoid static-analysis/indexing warnings
+    node = cast(MachineNode, cfg.machine_nodes[0])
+    node.cores = num_cores
+    node.max_cores = num_cores
+
+    # Use a reasonable timeout for network operations
+    timeout = aiohttp.ClientTimeout(total=60)
+
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        try:
+            async with session.post(
+                f"{backend_url}/jobs/submit",
+                json={
+                    "config": cfg.model_dump(mode="json", exclude_defaults=False),
+                    "priority": 0,
+                },
+            ) as resp:
+                status = resp.status
+                # Try to parse JSON reply safely; fall back to text
+                try:
+                    reply: Any = await resp.json()
+                except Exception:
+                    reply = await resp.text()
+
+                if 200 <= status < 300:
+                    logger.info("Job submit successful (status=%s)", status)
+                    logger.debug("Reply: %s", reply)
+                else:
+                    logger.error("Job submit failed (status=%s): %s", status, reply)
+        except asyncio.CancelledError:
+            # Re-raise cancellation so callers can handle it
+            raise
+        except Exception as exc:  # pragma: no cover - defensive logging
+            logger.exception("Failed to submit job to %s: %s", backend_url, exc)
 
 
 def parse_cli() -> argparse.Namespace:
@@ -112,11 +138,17 @@ def parse_cli() -> argparse.Namespace:
 def main() -> None:
     args = parse_cli()
 
+    # Configure basic logging if the caller didn't
+    if not logging.getLogger().handlers:
+        logging.basicConfig(level=logging.INFO)
+
     # Basic sanity checks
     if not args.project_path.exists():
+        logger.error("Error: project path does not exist: %s", args.project_path)
         print(f"Error: project path does not exist: {args.project_path}", file=sys.stderr)
         sys.exit(1)
     if args.num_cores <= 0:
+        logger.error("Error: --num-cores must be positive")
         print("Error: --num-cores must be positive", file=sys.stderr)
         sys.exit(1)
 
