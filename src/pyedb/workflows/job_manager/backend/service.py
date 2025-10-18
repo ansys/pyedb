@@ -67,6 +67,7 @@ from collections import deque
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+import getpass
 import logging
 import os.path
 import platform
@@ -234,39 +235,42 @@ class ResourceMonitor:
         Runs until the event-loop is shut down. Samples CPU, memory, and disk
         usage at regular intervals.
         """
+        await self._sample_once()
         while True:
-            try:
-                # CPU usage
-                cpu_percent = psutil.cpu_percent(interval=1)
-
-                # Memory usage
-                memory = psutil.virtual_memory()
-                memory_total_gb = memory.total / (1024**3)
-                memory_used_gb = memory.used / (1024**3)
-                memory_free_gb = memory.available / (1024**3)
-
-                # Disk usage (checking the root directory)
-                disk = psutil.disk_usage(os.path.abspath(os.sep))
-                disk_usage_percent = disk.percent
-                disk_free_gb = disk.free / (1024**3)
-
-                self.current_usage.update(
-                    {
-                        "cpu_percent": cpu_percent,
-                        "memory_percent": memory.percent,
-                        "memory_used_gb": round(memory_used_gb, 2),
-                        "memory_total_gb": round(memory_total_gb, 2),
-                        "memory_free_gb": round(memory_free_gb, 2),
-                        "disk_usage_percent": disk_usage_percent,
-                        "disk_free_gb": round(disk_free_gb, 2),
-                        "timestamp": datetime.now().isoformat(),
-                    }
-                )
-
-            except Exception as e:
-                logger.error(f"Resource monitoring error: {e}")
-
+            await self._sample_once()
             await asyncio.sleep(self.update_interval)
+
+    async def _sample_once(self):
+        try:
+            # CPU usage
+            cpu_percent = psutil.cpu_percent(interval=1)
+
+            # Memory usage
+            memory = psutil.virtual_memory()
+            memory_total_gb = memory.total / (1024**3)
+            memory_used_gb = memory.used / (1024**3)
+            memory_free_gb = memory.available / (1024**3)
+
+            # Disk usage (checking the root directory)
+            disk = psutil.disk_usage(os.path.abspath(os.sep))
+            disk_usage_percent = disk.percent
+            disk_free_gb = disk.free / (1024**3)
+
+            self.current_usage.update(
+                {
+                    "cpu_percent": cpu_percent,
+                    "memory_percent": memory.percent,
+                    "memory_used_gb": round(memory_used_gb, 2),
+                    "memory_total_gb": round(memory_total_gb, 2),
+                    "memory_free_gb": round(memory_free_gb, 2),
+                    "disk_usage_percent": disk_usage_percent,
+                    "disk_free_gb": round(disk_free_gb, 2),
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
+
+        except Exception as e:
+            logger.error(f"Resource monitoring error: {e}")
 
 
 class JobPoolManager:
@@ -469,6 +473,7 @@ class JobManager:
     """
 
     def __init__(self, resource_limits: ResourceLimits = None, scheduler_type: SchedulerType = SchedulerType.NONE):
+        logging.basicConfig(level=logging.DEBUG, format="%(levelname)s:%(name)s:%(message)s")
         self.jobs: Dict[str, JobInfo] = {}
         if resource_limits is None:
             resource_limits = ResourceLimits()
@@ -804,6 +809,8 @@ class JobManager:
 
             # Create HFSS config from dictionary
             config = HFSSSimulationConfig.from_dict(config_dict)
+            if "user" not in data["config"] or data["config"]["user"] is None:
+                data["config"]["user"] = getpass.getuser()
 
             # Submit the job
             job_id = await self.submit_job(config)

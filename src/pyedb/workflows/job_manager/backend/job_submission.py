@@ -67,6 +67,7 @@ SLURM cluster::
 
 from datetime import datetime
 import enum
+import getpass
 import logging
 import os
 import platform
@@ -357,6 +358,32 @@ class HFSS3DLayoutBatchOptions(BaseModel):
             "Q3D Extractor/RAMLimitPercent": "90",
         }
 
+    # ------------------------------------------------------------------
+    #  HFSS3DLayoutBatchOptions
+    # ------------------------------------------------------------------
+    def to_batch_options_string(self) -> str:
+        """
+        Return the Windows-safe string:
+        "'key1'='value1' 'key2'='value2' ..."
+        """
+        tmp = {
+            "HFSS 3D Layout Design/CreateStartingMesh": "1" if self.create_starting_mesh else "0",
+            "HFSS 3D Layout Design/DefaultProcessPriority": self.default_process_priority,
+            "HFSS 3D Layout Design/EnableGPU": "1" if self.enable_gpu else "0",
+            "HFSS 3D Layout Design/MPIVendor": self.mpi_vendor,
+            "HFSS 3D Layout Design/MPIVersion": self.mpi_version,
+            "HFSS 3D Layout Design/RemoteSpawnCommand": self.remote_spawn_command,
+            "HFSS 3D Layout Design/SolveAdaptiveOnly": "1" if self.solve_adaptive_only else "0",
+            "HFSS 3D Layout Design/ValidateOnly": "1" if self.validate_only else "0",
+            "HFSS 3D Layout Design/RAMLimitPercent": "90",
+            "HFSS/RAMLimitPercent": "90",
+            "Maxwell 2D/RAMLimitPercent": "90",
+            "Maxwell 3D/RAMLimitPercent": "90",
+            "Q3D Extractor/RAMLimitPercent": "90",
+        }
+        quoted_pairs = [f"'{k}'='{v}'" for k, v in tmp.items()]
+        return " ".join(quoted_pairs)
+
 
 class HFSSSimulationConfig(BaseModel):
     """
@@ -406,6 +433,7 @@ class HFSSSimulationConfig(BaseModel):
         If *project_path* does not exist.
     """
 
+    model_config = {"populate_by_name": True, "exclude_defaults": False}
     ansys_edt_path: str = ""
     solver: str = "Hfss3DLayout"
     jobid: str = Field(default_factory=lambda: f"LOCAL_{datetime.now().strftime('%Y%m%d_%H%M%S')}")

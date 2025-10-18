@@ -308,6 +308,62 @@ class JobManagerHandler:
                 continue
         return None
 
+    def submit_job(self, config: HFSSSimulationConfig, priority: int = 0, timeout: float = 30.0) -> str:
+        """
+        Synchronously submit a simulation job.
+
+        The method is thread-safe: it marshals the async work into the
+        background event-loop and returns the job identifier.
+
+        Parameters
+        ----------
+        config : HFSSSimulationConfig
+            Fully-built and validated simulation configuration.
+        priority : int, optional
+            Job priority (higher → de-queued earlier).  Default 0.
+        timeout : float, optional
+            Seconds to wait for the submission to complete.  Default 30 s.
+
+        Returns
+        -------
+        str
+            Unique job identifier (same as ``config.jobid``).
+
+        Raises
+        ------
+        RuntimeError
+            If the service is not started or the submission times out.
+        Exception
+            Any validation / scheduler error raised by the underlying coroutine.
+
+        Examples
+        --------
+        >>> from pyedb.workflows.job_manager.backend.job_manager_handler import JobManagerHandler
+        >>> from pyedb.workflows.job_manager.backend.job_submission import create_hfss_config, SchedulerType
+
+        >>> handler = JobManagerHandler()
+        >>> handler.start_service()
+        >>> cfg = create_hfss_config(
+        >>>     ansys_edt_path=...,
+        >>>     jobid="my_job",
+        >>>     project_path=...,
+        >>>     scheduler_type=SchedulerType.NONE
+        >>> )
+        >>> job_id = handler.submit_job(cfg, priority=0)
+        >>> print("submitted", job_id)
+        >>> # later
+        >>> handler.close()
+        """
+        if not self.started:
+            raise RuntimeError("Job-manager service is not started")
+
+        # Ship coroutine to the background loop
+        future = run_coroutine_threadsafe(self.manager.submit_job(config, priority=priority), self._loop)
+        try:
+            return future.result(timeout=timeout)  # block until done
+        except _futs.TimeoutError as exc:
+            raise RuntimeError("Job submission timed out") from exc
+
     async def get_system_status(self, request):
         """
         Get system status and scheduler information.
@@ -671,17 +727,37 @@ class JobManagerHandler:
         self.started = False
 
     def _run_event_loop(self) -> None:
-        """
-        Run the asyncio event loop in the background thread.
-
-        This method is the target of the background thread and runs
-        until the service is shut down.
-        """
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
         self._loop.run_until_complete(self._start_site())
-        # Ensure scheduler monitoring task is started
+
+        # ---- make the first sample synchronous ----
+        import datetime
+        import math
+        import os
+
+        import psutil
+
+        memory = psutil.virtual_memory()
+        disk = psutil.disk_usage(os.sep)
+        self.manager.resource_monitor.current_usage.update(
+            {
+                "cpu_percent": psutil.cpu_percent(interval=1),
+                "memory_percent": memory.percent,
+                "memory_used_gb": round(memory.used / 1024**3, 2),
+                "memory_total_gb": round(memory.total / 1024**3, 2),
+                "memory_free_gb": round(memory.available / 1024**3, 2),
+                "disk_usage_percent": disk.percent,
+                "disk_free_gb": round(disk.free / 1024**3, 2),
+                "timestamp": datetime.datetime.now().isoformat(),
+            }
+        )
+        # ------------------------------------------
+
+        # now start the periodic coroutine
+        self.manager._monitor_task = self._loop.create_task(self.manager.resource_monitor.monitor_resources())
         self.manager._ensure_scheduler_monitor_running()
+
         self._loop.run_forever()
 
     def create_simulation_config(
