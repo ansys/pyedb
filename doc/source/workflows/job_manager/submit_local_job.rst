@@ -1,21 +1,21 @@
 .. _job_manager_usage:
 
 ********************************************************************************
-Job Submission – Sync & Async Walk-through
+Job submission – sync & async walk-through
 ********************************************************************************
 
 .. contents:: Table of contents
    :local:
    :depth: 3
 
-.. rubric:: Submit and monitor HFSS/3-D Layout simulations through the PyEDB Job Manager
+.. rubric:: Submit and monitor HFSS 3-D Layout simulations through the PyEDB job manager
    with **zero** additional infrastructure on your workstation or **full** cluster support
    (SLURM, LSF, PBS, Windows-HPC).
 
 --------------------------------------------------------------------
 Overview
 --------------------------------------------------------------------
-The Job Manager is an *asynchronous* micro-service that is **automatically** started
+The job manager is an *asynchronous* micro-service that is **automatically** started
 in a background thread when you instantiate :class:`.JobManagerHandler`.
 It exposes:
 
@@ -24,17 +24,17 @@ It exposes:
 * Native async API for advanced integrations
 * CLI utility ``submit_local_job`` for shell / CI pipelines
 
-The same backend code-path is used regardless of front-end style; the difference is
-**who owns the event-loop** and **how control is returned to the caller**.
+The same back-end code path is used regardless of front-end style; the difference is
+**who owns the event loop** and **how control is returned to the caller**.
 
 --------------------------------------------------------------------
-Synchronous Usage (Scripts & Notebooks)
+Synchronous usage (scripts & notebooks)
 --------------------------------------------------------------------
-Perfect when you simply want to *“submit and wait”* without learning ``asyncio``.
+Perfect when you simply want to “submit and wait” without learning ``asyncio``.
 
 .. code-block:: python
    :caption: local_sync_demo.py
-   :linenos:
+   :lineno-start: 1
 
    from pyedb.workflows.job_manager.backend.job_submission import (
        create_hfss_config,
@@ -42,20 +42,20 @@ Perfect when you simply want to *“submit and wait”* without learning ``async
    )
    from pyedb.workflows.job_manager.backend.job_manager_handler import JobManagerHandler
 
-   project_to_solve = r"D:\Temp\test_jobs\test4.aedb"
+   project_path = r"D:\Temp\test_jobs\test4.AEDB"
 
    handler = JobManagerHandler()  # discovers ANSYS install
    handler.start_service()  # starts background aiohttp server
 
-   cfg = create_hfss_config(
-       project_path=project_to_solve, scheduler_type=SchedulerType.NONE
+   config = create_hfss_config(
+       project_path=project_path, scheduler_type=SchedulerType.NONE
    )
-   cfg.machine_nodes[0].cores = 8  # use 8 local cores
+   config.machine_nodes[0].cores = 8  # use 8 local cores
 
-   job_id = handler.submit_job(cfg)  # ← blocks until job accepted
+   job_id = handler.submit_job(config)  # blocks until job accepted
    print("submitted", job_id)
 
-   status = handler.wait_until_done(job_id)  # ← polls until terminal
+   status = handler.wait_until_done(job_id)  # polls until terminal
    print("job finished with status:", status)
 
    handler.close()  # graceful shutdown
@@ -72,7 +72,7 @@ Step-by-step
      - Creates a *synchronous façade* around the async service; auto-detects
        ANSYS version and scheduler (NONE on Windows, SLURM/LSF on Linux if present).
    * - 7
-     - Spawns a **daemon thread**, starts an *aiohttp* event-loop inside it,
+     - Spawns a **daemon thread**, starts an *aiohttp* event loop inside it,
        and binds the REST/WebSocket API to ``http://localhost:8080``.
    * - 9-11
      - Builds a validated :class:`.HFSSSimulationConfig`; ``machine_nodes`` is
@@ -96,9 +96,9 @@ Production notes
   ``scheduler_options``; the code path remains identical.
 
 --------------------------------------------------------------------
-Asynchronous Usage (CLI & Programmatic)
+Asynchronous usage (CLI & programmatic)
 --------------------------------------------------------------------
-Use when you need **non-blocking** behaviour inside an *async* function or from
+Use when you need **non-blocking** behaviour inside an ``async`` function or from
 the shell / CI pipelines.
 
 CLI – ``submit_local_job``
@@ -152,7 +152,7 @@ Example – CLI
    $ submit_local_job \
          --host 127.0.0.1 \
          --port 8080 \
-         --project-path "/shared/antenna.aedb" \
+         --project-path "/shared/antenna.AEDB" \
          --num-cores 16
 
 The command returns immediately after the job is **queued**; use the printed ID
@@ -168,9 +168,9 @@ Programmatic – native asyncio
 
 
    async def main():
-       manager = JobManager()  # same backend
-       cfg = create_hfss_config(project_path="antenna.aedb", scheduler_type="NONE")
-       job_id = await manager.submit_job(cfg, priority=5)
+       manager = JobManager()  # same back-end
+       config = create_hfss_config(project_path="antenna.AEDB", scheduler_type="NONE")
+       job_id = await manager.submit_job(config, priority=5)
        await manager.wait_until_all_done()  # non-blocking wait
        print("all done")
 
@@ -178,7 +178,7 @@ Programmatic – native asyncio
    asyncio.run(main())
 
 --------------------------------------------------------------------
-Choosing Between Sync & Async
+Choosing between sync & async
 --------------------------------------------------------------------
 .. list-table::
    :widths: 50 50
@@ -194,7 +194,7 @@ Choosing Between Sync & Async
      - Ideal for **web servers**, **micro-services**, **GUI applications**.
 
 --------------------------------------------------------------------
-See Also
+See also
 --------------------------------------------------------------------
 * :ref:`job_manager_rest_api` – Complete endpoint reference
 * :class:`.JobManagerHandler` – API reference (sync façade)
