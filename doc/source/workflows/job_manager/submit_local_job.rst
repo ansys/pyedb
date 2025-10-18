@@ -1,53 +1,123 @@
-.. _cli-submit-local-job:
+.. _job_manager_usage:
 
 ********************************************************************************
-``submit_local_job`` – submit HFSS jobs to the local job-manager
+Job Submission – Sync & Async Walk-through
 ********************************************************************************
 
 .. contents:: Table of contents
    :local:
-   :depth: 2
+   :depth: 3
 
-Synopsis
-========
+.. rubric:: Submit and monitor HFSS/3-D Layout simulations through the PyEDB Job Manager
+   with **zero** additional infrastructure on your workstation or **full** cluster support
+   (SLURM, LSF, PBS, Windows-HPC).
 
-.. code-block:: bash
+--------------------------------------------------------------------
+Overview
+--------------------------------------------------------------------
+The Job Manager is an *asynchronous* micro-service that is **automatically** started
+in a background thread when you instantiate :class:`.JobManagerHandler`.
+It exposes:
 
-   $ submit_local_job --help
-   $ submit_local_job --project-path <PATH> [options]
+* REST & Web-Socket endpoints (``http://localhost:8080`` by default)
+* Thread-safe synchronous façade for scripts / Jupyter
+* Native async API for advanced integrations
+* CLI utility ``submit_local_job`` for shell / CI pipelines
 
-Description
-===========
+The same backend code-path is used regardless of front-end style; the difference is
+**who owns the event-loop** and **how control is returned to the caller**.
 
-``submit_local_job`` is an *async* command-line utility that ships with **PyEDB**.
-It wraps the low-level ``pyedb.workflows.job_manager.backend.job_submission`` API
-and pushes an HFSS project to the local job-manager REST service.
+--------------------------------------------------------------------
+Synchronous Usage (Scripts & Notebooks)
+--------------------------------------------------------------------
+Perfect when you simply want to *“submit and wait”* without learning ``asyncio``.
 
-The utility is fully self-contained (only Python ≥ 3.8 and aiohttp are required)
-and is intended for CI/CD pipelines, desktop automation, or interactive use.
+.. code-block:: python
+   :caption: local_sync_demo.py
+   :linenos:
+
+   from pyedb.workflows.job_manager.backend.job_submission import (
+       create_hfss_config,
+       SchedulerType,
+   )
+   from pyedb.workflows.job_manager.backend.job_manager_handler import JobManagerHandler
+
+   project_to_solve = r"D:\Temp\test_jobs\test4.aedb"
+
+   handler = JobManagerHandler()  # discovers ANSYS install
+   handler.start_service()  # starts background aiohttp server
+
+   cfg = create_hfss_config(
+       project_path=project_to_solve, scheduler_type=SchedulerType.NONE
+   )
+   cfg.machine_nodes[0].cores = 8  # use 8 local cores
+
+   job_id = handler.submit_job(cfg)  # ← blocks until job accepted
+   print("submitted", job_id)
+
+   status = handler.wait_until_done(job_id)  # ← polls until terminal
+   print("job finished with status:", status)
+
+   handler.close()  # graceful shutdown
+
+Step-by-step
+^^^^^^^^^^^^
+.. list-table::
+   :widths: 10 90
+   :header-rows: 1
+
+   * - Line
+     - Description
+   * - 6
+     - Creates a *synchronous façade* around the async service; auto-detects
+       ANSYS version and scheduler (NONE on Windows, SLURM/LSF on Linux if present).
+   * - 7
+     - Spawns a **daemon thread**, starts an *aiohttp* event-loop inside it,
+       and binds the REST/WebSocket API to ``http://localhost:8080``.
+   * - 9-11
+     - Builds a validated :class:`.HFSSSimulationConfig`; ``machine_nodes`` is
+       overridden to use 8 CPU cores for a local *subprocess* run.
+   * - 13
+     - Marshals the async coroutine into the background loop and returns the
+       real job ID (``str``) to the caller.
+   * - 16
+     - Polls ``GET /api/jobs`` every 2 s until the job reaches
+       ``completed``, ``failed``, or ``cancelled``.
+   * - 18
+     - Cancels background tasks, stops the web server, and joins the daemon thread.
+
+Production notes
+^^^^^^^^^^^^^^^^
+* Thread-safe: multiple threads may submit or cancel concurrently.
+* Resource limits (CPU, memory, disk, concurrency) are enforced; jobs stay queued
+  until resources are free.
+* ``atexit`` ensures clean shutdown even if the user forgets ``close()``.
+* Cluster runs: change ``SchedulerType.NONE`` → ``SLURM``/``LSF`` and supply
+  ``scheduler_options``; the code path remains identical.
+
+--------------------------------------------------------------------
+Asynchronous Usage (CLI & Programmatic)
+--------------------------------------------------------------------
+Use when you need **non-blocking** behaviour inside an *async* function or from
+the shell / CI pipelines.
+
+CLI – ``submit_local_job``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+The package installs a console entry-point that talks to the **same** REST API.
 
 Installation
-============
-
-Editable/development install
-----------------------------
-
+""""""""""""
 .. code-block:: bash
 
-   $ git clone https://github.com/<org>/<repo>.git
-   $ cd <repo>
-   $ python -m pip install -e .
+   $ pip install -e .                      # or production wheel
+   $ which submit_local_job
+   /usr/local/bin/submit_local_job
 
-The console entry-point ``submit_local_job`` is automatically created by *setuptools*
-via the following stanza in ``pyproject.toml`` (or ``setup.cfg``):
+Synopsis
+""""""""
+.. code-block:: bash
 
-.. code-block:: toml
-
-   [project.scripts]
-   submit_local_job = "pyedb.workflows.cli.submit_local_job:main"
-
-Arguments & Options
-===================
+   $ submit_local_job --project-path <PATH> [options]
 
 .. sphinx_argparse_cli::
    :module: pyedb.workflows.cli.submit_local_job
@@ -56,74 +126,78 @@ Arguments & Options
    :nested: full
 
 Environment variables
-=====================
-
+"""""""""""""""""""""
 .. envvar:: PYEDB_JOB_MANAGER_HOST
 
-   Fallback value for ``--host`` if the option is omitted.
+   Fallback for ``--host``.
 
 .. envvar:: PYEDB_JOB_MANAGER_PORT
 
-   Fallback value for ``--port`` if the option is omitted.
+   Fallback for ``--port``.
 
-Exit status
-===========
-
+Exit codes
+""""""""""
 ===== =========================================================
 Code  Meaning
 ===== =========================================================
-``0`` Job configuration successfully submitted and accepted.
-``1`` CLI validation error, missing file, or connection failure.
-``2`` Unexpected runtime exception (stack trace printed to stderr).
+``0`` Job accepted by manager.
+``1`` CLI validation or connection error.
+``2`` Unexpected runtime exception.
 ===== =========================================================
 
-Examples
-========
-
-Submit with explicit values
----------------------------
-
+Example – CLI
+"""""""""""""
 .. code-block:: bash
 
    $ submit_local_job \
          --host 127.0.0.1 \
          --port 8080 \
-         --project-path "D:/Jobs/antenna.aedb" \
+         --project-path "/shared/antenna.aedb" \
          --num-cores 16
 
-Use environment defaults
-------------------------
+The command returns immediately after the job is **queued**; use the printed ID
+with ``wait_until_done`` or monitor via the web UI.
 
-.. code-block:: bash
+Programmatic – native asyncio
+"""""""""""""""""""""""""""""
+.. code-block:: python
 
-   $ export PYEDB_JOB_MANAGER_HOST=jobmgr.acme.com
-   $ export PYEDB_JOB_MANAGER_PORT=80
-   $ submit_local_job --project-path ~/feed_network.aedb
+   import asyncio
+   from pyedb.workflows.job_manager.backend.service import JobManager
+   from pyedb.workflows.job_manager.backend.job_submission import create_hfss_config
 
-Troubleshooting
-===============
 
-Connection refused
-------------------
+   async def main():
+       manager = JobManager()  # same backend
+       cfg = create_hfss_config(project_path="antenna.aedb", scheduler_type="NONE")
+       job_id = await manager.submit_job(cfg, priority=5)
+       await manager.wait_until_all_done()  # non-blocking wait
+       print("all done")
 
-Ensure the job-manager service is running and reachable:
 
-.. code-block:: bash
+   asyncio.run(main())
 
-   $ curl -i http://<host>:<port>/health
+--------------------------------------------------------------------
+Choosing Between Sync & Async
+--------------------------------------------------------------------
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
 
-Verbose logging
----------------
+   * - Synchronous (scripts / notebooks)
+     - Asynchronous (services / CLI)
+   * - No ``asyncio`` knowledge required.
+     - Caller runs inside ``async def``; operations are ``await``-ed.
+   * - Blocking calls – caller waits for result.
+     - Non-blocking – event loop stays responsive.
+   * - Ideal for **interactive** work, **CI pipelines**, **quick scripts**.
+     - Ideal for **web servers**, **micro-services**, **GUI applications**.
 
-Set the log level via the standard :mod:`logging` configuration, e.g.
-
-.. code-block:: bash
-
-   $ LOG_LEVEL=DEBUG submit_local_job ...
-
-See also
-========
-
-* :ref:`job-manager-rest-api`
-* :doc:`configuration_syntax`
-* :doc:`../tutorials/submit_batch`
+--------------------------------------------------------------------
+See Also
+--------------------------------------------------------------------
+* :ref:`job_manager_rest_api` – Complete endpoint reference
+* :class:`.JobManagerHandler` – API reference (sync façade)
+* :class:`.JobManager` – API reference (async core)
+* :doc:`configuration_syntax` – All scheduler & solver options
+* :doc:`../tutorials/submit_batch` – Bulk submissions on SLURM/LSF

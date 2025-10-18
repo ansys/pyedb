@@ -64,11 +64,13 @@ import shutil
 import ssl
 import sys
 import threading
+import time
 from typing import Optional
 import uuid
 
 import aiohttp
 from aiohttp import web
+import requests
 
 from pyedb.generic.general_methods import is_linux
 from pyedb.workflows.job_manager.backend.job_submission import (
@@ -265,12 +267,12 @@ class JobManagerHandler:
         self.app.router.add_get("/api/resources", self.get_resources)
         self.app.router.add_get("/api/scheduler_type", self.get_scheduler_type)
         self.app.router.add_get("/api/cluster_partitions", self.get_cluster_partitions)
-        self.app.router.add_post("/api/submit", self.submit_job)
+        self.app.router.add_post("/api/submit", self.handle_submit_job)
         self.app.router.add_post("/api/cancel/{job_id}", self.cancel_job)
         self.app.router.add_get("/api/jobs/{job_id}/log", self.get_job_log)
         self.app.router.add_get("/api/me", self.get_me)
         self.app.router.add_get("/system/status", self.get_system_status)
-        self.app.router.add_post("/jobs/submit", self.submit_job)
+        self.app.router.add_post("/jobs/submit", self.handle_submit_job)
 
     def _find_latest_log(self, project_path: str) -> Path | None:
         """
@@ -362,6 +364,44 @@ class JobManagerHandler:
             return future.result(timeout=timeout)  # block until done
         except _futs.TimeoutError as exc:
             raise RuntimeError("Job submission timed out") from exc
+
+    def wait_until_done(self, job_id: str, poll_every: float = 2.0) -> str:
+        """
+        Block until the requested job reaches a terminal state
+        (completed, failed, or cancelled).
+
+        Returns
+        -------
+        str
+            Terminal status string.
+        """
+        if not self.started:
+            raise RuntimeError("Service not started")
+
+        while True:
+            rsp = requests.get(f"{self.url}/api/jobs").json()
+            job = next((j for j in rsp if j["id"] == job_id), None)
+            if not job:
+                raise RuntimeError(f"Job {job_id} disappeared from manager")
+            status = job["status"]
+            if status in {"completed", "failed", "cancelled"}:
+                return status
+            time.sleep(poll_every)
+
+    def wait_until_all_done(self, poll_every: float = 2.0) -> None:
+        """
+        Block until **every** job currently known to the manager
+        is in a terminal state.
+        """
+        if not self.started:
+            raise RuntimeError("Service not started")
+
+        while True:
+            rsp = requests.get(f"{self.url}/api/jobs").json()
+            active = [j for j in rsp if j["status"] not in {"completed", "failed", "cancelled"}]
+            if not active:
+                return
+            time.sleep(poll_every)
 
     async def get_system_status(self, request):
         """
@@ -507,7 +547,7 @@ class JobManagerHandler:
         except Exception as exc:
             return web.json_response({"error": str(exc)}, status=500)
 
-    async def submit_job(self, request):
+    async def handle_submit_job(self, request):
         """
         Submit a new simulation job.
 
