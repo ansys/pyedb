@@ -543,7 +543,7 @@ class HFSSSimulationConfig(BaseModel):
         options_dict = self.layout_options.to_batch_options_dict()
         # Simple format: space-separated key=value pairs
         # They will be properly quoted when used in the command
-        options_list = [f"{k}={v}" for k, v in options_dict.items()]
+        options_list = [f"'{k}'='{v}'" for k, v in options_dict.items()]
         return " ".join(options_list)
 
     def generate_design_string(self) -> str:
@@ -702,9 +702,7 @@ class HFSSSimulationConfig(BaseModel):
         # Basic job parameters
         parts.append(f"-jobid {self.jobid}")
 
-        # ------------------------------------------------------------------
         # LOCAL MODE: enforce no -auto and explicit cores
-        # ------------------------------------------------------------------
         if self.scheduler_type == SchedulerType.NONE:
             self.auto = False  # never use -auto for local runs
             if self.machine_nodes:
@@ -720,13 +718,13 @@ class HFSSSimulationConfig(BaseModel):
             if self.scheduler_type != SchedulerType.NONE:
                 self.auto = False  # keep existing cluster guard
 
-            if self.auto:
-                parts.append("-auto")
-
             if self.distributed:
                 parts.append("-distributed")
                 total_cores = self._num_cores_for_scheduler()
                 parts.append(f"-machinelist numcores={total_cores}")
+
+        if self.auto:
+            parts.append("-auto")
 
         # Common flags
         if self.non_graphical:
@@ -821,13 +819,6 @@ class HFSSSimulationConfig(BaseModel):
             submit_cmd = ["bsub"]
         else:
             submit_cmd = ["bsub", "<", script_path]
-
-        # DEBUG: Print submission command and script content
-        logger.info(f"🔍 DEBUG: Submitting to {self.scheduler_type.value}")
-        logger.info(f"🔍 DEBUG: Submission command: {' '.join(submit_cmd)}")
-        logger.info(f"🔍 DEBUG: Script path: {script_path}")
-        logger.info(f"🔍 DEBUG: Script content:\n{'=' * 80}\n{script_content}\n{'=' * 80}")
-
         try:
             # Execute submission command with timeout
             if self.scheduler_type == SchedulerType.LSF:
@@ -849,10 +840,6 @@ class HFSSSimulationConfig(BaseModel):
                     timeout=30,
                     shell=False,
                 )
-
-            # DEBUG: Print submission result
-            logger.info(f"🔍 DEBUG: Submission result - Return code: {result.returncode}")
-            logger.info(f"🔍 DEBUG: Submission stdout: {result.stdout}")
             if result.stderr:
                 logger.warning(f"🔍 DEBUG: Submission stderr: {result.stderr}")
 
@@ -999,16 +986,27 @@ class HFSSSimulationConfig(BaseModel):
             self.jobid,
         ]
 
-        if self.distributed:
-            command.extend(["-distributed"])
-            # Removed duplicate -distributed flag
-            if self.scheduler_type != SchedulerType.NONE:
+        # ------------------------------------------------------------------
+        # LOCAL MODE: enforce no -auto and explicit cores
+        # ------------------------------------------------------------------
+        if self.scheduler_type == SchedulerType.NONE:
+            self.auto = False  # never use -auto for local runs
+            if self.machine_nodes:
+                simplified = [
+                    f"{node.hostname}:{node.cores}:{node.max_cores}:{node.utilization}%" for node in self.machine_nodes
+                ]
+                command.extend(["-machinelist", f"list={','.join(simplified)}"])
+            # Skip all later machinelist logic for local runs
+        # ------------------------------------------------------------------
+        # CLUSTER MODE: existing logic
+        # ------------------------------------------------------------------
+        else:
+            if self.distributed:
+                command.append("-distributed")
                 total_cores = self._num_cores_for_scheduler()
                 command.extend(["-machinelist", f"numcores={total_cores}"])
-            else:
-                machinelist = self.generate_machinelist_string()
-                command.extend(["-machinelist", machinelist])
 
+        # NOW append -auto only if still allowed
         if self.auto:
             command.append("-auto")
 
