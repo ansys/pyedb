@@ -1,7 +1,7 @@
-.. _job_manager_usage:
+.. _submit_job_production:
 
 ********************************************************************************
-Job submission – sync & async walk-through
+Job submission – production notes & quick-start
 ********************************************************************************
 
 .. contents:: Table of contents
@@ -10,22 +10,54 @@ Job submission – sync & async walk-through
 
 .. rubric:: Submit and monitor HFSS 3-D Layout simulations through the PyEDB job manager
    with **zero** additional infrastructure on your workstation or **full** cluster support
-   (SLURM, LSF, PBS, Windows-HPC).
+   (SLURM, LSF, PBS, Windows-HPC, …).
 
 --------------------------------------------------------------------
-Overview
+Pre-requisites
 --------------------------------------------------------------------
-The job manager is an *asynchronous* micro-service that is **automatically** started
-in a background thread when you instantiate :class:`.JobManagerHandler`.
+1. **ANSYS Electronics Desktop** must be installed.
+2. The environment variable ``ANSYSEM_ROOT<rrr>`` must point to the
+   installation directory, **e.g.**
+
+   .. code-block:: bash
+
+      export ANSYSEM_ROOT252=/ansys_inc/v252/Linux64      # 2025 R2
+      # or on Windows
+      set ANSYSEM_ROOT252=C:\Program Files\AnsysEM\v252\Win64
+
+   The backend automatically discovers the newest release if several
+   ``ANSYSEM_ROOT<rrr>`` variables are present.
+
+3. (Cluster only) A **scheduler template** for your workload manager
+   must exist in ``pyedb/workflows/job_manager/scheduler_templates/``.
+   Out-of-the-box templates are provided for **SLURM** and **LSF**;
+   PBS, Torque, Windows-HPC, or cloud batch systems can be added
+   by dropping a new YAML file—no code change required.
+
+--------------------------------------------------------------------
+Overview – how it works
+--------------------------------------------------------------------
+The job manager is an *asynchronous* micro-service that is **automatically**
+started in a background thread when you instantiate :class:`.JobManagerHandler`.
 It exposes:
 
 * REST & Web-Socket endpoints (``http://localhost:8080`` by default)
 * Thread-safe synchronous façade for scripts / Jupyter
 * Native async API for advanced integrations
-* CLI utility ``submit_local_job`` for shell / CI pipelines
+* CLI utilities ``submit_local_job`` and ``submit_job_on_scheduler`` for shell / CI pipelines
 
-The same back-end code path is used regardless of front-end style; the difference is
+The **same backend code path** is used regardless of front-end style; the difference is
 **who owns the event loop** and **how control is returned to the caller**.
+
+.. tip::
+   The backend **auto-detects** the scheduler:
+
+   * **Windows workstation** → ``SchedulerType.NONE`` (local subprocess)
+   * **Linux workstation** → ``SchedulerType.NONE`` (local subprocess)
+   * **Linux cluster with SLURM** → ``SchedulerType.SLURM``
+   * **Linux cluster with LSF** → ``SchedulerType.LSF``
+
+   You can still override the choice explicitly if needed.
 
 --------------------------------------------------------------------
 Synchronous usage (scripts & notebooks)
@@ -42,15 +74,16 @@ Perfect when you simply want to “submit and wait” without learning ``asyncio
    )
    from pyedb.workflows.job_manager.backend.job_manager_handler import JobManagerHandler
 
-   project_path = r"D:\Temp\test_jobs\test4.AEDB"
+   project_path = r"D:\Jobs\antenna_array.aedb"
 
-   handler = JobManagerHandler()  # discovers ANSYS install
+   handler = JobManagerHandler()  # discovers ANSYS install & scheduler
    handler.start_service()  # starts background aiohttp server
 
    config = create_hfss_config(
-       project_path=project_path, scheduler_type=SchedulerType.NONE
+       project_path=project_path,
+       scheduler_type=SchedulerType.NONE,  # auto-detected on Windows
    )
-   config.machine_nodes[0].cores = 8  # use 8 local cores
+   config.machine_nodes[0].cores = 16  # use 16 local cores
 
    job_id = handler.submit_job(config)  # blocks until job accepted
    print("submitted", job_id)
@@ -59,32 +92,6 @@ Perfect when you simply want to “submit and wait” without learning ``asyncio
    print("job finished with status:", status)
 
    handler.close()  # graceful shutdown
-
-Step-by-step
-^^^^^^^^^^^^
-.. list-table::
-   :widths: 10 90
-   :header-rows: 1
-
-   * - Line
-     - Description
-   * - 6
-     - Creates a *synchronous façade* around the async service; auto-detects
-       ANSYS version and scheduler (NONE on Windows, SLURM/LSF on Linux if present).
-   * - 7
-     - Spawns a **daemon thread**, starts an *aiohttp* event loop inside it,
-       and binds the REST/WebSocket API to ``http://localhost:8080``.
-   * - 9-11
-     - Builds a validated :class:`.HFSSSimulationConfig`; ``machine_nodes`` is
-       overridden to use 8 CPU cores for a local *subprocess* run.
-   * - 13
-     - Marshals the async coroutine into the background loop and returns the
-       real job ID (``str``) to the caller.
-   * - 16
-     - Polls ``GET /api/jobs`` every 2 s until the job reaches
-       ``completed``, ``failed``, or ``cancelled``.
-   * - 18
-     - Cancels background tasks, stops the web server, and joins the daemon thread.
 
 Production notes
 ^^^^^^^^^^^^^^^^
@@ -145,15 +152,15 @@ Code  Meaning
 ``2`` Unexpected runtime exception.
 ===== =========================================================
 
-Example – CLI
-"""""""""""""
+Example – CLI (cluster)
+"""""""""""""""""""""""
 .. code-block:: bash
 
-   $ submit_local_job \
-         --host 127.0.0.1 \
-         --port 8080 \
-         --project-path "/shared/antenna.AEDB" \
-         --num-cores 16
+   $ submit_job_on_scheduler \
+         --project-path "/shared/antenna.aedb" \
+         --partition hpclarge \
+         --nodes 2 \
+         --cores-per-node 32
 
 The command returns immediately after the job is **queued**; use the printed ID
 with ``wait_until_done`` or monitor via the web UI.
@@ -169,7 +176,16 @@ Programmatic – native asyncio
 
    async def main():
        manager = JobManager()  # same back-end
-       config = create_hfss_config(project_path="antenna.AEDB", scheduler_type="NONE")
+       config = create_hfss_config(
+           project_path="antenna.aedb",
+           scheduler_type="SLURM",  # or "LSF", "NONE", …
+           scheduler_options={
+               "queue": "hpclarge",
+               "nodes": 2,
+               "cores_per_node": 32,
+               "time": "04:00:00",
+           },
+       )
        job_id = await manager.submit_job(config, priority=5)
        await manager.wait_until_all_done()  # non-blocking wait
        print("all done")
