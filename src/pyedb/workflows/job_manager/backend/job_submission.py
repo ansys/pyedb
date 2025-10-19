@@ -469,6 +469,8 @@ class HFSSSimulationConfig(BaseModel):
                 self.ansys_edt_path = os.path.join(list(installed_versions.values())[-1], "ansysedt.exe")  # latest
         if not self.jobid:
             self.jobid = f"JOB_ID_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        if "auto" not in data:  # user did not touch it
+            data["auto"] = self.scheduler_type != SchedulerType.NONE
         self.validate_fields()
 
     def validate_fields(self) -> None:
@@ -698,63 +700,49 @@ class HFSSSimulationConfig(BaseModel):
         return opts.nodes * cpp
 
     def generate_command_string(self) -> str:
-        """Complete quoted command line ready for ``subprocess``.
-
-        Returns
-        -------
-        str
-            Platform-escaped string.
+        """
+        Platform-escaped command line.
+        Local  →  list=…
+        Scheduler →  distributed numcores=…  +  -auto
         """
         parts = []
 
-        # ANSYS executable with proper quoting
+        # 1. executable
         ansysedt_path = self.ansys_edt_path
         if platform.system() == "Windows":
             parts.append(f'"{ansysedt_path}"')
         else:
             parts.append(shlex.quote(ansysedt_path))
 
-        # Basic job parameters
+        # 2. jobid
         parts.append(f"-jobid {self.jobid}")
 
-        # LOCAL MODE: enforce no -auto and explicit cores
-        if self.scheduler_type == SchedulerType.NONE:
-            self.auto = False  # never use -auto for local runs
+        # 3. machine list & distributed flag
+        if self.scheduler_type == SchedulerType.NONE:  # LOCAL
             if self.machine_nodes:
-                simplified = [
-                    f"{node.hostname}:{node.cores}:{node.max_cores}:{node.utilization}%" for node in self.machine_nodes
-                ]
+                simplified = [f"{n.hostname}:{n.cores}:{n.max_cores}:{n.utilization}%" for n in self.machine_nodes]
                 parts.append(f"-machinelist list={','.join(simplified)}")
-            # Skip all later machinelist logic for local runs
-        # ------------------------------------------------------------------
-        # CLUSTER MODE: existing logic
-        # ------------------------------------------------------------------
-        else:
-            if self.scheduler_type != SchedulerType.NONE:
-                self.auto = False  # keep existing cluster guard
-
+        else:  # SCHEDULER
             if self.distributed:
                 parts.append("-distributed")
-                total_cores = self._num_cores_for_scheduler()
-                parts.append(f"-machinelist numcores={total_cores}")
+                parts.append(f"-machinelist numcores={self._num_cores_for_scheduler()}")
+            if self.auto:  # auto only for schedulers
+                parts.append("-auto")
 
-        if self.auto:
-            parts.append("-auto")
-
-        # Common flags
+        # 4. common flags
         if self.non_graphical:
             parts.append("-ng")
         if self.monitor:
             parts.append("-monitor")
 
-        # Batch options
+        # 5. batch options
         batch_opts = self.generate_batch_options_string()
         if platform.system() == "Windows":
             parts.append(f'-batchoptions "{batch_opts}"')
         else:
             parts.append(f"-batchoptions {shlex.quote(batch_opts)}")
 
-        # Project and design
+        # 6. design & project
         design_str = self.generate_design_string()
         if platform.system() == "Windows":
             proj_quoted = f'"{self.project_path}"'
@@ -926,6 +914,10 @@ class HFSSSimulationConfig(BaseModel):
             # Apply user-provided kwargs
             default_kwargs.update(subprocess_kwargs)
 
+            # extra safety
+            if self.scheduler_type == SchedulerType.NONE:
+                self.auto = False
+
             try:
                 print(f"Starting HFSS simulation: {self.jobid}")
                 print(f"Command: {' '.join(command) if isinstance(command, list) else command}")
@@ -985,59 +977,38 @@ class HFSSSimulationConfig(BaseModel):
 
     def generate_command_list(self) -> List[str]:
         """
-        Same as :meth:`generate_command_string` but returned as a **list**
-        suitable for ``subprocess.run(..., shell=False)`` on **Linux**.
-
-        Returns
-        -------
-        list[str]
-            Already shell-escaped arguments.
+        List form for subprocess.run(shell=False).
+        Local  →  list=…
+        Scheduler →  distributed numcores=…  +  -auto
         """
-        ansysedt_path = self.ansys_edt_path
+        cmd = [self.ansys_edt_path, "-jobid", self.jobid]
 
-        command = [
-            ansysedt_path,
-            "-jobid",
-            self.jobid,
-        ]
-
-        # ------------------------------------------------------------------
-        # LOCAL MODE: enforce no -auto and explicit cores
-        # ------------------------------------------------------------------
-        if self.scheduler_type == SchedulerType.NONE:
-            self.auto = False  # never use -auto for local runs
+        # machine list & distributed flag
+        if self.scheduler_type == SchedulerType.NONE:  # LOCAL
             if self.machine_nodes:
-                simplified = [
-                    f"{node.hostname}:{node.cores}:{node.max_cores}:{node.utilization}%" for node in self.machine_nodes
-                ]
-                command.extend(["-machinelist", f"list={','.join(simplified)}"])
-            # Skip all later machinelist logic for local runs
-        # ------------------------------------------------------------------
-        # CLUSTER MODE: existing logic
-        # ------------------------------------------------------------------
-        else:
+                simplified = [f"{n.hostname}:{n.cores}:{n.max_cores}:{n.utilization}%" for n in self.machine_nodes]
+                cmd.extend(["-machinelist", f"list={','.join(simplified)}"])
+        else:  # SCHEDULER
             if self.distributed:
-                command.append("-distributed")
-                total_cores = self._num_cores_for_scheduler()
-                command.extend(["-machinelist", f"numcores={total_cores}"])
+                cmd.append("-distributed")
+                cmd.extend(["-machinelist", f"numcores={self._num_cores_for_scheduler()}"])
+            if self.auto:
+                cmd.append("-auto")
 
-        # NOW append -auto only if still allowed
-        if self.auto:
-            command.append("-auto")
-
+        # common flags
         if self.non_graphical:
-            command.append("-ng")
-
+            cmd.append("-ng")
         if self.monitor:
-            command.append("-monitor")
+            cmd.append("-monitor")
 
-        batch_options = self.generate_batch_options_string()
-        command.extend(["-batchoptions", batch_options])
+        # batch options
+        cmd.extend(["-batchoptions", self.generate_batch_options_string()])
 
-        design_string = self.generate_design_string()
-        command.extend(["-batchsolve", design_string, self.project_path])
+        # design & project
+        design_str = self.generate_design_string()
+        cmd.extend(["-batchsolve", design_str, self.project_path])
 
-        return command
+        return cmd
 
     def to_dict(self) -> Dict[str, Any]:
         """

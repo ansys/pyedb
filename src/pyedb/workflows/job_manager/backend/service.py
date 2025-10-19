@@ -812,6 +812,11 @@ class JobManager:
             if "user" not in data["config"] or data["config"]["user"] is None:
                 data["config"]["user"] = getpass.getuser()
 
+            # Overwrite scheduler type and user with authoritative values
+            if config.scheduler_type != self.scheduler_type:
+                print("Overriding scheduler type from client:", config.scheduler_type, "→", self.scheduler_type)
+            config.scheduler_type = self.scheduler_type
+
             # Submit the job
             job_id = await self.submit_job(config)
 
@@ -1053,17 +1058,7 @@ class JobManager:
         """
         logger.info("✅ Job processing loop started.")
         while not self._shutdown:
-            # --- START DEBUG LOGGING ---
             can_start = self.job_pool.can_start_job(self.resource_monitor)
-            running_count = len(self.job_pool.running_jobs)
-            max_concurrent = self.resource_limits.max_concurrent_jobs
-
-            logger.info(
-                f"Checking conditions: can_start={can_start}, "
-                f"running_jobs={running_count}, max_concurrent={max_concurrent}"
-            )
-            # --- END DEBUG LOGGING ---
-
             if can_start:
                 next_job_id = self.job_pool.get_next_job()
                 if next_job_id:

@@ -592,7 +592,9 @@ class JobManagerHandler:
         config = HFSSSimulationConfig.from_dict(data["config"])
 
         # 3.  overwrite scheduler type and user with authoritative values
-        config.scheduler_type = scheduler_type
+        if config.scheduler_type != scheduler_type:
+            print("Overriding scheduler type from client:", config.scheduler_type, "→", scheduler_type)
+        config.scheduler_type = self.scheduler_type
         config.user = data.get("user") or getpass.getuser()
 
         # 4.  optional machine nodes / batch options
