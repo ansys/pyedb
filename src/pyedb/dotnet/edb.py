@@ -874,9 +874,15 @@ class Edb:
         ]
         if export_xml:
             cmd_make_edb.extend(["-x", "{}".format(export_xml)])
-        subprocess.run(cmd_make_edb)
+        try:
+            subprocess.run(cmd_make_edb, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError(
+                "Failed to create edb. Please check if the executable is present in the base path."
+            ) from e
+
         if not os.path.exists(os.path.join(working_dir, "vlctech.aedb")):
-            self.logger.error("Failed to create edb.")
+            self.logger.error("Failed to create edb. Please check if the executable is present in the base path.")
             return False
         else:
             self.logger.info("edb successfully created.")
