@@ -86,7 +86,7 @@ Perfect when you simply want to “submit and wait” without learning ``asyncio
    )
    from pyedb.workflows.job_manager.backend.job_manager_handler import JobManagerHandler
 
-   project_path = r"D:\Jobs\antenna_array.AEDB"
+   project_path = r"D:\Jobs\my_design.aedb"
 
    handler = JobManagerHandler()  # discovers ANSYS install & scheduler
    handler.start_service()  # starts background aiohttp server
