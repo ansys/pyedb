@@ -49,6 +49,18 @@ It exposes:
 The **same backend code path** is used regardless of front-end style; the difference is
 **who owns the event loop** and **how control is returned to the caller**.
 
+.. tip:: **Quick-start server (any OS)**
+
+     Save the launcher script as ``start_job_service.py`` (see :ref:`start_service_script`) and run:
+
+     .. code-block:: bash
+
+        python start_service.py --host 0.0.0.0 --port 9090
+
+     The service is ready when the line
+     ``✅ Job-manager backend listening on http://0.0.0.0:9090``
+     appears; leave the terminal open or daemonize it with your favourite supervisor.
+
 .. tip::
    The backend **auto-detects** the scheduler:
 
@@ -208,6 +220,16 @@ Choosing between sync & async
      - Non-blocking – event loop stays responsive.
    * - Ideal for **interactive** work, **CI pipelines**, **quick scripts**.
      - Ideal for **web servers**, **micro-services**, **GUI applications**.
+
+.. _start_service_script:
+
+--------------------------------------------------------------------
+Stand-alone server launcher script
+--------------------------------------------------------------------
+The file ``start_service.py`` is a minimal wrapper around
+:class:`.JobManagerHandler` that exposes only ``--host`` and ``--port``.
+It is **not** installed by pip; copy it from the doc folder or the
+previous code block and place it anywhere in your ``PATH``.
 
 --------------------------------------------------------------------
 See also
