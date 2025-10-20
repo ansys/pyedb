@@ -871,7 +871,7 @@ class Edb:
         try:
             subprocess.run(command, check=True)  # nosec
         except subprocess.CalledProcessError as e:  # nosec
-            raise RuntimeError("Translation failed. Please check the log file.")
+            raise RuntimeError("Translation failed. Please check the log file.") from e
         if not os.path.exists(ipc_path):
             self.logger.error("Translation failed. Please check the log file.")
         else:

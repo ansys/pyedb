@@ -40,6 +40,7 @@ class TestClass(BaseTestClass):
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
+    @pytest.mark.skip(reason="ipc export refactor. Check test_edb instead")
     def test_export_to_ipc2581_0(self, edb_examples):
         """Export of a loaded aedb file to an XML IPC2581 file"""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
