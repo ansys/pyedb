@@ -101,7 +101,7 @@ Perfect when you simply want to “submit and wait” without learning ``asyncio
    print("submitted job_id")
 
    status = handler.wait_until_done(job_id)  # polls until terminal
-   print("job finished with status:", status)
+   print(f"job finished with status: {status}")
 
    handler.close()  # graceful shutdown
 
@@ -234,8 +234,8 @@ previous code block and place it anywhere in your ``PATH``.
 --------------------------------------------------------------------
 See also
 --------------------------------------------------------------------
-* :ref:`job_manager_rest_api` – Complete endpoint reference
-* :class:`.JobManagerHandler` – API reference (sync façade)
-* :class:`.JobManager` – API reference (async core)
-* :doc:`configuration_syntax` – All scheduler & solver options
-* :doc:`../tutorials/submit_batch` – Bulk submissions on SLURM/LSF
+* :ref:`job_manager_rest_api`–Complete endpoint reference
+* :class:`.JobManagerHandler`–API reference (sync façade)
+* :class:`.JobManager`–API reference (async core)
+* :doc:`configuration_syntax`–All scheduler & solver options
+* :doc:`../tutorials/submit_batch`–Bulk submissions on SLURM/LSF
