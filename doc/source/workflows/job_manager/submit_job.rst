@@ -1,7 +1,7 @@
 .. _submit_job_production:
 
 ********************************************************************************
-Job submission – production notes & quick-start
+Job submission—production notes & quick-start
 ********************************************************************************
 
 .. contents:: Table of contents
@@ -17,7 +17,7 @@ Pre-requisites
 --------------------------------------------------------------------
 1. **ANSYS Electronics Desktop** must be installed.
 2. The environment variable ``ANSYSEM_ROOT<rrr>`` must point to the
-   installation directory, **e.g.**
+   installation directory, e.g.
 
    .. code-block:: bash
 
@@ -35,7 +35,7 @@ Pre-requisites
    by dropping a new YAML file—no code change required.
 
 --------------------------------------------------------------------
-Overview – how it works
+Overview—how it works
 --------------------------------------------------------------------
 The job manager is an *asynchronous* micro-service that is **automatically**
 started in a background thread when you instantiate :class:`.JobManagerHandler`.
@@ -51,14 +51,14 @@ The **same backend code path** is used regardless of front-end style; the differ
 
 .. tip:: **Quick-start server (any OS)**
 
-     Save the launcher script as ``start_job_service.py`` (see :ref:`start_service_script`) and run:
+     Save the launcher script as ``start_service.py`` (see :ref:`start_service_script`) and run:
 
      .. code-block:: bash
 
         python start_service.py --host 0.0.0.0 --port 9090
 
      The service is ready when the line
-     ``✅ Job-manager backend listening on http://0.0.0.0:9090``
+     “✅ Job-manager backend listening on http://0.0.0.0:9090.”
      appears; leave the terminal open or daemonize it with your favourite supervisor.
 
 .. tip::
@@ -86,7 +86,7 @@ Perfect when you simply want to “submit and wait” without learning ``asyncio
    )
    from pyedb.workflows.job_manager.backend.job_manager_handler import JobManagerHandler
 
-   project_path = r"D:\Jobs\antenna_array.aedb"
+   project_path = r"D:\Jobs\antenna_array.AEDB"
 
    handler = JobManagerHandler()  # discovers ANSYS install & scheduler
    handler.start_service()  # starts background aiohttp server
@@ -98,7 +98,7 @@ Perfect when you simply want to “submit and wait” without learning ``asyncio
    config.machine_nodes[0].cores = 16  # use 16 local cores
 
    job_id = handler.submit_job(config)  # blocks until job accepted
-   print("submitted", job_id)
+   print("submitted job_id")
 
    status = handler.wait_until_done(job_id)  # polls until terminal
    print("job finished with status:", status)
@@ -120,7 +120,7 @@ Asynchronous usage (CLI & programmatic)
 Use when you need **non-blocking** behaviour inside an ``async`` function or from
 the shell / CI pipelines.
 
-CLI – ``submit_local_job``
+CLI—``submit_local_job``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 The package installs a console entry-point that talks to the **same** REST API.
 
@@ -164,12 +164,12 @@ Code  Meaning
 ``2`` Unexpected runtime exception.
 ===== =========================================================
 
-Example – CLI (cluster)
+Example—CLI (cluster)
 """""""""""""""""""""""
 .. code-block:: bash
 
    $ submit_job_on_scheduler \
-         --project-path "/shared/antenna.aedb" \
+         --project-path "/shared/antenna.AEDB" \
          --partition hpclarge \
          --nodes 2 \
          --cores-per-node 32
@@ -177,7 +177,7 @@ Example – CLI (cluster)
 The command returns immediately after the job is **queued**; use the printed ID
 with ``wait_until_done`` or monitor via the web UI.
 
-Programmatic – native asyncio
+Programmatic—native asyncio
 """""""""""""""""""""""""""""
 .. code-block:: python
 
@@ -189,7 +189,7 @@ Programmatic – native asyncio
    async def main():
        manager = JobManager()  # same back-end
        config = create_hfss_config(
-           project_path="antenna.aedb",
+           project_path="antenna.AEDB",
            scheduler_type="SLURM",  # or "LSF", "NONE", …
            scheduler_options={
                "queue": "hpclarge",
@@ -216,8 +216,8 @@ Choosing between sync & async
      - Asynchronous (services / CLI)
    * - No ``asyncio`` knowledge required.
      - Caller runs inside ``async def``; operations are ``await``-ed.
-   * - Blocking calls – caller waits for result.
-     - Non-blocking – event loop stays responsive.
+   * - Blocking calls—caller waits for result.
+     - Non-blocking—event loop stays responsive.
    * - Ideal for **interactive** work, **CI pipelines**, **quick scripts**.
      - Ideal for **web servers**, **micro-services**, **GUI applications**.
 
