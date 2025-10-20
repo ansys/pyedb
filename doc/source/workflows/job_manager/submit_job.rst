@@ -93,7 +93,6 @@ Perfect when you simply want to “submit and wait” without learning ``asyncio
 
    config = create_hfss_config(
        project_path=project_path,
-       scheduler_type=` ` SchedulerType.NONE ` `,  # auto-detected on Windows
    )
    config.machine_nodes[0].cores = 16  # use 16 local cores
 
