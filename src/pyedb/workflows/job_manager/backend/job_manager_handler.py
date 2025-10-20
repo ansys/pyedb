@@ -379,7 +379,7 @@ class JobManagerHandler:
             raise RuntimeError("Service not started")
 
         while True:
-            rsp = requests.get(f"{self.url}/api/jobs").json()
+            rsp = requests.get(f"{self.url}/api/jobs", timeout=30).json()
             job = next((j for j in rsp if j["id"] == job_id), None)
             if not job:
                 raise RuntimeError(f"Job {job_id} disappeared from manager")
@@ -397,7 +397,7 @@ class JobManagerHandler:
             raise RuntimeError("Service not started")
 
         while True:
-            rsp = requests.get(f"{self.url}/api/jobs").json()
+            rsp = requests.get(f"{self.url}/api/jobs", timeout=30).json()
             active = [j for j in rsp if j["status"] not in {"completed", "failed", "cancelled"}]
             if not active:
                 return
