@@ -1474,7 +1474,8 @@ class Modeler(object):
         """Create a PinGroup.
 
         Parameters
-        name : str,
+        ----------
+        name : str
             Name of the PinGroup.
         pins_by_id : list[int] or None
             List of pins by ID.

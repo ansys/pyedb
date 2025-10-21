@@ -165,6 +165,14 @@ def check_pandoc_installed(app):
 
 
 def autodoc_skip_member(app, what, name, obj, skip, options):
+    # Skip property objects that might not have __module__ attribute
+    if isinstance(obj, property):
+        try:
+            if not hasattr(obj, "__module__"):
+                return True
+        except:
+            return True
+
     try:
         exclude = True if ".. deprecated::" in obj.__doc__ else False
     except:
