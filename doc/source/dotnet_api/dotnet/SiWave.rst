@@ -30,6 +30,3 @@ accessed from PyEDB in Windows only. All setups can be implemented through EDB A
     siwave.close_project()
     ...
 
-.. currentmodule:: pyedb.siwave_core.icepak
-   Icepak
-
