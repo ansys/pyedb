@@ -367,6 +367,22 @@ class PadstackDef(GrpcPadstackDef):
         return self.stop_layer
 
     @property
+    def material(self):
+        """Return hole material name.
+
+        Returns
+        -------
+        str
+            Hole material name.
+        """
+        return self.data.material.value
+
+    @material.setter
+    def material(self, value):
+        if isinstance(value, str):
+            self.data.material = value
+
+    @property
     def hole_diameter(self) -> float:
         """Hole diameter.
 
@@ -646,15 +662,6 @@ class PadstackDef(GrpcPadstackDef):
                 self.data.hole_range = GrpcPadstackHoleRange.UPPER_PAD_TO_LOWER_PAD
             else:  # pragma no cover
                 self.data.hole_range = GrpcPadstackHoleRange.UNKNOWN_RANGE
-
-    @property
-    def material(self) -> str:
-        """Return hole material name."""
-        return self.data.material.value
-
-    @material.setter
-    def material(self, value):
-        self.data.material.value = value
 
     def convert_to_3d_microvias(
         self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True
