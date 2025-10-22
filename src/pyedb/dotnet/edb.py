@@ -857,6 +857,8 @@ class Edb:
         >>> # Export to IPC2581 format:
         >>> edb.export_to_ipc2581("output.xml")
         """
+        if not float(self.version) >= 2025.2:
+            raise AttributeError("This function is only supported with ANSYS release 2025R2 and higher.")
         if not edbpath:
             edbpath = self.edbpath
         if not ipc_path:
