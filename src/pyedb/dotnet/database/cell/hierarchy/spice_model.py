@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,15 +20,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.dotnet.database.cell.hierarchy.model import Model
 
-class SpiceModel(object):  # pragma: no cover
-    def __init__(self, edb_model):
-        self._edb_model = edb_model
+
+class SPICEModel(Model):
+    """Manages SPICE model class."""
+
+    def __init__(self, pedb, edb_object=None):
+        super().__init__(pedb, edb_object)
 
     @property
-    def file_path(self):
-        return self._edb_model.GetSPICEFilePath()
+    def model_name(self):
+        """SPICE model name."""
+        return self._edb_object.GetModelName()
 
     @property
-    def name(self):
-        return self._edb_model.GetSPICEName()
+    def spice_file_path(self):
+        """SPICE file path."""
+        return self._edb_object.GetSPICEFilePath()

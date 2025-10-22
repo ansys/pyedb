@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -150,11 +150,24 @@ class RpcSession:
 
     @staticmethod
     def kill_all_instances():
-        proc = [p.pid for p in list(psutil.process_iter()) if "edb_rpc" in p.name().lower()]
+        # collect PIDs safely
+        proc = []
+        for p in psutil.process_iter(["pid", "name"]):
+            try:
+                if "edb_rpc" in p.info["name"].lower():
+                    proc.append(p.info["pid"])
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                continue
+
         time.sleep(latency_delay)
+
+        # terminate gracefully
         for pid in proc:
-            p = psutil.Process(pid)
-            p.terminate()
+            try:
+                p = psutil.Process(pid)
+                p.terminate()
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
 
     @staticmethod
     def close():

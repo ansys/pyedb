@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -356,8 +356,11 @@ class Modeler(object):
                 bounding_box.Item2.X.ToDouble(),
                 bounding_box.Item2.Y.ToDouble(),
             ]
-        except:
-            pass
+        except Exception as e:
+            self._logger.warning(
+                f"A(n) {type(e).__name__} error occurred while retrieving bounding box for polygon {polygon} - "
+                f"Empty list is returned: {str(e)}"
+            )
         return bounding
 
     def get_polygon_points(self, polygon):
@@ -1471,7 +1474,8 @@ class Modeler(object):
         """Create a PinGroup.
 
         Parameters
-        name : str,
+        ----------
+        name : str
             Name of the PinGroup.
         pins_by_id : list[int] or None
             List of pins by ID.

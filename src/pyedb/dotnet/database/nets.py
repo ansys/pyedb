@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -308,22 +308,30 @@ class EdbNets(CommonNets):
                 val_value = cmp.rlc_values
                 if refdes in exception_list:
                     pass
-                elif (
-                    val_type == "Inductor"
-                    and self._pedb.edb_value(val_value[1]).ToDouble() <= self._pedb.edb_value(inductor_below).ToDouble()
-                ):
-                    pass
-                elif (
-                    val_type == "Resistor"
-                    and self._pedb.edb_value(val_value[0]).ToDouble() <= self._pedb.edb_value(resistor_below).ToDouble()
-                ):
-                    pass
-                elif (
-                    val_type == "Capacitor"
-                    and self._pedb.edb_value(val_value[2]).ToDouble()
-                    >= self._pedb.edb_value(capacitor_above).ToDouble()
-                ):
-                    pass
+                elif val_type == "Inductor":
+                    if val_value[1] is None:
+                        continue
+                    elif (
+                        not self._pedb.edb_value(val_value[1]).ToDouble()
+                        <= self._pedb.edb_value(inductor_below).ToDouble()
+                    ):
+                        continue
+                elif val_type == "Resistor":
+                    if val_value[0] is None:
+                        continue
+                    elif (
+                        not self._pedb.edb_value(val_value[0]).ToDouble()
+                        <= self._pedb.edb_value(resistor_below).ToDouble()
+                    ):
+                        continue
+                elif val_type == "Capacitor":
+                    if val_value[2] is None:
+                        continue
+                    elif (
+                        not self._pedb.edb_value(val_value[2]).ToDouble()
+                        >= self._pedb.edb_value(capacitor_above).ToDouble()
+                    ):
+                        continue
                 else:
                     continue
 

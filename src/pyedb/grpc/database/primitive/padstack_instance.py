@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -121,6 +121,47 @@ class PadstackInstance(GrpcPadstackInstance):
         if not term.is_null:
             term = PadstackInstanceTerminal(self._pedb, term)
         return term if not term.is_null else None
+
+    @property
+    def side_number(self):
+        """Return the number of sides meshed of the padstack instance.
+        Returns
+        -------
+        int
+            Number of sides meshed of the padstack instance.
+        """
+        side_value = self.get_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21)
+        if side_value:
+            return int(re.search(r"(?m)^\s*sid=(\d+)", side_value).group(1))
+        return 0
+
+    @side_number.setter
+    def side_number(self, value):
+        """Set the number of sides meshed of the padstack instance.
+
+        Parameters
+        ----------
+        value : int
+            Number of sides to mesh the padstack instance.
+
+        Returns
+        -------
+        bool
+            True if successful, False otherwise.
+        """
+        if isinstance(value, int) and 3 <= value <= 64:
+            prop_string = f"$begin ''\n\tsid={value}\n\tmat='copper'\n\tvs='Wirebond'\n$end ''\n"
+            self.set_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21, prop_string)
+        else:
+            raise ValueError("Number of sides must be an integer between 3 and 64")
+
+    def delete(self):
+        """Delete the padstack instance."""
+        try:
+            self._pedb.padstacks._instances.pop(self.edb_uid, None)
+        except Exception:
+            self._pedb.padstacks.clear_instances_cache()
+        super().delete()
 
     def set_backdrill_top(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from top.
@@ -406,7 +447,7 @@ class PadstackInstance(GrpcPadstackInstance):
             return self._bounding_box
         return self._bounding_box
 
-    def in_polygon(self, polygon_data, include_partial=True) -> bool:
+    def in_polygon(self, polygon_data, include_partial=True, arbitrary_extent_value=300e-6) -> bool:
         """Check if padstack Instance is in given polygon data.
 
         Parameters
@@ -416,30 +457,35 @@ class PadstackInstance(GrpcPadstackInstance):
             Whether to include partial intersecting instances. The default is ``True``.
         simple_check : bool, optional
             Whether to perform a single check based on the padstack center or check the padstack bounding box.
+        arbitrary_extent_value : float, optional
+            When ``include_partial`` is ``True``, an arbitrary value is used to create a bounding box for the padstack
+            instance to check for intersection and save computation time during the cutout. The default is ``300e-6``.
 
         Returns
         -------
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        int_val = 1 if polygon_data.point_in_polygon(GrpcPointData(self.position)) else 0
+        int_val = 1 if polygon_data.is_inside(GrpcPointData(self.position)) else 0
         if int_val == 0:
+            if include_partial:
+                # pad-stack instance bbox is slow we take an arbitrary value e.g. 300e-6
+                arbitrary_value = arbitrary_extent_value
+                position = self.position
+                inst_bbox = [
+                    position[0] - arbitrary_value / 2,
+                    position[1] - arbitrary_value / 2,
+                    position[0] + arbitrary_value / 2,
+                    position[1] + arbitrary_value / 2,
+                ]
+                int_val = polygon_data.intersection_type(GrpcPolygonData(inst_bbox)).value
+                if int_val == 0:  # fully outside
+                    return False
+                elif int_val in [2, 3]:  # fully or partially inside
+                    return True
             return False
         else:
-            int_val = polygon_data.intersection_type(GrpcPolygonData(self.bounding_box))
-        # Intersection type:
-        # 0 = objects do not intersect
-        # 1 = this object fully inside other (no common contour points)
-        # 2 = other object fully inside this
-        # 3 = common contour points 4 = undefined intersection
-        if int_val == 0:
-            return False
-        elif include_partial:
             return True
-        elif int_val < 3:
-            return True
-        else:
-            return False
 
     @property
     def start_layer(self) -> str:
@@ -683,6 +729,96 @@ class PadstackInstance(GrpcPadstackInstance):
                 return False
 
     @property
+    def backdrill_diameter(self):
+        parameters = []
+        if self.backdrill_bottom:
+            parameters = self.get_back_drill_by_layer(True)
+        elif self.backdrill_top:
+            parameters = self.get_back_drill_by_layer(False)
+        if parameters:
+            return round(parameters[-1].value, 9)
+        return 0.0
+
+    @backdrill_diameter.setter
+    def backdrill_diameter(self, value):
+        if self.backdrill_bottom:
+            parameters = self.get_back_drill_by_layer(True)
+            self.set_back_drill_by_layer(
+                drill_to_layer=parameters[0],
+                offset=parameters[1],
+                diameter=self._pedb.value(value),
+                from_bottom=True,
+            )
+        elif self.backdrill_top:
+            parameters = self.get_back_drill_by_layer(False)
+            self.set_back_drill_by_layer(
+                drill_to_layer=parameters[0],
+                offset=parameters[1],
+                diameter=Value(value),
+                from_bottom=False,
+            )
+
+    @property
+    def backdrill_layer(self):
+        parameters = []
+        if self.backdrill_bottom:
+            parameters = self.get_back_drill_by_layer(True)
+        elif self.backdrill_top:
+            parameters = self.get_back_drill_by_layer(False)
+        if parameters:
+            return parameters[0]
+        return ""
+
+    @backdrill_layer.setter
+    def backdrill_layer(self, value):
+        if self.backdrill_bottom:
+            parameters = self.get_back_drill_by_layer(True)
+            self.set_back_drill_by_layer(
+                drill_to_layer=self._pedb.stackup.layers[value],
+                offset=parameters[1],
+                diameter=parameters[2],
+                from_bottom=True,
+            )
+        elif self.backdrill_top:
+            parameters = self.get_back_drill_by_layer(False)
+            self.set_back_drill_by_layer(
+                drill_to_layer=value,
+                offset=parameters[1],
+                diameter=parameters[2],
+                from_bottom=False,
+            )
+
+    @property
+    def backdrill_offset(self):
+        parameters = []
+        if self.backdrill_bottom:
+            parameters = self.get_back_drill_by_layer(True)
+        elif self.backdrill_top:
+            parameters = self.get_back_drill_by_layer(False)
+        if parameters:
+            return parameters[1].value
+        return 0.0
+
+    @backdrill_offset.setter
+    def backdrill_offset(self, value):
+        if self.backdrill_bottom:
+            parameters = self.get_back_drill_by_layer(True)
+            self.set_back_drill_by_layer(
+                drill_to_layer=parameters[0],
+                offset=Value(value),
+                diameter=parameters[2],
+                from_bottom=True,
+            )
+        elif self.backdrill_top:
+            parameters = self.get_back_drill_by_layer(False)
+            self.set_back_drill_by_layer(
+                drill_to_layer=parameters[0],
+                offset=Value(value),
+                diameter=parameters[2],
+                from_bottom=False,
+            )
+
+    @property
     def metal_volume(self) -> float:
         """Metal volume of the via hole instance in cubic units (m3). Metal plating ratio is accounted.
 
@@ -759,18 +895,6 @@ class PadstackInstance(GrpcPadstackInstance):
     def aedt_name(self, value):
         self.set_product_property(GrpcProductIdType.DESIGNER, 11, value)
 
-    @property
-    def side_number(self) -> int:
-        if not self._side_number:
-            prop_string = "$begin ''\n\tsid=3\n\tmat='copper'\n\tvs='Wirebond'\n$end ''\n"
-            self.set_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21, prop_string)
-        self._side_number = self.get_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21)
-        return self._side_number
-
-    @side_number.setter
-    def side_number(self, value):
-        self._side_number = self.set_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21, value)
-
     def split(self) -> list:
         """Split padstack instance into multiple instances. The new instances only connect adjacent layers."""
         pdef_name = self.padstack_definition
@@ -824,21 +948,21 @@ class PadstackInstance(GrpcPadstackInstance):
             rad_l = rad_large
 
         layout = self._pedb.active_layout
-        cloned_circle = Circle.create(
-            layout,
-            self.start_layer,
-            self.net,
-            Value(self.position[0]),
-            Value(self.position[1]),
-            Value(rad_u),
+        cloned_circle = Circle(self._pedb).create(
+            layout=layout,
+            layer=self.start_layer,
+            net=self.net,
+            center_x=Value(self.position[0]),
+            center_y=Value(self.position[1]),
+            radius=Value(rad_u),
         )
-        cloned_circle2 = Circle.create(
-            layout,
-            self.stop_layer,
-            self.net,
-            Value(self.position[0]),
-            Value(self.position[1]),
-            Value(rad_l),
+        cloned_circle2 = Circle(self._pedb).create(
+            layout=layout,
+            layer=self.stop_layer,
+            net=self.net,
+            center_x=Value(self.position[0]),
+            center_y=Value(self.position[1]),
+            radius=Value(rad_l),
         )
 
         s3d = GrpcStructure3D.create(layout, generate_unique_name("via3d_" + self.aedt_name.replace("via_", ""), n=3))

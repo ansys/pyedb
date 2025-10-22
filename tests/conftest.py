@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -189,6 +189,9 @@ class EdbExamples:
         target_path = os.path.join(local_scratch.path, "project.aedb")
         local_scratch.copyfolder(example_project, target_path)
         return target_path
+
+    def get_log_file_example(self):
+        return os.path.join(self.example_models_path, "test.log")
 
 
 @pytest.fixture(scope="class", autouse=True)

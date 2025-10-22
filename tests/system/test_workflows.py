@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -23,8 +23,11 @@
 """Tests related to Edb"""
 
 import os
+from pathlib import Path
 
 import pytest
+
+from tests.conftest import config
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
@@ -36,9 +39,30 @@ class TestClass:
     def init(self, local_scratch, target_path, target_path2, target_path4):
         self.local_scratch = local_scratch
 
+    def test_hfss_log_parser(self, edb_examples):
+        from pyedb.workflows.utilities.hfss_log_parser import HFSSLogParser
+
     def test_drc_rules(self):
         from pyedb.workflows.drc import Rules
 
+        log_file = edb_examples.get_log_file_example()
+        log_parser = HFSSLogParser(log_file).parse()
+        for nr, line in enumerate(Path(log_file).read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
+            if "converge" in line.lower():
+                print(f"{nr:04d}  {line.rstrip()}")
+        assert len(log_parser.adaptive) == 8
+        last_adaptive = log_parser.adaptive[-1]
+        assert last_adaptive.converged
+        assert last_adaptive.delta_s == 0.017318
+        assert last_adaptive.memory_mb == 263
+        assert last_adaptive.tetrahedra == 65671
+        assert log_parser.init_mesh.tetrahedra == 28358
+        assert log_parser.sweep.frequencies == 201
+        assert len(log_parser.sweep.solved) == 10
+        # log parser methods
+        assert log_parser.is_converged()
+        assert log_parser.adaptive_passes()
+        assert log_parser.memory_on_convergence() == 263
         RULES_DICT = {
             "min_line_width": [{"name": "MW", "value": "3.5mil"}],
             "min_clearance": [{"name": "CLR", "value": "4mil", "net1": "*", "net2": "*"}],
@@ -64,6 +88,10 @@ class TestClass:
         assert rules.copper_balance[0].name == "CB"
         assert rules.copper_balance[0].max_percent == 15
 
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Failing on GRPC")
+    def test_hfss_auto_setup(self, edb_examples):
+        from pyedb.workflows.sipi.hfss_auto_configuration import create_hfss_auto_configuration
+
     def test_drc_rules_from_file(self, edb_examples):
         from pyedb.workflows.drc import Drc, Rules
 
@@ -83,6 +111,15 @@ class TestClass:
         }
 
         edbapp = edb_examples.get_si_verse()
+        hfss_auto_config = create_hfss_auto_configuration(source_edb_path=edbapp.edbpath, edb=edbapp)
+        hfss_auto_config.grpc = edbapp.grpc
+        hfss_auto_config.ansys_version = edbapp.version
+        hfss_auto_config.auto_populate_batch_groups(["PCIe_Gen4_RX", "PCIe_Gen4_TX"])
+        hfss_auto_config.add_simulation_setup(
+            meshing_frequency="10GHz", start_frequency="0GHz", stop_frequency="40GHz", frequency_step="0.05GHz"
+        )
+        hfss_auto_config.create_projects()
+        assert sum(1 for item in Path(hfss_auto_config.batch_group_folder).iterdir() if item.is_dir()) == 2
         rules = Rules.from_dict(RULES_DICT)
         drc = Drc(edbapp)
         drc.check(rules)

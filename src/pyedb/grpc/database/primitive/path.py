@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,18 +20,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import math
+from typing import Union
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.primitive.path import Path as GrpcPath, PathCornerType as GrpcPatCornerType
+from ansys.edb.core.primitive.path import (
+    Path as GrpcPath,
+    PathCornerType as GrpcPathCornerType,
+    PathEndCapType as GrpcPathEndCapType,
+)
 
+from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
 
 class Path(GrpcPath, Primitive):
-    def __init__(self, pedb, edb_object):
-        GrpcPath.__init__(self, edb_object.msg)
-        Primitive.__init__(self, pedb, edb_object)
+    def __init__(self, pedb, edb_object=None):
+        if edb_object:
+            GrpcPath.__init__(self, edb_object.msg)
+            Primitive.__init__(self, pedb, edb_object)
         self._edb_object = edb_object
         self._pedb = pedb
 
@@ -71,6 +78,105 @@ class Path(GrpcPath, Primitive):
                 path_length += self.width / 2
         return round(path_length, 9)
 
+    def create(
+        self,
+        layout=None,
+        layer: Union[str, Layer] = None,
+        net: Union[str, "Net"] = None,
+        width: float = 100e-6,
+        end_cap1: Union[str, GrpcPathEndCapType] = "flat",
+        end_cap2: Union[str, GrpcPathEndCapType] = "flat",
+        corner_style: Union[str, GrpcPathCornerType] = "sharp",
+        points: Union[list, GrpcPolygonData] = None,
+    ):
+        """
+        Create a path in the specified layout, layer, and net with the given parameters.
+
+        Parameters
+        ----------
+        layout : Layout, optional
+            The layout in which the path will be created. If not provided, the active layout of the `pedb` instance
+            will be used.
+        layer : Union[str, Layer], optional
+            The layer in which the path will be created. This parameter is required and must be specified.
+        net : Union[str, Net], optional
+            The net to which the path will belong. If not provided, the path will not be associated with a net.
+        width : float, optional
+            The width of the path in meters. The default value is `100e-6`.
+        end_cap1 : str, optional
+            The style of the first end cap. Options are `"flat"`, `"round"`, `"extended"`, and `"clipped"`.
+            The default value is `"flat"`.
+        end_cap2 : str, optional
+            The style of the second end cap. Options are `"flat"`, `"round"`, `"extended"`, and `"clipped"`.
+            The default value is `"flat"`.
+        corner_style : str, optional
+            The style of the path corners. Options are `"sharp"`, `"round"`, and `"mitter"`.
+            The default value is `"sharp"`.
+        points : Union[list, GrpcPolygonData], optional
+            The points defining the path. This can be a list of points or an instance of `GrpcPolygonData`.
+            This parameter is required and must be specified.
+
+        Returns
+        -------
+        :class:`Path <pyedb.grpc.database.primitive.path.Path>`
+            The created path object.
+
+        Raises
+        ------
+        ValueError
+            If the `points` parameter is not provided.
+
+        Notes
+        -----
+        - If `points` is provided as a list, it will be converted to a `GrpcPolygonData` object.
+        - The created path is added to the modeler primitives of the `pedb` instance.
+
+        """
+        if layout is None:
+            layout = self._pedb.active_layout
+        end_cap_mapping = {
+            "flat": GrpcPathEndCapType.FLAT,
+            "round": GrpcPathEndCapType.ROUND,
+            "extended": GrpcPathEndCapType.EXTENDED,
+            "clipped": GrpcPathEndCapType.CLIPPED,
+        }
+        corner_style_mapping = {
+            "round": GrpcPathCornerType.ROUND,
+            "mitter": GrpcPathCornerType.MITER,
+            "sharp": GrpcPathCornerType.SHARP,
+        }
+        if isinstance(end_cap1, str):
+            end_cap1 = end_cap_mapping[end_cap1.lower()]
+        if isinstance(end_cap2, str):
+            end_cap2 = end_cap_mapping[end_cap2.lower()]
+        if isinstance(corner_style, str):
+            corner_style = corner_style_mapping[corner_style.lower()]
+        if not points:
+            raise ValueError("Points are required to create a path.")
+        if isinstance(points, list):
+            points = GrpcPolygonData(points=points)
+        self._edb_object = super().create(
+            layout=layout,
+            layer=layer,
+            net=net,
+            width=Value(width),
+            end_cap1=end_cap1,
+            end_cap2=end_cap2,
+            corner_style=corner_style,
+            points=points,
+        )
+
+        # keeping cache synced
+        new_path = Path(self._pedb, self._edb_object)
+        self._pedb.modeler._add_primitive(new_path)
+        return new_path
+
+    def delete(self):
+        """Delete the path object."""
+        # keeping cache synced
+        self._pedb.modeler._remove_primitive(self)
+        super().delete()
+
     def add_point(self, x, y, incremental=True) -> bool:
         """Add a point at the end of the path.
 
@@ -109,9 +215,9 @@ class Path(GrpcPath, Primitive):
             ``True`` when successful, ``False`` when failed.
         """
         mapping = {
-            "round": GrpcPatCornerType.ROUND,
-            "mitter": GrpcPatCornerType.MITER,
-            "sharp": GrpcPatCornerType.SHARP,
+            "round": GrpcPathCornerType.ROUND,
+            "mitter": GrpcPathCornerType.MITER,
+            "sharp": GrpcPathCornerType.SHARP,
         }
 
         cloned_path = GrpcPath.create(
@@ -338,8 +444,52 @@ class Path(GrpcPath, Primitive):
     def corner_style(self, corner_type):
         if isinstance(corner_type, str):
             mapping = {
-                "round": GrpcPatCornerType.ROUND,
-                "mitter": GrpcPatCornerType.MITER,
-                "sharp": GrpcPatCornerType.SHARP,
+                "round": GrpcPathCornerType.ROUND,
+                "mitter": GrpcPathCornerType.MITER,
+                "sharp": GrpcPathCornerType.SHARP,
             }
             self.corner_style = mapping[corner_type]
+
+    @property
+    def end_cap1(self) -> str:
+        """Path's start style as string.
+
+        Returns
+        -------
+        str
+            Values supported for the setter `"flat"`, `"round"`, `"extended"`
+
+        """
+        return self.get_end_cap_style()[0].name.lower()
+
+    @end_cap1.setter
+    def end_cap1(self, end_cap_style):
+        if isinstance(end_cap_style, str):
+            mapping = {
+                "flat": GrpcPathEndCapType.FLAT,
+                "round": GrpcPathEndCapType.ROUND,
+                "extended": GrpcPathEndCapType.EXTENDED,
+            }
+            self.set_end_cap_style(mapping[end_cap_style], self.get_end_cap_style()[1].value)
+
+    @property
+    def end_cap2(self) -> str:
+        """Path's end style as string.
+
+        Returns
+        -------
+        str
+            Values supported for the setter `"flat"`, `"round"`, `"extended"`
+
+        """
+        return self.get_end_cap_style()[1].name.lower()
+
+    @end_cap2.setter
+    def end_cap2(self, end_cap_style):
+        if isinstance(end_cap_style, str):
+            mapping = {
+                "flat": GrpcPathEndCapType.FLAT,
+                "round": GrpcPathEndCapType.ROUND,
+                "extended": GrpcPathEndCapType.EXTENDED,
+            }
+            self.set_end_cap_style(self.get_end_cap_style()[0].value, mapping[end_cap_style])

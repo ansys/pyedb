@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -23,6 +23,7 @@
 from copy import deepcopy as copy
 import json
 
+from defusedxml.ElementTree import parse as defused_parse
 import numpy as np
 
 from pyedb.generic.general_methods import ET
@@ -66,7 +67,7 @@ class EMCRuleCheckerSettings:
         tree = ET.ElementTree(root)
         try:
             ET.indent(tree, space="\t", level=0)
-        except:  # pragma no cover
+        except AttributeError:  # pragma no cover
             pass
         return tree
 
@@ -78,7 +79,7 @@ class EMCRuleCheckerSettings:
         fpath: str
             Path to file.
         """
-        tree = ET.parse(fpath)
+        tree = defused_parse(fpath)
         root = tree.getroot()
 
         self.tag_library = TagLibrary(root.find("TagLibrary"))

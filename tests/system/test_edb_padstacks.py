@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -587,6 +587,73 @@ class TestClass(BaseTestClass):
         _, _ = edbapp.padstacks.reduce_via_by_density(clusters[0], cell_size_x=5e-3, cell_size_y=5e-3, delete=True)
         _, _ = edbapp.padstacks.reduce_via_by_density(clusters[1], cell_size_x=5e-3, cell_size_y=5e-3, delete=True)
         assert len(edbapp.padstacks.instances) == 2
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_create_backdrill_dielectric_fill_via(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        backdrill_layer = "Inner1(GND1)"
+        edbapp.padstacks.create_dielectric_filled_backdrills(
+            layer=backdrill_layer,
+            material="test_fill",
+            permittivity=3.85,
+            dielectric_loss_tangent=0,
+            diameter="400um",
+            nets="1V0",
+        )
+        assert "test_fill" in edbapp.materials
+        assert edbapp.materials["test_fill"].permittivity == 3.85
+        assert edbapp.padstacks.get_instances(net_name="1V0")[0].backdrill_type == "layer_drill"
+        if not edbapp.grpc:
+            assert edbapp.padstacks.get_instances(net_name="1V0")[0].backdrill_bottom[0] == "Inner1(GND1)"
+            assert edbapp.padstacks.get_instances(net_name="1V0")[0].backdrill_bottom[1] == "0.0004"
+        else:
+            assert edbapp.padstacks.get_instances(net_name="1V0")[0].backdrill_bottom
+            assert edbapp.padstacks.get_instances(net_name="1V0")[0].backdrill_diameter == 0.0004
+            assert edbapp.padstacks.get_instances(net_name="1V0")[0].backdrill_layer == "Inner1(GND1)"
+        assert edbapp.padstacks.definitions["v35h15_BD"].material == "test_fill"
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_create_backdrill_dielectric_fill_via2(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        backdrill_layer = "Inner1(GND1)"
+        edbapp.padstacks.create_dielectric_filled_backdrills(
+            layer=backdrill_layer,
+            material="test_fill",
+            permittivity=3.85,
+            dielectric_loss_tangent=0,
+            diameter="400um",
+            padstack_definition="v40h20-1",
+        )
+        instance = edbapp.padstacks.definitions["v40h20-1"].instances[0]
+        assert instance.backdrill_type == "layer_drill"
+        if not edbapp.grpc:
+            assert instance.backdrill_bottom[1] == "0.0004"
+            assert instance.backdrill_bottom[0] == "Inner1(GND1)"
+        else:
+            assert instance.backdrill_diameter == 0.0004
+            assert instance.backdrill_layer == "Inner1(GND1)"
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_create_backdrill_dielectric_fill_via3(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        instances = edbapp.padstacks.definitions["v40h20-1"].instances
+        backdrill_layer = "Inner1(GND1)"
+        edbapp.padstacks.create_dielectric_filled_backdrills(
+            layer=backdrill_layer,
+            material="test_fill",
+            permittivity=3.85,
+            dielectric_loss_tangent=0,
+            diameter="400um",
+            padstack_instances=instances,
+        )
+        instance = edbapp.padstacks.definitions["v40h20-1"].instances[0]
+        assert instance.backdrill_type == "layer_drill"
+        if not edbapp.grpc:
+            assert instance.backdrill_bottom[1] == "0.0004"
+            assert instance.backdrill_bottom[0] == "Inner1(GND1)"
+        else:
+            assert instance.backdrill_diameter == 0.0004
+            assert instance.backdrill_layer == "Inner1(GND1)"
         edbapp.close(terminate_rpc_session=False)
 
 

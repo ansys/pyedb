@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -25,6 +25,7 @@ This module contains the `EdbPadstacks` class.
 """
 
 from collections import defaultdict
+from functools import lru_cache
 import math
 from typing import Any, Dict, List, Optional, Tuple, Union
 import warnings
@@ -47,6 +48,29 @@ from pyedb.grpc.database.definition.padstack_def import PadstackDef
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.utility.value import Value
 from pyedb.modeler.geometry_operators import GeometryOperators
+
+GEOMETRY_MAP = {
+    0: GrpcPadGeometryType.PADGEOMTYPE_NO_GEOMETRY,
+    1: GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
+    2: GrpcPadGeometryType.PADGEOMTYPE_SQUARE,
+    3: GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE,
+    4: GrpcPadGeometryType.PADGEOMTYPE_OVAL,
+    5: GrpcPadGeometryType.PADGEOMTYPE_BULLET,
+    6: GrpcPadGeometryType.PADGEOMTYPE_NSIDED_POLYGON,
+    7: GrpcPadGeometryType.PADGEOMTYPE_POLYGON,
+    8: GrpcPadGeometryType.PADGEOMTYPE_ROUND45,
+    9: GrpcPadGeometryType.PADGEOMTYPE_ROUND90,
+    10: GrpcPadGeometryType.PADGEOMTYPE_SQUARE45,
+    11: GrpcPadGeometryType.PADGEOMTYPE_SQUARE90,
+}
+
+PAD_TYPE_MAP = {
+    0: GrpcPadType.REGULAR_PAD,
+    1: GrpcPadType.ANTI_PAD,
+    2: GrpcPadType.THERMAL_PAD,
+    3: GrpcPadType.HOLE,
+    4: GrpcPadType.UNKNOWN_GEOM_TYPE,
+}
 
 
 class Padstacks(object):
@@ -87,6 +111,15 @@ class Padstacks(object):
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
         self.__definitions: Dict[str, Any] = {}
+        self._instances = None
+        self._instances_by_name = {}
+        self._instances_by_net = {}
+
+    def clear_instances_cache(self):
+        """Clear the cached padstack instances."""
+        self._instances = None
+        self._instances_by_name = {}
+        self._instances_by_net = {}
 
     @property
     def _active_layout(self) -> Any:
@@ -113,7 +146,8 @@ class Padstacks(object):
         """ """
         return self._pedb.stackup.layers
 
-    def int_to_pad_type(self, val=0) -> GrpcPadType:
+    @staticmethod
+    def int_to_pad_type(val=0) -> GrpcPadType:
         """Convert an integer to an EDB.PadGeometryType.
 
         Parameters
@@ -131,20 +165,10 @@ class Padstacks(object):
         >>> pad_type = edb_padstacks.int_to_pad_type(1)  # Returns ANTI_PAD
         """
 
-        if val == 0:
-            return GrpcPadType.REGULAR_PAD
-        elif val == 1:
-            return GrpcPadType.ANTI_PAD
-        elif val == 2:
-            return GrpcPadType.THERMAL_PAD
-        elif val == 3:
-            return GrpcPadType.HOLE
-        elif val == 4:
-            return GrpcPadType.UNKNOWN_GEOM_TYPE
-        else:
-            return val
+        return PAD_TYPE_MAP.get(val, val)
 
-    def int_to_geometry_type(self, val: int = 0) -> GrpcPadGeometryType:
+    @staticmethod
+    def int_to_geometry_type(val: int = 0) -> GrpcPadGeometryType:
         """Convert an integer to an EDB.PadGeometryType.
 
         Parameters
@@ -161,32 +185,7 @@ class Padstacks(object):
         >>> geom_type = edb_padstacks.int_to_geometry_type(1)  # Returns CIRCLE
         >>> geom_type = edb_padstacks.int_to_geometry_type(2)  # Returns SQUARE
         """
-        if val == 0:
-            return GrpcPadGeometryType.PADGEOMTYPE_NO_GEOMETRY
-        elif val == 1:
-            return GrpcPadGeometryType.PADGEOMTYPE_CIRCLE
-        elif val == 2:
-            return GrpcPadGeometryType.PADGEOMTYPE_SQUARE
-        elif val == 3:
-            return GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE
-        elif val == 4:
-            return GrpcPadGeometryType.PADGEOMTYPE_OVAL
-        elif val == 5:
-            return GrpcPadGeometryType.PADGEOMTYPE_BULLET
-        elif val == 6:
-            return GrpcPadGeometryType.PADGEOMTYPE_NSIDED_POLYGON
-        elif val == 7:
-            return GrpcPadGeometryType.PADGEOMTYPE_POLYGON
-        elif val == 8:
-            return GrpcPadGeometryType.PADGEOMTYPE_ROUND45
-        elif val == 9:
-            return GrpcPadGeometryType.PADGEOMTYPE_ROUND90
-        elif val == 10:
-            return GrpcPadGeometryType.PADGEOMTYPE_SQUARE45
-        elif val == 11:
-            return GrpcPadGeometryType.PADGEOMTYPE_SQUARE90
-        else:
-            return val
+        return GEOMETRY_MAP.get(val, val)
 
     @property
     def definitions(self) -> Dict[str, PadstackDef]:
@@ -225,7 +224,17 @@ class Padstacks(object):
         >>> for id, instance in all_instances.items():
         ...     print(f"Instance {id}: {instance.name}")
         """
-        return self._pedb.layout.padstack_instances
+        if self._instances is None:
+            self._instances = self._pedb.layout.padstack_instances
+        return self._instances
+
+    @property
+    def instances_by_net(self) -> Dict[Any, PadstackInstance]:
+        if not self._instances_by_net:
+            for edb_padstack_instance in self.instances.values():
+                if edb_padstack_instance.net_name:
+                    self._instances_by_net.setdefault(edb_padstack_instance.net_name, []).append(edb_padstack_instance)
+        return self._instances_by_net
 
     @property
     def instances_by_name(self) -> Dict[str, PadstackInstance]:
@@ -242,11 +251,11 @@ class Padstacks(object):
         >>> for name, instance in named_instances.items():
         ...     print(f"Instance named {name}")
         """
-        padstack_instances = {}
-        for _, edb_padstack_instance in self.instances.items():
-            if edb_padstack_instance.aedt_name:
-                padstack_instances[edb_padstack_instance.aedt_name] = edb_padstack_instance
-        return padstack_instances
+        if not self._instances_by_name:
+            for _, edb_padstack_instance in self.instances.items():
+                if edb_padstack_instance.aedt_name:
+                    self._instances_by_name[edb_padstack_instance.aedt_name] = edb_padstack_instance
+        return self._instances_by_name
 
     def find_instance_by_id(self, value: int) -> Optional[PadstackInstance]:
         """Find a padstack instance by database ID.
@@ -336,6 +345,188 @@ class Padstacks(object):
     def pad_type(self) -> GrpcPadType:
         """Return a PadType Enumerator."""
         return GrpcPadType
+
+    def create_dielectric_filled_backdrills(
+        self,
+        layer: str,
+        diameter: Union[float, str],
+        material: str,
+        permittivity: float,
+        padstack_instances: Optional[List[PadstackInstance]] = None,
+        padstack_definition: Optional[Union[str, List[str]]] = None,
+        dielectric_loss_tangent: Optional[float] = None,
+        nets: Optional[Union[str, List[str]]] = None,
+    ) -> bool:
+        r"""Create dielectric-filled back-drills for through-hole vias.
+
+        Back-drilling (a.k.a. controlled-depth drilling) is used to remove the
+        unused via stub that acts as an unterminated transmission-line segment,
+        thereby improving signal-integrity at high frequencies.  This routine
+        goes one step further: after the stub is removed the resulting cylindrical
+        cavity is **completely filled** with a user-specified dielectric.  The
+        fill material restores mechanical rigidity, prevents solder-wicking, and
+        keeps the original via’s electrical characteristics intact on the
+        remaining, still-plated, portion.
+
+        Selection criteria
+        ------------------
+        A via is processed only when **all** of the following are true:
+
+        1. It is a through-hole structure (spans at least three metal layers).
+        2. It includes the requested ``layer`` somewhere in its layer span.
+        3. It belongs to one of the supplied ``padstack_definition`` names
+           (or to *any* definition if the argument is omitted).
+        4. It is attached to one of the supplied ``nets`` (or to *any* net if
+           the argument is omitted).
+
+        Geometry that is created
+        ------------------------
+        For every qualified via the routine
+
+        * Generates a new pad-stack definition named ``<original_name>_BD``.
+          The definition is drilled from the **bottom-most signal layer** up to
+          and **including** ``layer``, uses the exact ``diameter`` supplied, and
+          is plated at 100 %.
+        * Places an additional pad-stack instance on top of the original via,
+          thereby filling the newly drilled cavity with the requested
+          ``material``.
+        * Leaves the original via untouched—only its unused stub is removed.
+
+        The back-drill is **not** subtracted from anti-pads or plane clearances;
+        the filling material is assumed to be electrically invisible at the
+        frequencies of interest.
+
+        Parameters
+        ----------
+        layer : :class:`str`
+            Signal layer name up to which the back-drill is performed (inclusive).
+            The drill always starts on the bottom-most signal layer of the stack-up.
+        diameter : :class:`float` or :class:`str`
+            Finished hole diameter for the back-drill.  A numeric value is
+            interpreted in the database length unit; a string such as
+            ``"0.3mm"`` is evaluated with units.
+        material : :class:`str`
+            Name of the dielectric material that fills the drilled cavity.  If the
+            material does not yet exist in the central material library it is
+            created on the fly.
+        permittivity : :class:`float`
+            Relative permittivity :math:`\varepsilon_{\mathrm{r}}` used when the
+            material has to be created.  Must be positive.
+        padstack_instances : :class:`list` [:class:`PadstackInstance` ], optional
+            Explicit list of via instances to process.  When provided,
+            ``padstack_definition`` and ``nets`` are ignored for filtering.
+        padstack_definition : :class:`str` or :class:`list` [:class:`str` ], optional
+            Pad-stack definition(s) to process.  If omitted, **all** through-hole
+            definitions are considered.
+        dielectric_loss_tangent : :class:`float`, optional
+            Loss tangent :math:`\tan\delta` used when the material has to be
+            created.  Defaults to ``0.0``.
+        nets : :class:`str` or :class:`list` [:class:`str` ], optional
+            Net name(s) used to filter vias.  If omitted, vias belonging to
+            **any** net are processed.
+
+        Returns
+        -------
+        :class:`bool`
+            ``True`` when at least one back-drill was successfully created.
+            ``False`` if no suitable via was found or any error occurred.
+
+        Raises
+        ------
+        ValueError
+            If ``material`` is empty or if ``permittivity`` is non-positive when a
+            new material must be created.
+
+        Notes
+        -----
+        * The routine is safe to call repeatedly: existing back-drills are **not**
+          duplicated because the ``*_BD`` definition name is deterministic.
+        * The original via keeps its pad-stack definition and net assignment; only
+          its unused stub is removed.
+        * The back-drill is **not** subtracted from anti-pads or plane clearances;
+          the filling material is assumed to be electrically invisible at the
+          frequencies of interest.
+
+        Examples
+        --------
+        Create back-drills on all vias belonging to two specific pad-stack
+        definitions and two DDR4 nets:
+
+        >>> edb.padstacks.create_dielectric_filled_backdrills(
+        ...     layer="L3",
+        ...     diameter="0.25mm",
+        ...     material="EPON_827",
+        ...     permittivity=3.8,
+        ...     dielectric_loss_tangent=0.015,
+        ...     padstack_definition=["VIA_10MIL", "VIA_16MIL"],
+        ...     nets=["DDR4_DQ0", "DDR4_DQ1"],
+        ... )
+        True
+        """
+        _padstack_instances = defaultdict(list)
+        if padstack_instances:
+            for inst in padstack_instances:
+                _padstack_instances[inst.padstack_def.name].append(inst)
+        else:
+            if padstack_definition:
+                if isinstance(padstack_definition, str):
+                    padstack_definition = [padstack_definition]
+                padstack_definitions = [
+                    self.definitions.get(padstack_def, None) for padstack_def in padstack_definition
+                ]
+                if nets:
+                    if isinstance(nets, str):
+                        nets = [nets]
+                    for padstack_definition in padstack_definitions:
+                        _padstack_instances[padstack_definition.name] = self.get_instances(
+                            definition_name=padstack_definition.name, net_name=nets
+                        )
+                else:
+                    for padstack_definition in padstack_definitions:
+                        _padstack_instances[padstack_definition.name] = padstack_definition.instances
+            elif nets:
+                instances = self.get_instances(net_name=nets)
+                for inst in instances:
+                    padsatck_def_name = inst.padstack_def.name
+                    padstack_def_layers = inst.padstack_def.data.layer_names
+                    if layer in padstack_def_layers and len(padstack_def_layers) >= 3:
+                        _padstack_instances[padsatck_def_name].append(inst)
+                    else:
+                        self._pedb.logger.info(
+                            f"Drill layer {layer} not in padstack definition layers "
+                            f"or layer number = {len(padstack_def_layers)} "
+                            f"for padstack definition {padsatck_def_name}, skipping for backdrills"
+                        )
+        if not material:
+            raise ValueError("`material` must be specified")
+        if not material in self._pedb.materials:
+            if not dielectric_loss_tangent:
+                dielectric_loss_tangent = 0.0
+            self._pedb.materials.add_dielectric_material(
+                name=material, permittivity=permittivity, dielectric_loss_tangent=dielectric_loss_tangent
+            )
+        for def_name, instances in _padstack_instances.items():
+            padstack_def_backdrill_name = f"{def_name}_BD"
+            start_layer = list(self._pedb.stackup.signal_layers.keys())[-1]  # bottom layer
+            self.create(
+                padstackname=padstack_def_backdrill_name,
+                holediam=self._pedb.value(diameter),
+                paddiam="0.0",
+                antipaddiam="0.0",
+                start_layer=start_layer,
+                stop_layer=layer,
+            )
+            self.definitions[padstack_def_backdrill_name].material = material
+            self.definitions[padstack_def_backdrill_name].hole_plating_ratio = 100.0
+            for inst in instances:
+                inst.set_back_drill_by_layer(drill_to_layer=layer, offset=0.0, diameter=self._pedb.value(diameter))
+                self.place(
+                    position=inst.position,
+                    definition_name=padstack_def_backdrill_name,
+                    fromlayer=start_layer,
+                    tolayer=layer,
+                )
+        return True
 
     def create_circular_padstack(
         self,
@@ -446,6 +637,11 @@ class Padstacks(object):
 
         padstack_def.data = padstack_data
 
+    def delete_batch_instances(self, instances_to_delete):
+        for inst in instances_to_delete:
+            inst._edb_object.delete()
+        self.clear_instances_cache()
+
     def delete_padstack_instances(self, net_names: Union[str, List[str]]) -> bool:
         """Delete padstack instances by net names.
 
@@ -469,8 +665,9 @@ class Padstacks(object):
 
         for p_id, p in self.instances.items():
             if p.net_name in net_names:
-                if not p.delete():  # pragma: no cover
+                if not p._edb_object.delete():  # pragma: no cover
                     return False
+        self.clear_instances_cache()
         return True
 
     def set_solderball(self, padstackInst, sballLayer_name, isTopPlaced=True, ballDiam=100e-6):
@@ -795,6 +992,23 @@ class Padstacks(object):
                         via_list.append(inst)
         return via_list
 
+    def layers_between(self, layers, start_layer=None, stop_layer=None):
+        """
+        Return the sub-list of *layers* that lies between *start_layer*
+        (inclusive) and *stop_layer* (inclusive).  Works no matter which
+        of the two is nearer the top of the stack.
+        """
+        if not layers:
+            return []
+
+        # default to the full stack if one end is unspecified
+        start_idx = layers.index(start_layer) if start_layer in layers else 0
+        stop_idx = layers.index(stop_layer) if stop_layer in layers else len(layers) - 1
+
+        # always slice from the smaller to the larger index
+        lo, hi = sorted((start_idx, stop_idx))
+        return layers[lo : hi + 1]
+
     def create(
         self,
         padstackname: Optional[str] = None,
@@ -936,11 +1150,7 @@ class Padstacks(object):
         else:  # pragma no cover
             self._logger.error("Unknown padstack hole range")
         padstack_data.material = "copper"
-
-        if start_layer and start_layer in layers:  # pragma no cover
-            layers = layers[layers.index(start_layer) :]
-        if stop_layer and stop_layer in layers:  # pragma no cover
-            layers = layers[: layers.index(stop_layer) + 1]
+        layers = self.layers_between(layers=layers, start_layer=start_layer, stop_layer=stop_layer)
         if not isinstance(paddiam, list):
             pad_array = [paddiam]
         else:
@@ -1133,6 +1343,7 @@ class Padstacks(object):
                 layer_map=None,
             )
             padstack_instance.is_layout_pin = is_pin
+            self.clear_instances_cache()
             return PadstackInstance(self._pedb, padstack_instance)
         else:
             raise RuntimeError("Place padstack failed")
@@ -1299,7 +1510,7 @@ class Padstacks(object):
         name: Optional[str] = None,
         pid: Optional[int] = None,
         definition_name: Optional[str] = None,
-        net_name: Optional[str] = None,
+        net_name: Optional[Union[str, List[str]]] = None,
         component_reference_designator: Optional[str] = None,
         component_pin: Optional[str] = None,
     ) -> List[PadstackInstance]:
@@ -1505,7 +1716,7 @@ class Padstacks(object):
         minimum_via_number: int = 6,
         selected_angles: Optional[List[float]] = None,
         padstack_instances_id: Optional[List[int]] = None,
-    ) -> None:
+    ) -> List[str]:
         """Replace padstack instances along lines into a single polygon.
 
         Detect all pad-stack instances that are placed along lines and replace them by a single polygon based one
@@ -1594,66 +1805,13 @@ class Padstacks(object):
                 inst.delete()
         return instances_created
 
-    def reduce_via_in_bounding_box(self, bounding_box, x_samples, y_samples, nets=None):
-        """Reduces the number of vias intersecting bounding box and nets by x and y samples.
-
-        Parameters
-        ----------
-        bounding_box : tuple or list.
-            bounding box, [x1, y1, x2, y2]
-        x_samples : int
-        y_samples : int
-        nets : str or list, optional
-            net name or list of nets name applying filtering on padstack instances selection. If ``None`` is provided
-            all instances are included in the index. Default value is ``None``.
-
-        Returns
-        -------
-        bool
-            ``True`` when succeeded ``False`` when failed.
-        """
-
-        padstacks_inbox = self.get_padstack_instances_intersecting_bounding_box(bounding_box, nets)
-        if not padstacks_inbox:
-            self._logger.info("no padstack in bounding box")
-            return False
-        else:
-            if len(padstacks_inbox) <= (x_samples * y_samples):
-                self._logger.info(f"more samples {x_samples * y_samples} than existing {len(padstacks_inbox)}")
-                return False
-            else:
-                # extract ids and positions
-                vias = {item: self.instances[item].position for item in padstacks_inbox}
-                ids, positions = zip(*vias.items())
-                pt_x, pt_y = zip(*positions)
-
-                # meshgrid
-                _x_min, _x_max = min(pt_x), max(pt_x)
-                _y_min, _y_max = min(pt_y), max(pt_y)
-
-                x_grid, y_grid = np.meshgrid(
-                    np.linspace(_x_min, _x_max, x_samples), np.linspace(_y_min, _y_max, y_samples)
-                )
-
-                # mapping to meshgrid
-                to_keep = {
-                    ids[np.argmin(np.square(_x - pt_x) + np.square(_y - pt_y))]
-                    for _x, _y in zip(x_grid.ravel(), y_grid.ravel())
-                }
-
-                for item in padstacks_inbox:
-                    if item not in to_keep:
-                        self.instances[item].delete()
-
-                return True
-
     def merge_via(
         self,
         contour_boxes: List[List[float]],
         net_filter: Optional[Union[str, List[str]]] = None,
         start_layer: Optional[str] = None,
         stop_layer: Optional[str] = None,
-    ) -> bool:
+    ) -> List[str]:
         """Evaluate pad-stack instances included on the provided point list and replace all by single instance.
 
         Parameters
@@ -1673,7 +1831,6 @@ class Padstacks(object):
 
         """
 
-        import numpy as np
         from scipy.spatial import ConvexHull
 
         merged_via_ids = []
@@ -1717,6 +1874,7 @@ class Padstacks(object):
             )
             merged_via_ids.append(merged_instance.edb_uid)
             [self.instances[inst].delete() for inst in instances]
+        self.clear_instances_cache()
         return merged_via_ids
 
     def reduce_via_in_bounding_box(
@@ -1772,6 +1930,7 @@ class Padstacks(object):
                 for item in padstacks_inbox:
                     if item not in to_keep:
                         all_instances[item].delete()
+                self.clear_instances_cache()
                 return True
 
     @staticmethod
@@ -1927,5 +2086,5 @@ class Padstacks(object):
             to_delete = set(padstacks) - to_keep
             for _id in to_delete:
                 all_instances[_id].delete()
-
+        self.clear_instances_cache()
         return list(to_keep), grid

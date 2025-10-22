@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,14 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Union
+from __future__ import annotations
 
+from typing import TYPE_CHECKING, Union
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.primitive.circle import Circle
+    from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from ansys.edb.core.net.net import Net as GrpcNet
 from ansys.edb.core.primitive.primitive import PrimitiveType as GrpcPrimitiveType
 
 from pyedb.grpc.database.primitive.bondwire import Bondwire
-from pyedb.grpc.database.primitive.circle import Circle
-from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.path import Path
 from pyedb.grpc.database.primitive.polygon import Polygon
 from pyedb.grpc.database.primitive.rectangle import Rectangle
@@ -76,6 +79,7 @@ class Net(GrpcNet):
             - :class:`Rectangle <pyedb.grpc.database.primitive.rectangle.Rectangle>`
             - :class:`Bondwire <pyedb.grpc.database.primitive.bondwire.Bondwire>`
         """
+
         primitives = super().primitives
         if not len(self.__primitives) == len(primitives):
             for primitive in primitives:
@@ -100,6 +104,8 @@ class Net(GrpcNet):
         list of :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
             Padstack instances associated with the net.
         """
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+
         return [PadstackInstance(self._pedb, i) for i in super().padstack_instances]
 
     @property
@@ -118,8 +124,11 @@ class Net(GrpcNet):
             if component:
                 try:
                     components[component.name] = component
-                except:
-                    pass
+                except Exception as e:
+                    self._pedb.logger.error(
+                        f"A(n) {type(e).__name__} error occurred while attempting to access "
+                        f"'components' property for object {self} - Empty dict is returned: {str(e)}"
+                    )
         return components
 
     def find_dc_short(self, fix=False) -> list[list[str, str]]:

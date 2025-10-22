@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -39,7 +39,6 @@ class TestClass(BaseTestClass):
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_nets_queries(self, edb_examples):
         """Evaluate nets queries"""
         edbapp = edb_examples.get_si_verse()

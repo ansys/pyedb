@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -722,7 +722,7 @@ class Materials(object):
         :class:`Material <pyedb.grpc.database.definition.materials.Material>`
             Material object.
         """
-        extended_kwargs = {key: value for (key, value) in kwargs.items()}
+        extended_kwargs = {key: value for (key, value) in kwargs.items() if not key == "name"}
         extended_kwargs["permittivity"] = permittivity
         extended_kwargs["dielectric_loss_tangent"] = dielectric_loss_tangent
         material = self.add_material(name, **extended_kwargs)
