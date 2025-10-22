@@ -38,7 +38,7 @@ Features
 Examples
 --------
 >>> import pyedb
->>> from pyedb.workflows.utilities.drc import Drc, Rules
+>>> from pyedb.workflows.drc.drc import Drc, Rules
 >>> edb = pyedb.Edb(edbpath="my_board.aedb")
 >>> rules = Rules.parse_file("rules.json")  # or Rules.parse_obj(python_dict)
 >>> drc = Drc(edb)
@@ -55,7 +55,7 @@ import datetime
 import itertools
 import os
 from queue import Queue
-from typing import Any, Dict, List, Set
+from typing import Any, Dict, List, Optional, Set
 
 from pydantic import BaseModel
 from rtree import index as rtree_index
@@ -81,18 +81,6 @@ class MinClearance(BaseModel):
     """Minimum clearance between two nets."""
 
     name: str
-    """Rule identifier."""
-
-    value: str
-    """Minimum gap with unit, e.g. ``"4mil"``."""
-
-    net1: str
-    """First net name.  Wild-card ``"*"`` is supported."""
-
-    net2: str
-    """Second net name.  Wild-card ``"*"`` is supported."""
-
-    name: str
     value: str
     net1: str
     net2: str
@@ -102,12 +90,6 @@ class MinAnnularRing(BaseModel):
     """Minimum annular ring for drilled holes."""
 
     name: str
-    """Rule identifier."""
-
-    value: str
-    """Minimum ring with unit, e.g. ``"2mil"``."""
-
-    name: str
     value: str
 
 
@@ -115,26 +97,11 @@ class DiffPair(BaseModel):
     """Differential-pair definition."""
 
     positive: str
-    """Positive (P) net name."""
-
-    negative: str
-    """Negative (N) net name."""
-
-    positive: str
     negative: str
 
 
 class DiffPairLengthMatch(BaseModel):
     """Length-matching rule for differential pairs."""
-
-    name: str
-    """Rule identifier."""
-
-    tolerance: str
-    """Max allowed delta with unit, e.g. ``"5mil"``."""
-
-    pairs: List[DiffPair]
-    """List of differential pairs to be matched."""
 
     name: str
     tolerance: str
@@ -145,26 +112,11 @@ class BackDrillStubLength(BaseModel):
     """Maximum allowed back-drill stub length."""
 
     name: str
-    """Rule identifier."""
-
-    value: str
-    """Stub length with unit, e.g. ``"6mil"``."""
-
-    name: str
     value: str
 
 
 class CopperBalance(BaseModel):
     """Copper-density balance rule."""
-
-    name: str
-    """Rule identifier."""
-
-    max_percent: int
-    """Maximum allowed imbalance percentage (0-100)."""
-
-    layers: List[str]
-    """Layers on which the rule applies.  Empty list ⇒ all signal layers."""
 
     name: str
     max_percent: int
@@ -173,27 +125,66 @@ class CopperBalance(BaseModel):
 
 class Rules(BaseModel):
     """
-    Container for **all** design rules supported by the engine.
+    Centralised, serialisable container for **all** design-rule categories
+    supported by the PyEDB DRC engine.
 
-    The class is a thin `pydantic` model enabling JSON/YAML serialization
-    and static validation.
-    """
+    The class is a thin ``pydantic`` model that provides:
 
-    min_line_width: List[MinLineWidth]
-    min_clearance: List[MinClearance]
-    min_annular_ring: List[MinAnnularRing]
-    diff_pair_length_match: List[DiffPairLengthMatch]
-    back_drill_stub_length: List[BackDrillStubLength]
-    copper_balance: List[CopperBalance]
+    * JSON/YAML round-trip via ``parse_file``, ``parse_obj``, ``model_dump``,
+      ``model_dump_json``.
+    * Type-safe, API to incrementally **build** rule decks without
+      manipulating raw dictionaries.
 
+
+    Examples
+    --------
+    >>> from pyedb.workflows.drc.drc import Rules
+    >>>
+    >>> rules = (
+    ...     Rules()
+    ...     .add_min_line_width("pwr", "15 mil")
+    ...     .add_min_clearance("clk2data", "4 mil", "CLK*", "DATA*")
+    ...     .add_min_annular_ring("via5", "5 mil")
+    ...     .add_diff_pair_length_match("usb", tolerance="0.1 mm", pairs=[("USB_P", "USB_N")])
+    ...     .add_copper_balance("top_bal", max_percent=10, layers=["TOP"])
+    ... )
+    >>> rules.model_dump_json(indent=2)
+    >>> rules.write_json("my_rules.json")
+
+    Attributes
+    ----------
+    min_line_width : List[:class:`MinLineWidth`]
+        Minimum acceptable trace width per layer or globally.
+    min_clearance : List[:class:`MinClearance`]
+        Spacing requirements between nets (wild-cards allowed).
+    min_annular_ring : List[:class:`MinAnnularRing`]
+        Minimum annular ring for drilled holes.
+    diff_pair_length_match : List[:class:`DiffPairLengthMatch`]
+        Length-matching constraints for differential pairs.
+    back_drill_stub_length : List[:class:`BackDrillStubLength`]
+        Maximum allowed back-drill stub length.
+    copper_balance : List[:class:`CopperBalance`]
+        Copper-density balance limits per layer or zone.
+    """  # noqa: E501
+
+    min_line_width: List[MinLineWidth] = []
+    min_clearance: List[MinClearance] = []
+    min_annular_ring: List[MinAnnularRing] = []
+    diff_pair_length_match: List[DiffPairLengthMatch] = []
+    back_drill_stub_length: List[BackDrillStubLength] = []
+    copper_balance: List[CopperBalance] = []
+
+    # ------------------------------------------------------------------
+    # Serialization helpers
+    # ------------------------------------------------------------------
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Rules":
+    def from_dict(cls, data: dict[str, Any]) -> "Rules":
         """
-        Alias for :meth:`parse_obj <pydantic.main.BaseModel.parse_obj>`.
+        Alias for :meth:`model_validate <pydantic.BaseModel.model_validate>`.
 
         Parameters
         ----------
-        data : dict
+        data
             Dictionary produced by ``json.load``, ``yaml.safe_load``, etc.
 
         Returns
@@ -203,16 +194,169 @@ class Rules(BaseModel):
         """
         return cls.model_validate(data)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """
-        Alias for :meth:`dict <pydantic.main.BaseModel.dict>`.
+        Alias for :meth:`model_dump <pydantic.BaseModel.model_dump>`.
 
         Returns
         -------
         dict
             JSON-serialisable dictionary.
         """
-        return self.dict()
+        return self.model_dump()
+
+    # ------------------------------------------------------------------
+    # Fluent API – mutate in place and return self for chaining
+    # ------------------------------------------------------------------
+    def add_min_line_width(
+        self,
+        name: str,
+        value: str,
+        layers: list[str] | None = None,
+    ) -> "Rules":
+        """
+        Append a minimum-line-width rule.
+
+        Parameters
+        ----------
+        name : str
+            Rule identifier
+        value : str
+            Minimum width with unit, e.g. ``"3.5mil"``.
+        layers : list[str], optional
+            List of layer names to apply the rule to.  If ``None``,
+            applies to all signal layers.
+
+        Returns
+        -------
+        Rules
+            Self to enable method chaining.
+        """
+        rule = MinLineWidth(name=name, value=value)
+        if layers is not None:
+            rule.layers = layers  # type: ignore[attr-defined]
+        self.min_line_width.append(rule)
+        return self
+
+    def add_min_clearance(
+        self,
+        name: str,
+        value: str,
+        net1: str,
+        net2: str,
+    ) -> "Rules":
+        """
+        Append a minimum-clearance rule between two nets (wild-cards allowed).
+
+        Parameters
+        ----------
+        name : str
+            Rule identifier.
+        value : str
+            Minimum clearance with unit, e.g. ``"4mil"``.
+        net1 : str
+            First net name or wild-card (``"*"``).
+        net2 : str
+            Second net name or wild-card (``"*"``).
+
+        Returns
+        -------
+        Rules
+            Self to enable method chaining.
+        """
+        self.min_clearance.append(MinClearance(name=name, value=value, net1=net1, net2=net2))
+        return self
+
+    def add_min_annular_ring(self, name: str, value: str) -> "Rules":
+        """
+        Append a minimum-annular-ring rule for drilled holes.
+
+        Parameters
+        ----------
+        name : str
+            Rule identifier.
+        value : str
+            Minimum annular ring with unit, e.g. ``"2mil"``.
+
+        Returns
+        -------
+        Rules
+            Self to enable method chaining.
+        """
+        self.min_annular_ring.append(MinAnnularRing(name=name, value=value))
+        return self
+
+    def add_diff_pair_length_match(
+        self,
+        name: str,
+        tolerance: str,
+        pairs: list[tuple[str, str]],
+    ) -> "Rules":
+        """
+        Append a length-matching rule for differential pairs.
+
+        Parameters
+        ----------
+        name : str
+            Rule identifier.
+        tolerance : str
+            Maximum allowed length difference with unit, e.g. ``"0.1mm"``.
+        pairs : list[tuple[str, str]]
+            List of differential pairs as tuples of
+
+        Returns
+        -------
+        Rules
+            Self to enable method chaining.
+        """
+        dpairs = [DiffPair(positive=p, negative=n) for p, n in pairs]
+        self.diff_pair_length_match.append(DiffPairLengthMatch(name=name, tolerance=tolerance, pairs=dpairs))
+        return self
+
+    def add_back_drill_stub_length(self, name: str, value: str) -> "Rules":
+        """
+        Append a maximum-allowed back-drill stub-length rule.
+
+        Parameters
+        ----------
+        name : str
+            Rule identifier.
+        value : str
+            Maximum allowed stub length with unit, e.g. ``"6mil"``.
+
+        Returns
+        -------
+        Rules
+            Self to enable method chaining.
+        """
+        self.back_drill_stub_length.append(BackDrillStubLength(name=name, value=value))
+        return self
+
+    def add_copper_balance(
+        self,
+        name: str,
+        max_percent: int,
+        layers: list[str],
+    ) -> "Rules":
+        """
+        Append a copper-density balance rule.
+
+        Parameters
+        ----------
+        name : str
+            Rule identifier.
+        max_percent : int
+            Maximum allowed copper imbalance in percent (e.g. ``15`` for 15%).
+        layers : list[str]
+            List of layer names to apply the rule to.
+
+        Returns
+        -------
+        Rules
+            Self to enable method chaining.
+        """
+        self.copper_balance.append(CopperBalance(name=name, max_percent=max_percent, layers=layers))
+        return self
 
 
 class Drc:

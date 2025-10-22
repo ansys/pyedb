@@ -1,5 +1,5 @@
-Workflows
-=========
+Utilities Workflows
+===================
 
 This section describes PyEDB utilities workflows features.
 
@@ -8,4 +8,3 @@ This section describes PyEDB utilities workflows features.
 
    cutout
    hfss_log_parser
-   drc
