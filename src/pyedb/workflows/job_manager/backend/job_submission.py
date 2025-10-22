@@ -629,14 +629,11 @@ class HFSSSimulationConfig(BaseModel):
 
     def generate_lsf_script(self) -> str:
         """
-        Return LSF batch script.
-
-        Returns
-        -------
-        str
-            Multi-line string.
+        Return LSF batch script that matches the reference command.
         """
         opts = self.scheduler_options
+        total_cpus = opts.nodes * opts.cores_per_node
+
         script = [
             "#!/bin/bash",
             f"#BSUB -J {self.jobid}",
@@ -644,30 +641,22 @@ class HFSSSimulationConfig(BaseModel):
             f"#BSUB -e {self.jobid}.%J.err",
             f"#BSUB -q {opts.queue}",
             f"#BSUB -W {opts.time}",
-            f"#BSUB -n {opts.nodes * opts.tasks_per_node}",
-            f'#BSUB -R "rusage[ncpus={opts.cores_per_node}]"',
+            f"#BSUB -n {total_cpus}",
+            f'#BSUB -R "span[ptile={opts.cores_per_node}] select[ ((osrel=80) || (osrel=90)) && ui=ansysedt_solver] '
+            f'rusage[mem={opts.memory}/host]"',
+            f"#BSUB -env 'all,~LD_PRELOAD,LSB_JOB_REPORT_MAIL=Y'",
+            "",
+            "export ANSOFT_PASS_DEBUG_ENV_TO_REMOTE_ENGINES=1",
+            "export ANSYSEM_FEATURE_CONTROL=lwamOsjR_L-LnSHxWbr35csqQvEwNCJH",
+            "",
+            "# Load ANSYS environment",
+            "module load ansys",
+            "",
+            "# Execute HFSS simulation",
+            self.generate_command_string(),
+            "",
+            "echo 'LSF job completed successfully'",
         ]
-
-        if opts.memory:
-            script.append(f"#BSUB -R 'rusage[mem={opts.memory}]'")
-        if opts.account:
-            script.append(f"#BSUB -P {opts.account}")
-        if opts.exclusive:
-            script.append("#BSUB -x")
-
-        script.extend(
-            [
-                "",
-                "# Load ANSYS environment",
-                "module load ansys",
-                "",
-                "# Execute HFSS simulation",
-                self.generate_command_string(),
-                "",
-                "echo 'LSF job completed successfully'",
-            ]
-        )
-
         return "\n".join(script)
 
     def generate_scheduler_script(self) -> str:
