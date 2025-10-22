@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """ "
 Self-contained DRC engine for PyEDB.
 
@@ -16,7 +38,7 @@ Features
 Examples
 --------
 >>> import pyedb
->>> from pyedb.workflows.drc import Drc, Rules
+>>> from pyedb.workflows.utilities.drc import Drc, Rules
 >>> edb = pyedb.Edb(edbpath="my_board.aedb")
 >>> rules = Rules.parse_file("rules.json")  # or Rules.parse_obj(python_dict)
 >>> drc = Drc(edb)
@@ -179,7 +201,7 @@ class Rules(BaseModel):
         Rules
             Validated instance ready for :meth:`Drc.check`.
         """
-        return cls.parse_obj(data)
+        return cls.model_validate(data)
 
     def to_dict(self) -> Dict[str, Any]:
         """
@@ -209,7 +231,7 @@ class Drc:
     Examples
     --------
     >>> edb = pyedb.Edb("my_board.aedb")
-    >>> rules = Rules.parse_file("rules.json")
+    >>> rules = Rules.load("rules.json")
     >>> drc = Drc(edb)
     >>> violations = drc.check(rules)
     >>> drc.to_ipc356a("review.ipc")
@@ -260,7 +282,7 @@ class Drc:
         self.violations.clear()
 
         # Iterate through each rule in the Rules object
-        for rule_group in rules.__fields__:
+        for rule_group in rules.model_fields:
             rule_list = getattr(rules, rule_group)
             if rule_list:
                 for rule in rule_list:

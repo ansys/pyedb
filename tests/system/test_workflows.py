@@ -42,9 +42,6 @@ class TestClass:
     def test_hfss_log_parser(self, edb_examples):
         from pyedb.workflows.utilities.hfss_log_parser import HFSSLogParser
 
-    def test_drc_rules(self):
-        from pyedb.workflows.drc import Rules
-
         log_file = edb_examples.get_log_file_example()
         log_parser = HFSSLogParser(log_file).parse()
         for nr, line in enumerate(Path(log_file).read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
@@ -63,6 +60,10 @@ class TestClass:
         assert log_parser.is_converged()
         assert log_parser.adaptive_passes()
         assert log_parser.memory_on_convergence() == 263
+
+    def test_drc_rules(self):
+        from pyedb.workflows.utilities.drc import Rules
+
         RULES_DICT = {
             "min_line_width": [{"name": "MW", "value": "3.5mil"}],
             "min_clearance": [{"name": "CLR", "value": "4mil", "net1": "*", "net2": "*"}],
@@ -92,8 +93,19 @@ class TestClass:
     def test_hfss_auto_setup(self, edb_examples):
         from pyedb.workflows.sipi.hfss_auto_configuration import create_hfss_auto_configuration
 
+        edbapp = edb_examples.get_si_verse()
+        hfss_auto_config = create_hfss_auto_configuration(source_edb_path=edbapp.edbpath, edb=edbapp)
+        hfss_auto_config.grpc = edbapp.grpc
+        hfss_auto_config.ansys_version = edbapp.version
+        hfss_auto_config.auto_populate_batch_groups(["PCIe_Gen4_RX", "PCIe_Gen4_TX"])
+        hfss_auto_config.add_simulation_setup(
+            meshing_frequency="10GHz", start_frequency="0GHz", stop_frequency="40GHz", frequency_step="0.05GHz"
+        )
+        hfss_auto_config.create_projects()
+        assert sum(1 for item in Path(hfss_auto_config.batch_group_folder).iterdir() if item.is_dir()) == 2
+
     def test_drc_rules_from_file(self, edb_examples):
-        from pyedb.workflows.drc import Drc, Rules
+        from pyedb.workflows.utilities.drc import Drc, Rules
 
         RULES_DICT = {
             "min_line_width": [{"name": "MW", "value": "3.5mil"}],
@@ -109,20 +121,11 @@ class TestClass:
             "back_drill_stub_length": [{"name": "STUB", "value": "6mil"}],
             "copper_balance": [{"name": "CB", "max_percent": 15, "layers": ["L3", "L4"]}],
         }
-
         edbapp = edb_examples.get_si_verse()
-        hfss_auto_config = create_hfss_auto_configuration(source_edb_path=edbapp.edbpath, edb=edbapp)
-        hfss_auto_config.grpc = edbapp.grpc
-        hfss_auto_config.ansys_version = edbapp.version
-        hfss_auto_config.auto_populate_batch_groups(["PCIe_Gen4_RX", "PCIe_Gen4_TX"])
-        hfss_auto_config.add_simulation_setup(
-            meshing_frequency="10GHz", start_frequency="0GHz", stop_frequency="40GHz", frequency_step="0.05GHz"
-        )
-        hfss_auto_config.create_projects()
-        assert sum(1 for item in Path(hfss_auto_config.batch_group_folder).iterdir() if item.is_dir()) == 2
         rules = Rules.from_dict(RULES_DICT)
         drc = Drc(edbapp)
         drc.check(rules)
         output_file = os.path.join(self.local_scratch.path, "drc_results.ipc356a")
         drc.to_ipc356a(file_path=output_file)
         assert os.path.isfile(output_file)
+        edbapp.close()
