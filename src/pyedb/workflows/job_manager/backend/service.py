@@ -142,7 +142,7 @@ class ResourceLimits:
     max_concurrent_jobs: int = 1
     max_cpu_percent: float = 80.0  # Don't start new jobs if CPU > 80%
     min_memory_gb: float = 2.0  # Minimum free memory required to start a job
-    min_disk_gb: float = 10.0  # Minimum free disk space required
+    min_disk_gb: float = 2.0  # Minimum free disk space required
 
 
 @dataclass
