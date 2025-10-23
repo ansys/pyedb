@@ -24,6 +24,7 @@ from pathlib import Path
 import pytest
 
 from pyedb.extensions.via_design_backend import ViaDesignBackend
+from tests.conftest import GRPC
 from tests.system.base_test_class import BaseTestClass
 
 # from tests.conftest import _get_test_board
@@ -634,6 +635,7 @@ class TestClass(BaseTestClass):
         assert create_array_from_unit_cell(edbapp, x_number=2, y_number=2)
         edbapp.close()
 
+    @pytest.mark.skipif(condition=not GRPC, reason="Implemented only with grpc")
     def test_dxf_swap_backend_center_point(self, edb_examples):
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf_center_point
 
@@ -645,12 +647,11 @@ class TestClass(BaseTestClass):
         edb.save()
 
         assert len(edb.modeler.primitives_by_layer["Trace"]) == 3
-        assert edb.modeler.primitives_by_layer["Trace"][2].aedt_name == "poly_17"
-        # polygon = edb.modeler.get_primitive_by_layer_and_point(point=point_aedt, layer=layer_name)
-        # assert len(polygon) == 1
-        # Area = 200 mm^2
-        # assert polygon[0].area == 200
+        polygon = edb.modeler.get_primitive_by_layer_and_point(point=point_aedt, layer=layer_name)
+        assert len(polygon) == 1
+        assert polygon[0].area == 200
 
+    @pytest.mark.skipif(condition=not GRPC, reason="Implemented only with grpc")
     def test_dxf_swap_backend(self, edb_examples):
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf
 
@@ -663,3 +664,6 @@ class TestClass(BaseTestClass):
         edb.save()
 
         assert len(edb.modeler.primitives_by_layer["Trace"]) == 3
+        polygon = edb.modeler.get_primitive_by_layer_and_point(point=point_aedt, layer=layer_name)
+        assert len(polygon) == 1
+        assert polygon[0].area == 200
