@@ -141,3 +141,5 @@ project_path
 config
 [Ss]cheduler[Tt]ype.[Nn][Oo][Nn][Ee]
 job_id
+Cohn
+Pydantic
