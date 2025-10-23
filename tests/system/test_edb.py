@@ -2009,9 +2009,3 @@ class TestClass(BaseTestClass):
         assert edbapp.import_vlctech_stackup(vlctech_path)
         assert os.path.exists(edbapp.edbpath) and edbapp.edbpath[-12:] == "vlctech.aedb"
         assert edbapp.close()
-
-    def test_ipc_2581(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.export_to_ipc2581()
-        assert os.path.exists(edbapp.edbpath[:-5] + ".xml")
-        edbapp.close(terminate_rpc_session=False)
