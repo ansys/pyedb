@@ -1720,6 +1720,7 @@ class TestClass(BaseTestClass):
         map_file = os.path.join(local_path, "example_models", "cad", "GDS", "dummy_layermap.map")
         edb = Edb()
         assert edb.import_layout_file(input_file=input_file, control_file=control_file, map_file=map_file)
+        assert edb.close()
 
     @pytest.mark.parametrize("positive_pin_names", (["R20", "R21", "T20"], ["R20"]))
     @pytest.mark.parametrize("pec_boundary", (False, True))
@@ -1942,6 +1943,17 @@ class TestClass(BaseTestClass):
                 str(Path(edbapp.edbpath).with_name(Path(edbapp.edbpath).stem + "_compare_results")),
             ]
 
+    def test_job_manager(self, edb_examples, local_scratch):
+        project_path = edb_examples.copy_project_for_job_manager(local_scratch)
+        edb = edb_examples.create_empty_edb()
+        jm = edb.job_manager
+        jm.start_service()
+        assert jm.started
+        job1 = edb.job_manager.create_simulation_config(project_path=project_path)
+        assert job1
+        jm.close()  # stop the service when done
+        assert not jm.started
+
     @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
     def test_create_layout_component(self, edb_examples):
         from pyedb import Edb
@@ -1988,3 +2000,12 @@ class TestClass(BaseTestClass):
         assert edbapp.export_to_ipc2581()
         assert os.path.exists(edbapp.edbpath[:-5] + ".xml")
         edbapp.close(terminate_rpc_session=False)
+        
+    def test_import_vlctech(self, edb_examples):
+        from pyedb import Edb
+
+        vlctech_path = os.path.join(local_path, "example_models", "cad", "vlctech", "test.vlc.tech.typ")
+        edbapp = Edb()
+        assert edbapp.import_vlctech_stackup(vlctech_path)
+        assert os.path.exists(edbapp.edbpath) and edbapp.edbpath[-12:] == "vlctech.aedb"
+        assert edbapp.close()

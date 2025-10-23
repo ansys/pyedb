@@ -42,6 +42,7 @@ import sys
 import tempfile
 import time
 import traceback
+from typing import Dict
 
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.settings import settings
@@ -133,6 +134,26 @@ def _exception(ex_info, func, args, kwargs, message="Type Error"):
                 func.__name__
             )
         )
+
+
+def installed_ansys_em_versions() -> Dict[str, str]:
+    """
+    Scan environment variables and return a dict
+    {version: installation_path} for every ANSYS EM release found.
+    Versions are ordered from oldest → latest (latest appears last).
+    """
+    pattern = re.compile(r"^ANSYSEM_ROOT(\d{3})$", re.IGNORECASE)
+
+    # collect everything
+    versions = {}
+    for key, value in os.environ.items():
+        m = pattern.match(key)
+        if m:
+            version = m.group(1)
+            versions[version] = value.rstrip(os.sep)
+
+    # sort ascending so the latest is last
+    return dict(sorted(versions.items(), key=lambda kv: int(kv[0])))
 
 
 def get_filename_without_extension(path):

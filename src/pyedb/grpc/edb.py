@@ -135,6 +135,7 @@ from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
+from pyedb.workflows.job_manager.backend.job_manager_handler import JobManagerHandler
 from pyedb.workflows.utilities.cutout import Cutout
 
 os.environ["no_proxy"] = "localhost,127.0.0.1"
@@ -430,6 +431,7 @@ class Edb(EdbInit):
         self._source_excitation = SourceExcitation(self)
         self._differential_pairs = DifferentialPairs(self)
         self._extended_nets = ExtendedNets(self)
+        self._job_manager = JobManagerHandler(self)
 
     def value(self, val) -> float:
         """Convert a value into a pyedb value."""
@@ -438,6 +440,17 @@ class Edb(EdbInit):
         else:
             context = self.active_cell if not str(val).startswith("$") else self.active_db
             return Value(GrpcValue(val, context), context)
+
+    @property
+    def job_manager(self):
+        """Job manager for handling simulation tasks.
+
+        Returns
+        -------
+        :class:`JobManagerHandler <pyedb.workflows.job_manager.job_manager_handler.JobManagerHandler>`
+            Job manager instance for submitting and managing simulation jobs.
+        """
+        return self._job_manager
 
     @property
     def cell_names(self) -> List[str]:
@@ -871,6 +884,62 @@ class Edb(EdbInit):
             self.logger.info("Translation correctly completed")
         self.edbpath = os.path.join(working_dir, aedb_name)
         return self.open_edb()
+
+    def import_vlctech_stackup(
+        self,
+        vlctech_file,
+        working_dir="",
+        export_xml=None,
+    ):
+        """Import a vlc.tech file and generate an ``edb.def`` file in the working directory containing only the stackup.
+
+        Parameters
+        ----------
+        vlctech_file : str
+            Full path to the technology stackup file. It must be vlc.tech.
+        working_dir : str, optional
+            Directory in which to create the ``aedb`` folder. The name given to the AEDB file
+            is the same as the name of the board file.
+        export_xml : str, optional
+            Export technology file in XML control file format.
+
+        Returns
+        -------
+        Full path to the AEDB file : str
+
+        """
+        if not working_dir:
+            working_dir = os.path.dirname(vlctech_file)
+        command = os.path.join(self.base_path, "helic", "tools", "raptorh", "bin", "make-edb")
+        if is_windows:
+            command += ".exe"
+        else:
+            os.environ["HELIC_ROOT"] = os.path.join(self.base_path, "helic")
+        cmd_make_edb = [
+            command,
+            "-t",
+            "{}".format(vlctech_file),
+            "-o",
+            "{}".format(os.path.join(working_dir, "vlctech")),
+        ]
+        if export_xml:
+            cmd_make_edb.extend(["-x", "{}".format(export_xml)])
+
+        try:
+            subprocess.run(cmd_make_edb, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError(
+                "Failed to create edb. Please check if the executable is present in the base path."
+            ) from e
+
+        if not os.path.exists(os.path.join(working_dir, "vlctech.aedb")):
+            self.logger.error("Failed to create edb. Please check if the executable is present in the base path.")
+            return False
+        else:
+            self.logger.info("edb successfully created.")
+        self.edbpath = os.path.join(working_dir, "vlctech.aedb")
+        self.open()
+        return self.edbpath
 
     def export_to_ipc2581(self, edbpath="", anstranslator_full_path="", ipc_path=None) -> str:
         """Export design to IPC2581 format.
@@ -3132,7 +3201,7 @@ class Edb(EdbInit):
         except subprocess.CalledProcessError as e:  # nosec
             raise RuntimeError(
                 "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
-            )
+            ) from e
 
         if not os.path.exists(os.path.join(results, "EDBDiff.csv")):
             self.logger.error("Comparison execution failed")
