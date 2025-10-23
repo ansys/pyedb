@@ -97,7 +97,6 @@ from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import generate_unique_name, is_linux, is_windows
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
-from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.misc.decorators import deprecate_argument_name, execution_timer
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
@@ -903,50 +902,50 @@ class Edb:
         self.open_edb()
         return self.edbpath
 
-    def export_to_ipc2581(self, ipc_path=None, units="MILLIMETER"):
-        """Create an XML IPC2581 file from the active EDB.
-
-        .. note::
-           The method works only in CPython because of some limitations on Ironpython in XML parsing and
-           because it's time-consuming.
-           This method is still being tested and may need further debugging.
-           Any feedback is welcome. Back drills and custom pads are not supported yet.
+    def export_to_ipc2581(self, edbpath="", anstranslator_full_path="", ipc_path=None) -> str:
+        """Export design to IPC2581 format.
 
         Parameters
         ----------
+        edbpath: str
+            Full path to aedb folder of the design to convert.
+        anstranslator_full_path : str, optional
+            Path to Ansys translator executable.
         ipc_path : str, optional
-            Path to the XML IPC2581 file. The default is ``None``, in which case
-            an attempt is made to find the XML IPC2581 file in the same directory
-            as the active EDB. To succeed, the XML IPC2581 file and the active
-            EDT must have the same name. Only the extension differs.
-        units : str, optional
-            Units of the XML IPC2581 file. Options are ``"millimeter"``,
-            ``"inch"``, and ``"micron"``. The default is ``"millimeter"``.
+            Output XML file path. Default: <edb_path>.xml.
 
         Returns
         -------
-        ``True`` if successful, ``False`` if failed : bool
+        str
+            Path to output IPC2581 file, and corresponding log file.
 
+        Examples
+        --------
+        >>> # Export to IPC2581 format:
+        >>> edb.export_to_ipc2581("output.xml")
         """
-        if units.lower() not in ["millimeter", "inch", "micron"]:  # pragma no cover
-            self.logger.warning("The wrong unit is entered. Setting to the default, millimeter.")
-            units = "millimeter"
-
+        if not float(self.version) >= 2025.2:
+            raise AttributeError("This function is only supported with ANSYS release 2025R2 and higher.")
+        if not edbpath:
+            edbpath = self.edbpath
         if not ipc_path:
-            ipc_path = self.edbpath[:-4] + "xml"
-        self.logger.info("Export IPC 2581 is starting. This operation can take a while.")
-        start = time.time()
-        ipc = Ipc2581(self, units)
-        ipc.load_ipc_model()
-        ipc.file_path = ipc_path
-        result = ipc.write_xml()
-
-        if result:  # pragma no cover
-            self.logger.info_timer("Export IPC 2581 completed.", start)
-            self.logger.info("File saved as %s", ipc_path)
-            return ipc_path
-        self.logger.info("Error exporting IPC 2581.")
-        return False
+            ipc_path = edbpath[:-5] + ".xml"
+        if anstranslator_full_path and os.path.exists(anstranslator_full_path):
+            executable_path = anstranslator_full_path
+        else:
+            executable_path = os.path.join(self.base_path, "anstranslator")
+            if is_windows:
+                executable_path += ".exe"
+        command = [executable_path, edbpath, ipc_path, "-i=edb", "-o=ipc2581"]
+        try:
+            subprocess.run(command, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError("Translation failed. Please check the log file.") from e
+        if not os.path.exists(ipc_path):
+            self.logger.error("Translation failed. Please check the log file.")
+        else:
+            self.logger.info("Translation successfully completed.")
+        return ipc_path
 
     @property
     def configuration(self):

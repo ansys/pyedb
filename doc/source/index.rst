@@ -30,6 +30,7 @@ Getting Started
    installation
    user_guide/index
    migration_guide
+   changelog
 
 Reference
 =========
