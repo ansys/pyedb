@@ -1,88 +1,82 @@
-.. py:module:: pyedb.workflows.utilities.drc
-.. _drc_engine:
+.. _ref_drc:
 
-=================================
-Design-Rule Checking (DRC) engine
-=================================
-The ``pyedb.workflows.utilities.drc`` submodule is a **self-contained, high-performance**
-design-rule checker that runs **inside** an open PyEDB session.
-It validates more than **50 industry-standard rules** in parallel and exports
-machine-readable violation reports (IPC-D-356A, JSON, CSV).
+==================================================================
+Design-rule checking (DRC) – self-contained, multi-threaded engine
+==================================================================
 
-.. note::
-   The engine is **thread-safe**, **zero-copy**, and uses an **R-tree spatial index**
-   for sub-millisecond geometry queries on boards with >1 M primitives.
+.. currentmodule:: pyedb.workflows.drc.drc
 
-.. tip::
-   A complete ruleset can be expressed in a **single JSON/YAML file**
-   and loaded with :meth:`Rules.parse_file`.
+.. automodule:: pyedb.workflows.drc.drc
+   :no-members:
+   :noindex:
 
-.. contents:: Table of contents
-   :local:
-   :depth: 3
+The ``pyedb.workflows.drc`` sub-package exposes a lightweight, high-accuracy
+**design-rule checker (DRC)** that runs **inside** an open PyEDB session.
+It validates more than 50 industry-standard rules (geometry, spacing,
+manufacturing, high-speed, test) and exports an IPC-D-356A netlist annotated
+with violations for CAM hand-off.
 
-------------
-Capabilities
-------------
+Features
+--------
 
-Geometry & manufacturing rules
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-* Minimum line width
-* Minimum clearance (net-to-net, layer-scoped, wild-card support)
-* Minimum annular ring (drilled holes)
-* Copper balance (layer or arbitrary polygon zones)
-* Back-drill stub length verification
+* Impedance checks via improved analytical formulas (Wheeler, Cohn,
+  Hammerstad–Jensen).
+* Copper-balance by layer or by arbitrary zone polygons.
+* Back-drill stub / depth verification.
+* R-tree spatial index for fast geometry queries.
+* Thread-safe, multi-threaded rule execution (automatic core detection).
+* Fluent, type-safe API to build rule decks programmatically.
+* JSON / YAML round-trip serialization (via Pydantic).
 
-High-speed / SI rules
-^^^^^^^^^^^^^^^^^^^^^
-* Differential-pair length matching with user-defined tolerance
-* Via-stitch density checks (planned)
-* Impedance deviation (planned)
-
-Export formats
-^^^^^^^^^^^^^^
-* IPC-D-356A netlist with embedded DRC comments (Valor, Genesis, …)
-* JSON (violations only)
-* CSV (violations only)
-
-------------
 Quick start
-------------
+-----------
 
 .. code-block:: python
 
    import pyedb
-   from pyedb.workflows.utilities.drc import Drc, Rules
+   from pyedb.workflows.drc.drc import Drc, Rules
 
-   # 1. Open an EDB session
    edb = pyedb.Edb("my_board.aedb")
+   rules = (
+       Rules()
+       .add_min_line_width("pwr", "15 mil")
+       .add_min_clearance("clk2data", "4 mil", "CLK*", "DATA*")
+       .add_min_annular_ring("via5", "5 mil")
+       .add_diff_pair_length_match("usb", tolerance="0.1 mm", pairs=[("USB_P", "USB_N")])
+       .add_copper_balance("top_bal", max_percent=10, layers=["TOP"])
+   )
 
-   # 2. Load rules (JSON or Python dict)
-   rules = Rules.parse_file("rules.json")
-
-   # 3. Run DRC
    drc = Drc(edb)
    violations = drc.check(rules)
-
-   # 4. Export for fab review
    drc.to_ipc356a("fab_review.ipc")
 
-   # 5. Inspect violations
-   for v in violations:
-       print(v)
+API reference
+-------------
 
-------------
-Rule schema
-------------
-
-All rules are **Pydantic** models and therefore **self-validating**.
-The top-level container is :class:`Rules`.
+Rules container
+~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: generated
+   :toctree: generated/
    :nosignatures:
 
    Rules
+   Rules.from_dict
+   Rules.to_dict
+   Rules.add_min_line_width
+   Rules.add_min_clearance
+   Rules.add_min_annular_ring
+   Rules.add_diff_pair_length_match
+   Rules.add_back_drill_stub_length
+   Rules.add_copper_balance
+
+Rule models
+~~~~~~~~~~~
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
    MinLineWidth
    MinClearance
    MinAnnularRing
@@ -91,117 +85,60 @@ The top-level container is :class:`Rules`.
    BackDrillStubLength
    CopperBalance
 
-Each model supports:
+DRC engine
+~~~~~~~~~~
 
-* Auto-completion in IDEs
-* JSON/YAML round-trip
-* Type-safe unit handling (e.g. ``"3.5 mil"``, ``"0.09 mm"``)
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
 
-Example JSON snippet:
+   Drc
+   Drc.check
+   Drc.to_ipc356a
 
-.. code-block:: json
+Implementation notes
+--------------------
 
-   {
-     "min_line_width": [
-       {"name": "PWR_5V", "value": "10 mil", "layers": ["TOP", "L3"]}
-     ],
-     "min_clearance": [
-       {"name": "CLK_to_PWR", "value": "4 mil", "net1": "CLK_*", "net2": "PWR_*"}
-     ]
-   }
+Thread safety
+~~~~~~~~~~~~~
+All heavy geometry checks are embarrassingly parallel.  The engine snapshots
+EDB data into plain Python objects before entering the worker pool, so the
+R-tree index is **never** accessed concurrently.
 
-------------
-API reference
-------------
-
-.. autoclass:: Drc
-   :members:
-   :inherited-members:
-   :show-inheritance:
-   :special-members: __init__
-
-.. autoclass:: Rules
-   :members:
-   :inherited-members:
-   :show-inheritance:
-
-.. autoclass:: MinLineWidth
-   :members:
-   :undoc-members:
-
-.. autoclass:: MinClearance
-   :members:
-   :undoc-members:
-
-.. autoclass:: MinAnnularRing
-   :members:
-   :undoc-members:
-
-.. autoclass:: DiffPair
-   :members:
-   :undoc-members:
-
-.. autoclass:: DiffPairLengthMatch
-   :members:
-   :undoc-members:
-
-.. autoclass:: BackDrillStubLength
-   :members:
-   :undoc-members:
-
-.. autoclass:: CopperBalance
-   :members:
-   :undoc-members:
-
-------------
-Performance notes
-------------
-
-* **Spatial index**: Built once per ``Drc`` instance; reused for all subsequent checks.
-* **Parallelism**: Rule handlers use ``ThreadPoolExecutor`` with **automatic core detection**
-  (``max_workers = os.cpu_count() - 1``).
-* **Memory footprint**: Primitive data is **streamed** into Python-native structures;
-  peak RAM grows **linearly** with the number of violating objects, not with total primitives.
-
-------------
 Extending the engine
-------------
-
-New rules can be added **without modifying** the core engine:
+~~~~~~~~~~~~~~~~~~~~
+Add a new rule in three steps:
 
 1. Create a Pydantic model inheriting from ``pydantic.BaseModel``.
-2. Add the rule list to :class:`Rules`.
-3. Implement ``_rule_<name>`` in :class:`Drc`.
+2. Append the model to the ``Rules`` container and expose a fluent helper.
+3. Implement ``_rule_<field_name>`` inside ``Drc``; accept the rule instance
+   and append violations to ``self.violations``.
 
-Example stub:
+Examples
+--------
+
+Load a rule deck from JSON
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-   class MyCustomRule(BaseModel):
-       name: str
-       value: float
+   import json
+   from pyedb.workflows.drc.drc import Rules
 
+   with open("my_rules.json") as f:
+       rules = Rules.from_dict(json.load(f))
 
-   class Rules(BaseModel):
-       ...
-       my_custom_rule: List[MyCustomRule] = []
+Export violations to CSV
+~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. code-block:: python
 
-   class Drc:
-       def _rule_my_custom_rule(self, rule: MyCustomRule): ...  # implementation
+   import csv
 
-------------
-References
-------------
+   drc = Drc(edb)
+   drc.check(rules)
 
-* IPC-D-356A standard – `IPC Association <https://www.ipc.org>`_
-* *High-Speed Digital Design* – Johnson & Graham
-* *Signal Integrity Simplified* – Bogatin
-
-------------
-Indices and tables
-------------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   with open("violations.csv", "w", newline="") as f:
+       writer = csv.DictWriter(f, fieldnames=drc.violations[0].keys())
+       writer.writeheader()
+       writer.writerows(drc.violations)
