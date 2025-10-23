@@ -77,6 +77,7 @@ from pyedb.workflows.job_manager.backend.job_submission import (
     HFSS3DLayoutBatchOptions,
     HFSSSimulationConfig,
     MachineNode,
+    SchedulerOptions,
     SchedulerType,
     create_hfss_config,
 )
@@ -253,6 +254,7 @@ class JobManagerHandler:
         self._thread: Optional[threading.Thread] = None
         self._start_event = threading.Event()
         self._shutdown = False
+        self.resource_limits = self.manager.resource_limits
         atexit.register(self.close)
 
         self.scheduler_type = self._detect_scheduler()
@@ -606,6 +608,10 @@ class JobManagerHandler:
         # 5.  FINAL guarantee – path must be non-empty and exist
         if not config.ansys_edt_path or not os.path.isfile(config.ansys_edt_path):
             config.ansys_edt_path = self.ansys_path
+        # 5½.  enforce the limits that were set via CLI
+        config.scheduler_options = config.scheduler_options or SchedulerOptions()
+        self.resource_limits.min_disk_gb = self.resource_limits.min_disk_gb
+        self.resource_limits.min_memory_gb = self.resource_limits.min_memory_gb
         # rebuild so every cached field (command string, scripts, …) is correct
         config = HFSSSimulationConfig(**config.model_dump())
 
