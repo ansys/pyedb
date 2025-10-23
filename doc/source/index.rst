@@ -30,6 +30,7 @@ Getting Started
    installation
    user_guide/index
    migration_guide
+   changelog
 
 Reference
 =========
@@ -38,6 +39,7 @@ Reference
    :maxdepth: 1
 
    examples/index
+   workflows/index
    grpc_api/index
    glossary
    troubleshooting

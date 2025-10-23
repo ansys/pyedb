@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -23,6 +23,7 @@
 """
 This module contains the ``EdbHfss`` class.
 """
+
 import math
 import warnings
 
@@ -1259,11 +1260,7 @@ class Hfss(object):
         )
         from ansys.edb.core.simulation_setup.simulation_setup import (
             Distribution as GrpcDistribution,
-        )
-        from ansys.edb.core.simulation_setup.simulation_setup import (
             FrequencyData as GrpcFrequencyData,
-        )
-        from ansys.edb.core.simulation_setup.simulation_setup import (
             SweepData as GrpcSweepData,
         )
 

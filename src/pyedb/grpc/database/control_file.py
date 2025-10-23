@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -23,9 +23,11 @@
 import copy
 import os
 import re
-import subprocess
+import subprocess  # nosec B404
 import sys
 from typing import Any, Dict, List, Optional, Union
+
+from defusedxml.ElementTree import parse as defused_parse
 
 from pyedb.generic.general_methods import ET, env_path, env_value, is_linux
 from pyedb.generic.settings import settings
@@ -35,6 +37,11 @@ from pyedb.misc.misc import list_installed_ansysem
 
 def convert_technology_file(tech_file, edbversion=None, control_file=None):
     """Convert a technology file to EDB control file (XML).
+
+    .. warning::
+        Do not execute this function with untrusted function argument, environment
+        variables or pyedb global settings.
+        See the :ref:`security guide<ref_security_consideration>` for details.
 
         Parameters
         ----------
@@ -58,40 +65,26 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
         -------
         # Example 1: Converting a technology file to control file
     >>> converted_file = convert_technology_file(
-    >>> tech_file="/path/to/tech.t",
-    >>> edbversion="2025.2",
-    >>> control_file="/path/to/output.xml"
-    >>> )
+    ...     tech_file="/path/to/tech.t", edbversion="2025.2", control_file="/path/to/output.xml"
+    ... )
     >>> if converted_file:
     >>> print(f"Converted to: {converted_file}")
 
         # Example 2: Creating a material
     >>> from pyedb import ControlFileMaterial
-    >>> material = ControlFileMaterial(
-    >>> "Copper",
-    >>> {"Permittivity": 1.0, "Conductivity": 5.8e7}
-    >>> )
+    >>> material = ControlFileMaterial("Copper", {"Permittivity": 1.0, "Conductivity": 5.8e7})
 
         # Example 3: Creating a dielectric layer
     >>> from pyedb import ControlFileDielectric
-    >>> dielectric = ControlFileDielectric(
-    >>> "Core",
-    >>> {"Thickness": "0.2mm", "Material": "FR4"}
-    >>> )
+    >>> dielectric = ControlFileDielectric("Core", {"Thickness": "0.2mm", "Material": "FR4"})
 
         # Example 4: Creating a signal layer
     >>> from pyedb import ControlFileLayer
-    >>> signal_layer = ControlFileLayer(
-    >>> "TopLayer",
-    >>> {"Type": "signal", "Material": "Copper", "Thickness": "0.035mm"}
-    >>> )
+    >>> signal_layer = ControlFileLayer("TopLayer", {"Type": "signal", "Material": "Copper", "Thickness": "0.035mm"})
 
         # Example 5: Creating a via layer
     >>> from pyedb import ControlFileVia
-    >>> via_layer = ControlFileVia(
-    >>> "Via1",
-    >>> {"StartLayer": "TopLayer", "StopLayer": "BottomLayer"}
-    >>> )
+    >>> via_layer = ControlFileVia("Via1", {"StartLayer": "TopLayer", "StopLayer": "BottomLayer"})
     >>> via_layer.create_via_group = True
     >>> via_layer.tolerance = "0.1mm"
 
@@ -111,11 +104,7 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
 
         # Example 8: Setting up simulation extents
     >>> from pyedb import ControlExtent
-    >>> extent = ControlExtent(
-    >>> type="Conforming",
-    >>> diel_hactor=0.3,
-    >>> airbox_hfactor=0.5
-    >>> )
+    >>> extent = ControlExtent(type="Conforming", diel_hactor=0.3, airbox_hfactor=0.5)
 
         # Example 9: Creating circuit ports
     >>> from pyedb import ControlCircuitPt
@@ -142,17 +131,11 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
 
         # Example 13: Frequency sweep configuration
     >>> from pyedb import ControlFileSweep
-    >>> sweep = ControlFileSweep(
-    >>> "Sweep1", "1GHz", "10GHz", "0.1GHz",
-    >>> "Interpolating", "LinearStep", True
-    >>> )
+    >>> sweep = ControlFileSweep("Sweep1", "1GHz", "10GHz", "0.1GHz", "Interpolating", "LinearStep", True)
 
         # Example 14: Mesh operation setup
     >>> from pyedb import ControlFileMeshOp
-    >>> mesh_op = ControlFileMeshOp(
-    >>> "FineMesh", "Region1", "MeshOperationSkinDepth",
-    >>> {"Net1": "TopLayer"}
-    >>> )
+    >>> mesh_op = ControlFileMeshOp("FineMesh", "Region1", "MeshOperationSkinDepth", {"Net1": "TopLayer"})
     >>> mesh_op.skin_depth = "1um"
 
         # Example 15: Simulation setup configuration
@@ -236,10 +219,11 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
         ]
         commands.append(command)
         commands.append(["rm", "-r", vlc_file_name + ".aedb"])
-        my_env = os.environ.copy()
         for command in commands:
-            p = subprocess.Popen(command, env=my_env)
-            p.wait()
+            try:
+                subprocess.run(command, check=True)  # nosec
+            except subprocess.CalledProcessError as e:  # nosec
+                raise RuntimeError("An error occurred while converting a technology file to edb control file") from e
         if os.path.exists(control_file):
             settings.logger.info("XML file created.")
             return control_file
@@ -290,8 +274,11 @@ class ControlProperty:
                 double.text = str(self.value)
             else:
                 pass
-        except:
-            pass
+        except Exception as e:
+            settings.logger.error(
+                f"A(n) {type(e).__name__} error occurred while attempting to create a new sub-element {self.name} "
+                f"for element {root}: {str(e)}"
+            )
 
 
 class ControlFileMaterial:
@@ -1673,7 +1660,7 @@ class ControlFile:
         bool
             ``True`` if successful, ``False`` otherwise.
         """
-        tree = ET.parse(xml_input)
+        tree = defused_parse(xml_input)
         root = tree.getroot()
         for el in root:
             if el.tag == "Stackup":

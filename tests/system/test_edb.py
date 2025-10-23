@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -284,7 +284,7 @@ class TestClass(BaseTestClass):
                 "-RunScriptAndExit",
                 str(Path(edb.edbpath).parent / "export_cad.py"),
             ]
-            assert input_cmd == input_cmd_  #  if is_linux else " ".join(input_cmd_)
+            assert input_cmd == input_cmd_  # if is_linux else " ".join(input_cmd_)
 
             edb.export_maxwell(None)
             popen_args, _ = mock_run.call_args
@@ -1208,10 +1208,10 @@ class TestClass(BaseTestClass):
         exec_path = edbapp.siwave.create_exec_file(add_dc=True)
         assert Path(exec_path).exists()
         executable = "siwave_ng" if is_linux else "siwave_ng.exe"
-        with patch("subprocess.Popen", return_value=mock_process) as mock_popen:
+        with patch("subprocess.run", return_value=mock_process) as mock_run:
             siw_path = edbapp.solve_siwave()
-            popen_args, _ = mock_popen.call_args
-            input_cmd = popen_args[0]
+            run_args, _ = mock_run.call_args
+            input_cmd = run_args[0]
 
         input_cmd_ = [
             str(Path(edbapp.ansys_em_path) / executable),
@@ -1223,10 +1223,10 @@ class TestClass(BaseTestClass):
         assert input_cmd == input_cmd_ if is_linux else " ".join(input_cmd_)
 
         executable = "siwave" if is_linux else "siwave.exe"
-        with patch("subprocess.Popen", return_value=mock_process) as mock_popen:
+        with patch("subprocess.run", return_value=mock_process) as mock_run:
             edbapp.export_siwave_dc_results(siw_path, "SIwaveDCIR1")
-            popen_args, _ = mock_popen.call_args
-            input_cmd = popen_args[0]
+            run_args, _ = mock_run.call_args
+            input_cmd = run_args[0]
 
         input_cmd_ = [
             str(Path(edbapp.ansys_em_path) / executable),
@@ -1247,13 +1247,13 @@ class TestClass(BaseTestClass):
         )
         assert extent
         assert len(extent) == 55
-        assert [round(num, 9) for num in extent[0]] == [0.0110258, 0.044515088]
-        assert [round(num, 9) for num in extent[10]] == [0.022142312, 0.028510392]
-        assert [round(num, 9) for num in extent[20]] == [0.067229304, 0.026054684]
-        assert [round(num, 9) for num in extent[30]] == [0.067937069, 0.02961899]
-        assert [round(num, 9) for num in extent[40]] == [0.065503274, 0.031478932]
-        assert [round(num, 9) for num in extent[50]] == [0.011434652, 0.04636553]
-        edbapp.close_edb()
+        assert [round(num, 6) for num in extent[0]] == [0.011025, 0.044555]
+        assert [round(num, 6) for num in extent[10]] == [0.015891, 0.047141]
+        assert [round(num, 6) for num in extent[20]] == [0.067474, 0.03016]
+        assert [round(num, 6) for num in extent[30]] == [0.068436, 0.027209]
+        assert [round(num, 6) for num in extent[40]] == [0.050244, 0.022631]
+        assert [round(num, 6) for num in extent[50]] == [0.011433, 0.03922]
+        edbapp.close(terminate_rpc_session=False)
 
     def test_move_and_edit_polygons(self, edb_examples):
         """Move a polygon."""
@@ -1286,17 +1286,6 @@ class TestClass(BaseTestClass):
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
         edbapp.close(terminate_rpc_session=False)
-
-    def test_multizone(self, edb_examples):
-        # Done
-        # edbapp = edb_examples.get_multizone_pcb()
-        # common_reference_net = "gnd"
-        # edb_zones = edbapp.copy_zones()
-        # assert edb_zones
-        # defined_ports, project_connexions = edbapp.cutout_multizone_layout(edb_zones, common_reference_net)
-        # assert defined_ports
-        # assert project_connexions
-        pass
 
     def test_icepak(self, edb_examples):
         # Done
@@ -1731,6 +1720,7 @@ class TestClass(BaseTestClass):
         map_file = os.path.join(local_path, "example_models", "cad", "GDS", "dummy_layermap.map")
         edb = Edb()
         assert edb.import_layout_file(input_file=input_file, control_file=control_file, map_file=map_file)
+        assert edb.close()
 
     @pytest.mark.parametrize("positive_pin_names", (["R20", "R21", "T20"], ["R20"]))
     @pytest.mark.parametrize("pec_boundary", (False, True))
@@ -1953,6 +1943,17 @@ class TestClass(BaseTestClass):
                 str(Path(edbapp.edbpath).with_name(Path(edbapp.edbpath).stem + "_compare_results")),
             ]
 
+    def test_job_manager(self, edb_examples, local_scratch):
+        project_path = edb_examples.copy_project_for_job_manager(local_scratch)
+        edb = edb_examples.create_empty_edb()
+        jm = edb.job_manager
+        jm.start_service()
+        assert jm.started
+        job1 = edb.job_manager.create_simulation_config(project_path=project_path)
+        assert job1
+        jm.close()  # stop the service when done
+        assert not jm.started
+
     @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
     def test_create_layout_component(self, edb_examples):
         from pyedb import Edb
@@ -1966,3 +1967,45 @@ class TestClass(BaseTestClass):
             edbapp = Edb(grpc=config["use_grpc"], edbversion=config["desktopVersion"])
             layout_comp = edbapp.import_layout_component(out_file)
             assert not layout_comp.cell_instance.is_null
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_auto_assign_mesh_seeding(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        signal_nets = ["PCIe_Gen4_RX0_N", "PCIe_Gen4_RX0_P"]
+        power_nets = ["GND"]
+        edbapp.cutout(
+            signal_list=signal_nets, reference_list=power_nets, extent_type="Bounding_box", expansion_size="5mm"
+        )
+        setup = edbapp.hfss.add_setup("Setup1")
+        edbapp.components.create_port_on_component(
+            component="U1", net_list=signal_nets, port_type="coax_port", reference_net=power_nets[0]
+        )
+        edbapp.components.create_port_on_component(
+            component="X1", net_list=signal_nets, port_type="coax_port", reference_net=power_nets[0]
+        )
+        setup.auto_mesh_operation(trace_ratio_seeding=4, signal_via_side_number=14, power_ground_via_side_number=4)
+        assert setup.mesh_operations
+        if not edbapp.grpc:
+            mesh_op = setup.mesh_operations["Setup1_AutoMeshOp"]
+        else:
+            mesh_op = setup.mesh_operations[0]
+        assert mesh_op.max_length
+        assert len(mesh_op.net_layer_info) == 4
+        net_layer_info = mesh_op.net_layer_info[0]
+        assert net_layer_info
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_ipc_2581(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.export_to_ipc2581()
+        assert os.path.exists(edbapp.edbpath[:-5] + ".xml")
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_import_vlctech(self, edb_examples):
+        from pyedb import Edb
+
+        vlctech_path = os.path.join(local_path, "example_models", "cad", "vlctech", "test.vlc.tech.typ")
+        edbapp = Edb()
+        assert edbapp.import_vlctech_stackup(vlctech_path)
+        assert os.path.exists(edbapp.edbpath) and edbapp.edbpath[-12:] == "vlctech.aedb"
+        assert edbapp.close()

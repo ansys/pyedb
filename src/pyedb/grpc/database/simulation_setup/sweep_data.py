@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -22,11 +22,9 @@
 
 from ansys.edb.core.simulation_setup.simulation_setup import (
     Distribution as GrpcDistribution,
-)
-from ansys.edb.core.simulation_setup.simulation_setup import (
     FrequencyData as GrpcFrequencyData,
+    SweepData as GrpcSweepData,
 )
-from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSweepData
 
 
 class SweepData(GrpcSweepData):

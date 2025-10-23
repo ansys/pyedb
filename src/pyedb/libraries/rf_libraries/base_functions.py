@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -50,8 +50,7 @@ class HatchGround:
 
     Examples
     --------
-    >>> hatch = HatchGround(pitch=0.5e-3, width=0.2e-3,
-    ...                     fill_target=70, board_size=5e-3)
+    >>> hatch = HatchGround(pitch=0.5e-3, width=0.2e-3, fill_target=70, board_size=5e-3)
     >>> edb = Edb("demo.aedb")
     >>> hatch._edb = edb
     >>> hatch.create()
@@ -164,8 +163,7 @@ class Meander:
 
     Examples
     --------
-    >>> m = Meander(pitch=0.2e-3, trace_width=0.15e-3,
-    ...             amplitude=2e-3, num_turns=4)
+    >>> m = Meander(pitch=0.2e-3, trace_width=0.15e-3, amplitude=2e-3, num_turns=4)
     >>> edb = Edb("meander.aedb")
     >>> m._pedb = edb
     >>> m.create()
@@ -293,7 +291,7 @@ class MIMCapacitor:
     >>> edb = Edb("mim.aedb")
     >>> cap._pedb = edb
     >>> cap.create()
-    >>> f"{cap.capacitance_f*1e12:.2f} pF"
+    >>> f"{cap.capacitance_f * 1e12:.2f} pF"
     '1.45 pF'
     """
 
@@ -383,8 +381,7 @@ class SpiralInductor:
 
     Examples
     --------
-    >>> sp = SpiralInductor(turns=3.5, trace_width=25e-6,
-    ...                     inner_diameter=80e-6)
+    >>> sp = SpiralInductor(turns=3.5, trace_width=25e-6, inner_diameter=80e-6)
     >>> edb = Edb("spiral.aedb")
     >>> sp._pedb = edb
     >>> sp.create()
@@ -769,7 +766,7 @@ class RatRace:
     >>> edb = Edb("ratrace.aedb")
     >>> rr._pedb = edb
     >>> rr.create()
-    >>> f"{rr.circumference*1e3:.2f} mm"
+    >>> f"{rr.circumference * 1e3:.2f} mm"
     '45.00 mm'
     """
 
@@ -958,9 +955,7 @@ class InterdigitalCapacitor:
 
     Examples
     --------
-    >>> idc = InterdigitalCapacitor(fingers=10,
-    ...                             finger_length="0.5mm",
-    ...                             gap="0.03mm")
+    >>> idc = InterdigitalCapacitor(fingers=10, finger_length="0.5mm", gap="0.03mm")
     >>> edb = Edb("idc.aedb")
     >>> idc._pedb = edb
     >>> idc.create()
@@ -1104,11 +1099,7 @@ class DifferentialTLine:
 
     Examples
     --------
-    >>> diff = DifferentialTLine(Edb("diff.aedb"),
-    ...                          length=5e-3,
-    ...                          width=0.15e-3,
-    ...                          spacing=0.1e-3,
-    ...                          angle=math.pi/4)
+    >>> diff = DifferentialTLine(Edb("diff.aedb"), length=5e-3, width=0.15e-3, spacing=0.1e-3, angle=math.pi / 4)
     >>> traces = diff.create()
     >>> f"{diff.diff_impedance:.1f} Ω"
     '95.6 Ω'

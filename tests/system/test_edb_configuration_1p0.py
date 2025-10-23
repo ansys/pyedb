@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -271,7 +271,7 @@ class TestClass(BaseTestClass):
         edbapp.build_simulation_project(simconfig)
         assert round(edbapp.components["X1"].solder_ball_height, 6) == 0.00025
         assert round(edbapp.components["U1"].solder_ball_height, 6) == 0.00035
-        edbapp.close_edb()
+        edbapp.close()
 
     def test_build_siwave_project_from_config_file(self):
         """Build Siwave simulation project from configuration file."""

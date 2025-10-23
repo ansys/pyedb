@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -2132,7 +2132,7 @@ class SimulationConfiguration(object):
 
     Defined the radiation box type, Conformal, Bounding box and ConvexHull are supported (HFSS only).
 
-    >>> sim_setup.max_num_passes= 30
+    >>> sim_setup.max_num_passes = 30
 
     Default value is 30, specify the maximum number of adaptive passes (only HFSS). Reasonable high value is recommended
     to force the solver reaching the convergence criteria.
@@ -2147,7 +2147,7 @@ class SimulationConfiguration(object):
     local minima.
 
     >>> from dotnet.generic.constants import BasisOrder
-    >>> sim_setup.basis_order =  BasisOrder.Single
+    >>> sim_setup.basis_order = BasisOrder.Single
 
     Select the order basis (HFSS only), Zero, Single, Double and Mixed are supported. For Signal integrity Single or
     Mixed should be used.
@@ -2229,7 +2229,7 @@ class SimulationConfiguration(object):
 
     Activate the loop resistance usage per pin when ``True``
 
-    >>> sim_setup.dc_via_report_path = 'C:\\temp\\via_report_file'
+    >>> sim_setup.dc_via_report_path = "C:\\temp\\via_report_file"
 
     Define the via report path file.
 

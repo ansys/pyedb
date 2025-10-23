@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-"""
+""" """
+
 import json
 import os
 from pathlib import Path
@@ -187,6 +187,15 @@ class EdbExamples:
     def load_dxf_edb(self):
         aedb = self._copy_file_folder_into_local_folder("dxf_swap/starting_edb/starting_edb.aedb")
         return Edb(edbpath=aedb, version=desktop_version, grpc=True)
+      
+    def copy_project_for_job_manager(self, local_scratch):
+        example_project = os.path.join(example_models_path, "test_project_for_job_manager.aedb")
+        target_path = os.path.join(local_scratch.path, "project.aedb")
+        local_scratch.copyfolder(example_project, target_path)
+        return target_path
+
+    def get_log_file_example(self):
+        return os.path.join(self.example_models_path, "test.log")
 
 
 @pytest.fixture(scope="class", autouse=True)

@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 # -*- coding: utf-8 -*-
 from decimal import Decimal
 import json
@@ -72,23 +94,13 @@ def unique_string_list(element_list, only_string=True):  # pragma: no cover
     -------
 
     """
-    if element_list:
-        if isinstance(element_list, list):
-            element_list = set(element_list)
-        elif isinstance(element_list, str):
-            element_list = [element_list]
-        else:
-            error_message = "Invalid list data"
-            try:
-                error_message += " {}".format(element_list)
-            except:
-                pass
-            raise Exception(error_message)
+    if isinstance(element_list, str):
+        element_list = [element_list]
 
-        if only_string and any(not isinstance(x, str) for x in element_list):
-            raise TypeError("Invalid list entries, some elements are not of type string.")
+    if only_string and any(not isinstance(x, str) for x in element_list):
+        raise TypeError("Invalid list entries, some elements are not of type string.")
 
-    return element_list
+    return list(set(element_list))
 
 
 def string_list(element_list):  # pragma: no cover
@@ -142,28 +154,28 @@ def from_rkm(code):  # pragma: no cover
 
     Examples
     --------
-    >>> from_rkm('R47')
+    >>> from_rkm("R47")
     '0.47'
 
-    >>> from_rkm('4R7')
+    >>> from_rkm("4R7")
     '4.7'
 
-    >>> from_rkm('470R')
+    >>> from_rkm("470R")
     '470'
 
-    >>> from_rkm('4K7')
+    >>> from_rkm("4K7")
     '4.7k'
 
-    >>> from_rkm('47K')
+    >>> from_rkm("47K")
     '47k'
 
-    >>> from_rkm('47K3')
+    >>> from_rkm("47K3")
     '47.3k'
 
-    >>> from_rkm('470K')
+    >>> from_rkm("470K")
     '470k'
 
-    >>> from_rkm('4M7')
+    >>> from_rkm("4M7")
     '4.7M'
 
     """

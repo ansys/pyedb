@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 # -*- coding: utf-8 -*-
 from collections import defaultdict
 import math
@@ -62,12 +84,12 @@ class GeometryOperators(object):
         Parse `'"2mm"'`.
 
         >>> from pyedb.modeler.geometry_operators import GeometryOperators as go
-        >>> go.parse_dim_arg('2mm')
+        >>> go.parse_dim_arg("2mm")
         >>> 0.002
 
         Use the optional argument ``scale_to_unit`` to specify the destination unit.
 
-        >>> go.parse_dim_arg('2mm', scale_to_unit='mm')
+        >>> go.parse_dim_arg("2mm", scale_to_unit="mm")
         >>> 2.0
 
         """
@@ -1588,6 +1610,7 @@ class GeometryOperators(object):
             ``True`` if the segments are intersecting.
             ``False`` otherwise.
         """
+
         # fmt: off
         def on_segment(p, q, r):
             # Given three collinear points p, q, r, the function checks if point q lies on line-segment 'pr'

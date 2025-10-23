@@ -1,3 +1,12 @@
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 #
 # The above copyright notice and this permission notice shall be included in all
@@ -11,14 +20,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Tests related to Edb
-"""
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+"""Tests related to Edb"""
 
 import os
 
+from defusedxml.ElementTree import parse as defused_parse
 import pytest
 
-from pyedb.generic.general_methods import ET
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -41,7 +62,7 @@ class TestClass(BaseTestClass):
             )
         xtalk_scan.file_path = os.path.join(self.local_scratch.path, "test_impedance_scan.xml")
         assert xtalk_scan.write_xml()
-        tree = ET.parse(xtalk_scan.file_path)
+        tree = defused_parse(xtalk_scan.file_path)
         root = tree.getroot()
         nets = [child for child in root[0] if "SingleEndedNets" in child.tag][0]
         assert len(nets) == 342
@@ -65,7 +86,7 @@ class TestClass(BaseTestClass):
 
         xtalk_scan.file_path = os.path.join(self.local_scratch.path, "test_impedance_scan.xml")
         assert xtalk_scan.write_xml()
-        tree = ET.parse(xtalk_scan.file_path)
+        tree = defused_parse(xtalk_scan.file_path)
         root = tree.getroot()
         nets = [child for child in root[0] if "SingleEndedNets" in child.tag][0]
         assert len(nets) == 342
@@ -93,7 +114,7 @@ class TestClass(BaseTestClass):
             xtalk_scan.time_xtalk_scan.add_receiver_pin(name=pin.name, ref_des="U1", impedance=80.0)
         xtalk_scan.file_path = os.path.join(self.local_scratch.path, "test_impedance_scan.xml")
         assert xtalk_scan.write_xml()
-        tree = ET.parse(xtalk_scan.file_path)
+        tree = defused_parse(xtalk_scan.file_path)
         root = tree.getroot()
         nets = [child for child in root[0] if "SingleEndedNets" in child.tag][0]
         assert len(nets) == 342

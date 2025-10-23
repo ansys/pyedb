@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -27,7 +27,6 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 
 
 class HeatSink:
-
     """Heatsink model description.
 
     Parameters

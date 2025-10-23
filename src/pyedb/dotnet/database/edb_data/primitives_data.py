@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -358,9 +358,9 @@ class EDBArcs(object):
     >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> prim_arcs = edb.modeler.primitives[0].arcs
-    >>> prim_arcs.center # arc center
-    >>> prim_arcs.points # arc point list
-    >>> prim_arcs.mid_point # arc mid point
+    >>> prim_arcs.center  # arc center
+    >>> prim_arcs.points  # arc point list
+    >>> prim_arcs.mid_point  # arc mid point
     """
 
     def __init__(self, app, arc):

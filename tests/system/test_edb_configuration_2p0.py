@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -116,101 +116,6 @@ class TestClass(BaseTestClass):
                 if p == "thermal_modifier":
                     continue
                 assert value == target_mat[p]
-        edbapp.close(terminate_rpc_session=False)
-
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
-    def test_01_setups(self, edb_examples):
-        data = {
-            "setups": [
-                {
-                    "name": "hfss_setup_1",
-                    "type": "hfss",
-                    "f_adapt": "5GHz",
-                    "max_num_passes": 10,
-                    "max_mag_delta_s": 0.02,
-                    "mesh_operations": [
-                        {
-                            "name": "mop_1",
-                            "type": "length",
-                            "max_length": "3mm",
-                            "max_elements": 100,
-                            "restrict_length": True,
-                            "refine_inside": False,
-                            "nets_layers_list": {"GND": ["1_Top", "16_Bottom"]},
-                        }
-                    ],
-                },
-            ]
-        }
-
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        for setup in data["setups"]:
-            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
-            for p, value in setup.items():
-                if p == "max_num_passes":
-                    assert value == int(target[p])
-                elif p == "max_mag_delta_s":
-                    assert value == float(target[p])
-                elif p == "freq_sweep":
-                    pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
-                elif p == "mesh_operations":
-                    for mop in value:
-                        target_mop = [i for i in target["mesh_operations"] if i["name"] == mop["name"]][0]
-                        for mop_p_name, mop_value in mop.items():
-                            assert mop_value == target_mop[mop_p_name]
-                else:
-                    assert value == target[p]
-        edbapp.close(terminate_rpc_session=False)
-
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
-    def test_01a_setups_frequency_sweeps(self, edb_examples):
-        data = {
-            "setups": [
-                {
-                    "name": "hfss_setup_1",
-                    "type": "hfss",
-                    "f_adapt": "5GHz",
-                    "max_num_passes": 10,
-                    "max_mag_delta_s": 0.02,
-                    "freq_sweep": [
-                        {
-                            "name": "sweep1",
-                            "type": "interpolation",
-                            "frequencies": [
-                                {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"},
-                                {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
-                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11},
-                            ],
-                        },
-                        {
-                            "name": "sweep2",
-                            "type": "discrete",
-                            "frequencies": [
-                                "LIN 0.05GHz 0.2GHz 0.01GHz",
-                                "DEC 1e-06GHz 0.0001GHz 10",
-                                "LINC 0.01GHz 0.02GHz 11",
-                            ],
-                        },
-                    ],
-                },
-            ]
-        }
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        setup = data_from_db["setups"][0]
-        assert setup["name"] == "hfss_setup_1"
-        sweep1 = setup["freq_sweep"][0]
-        assert sweep1["name"] == "sweep1"
-        assert sweep1["frequencies"] == [
-            "LIN 0.05GHz 0.2GHz 0.01GHz",
-            "DEC 1e-06GHz 0.0001GHz 10",
-            "LINC 0.01GHz 0.02GHz 11",
-        ]
-        sweep2 = setup["freq_sweep"][1]
-        assert sweep2["type"] == "discrete"
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
@@ -1473,4 +1378,338 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND", "pyedb_cutout"])
+        edbapp.close(terminate_rpc_session=False)
+
+
+@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+class TestClassTerminals(BaseTestClass):
+    @pytest.fixture(autouse=True)
+    def init(self, edb_examples):
+        """init runs before each test."""
+        self.terminal1 = {
+            "name": "terminal1",
+            "impedance": 1,
+            "is_circuit_port": False,
+            "boundary_type": "PortBoundary",
+            "hfss_type": "Wave",
+            "terminal_type": "padstack_instance",
+            "padstack_instance": "U7-M7",
+            "layer": None,
+        }
+        self.pin_group2 = {"name": "U7_GND", "reference_designator": "U7", "net": "GND"}
+        self.terminal2 = {
+            "name": "terminal2",
+            "impedance": 40,
+            "boundary_type": "PortBoundary",
+            "terminal_type": "pin_group",
+            "pin_group": "U7_GND",
+            "reference_terminal": "terminal1",
+        }
+        self.terminal3 = {
+            "x": "104mm",
+            "y": "37mm",
+            "layer": "1_Top",
+            "name": "terminal3",
+            "impedance": 50,
+            "boundary_type": "PortBoundary",
+            "reference_terminal": "terminal3_ref",
+            "terminal_type": "point",
+            "net": "AVCC_1V3",
+        }
+        self.terminal3_ref = {
+            "x": "104mm",
+            "y": "37mm",
+            "layer": "Inner6(GND2)",
+            "net": "GND",
+            "name": "terminal3_ref",
+            "impedance": 50,
+            "boundary_type": "PortBoundary",
+            "terminal_type": "point",
+        }
+
+        self.edge_terminal_1 = {
+            "name": "edge_terminal_1",
+            "impedance": 50,
+            "is_circuit_port": False,
+            "boundary_type": "PortBoundary",
+            "primitive": "path_1",
+            "point_on_edge_x": 0,
+            "point_on_edge_y": "1mm",
+            "horizontal_extent_factor": 6,
+            "vertical_extent_factor": 8,
+            "pec_launch_width": "0.02mm",
+            "terminal_type": "edge",
+        }
+        self.edge_terminal_2 = {
+            "terminal_type": "edge",
+            "name": "edge_terminal_2",
+            "impedance": 50,
+            "is_circuit_port": False,
+            "boundary_type": "PortBoundary",
+            "primitive": "path_2",
+            "point_on_edge_x": "1mm",
+            "point_on_edge_y": "1mm",
+            "horizontal_extent_factor": 6,
+            "vertical_extent_factor": 8,
+            "pec_launch_width": "0.02mm",
+        }
+        self.bundle_terminal = {
+            "terminal_type": "bundle",
+            "terminals": ["edge_terminal_1", "edge_terminal_2"],
+            "name": "bundle_terminal",
+        }
+
+    def test_padstack_instance_terminal(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.configuration.load({"terminals": [self.terminal1]}, append=False)
+        edbapp.configuration.run()
+        terminal1 = edbapp.ports["terminal1"]
+        assert terminal1.impedance == 1
+        assert terminal1.padstack_instance.aedt_name == "U7-M7"
+
+        exported = edbapp.configuration.get_data_from_db(terminals=True)["terminals"]
+        assert exported[0] == {
+            "name": "terminal1",
+            "impedance": 1.0,
+            "is_circuit_port": False,
+            "amplitude": 1.0,
+            "phase": 0.0,
+            "terminal_to_ground": "kNoGround",
+            "boundary_type": "PortBoundary",
+            "hfss_type": "Wave",
+            "terminal_type": "padstack_instance",
+            "padstack_instance": "U7-M7",
+            "padstack_instance_id": 4294971660,
+        }
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_pin_group_terminal(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.configuration.load({"pin_groups": [self.pin_group2]})
+        edbapp.configuration.run()
+
+        edbapp.configuration.load({"terminals": [self.terminal1, self.terminal2]}, append=False)
+        edbapp.configuration.run()
+        assert "terminal2" in edbapp.terminals
+        exported = edbapp.configuration.get_data_from_db(terminals=True)["terminals"]
+        ex_terminal2 = [i for i in exported if i["name"] == "terminal2"][0]
+        assert ex_terminal2 == {
+            "name": "terminal2",
+            "impedance": 40.0,
+            "is_circuit_port": True,
+            "reference_terminal": "terminal1",
+            "amplitude": 1.0,
+            "phase": 0.0,
+            "terminal_to_ground": "kNoGround",
+            "boundary_type": "PortBoundary",
+            "terminal_type": "pin_group",
+            "pin_group": "U7_GND",
+        }
+
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_point_terminal(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load({"terminals": [self.terminal3, self.terminal3_ref]}, apply_file=True)
+
+        exported = edbapp.configuration.get_data_from_db(terminals=True)["terminals"]
+        assert exported == [
+            {
+                "name": "terminal3",
+                "impedance": 50.0,
+                "is_circuit_port": True,
+                "reference_terminal": "terminal3_ref",
+                "amplitude": 1.0,
+                "phase": 0.0,
+                "terminal_to_ground": "kNoGround",
+                "boundary_type": "PortBoundary",
+                "terminal_type": "point",
+                "x": 0.10400000000000001,
+                "y": 0.037,
+                "layer": "1_Top",
+                "net": "AVCC_1V3",
+            },
+            {
+                "name": "terminal3_ref",
+                "impedance": 50.0,
+                "is_circuit_port": True,
+                "amplitude": 1.0,
+                "phase": 0.0,
+                "terminal_to_ground": "kNoGround",
+                "boundary_type": "PortBoundary",
+                "terminal_type": "point",
+                "x": 0.10400000000000001,
+                "y": 0.037,
+                "layer": "Inner6(GND2)",
+                "net": "GND",
+            },
+        ]
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_edge_bundle_terminal(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp.modeler.create_rectangle(
+            layer_name="BOT", net_name="GND", lower_left_point=["-2mm", "-2mm"], upper_right_point=["2mm", "2mm"]
+        )
+        prim_1 = edbapp.modeler.create_trace(
+            path_list=([0, 0], [0, "1mm"]),
+            layer_name="TOP",
+            net_name="SIG",
+            width="0.1mm",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        prim_1.aedt_name = "path_1"
+        prim_2 = edbapp.modeler.create_trace(
+            path_list=(["1mm", 0], ["1mm", "1mm"]),
+            layer_name="TOP",
+            net_name="SIG",
+            width="0.1mm",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        prim_2.aedt_name = "path_2"
+
+        edbapp.configuration.load(
+            {"terminals": [self.edge_terminal_1, self.edge_terminal_2, self.bundle_terminal]}, apply_file=True
+        )
+        port1 = edbapp.ports["bundle_terminal"]
+        assert port1.terminals[0].name == "bundle_terminal:T1"
+        assert port1.terminals[1].name == "bundle_terminal:T2"
+        edbapp.close(terminate_rpc_session=False)
+
+
+@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+class TestClassSetups(BaseTestClass):
+    @pytest.fixture(autouse=True)
+    def init(self, edb_examples):
+        """init runs before each test."""
+        self.terminal1 = {
+            "name": "terminal1",
+            "impedance": 1,
+            "is_circuit_port": False,
+            "boundary_type": "PortBoundary",
+            "hfss_type": "Wave",
+            "terminal_type": "padstack_instance",
+            "padstack_instance": "U7-M7",
+            "layer": None,
+        }
+
+    def test_01_setups(self, edb_examples):
+        data = {
+            "setups": [
+                {
+                    "name": "hfss_setup_1",
+                    "type": "hfss",
+                    "f_adapt": "5GHz",
+                    "max_num_passes": 10,
+                    "max_mag_delta_s": 0.02,
+                    "mesh_operations": [
+                        {
+                            "name": "mop_1",
+                            "type": "length",
+                            "max_length": "3mm",
+                            "max_elements": 100,
+                            "restrict_length": True,
+                            "refine_inside": False,
+                            "nets_layers_list": {"GND": ["1_Top", "16_Bottom"]},
+                        }
+                    ],
+                },
+            ]
+        }
+
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        for setup in data["setups"]:
+            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
+            for p, value in setup.items():
+                if p == "max_num_passes":
+                    assert value == int(target[p])
+                elif p == "max_mag_delta_s":
+                    assert value == float(target[p])
+                elif p == "freq_sweep":
+                    pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
+                elif p == "mesh_operations":
+                    for mop in value:
+                        target_mop = [i for i in target["mesh_operations"] if i["name"] == mop["name"]][0]
+                        for mop_p_name, mop_value in mop.items():
+                            assert mop_value == target_mop[mop_p_name]
+                else:
+                    assert value == target[p]
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_auto_mesh_operation(self, edb_examples):
+        data = {
+            "terminals": [self.terminal1],
+            "setups": [
+                {
+                    "name": "hfss_setup_1",
+                    "type": "hfss",
+                    "f_adapt": "5GHz",
+                    "max_num_passes": 10,
+                    "max_mag_delta_s": 0.02,
+                    "auto_mesh_operation": {
+                        "trace_ratio_seeding": 3,
+                        "signal_via_side_number": 12,
+                        "power_ground_via_side_number": 6,
+                    },
+                },
+            ],
+        }
+
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        assert data_from_db["setups"][0]["mesh_operations"][0]["name"] == "hfss_setup_1_AutoMeshOp"
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_01a_setups_frequency_sweeps(self, edb_examples):
+        data = {
+            "setups": [
+                {
+                    "name": "hfss_setup_1",
+                    "type": "hfss",
+                    "f_adapt": "5GHz",
+                    "max_num_passes": 10,
+                    "max_mag_delta_s": 0.02,
+                    "freq_sweep": [
+                        {
+                            "name": "sweep1",
+                            "type": "interpolation",
+                            "frequencies": [
+                                {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"},
+                                {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
+                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11},
+                            ],
+                        },
+                        {
+                            "name": "sweep2",
+                            "type": "discrete",
+                            "frequencies": [
+                                "LIN 0.05GHz 0.2GHz 0.01GHz",
+                                "DEC 1e-06GHz 0.0001GHz 10",
+                                "LINC 0.01GHz 0.02GHz 11",
+                            ],
+                        },
+                    ],
+                },
+            ]
+        }
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        setup = data_from_db["setups"][0]
+        assert setup["name"] == "hfss_setup_1"
+        sweep1 = setup["freq_sweep"][0]
+        assert sweep1["name"] == "sweep1"
+        assert sweep1["frequencies"] == [
+            "LIN 0.05GHz 0.2GHz 0.01GHz",
+            "DEC 1e-06GHz 0.0001GHz 10",
+            "LINC 0.01GHz 0.02GHz 11",
+        ]
+        sweep2 = setup["freq_sweep"][1]
+        assert sweep2["type"] == "discrete"
         edbapp.close(terminate_rpc_session=False)

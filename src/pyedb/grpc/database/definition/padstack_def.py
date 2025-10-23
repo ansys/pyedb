@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -26,18 +26,16 @@ import warnings
 from ansys.edb.core.definition.padstack_def import PadstackDef as GrpcPadstackDef
 from ansys.edb.core.definition.padstack_def_data import (
     PadGeometryType as GrpcPadGeometryType,
-)
-from ansys.edb.core.definition.padstack_def_data import (
     PadstackHoleRange as GrpcPadstackHoleRange,
+    PadType as GrpcPadType,
 )
-from ansys.edb.core.definition.padstack_def_data import PadType as GrpcPadType
 import ansys.edb.core.geometry.polygon_data
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure
-from ansys.edb.core.hierarchy.structure3d import Structure3D as GrpcStructure3D
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure, Structure3D as GrpcStructure3D
 from ansys.edb.core.primitive.circle import Circle as GrpcCircle
 
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.grpc.database.primitive.circle import Circle
 from pyedb.grpc.database.utility.value import Value
 
 
@@ -127,7 +125,7 @@ class PadProperties:
             self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_POLYGON)
         else:
             raise ValueError(
-                f"Unsupported pad shape: {value}. Supported shapes are 'circle', " f"'rectangle', and 'polygon'."
+                f"Unsupported pad shape: {value}. Supported shapes are 'circle', 'rectangle', and 'polygon'."
             )
 
     @property
@@ -297,7 +295,11 @@ class PadstackDef(GrpcPadstackDef):
         List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             List of PadstackInstance objects.
         """
-        return [i for i in list(self._pedb.padstacks.instances.values()) if i.padstack_def.name == self.name]
+        return [
+            i
+            for i in list(self._pedb.padstacks.instances.values())
+            if not i.is_null and i.padstack_def.name == self.name
+        ]
 
     @property
     def layers(self) -> list[str]:
@@ -363,6 +365,22 @@ class PadstackDef(GrpcPadstackDef):
         """
         warnings.warn("via_stop_layer is deprecated. Use stop_layer instead.", DeprecationWarning)
         return self.stop_layer
+
+    @property
+    def material(self):
+        """Return hole material name.
+
+        Returns
+        -------
+        str
+            Hole material name.
+        """
+        return self.data.material.value
+
+    @material.setter
+    def material(self, value):
+        if isinstance(value, str):
+            self.data.material = value
 
     @property
     def hole_diameter(self) -> float:
@@ -645,15 +663,6 @@ class PadstackDef(GrpcPadstackDef):
             else:  # pragma no cover
                 self.data.hole_range = GrpcPadstackHoleRange.UNKNOWN_RANGE
 
-    @property
-    def material(self) -> str:
-        """Return hole material name."""
-        return self.data.material.value
-
-    @material.setter
-    def material(self, value):
-        self.data.material.value = value
-
     def convert_to_3d_microvias(
         self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True
     ) -> bool:
@@ -720,7 +729,7 @@ class PadstackDef(GrpcPadstackDef):
                         net_name=via.net_name,
                     )
                 else:
-                    GrpcCircle.create(
+                    Circle(self._pedb).create(
                         layout,
                         self.start_layer,
                         via.net,
@@ -735,7 +744,7 @@ class PadstackDef(GrpcPadstackDef):
                         net_name=via.net_name,
                     )
                 else:
-                    GrpcCircle.create(
+                    Circle(self._pedb).create(
                         layout,
                         self.stop_layer,
                         via.net,
@@ -748,7 +757,7 @@ class PadstackDef(GrpcPadstackDef):
                     if layer_name == via.start_layer or started:
                         start = layer_name
                         stop = layer_names[layer_names.index(layer_name) + 1]
-                        cloned_circle = GrpcCircle.create(
+                        cloned_circle = Circle(self._pedb).create(
                             layout,
                             start,
                             via.net,
@@ -756,7 +765,7 @@ class PadstackDef(GrpcPadstackDef):
                             Value(pos[1]),
                             Value(rad1),
                         )
-                        cloned_circle2 = GrpcCircle.create(
+                        cloned_circle2 = Circle(self._pedb).create(
                             layout,
                             stop,
                             via.net,
@@ -771,7 +780,7 @@ class PadstackDef(GrpcPadstackDef):
                         s3d.add_member(cloned_circle2)
                         if not self.data.material.value:
                             self._pedb.logger.warning(
-                                f"Padstack definution {self.name} has no material defined." f"Defaulting to copper"
+                                f"Padstack definution {self.name} has no material defined.Defaulting to copper"
                             )
                             self.data.material = "copper"
                         s3d.set_material(self.data.material.value)

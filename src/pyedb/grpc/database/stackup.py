@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -41,39 +41,24 @@ from ansys.edb.core.definition.solder_ball_property import (
 from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
 from ansys.edb.core.hierarchy.cell_instance import CellInstance as GrpcCellInstance
 from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
-from ansys.edb.core.layer.layer import LayerType as GrpcLayerType
-from ansys.edb.core.layer.layer import TopBottomAssociation as GrpcTopBottomAssociation
+from ansys.edb.core.layer.layer import LayerType as GrpcLayerType, TopBottomAssociation as GrpcTopBottomAssociation
 from ansys.edb.core.layer.layer_collection import (
+    LayerCollection as GrpcLayerCollection,
     LayerCollectionMode as GrpcLayerCollectionMode,
+    LayerTypeSet as GrpcLayerTypeSet,
 )
-from ansys.edb.core.layer.layer_collection import LayerCollection as GrpcLayerCollection
-from ansys.edb.core.layer.layer_collection import LayerTypeSet as GrpcLayerTypeSet
 from ansys.edb.core.layer.stackup_layer import StackupLayer as GrpcStackupLayer
 from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
+from defusedxml.ElementTree import parse as defused_parse
+import matplotlib.colors as colors
+import numpy as np
+import pandas as pd
 
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
-
-colors = None
-pd = None
-np = None
-try:
-    import matplotlib.colors as colors
-except ImportError:
-    colors = None
-
-try:
-    import numpy as np
-except ImportError:
-    np = None
-
-try:
-    import pandas as pd
-except ImportError:
-    pd = None
 
 logger = logging.getLogger(__name__)
 
@@ -128,8 +113,9 @@ class LayerCollection(GrpcLayerCollection):
         --------
         >>> from pyedb import Edb
         >>> edb = Edb()
-        >>> top_layer = edb.stackup.add_layer_top("NewTopLayer", layer_type="signal", thickness="0.1mm",
-        ... material="copper")
+        >>> top_layer = edb.stackup.add_layer_top(
+        ...     "NewTopLayer", layer_type="signal", thickness="0.1mm", material="copper"
+        ... )
         """
         thickness = Value(0.0)
         if "thickness" in kwargs:
@@ -167,8 +153,9 @@ class LayerCollection(GrpcLayerCollection):
         --------
         >>> from pyedb import Edb
         >>> edb = Edb()
-        >>> bot_layer = edb.stackup.add_layer_bottom("NewBottomLayer", layer_type="signal", thickness="0.1mm",
-        ... material="copper")
+        >>> bot_layer = edb.stackup.add_layer_bottom(
+        ...     "NewBottomLayer", layer_type="signal", thickness="0.1mm", material="copper"
+        ... )
         """
         thickness = Value(0.0)
         layer_type_map = {"dielectric": GrpcLayerType.DIELECTRIC_LAYER, "signal": GrpcLayerType.SIGNAL_LAYER}
@@ -564,9 +551,6 @@ class Stackup(LayerCollection):
         >>> edb = Edb()
         >>> edb.stackup.create_symmetric_stackup(layer_count=4)
         """
-        if not np:
-            self._pedb.logger.error("Numpy is needed. Please, install it first.")
-            return False
         if not layer_count % 2 == 0:
             return False
 
@@ -1023,10 +1007,6 @@ class Stackup(LayerCollection):
         return self.export(fpath, file_format=file_format, include_material_with_layer=include_material_with_layer)
 
     def _export_layer_stackup_to_csv_xlsx(self, fpath: Optional[str] = None, file_format: Optional[str] = None) -> bool:
-        if not pd:
-            self._pedb.logger.error("Pandas is needed. Please, install it first.")
-            return False
-
         data = {
             "Type": [],
             "Material": [],
@@ -1189,8 +1169,11 @@ class Stackup(LayerCollection):
                         sball_prop = cmp_prop.solder_ball_property
                         sball_prop.placement = GrpcSolderballPlacement.ABOVE_PADSTACK
                         cmp_prop.solder_ball_property = sball_prop
-                except:
-                    pass
+                except Exception as e:
+                    self._logger.warning(
+                        f"A(n) {type(e).__name__} error occurred while attempting to update "
+                        f"solder_ball_property for component {cmp}: {str(e)}"
+                    )
                 if cmp_type == GrpcComponentType.IC:
                     die_prop = cmp_prop.die_property
                     chip_orientation = die_prop.die_orientation
@@ -1236,8 +1219,11 @@ class Stackup(LayerCollection):
             try:
                 if val.solder_ball_height and val.placement_layer == layer_name:
                     height = val.solder_ball_height
-            except:
-                pass
+            except Exception as e:
+                self._logger.error(
+                    f"A(n) {type(e).__name__} error occurred while attempting to retrieve solder_height "
+                    f"for layer {layer_name} - Default value of 0.0 is returned: {str(e)}"
+                )
         return height
 
     def _remove_solder_pec(self, layer_name):
@@ -1330,15 +1316,21 @@ class Stackup(LayerCollection):
         >>> mounted_cmp = edb2.components.get_component_by_name("BGA")
 
         >>> vector, rotation, solder_ball_height = edb1.components.get_component_placement_vector(
-        ...                                                     mounted_component=mounted_cmp,
-        ...                                                     hosting_component=hosting_cmp,
-        ...                                                     mounted_component_pin1="A12",
-        ...                                                     mounted_component_pin2="A14",
-        ...                                                     hosting_component_pin1="A12",
-        ...                                                     hosting_component_pin2="A14")
-        >>> edb2.stackup.place_in_layout(edb1.active_cell, angle=0.0, offset_x=vector[0],
-        ...                              offset_y=vector[1], flipped_stackup=False, place_on_top=True,
-        ...                              )
+        ...     mounted_component=mounted_cmp,
+        ...     hosting_component=hosting_cmp,
+        ...     mounted_component_pin1="A12",
+        ...     mounted_component_pin2="A14",
+        ...     hosting_component_pin1="A12",
+        ...     hosting_component_pin2="A14",
+        ... )
+        >>> edb2.stackup.place_in_layout(
+        ...     edb1.active_cell,
+        ...     angle=0.0,
+        ...     offset_x=vector[0],
+        ...     offset_y=vector[1],
+        ...     flipped_stackup=False,
+        ...     place_on_top=True,
+        ... )
         """
         # if flipped_stackup and place_on_top or (not flipped_stackup and not place_on_top):
         self.adjust_solder_dielectrics()
@@ -1418,9 +1410,14 @@ class Stackup(LayerCollection):
         >>> edb2 = Edb(edbpath=targetfile2, edbversion="2021.2")
         >>> hosting_cmp = edb1.components.get_component_by_name("U100")
         >>> mounted_cmp = edb2.components.get_component_by_name("BGA")
-        >>> edb2.stackup.place_in_layout(edb1.active_cell, angle=0.0, offset_x="1mm",
-        ...                                   offset_y="2mm", flipped_stackup=False, place_on_top=True,
-        ...                                   )
+        >>> edb2.stackup.place_in_layout(
+        ...     edb1.active_cell,
+        ...     angle=0.0,
+        ...     offset_x="1mm",
+        ...     offset_y="2mm",
+        ...     flipped_stackup=False,
+        ...     place_on_top=True,
+        ... )
         """
         _angle = angle * math.pi / 180.0
 
@@ -1678,9 +1675,14 @@ class Stackup(LayerCollection):
         --------
         >>> edb1 = Edb(edbpath=targetfile1, edbversion="2021.2")
         >>> a3dcomp_path = "connector.a3dcomp"
-        >>> edb1.stackup.place_a3dcomp_3d_placement(a3dcomp_path, angle=0.0, offset_x="1mm",
-        ...                                   offset_y="2mm", flipped_stackup=False, place_on_top=True,
-        ...                                   )
+        >>> edb1.stackup.place_a3dcomp_3d_placement(
+        ...     a3dcomp_path,
+        ...     angle=0.0,
+        ...     offset_x="1mm",
+        ...     offset_y="2mm",
+        ...     flipped_stackup=False,
+        ...     place_on_top=True,
+        ... )
         """
         rotation_axis_from = GrpcPoint3DData(1.0, 0.0, 0.0)
         _angle = angle * math.pi / 180.0
@@ -1932,10 +1934,6 @@ class Stackup(LayerCollection):
         bool
             ``True`` when successful.
         """
-        if not pd:
-            self._pedb.logger.error("Pandas is needed. You must install it first.")
-            return False
-
         df = pd.read_csv(file_path, index_col=0)
 
         for name in self.layers.keys():  # pragma: no cover
@@ -2204,10 +2202,7 @@ class Stackup(LayerCollection):
         bool
             ``True`` when successful.
         """
-        if not colors:
-            self._pedb.logger.error("Matplotlib is needed. Please, install it first.")
-            return False
-        tree = ET.parse(file_path)
+        tree = defused_parse(file_path)
         root = tree.getroot()
         stackup = root.find("Stackup")
         stackup_dict = {}

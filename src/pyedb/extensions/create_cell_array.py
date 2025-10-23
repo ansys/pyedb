@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -23,21 +23,25 @@
 """
 This module contains the array building feature from unit cell.
 """
+
 import itertools
 from typing import Optional, Union
+import warnings
 
 from pyedb import Edb
+from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+from pyedb.misc.decorators import execution_timer
 
 
 # ----------------------
-# Public façade function
+# Public api
 # ----------------------
 def create_array_from_unit_cell(
     edb: Edb,
     x_number: int = 2,
     y_number: int = 2,
-    offset_x: Optional[Union[int, float]] = None,
-    offset_y: Optional[Union[int, float]] = None,
+    offset_x: Optional[Union[int, float, str]] = None,
+    offset_y: Optional[Union[int, float, str]] = None,
 ) -> bool:
     """
     Create a 2-D rectangular array from the current EDB unit cell.
@@ -56,10 +60,10 @@ def create_array_from_unit_cell(
         Number of columns (X-direction). Must be > 0.  Defaults to 2.
     y_number : int, optional
         Number of rows (Y-direction). Must be > 0.  Defaults to 2.
-    offset_x : int | float | None, optional
+    offset_x : int | float | str, None, optional
         Horizontal pitch (distance between cell origins).  When *None* the
         value is derived from the outline geometry.
-    offset_y : int | float | None, optional
+    offset_y : int | float | str, None, optional
         Vertical pitch (distance between cell origins).  When *None* the
         value is derived from the outline geometry.
 
@@ -93,12 +97,15 @@ def create_array_from_unit_cell(
         adapter = _GrpcAdapter(edb)
     else:
         adapter = _DotNetAdapter(edb)
+        warnings.warn(".NET back-end is deprecated and will be removed in future releases.", UserWarning)
+        warnings.warn("Consider moving to PyEDB gRPC (ANSYS 2025R2) for better performances", UserWarning)
     return __create_array_from_unit_cell_impl(edb, adapter, x_number, y_number, offset_x, offset_y)
 
 
 # ------------------------------------------------------------------
 # Implementation (technology-agnostic)
 # ------------------------------------------------------------------
+@execution_timer("create_array_from_unit_cell")
 def __create_array_from_unit_cell_impl(
     edb: Edb,
     adapter: "_BaseAdapter",
@@ -133,8 +140,12 @@ def __create_array_from_unit_cell_impl(
     # ---------- Sanity & auto-pitch detection ----------
     if x_number <= 0 or y_number <= 0:
         raise ValueError("x_number and y_number must be positive integers")
+    if offset_x and not offset_y:
+        raise ValueError("If offset_x is provided, offset_y must be provided as well")
+    if offset_y and not offset_x:
+        raise ValueError("If offset_y is provided, offset_x must be provided as well")
 
-    if offset_x is None or offset_y is None:
+    if not offset_x and not offset_y:
         edb.logger.info("Auto-detecting outline extents")
         outline_prims = [p for p in edb.modeler.primitives if p.layer_name.lower() == "outline"]
         if not outline_prims:
@@ -143,40 +154,52 @@ def __create_array_from_unit_cell_impl(
         if not adapter.is_supported_outline(outline):
             raise RuntimeError("Outline primitive is not a polygon/rectangle. Provide offset_x / offset_y.")
         offset_x, offset_y = adapter.pitch_from_outline(outline)
+    offset_x = edb.value(offset_x)
+    offset_y = edb.value(offset_y)
 
     # ---------- Collect everything we have to replicate ----------
     primitives = [p for p in edb.modeler.primitives if adapter.is_primitive_to_copy(p)]
     paths = list(edb.modeler.paths)
     vias = list(edb.padstacks.vias.values())
     components = list(edb.components.instances.values())
+    pingroups = edb.layout.pin_groups
+    if edb.grpc:
+        pg_dict = {
+            pad.edb_uid: pg.name  # edb_uid → PinGroup.name
+            for pg in pingroups  # for every PinGroup
+            for pad in pg.pins.values()  # for every PadstackInstance in its pin-dict
+        }
+    else:
+        pg_dict = {
+            pad.id: pg.name  # edb_uid → PinGroup.name
+            for pg in pingroups  # for every PinGroup
+            for pad in pg.pins.values()  # for every PadstackInstance in its pin-dict
+        }
 
     # ---------- Replication loops ----------
     edb.logger.info(f"Starting array replication {x_number}×{y_number}")
+    total_number = x_number * y_number - 1  # minus original
+    cell_count = 0
     for i, j in itertools.product(range(x_number), range(y_number)):
         if i == 0 and j == 0:
             continue  # original already exists
-
         dx = edb.value(offset_x * i)
         dy = edb.value(offset_y * j)
-
+        # Components
+        for comp in components:
+            adapter.duplicate_component(comp, dx, dy, i, j, pin_groups=pg_dict)
         # Primitives & voids
         for prim in primitives:
-            new_poly = adapter.duplicate_primitive(prim, dx, dy, i, j)
-            for void in prim.voids:
-                adapter.duplicate_void(new_poly, void, dx, dy)
-
+            if not prim.is_void:
+                adapter.duplicate_primitive(prim, dx, dy, i, j)
         # Paths
         for path in paths:
             adapter.duplicate_path(path, dx, dy, i, j)
-
         # Stand-alone vias
         for via in (v for v in vias if not v.component):
             adapter.duplicate_standalone_via(via, dx, dy, i, j)
-
-        # Components
-        for comp in components:
-            adapter.duplicate_component(comp, dx, dy, i, j)
-
+        cell_count += 1
+        edb.logger.info(f"Replicated cell {cell_count} of {total_number} ({(cell_count / total_number) * 100:.1f}%)")
     edb.logger.info("Array replication finished successfully")
     return True
 
@@ -189,6 +212,8 @@ class _BaseAdapter:
 
     def __init__(self, edb: Edb):
         self.edb = edb
+        self.layers = edb.stackup.layers
+        self.active_layout = edb.active_layout
 
     # ---- Outline helpers ----
     def is_supported_outline(self, outline) -> bool:
@@ -215,10 +240,6 @@ class _BaseAdapter:
         """Return a new primitive translated by (dx, dy)."""
         raise NotImplementedError
 
-    def duplicate_void(self, new_poly, void, dx, dy):
-        """Add a translated copy of *void* to *new_poly*."""
-        raise NotImplementedError
-
     def duplicate_path(self, path, dx, dy, i, j):
         """Create a translated copy of *path*."""
         raise NotImplementedError
@@ -227,7 +248,7 @@ class _BaseAdapter:
         """Create a translated copy of a stand-alone via."""
         raise NotImplementedError
 
-    def duplicate_component(self, comp, dx, dy, i, j):
+    def duplicate_component(self, comp, dx, dy, i, j, pin_groups=None):
         """Create a translated copy of *comp* (including its pins)."""
         raise NotImplementedError
 
@@ -247,14 +268,10 @@ class _GrpcAdapter(_BaseAdapter):
 
     def duplicate_primitive(self, prim, dx, dy, i, j):
         moved_pd = prim.polygon_data.move((dx, dy))
+        voids = [voids.polygon_data.move((dx, dy)) for voids in prim.voids]
         return self.edb.modeler.create_polygon(
-            moved_pd,
-            layer_name=prim.layer.name,
-            net_name=prim.net.name,
+            moved_pd, layer_name=prim.layer.name, net_name=prim.net.name, voids=voids
         )
-
-    def duplicate_void(self, new_poly, void, dx, dy):
-        new_poly.add_void(void.polygon_data.move((dx, dy)))
 
     def duplicate_path(self, path, dx, dy, i, j):
         moved_line = path.cast().center_line.move((dx, dy))
@@ -263,29 +280,30 @@ class _GrpcAdapter(_BaseAdapter):
             width=path.width,
             layer_name=path.layer.name,
             net_name=path.net.name,
+            corner_style=path.corner_style,
+            start_cap_style=path.end_cap1,
+            end_cap_style=path.end_cap2,
         )
 
     def duplicate_standalone_via(self, via, dx, dy, i, j):
-        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-
         pos = via.position
         PadstackInstance.create(
-            self.edb.active_layout,
+            self.active_layout,
             net=via.net,
-            name=f"{via.name}_i{i}_j{j}",
-            padstack_def=self.edb.padstacks.definitions[via.padstack_definition],
+            name=f"{via.name}_X{i}_Y{j}",
+            padstack_def=via.definition,
             position_x=pos[0] + dx,
             position_y=pos[1] + dy,
             rotation=0.0,
-            top_layer=self.edb.stackup.layers[via.start_layer],
-            bottom_layer=self.edb.stackup.layers[via.stop_layer],
+            top_layer=self.layers[via.start_layer],
+            bottom_layer=self.layers[via.stop_layer],
         )
 
-    def duplicate_component(self, comp, dx, dy, i, j):
-        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-
+    def duplicate_component(self, comp, dx, dy, i, j, pin_groups=None):
         new_pins = []
+        _pg = {}
         for pin in comp.pins.values():
+            pg_name = pin_groups.get(pin.edb_uid, None) if pin_groups else None
             pos = pin.position
             new_pin = PadstackInstance.create(
                 self.edb.active_layout,
@@ -299,6 +317,8 @@ class _GrpcAdapter(_BaseAdapter):
                 bottom_layer=self.edb.stackup.layers[pin.stop_layer],
             )
             new_pins.append(new_pin)
+            if pg_name:
+                _pg.setdefault(pg_name, []).append(new_pin)
 
         if new_pins:
             res = self.edb.value(comp.res_value) if hasattr(comp, "res_value") and comp.res_value else None
@@ -313,8 +333,11 @@ class _GrpcAdapter(_BaseAdapter):
                 l_value=ind,
                 c_value=cap,
             )
+            new_comp.type = comp.type
             if hasattr(comp, "component_property") and comp.component_property:
                 new_comp.component_property = comp.component_property
+            for pg_name, pins in _pg.items():
+                self.edb.components.create_pingroup_from_pins(pins=pins, group_name=f"{pg_name}_{i}_{j}")
 
 
 class _DotNetAdapter(_BaseAdapter):
@@ -342,14 +365,6 @@ class _DotNetAdapter(_BaseAdapter):
             net_name=prim.net.name,
         )
 
-    def duplicate_void(self, new_poly, void, dx, dy):
-        from pyedb.dotnet.database.geometry.point_data import PointData
-
-        vector = PointData.create_from_xy(self.edb, x=dx, y=dy)
-        void_polygon_data = void.polygon_data
-        void_polygon_data._edb_object.Move(vector._edb_object)
-        new_poly.add_void(void_polygon_data.points)
-
     def duplicate_path(self, path, dx, dy, i, j):
         from pyedb.dotnet.database.geometry.point_data import PointData
 
@@ -357,11 +372,15 @@ class _DotNetAdapter(_BaseAdapter):
         moved_path = path._edb_object.GetCenterLine()
         moved_path.Move(vector._edb_object)
         moved_path = [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(moved_path.Points)]
+        end_caps = path._edb_object.GetEndCapStyle()
+
         self.edb.modeler.create_trace(
             path_list=list(moved_path),
             width=path.width,
             layer_name=path.layer.name,
             net_name=path.net.name,
+            start_cap_style=str(end_caps[1]),
+            end_cap_style=str(end_caps[2]),
         )
 
     def duplicate_standalone_via(self, via, dx, dy, i, j):
@@ -372,7 +391,7 @@ class _DotNetAdapter(_BaseAdapter):
             via_name=f"{via.aedt_name}_i{i}_j{j}",
         )
 
-    def duplicate_component(self, comp, dx, dy, i, j):
+    def duplicate_component(self, comp, dx, dy, i, j, pin_groups=None):
         new_pins = []
         for pin in comp.pins.values():
             pos = pin.position
@@ -382,7 +401,6 @@ class _DotNetAdapter(_BaseAdapter):
                 via_name=f"{pin.aedt_name}_i{i}_j{j}",
             )
             new_pins.append(new_pin)
-
         if new_pins:
             new_comp = self.edb.components.create(
                 pins=new_pins,

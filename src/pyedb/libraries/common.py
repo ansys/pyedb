@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -45,8 +45,7 @@ class Substrate:
 
     Examples
     --------
-    >>> sub = Substrate(h=1.6e-3, er=4.4, tan_d=0.02,
-    ...                 name="FR4", size=(10e-3, 15e-3))
+    >>> sub = Substrate(h=1.6e-3, er=4.4, tan_d=0.02, name="FR4", size=(10e-3, 15e-3))
     >>> sub.h
     0.0016
     """
@@ -84,7 +83,7 @@ class Material:
     >>> m = Material(edb, "MyMaterial")
     >>> m.name
     'MyMaterial'
-    >>> edb.materials["MyMaterial"]   # now exists in the database
+    >>> edb.materials["MyMaterial"]  # now exists in the database
     <Material object at ...>
     """
 
@@ -125,7 +124,7 @@ class Conductor(Material):
     >>> cu = Conductor(edb, "Copper", conductivity=5.8e7)
     >>> cu.conductivity
     58000000.0
-    >>> cu.conductivity = 3.5e7   # update on-the-fly
+    >>> cu.conductivity = 3.5e7  # update on-the-fly
     >>> edb.materials["Copper"].conductivity
     35000000.0
     """

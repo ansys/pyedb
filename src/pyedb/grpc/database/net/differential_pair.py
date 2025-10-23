@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,14 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.net.net import Net
 import re
 
 from ansys.edb.core.net.differential_pair import (
     DifferentialPair as GrpcDifferentialPair,
 )
-
-from pyedb.grpc.database.net.net import Net
 
 
 class DifferentialPairs:
@@ -131,9 +134,13 @@ class DifferentialPair(GrpcDifferentialPair):
     @property
     def positive_net(self) -> Net:
         """Positive Net."""
+        from pyedb.grpc.database.net.net import Net
+
         return Net(self._pedb, super().positive_net)
 
     @property
     def negative_net(self) -> Net:
         """Negative Net."""
+        from pyedb.grpc.database.net.net import Net
+
         return Net(self._pedb, super().negative_net)

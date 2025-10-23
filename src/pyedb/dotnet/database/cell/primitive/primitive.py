@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -39,8 +39,8 @@ class Primitive(Connectable):
     >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_prim = edb.modeler.primitives[0]
-    >>> edb_prim.is_void # Class Property
-    >>> edb_prim.IsVoid() # EDB Object Property
+    >>> edb_prim.is_void  # Class Property
+    >>> edb_prim.IsVoid()  # EDB Object Property
     """
 
     def __init__(self, pedb, edb_object):

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -24,6 +24,7 @@
 This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiwave``,
 ``PinGroup``, ``ResistorSource``, ``Source``, ``SourceType``, and ``VoltageSource``.
 """
+
 import os
 import time
 
@@ -483,8 +484,8 @@ class EdbSiwave(object):
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> pins =edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.siwave.create_resistor_on_pin(pins[0], pins[1],50,"res_name")
+        >>> pins = edbapp.components.get_pin_from_component("U2A5")
+        >>> edbapp.siwave.create_resistor_on_pin(pins[0], pins[1], 50, "res_name")
         """
         resistor = ResistorSource()
         resistor.positive_node.net = pos_pin.net_name
@@ -625,7 +626,7 @@ class EdbSiwave(object):
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edb.siwave.create_voltage_source_on_net("U2A5","V1P5_S3","U2A5","GND",3.3,0,"source_name")
+        >>> edb.siwave.create_voltage_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 3.3, 0, "source_name")
         """
         if not negative_component_name:
             negative_component_name = positive_component_name

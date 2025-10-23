@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -50,34 +50,9 @@ class GapPort(EdgeTerminal):
         super().__init__(pedb, edb_object)
 
     @property
-    def magnitude(self):
-        """Magnitude."""
-        return self._edb_object.GetSourceAmplitude().ToDouble()
-
-    @property
-    def source_amplitude(self):
-        """Property added for grpc compatibility"""
-        return self.magnitude
-
-    @property
-    def source_phase(self):
-        """Property added for grpc compatibility"""
-        return self.phase
-
-    @property
-    def phase(self):
-        """Phase."""
-        return self._edb_object.GetSourcePhase().ToDouble()
-
-    @property
     def renormalize(self):
         """Whether renormalize is active."""
         return self._edb_object.GetPortPostProcessingProp().DoRenormalize
-
-    @property
-    def deembed(self):
-        """Inductance value of the deembed gap port."""
-        return self._edb_object.GetPortPostProcessingProp().DoDeembedGapL
 
     @property
     def renormalize_z0(self):

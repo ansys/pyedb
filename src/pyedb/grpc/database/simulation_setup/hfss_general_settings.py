@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -23,8 +23,6 @@
 
 from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
     AdaptType as GrpcAdaptType,
-)
-from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
     HFSSGeneralSettings as GrpcHFSSGeneralSettings,
 )
 

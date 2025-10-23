@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -243,9 +243,7 @@ class Material(object):
         if self.__dc_model and value:
             self.__dc_model.SetDCRelativePermitivity(value)
         else:
-            self.__edb.logger.error(
-                f"DC permittivity cannot be updated in material without DC model or value {value}." f""
-            )
+            self.__edb.logger.error(f"DC permittivity cannot be updated in material without DC model or value {value}.")
 
     @property
     def dielectric_model_frequency(self):

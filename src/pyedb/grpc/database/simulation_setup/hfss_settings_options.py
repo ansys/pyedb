@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -23,11 +23,7 @@
 
 from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
     BasisFunctionOrder as GrpcBasisFunctionOrder,
-)
-from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
     HFSSSettingsOptions as GrpcHFSSSettingsOptions,
-)
-from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
     SolverType as GrpcSolverType,
 )
 

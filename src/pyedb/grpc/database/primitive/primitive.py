@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -39,8 +39,8 @@ class Primitive(GrpcPrimitive):
     >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_prim = edb.modeler.primitives[0]
-    >>> edb_prim.is_void # Class Property
-    >>> edb_prim.IsVoid() # EDB Object Property
+    >>> edb_prim.is_void  # Class Property
+    >>> edb_prim.IsVoid()  # EDB Object Property
     """
 
     def __init__(self, pedb, edb_object):
@@ -401,11 +401,6 @@ class Primitive(GrpcPrimitive):
         for prim in primitives:
             if isinstance(prim, Primitive):
                 prim.delete()
-            else:
-                try:
-                    prim.Delete()
-                except AttributeError:
-                    continue
         return new_polys
 
     def intersect(self, primitives) -> list[any]:

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -23,6 +23,7 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
+
 from typing import List, Union
 
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
@@ -30,9 +31,7 @@ from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.database.cell.primitive.path import Path
 from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
 from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
-from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal,
-)
+from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.cell.voltage_regulator import VoltageRegulator
@@ -55,6 +54,8 @@ from pyedb.dotnet.database.utilities.obj_base import ObjBase
 
 
 def primitive_cast(pedb, edb_object):
+    if not hasattr(edb_object, "GetPrimitiveType"):
+        return
     if edb_object.GetPrimitiveType().ToString() == "Rectangle":
         return EdbRectangle(edb_object, pedb)
     elif edb_object.GetPrimitiveType().ToString() == "Circle":
@@ -133,6 +134,9 @@ class Layout(ObjBase):
         -----
         Method returns the expansion of the contour, so any voids within expanded objects are ignored.
         """
+        if isinstance(nets, list) and all(isinstance(item, str) for item in nets):
+            nets = [self._pedb.nets.nets[i] for i in nets if i in self.nets]
+
         nets = [i._edb_object for i in nets]
         return self._edb_object.GetExpandedExtentFromNets(
             convert_py_list_to_net_list(nets),
@@ -234,7 +238,7 @@ class Layout(ObjBase):
         primitives = list(self._edb_object.Primitives)
         if len(primitives) != len(self._primitives):
             self._primitives = [primitive_cast(self._pedb, p) for p in primitives]
-        return self._primitives
+        return [p for p in self._primitives if p is not None]  # non stackup primitives are None
 
     @property
     def primitives_by_aedt_name(self) -> dict:
@@ -407,6 +411,7 @@ class Layout(ObjBase):
         candidates = self.padstack_instances
         if instance_id is not None:
             value = instance_id if isinstance(instance_id, list) else [instance_id]
+            value = [int(i) for i in value]
             candidates = [i for i in candidates if i.id in value]
 
         if aedt_name is not None:

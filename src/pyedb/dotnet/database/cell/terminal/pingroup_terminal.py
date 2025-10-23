@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -57,7 +57,7 @@ class PinGroupTerminal(Terminal):
         )
         term = PinGroupTerminal(self._pedb, term)
         if term.is_null:
-            msg = f"Failed to create terminal. "
+            msg = f"Failed to create terminal {name}."
             if name in self._pedb.terminals:
                 msg += f"Terminal {name} already exists."
             raise ValueError(msg)

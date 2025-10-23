@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -54,6 +54,12 @@ class Terminal(Connectable):
             "PadstackInstanceTerminal": self._pedb.core.Cell.Terminal.TerminalType.PadstackInstanceTerminal,
             "BundleTerminal": self._pedb.core.Cell.Terminal.TerminalType.BundleTerminal,
             "PinGroupTerminal": self._pedb.core.Cell.Terminal.TerminalType.PinGroupTerminal,
+        }
+
+        self._source_term_to_ground_mapping = {
+            "kNoGround": self._pedb.core.Cell.Terminal.SourceTermToGround.kNoGround,
+            "kNegative": self._pedb.core.Cell.Terminal.SourceTermToGround.kNegative,
+            "kPositive": self._pedb.core.Cell.Terminal.SourceTermToGround.kPositive,
         }
 
     @property
@@ -403,6 +409,11 @@ class Terminal(Connectable):
             power_ground_net_names = [gnd_net]
         else:
             power_ground_net_names = [net for net in self._pedb.nets.power.keys()]
+        pin_list = [
+            EDBPadstackInstance(pin, self._pedb)
+            for pin in pin_list
+            if str(pin) == "Ansys.Ansoft.Edb.Cell.Primitive.PadstackInstance"
+        ]
         comp_ref_pins = [i for i in pin_list if i.net_name in power_ground_net_names]
         if len(comp_ref_pins) == 0:  # pragma: no cover
             self._pedb.logger.error(
@@ -425,7 +436,7 @@ class Terminal(Connectable):
                 closest_pin_distance = distance
                 pin_obj = pin
         if pin_obj:
-            return EDBPadstackInstance(pin_obj, self._pedb)
+            return pin_obj
 
     @property
     def magnitude(self):
@@ -444,3 +455,35 @@ class Terminal(Connectable):
     @phase.setter
     def phase(self, value):
         self._edb_object.SetSourcePhase(self._edb.Utility.Value(value))
+
+    @property
+    def amplitude(self):
+        """Property added for grpc compatibility"""
+        return self.magnitude
+
+    @property
+    def source_amplitude(self):
+        """Property added for grpc compatibility"""
+        return self.magnitude
+
+    @source_amplitude.setter
+    def source_amplitude(self, value):
+        self.magnitude = value
+
+    @property
+    def source_phase(self):
+        """Property added for grpc compatibility"""
+        return self.phase
+
+    @source_phase.setter
+    def source_phase(self, value):
+        self.phase = value
+
+    @property
+    def terminal_to_ground(self):
+        return self._edb_object.GetTerminalToGround().ToString()
+
+    @terminal_to_ground.setter
+    def terminal_to_ground(self, value):
+        obj = self._source_term_to_ground_mapping[value]
+        self._edb_object.SetTerminalToGround(obj)
