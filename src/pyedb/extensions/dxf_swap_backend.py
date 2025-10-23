@@ -137,6 +137,8 @@ def swap_polygon_with_dxf(edb: Edb, dxf_path: str, layer_name: str, point_dxf: L
     ... )
     >>> edb.save()
     """
+    if not float(edb.version) >= 2025.2:
+        raise AttributeError("This function is only supported with ANSYS release 2025R2 and higher.")
     prim_to_delete = edb.modeler.get_primitive_by_layer_and_point(point=point_aedt, layer=layer_name)
     prim_to_delete = prim_to_delete[0]
     prim_to_delete.delete()
@@ -218,6 +220,8 @@ def swap_polygon_with_dxf_center_point(edb: Edb, dxf_path: str, layer_name: str,
     ... )
     >>> edb.save()
     """
+    if not float(edb.version) >= 2025.2:
+        raise AttributeError("This function is only supported with ANSYS release 2025R2 and higher.")
     prim_to_delete = edb.modeler.get_primitive_by_layer_and_point(point=point_aedt, layer=layer_name)
     prim_to_delete = prim_to_delete[0]
     prim_to_delete.delete()
