@@ -2000,7 +2000,7 @@ class TestClass(BaseTestClass):
         assert edbapp.export_to_ipc2581()
         assert os.path.exists(edbapp.edbpath[:-5] + ".xml")
         edbapp.close(terminate_rpc_session=False)
-        
+
     def test_import_vlctech(self, edb_examples):
         from pyedb import Edb
 
