@@ -26,7 +26,7 @@ Features
 * R-tree spatial index for fast geometry queries.
 * Thread-safe, multi-threaded rule execution (automatic core detection).
 * Fluent, type-safe API to build rule decks programmatically.
-* JSON/YAML round-trip serialization (via pydantic).
+* JSON/YAML round-trip serialization (via Pydantic).
 
 Quick start
 -----------
@@ -34,7 +34,7 @@ Quick start
 .. code-block:: python
 
    import pyedb
-   from pyedb.workflows.drc.drc import Drc, Rules
+   from pyedb.workflows.drc.drc import DRC, Rules
 
    edb = pyedb.Edb("my_board.aedb")
    rules = (
@@ -46,7 +46,7 @@ Quick start
        .add_copper_balance("top_bal", max_percent=10, layers=["TOP"])
    )
 
-   drc = Drc(edb)
+   drc = DRC(edb)
    violations = drc.check(rules)
    drc.to_ipc356a("fab_review.ipc")
 
@@ -85,16 +85,16 @@ Rule models
    BackDrillStubLength
    CopperBalance
 
-Drc engine
+DRC engine
 ~~~~~~~~~~
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
 
-   Drc
-   Drc.check
-   Drc.to_ipc356a
+   DRC
+   DRC.check
+   DRC.to_ipc356a
 
 Implementation notes
 --------------------
@@ -109,9 +109,9 @@ Extending the engine
 ~~~~~~~~~~~~~~~~~~~~
 Add a new rule in three steps:
 
-1. Create a pydantic model inheriting from ``pydantic.BaseModel``.
+1. Create a Pydantic model inheriting from ``Pydantic.BaseModel``.
 2. Append the model to the ``Rules`` container and expose a fluent helper.
-3. Implement ``_rule_<field_name>`` inside ``Drc``; accept the rule instance
+3. Implement ``_rule_<field_name>`` inside ``DRC``; accept the rule instance
    and append violations to ``self.violations``.
 
 Examples
@@ -135,7 +135,7 @@ Export violations to CSV
 
    import csv
 
-   drc = Drc(edb)
+   drc = DRC(edb)
    drc.check(rules)
 
    with open("violations.csv", "w", newline="") as f:
