@@ -97,7 +97,6 @@ from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import generate_unique_name, is_linux, is_windows
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
-from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.misc.decorators import deprecate_argument_name, execution_timer
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties

@@ -131,7 +131,6 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.edb_init import EdbInit
-from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
