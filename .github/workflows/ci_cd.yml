@@ -449,14 +449,14 @@ jobs:
       - name: "Create coverage files"
         run: |
           . .venv/bin/activate
-          python -m coverage html -d .cov\system-html
-          python -m coverage xml -o .cov\system.xml
+          python -m coverage html -d .cov/system-html
+          python -m coverage xml -o .cov/system.xml
 
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          path: .cov\system-html
+          path: .cov/system-html
           name: html-system-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
@@ -524,14 +524,14 @@ jobs:
       - name: "Create coverage files"
         run: |
           . .venv/bin/activate
-          python -m coverage html -d .cov\system-html
-          python -m coverage xml -o .cov\system.xml
+          python -m coverage html -d .cov/system-html
+          python -m coverage xml -o .cov/system.xml
 
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          path: .cov\system-html
+          path: .cov/system-html
           name: html-system-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
@@ -599,14 +599,14 @@ jobs:
       - name: "Create coverage files"
         run: |
           . .venv/bin/activate
-          python -m coverage html -d .cov\unit-html
-          python -m coverage xml -o .cov\unit.xml
+          python -m coverage html -d .cov/unit-html
+          python -m coverage xml -o .cov/unit.xml
 
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          path: .cov\unit-html
+          path: .cov/unit-html
           name: html-unit-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
@@ -674,14 +674,14 @@ jobs:
       - name: "Create coverage files"
         run: |
           . .venv/bin/activate
-          python -m coverage html -d .cov\unit-html
-          python -m coverage xml -o .cov\unit.xml
+          python -m coverage html -d .cov/unit-html
+          python -m coverage xml -o .cov/unit.xml
 
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          path: .cov\unit-html
+          path: .cov/unit-html
           name: html-unit-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
@@ -967,6 +967,7 @@ jobs:
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          add-artifact-attestation-notes: true
 
   upload-dev-docs:
     name: Upload dev documentation
