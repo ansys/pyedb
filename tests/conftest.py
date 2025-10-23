@@ -187,7 +187,7 @@ class EdbExamples:
     def load_dxf_edb(self):
         aedb = self._copy_file_folder_into_local_folder("dxf_swap/starting_edb/starting_edb.aedb")
         return Edb(edbpath=aedb, version=desktop_version, grpc=True)
-      
+
     def copy_project_for_job_manager(self, local_scratch):
         example_project = os.path.join(example_models_path, "test_project_for_job_manager.aedb")
         target_path = os.path.join(local_scratch.path, "project.aedb")
