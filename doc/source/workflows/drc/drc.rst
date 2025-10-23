@@ -1,7 +1,7 @@
 .. _ref_drc:
 
 ==================================================================
-Design-rule checking (DRC) – self-contained, multi-threaded engine
+Design-rule checking (DRC)–self-contained, multi-threaded engine
 ==================================================================
 
 .. currentmodule:: pyedb.workflows.drc.drc
@@ -22,11 +22,11 @@ Features
 * Impedance checks via improved analytical formulas (Wheeler, Cohn,
   Hammerstad–Jensen).
 * Copper-balance by layer or by arbitrary zone polygons.
-* Back-drill stub / depth verification.
+* Back-drill stub/depth verification.
 * R-tree spatial index for fast geometry queries.
 * Thread-safe, multi-threaded rule execution (automatic core detection).
 * Fluent, type-safe API to build rule decks programmatically.
-* JSON / YAML round-trip serialization (via Pydantic).
+* JSON/YAML round-trip serialization (via pydantic).
 
 Quick start
 -----------
@@ -85,7 +85,7 @@ Rule models
    BackDrillStubLength
    CopperBalance
 
-DRC engine
+Drc engine
 ~~~~~~~~~~
 
 .. autosummary::
@@ -101,7 +101,7 @@ Implementation notes
 
 Thread safety
 ~~~~~~~~~~~~~
-All heavy geometry checks are embarrassingly parallel.  The engine snapshots
+All heavy geometry checks are embarrassingly parallel. The engine snapshots
 EDB data into plain Python objects before entering the worker pool, so the
 R-tree index is **never** accessed concurrently.
 
@@ -109,7 +109,7 @@ Extending the engine
 ~~~~~~~~~~~~~~~~~~~~
 Add a new rule in three steps:
 
-1. Create a Pydantic model inheriting from ``pydantic.BaseModel``.
+1. Create a pydantic model inheriting from ``pydantic.BaseModel``.
 2. Append the model to the ``Rules`` container and expose a fluent helper.
 3. Implement ``_rule_<field_name>`` inside ``Drc``; accept the rule instance
    and append violations to ``self.violations``.
