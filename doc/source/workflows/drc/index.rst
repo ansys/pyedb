@@ -1,4 +1,4 @@
-Drc workflows
+DRC workflows
 =============
 
 This section describes PyEDB DRC workflows features.
