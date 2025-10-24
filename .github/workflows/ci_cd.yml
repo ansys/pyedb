@@ -94,6 +94,10 @@ jobs:
   smoke-tests:
     name: Build and Smoke tests (${{ matrix.os }} | Python ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -107,6 +111,7 @@ jobs:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
+          attest-provenance: true
 
       - name: Import python package
         shell: bash
@@ -449,14 +454,14 @@ jobs:
       - name: "Create coverage files"
         run: |
           . .venv/bin/activate
-          python -m coverage html -d .cov\system-html
-          python -m coverage xml -o .cov\system.xml
+          python -m coverage html -d .cov/system-html
+          python -m coverage xml -o .cov/system.xml
 
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          path: .cov\system-html
+          path: .cov/system-html
           name: html-system-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
@@ -524,14 +529,14 @@ jobs:
       - name: "Create coverage files"
         run: |
           . .venv/bin/activate
-          python -m coverage html -d .cov\system-html
-          python -m coverage xml -o .cov\system.xml
+          python -m coverage html -d .cov/system-html
+          python -m coverage xml -o .cov/system.xml
 
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          path: .cov\system-html
+          path: .cov/system-html
           name: html-system-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
@@ -599,14 +604,14 @@ jobs:
       - name: "Create coverage files"
         run: |
           . .venv/bin/activate
-          python -m coverage html -d .cov\unit-html
-          python -m coverage xml -o .cov\unit.xml
+          python -m coverage html -d .cov/unit-html
+          python -m coverage xml -o .cov/unit.xml
 
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          path: .cov\unit-html
+          path: .cov/unit-html
           name: html-unit-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
@@ -674,14 +679,14 @@ jobs:
       - name: "Create coverage files"
         run: |
           . .venv/bin/activate
-          python -m coverage html -d .cov\unit-html
-          python -m coverage xml -o .cov\unit.xml
+          python -m coverage html -d .cov/unit-html
+          python -m coverage xml -o .cov/unit.xml
 
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          path: .cov\unit-html
+          path: .cov/unit-html
           name: html-unit-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
@@ -929,12 +934,17 @@ jobs:
             unit-tests-linux-grpc,
             docs-build]
     runs-on: ubuntu-latest
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
     steps:
       - name: Build library source and wheel artifacts
         uses: ansys/actions/build-library@c2fa7c93f6883114e0e643599431b33d29f0b13f # v10.1.4
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          attest-provenance: true
 
   release:
     name: Release project
@@ -967,6 +977,7 @@ jobs:
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          add-artifact-attestation-notes: true
 
   upload-dev-docs:
     name: Upload dev documentation
