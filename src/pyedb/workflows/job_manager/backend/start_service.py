@@ -3,7 +3,6 @@
 # Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
-#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -27,7 +26,7 @@ Start the PyEDB Job-Manager service via JobManagerHandler.
 
 Usage
 -----
-$ python start_service.py --host 0.0.0.0 --port 9090
+$ python start_service.py --host 0.0.0.0 --port 9090 --min-disk 2 --min-memory 1
 ✅ Job-manager backend listening on http://0.0.0.0:9090
 Press Ctrl-C to shut down gracefully.
 """
@@ -54,6 +53,18 @@ def parse_cli() -> argparse.Namespace:
         default=8080,
         help="TCP port to listen on (default: 8080)",
     )
+    parser.add_argument(
+        "--min-disk",
+        type=float,
+        default=10.0,
+        help="Minimum free disk space in GB (default: 10.0)",
+    )
+    parser.add_argument(
+        "--min-memory",
+        type=float,
+        default=2.0,
+        help="Minimum free memory in GB (default: 2.0)",
+    )
     return parser.parse_args()
 
 
@@ -61,9 +72,15 @@ def main():
     args = parse_cli()
 
     handler = JobManagerHandler(host=args.host, port=args.port)
+
+    # Override resource limits from CLI
+    handler.manager.resource_limits.min_disk_gb = args.min_disk
+    handler.manager.resource_limits.min_memory_gb = args.min_memory
+
     handler.start_service()  # non-blocking; spins up daemon thread + aiohttp
 
     print(f"✅ Job-manager backend listening on http://{handler.host}:{handler.port}")
+    print(f"   Resource gates: {args.min_disk} GB disk / {args.min_memory} GB memory")
 
     # Graceful shutdown on Ctrl-C
     stop_event = threading.Event()
