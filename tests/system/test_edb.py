@@ -2010,7 +2010,7 @@ class TestClass(BaseTestClass):
         assert os.path.exists(edbapp.edbpath) and edbapp.edbpath[-12:] == "vlctech.aedb"
         assert edbapp.close()
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Supported only ib grpc")
+    @pytest.mark.skipif(not config["use_grpc"], reason="Supported only in grpc")
     def test_design_mode(self):
         from pyedb import Edb
 
