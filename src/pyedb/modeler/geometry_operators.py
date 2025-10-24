@@ -27,6 +27,7 @@ import re
 import sys
 
 import numpy as np
+from sklearn.neighbors import KDTree
 
 from pyedb.generic.constants import AXIS, PLANE, SWEEPDRAFT, scale_units
 
@@ -2226,3 +2227,43 @@ class GeometryOperators(object):
         if return_additional_info:
             return lines, lines_idx, num_points, len(detected_lines_idx), len(selected_lines_idx), len(lines_idx)
         return lines, lines_idx
+
+    @staticmethod
+    def smallest_distance_between_polygons(polygon1, polygon2):
+        """
+        Find the smallest distance between two polygons using KDTree for efficient nearest neighbor search.
+
+        Parameters:
+        polygon1 (list of tuples): List of (x, y) coordinates representing the points of the first polygon.
+        polygon2 (list of tuples): List of (x, y) coordinates representing the points of the second polygon.
+
+        Returns:
+        float: The smallest distance between any two points from the two polygons.
+
+        Example:
+        >>> polygon1 = [(1, 1), (4, 1), (4, 4), (1, 4)]
+        >>> polygon2 = [(5, 5), (8, 5), (8, 8), (5, 8)]
+        >>> smallest_distance_between_polygons(polygon1, polygon2)
+        1.4142135623730951
+        """
+        # Convert lists of points to numpy arrays
+        points1 = np.array(polygon1)
+        points2 = np.array(polygon2)
+
+        # Check for overlapping points
+        for point1 in points1:
+            for point2 in points2:
+                if np.array_equal(point1, point2):
+                    print("Warning: Overlapping points detected. Distance will be 0.0.")
+                    return 0.0
+
+        # Build KDTree for the second polygon
+        tree = KDTree(points2)
+
+        # Query the nearest neighbor in the second polygon for each point in the first polygon
+        distances, _ = tree.query(points1)
+
+        # The smallest distance is the minimum of these distances
+        min_distance = np.min(distances)
+
+        return min_distance
