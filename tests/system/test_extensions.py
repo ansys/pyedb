@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import os
 from pathlib import Path
 
 import pytest
@@ -612,7 +613,6 @@ class TestClass(BaseTestClass):
 
     def test_arbitrary_wave_ports(self, edb_examples):
         # TODO check later when sever instances is improved.
-        import os
 
         local_path = Path(__file__).parent.parent
         example_folder = os.path.join(local_path, "example_models", "TEDB")
@@ -639,7 +639,8 @@ class TestClass(BaseTestClass):
     def test_dxf_swap_backend_center_point(self, edb_examples):
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf_center_point
 
-        dxf_path = "example_models/dxf_swap/rectangle.dxf"
+        local_path = Path(__file__).parent.parent
+        dxf_path = os.path.join(local_path, "example_models", "dxf_swap", "rectangle.dxf")
         layer_name = "Trace"
         edb = edb_examples.load_dxf_edb()
         point_aedt = ["170mm", "70mm"]
@@ -653,9 +654,12 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(condition=not GRPC, reason="Implemented only with grpc")
     def test_dxf_swap_backend(self, edb_examples):
+        import os
+
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf
 
-        dxf_path = "example_models/dxf_swap/rectangle.dxf"
+        local_path = Path(__file__).parent.parent
+        dxf_path = os.path.join(local_path, "example_models", "dxf_swap", "rectangle.dxf")
         layer_name = "Trace"
         edb = edb_examples.load_dxf_edb()
         point_aedt = ["170mm", "70mm"]
