@@ -1,0 +1,6 @@
+create\_voltage\_source\_terminal
+=================================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pingroup
+
+.. automethod:: PinGroup.create_voltage_source_terminal

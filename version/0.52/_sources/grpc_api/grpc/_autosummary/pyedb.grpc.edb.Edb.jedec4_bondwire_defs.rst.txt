@@ -1,0 +1,6 @@
+jedec4\_bondwire\_defs
+======================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.jedec4_bondwire_defs

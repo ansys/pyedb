@@ -1,0 +1,100 @@
+﻿Modeler
+=======
+
+.. currentmodule:: pyedb.dotnet.database.modeler
+
+.. autoclass:: Modeler
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Modeler.add_void
+      
+      
+      Modeler.create_bondwire
+      
+      
+      Modeler.create_circle
+      
+      
+      Modeler.create_pin_group
+      
+      
+      Modeler.create_polygon
+      
+      
+      Modeler.create_rectangle
+      
+      
+      Modeler.create_trace
+      
+      
+      Modeler.defeature_polygon
+      
+      
+      Modeler.delete_primitives
+      
+      
+      Modeler.fix_circle_void_for_clipping
+      
+      
+      Modeler.get_layout_statistics
+      
+      
+      Modeler.get_polygon_bounding_box
+      
+      
+      Modeler.get_polygon_points
+      
+      
+      Modeler.get_polygons_by_layer
+      
+      
+      Modeler.get_primitive
+      
+      
+      Modeler.get_primitive_by_layer_and_point
+      
+      
+      Modeler.get_primitives
+      
+      
+      Modeler.parametrize_polygon
+      
+      
+      Modeler.parametrize_trace_width
+      
+      
+      Modeler.shape_to_polygon_data
+      
+      
+      Modeler.unite_polygons_on_layer
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Modeler.circles
+      Modeler.db
+      Modeler.layers
+      Modeler.paths
+      Modeler.polygons
+      Modeler.polygons_by_layer
+      Modeler.primitives
+      Modeler.primitives_by_layer
+      Modeler.primitives_by_net
+      Modeler.rectangles
+   
+   

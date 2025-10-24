@@ -1,0 +1,6 @@
+is\_integer
+===========
+
+.. currentmodule:: pyedb.grpc.database.utility.value
+
+.. automethod:: Value.is_integer

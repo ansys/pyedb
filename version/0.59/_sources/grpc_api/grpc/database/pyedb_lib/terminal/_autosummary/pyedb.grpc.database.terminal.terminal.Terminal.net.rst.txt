@@ -1,0 +1,6 @@
+net
+===
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. autoproperty:: Terminal.net

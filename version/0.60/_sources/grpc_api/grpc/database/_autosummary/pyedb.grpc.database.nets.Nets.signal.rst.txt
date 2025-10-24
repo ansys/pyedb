@@ -1,0 +1,6 @@
+signal
+======
+
+.. currentmodule:: pyedb.grpc.database.nets
+
+.. autoproperty:: Nets.signal

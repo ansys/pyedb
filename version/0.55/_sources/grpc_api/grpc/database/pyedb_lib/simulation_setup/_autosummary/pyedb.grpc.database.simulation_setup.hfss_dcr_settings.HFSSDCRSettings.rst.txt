@@ -1,0 +1,27 @@
+﻿HFSSDCRSettings
+===============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_dcr_settings
+
+.. autoclass:: HFSSDCRSettings
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HFSSDCRSettings.max_passes
+      HFSSDCRSettings.min_converged_passes
+      HFSSDCRSettings.min_passes
+      HFSSDCRSettings.msg
+      HFSSDCRSettings.percent_error
+      HFSSDCRSettings.percent_refinement_per_pass
+   
+   

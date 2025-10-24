@@ -1,0 +1,6 @@
+magnitude
+=========
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoproperty:: VoltageSource.magnitude

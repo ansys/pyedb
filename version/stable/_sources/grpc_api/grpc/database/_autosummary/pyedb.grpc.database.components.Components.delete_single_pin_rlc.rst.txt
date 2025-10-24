@@ -1,0 +1,6 @@
+delete\_single\_pin\_rlc
+========================
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. automethod:: Components.delete_single_pin_rlc

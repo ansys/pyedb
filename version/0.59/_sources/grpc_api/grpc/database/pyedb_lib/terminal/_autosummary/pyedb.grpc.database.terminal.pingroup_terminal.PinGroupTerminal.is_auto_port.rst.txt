@@ -1,0 +1,6 @@
+is\_auto\_port
+==============
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoproperty:: PinGroupTerminal.is_auto_port

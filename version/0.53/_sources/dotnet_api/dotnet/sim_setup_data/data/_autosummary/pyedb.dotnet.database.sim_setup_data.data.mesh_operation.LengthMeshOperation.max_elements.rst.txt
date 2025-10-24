@@ -1,0 +1,6 @@
+max\_elements
+=============
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.mesh_operation
+
+.. autoproperty:: LengthMeshOperation.max_elements

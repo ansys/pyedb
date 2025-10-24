@@ -1,0 +1,6 @@
+x
+=
+
+.. currentmodule:: pyedb.grpc.database.geometry.point_3d_data
+
+.. autoproperty:: Point3DData.x

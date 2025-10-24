@@ -1,0 +1,30 @@
+﻿CfgPorts
+========
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. autoclass:: CfgPorts
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgPorts.apply
+      
+      
+      CfgPorts.export_properties
+      
+      
+      CfgPorts.get_data_from_db
+      
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+set\_attributes
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_stackup
+
+.. automethod:: CfgLayer.set_attributes

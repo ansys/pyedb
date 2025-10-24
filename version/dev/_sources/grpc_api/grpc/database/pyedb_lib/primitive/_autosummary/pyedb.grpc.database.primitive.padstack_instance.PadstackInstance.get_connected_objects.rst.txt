@@ -1,0 +1,6 @@
+get\_connected\_objects
+=======================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. automethod:: PadstackInstance.get_connected_objects

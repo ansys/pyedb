@@ -1,0 +1,6 @@
+is\_mcad
+========
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoproperty:: Polygon.is_mcad

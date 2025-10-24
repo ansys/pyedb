@@ -1,0 +1,6 @@
+get\_layers
+===========
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: LayerCollection.get_layers

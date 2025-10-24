@@ -1,0 +1,6 @@
+add\_n\_port\_model
+===================
+
+.. currentmodule:: pyedb.grpc.database.definition.component_def
+
+.. automethod:: ComponentDef.add_n_port_model

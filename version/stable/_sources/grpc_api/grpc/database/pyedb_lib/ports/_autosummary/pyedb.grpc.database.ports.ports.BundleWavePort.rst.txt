@@ -1,0 +1,77 @@
+﻿BundleWavePort
+==============
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoclass:: BundleWavePort
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      BundleWavePort.cast
+      
+      
+      BundleWavePort.create
+      
+      
+      BundleWavePort.create_3d_comp
+      
+      
+      BundleWavePort.create_hfss
+      
+      
+      BundleWavePort.create_stride
+      
+      
+      BundleWavePort.decouple
+      
+      
+      BundleWavePort.delete
+      
+      
+      BundleWavePort.find
+      
+      
+      BundleWavePort.find_by_id
+      
+      
+      BundleWavePort.get_product_property
+      
+      
+      BundleWavePort.get_product_property_ids
+      
+      
+      BundleWavePort.product_solver_names
+      
+      
+      BundleWavePort.product_solver_option
+      
+      
+      BundleWavePort.set_product_property
+      
+      
+      BundleWavePort.set_product_solver_option
+      
+      
+      BundleWavePort.ungroup
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      BundleWavePort.layout_obj_type
+      BundleWavePort.type
+   
+   

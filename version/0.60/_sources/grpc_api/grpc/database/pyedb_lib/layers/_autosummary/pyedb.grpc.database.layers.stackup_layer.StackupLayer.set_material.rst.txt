@@ -1,0 +1,6 @@
+set\_material
+=============
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. automethod:: StackupLayer.set_material

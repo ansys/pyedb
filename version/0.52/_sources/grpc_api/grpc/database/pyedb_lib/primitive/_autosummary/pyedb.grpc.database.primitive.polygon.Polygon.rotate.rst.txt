@@ -1,0 +1,6 @@
+rotate
+======
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. automethod:: Polygon.rotate

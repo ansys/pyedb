@@ -1,0 +1,6 @@
+deembed\_length
+===============
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: BundleWavePort.deembed_length

@@ -1,0 +1,6 @@
+change\_design\_variable\_value
+===============================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.change_design_variable_value

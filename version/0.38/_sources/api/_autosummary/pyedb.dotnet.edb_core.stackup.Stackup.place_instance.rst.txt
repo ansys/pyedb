@@ -1,0 +1,6 @@
+place\_instance
+===============
+
+.. currentmodule:: pyedb.dotnet.edb_core.stackup
+
+.. automethod:: Stackup.place_instance

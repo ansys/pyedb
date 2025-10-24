@@ -1,0 +1,6 @@
+referencing\_via\_layer\_ids
+============================
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoproperty:: StackupLayer.referencing_via_layer_ids

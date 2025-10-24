@@ -1,0 +1,6 @@
+add\_pin
+========
+
+.. currentmodule:: pyedb.grpc.database.utility.xml_control_file
+
+.. automethod:: ControlFileComponent.add_pin

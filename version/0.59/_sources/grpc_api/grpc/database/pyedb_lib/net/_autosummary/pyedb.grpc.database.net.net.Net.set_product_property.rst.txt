@@ -1,0 +1,6 @@
+set\_product\_property
+======================
+
+.. currentmodule:: pyedb.grpc.database.net.net
+
+.. automethod:: Net.set_product_property

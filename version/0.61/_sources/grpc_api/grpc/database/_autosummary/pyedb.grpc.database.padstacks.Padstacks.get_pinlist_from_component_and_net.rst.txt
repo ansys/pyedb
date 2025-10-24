@@ -1,0 +1,6 @@
+get\_pinlist\_from\_component\_and\_net
+=======================================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.get_pinlist_from_component_and_net
