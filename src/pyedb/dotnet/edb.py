@@ -839,11 +839,15 @@ class Edb:
         try:
             subprocess.run(cmd_translator, check=True)  # nosec
         except subprocess.CalledProcessError as e:  # nosec
-            raise RuntimeError("An error occurred while translating board file to ``edb.def`` file") from e
+            raise RuntimeError(
+                "An error occurred while translating board file to ``edb.def`` file. Please check the log file."
+            ) from e
         if not os.path.exists(os.path.join(working_dir, aedb_name)):
-            raise RuntimeWarning(f"Translator failed. command : {' '.join(cmd_translator)}")
+            raise RuntimeWarning(
+                f"Translation failed. command : {' '.join(cmd_translator)}. Please check the log file."
+            )
         else:
-            self.logger.info("Translation correctly completed")
+            self.logger.info("Translation successfully completed")
         self.edbpath = os.path.join(working_dir, aedb_name)
         return self.open_edb()
 
