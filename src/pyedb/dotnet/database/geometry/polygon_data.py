@@ -87,6 +87,11 @@ class PolygonData:
             for i in list(self._edb_object.Points)
         ]
 
+    @property
+    def points_without_arcs(self):
+        points = list(self._edb_object.GetPolygonWithoutArcs().Points)
+        return [(pt.X.ToDouble(), pt.Y.ToDouble()) for pt in points]
+
     def create_from_points(self, points, closed=True):
         list_of_point_data = []
         for pt in points:
