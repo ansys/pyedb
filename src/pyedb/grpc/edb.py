@@ -74,6 +74,7 @@ from ansys.edb.core.hierarchy.layout_component import (
     LayoutComponent as GrpcLayoutComponent,
 )
 import ansys.edb.core.layout.cell
+from ansys.edb.core.layout.cell import DesignMode as GrpcDesignMode
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
 )
@@ -210,6 +211,7 @@ class Edb(EdbInit):
         map_file: str = None,
         technology_file: str = None,
         layer_filter: str = None,
+        design_mode: str = None,
         restart_rpc_server=False,
     ):
         edbversion = get_string_version(edbversion)
@@ -271,7 +273,6 @@ class Edb(EdbInit):
                 map_file=map_file,
             ):
                 raise AttributeError("Translation was unsuccessful")
-                return False
             if settings.enable_local_log_file and self.log_name:
                 self.logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)
@@ -289,7 +290,6 @@ class Edb(EdbInit):
                 map_file=map_file,
             ):
                 raise AttributeError("Translation was unsuccessful")
-                return False
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
             self.open(restart_rpc_server=restart_rpc_server)
@@ -301,6 +301,8 @@ class Edb(EdbInit):
             self.open(restart_rpc_server=restart_rpc_server)
         if self.active_cell:
             self.logger.info("EDB initialized.")
+            if design_mode:
+                self.design_mode = design_mode
         else:
             self.logger.info("Failed to initialize EDB.")
         self._layout_instance = None
@@ -2063,6 +2065,39 @@ class Edb(EdbInit):
                 self.db.set_variable_value(variable_name, Value(variable_value))
             elif variable_name in self.active_cell.get_all_variable_names():
                 self.active_cell.set_variable_value(variable_name, Value(variable_value))
+
+    @property
+    def design_mode(self):
+        """Get mode of the  edb design.
+
+        Returns
+        ----------
+        str
+            Value is either "GENERAL" or "IC".
+        """
+        design_mode = self.active_cell.design_mode
+        if design_mode.value == 0:
+            mode = "GENERAL"
+        elif design_mode.value == 1:
+            mode = "IC"
+        return mode
+
+    @design_mode.setter
+    def design_mode(self, value):
+        """Update the design mode of the edb.
+
+        Parameters
+        ----------
+        value : str
+            It can be either "GENERAL" or "IC".
+        """
+        if value == "GENERAL":
+            enum_value = 0
+        elif value == "IC":
+            enum_value = 1
+        else:
+            raise ValueError("Invalid value input")
+        self.active_cell.design_mode = GrpcDesignMode(enum_value)
 
     def get_bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         """Get layout bounding box.
