@@ -31,6 +31,7 @@ import pytest
 
 from pyedb.generic.general_methods import is_linux
 from tests.conftest import config, local_path, test_subfolder
+from tests.scratch_33_internal import edbapp
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
@@ -2009,3 +2010,13 @@ class TestClass(BaseTestClass):
         assert edbapp.import_vlctech_stackup(vlctech_path)
         assert os.path.exists(edbapp.edbpath) and edbapp.edbpath[-12:] == "vlctech.aedb"
         assert edbapp.close()
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Supported only ib grpc")
+    def test_design_mode(self):
+        from pyedb import Edb
+
+        edbapp = Edb(design_mode="IC")
+        assert edbapp.design_mode == "IC"
+        edbapp.design_mode = "GENERAL"
+        assert edbapp.design_mode == "GENERAL"
+        edbapp.close()
