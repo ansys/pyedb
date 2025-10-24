@@ -729,6 +729,96 @@ class PadstackInstance(GrpcPadstackInstance):
                 return False
 
     @property
+    def backdrill_diameter(self):
+        parameters = []
+        if self.backdrill_bottom:
+            parameters = self.get_back_drill_by_layer(True)
+        elif self.backdrill_top:
+            parameters = self.get_back_drill_by_layer(False)
+        if parameters:
+            return round(parameters[-1].value, 9)
+        return 0.0
+
+    @backdrill_diameter.setter
+    def backdrill_diameter(self, value):
+        if self.backdrill_bottom:
+            parameters = self.get_back_drill_by_layer(True)
+            self.set_back_drill_by_layer(
+                drill_to_layer=parameters[0],
+                offset=parameters[1],
+                diameter=self._pedb.value(value),
+                from_bottom=True,
+            )
+        elif self.backdrill_top:
+            parameters = self.get_back_drill_by_layer(False)
+            self.set_back_drill_by_layer(
+                drill_to_layer=parameters[0],
+                offset=parameters[1],
+                diameter=Value(value),
+                from_bottom=False,
+            )
+
+    @property
+    def backdrill_layer(self):
+        parameters = []
+        if self.backdrill_bottom:
+            parameters = self.get_back_drill_by_layer(True)
+        elif self.backdrill_top:
+            parameters = self.get_back_drill_by_layer(False)
+        if parameters:
+            return parameters[0]
+        return ""
+
+    @backdrill_layer.setter
+    def backdrill_layer(self, value):
+        if self.backdrill_bottom:
+            parameters = self.get_back_drill_by_layer(True)
+            self.set_back_drill_by_layer(
+                drill_to_layer=self._pedb.stackup.layers[value],
+                offset=parameters[1],
+                diameter=parameters[2],
+                from_bottom=True,
+            )
+        elif self.backdrill_top:
+            parameters = self.get_back_drill_by_layer(False)
+            self.set_back_drill_by_layer(
+                drill_to_layer=value,
+                offset=parameters[1],
+                diameter=parameters[2],
+                from_bottom=False,
+            )
+
+    @property
+    def backdrill_offset(self):
+        parameters = []
+        if self.backdrill_bottom:
+            parameters = self.get_back_drill_by_layer(True)
+        elif self.backdrill_top:
+            parameters = self.get_back_drill_by_layer(False)
+        if parameters:
+            return parameters[1].value
+        return 0.0
+
+    @backdrill_offset.setter
+    def backdrill_offset(self, value):
+        if self.backdrill_bottom:
+            parameters = self.get_back_drill_by_layer(True)
+            self.set_back_drill_by_layer(
+                drill_to_layer=parameters[0],
+                offset=Value(value),
+                diameter=parameters[2],
+                from_bottom=True,
+            )
+        elif self.backdrill_top:
+            parameters = self.get_back_drill_by_layer(False)
+            self.set_back_drill_by_layer(
+                drill_to_layer=parameters[0],
+                offset=Value(value),
+                diameter=parameters[2],
+                from_bottom=False,
+            )
+
+    @property
     def metal_volume(self) -> float:
         """Metal volume of the via hole instance in cubic units (m3). Metal plating ratio is accounted.
 

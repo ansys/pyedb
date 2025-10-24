@@ -165,6 +165,14 @@ def check_pandoc_installed(app):
 
 
 def autodoc_skip_member(app, what, name, obj, skip, options):
+    # Skip property objects that might not have __module__ attribute
+    if isinstance(obj, property):
+        try:
+            if not hasattr(obj, "__module__"):
+                return True
+        except:
+            return True
+
     try:
         exclude = True if ".. deprecated::" in obj.__doc__ else False
     except:
@@ -423,3 +431,12 @@ latex_additional_files = [watermark, ansys_logo_white, ansys_logo_white_cropped]
 # change the preamble of latex with customized title page
 # variables are the title of pdf, watermark
 latex_elements = {"preamble": latex.generate_preamble(html_title)}
+
+linkcheck_ignore = [
+    r"https://download.ansys.com/",
+]
+
+# If we are on a release, we have to ignore the "release" URLs, since it is not
+# available until the release is published.
+if switcher_version != "dev":
+    linkcheck_ignore.append(f"https://github.com/ansys/pyedb/releases/tag/v{__version__}")  # noqa: E501

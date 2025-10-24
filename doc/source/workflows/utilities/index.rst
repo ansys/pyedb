@@ -7,3 +7,4 @@ This section describes PyEDB utilities workflows features.
    :maxdepth: 2
 
    cutout
+   hfss_log_parser

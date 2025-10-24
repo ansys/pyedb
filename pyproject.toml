@@ -40,6 +40,9 @@ dependencies = [
     "psutil",
     "defusedxml>=0.7,<8.0",
     "matplotlib>=3.5.0,<3.11",
+    "aiohttp>=3.8",
+    "python-socketio>=5.10",
+    "requests>=2.32,<3.0",
 ]
 
 [project.optional-dependencies]
@@ -57,11 +60,11 @@ doc = [
     "imageio>=2.30.0,<2.38",
     "ipython>=8.13.0,<8.32",
     "jupyterlab>=4.0.0,<4.5",
-    "jupytext>=1.16.0,<1.18",
+    "jupytext>=1.16.0,<1.19",
     "matplotlib>=3.5.0,<3.11",
     "nbsphinx>=0.9.0,<0.10",
     "nbconvert < 7.17",
-    "numpydoc>=1.5.0,<1.9",
+    "numpydoc==1.5.0",
     "pypandoc>=1.10.0,<1.16",
     # NOTE: Remove recommonmark once examples are reworked.
     "recommonmark",
@@ -264,3 +267,47 @@ checks = [
     "PR10",  # Parameter "{param_name}" requires a space before the colon
     # separating the parameter name and type",
 ]
+
+[tool.towncrier]
+package = "pyedb"
+directory = "doc/changelog.d"
+filename = "doc/source/changelog.rst"
+start_string = ".. towncrier release notes start\n"
+template = "doc/changelog.d/changelog_template.jinja"
+title_format = "`{version} <https://github.com/ansys/pyedb/releases/tag/v{version}>`_ - {project_date}"
+issue_format = "`#{issue} <https://github.com/ansys/pyedb/pull/{issue}>`_"
+
+[[tool.towncrier.type]]
+directory = "added"
+name = "Added"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "dependencies"
+name = "Dependencies"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "documentation"
+name = "Documentation"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "fixed"
+name = "Fixed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "maintenance"
+name = "Maintenance"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "miscellaneous"
+name = "Miscellaneous"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "test"
+name = "Test"
+showcontent = true
