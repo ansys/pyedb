@@ -98,6 +98,11 @@ class PolygonData:
             list_of_point_data.append(PointData.create_from_xy(self._pedb, x=pt[0], y=pt[1])._edb_object)
         return self._pedb.core.Geometry.PolygonData(convert_py_list_to_net_list(list_of_point_data), closed)
 
+    @property
+    def area(self):
+        """Get the area of the polygon."""
+        return self._edb_object.Area()
+
     def create_from_bounding_box(self, points):
         bbox = BBox(self._pedb, point_1=points[0], point_2=points[1])
         return self._pedb.core.Geometry.PolygonData.CreateFromBBox(bbox._edb_object)

@@ -397,7 +397,7 @@ class Drc:
             self.idx_primitives.insert(i, coordinates=[bbox[0], bbox[1], bbox[2], bbox[3]])
         for i, via in enumerate(self.edb.padstacks.instances.values()):
             self.idx_vias.insert(i, via.position)
-        for i, comp in enumerate(self.edb.components.components.values()):
+        for i, comp in enumerate(self.edb.components.instances.values()):
             self.idx_components.insert(i, comp.bounding_box)
 
     def check(self, rules: Rules) -> List[Dict[str, Any]]:
