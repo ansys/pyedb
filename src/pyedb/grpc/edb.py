@@ -74,6 +74,7 @@ from ansys.edb.core.hierarchy.layout_component import (
     LayoutComponent as GrpcLayoutComponent,
 )
 import ansys.edb.core.layout.cell
+from ansys.edb.core.layout.cell import DesignMode as GrpcDesignMode
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
 )
@@ -2083,6 +2084,37 @@ class Edb(EdbInit):
                 self.db.set_variable_value(variable_name, Value(variable_value))
             elif variable_name in self.active_cell.get_all_variable_names():
                 self.active_cell.set_variable_value(variable_name, Value(variable_value))
+
+    @property
+    def design_mode(self):
+        """Get mode of the  edb design.
+        Returns
+        ----------
+        str
+            Value is either "General" or "IC".
+        """
+        design_mode = self.active_cell.design_mode
+        if design_mode.value == 0:
+            mode = "General"
+        elif design_mode.value == 1:
+            mode = "IC"
+        return mode
+
+    @design_mode.setter
+    def design_mode(self, value):
+        """Update the design mode of the edb.
+        Parameters
+        ----------
+        value : str
+            It can be either "General" or "IC".
+        """
+        if value == "General":
+            enum_value = 0
+        elif value == "IC":
+            enum_value = 1
+        else:
+            raise ValueError("Invalid value input")
+        self.active_cell.design_mode = GrpcDesignMode(enum_value)
 
     def get_bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         """Get layout bounding box.
