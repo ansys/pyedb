@@ -211,7 +211,6 @@ class Edb(EdbInit):
         map_file: str = None,
         technology_file: str = None,
         layer_filter: str = None,
-        design_mode: str = None,
         restart_rpc_server=False,
     ):
         edbversion = get_string_version(edbversion)
@@ -2093,11 +2092,11 @@ class Edb(EdbInit):
         Returns
         ----------
         str
-            Value is either "GENERAL" or "IC".
+            Value is either "General" or "IC".
         """
         design_mode = self.active_cell.design_mode
         if design_mode.value == 0:
-            mode = "GENERAL"
+            mode = "General"
         elif design_mode.value == 1:
             mode = "IC"
         return mode
@@ -2109,9 +2108,9 @@ class Edb(EdbInit):
         Parameters
         ----------
         value : str
-            It can be either "GENERAL" or "IC".
+            It can be either "General" or "IC".
         """
-        if value == "GENERAL":
+        if value == "General":
             enum_value = 0
         elif value == "IC":
             enum_value = 1

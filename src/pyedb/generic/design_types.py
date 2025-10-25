@@ -59,7 +59,6 @@ def Edb(
     grpc=False,
     control_file=None,
     layer_filter=None,
-    design_mode=None,
 ):
     """Provides the EDB application interface.
 
@@ -296,7 +295,6 @@ def Edb(
             use_ppe=use_ppe,
             technology_file=technology_file,
             control_file=control_file,
-            design_mode=design_mode,
         )
     else:
         if float(settings.specified_version) >= 2025.2:
