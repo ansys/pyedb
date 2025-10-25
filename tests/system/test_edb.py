@@ -2014,8 +2014,8 @@ class TestClass(BaseTestClass):
     def test_design_mode(self):
         from pyedb import Edb
 
-        edbapp = Edb(design_mode="IC")
-        assert edbapp.design_mode == "IC"
-        edbapp.design_mode = "GENERAL"
+        edbapp = Edb()
         assert edbapp.design_mode == "GENERAL"
+        edbapp.design_mode = "IC"
+        assert edbapp.design_mode == "IC"
         edbapp.close()
