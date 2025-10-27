@@ -248,3 +248,4 @@ def swap_polygon_with_dxf_center_point(edb: Edb, dxf_path: str, layer_name: str,
     ]
 
     dxf_polygon.move(vector=move_vector)
+    edb.modeler._reload_all()  # Force reload to update primitive positions in EDB GUI
