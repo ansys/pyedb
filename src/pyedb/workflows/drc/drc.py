@@ -517,7 +517,7 @@ class Drc:
                 pid = prim.id
                 bbox = prim.bbox
                 if self.edb.grpc:
-                    points = [[pt.x, pt.y] for pt in prim.polygon_data.without_arcs().points]
+                    points = [[pt.x.value, pt.y.value] for pt in prim.polygon_data.without_arcs().points]
                 else:
                     points = prim.polygon_data.points_without_arcs
 
@@ -631,8 +631,12 @@ class Drc:
             via_def = padstacks_definitions[via.padstack_definition]
 
             # Skip if no hole properties (non-drilled padstack)
-            if not via_def.hole_properties:
-                continue
+            if self.edb.grpc:
+                if not via_def.hole_diameter:
+                    continue
+            else:
+                if not via_def.hole_properties:
+                    continue
 
             # Some padstacks may not have pad shapes either
             if not via_def.pad_by_layer:
@@ -640,7 +644,10 @@ class Drc:
 
             first_pad = next(iter(via_def.pad_by_layer.values()))
             od = first_pad.parameters_values[0]
-            id_ = via_def.hole_properties[0]
+            if self.edb.grpc:
+                id_ = via_def.id
+            else:
+                id_ = via_def.hole_properties[0]
             via_data.append({"via_name": via.name, "od": od, "id": id_})
 
         # === STEP 2: Multi-threaded computation ===
@@ -664,32 +671,31 @@ class Drc:
     def _rule_copper_balance(self, rule: CopperBalance):
         max_imbalance = self.edb.value(rule.max_percent)
 
-        # Snapshot data for thread safety
+        # Snapshot data
         primitives_by_layer = dict(self.edb.modeler.primitives_by_layer)
         layout_outline = [prim for prim in self.edb.modeler.primitives if prim.layer.name.lower() == "outline"]
         if not layout_outline:
             raise ValueError("No outline primitive found in the layout.")
-        area_board = layout_outline[0].polygon_data.area
+        if self.edb.grpc:
+            area_board = layout_outline[0].polygon_data.area()
+        else:
+            area_board = layout_outline[0].polygon_data.area
 
-        def check_layer(layer, prim_list):
-            area_copper = sum(prim.polygon_data.area for prim in prim_list)
+        for layer, prim_list in primitives_by_layer.items():
+            if self.edb.grpc:
+                area_copper = sum(prim.polygon_data.area() for prim in prim_list)
+            else:
+                area_copper = sum(prim.polygon_data.area for prim in prim_list)
             imbalance = abs(area_copper - area_board / 2) / (area_board / 2) * 100
             if imbalance > max_imbalance:
-                return {
-                    "rule": "copper_balance",
-                    "layer": layer,
-                    "imbalance_pct": imbalance,
-                    "limit_pct": max_imbalance,
-                }
-            return None
-
-        workers = max(1, (os.cpu_count() or 2) - 1)
-
-        with ThreadPoolExecutor(max_workers=workers) as executor:
-            results = list(executor.map(lambda kv: check_layer(kv[0], kv[1]), primitives_by_layer.items()))
-
-        # Append results in the main thread only (lock-free)
-        self.violations.extend(r for r in results if r is not None)
+                self.violations.append(
+                    {
+                        "rule": "copper_balance",
+                        "layer": layer,
+                        "imbalance_pct": imbalance,
+                        "limit_pct": max_imbalance,
+                    }
+                )
 
     # High-speed rules
     def _rule_diff_pair_length_match(self, rule: DiffPairLengthMatch):
@@ -727,14 +733,25 @@ class Drc:
     def _rule_back_drill_stub_length(self, rule: BackDrillStubLength):
         max_stub = self.edb.value(rule.value)
 
-        # Snapshot data for thread safety
+        # Snapshot data for safety
         padstack_instances = list(self.edb.padstacks.instances.values())
         layers = dict(self.edb.stackup.layers)
 
-        def check_via(via):
-            start = via.layer_range_names[0]
-            stop = via.layer_range_names[-1]
-            if via.backdrill_parameters:
+        for via in padstack_instances:
+            layer_range = via.layer_range_names
+            if layer_range:
+                start = layer_range[0]
+                stop = layer_range[-1]
+
+            is_backdrilled = False
+            if self.edb.grpc:
+                if via.backdrill_diameter:
+                    is_backdrilled = True
+            else:
+                if via.backdrill_parameters:
+                    is_backdrilled = True
+
+            if is_backdrilled:
                 via_length = abs(layers[start].upper_elevation - layers[stop].lower_elevation)
                 if via.backdrill_type == "layer_drill":
                     if via.backdrill_bottom:
@@ -742,18 +759,12 @@ class Drc:
                     else:
                         stub = abs(via_length - layers[via.backdrill_parameters[0]].upper_elevation)
                 else:
-                    stub = 0  # If other drill types exist, handle here
+                    stub = 0  # other drill types can be handled here
+
                 if stub > max_stub:
-                    return {"rule": "back_drill_stub_length", "via": via.name, "stub_um": stub, "limit_um": max_stub}
-            return None
-
-        workers = max(1, (os.cpu_count() or 2) - 1)
-
-        with ThreadPoolExecutor(max_workers=workers) as executor:
-            results = list(executor.map(check_via, padstack_instances))
-
-        # Merge results lock-free in main thread
-        self.violations.extend(r for r in results if r is not None)
+                    self.violations.append(
+                        {"rule": "back_drill_stub_length", "via": via.name, "stub_um": stub, "limit_um": max_stub}
+                    )
 
     # Export utilities
     def to_ipc356a(self, file_path: str) -> None:
@@ -786,7 +797,10 @@ class Drc:
                 f.write(f"NET {net_name}\n")
                 for prim in net.primitives:
                     if hasattr(prim, "polygon_data"):
-                        points = prim.polygon_data.points_without_arcs
+                        if self.edb.grpc:
+                            points = [[pt.x.value, pt.y.value] for pt in prim.polygon_data.without_arcs().points]
+                        else:
+                            points = prim.polygon_data.points_without_arcs
                         if points:
                             coords = " ".join(f"x:{x}, y:{y}" for x, y in points)
                             f.write(f"  P {coords}\n")
