@@ -515,8 +515,11 @@ class Drc:
 
             for prim in primitives:
                 pid = prim.id
-                bbox = list(itertools.chain(*prim.polygon_data.bounding_box))  # [minx,miny,maxx,maxy]
-                points = prim.polygon_data.points_without_arcs
+                bbox = prim.bbox
+                if self.edb.grpc:
+                    points = [[pt.x, pt.y] for pt in prim.polygon_data.without_arcs().points]
+                else:
+                    points = prim.polygon_data.points_without_arcs
 
                 primitive_points_map[pid] = points
                 prim_bboxes[pid] = bbox
