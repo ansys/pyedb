@@ -642,12 +642,9 @@ class HFSSSimulationConfig(BaseModel):
             f"#BSUB -q {opts.queue}",
             f"#BSUB -W {opts.time}",
             f"#BSUB -n {total_cpus}",
-            f'#BSUB -R "span[ptile={opts.cores_per_node}] select[ ((osrel=80) || (osrel=90)) && ui=ansysedt_solver] '
+            f'#BSUB -R "span[ptile={opts.cores_per_node}]"',
             f'rusage[mem={opts.memory}/host]"',
             f"#BSUB -env 'all,~LD_PRELOAD,LSB_JOB_REPORT_MAIL=Y'",
-            "",
-            "export ANSOFT_PASS_DEBUG_ENV_TO_REMOTE_ENGINES=1",
-            "export ANSYSEM_FEATURE_CONTROL=lwamOsjR_L-LnSHxWbr35csqQvEwNCJH",
             "",
             "# Load ANSYS environment",
             "module load ansys",
