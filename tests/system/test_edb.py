@@ -1995,6 +1995,12 @@ class TestClass(BaseTestClass):
         assert net_layer_info
         edbapp.close(terminate_rpc_session=False)
 
+    def test_ipc_2581(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.export_to_ipc2581()
+        assert os.path.exists(edbapp.edbpath[:-5] + ".xml")
+        edbapp.close(terminate_rpc_session=False)
+
     def test_import_vlctech(self, edb_examples):
         from pyedb import Edb
 
