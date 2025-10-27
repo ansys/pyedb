@@ -27,7 +27,7 @@ import re
 import sys
 
 import numpy as np
-from sklearn.neighbors import KDTree
+from scipy.spatial import KDTree
 
 from pyedb.generic.constants import AXIS, PLANE, SWEEPDRAFT, scale_units
 
