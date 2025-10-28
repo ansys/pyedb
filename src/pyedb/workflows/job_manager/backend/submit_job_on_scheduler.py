@@ -76,6 +76,7 @@ DEFAULT_PORT = 8080
 DEFAULT_PARTITION = "default"
 DEFAULT_NODES = 1
 DEFAULT_CORES_PER_NODE = 1
+DEFAULT_RUN_LIMIT = "unlimited"
 
 
 async def submit_slurm_job(
@@ -86,6 +87,7 @@ async def submit_slurm_job(
     partition: str,
     nodes: int,
     cores_per_node: int,
+    run_limit: str,
 ) -> None:
     """Send the SLURM job-configuration to the REST endpoint."""
     backend_url = f"http://{host}:{port}"
@@ -95,7 +97,7 @@ async def submit_slurm_job(
         queue=partition,
         nodes=nodes,
         cores_per_node=cores_per_node,
-        time="24:00:00",  # you can expose --time if you wish
+        time=run_limit,
     )
 
     # 2.  Create the HFSS config (scheduler_type=SLURM is the key)
@@ -140,6 +142,11 @@ def parse_cli() -> argparse.Namespace:
     parser.add_argument("--partition", default=DEFAULT_PARTITION)
     parser.add_argument("--nodes", type=int, default=DEFAULT_NODES)
     parser.add_argument("--cores-per-node", type=int, default=DEFAULT_CORES_PER_NODE)
+    parser.add_argument(
+        "--run-limit",
+        default=DEFAULT_RUN_LIMIT,
+        help='Wall-time limit for LSF/SLURM (default: "unlimited"). Give an integer in hours (e.g. 24) or "unlimited".',
+    )
     return parser.parse_args()
 
 
@@ -160,6 +167,7 @@ def main() -> None:
             partition=args.partition,
             nodes=args.nodes,
             cores_per_node=args.cores_per_node,
+            run_limit=args.run_limit,
         )
     )
 
