@@ -2008,4 +2008,12 @@ class TestClass(BaseTestClass):
         edbapp = Edb()
         assert edbapp.import_vlctech_stackup(vlctech_path)
         assert os.path.exists(edbapp.edbpath) and edbapp.edbpath[-12:] == "vlctech.aedb"
-        assert edbapp.close()
+        assert edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Supported only in grpc")
+    def test_design_mode(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        assert edbapp.design_mode == "general"
+        edbapp.design_mode = "IC"
+        assert edbapp.design_mode == "ic"
+        edbapp.close()
