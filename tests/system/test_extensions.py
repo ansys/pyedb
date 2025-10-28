@@ -648,9 +648,12 @@ class TestClass(BaseTestClass):
         edb.save()
 
         assert len(edb.modeler.primitives_by_layer["Trace"]) == 3
-        polygon = edb.modeler.get_primitive_by_layer_and_point(point=point_aedt, layer=layer_name)
-        assert len(polygon) == 1
-        assert polygon[0].area == 200
+        polygon = edb.modeler.primitives[2]
+
+        center = [round(pt, 6) for pt in polygon.center]
+        assert center == [170e-3, 70e-3]
+        assert edb.modeler.primitives[2].layer_name == layer_name
+        assert round(edb.modeler.primitives[2].area(), 6) == 200e-6
 
     @pytest.mark.skipif(condition=not GRPC, reason="Implemented only with grpc")
     def test_dxf_swap_backend(self, edb_examples):

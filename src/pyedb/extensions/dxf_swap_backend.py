@@ -163,6 +163,7 @@ def swap_polygon_with_dxf(edb: Edb, dxf_path: str, layer_name: str, point_dxf: L
     ]
 
     dxf_polygon.move(vector=move_vector)
+    edb.modeler._reload_all()
 
 
 def swap_polygon_with_dxf_center_point(edb: Edb, dxf_path: str, layer_name: str, point_aedt: List[str]):
