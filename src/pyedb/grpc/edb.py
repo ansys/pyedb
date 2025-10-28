@@ -2093,12 +2093,7 @@ class Edb(EdbInit):
         str
             Value is either "General" or "IC".
         """
-        design_mode = self.active_cell.design_mode
-        if design_mode.value == 0:
-            mode = "General"
-        elif design_mode.value == 1:
-            mode = "IC"
-        return mode
+        return ("general", "ic")[self.active_cell.design_mode.value]
 
     @design_mode.setter
     def design_mode(self, value):
@@ -2108,13 +2103,10 @@ class Edb(EdbInit):
         value : str
             It can be either "General" or "IC".
         """
-        if value == "General":
-            enum_value = 0
-        elif value == "IC":
-            enum_value = 1
-        else:
-            raise ValueError("Invalid value input")
-        self.active_cell.design_mode = GrpcDesignMode(enum_value)
+        try:
+            self.active_cell.design_mode = GrpcDesignMode(("general", "ic").index(value.lower()))
+        except (AttributeError, ValueError):
+            raise ValueError("Value must be 'general' or 'ic' (case-insensitive)")
 
     def get_bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         """Get layout bounding box.
