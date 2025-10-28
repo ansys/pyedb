@@ -9,6 +9,79 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.62.0 <https://github.com/ansys/pyedb/releases/tag/v0.62.0>`_ - October 28, 2025
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Add functionality for geometry swapping from DXF file
+          - `#1529 <https://github.com/ansys/pyedb/pull/1529>`_
+
+        * - Adding DRC inside pyedb
+          - `#1600 <https://github.com/ansys/pyedb/pull/1600>`_
+
+        * - Layout file warnings
+          - `#1602 <https://github.com/ansys/pyedb/pull/1602>`_
+
+        * - Design mode
+          - `#1607 <https://github.com/ansys/pyedb/pull/1607>`_
+
+        * - Job manager lsf support
+          - `#1609 <https://github.com/ansys/pyedb/pull/1609>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/labeler from 5.0.0 to 6.0.1
+          - `#1578 <https://github.com/ansys/pyedb/pull/1578>`_
+
+        * - Bump actions/download-artifact from 5.0.0 to 6.0.0
+          - `#1610 <https://github.com/ansys/pyedb/pull/1610>`_
+
+        * - Bump actions/upload-artifact from 4.6.2 to 5.0.0
+          - `#1611 <https://github.com/ansys/pyedb/pull/1611>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Add the changelog feature
+          - `#1593 <https://github.com/ansys/pyedb/pull/1593>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Job manager default values
+          - `#1597 <https://github.com/ansys/pyedb/pull/1597>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Adding artifact attestations and fix warnings related to coverage upload
+          - `#1601 <https://github.com/ansys/pyedb/pull/1601>`_
+
 
 .. vale on
 
