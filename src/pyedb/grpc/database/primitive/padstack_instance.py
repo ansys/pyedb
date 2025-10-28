@@ -531,7 +531,11 @@ class PadstackInstance(GrpcPadstackInstance):
             List of layer names.
 
         """
-        start_layer, stop_layer = self.get_layer_range()
+        layer_range = self.get_layer_range()
+        if layer_range:
+            start_layer, stop_layer = layer_range
+        else:
+            return []
         started = False
         layer_list = []
         start_layer_name = start_layer.name

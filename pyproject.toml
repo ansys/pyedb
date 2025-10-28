@@ -44,6 +44,7 @@ dependencies = [
     "python-socketio>=5.10",
     "requests>=2.32,<3.0",
     "ezdxf>=1.4.2",
+    "scipy>=1.13, <2.0",
 ]
 
 [project.optional-dependencies]
