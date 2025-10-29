@@ -1,0 +1,24 @@
+﻿LayerEdbClass
+=============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.layer_data
+
+.. autoclass:: LayerEdbClass
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      LayerEdbClass.update
+      
+   
+   
+
+   
+   
+   

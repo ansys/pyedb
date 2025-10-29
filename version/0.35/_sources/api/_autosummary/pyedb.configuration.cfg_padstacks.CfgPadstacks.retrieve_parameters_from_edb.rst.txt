@@ -1,0 +1,6 @@
+retrieve\_parameters\_from\_edb
+===============================
+
+.. currentmodule:: pyedb.configuration.cfg_padstacks
+
+.. automethod:: CfgPadstacks.retrieve_parameters_from_edb

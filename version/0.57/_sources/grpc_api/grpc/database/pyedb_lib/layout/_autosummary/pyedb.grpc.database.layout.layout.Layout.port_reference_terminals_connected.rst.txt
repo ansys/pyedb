@@ -1,0 +1,6 @@
+port\_reference\_terminals\_connected
+=====================================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. autoproperty:: Layout.port_reference_terminals_connected

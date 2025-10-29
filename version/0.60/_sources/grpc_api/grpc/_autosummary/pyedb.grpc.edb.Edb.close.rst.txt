@@ -1,0 +1,6 @@
+close
+=====
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.close

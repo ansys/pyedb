@@ -1,0 +1,65 @@
+﻿ArcData
+=======
+
+.. currentmodule:: pyedb.grpc.database.geometry.arc_data
+
+.. autoclass:: ArcData
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      ArcData.angle
+      
+      
+      ArcData.closest_points
+      
+      
+      ArcData.is_big
+      
+      
+      ArcData.is_ccw
+      
+      
+      ArcData.is_cw
+      
+      
+      ArcData.is_left
+      
+      
+      ArcData.is_point
+      
+      
+      ArcData.is_segment
+      
+      
+      ArcData.tangent_at
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ArcData.bbox
+      ArcData.center
+      ArcData.direction
+      ArcData.end
+      ArcData.height
+      ArcData.length
+      ArcData.mid_point
+      ArcData.midpoint
+      ArcData.points
+      ArcData.radius
+      ArcData.start
+   
+   

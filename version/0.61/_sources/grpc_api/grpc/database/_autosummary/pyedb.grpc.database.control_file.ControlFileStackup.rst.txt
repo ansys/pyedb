@@ -1,0 +1,33 @@
+﻿ControlFileStackup
+==================
+
+.. currentmodule:: pyedb.grpc.database.control_file
+
+.. autoclass:: ControlFileStackup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      ControlFileStackup.add_dielectric
+      
+      
+      ControlFileStackup.add_layer
+      
+      
+      ControlFileStackup.add_material
+      
+      
+      ControlFileStackup.add_via
+      
+   
+   
+
+   
+   
+   

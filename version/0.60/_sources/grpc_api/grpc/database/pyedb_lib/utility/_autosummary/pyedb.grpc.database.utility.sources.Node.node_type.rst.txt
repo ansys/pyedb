@@ -1,0 +1,6 @@
+node\_type
+==========
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoproperty:: Node.node_type

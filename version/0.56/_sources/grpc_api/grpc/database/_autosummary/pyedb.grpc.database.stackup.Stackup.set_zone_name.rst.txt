@@ -1,0 +1,6 @@
+set\_zone\_name
+===============
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: Stackup.set_zone_name

@@ -1,0 +1,6 @@
+ic\_mode\_auto\_resolution
+==========================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_advanced_settings
+
+.. autoproperty:: HFSSAdvancedSettings.ic_mode_auto_resolution

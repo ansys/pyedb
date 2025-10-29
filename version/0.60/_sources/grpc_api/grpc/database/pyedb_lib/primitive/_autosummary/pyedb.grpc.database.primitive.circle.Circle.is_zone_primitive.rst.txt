@@ -1,0 +1,6 @@
+is\_zone\_primitive
+===================
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. autoproperty:: Circle.is_zone_primitive

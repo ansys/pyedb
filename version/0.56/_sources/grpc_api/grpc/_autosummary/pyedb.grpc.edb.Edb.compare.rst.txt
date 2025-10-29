@@ -1,0 +1,6 @@
+compare
+=======
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.compare

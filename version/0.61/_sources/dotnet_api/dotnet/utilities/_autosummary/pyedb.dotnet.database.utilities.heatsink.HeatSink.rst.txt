@@ -1,0 +1,15 @@
+﻿HeatSink
+========
+
+.. currentmodule:: pyedb.dotnet.database.utilities.heatsink
+
+.. autoclass:: HeatSink
+
+   
+
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+get\_primitive
+==============
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. automethod:: Modeler.get_primitive

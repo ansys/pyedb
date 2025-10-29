@@ -1,0 +1,6 @@
+is\_port
+========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: WavePort.is_port

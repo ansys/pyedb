@@ -1,0 +1,6 @@
+is\_mcad\_3d\_comp
+==================
+
+.. currentmodule:: pyedb.grpc.database.terminal.bundle_terminal
+
+.. autoproperty:: BundleTerminal.is_mcad_3d_comp

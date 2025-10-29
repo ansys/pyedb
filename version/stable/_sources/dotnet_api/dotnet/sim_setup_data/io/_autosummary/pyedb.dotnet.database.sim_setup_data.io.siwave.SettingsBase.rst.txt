@@ -1,0 +1,27 @@
+﻿SettingsBase
+============
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoclass:: SettingsBase
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      SettingsBase.get_configurations
+      
+      
+      SettingsBase.restore_default
+      
+   
+   
+
+   
+   
+   

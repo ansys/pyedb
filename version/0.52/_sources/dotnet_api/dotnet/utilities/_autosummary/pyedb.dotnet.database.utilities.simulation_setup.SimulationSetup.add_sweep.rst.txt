@@ -1,0 +1,6 @@
+add\_sweep
+==========
+
+.. currentmodule:: pyedb.dotnet.database.utilities.simulation_setup
+
+.. automethod:: SimulationSetup.add_sweep

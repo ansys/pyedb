@@ -1,0 +1,83 @@
+﻿Terminal
+========
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. autoclass:: Terminal
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Terminal.cast
+      
+      
+      Terminal.create_3d_comp
+      
+      
+      Terminal.create_hfss
+      
+      
+      Terminal.create_stride
+      
+      
+      Terminal.delete
+      
+      
+      Terminal.find
+      
+      
+      Terminal.find_by_id
+      
+      
+      Terminal.get_edge_terminal_reference_primitive
+      
+      
+      Terminal.get_pad_edge_terminal_reference_pin
+      
+      
+      Terminal.get_padstack_terminal_reference_pin
+      
+      
+      Terminal.get_pin_group_terminal_reference_pin
+      
+      
+      Terminal.get_point_terminal_reference_primitive
+      
+      
+      Terminal.get_product_property
+      
+      
+      Terminal.get_product_property_ids
+      
+      
+      Terminal.product_solver_names
+      
+      
+      Terminal.product_solver_option
+      
+      
+      Terminal.set_product_property
+      
+      
+      Terminal.set_product_solver_option
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Terminal.layout_obj_type
+      Terminal.type
+   
+   

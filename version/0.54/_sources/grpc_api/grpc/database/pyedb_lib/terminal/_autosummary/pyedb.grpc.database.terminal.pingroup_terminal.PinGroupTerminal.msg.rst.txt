@@ -1,0 +1,6 @@
+msg
+===
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoproperty:: PinGroupTerminal.msg

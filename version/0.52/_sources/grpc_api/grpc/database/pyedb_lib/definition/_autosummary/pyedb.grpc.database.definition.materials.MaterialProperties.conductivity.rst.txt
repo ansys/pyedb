@@ -1,0 +1,6 @@
+conductivity
+============
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoattribute:: MaterialProperties.conductivity

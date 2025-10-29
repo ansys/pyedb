@@ -1,0 +1,6 @@
+unite\_primitives
+=================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.unite_primitives

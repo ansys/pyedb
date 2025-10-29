@@ -1,0 +1,6 @@
+voltage\_regulator\_modules
+===========================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.voltage_regulator_modules

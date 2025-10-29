@@ -1,0 +1,6 @@
+terminal\_to\_ground
+====================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: ExcitationSources.terminal_to_ground

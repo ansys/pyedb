@@ -1,0 +1,6 @@
+create\_hfss
+============
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. automethod:: EdgeTerminal.create_hfss

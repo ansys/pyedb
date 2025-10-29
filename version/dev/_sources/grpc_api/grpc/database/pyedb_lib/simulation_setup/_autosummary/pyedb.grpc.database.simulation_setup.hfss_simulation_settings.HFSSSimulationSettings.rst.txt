@@ -1,0 +1,15 @@
+﻿HFSSSimulationSettings
+======================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_simulation_settings
+
+.. autoclass:: HFSSSimulationSettings
+
+   
+
+   
+   
+
+   
+   
+   

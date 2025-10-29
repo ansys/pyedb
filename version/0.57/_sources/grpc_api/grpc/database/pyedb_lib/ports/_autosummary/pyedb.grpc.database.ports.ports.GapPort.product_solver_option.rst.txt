@@ -1,0 +1,6 @@
+product\_solver\_option
+=======================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. automethod:: GapPort.product_solver_option

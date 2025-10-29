@@ -1,0 +1,6 @@
+create\_stride
+==============
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. automethod:: Bondwire.create_stride

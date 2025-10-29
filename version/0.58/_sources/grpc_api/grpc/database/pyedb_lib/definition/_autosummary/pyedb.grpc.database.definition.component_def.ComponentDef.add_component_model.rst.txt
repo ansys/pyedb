@@ -1,0 +1,6 @@
+add\_component\_model
+=====================
+
+.. currentmodule:: pyedb.grpc.database.definition.component_def
+
+.. automethod:: ComponentDef.add_component_model

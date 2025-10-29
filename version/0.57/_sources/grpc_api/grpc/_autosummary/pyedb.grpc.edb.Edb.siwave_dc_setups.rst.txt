@@ -1,0 +1,6 @@
+siwave\_dc\_setups
+==================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.siwave_dc_setups

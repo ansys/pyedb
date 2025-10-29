@@ -1,0 +1,6 @@
+create\_trace
+=============
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. automethod:: Modeler.create_trace

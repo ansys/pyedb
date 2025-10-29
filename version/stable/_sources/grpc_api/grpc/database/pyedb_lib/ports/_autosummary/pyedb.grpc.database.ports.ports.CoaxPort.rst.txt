@@ -1,0 +1,71 @@
+﻿CoaxPort
+========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoclass:: CoaxPort
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CoaxPort.cast
+      
+      
+      CoaxPort.create
+      
+      
+      CoaxPort.create_3d_comp
+      
+      
+      CoaxPort.create_hfss
+      
+      
+      CoaxPort.create_stride
+      
+      
+      CoaxPort.delete
+      
+      
+      CoaxPort.find
+      
+      
+      CoaxPort.find_by_id
+      
+      
+      CoaxPort.get_product_property
+      
+      
+      CoaxPort.get_product_property_ids
+      
+      
+      CoaxPort.product_solver_names
+      
+      
+      CoaxPort.product_solver_option
+      
+      
+      CoaxPort.set_product_property
+      
+      
+      CoaxPort.set_product_solver_option
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CoaxPort.layout_obj_type
+      CoaxPort.type
+   
+   

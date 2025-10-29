@@ -1,0 +1,6 @@
+params
+======
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: CoaxPort.params

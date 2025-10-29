@@ -1,0 +1,6 @@
+include\_nets
+=============
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.include_nets
