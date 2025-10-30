@@ -64,17 +64,21 @@ class HatchGround:
         pitch: Union[str, float] = 17.07e-3,
         width: Union[str, float] = 5.0e-3,
         fill_target: Union[str, float] = 50.0,
-        board_size: Union[str, float] = 100e-3,
+        ground_width: Union[str, float] = 100e-3,
+        ground_length: Union[str, float] = 100e-3,
         layer_gnd: str = "GND",
+        angle: float = 0.0,
     ):
         """Initialize the hatch ground object."""
         self._edb = edb_cell
         self.pitch = self._edb.value(pitch)
         self.width = self._edb.value(width)
         self.fill_target = self._edb.value(fill_target)
-        self.board_size = self._edb.value(board_size)
+        self.ground_width = self._edb.value(ground_width)
+        self.ground_length = self._edb.value(ground_length)
         self.layer_gnd = layer_gnd
         self._outline = None
+        self.angle = angle
 
     @property
     def copper_fill_ratio(self) -> float:
@@ -88,28 +92,30 @@ class HatchGround:
             has been generated.
         """
         cu_area = self._edb.modeler.polygons[0].area()
-        return 100.0 * cu_area / (self.board_size**2)
+        return 100.0 * cu_area / (self.ground_length * self.ground_width)
 
     def _generate_hatch(self) -> None:
         """Draw orthogonal stripes, then punch gaps for the requested fill."""
         # ---------- horizontal bars ----------
         y = 0.0
-        while y < self.board_size:
-            self._add_stripe(0.0, y, self.board_size, y + self.width)
+        self.board_size = max(self.ground_width, self.ground_length)
+        rectified_size = self.board_size + self.board_size * (math.sin(self.angle * math.pi / 180))
+        while y < rectified_size:
+            self._add_stripe(0.0, y, rectified_size, y + self.width)
             y += self.pitch
 
         # ---------- vertical bars ------------
         x = 0.0
-        while x < self.board_size:
-            self._add_stripe(x, 0.0, x + self.width, self.board_size)
+        while x < rectified_size:
+            self._add_stripe(x, 0.0, x + self.width, rectified_size)
             x += self.pitch
 
         # ---------- punch square gaps --------
         gaps: List[List[Tuple[float, float]]] = []
         x = 0.0
-        while x < self.board_size:
+        while x < rectified_size:
             y = 0.0
-            while y < self.board_size:
+            while y < rectified_size:
                 gaps.append(
                     [
                         (x, y),
@@ -122,11 +128,30 @@ class HatchGround:
                 y += self.pitch
             x += self.pitch
         polygons = self._edb.modeler.polygons
-        polygons[0].unite(polygons[1:])
+        grid = polygons[0].unite(polygons[1:])
+        if self.angle:
+            grid = grid[0]
+            grid.rotate(self.angle, center=[rectified_size / 2, rectified_size / 2])
+            grid.move(vector=[-(rectified_size - self.board_size) / 2, -(rectified_size - self.board_size) / 2])
+            for void in grid.voids:
+                void.rotate(self.angle, center=[rectified_size / 2, rectified_size / 2])
+                void.move(vector=[-(rectified_size - self.board_size) / 2, -(rectified_size - self.board_size) / 2])
+            board_outline = [
+                [0, 0],
+                [self.ground_width, 0],
+                [self.ground_width, self.ground_length],
+                [0, self.ground_length],
+            ]
+            hatched_plan = self._edb.modeler.create_polygon(board_outline, layer_name=self.layer_gnd, net_name="GND")
+            hatch_polygon_data = hatched_plan.polygon_data
+            for void in grid.voids:
+                if hatch_polygon_data.is_inside(void.center):
+                    hatched_plan.add_void(void)
+            grid.delete()
 
     def _add_stripe(self, x0: float, y0: float, x1: float, y1: float) -> None:
         """Create one rectangular copper bar on the GND layer."""
-        points = [(x0, y0), (x1, y0), (x1, y1), (x0, y1), (x0, y0)]
+        points = [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]
         self._edb.modeler.create_polygon(points, layer_name=self.layer_gnd, net_name="GND")
 
     def create(self) -> bool:
