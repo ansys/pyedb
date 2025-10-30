@@ -1184,7 +1184,7 @@ class Padstacks(object):
             antipad_shape = GrpcPadGeometryType.PADGEOMTYPE_CIRCLE
         if add_default_layer:  # pragma no cover
             layers = layers + ["Default"]
-        if antipad_shape == "Polygon" and pad_shape == "Polygon":
+        if pad_shape == "Polygon":
             for layer in layers:
                 padstack_data.set_pad_parameters(
                     layer=layer,
@@ -1194,6 +1194,8 @@ class Padstacks(object):
                     rotation=pad_rotation,
                     fp=pad_array,
                 )
+        if antipad_shape == "Polygon":
+            for layer in layers:
                 padstack_data.set_pad_parameters(
                     layer=layer,
                     pad_type=GrpcPadType.ANTI_PAD,
