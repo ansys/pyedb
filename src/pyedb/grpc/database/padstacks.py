@@ -1176,6 +1176,8 @@ class Padstacks(object):
                 antipad_array = GrpcPolygonData(points=antipad_polygon)
             elif isinstance(antipad_polygon, GrpcPolygonData):
                 antipad_array = antipad_polygon
+            else:
+                antipad_array = GrpcPolygonData(points=[[0, 0], [0, 0], [0, 0], [0, 0]])
         else:
             if not isinstance(antipaddiam, list):
                 antipad_array = [antipaddiam]
