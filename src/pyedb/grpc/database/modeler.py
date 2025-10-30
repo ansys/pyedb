@@ -128,14 +128,17 @@ class Modeler(object):
 
     def _add_primitive(self, prim: Any):
         """Add primitive wrapper to caches."""
-        self._primitives[prim.edb_uid] = prim
-        if self._primitives_by_name is not None:
-            self._primitives_by_name[prim.aedt_name] = prim
-        if self._primitives_by_net is not None and hasattr(prim, "net"):
-            self._primitives_by_net.setdefault(prim.net, []).append(prim)
-        if hasattr(prim, "layer"):
-            if self._primitives_by_layer is not None and prim.layer_name:
-                self._primitives_by_layer.setdefault(prim.layer_name, []).append(prim)
+        try:
+            self._primitives[prim.edb_uid] = prim
+            if self._primitives_by_name is not None:
+                self._primitives_by_name[prim.aedt_name] = prim
+            if self._primitives_by_net is not None and hasattr(prim, "net"):
+                self._primitives_by_net.setdefault(prim.net, []).append(prim)
+            if hasattr(prim, "layer"):
+                if self._primitives_by_layer is not None and prim.layer_name:
+                    self._primitives_by_layer.setdefault(prim.layer_name, []).append(prim)
+        except:
+            self._reload_all()
 
     def _remove_primitive(self, prim: Primitive):
         """Remove primitive wrapper from all caches efficiently and safely."""
