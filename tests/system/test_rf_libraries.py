@@ -104,13 +104,19 @@ class TestClass(BaseTestClass):
         edb = edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
         hatch = HatchGround(
-            edb_cell=edb, width=100e-6, pitch=225e-6, fill_target=50.0, layer_gnd="METAL_BOT", board_size=10e-3
+            edb_cell=edb,
+            width=100e-6,
+            pitch=225e-6,
+            fill_target=50.0,
+            layer_gnd="METAL_BOT",
+            ground_length=10e-3,
+            ground_width=5e-3,
         )
         hatch.create()
         assert round(hatch.copper_fill_ratio, 2) == 69.75
         assert hatch.board_size == 0.01
         assert edb.modeler.polygons[0].net.name == "GND"
-        assert len(edb.modeler.polygons[0].arcs) == 356
+        assert len(edb.modeler.polygons[0].arcs) == 4
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
