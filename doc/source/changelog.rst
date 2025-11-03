@@ -9,6 +9,35 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.63.0 <https://github.com/ansys/pyedb/releases/tag/v0.63.0>`_ - November 03, 2025
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Hatched ground plane with angle support
+          - `#1620 <https://github.com/ansys/pyedb/pull/1620>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.62.0
+          - `#1614 <https://github.com/ansys/pyedb/pull/1614>`_
+
+        * - Run PyAEDT test with PYAEDT_LOCAL_SETTINGS_PATH env var
+          - `#1622 <https://github.com/ansys/pyedb/pull/1622>`_
+
+
 `0.62.0 <https://github.com/ansys/pyedb/releases/tag/v0.62.0>`_ - October 28, 2025
 ==================================================================================
 
