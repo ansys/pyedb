@@ -357,6 +357,8 @@ venv.bak/
 # sphinx build
 doc/_build/
 doc/source/examples
+doc/source/autoapi
+doc/source/workflows/drc/generated
 doc/build_errors.txt
 _autosummary/
 
