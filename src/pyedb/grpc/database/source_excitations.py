@@ -653,7 +653,7 @@ class SourceExcitation:
                     do_pingroup = False
             if do_pingroup:
                 if len(ref_pins) == 1:
-                    ref_pins.is_pin = True
+                    ref_pins[0].is_pin = True
                     ref_pin_group_term = self._create_terminal(ref_pins[0])
                 else:
                     for pin in ref_pins:
