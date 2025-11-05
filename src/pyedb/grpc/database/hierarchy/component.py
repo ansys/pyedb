@@ -763,7 +763,7 @@ class Component(GrpcComponentGroup):
             super(Component, self.__class__).location.__set__(self, _location)
 
     @property
-    def bounding_box(self) -> list[float]:
+    def bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         """Component's bounding box.
 
         Returns
@@ -776,7 +776,7 @@ class Component(GrpcComponentGroup):
         bbox = self.component_instance.get_bbox().points
         pt1 = bbox[0]
         pt2 = bbox[2]
-        return [Value(pt1.x), Value(pt1.y), Value(pt2.x), Value(pt2.y)]
+        return (Value(pt1.x), Value(pt1.y)), (Value(pt2.x), Value(pt2.y))
 
     @property
     def rotation(self) -> float:
