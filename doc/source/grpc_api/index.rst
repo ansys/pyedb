@@ -30,8 +30,9 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
    If you want to access the legacy DotNet API please refer to the :ref:`archive section <archive>`.
 
 To enable PyEDB gRPC you have two options.
-- Explicit import
-- Using grpc flag
+
+*   Explicit import
+*   Using grpc flag
 
 .. code:: python
 
@@ -43,15 +44,11 @@ To enable PyEDB gRPC you have two options.
 
    edb = Edb(edbpath=r"my_edb_path", edbversion="2025.2", grpc=True)
 
+
+API documentation
+-----------------
+
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
 
-   grpc/index
-
-
-
-
-
-
-
-
+   ../autoapi/pyedb/grpc/index

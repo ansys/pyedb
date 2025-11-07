@@ -58,7 +58,7 @@ tests = [
     "shapely"
 ]
 doc = [
-    "ansys-sphinx-theme>=1.0.0,<1.5",
+    "ansys-sphinx-theme[autoapi]>=1.0.0,<1.7",
     "imageio>=2.30.0,<2.38",
     "ipython>=8.13.0,<8.32",
     "jupyterlab>=4.0.0,<4.5",
@@ -70,9 +70,8 @@ doc = [
     "pypandoc>=1.10.0,<1.16",
     # NOTE: Remove recommonmark once examples are reworked.
     "recommonmark",
-    "Sphinx>=7.1.0,<8.2",
-    "sphinx-autobuild==2024.10.3; python_version == '3.8'",
-    "sphinx-autobuild==2024.10.3; python_version > '3.8'",
+    "Sphinx>=7.1.0,<8.3",
+    "sphinx-autobuild==2024.10.3",
     "sphinx-copybutton>=0.5.0,<0.6",
     "sphinx-gallery>=0.14.0,<0.20",
     "sphinx_design>=0.4.0,<0.7",
