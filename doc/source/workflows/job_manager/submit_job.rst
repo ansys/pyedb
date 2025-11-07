@@ -44,7 +44,7 @@ It exposes:
 * REST & Web-Socket endpoints (``http://localhost:8080`` by default)
 * Thread-safe synchronous façade for scripts / Jupyter
 * Native async API for advanced integrations
-* CLI utilities ``submit_local_job`` and ``submit_job_on_scheduler`` for shell / CI pipelines
+* CLI utilities ``submit_local_job``, ``submit_batch_jobs``, and ``submit_job_on_scheduler`` for shell / CI pipelines
 
 The **same backend code path** is used regardless of front-end style; the difference is
 **who owns the event loop** and **how control is returned to the caller**.
@@ -175,6 +175,130 @@ Example—CLI (cluster)
 
 The command returns immediately after the job is **queued**; use the printed ID
 with ``wait_until_done`` or monitor via the web UI.
+
+CLI—``submit_batch_jobs``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+For bulk submissions, use ``submit_batch_jobs`` to automatically discover and submit
+multiple projects from a directory tree.
+
+Synopsis
+""""""""
+.. code-block:: bash
+
+   $ python submit_batch_jobs.py --root-dir <DIRECTORY> [options]
+
+Key features
+""""""""""""
+* **Automatic discovery**: Scans for all ``.aedb`` folders and ``.aedt`` files
+* **Smart pairing**: When both ``.aedb`` and ``.aedt`` exist, uses the ``.aedt`` file
+* **Asynchronous submission**: Submits jobs concurrently for faster processing
+* **Recursive scanning**: Optional recursive directory traversal
+
+Options
+"""""""
+.. list-table::
+   :widths: 30 15 55
+   :header-rows: 1
+
+   * - Argument
+     - Default
+     - Description
+   * - ``--root-dir``
+     - *(required)*
+     - Root directory to scan for projects
+   * - ``--host``
+     - ``localhost``
+     - Job manager host address
+   * - ``--port``
+     - ``8080``
+     - Job manager port
+   * - ``--num-cores``
+     - ``8``
+     - Number of cores to allocate per job
+   * - ``--max-concurrent``
+     - ``5``
+     - Maximum concurrent job submissions
+   * - ``--delay-ms``
+     - ``100``
+     - Delay in milliseconds between job submissions
+   * - ``--recursive``
+     - ``False``
+     - Scan subdirectories recursively
+   * - ``--verbose``
+     - ``False``
+     - Enable debug logging
+
+Example—batch submission (local)
+"""""""""""""""""""""""""""""""""
+.. code-block:: bash
+
+   # Submit all projects in a directory
+   $ python submit_batch_jobs.py --root-dir "D:\Temp\test_jobs"
+
+   # Recursive scan with custom core count
+   $ python submit_batch_jobs.py \
+         --root-dir "D:\Projects\simulations" \
+         --num-cores 16 \
+         --recursive \
+         --verbose
+
+Example output
+""""""""""""""
+.. code-block:: text
+
+   2025-11-07 10:30:15 - __main__ - INFO - Scanning D:\Temp\test_jobs for projects (recursive=False)
+   2025-11-07 10:30:15 - __main__ - INFO - Found AEDB folder: D:\Temp\test_jobs\project1.aedb
+   2025-11-07 10:30:15 - __main__ - INFO - Found AEDT file: D:\Temp\test_jobs\project2.aedt
+   2025-11-07 10:30:15 - __main__ - INFO - Using AEDB folder for project: D:\Temp\test_jobs\project1.aedb
+   2025-11-07 10:30:15 - __main__ - INFO - Using standalone AEDT file: D:\Temp\test_jobs\project2.aedt
+   2025-11-07 10:30:15 - __main__ - INFO - Found 2 project(s) to submit
+   2025-11-07 10:30:15 - __main__ - INFO - Starting batch submission of 2 project(s) to http://localhost:8080
+   2025-11-07 10:30:16 - __main__ - INFO - ✓ Successfully submitted: project1.aedb (status=200)
+   2025-11-07 10:30:16 - __main__ - INFO - ✓ Successfully submitted: project2.aedt (status=200)
+   2025-11-07 10:30:16 - __main__ - INFO - ============================================================
+   2025-11-07 10:30:16 - __main__ - INFO - Batch submission complete:
+   2025-11-07 10:30:16 - __main__ - INFO -   Total projects: 2
+   2025-11-07 10:30:16 - __main__ - INFO -   ✓ Successful: 2
+   2025-11-07 10:30:16 - __main__ - INFO -   ✗ Failed: 0
+   2025-11-07 10:30:16 - __main__ - INFO - ============================================================
+
+How it works
+""""""""""""
+1. **Scanning phase**:
+
+   * Searches for all ``.aedb`` folders in the root directory
+   * Searches for all ``.aedt`` files in the root directory
+   * For each ``.aedb`` folder, checks if a corresponding ``.aedt`` file exists:
+
+     - If yes: Uses the ``.aedt`` file
+     - If no: Uses the ``.aedb`` folder
+
+   * Standalone ``.aedt`` files (without corresponding ``.aedb``) are also included
+
+2. **Submission phase**:
+
+   * Creates job configurations for each project
+   * Submits jobs asynchronously to the job manager REST API
+   * Limits concurrent submissions using a semaphore (default: 5)
+   * Reports success/failure for each submission
+
+3. **Results**:
+
+   * Displays a summary with total, successful, and failed submissions
+   * Logs detailed information about each submission
+
+.. note::
+   The script does **not** wait for jobs to complete, only for submission confirmation.
+   Job execution happens asynchronously in the job manager service.
+
+.. tip::
+   * Use ``--max-concurrent`` to limit load on the job manager service when submitting
+     large batches.
+   * Use ``--delay-ms`` to control the pause between submissions (default: 100ms).
+     This ensures HTTP requests are fully sent before the next submission starts.
+   * Set ``--delay-ms 0`` to disable the delay if your network is very fast and reliable.
+   * For very large batch submissions, consider increasing the timeout in the code if
+     network latency is high.
 
 Programmatic—native asyncio
 """""""""""""""""""""""""""""
