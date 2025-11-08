@@ -45,6 +45,13 @@ class SiwaveSolve(object):
         full_path = Path(self._pedb.ansys_em_path) / executable
         return str(full_path)
 
+    @property
+    def __siwave_valcheck_exe_path(self):
+        executable = "siwavevalchk"
+        executable = executable if is_linux else executable + ".exe"
+        full_path = Path(self._pedb.ansys_em_path) / executable
+        return str(full_path)
+
     def __create_exec(self, type):
         base = os.path.splitext(self._pedb.edbpath)[0]
         txt_path = base + ".txt"
@@ -66,6 +73,40 @@ class SiwaveSolve(object):
 
         os.rename(txt_path, exec_path)
         return exec_path
+
+    def __create_valcheck_exec(self, type, num_core):
+        base = os.path.splitext(self._pedb.edbpath)[0]
+        txt_path = base + ".txt"
+        exec_path = base + ".exec"
+        with open(txt_path, "w") as file:
+            file.write(f"ValidationMode {type}")
+            file.write("FixSelfIntersections")
+            file.write("FixDisjointNets")
+            file.write("CheckForShortedNets")
+            file.write("FixOverlappingVias")
+            file.write("CheckForBondwireErrors")
+            file.write("FixMisalignments")
+            file.write("FixFloatingPlanes")
+            file.write("CheckForUnreferencedTraces")
+            file.write("IgnoreNonFunctionalPads")
+            file.write(f"SetNumCpus {num_core}")
+            file.write("CorrectAllFixableIssues")
+            file.write("StrictDisjointNetCheck")
+        os.rename(txt_path, exec_path)
+        return exec_path
+
+    def run_siwave_validation(self, edbpath: str, validation_type: str = "SYZ", num_core=4):
+        command = [
+            self.__siwave_valcheck_exe_path,
+            edbpath,
+            self.__create_valcheck_exec(type=validation_type, num_core=num_core),
+            "-formatOutput",
+            "-useSubdir",
+        ]
+        try:
+            subprocess.run(command, check=True)  # nosec
+        except subprocess.CalledProcessError as e:  # nosec
+            raise RuntimeError(f"An error occurred when launching the solver. Please check input paths") from e
 
     def solve_siwave(self, edbpath, analysis_type):
         """Solve an SIWave setup. Only non-graphical batch mode is supported.
