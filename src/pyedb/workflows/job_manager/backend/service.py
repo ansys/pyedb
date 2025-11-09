@@ -1065,14 +1065,15 @@ class JobManager:
                     logger.info(f"Dequeued job {next_job_id}. Starting...")
                     self.job_pool.running_jobs.add(next_job_id)
                     asyncio.create_task(self._process_single_job(next_job_id))
+                    # Continue immediately to check if we can start more jobs
+                    # The running_jobs check will prevent exceeding max_concurrent
+                    continue
                 else:
                     logger.info("Queue is empty, sleeping.")
                     await asyncio.sleep(1)
             else:
                 logger.warning("Cannot start new job, waiting...")
                 await asyncio.sleep(5)
-
-            await asyncio.sleep(0.2)
 
     async def _process_single_job(self, job_id: str):
         """
