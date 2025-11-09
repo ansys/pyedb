@@ -59,17 +59,17 @@ class SiwaveSolve(object):
         with open(txt_path, "w") as file:
             if type:
                 if type == "DCIR":
-                    file.write("ExecDcSim")
+                    file.write("ExecDcSim\n")
                 elif type == "SYZ":
-                    file.write("ExecSyzSim")
+                    file.write("ExecSyzSim\n")
                 elif type == "CPA":
-                    file.write("ExecSentinelCpaSim")
+                    file.write("ExecSentinelCpaSim\n")
                 elif type == "TimeCrosstalk":
-                    file.write("ExecTimeDomainCrosstalkSim")
+                    file.write("ExecTimeDomainCrosstalkSim\n")
                 elif type == "FreqCrosstalk":
-                    file.write("ExecCrosstalkSim")
+                    file.write("ExecCrosstalkSim\n")
                 elif type == "Impedance":
-                    file.write("ExecZ0Sim")
+                    file.write("ExecZ0Sim\n")
 
         os.rename(txt_path, exec_path)
         return exec_path
@@ -79,19 +79,20 @@ class SiwaveSolve(object):
         txt_path = base + ".txt"
         exec_path = base + ".exec"
         with open(txt_path, "w") as file:
-            file.write(f"ValidationMode {type}")
-            file.write("FixSelfIntersections")
-            file.write("FixDisjointNets")
-            file.write("CheckForShortedNets")
-            file.write("FixOverlappingVias")
-            file.write("CheckForBondwireErrors")
-            file.write("FixMisalignments")
+            file.write(f"ValidationMode {type}\n")
+            file.write("FixSelfIntersections\n")
+            file.write("FixDisjointNets\n")
+            file.write("CheckForShortedNets\n")
+            file.write("FixOverlappingVias\n")
+            file.write("CheckForBondwireErrors\n")
+            file.write("FixMisalignments\n")
             file.write("FixFloatingPlanes")
-            file.write("CheckForUnreferencedTraces")
-            file.write("IgnoreNonFunctionalPads")
-            file.write(f"SetNumCpus {num_core}")
-            file.write("CorrectAllFixableIssues")
-            file.write("StrictDisjointNetCheck")
+            file.write("CheckForUnreferencedTraces\n")
+            file.write("IgnoreNonFunctionalPads\n")
+            file.write(f"SetNumCpus {num_core}\n")
+            file.write("CorrectAllFixableIssues\n")
+            file.write("StrictDisjointNetCheck\n")
+            file.write("SaveSiw\n D:\\Temp\\test_valcheck\\test.siw\n")
         os.rename(txt_path, exec_path)
         return exec_path
 
