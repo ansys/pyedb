@@ -26,8 +26,10 @@ Start the PyEDB Job-Manager service via JobManagerHandler.
 
 Usage
 -----
-$ python start_service.py --host 0.0.0.0 --port 9090 --min-disk 2 --min-memory 1
+$ python start_service.py --host 0.0.0.0 --port 9090 --max-concurrent 4 --min-disk 2 --min-memory 1
 ✅ Job-manager backend listening on http://0.0.0.0:9090
+   Max concurrent jobs: 4
+   Resource gates: 2.0 GB disk / 1.0 GB memory
 Press Ctrl-C to shut down gracefully.
 """
 
@@ -54,6 +56,12 @@ def parse_cli() -> argparse.Namespace:
         help="TCP port to listen on (default: 8080)",
     )
     parser.add_argument(
+        "--max-concurrent",
+        type=int,
+        default=4,
+        help="Maximum number of concurrent jobs for local runs (default: 4)",
+    )
+    parser.add_argument(
         "--min-disk",
         type=float,
         default=10.0,
@@ -74,12 +82,14 @@ def main():
     handler = JobManagerHandler(host=args.host, port=args.port)
 
     # Override resource limits from CLI
+    handler.manager.resource_limits.max_concurrent_jobs = args.max_concurrent
     handler.manager.resource_limits.min_disk_gb = args.min_disk
     handler.manager.resource_limits.min_memory_gb = args.min_memory
 
     handler.start_service()  # non-blocking; spins up daemon thread + aiohttp
 
     print(f"✅ Job-manager backend listening on http://{handler.host}:{handler.port}")
+    print(f"   Max concurrent jobs: {args.max_concurrent}")
     print(f"   Resource gates: {args.min_disk} GB disk / {args.min_memory} GB memory")
 
     # Graceful shutdown on Ctrl-C
