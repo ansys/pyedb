@@ -434,7 +434,7 @@ class PadstackInstance(GrpcPadstackInstance):
         return self._object_instance
 
     @property
-    def bounding_box(self) -> list[float]:
+    def bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         """Padstack instance bounding box.
         Because this method is slow, the bounding box is stored in a variable and reused.
 
@@ -442,9 +442,12 @@ class PadstackInstance(GrpcPadstackInstance):
         -------
         list of float
         """
-        # TODO check to implement in grpc
         if self._bounding_box:
             return self._bounding_box
+        bbox = self.layout_object_instance.get_bbox()
+        pt1 = bbox.points[0]
+        pt2 = bbox.points[2]
+        self._bounding_box = ((pt1.x.value, pt1.y.value), (pt2.x.value, pt2.y.value))
         return self._bounding_box
 
     def in_polygon(self, polygon_data, include_partial=True, arbitrary_extent_value=300e-6) -> bool:
