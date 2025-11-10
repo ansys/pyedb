@@ -71,6 +71,7 @@ import getpass
 import logging
 import os.path
 import platform
+import threading
 from typing import Any, Deque, Dict, List, Optional, Set
 
 import aiohttp
@@ -504,6 +505,9 @@ class JobManager:
         self._limits_changed: Optional[asyncio.Event] = None
         # Semaphore to enforce concurrent job limit (created when loop is available)
         self._job_semaphore: Optional[asyncio.Semaphore] = None
+        # Use a thread lock to protect creation of the asyncio lock (safe to create without event loop)
+        self._lock_init_lock = threading.Lock()
+        self._processing_task_lock: Optional[asyncio.Lock] = None
         # Start resource monitoring immediately
         self._monitor_task = None
         self._ensure_monitor_running()
@@ -1029,11 +1033,20 @@ class JobManager:
         """
         job_id = config.jobid
 
+        # Check if job already exists and is not completed
+        existing_job = self.jobs.get(job_id)
+        if existing_job:
+            if existing_job.status in (JobStatus.QUEUED, JobStatus.RUNNING):
+                logger.warning(f"⚠️  Job {job_id} already {existing_job.status.value}, skipping duplicate submission")
+                return job_id
+            elif existing_job.status in (JobStatus.COMPLETED, JobStatus.FAILED):
+                logger.info(f"Job {job_id} already finished ({existing_job.status.value}), allowing resubmission")
+
         # Create job info
         job_info = JobInfo(config=config, status=JobStatus.QUEUED, priority=priority)
         self.jobs[job_id] = job_info
 
-        # Add to job pool
+        # Add to job pool (only if not already queued)
         self.job_pool.add_job(job_id, priority)
 
         # Notify web clients
@@ -1044,61 +1057,110 @@ class JobManager:
 
         logger.info(f"Job {job_id} queued with priority {priority}")
 
-        # Trigger processing if not already running
-        if not self._processing_task or self._processing_task.done():
-            self._processing_task = asyncio.create_task(self._process_jobs_continuously())
+        # Trigger processing if not already running (protected by lock)
+        logger.debug(
+            f"🔒 Checking processing task status: task={self._processing_task}, lock={self._processing_task_lock}"
+        )
+
+        # Ensure asyncio lock exists using thread lock for protection
+        if self._processing_task_lock is None:
+            with self._lock_init_lock:  # Thread-safe lock creation
+                if self._processing_task_lock is None:  # Double-check pattern
+                    logger.info("🔒 Creating new asyncio lock for processing task protection")
+                    self._processing_task_lock = asyncio.Lock()
+
+        logger.debug(f"🔒 Acquiring lock to check/create processing task...")
+        async with self._processing_task_lock:
+            logger.debug(f"🔒 Lock acquired! Current task: {self._processing_task}")
+            if not self._processing_task or self._processing_task.done():
+                logger.warning(f"⚠️  CREATING NEW PROCESSING TASK (task_id will be logged)")
+                self._processing_task = asyncio.create_task(self._process_jobs_continuously())
+                logger.warning(f"✅ NEW PROCESSING TASK CREATED: {id(self._processing_task)}")
+            else:
+                logger.debug(f"✓ Processing task already exists (id={id(self._processing_task)}), waking it up")
+                # Wake up the processing loop if it's waiting
+                if self._limits_changed is not None:
+                    self._limits_changed.set()
+                    logger.debug("✓ Sent wake-up signal to processing loop")
 
         return job_id
 
     async def _process_jobs_continuously(self):
         """
         Main scheduler loop – strict concurrency enforcement.
-        A job is removed from the queue **only** when we already hold
-        a semaphore permit that will stay held until the job terminates.
+        Jobs are dequeued only when we have fewer than max_concurrent_jobs running.
         """
+        loop_id = id(asyncio.current_task())
+        logger.warning(f"🔄 PROCESSING LOOP STARTED - ID: {loop_id}")
+
         if self._job_semaphore is None:
             self._job_semaphore = asyncio.Semaphore(self.resource_limits.max_concurrent_jobs)
+
+        if self._limits_changed is None:
+            self._limits_changed = asyncio.Event()
 
         logger.info("✅ Job-processing loop started (concurrency = %s)", self.resource_limits.max_concurrent_jobs)
 
         while not self._shutdown:
-            await self._job_semaphore.acquire()  # ❶ wait for free slot
+            # Wait until we have capacity to start a new job
+            while len(self.job_pool.running_jobs) >= self.resource_limits.max_concurrent_jobs and not self._shutdown:
+                logger.debug(
+                    "At capacity (%d/%d jobs running), waiting...",
+                    len(self.job_pool.running_jobs),
+                    self.resource_limits.max_concurrent_jobs,
+                )
+                try:
+                    await asyncio.wait_for(self._limits_changed.wait(), 1.0)
+                    self._limits_changed.clear()
+                except asyncio.TimeoutError:
+                    pass  # Check again
 
-            next_job_id = None
-            while next_job_id is None and not self._shutdown:
-                next_job_id = self.job_pool.get_next_job()
-                if next_job_id is None:  # queue empty
-                    self._job_semaphore.release()  # give slot back
-                    try:
-                        await asyncio.wait_for(self._limits_changed.wait(), 1.0)
-                        self._limits_changed.clear()
-                        await self._job_semaphore.acquire()
-                    except asyncio.TimeoutError:
-                        pass
-
-            if next_job_id is None:  # shutdown requested
-                self._job_semaphore.release()
+            if self._shutdown:
                 break
 
+            # Get next job from queue
+            next_job_id = self.job_pool.get_next_job()
+            if next_job_id is None:
+                # Queue is empty, wait for new jobs
+                try:
+                    await asyncio.wait_for(self._limits_changed.wait(), 1.0)
+                    self._limits_changed.clear()
+                except asyncio.TimeoutError:
+                    pass  # Check queue again
+                continue
+
+            # Skip if job is already running (duplicate prevention)
+            if next_job_id in self.job_pool.running_jobs:
+                logger.warning(f"⚠️  Job {next_job_id} already running, skipping duplicate")
+                continue
+
+            # Mark as running BEFORE creating task to prevent race condition
             self.job_pool.running_jobs.add(next_job_id)
             logger.info(
-                "De-queued job %s. Starting... (running: %s/%s)",
+                "De-queued job %s. Starting... (running: %s/%s) [Loop ID: %s]",
                 next_job_id,
                 len(self.job_pool.running_jobs),
                 self.resource_limits.max_concurrent_jobs,
+                loop_id,
             )
-            # transfer the **same** permit to the worker task
-            asyncio.create_task(self._process_single_job(next_job_id, semaphore=self._job_semaphore))
+
+            # Start the job (no semaphore needed now, we use running_jobs count directly)
+            asyncio.create_task(self._process_single_job(next_job_id, semaphore=None))
+
+            # Small yield to prevent tight loop
+            await asyncio.sleep(0)
 
     async def _process_single_job(self, job_id: str, semaphore: asyncio.Semaphore | None = None):
         """
-        Execute one job and **always** release the semaphore permit when done.
+        Execute one job and always clean up running_jobs set when done.
+        Semaphore parameter is deprecated but kept for compatibility.
         """
         job_info = self.jobs.get(job_id)
         if not job_info or job_info.status != JobStatus.QUEUED:
-            if semaphore:
-                semaphore.release()
             self.job_pool.running_jobs.discard(job_id)
+            # Signal that capacity is available
+            if self._limits_changed is not None:
+                self._limits_changed.set()
             return
 
         job_info.status = JobStatus.RUNNING
@@ -1128,7 +1190,11 @@ class JobManager:
                 job_info.scheduler_job_id = job_info.config._extract_job_id(result.stdout)
                 job_info.status = JobStatus.SCHEDULED
                 await self.sio.emit("job_scheduled", {"job_id": job_id, "scheduler_job_id": job_info.scheduler_job_id})
-                # for scheduler jobs we exit here; completion is tracked elsewhere
+                # For scheduler jobs, remove from running_jobs since they run on external scheduler
+                # This frees up a slot for the next local job
+                self.job_pool.running_jobs.discard(job_id)
+                if self._limits_changed is not None:
+                    self._limits_changed.set()
                 return
 
             # ---------- local path ----------
@@ -1168,9 +1234,7 @@ class JobManager:
             job_info.end_time = datetime.now()
             self.job_pool.running_jobs.discard(job_id)
 
-            # ❷ release the permit **only** when the job is truly finished
-            if semaphore is not None:
-                semaphore.release()
+            # Signal processing loop that capacity is now available
             if self._limits_changed is not None:
                 self._limits_changed.set()
 
@@ -1312,33 +1376,8 @@ class JobManager:
                         f"{getattr(self.resource_limits, field)}"
                     )
 
-                # If max_concurrent_jobs changed, update semaphore
-                if "max_concurrent_jobs" in old_limits and self._job_semaphore is not None:
-                    old_max = old_limits["max_concurrent_jobs"]
-                    new_max = self.resource_limits.max_concurrent_jobs
-                    diff = new_max - old_max
-
-                    logger.info(f"Updating semaphore from {old_max} to {new_max} (diff: {diff})")
-
-                    if diff > 0:
-                        # Increase limit - release permits
-                        for _ in range(diff):
-                            self._job_semaphore.release()
-                        logger.info(f"Released {diff} semaphore permits")
-                    elif diff < 0:
-                        # Decrease limit - acquire permits (non-blocking)
-                        # Note: This doesn't stop already running jobs, just prevents new ones
-                        acquired = 0
-                        for _ in range(abs(diff)):
-                            if not self._job_semaphore.locked():
-                                try:
-                                    await asyncio.wait_for(self._job_semaphore.acquire(), timeout=0.01)
-                                    acquired += 1
-                                except asyncio.TimeoutError:
-                                    break
-                        logger.info(f"Acquired {acquired} semaphore permits to reduce limit")
-
-                # Signal processing loop to wake up and check if more jobs can be started
+                # Signal processing loop to re-evaluate capacity
+                # (We no longer manipulate semaphore since we use running_jobs count directly)
                 if self._limits_changed is not None:
                     self._limits_changed.set()
 
