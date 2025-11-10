@@ -1049,13 +1049,19 @@ class JobManager:
         # Add to job pool (only if not already queued)
         self.job_pool.add_job(job_id, priority)
 
+        # Get queue stats for logging
+        queue_stats = self.job_pool.get_queue_stats()
+
         # Notify web clients
         await self.sio.emit(
             "job_queued",
-            {"job_id": job_id, "priority": priority, "queue_position": self.job_pool.get_queue_stats()["total_queued"]},
+            {"job_id": job_id, "priority": priority, "queue_position": queue_stats["total_queued"]},
         )
 
-        logger.info(f"Job {job_id} queued with priority {priority}")
+        logger.info(
+            f"Job {job_id} queued with priority {priority}. Queue: {queue_stats['total_queued']}, "
+            f"Running: {queue_stats['running_jobs']}/{queue_stats['max_concurrent']}"
+        )
 
         # Trigger processing if not already running (protected by lock)
         logger.debug(
@@ -1118,10 +1124,36 @@ class JobManager:
             if self._shutdown:
                 break
 
-            # Get next job from queue
+            # CRITICAL: Check capacity immediately before dequeuing
+            # This prevents race conditions in fast-completing jobs
+            current_running = len(self.job_pool.running_jobs)
+            if current_running >= self.resource_limits.max_concurrent_jobs:
+                logger.debug(
+                    "Capacity check failed (%d/%d), waiting for slot...",
+                    current_running,
+                    self.resource_limits.max_concurrent_jobs,
+                )
+                # Don't dequeue - wait for capacity
+                try:
+                    await asyncio.wait_for(self._limits_changed.wait(), 0.5)
+                    self._limits_changed.clear()
+                except asyncio.TimeoutError:
+                    pass
+                continue
+
+            # Get next job from queue (only if we have capacity)
             next_job_id = self.job_pool.get_next_job()
             if next_job_id is None:
                 # Queue is empty, wait for new jobs
+                queue_stats = self.job_pool.get_queue_stats()
+                running_count = len(self.job_pool.running_jobs)
+
+                # Log at INFO level if we're idle (no jobs running or queued)
+                if running_count == 0:
+                    logger.info("📭 Queue empty and no jobs running. Waiting for new job submissions...")
+                else:
+                    logger.debug("Queue empty but %d job(s) still running. Waiting...", running_count)
+
                 try:
                     await asyncio.wait_for(self._limits_changed.wait(), 1.0)
                     self._limits_changed.clear()
@@ -1133,6 +1165,23 @@ class JobManager:
             if next_job_id in self.job_pool.running_jobs:
                 logger.warning(f"⚠️  Job {next_job_id} already running, skipping duplicate")
                 continue
+
+            # Get the job info to check and update status
+            job_info = self.jobs.get(next_job_id)
+            if not job_info:
+                logger.error(f"Job {next_job_id} not found in jobs dict, skipping")
+                continue
+
+            # FINAL capacity check before committing (prevents race with job completion)
+            if len(self.job_pool.running_jobs) >= self.resource_limits.max_concurrent_jobs:
+                logger.warning(f"⚠️  Capacity exceeded after dequeue (race condition), re-queueing {next_job_id}")
+                # Put job back in queue
+                self.job_pool.add_job(next_job_id, job_info.priority)
+                continue
+
+            # Mark job as RUNNING immediately to prevent re-dequeuing
+            job_info.status = JobStatus.RUNNING
+            job_info.start_time = datetime.now()
 
             # Mark as running BEFORE creating task to prevent race condition
             self.job_pool.running_jobs.add(next_job_id)
@@ -1154,17 +1203,27 @@ class JobManager:
         """
         Execute one job and always clean up running_jobs set when done.
         Semaphore parameter is deprecated but kept for compatibility.
+
+        NOTE: Job status should already be RUNNING when this is called,
+        as it's set in the processing loop when the job is dequeued.
         """
         job_info = self.jobs.get(job_id)
-        if not job_info or job_info.status != JobStatus.QUEUED:
+        if not job_info:
+            logger.error(f"Job {job_id} not found in jobs dict")
             self.job_pool.running_jobs.discard(job_id)
             # Signal that capacity is available
             if self._limits_changed is not None:
                 self._limits_changed.set()
             return
 
-        job_info.status = JobStatus.RUNNING
-        job_info.start_time = datetime.now()
+        # Verify job is in correct state (should be RUNNING already)
+        if job_info.status != JobStatus.RUNNING:
+            logger.warning(f"Job {job_id} has unexpected status {job_info.status.value}, expected RUNNING")
+            # Don't return - try to process anyway but log the issue
+
+        # Record local resources (start_time should already be set)
+        if not job_info.start_time:
+            job_info.start_time = datetime.now()
         job_info.local_resources = self.resource_monitor.current_usage.copy()
 
         await self.sio.emit(
@@ -1234,9 +1293,26 @@ class JobManager:
             job_info.end_time = datetime.now()
             self.job_pool.running_jobs.discard(job_id)
 
+            # Log completion with queue stats
+            queue_stats = self.job_pool.get_queue_stats()
+            running_count = len(self.job_pool.running_jobs)
+            queued_count = queue_stats["total_queued"]
+
+            if running_count == 0 and queued_count == 0:
+                logger.info("✓ Job %s finished. ✅ ALL JOBS COMPLETE! (No jobs running or queued)", job_id)
+            else:
+                logger.info(
+                    "✓ Job %s finished. Running: %d/%d, Queued: %d",
+                    job_id,
+                    running_count,
+                    self.resource_limits.max_concurrent_jobs,
+                    queued_count,
+                )
+
             # Signal processing loop that capacity is now available
             if self._limits_changed is not None:
                 self._limits_changed.set()
+                logger.debug("✓ Signaled processing loop that slot is available")
 
             await self.sio.emit(
                 "job_completed",
