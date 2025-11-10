@@ -500,6 +500,10 @@ class JobManager:
         # Background task for continuous job processing
         self._processing_task: Optional[asyncio.Task] = None
         self._shutdown = False
+        # Event to wake up processing loop when limits change (created when loop is available)
+        self._limits_changed: Optional[asyncio.Event] = None
+        # Semaphore to enforce concurrent job limit (created when loop is available)
+        self._job_semaphore: Optional[asyncio.Semaphore] = None
         # Start resource monitoring immediately
         self._monitor_task = None
         self._ensure_monitor_running()
@@ -1048,158 +1052,128 @@ class JobManager:
 
     async def _process_jobs_continuously(self):
         """
-        Continuously process jobs until shutdown is requested.
-
-        This is the main job processing loop that:
-        - Checks if new jobs can be started based on resource limits
-        - Dequeues the highest priority job
-        - Starts job execution in a separate task
-        - Sleeps when no jobs can be started or queue is empty
+        Main scheduler loop – strict concurrency enforcement.
+        A job is removed from the queue **only** when we already hold
+        a semaphore permit that will stay held until the job terminates.
         """
-        logger.info("✅ Job processing loop started.")
+        if self._job_semaphore is None:
+            self._job_semaphore = asyncio.Semaphore(self.resource_limits.max_concurrent_jobs)
+
+        logger.info("✅ Job-processing loop started (concurrency = %s)", self.resource_limits.max_concurrent_jobs)
+
         while not self._shutdown:
-            can_start = self.job_pool.can_start_job(self.resource_monitor)
-            if can_start:
+            await self._job_semaphore.acquire()  # ❶ wait for free slot
+
+            next_job_id = None
+            while next_job_id is None and not self._shutdown:
                 next_job_id = self.job_pool.get_next_job()
-                if next_job_id:
-                    logger.info(f"Dequeued job {next_job_id}. Starting...")
-                    self.job_pool.running_jobs.add(next_job_id)
-                    asyncio.create_task(self._process_single_job(next_job_id))
-                else:
-                    logger.info("Queue is empty, sleeping.")
-                    await asyncio.sleep(1)
-            else:
-                logger.warning("Cannot start new job, waiting...")
-                await asyncio.sleep(5)
+                if next_job_id is None:  # queue empty
+                    self._job_semaphore.release()  # give slot back
+                    try:
+                        await asyncio.wait_for(self._limits_changed.wait(), 1.0)
+                        self._limits_changed.clear()
+                        await self._job_semaphore.acquire()
+                    except asyncio.TimeoutError:
+                        pass
 
-            await asyncio.sleep(0.2)
+            if next_job_id is None:  # shutdown requested
+                self._job_semaphore.release()
+                break
 
-    async def _process_single_job(self, job_id: str):
+            self.job_pool.running_jobs.add(next_job_id)
+            logger.info(
+                "De-queued job %s. Starting... (running: %s/%s)",
+                next_job_id,
+                len(self.job_pool.running_jobs),
+                self.resource_limits.max_concurrent_jobs,
+            )
+            # transfer the **same** permit to the worker task
+            asyncio.create_task(self._process_single_job(next_job_id, semaphore=self._job_semaphore))
+
+    async def _process_single_job(self, job_id: str, semaphore: asyncio.Semaphore | None = None):
         """
-        Process a single job from the pool.
-
-        Parameters
-        ----------
-        job_id : str
-            Job identifier to process
-
-        Notes
-        -----
-        This method handles:
-        - Local execution via subprocess
-        - Scheduler submission (SLURM/LSF)
-        - Status updates and notifications
-        - Error handling and cleanup
+        Execute one job and **always** release the semaphore permit when done.
         """
         job_info = self.jobs.get(job_id)
         if not job_info or job_info.status != JobStatus.QUEUED:
+            if semaphore:
+                semaphore.release()
             self.job_pool.running_jobs.discard(job_id)
             return
 
-        # Update job status
         job_info.status = JobStatus.RUNNING
         job_info.start_time = datetime.now()
         job_info.local_resources = self.resource_monitor.current_usage.copy()
 
-        # Notify web clients
         await self.sio.emit(
             "job_started",
             {"job_id": job_id, "start_time": job_info.start_time.isoformat(), "resources": job_info.local_resources},
         )
-
-        logger.info(f"Job {job_id} started")
+        logger.info(
+            "Job %s actually executing (CPU %.1f %%)", job_id, self.resource_monitor.current_usage["cpu_percent"]
+        )
 
         try:
-            # Run the simulation
             if job_info.config.scheduler_type != SchedulerType.NONE:
-                #  Make sure the executable path is present
+                # ---------- scheduler path ----------
                 if not job_info.config.ansys_edt_path or not os.path.exists(job_info.config.ansys_edt_path):
                     if self.ansys_path and os.path.exists(self.ansys_path):
                         job_info.config = HFSSSimulationConfig(
                             **{**job_info.config.model_dump(), "ansys_edt_path": self.ansys_path}
                         )
-                        logger.info(f"Using JobManager's detected ANSYS path: {self.ansys_path}")
                     else:
-                        raise FileNotFoundError(
-                            f"ANSYS executable not found. Config path: {job_info.config.ansys_edt_path}, "
-                            f"Manager path: {self.ansys_path}"
-                        )
+                        raise FileNotFoundError("ANSYS executable not found")
 
-                # Now generate the script – the path is guaranteed to be non-empty
                 result = job_info.config.submit_to_scheduler()
                 job_info.scheduler_job_id = job_info.config._extract_job_id(result.stdout)
                 job_info.status = JobStatus.SCHEDULED
-                logger.info(
-                    f"Job {job_id} submitted to scheduler with ID: {job_info.scheduler_job_id}, status: SCHEDULED"
-                )
                 await self.sio.emit("job_scheduled", {"job_id": job_id, "scheduler_job_id": job_info.scheduler_job_id})
+                # for scheduler jobs we exit here; completion is tracked elsewhere
+                return
 
+            # ---------- local path ----------
+            command_list = job_info.config.generate_command_list()
+            process = await asyncio.create_subprocess_exec(
+                *command_list,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            job_info.process = process
+
+            stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=86400)
+            job_info.return_code = process.returncode
+            job_info.output = stdout.decode() if stdout else ""
+            job_info.error = stderr.decode() if stderr else ""
+
+            if process.returncode == 0:
+                job_info.status = JobStatus.COMPLETED
+                logger.info("Job %s completed successfully", job_id)
             else:
-                # ----------------  local mode – same guarantee  -----------------
-                if not job_info.config.ansys_edt_path or not os.path.exists(job_info.config.ansys_edt_path):
-                    if self.ansys_path and os.path.exists(self.ansys_path):
-                        job_info.config = HFSSSimulationConfig(
-                            **{**job_info.config.model_dump(), "ansys_edt_path": self.ansys_path}
-                        )
-                        logger.info(f"Using JobManager's detected ANSYS path: {self.ansys_path}")
-                    else:
-                        raise FileNotFoundError(
-                            f"ANSYS executable not found. Config path: {job_info.config.ansys_edt_path}, "
-                            f"Manager path: {self.ansys_path}"
-                        )
+                job_info.status = JobStatus.FAILED
+                logger.error("Job %s failed with return code %s", job_id, process.returncode)
 
-                # Generate command as list for secure execution
-                command_list = job_info.config.generate_command_list()
-
-                # Log the command being executed for debugging
-                logger.info(f"Executing command for job {job_id}: {' '.join(command_list)}")
-                logger.info(f"ANSYS executable path: {job_info.config.ansys_edt_path}")
-                logger.info(f"Project path: {job_info.config.project_path}")
-
-                # Check if project file exists
-                if not os.path.exists(job_info.config.project_path):
-                    raise FileNotFoundError(f"Project file not found: {job_info.config.project_path}")
-
-                # Run locally - using asyncio subprocess for better control with secure command list
-                process = await asyncio.create_subprocess_exec(
-                    *command_list,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                )
-
-                job_info.process = process
-
-                # Wait for completion with timeout (24 hours max)
-                try:
-                    stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=86400)
-
-                    job_info.return_code = process.returncode
-                    job_info.output = stdout.decode() if stdout else ""
-                    job_info.error = stderr.decode() if stderr else ""
-
-                    if process.returncode == 0:
-                        job_info.status = JobStatus.COMPLETED
-                        logger.info(f"Job {job_id} completed successfully")
-                    else:
-                        job_info.status = JobStatus.FAILED
-                        logger.error(f"Job {job_id} failed with return code {process.returncode}")
-
-                except asyncio.TimeoutError:
-                    job_info.status = JobStatus.FAILED
-                    job_info.error = "Job timed out after 24 hours"
-                    process.terminate()
-                    logger.error(f"Job {job_id} timed out")
-
-        except Exception as e:
+        except asyncio.TimeoutError:
             job_info.status = JobStatus.FAILED
-            job_info.error = str(e)
-            logger.error(f"Job {job_id} failed with error: {e}")
+            job_info.error = "Job timed out after 24 h"
+            if job_info.process:
+                job_info.process.kill()
+            logger.error("Job %s timed out", job_id)
+
+        except Exception as exc:
+            job_info.status = JobStatus.FAILED
+            job_info.error = str(exc)
+            logger.error("Job %s failed with error: %s", job_id, exc)
 
         finally:
             job_info.end_time = datetime.now()
             self.job_pool.running_jobs.discard(job_id)
 
-            # Notify web clients
+            # ❷ release the permit **only** when the job is truly finished
+            if semaphore is not None:
+                semaphore.release()
+            if self._limits_changed is not None:
+                self._limits_changed.set()
+
             await self.sio.emit(
                 "job_completed",
                 {
@@ -1337,6 +1311,36 @@ class JobManager:
                         f"Resource limit {field} changed from {old_limits[field]} to "
                         f"{getattr(self.resource_limits, field)}"
                     )
+
+                # If max_concurrent_jobs changed, update semaphore
+                if "max_concurrent_jobs" in old_limits and self._job_semaphore is not None:
+                    old_max = old_limits["max_concurrent_jobs"]
+                    new_max = self.resource_limits.max_concurrent_jobs
+                    diff = new_max - old_max
+
+                    logger.info(f"Updating semaphore from {old_max} to {new_max} (diff: {diff})")
+
+                    if diff > 0:
+                        # Increase limit - release permits
+                        for _ in range(diff):
+                            self._job_semaphore.release()
+                        logger.info(f"Released {diff} semaphore permits")
+                    elif diff < 0:
+                        # Decrease limit - acquire permits (non-blocking)
+                        # Note: This doesn't stop already running jobs, just prevents new ones
+                        acquired = 0
+                        for _ in range(abs(diff)):
+                            if not self._job_semaphore.locked():
+                                try:
+                                    await asyncio.wait_for(self._job_semaphore.acquire(), timeout=0.01)
+                                    acquired += 1
+                                except asyncio.TimeoutError:
+                                    break
+                        logger.info(f"Acquired {acquired} semaphore permits to reduce limit")
+
+                # Signal processing loop to wake up and check if more jobs can be started
+                if self._limits_changed is not None:
+                    self._limits_changed.set()
 
                 # Notify web clients about the update
                 await self.sio.emit(
