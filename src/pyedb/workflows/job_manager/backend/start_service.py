@@ -73,6 +73,12 @@ def parse_cli() -> argparse.Namespace:
         default=2.0,
         help="Minimum free memory in GB (default: 2.0)",
     )
+    parser.add_argument(
+        "--max-concurrent-jobs",
+        type=int,
+        default=1,
+        help="Maximum number of concurrent jobs for local runs (default: 1)",
+    )
     return parser.parse_args()
 
 
@@ -85,12 +91,16 @@ def main():
     handler.manager.resource_limits.max_concurrent_jobs = args.max_concurrent
     handler.manager.resource_limits.min_disk_gb = args.min_disk
     handler.manager.resource_limits.min_memory_gb = args.min_memory
+    handler.manager.resource_limits.max_concurrent_jobs = args.max_concurrent_jobs
+    # Ensure job_pool has the updated reference
+    handler.manager.job_pool.resource_limits = handler.manager.resource_limits
 
     handler.start_service()  # non-blocking; spins up daemon thread + aiohttp
 
     print(f"✅ Job-manager backend listening on http://{handler.host}:{handler.port}")
     print(f"   Max concurrent jobs: {args.max_concurrent}")
     print(f"   Resource gates: {args.min_disk} GB disk / {args.min_memory} GB memory")
+    print(f"   Max concurrent jobs: {args.max_concurrent_jobs}")
 
     # Graceful shutdown on Ctrl-C
     stop_event = threading.Event()

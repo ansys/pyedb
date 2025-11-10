@@ -1,7 +1,7 @@
 .. _ref_drc:
 
 ==================================================================
-Design-rule checking (DRC)–self-contained, multi-threaded engine
+Design-rule checking (DRC)—self-contained, multi-threaded engine
 ==================================================================
 
 .. currentmodule:: pyedb.workflows.drc.drc
@@ -128,7 +128,7 @@ Load a rule deck from JSON
    with open("my_rules.json") as f:
        rules = Rules.from_dict(json.load(f))
 
-Export violations to CSV
+Export violations to csv
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
