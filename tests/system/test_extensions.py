@@ -19,13 +19,16 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import os
 from pathlib import Path
 
 import pytest
 
 from pyedb.extensions.via_design_backend import ViaDesignBackend
-from tests.conftest import desktop_version
+from tests.conftest import GRPC, desktop_version
 from tests.system.base_test_class import BaseTestClass
+
+# from tests.conftest import _get_test_board
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
@@ -610,7 +613,6 @@ class TestClass(BaseTestClass):
 
     def test_arbitrary_wave_ports(self, edb_examples):
         # TODO check later when sever instances is improved.
-        import os
 
         local_path = Path(__file__).parent.parent
         example_folder = os.path.join(local_path, "example_models", "TEDB")
@@ -632,3 +634,45 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_unit_cell()
         assert create_array_from_unit_cell(edbapp, x_number=2, y_number=2)
         edbapp.close()
+
+    @pytest.mark.skipif(condition=not GRPC, reason="Implemented only with grpc")
+    def test_dxf_swap_backend_center_point(self, edb_examples):
+        from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf_center_point
+
+        local_path = Path(__file__).parent.parent
+        dxf_path = os.path.join(local_path, "example_models", "dxf_swap", "rectangle.dxf")
+        layer_name = "Trace"
+        edb = edb_examples.load_dxf_edb()
+        point_aedt = ["170mm", "70mm"]
+        swap_polygon_with_dxf_center_point(edb, dxf_path, layer_name, point_aedt)
+        edb.save()
+
+        assert len(edb.modeler.primitives_by_layer["Trace"]) == 3
+        polygon = edb.modeler.primitives[2]
+
+        center = [round(pt, 6) for pt in polygon.center]
+        assert center == [170e-3, 70e-3]
+        assert edb.modeler.primitives[2].layer_name == layer_name
+        assert round(edb.modeler.primitives[2].area(), 6) == 200e-6
+
+    @pytest.mark.skipif(condition=not GRPC, reason="Implemented only with grpc")
+    def test_dxf_swap_backend(self, edb_examples):
+        import os
+
+        from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf
+
+        local_path = Path(__file__).parent.parent
+        dxf_path = os.path.join(local_path, "example_models", "dxf_swap", "rectangle.dxf")
+        layer_name = "Trace"
+        edb = edb_examples.load_dxf_edb()
+        point_aedt = ["170mm", "70mm"]
+        point_dxf = ["40mm", "25mm"]
+        swap_polygon_with_dxf(edb, dxf_path, layer_name, point_dxf, point_aedt)
+        edb.save()
+
+        assert len(edb.modeler.primitives_by_layer["Trace"]) == 3
+        polygon = edb.modeler.primitives[2]
+        center = [round(pt, 6) for pt in polygon.center]
+        assert center == [170e-3, 70e-3]
+        assert edb.modeler.primitives[2].layer_name == layer_name
+        assert round(polygon.area(), 6) == 200e-6

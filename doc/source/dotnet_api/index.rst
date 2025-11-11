@@ -30,14 +30,13 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
     edb.close_edb()
 
 
-.. toctree::
-   :maxdepth: 2
+API documentation
+-----------------
 
-   dotnet/CoreEdb
-   dotnet/edb_data/index
-   dotnet/sim_setup_data/data/index
-   dotnet/sim_setup_data/io/index
-   dotnet/utilities/index
+.. toctree::
+   :maxdepth: 1
+
+   ../autoapi/pyedb/dotnet/index
    dotnet/SiWave
 
 

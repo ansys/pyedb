@@ -1126,7 +1126,7 @@ class Components(object):
                 rlc.c_enabled = False
             else:
                 rlc.c_enabled = True
-                rlc.C = Value(c_value)
+                rlc.c = Value(c_value)
             if rlc.r_enabled and not rlc.c_enabled and not rlc.l_enabled:
                 new_cmp.component_type = GrpcComponentType.RESISTOR
             elif rlc.c_enabled and not rlc.r_enabled and not rlc.l_enabled:

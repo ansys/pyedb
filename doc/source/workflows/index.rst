@@ -9,4 +9,5 @@ This section describes PyEDB workflows features.
    job_manager/index
    sipi/index
    utilities/index
+   drc/index
 
