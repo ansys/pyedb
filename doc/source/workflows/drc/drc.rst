@@ -85,7 +85,7 @@ Rule models
    BackDrillStubLength
    CopperBalance
 
-DRC engine
+DRC Engine
 ~~~~~~~~~~
 
 .. autosummary::
@@ -128,8 +128,8 @@ Load a rule deck from JSON
    with open("my_rules.json") as f:
        rules = Rules.from_dict(json.load(f))
 
-Export violations to csv
-~~~~~~~~~~~~~~~~~~~~~~~~
+Export violations to CSV
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
