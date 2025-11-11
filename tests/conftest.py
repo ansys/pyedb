@@ -197,6 +197,9 @@ class EdbExamples:
     def get_log_file_example(self):
         return os.path.join(self.example_models_path, "test.log")
 
+    def get_siwave_log_file_example(self):
+        return os.path.join(self.example_models_path, "siwave.log")
+
 
 @pytest.fixture(scope="class", autouse=True)
 def target_path(local_scratch):
