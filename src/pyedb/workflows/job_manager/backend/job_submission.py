@@ -68,6 +68,7 @@ SLURM cluster::
 from datetime import datetime
 import enum
 import getpass
+import hashlib
 import logging
 import os
 import platform
@@ -77,6 +78,7 @@ import shutil
 import subprocess  # nosec B404
 import tempfile
 from typing import Any, Dict, List, Optional, Union
+import uuid
 
 from pydantic import BaseModel, Field
 
@@ -468,7 +470,12 @@ class HFSSSimulationConfig(BaseModel):
             else:
                 self.ansys_edt_path = os.path.join(list(installed_versions.values())[-1], "ansysedt.exe")  # latest
         if not self.jobid:
-            self.jobid = f"JOB_ID_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            # Generate unique job ID using timestamp and UUID to avoid collisions
+            # when submitting multiple jobs rapidly (batch submissions)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            # Use short UUID (first 8 chars) for readability while ensuring uniqueness
+            unique_id = str(uuid.uuid4())[:8]
+            self.jobid = f"JOB_{timestamp}_{unique_id}"
         if "auto" not in data:  # user did not touch it
             data["auto"] = self.scheduler_type != SchedulerType.NONE
         self.validate_fields()
