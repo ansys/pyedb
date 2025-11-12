@@ -9,6 +9,80 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.64.0 <https://github.com/ansys/pyedb/releases/tag/v0.64.0>`_ - November 12, 2025
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Adding CLI for batch submission
+          - `#1635 <https://github.com/ansys/pyedb/pull/1635>`_
+
+        * - Job manager concurrent job bug
+          - `#1640 <https://github.com/ansys/pyedb/pull/1640>`_
+
+        * - Siwave log parser
+          - `#1646 <https://github.com/ansys/pyedb/pull/1646>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump ansys/actions from 10.1.4 to 10.1.5
+          - `#1623 <https://github.com/ansys/pyedb/pull/1623>`_
+
+        * - Update pypandoc requirement from <1.16,>=1.10.0 to >=1.10.0,<1.17
+          - `#1643 <https://github.com/ansys/pyedb/pull/1643>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Introduce \`\`sphinx-autoapi\`\` for API documentation
+          - `#1632 <https://github.com/ansys/pyedb/pull/1632>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bux fixed
+          - `#1626 <https://github.com/ansys/pyedb/pull/1626>`_
+
+        * - Create port on component (grpc) bug fixed
+          - `#1628 <https://github.com/ansys/pyedb/pull/1628>`_
+
+        * - Cfg_ports_sources.py
+          - `#1644 <https://github.com/ansys/pyedb/pull/1644>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.63.0
+          - `#1624 <https://github.com/ansys/pyedb/pull/1624>`_
+
+        * - Bump release 0.64.dev0
+          - `#1634 <https://github.com/ansys/pyedb/pull/1634>`_
+
+
 `0.63.0 <https://github.com/ansys/pyedb/releases/tag/v0.63.0>`_ - November 03, 2025
 ===================================================================================
 
