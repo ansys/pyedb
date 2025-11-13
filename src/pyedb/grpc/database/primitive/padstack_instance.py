@@ -590,14 +590,9 @@ class PadstackInstance(GrpcPadstackInstance):
         :class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`
 
         """
-        obj_inst = [
-            obj
-            for obj in self._pedb.layout_instance.query_layout_obj_instances(
-                spatial_filter=GrpcPointData(self.position)
-            )
-            if obj.layout_obj.id == self.id
-        ]
-        return obj_inst[0] if obj_inst else None
+        if not self._object_instance:
+            self._object_instance = self.layout.layout_instance.get_layout_obj_instance_in_context(self, None)
+        return self._object_instance
 
     @property
     def is_pin(self) -> bool:
