@@ -224,7 +224,9 @@ class TestClass(BaseTestClass):
         assert len(padstack_instances)
         padstack_1 = padstack_instances[0]
         assert padstack_1.id
-        assert isinstance(padstack_1.bounding_box, list)
+        assert isinstance(padstack_1.bounding_box, list) or isinstance(
+            padstack_1.bounding_box, tuple
+        )  # grpc returns tuple
         for v in padstack_instances:
             if not v.is_pin:
                 v.name = "TestInst"
