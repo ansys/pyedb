@@ -8,3 +8,4 @@ This section describes PyEDB utilities workflows features.
 
    cutout
    hfss_log_parser
+   siwave_log_parser

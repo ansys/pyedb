@@ -129,3 +129,19 @@ class TestClass:
         drc.to_ipc356a(file_path=output_file)
         assert os.path.isfile(output_file)
         edbapp.close()
+
+    def test_siwave_log_parser(self, edb_examples):
+        from pyedb.workflows.utilities.siwave_log_parser import SiwaveLogParser
+
+        log_file = edb_examples.get_siwave_log_file_example()
+        parser = SiwaveLogParser(log_file)
+        log_parser = parser.parse()
+        assert log_parser.aedt
+        assert log_parser.batch
+        assert log_parser.settings
+        # Check status (should be Normal Completion for successful runs)
+        assert log_parser.batch.status
+        assert log_parser.batch.status == "Normal Completion"
+        # Test helper methods
+        assert log_parser.is_completed()
+        assert not log_parser.is_aborted()
