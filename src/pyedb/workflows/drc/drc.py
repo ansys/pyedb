@@ -398,7 +398,10 @@ class Drc:
         for i, via in enumerate(self.edb.padstacks.instances.values()):
             self.idx_vias.insert(i, via.position)
         for i, comp in enumerate(self.edb.components.instances.values()):
-            self.idx_components.insert(i, comp.bounding_box)
+            comp_bbox = comp.bounding_box
+            if isinstance(comp_bbox, tuple):
+                comp_bbox = [comp_bbox[0][0], comp_bbox[0][1], comp_bbox[1][0], comp_bbox[1][1]]
+            self.idx_components.insert(i, comp_bbox)
 
     def check(self, rules: Rules) -> List[Dict[str, Any]]:
         """
