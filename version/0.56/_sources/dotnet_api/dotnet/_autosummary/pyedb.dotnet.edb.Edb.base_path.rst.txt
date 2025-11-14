@@ -1,0 +1,6 @@
+base\_path
+==========
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.base_path

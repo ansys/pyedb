@@ -1,0 +1,79 @@
+
+
+
+
+
+
+:class:`NPortComponentModel`
+============================
+
+
+.. py:class:: pyedb.dotnet.database.definition.component_model.NPortComponentModel(pedb, edb_object)
+
+   Bases: :py:obj:`ComponentModel`
+
+
+   
+   Class for n-port component models.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: NPortComponentModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~reference_file`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.definition.component_model import NPortComponentModel
+
+Property detail
+---------------
+
+.. py:property:: reference_file
+
+
+
+
+
+

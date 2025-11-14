@@ -1,0 +1,15 @@
+﻿EDBStatistics
+=============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.utilities
+
+.. autoclass:: EDBStatistics
+
+   
+
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+get\_layout\_thickness
+======================
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: Stackup.get_layout_thickness

@@ -1,0 +1,183 @@
+
+
+
+
+
+
+:class:`CfgBoundaries`
+======================
+
+
+.. py:class:: pyedb.configuration.cfg_boundaries.CfgBoundaries(pedb, boundary_data)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBase`
+
+
+
+.. py:currentmodule:: CfgBoundaries
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_parameters_from_edb`
+            - 
+          * - :py:attr:`~set_parameters_to_edb`
+            - Imports boundary information from JSON.
+          * - :py:attr:`~apply`
+            - Imports boundary information from JSON.
+          * - :py:attr:`~get_data_from_db`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~boundary_data`
+            - 
+          * - :py:attr:`~open_region`
+            - 
+          * - :py:attr:`~open_region_type`
+            - 
+          * - :py:attr:`~pml_visible`
+            - 
+          * - :py:attr:`~pml_operation_frequency`
+            - 
+          * - :py:attr:`~pml_radiation_factor`
+            - 
+          * - :py:attr:`~dielectric_extent_type`
+            - 
+          * - :py:attr:`~horizontal_padding`
+            - 
+          * - :py:attr:`~honor_primitives_on_dielectric_layers`
+            - 
+          * - :py:attr:`~air_box_extent_type`
+            - 
+          * - :py:attr:`~air_box_base_polygon`
+            - 
+          * - :py:attr:`~air_box_truncate_model_ground_layers`
+            - 
+          * - :py:attr:`~air_box_horizontal_padding`
+            - 
+          * - :py:attr:`~air_box_positive_vertical_padding`
+            - 
+          * - :py:attr:`~air_box_negative_vertical_padding`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_boundaries import CfgBoundaries
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: boundary_data
+
+.. py:attribute:: open_region
+
+.. py:attribute:: open_region_type
+
+.. py:attribute:: pml_visible
+
+.. py:attribute:: pml_operation_frequency
+
+.. py:attribute:: pml_radiation_factor
+
+.. py:attribute:: dielectric_extent_type
+
+.. py:attribute:: horizontal_padding
+
+.. py:attribute:: honor_primitives_on_dielectric_layers
+
+.. py:attribute:: air_box_extent_type
+
+.. py:attribute:: air_box_base_polygon
+
+.. py:attribute:: air_box_truncate_model_ground_layers
+
+.. py:attribute:: air_box_horizontal_padding
+
+.. py:attribute:: air_box_positive_vertical_padding
+
+.. py:attribute:: air_box_negative_vertical_padding
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_parameters_from_edb()
+
+.. py:method:: set_parameters_to_edb()
+
+   
+   Imports boundary information from JSON.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply()
+
+   
+   Imports boundary information from JSON.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_data_from_db()
+
+
+
+

@@ -1,0 +1,116 @@
+﻿CircuitPort
+===========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoclass:: CircuitPort
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CircuitPort.cast
+      
+      
+      CircuitPort.couple_ports
+      
+      
+      CircuitPort.create
+      
+      
+      CircuitPort.create_3d_comp
+      
+      
+      CircuitPort.create_hfss
+      
+      
+      CircuitPort.create_stride
+      
+      
+      CircuitPort.delete
+      
+      
+      CircuitPort.find
+      
+      
+      CircuitPort.find_by_id
+      
+      
+      CircuitPort.get_product_property
+      
+      
+      CircuitPort.get_product_property_ids
+      
+      
+      CircuitPort.product_solver_names
+      
+      
+      CircuitPort.product_solver_option
+      
+      
+      CircuitPort.set_product_property
+      
+      
+      CircuitPort.set_product_solver_option
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CircuitPort.boundary_type
+      CircuitPort.bundle_terminal
+      CircuitPort.component
+      CircuitPort.deembed
+      CircuitPort.edb_uid
+      CircuitPort.edges
+      CircuitPort.group
+      CircuitPort.hfss_pi_type
+      CircuitPort.hfss_type
+      CircuitPort.id
+      CircuitPort.impedance
+      CircuitPort.is_auto_port
+      CircuitPort.is_circuit_port
+      CircuitPort.is_interface_terminal
+      CircuitPort.is_mcad
+      CircuitPort.is_mcad_3d_comp
+      CircuitPort.is_mcad_hfss
+      CircuitPort.is_mcad_stride
+      CircuitPort.is_null
+      CircuitPort.is_port
+      CircuitPort.is_reference_terminal
+      CircuitPort.is_wave_port
+      CircuitPort.layout
+      CircuitPort.layout_obj_type
+      CircuitPort.magnitude
+      CircuitPort.model
+      CircuitPort.msg
+      CircuitPort.name
+      CircuitPort.net
+      CircuitPort.obj_type
+      CircuitPort.phase
+      CircuitPort.port_post_processing_prop
+      CircuitPort.ref_terminal
+      CircuitPort.reference_layer
+      CircuitPort.reference_terminal
+      CircuitPort.renormalize
+      CircuitPort.renormalize_z0
+      CircuitPort.rlc_boundary_parameters
+      CircuitPort.source_amplitude
+      CircuitPort.source_phase
+      CircuitPort.term_to_ground
+      CircuitPort.terminal_type
+      CircuitPort.type
+      CircuitPort.use_reference_from_hierarchy
+   
+   

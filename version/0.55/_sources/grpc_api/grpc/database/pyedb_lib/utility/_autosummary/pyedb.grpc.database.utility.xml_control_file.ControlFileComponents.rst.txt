@@ -1,0 +1,24 @@
+﻿ControlFileComponents
+=====================
+
+.. currentmodule:: pyedb.grpc.database.utility.xml_control_file
+
+.. autoclass:: ControlFileComponents
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      ControlFileComponents.add_component
+      
+   
+   
+
+   
+   
+   

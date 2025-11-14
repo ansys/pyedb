@@ -1,0 +1,6 @@
+add\_port
+=========
+
+.. currentmodule:: pyedb.grpc.database.utility.xml_control_file
+
+.. automethod:: ControlFileComponent.add_port

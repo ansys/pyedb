@@ -1,0 +1,6 @@
+hfss\_type
+==========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: WavePort.hfss_type

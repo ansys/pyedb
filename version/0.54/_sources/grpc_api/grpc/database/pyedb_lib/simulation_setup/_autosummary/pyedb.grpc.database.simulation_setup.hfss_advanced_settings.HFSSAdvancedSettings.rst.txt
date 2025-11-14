@@ -1,0 +1,38 @@
+﻿HFSSAdvancedSettings
+====================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_advanced_settings
+
+.. autoclass:: HFSSAdvancedSettings
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HFSSAdvancedSettings.defeature_absolute_length
+      HFSSAdvancedSettings.defeature_ratio
+      HFSSAdvancedSettings.healing_option
+      HFSSAdvancedSettings.ic_mode_auto_resolution
+      HFSSAdvancedSettings.ic_mode_length
+      HFSSAdvancedSettings.mesh_for_via_plating
+      HFSSAdvancedSettings.model_type
+      HFSSAdvancedSettings.msg
+      HFSSAdvancedSettings.num_via_density
+      HFSSAdvancedSettings.num_via_sides
+      HFSSAdvancedSettings.remove_floating_geometry
+      HFSSAdvancedSettings.small_void_area
+      HFSSAdvancedSettings.union_polygons
+      HFSSAdvancedSettings.use_defeature
+      HFSSAdvancedSettings.use_defeature_absolute_length
+      HFSSAdvancedSettings.via_material
+      HFSSAdvancedSettings.via_model_type
+   
+   

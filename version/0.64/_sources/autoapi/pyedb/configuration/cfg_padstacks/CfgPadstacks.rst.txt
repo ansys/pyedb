@@ -1,0 +1,128 @@
+
+
+
+
+
+
+:class:`CfgPadstacks`
+=====================
+
+
+.. py:class:: pyedb.configuration.cfg_padstacks.CfgPadstacks(pedb, padstack_dict=None)
+
+   
+   Padstack data class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgPadstacks
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~clean`
+            - 
+          * - :py:attr:`~apply`
+            - Apply padstack definition and instances on layout.
+          * - :py:attr:`~retrieve_parameters_from_edb`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~definitions`
+            - 
+          * - :py:attr:`~instances`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_padstacks import CfgPadstacks
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: definitions
+   :value: []
+
+
+.. py:attribute:: instances
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: clean()
+
+.. py:method:: apply()
+
+   
+   Apply padstack definition and instances on layout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: retrieve_parameters_from_edb()
+
+
+
+

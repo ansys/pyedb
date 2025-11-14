@@ -1,0 +1,6 @@
+source\_phase
+=============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: GapPort.source_phase

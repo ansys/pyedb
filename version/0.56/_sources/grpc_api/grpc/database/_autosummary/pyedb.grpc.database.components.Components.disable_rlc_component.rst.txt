@@ -1,0 +1,6 @@
+disable\_rlc\_component
+=======================
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. automethod:: Components.disable_rlc_component

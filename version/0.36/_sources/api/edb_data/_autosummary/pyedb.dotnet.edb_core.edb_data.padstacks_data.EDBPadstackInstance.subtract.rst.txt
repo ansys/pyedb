@@ -1,0 +1,6 @@
+subtract
+========
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. automethod:: EDBPadstackInstance.subtract

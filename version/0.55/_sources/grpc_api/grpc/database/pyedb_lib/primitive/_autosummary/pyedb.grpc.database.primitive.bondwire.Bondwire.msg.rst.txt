@@ -1,0 +1,6 @@
+msg
+===
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. autoproperty:: Bondwire.msg

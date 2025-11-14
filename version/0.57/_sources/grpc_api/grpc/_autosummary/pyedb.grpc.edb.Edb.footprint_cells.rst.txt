@@ -1,0 +1,6 @@
+footprint\_cells
+================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.footprint_cells

@@ -1,0 +1,6 @@
+hfss\_extent\_info
+==================
+
+.. currentmodule:: pyedb.dotnet.database.hfss
+
+.. autoproperty:: EdbHfss.hfss_extent_info

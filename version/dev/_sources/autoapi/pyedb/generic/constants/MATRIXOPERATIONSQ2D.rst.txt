@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`MATRIXOPERATIONSQ2D`
+============================
+
+
+.. py:class:: pyedb.generic.constants.MATRIXOPERATIONSQ2D
+
+   Bases: :py:obj:`object`
+
+
+   
+   Matrix Reduction types.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import MATRIXOPERATIONSQ2D
+
+
+
+
+

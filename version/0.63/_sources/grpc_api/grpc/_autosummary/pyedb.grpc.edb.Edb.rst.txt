@@ -1,0 +1,210 @@
+﻿Edb
+===
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoclass:: Edb
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Edb.add_design_variable
+      
+      
+      Edb.add_project_variable
+      
+      
+      Edb.are_port_reference_terminals_connected
+      
+      
+      Edb.auto_parametrize_design
+      
+      
+      Edb.calculate_initial_extent
+      
+      
+      Edb.change_design_variable_value
+      
+      
+      Edb.close
+      
+      
+      Edb.close_edb
+      
+      
+      Edb.compare
+      
+      
+      Edb.copy_cells
+      
+      
+      Edb.copy_zones
+      
+      
+      Edb.create
+      
+      
+      Edb.create_current_source
+      
+      
+      Edb.create_hfss_setup
+      
+      
+      Edb.create_hfsspi_setup
+      
+      
+      Edb.create_model_for_arbitrary_wave_ports
+      
+      
+      Edb.create_port
+      
+      
+      Edb.create_raptorx_setup
+      
+      
+      Edb.create_siwave_dc_setup
+      
+      
+      Edb.create_siwave_syz_setup
+      
+      
+      Edb.create_voltage_probe
+      
+      
+      Edb.create_voltage_source
+      
+      
+      Edb.cutout
+      
+      
+      Edb.cutout_multizone_layout
+      
+      
+      Edb.delete
+      
+      
+      Edb.edb_exception
+      
+      
+      Edb.execute
+      
+      
+      Edb.export_gds_comp_xml
+      
+      
+      Edb.export_hfss
+      
+      
+      Edb.export_layout_component
+      
+      
+      Edb.export_maxwell
+      
+      
+      Edb.export_q3d
+      
+      
+      Edb.export_siwave_dc_results
+      
+      
+      Edb.export_to_ipc2581
+      
+      
+      Edb.find_by_id
+      
+      
+      Edb.get_all_variable_names
+      
+      
+      Edb.get_bounding_box
+      
+      
+      Edb.get_connected_objects
+      
+      
+      Edb.get_point_terminal
+      
+      
+      Edb.get_product_property
+      
+      
+      Edb.get_product_property_ids
+      
+      
+      Edb.get_statistics
+      
+      
+      Edb.get_variable
+      
+      
+      Edb.import_gds_file
+      
+      
+      Edb.import_layout_component
+      
+      
+      Edb.import_layout_file
+      
+      
+      Edb.import_layout_pcb
+      
+      
+      Edb.import_material_from_control_file
+      
+      
+      Edb.import_vlctech_stackup
+      
+      
+      Edb.number_with_units
+      
+      
+      Edb.open
+      
+      
+      Edb.point_3d
+      
+      
+      Edb.point_data
+      
+      
+      Edb.save
+      
+      
+      Edb.save_as
+      
+      
+      Edb.save_edb
+      
+      
+      Edb.save_edb_as
+      
+      
+      Edb.scale
+      
+      
+      Edb.set_product_property
+      
+      
+      Edb.solve_siwave
+      
+      
+      Edb.value
+      
+      
+      Edb.variable_exists
+      
+      
+      Edb.write_export3d_option_config_file
+      
+   
+   
+
+   
+   
+   

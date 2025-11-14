@@ -1,0 +1,6 @@
+min\_passes
+===========
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_settings_options
+
+.. autoproperty:: HFSSSettingsOptions.min_passes

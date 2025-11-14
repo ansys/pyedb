@@ -1,0 +1,6 @@
+shortest\_arc
+=============
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. autoproperty:: Primitive.shortest_arc

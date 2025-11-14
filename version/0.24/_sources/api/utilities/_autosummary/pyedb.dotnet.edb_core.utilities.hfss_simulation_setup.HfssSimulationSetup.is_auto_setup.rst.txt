@@ -1,0 +1,6 @@
+is\_auto\_setup
+===============
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.hfss_simulation_setup
+
+.. autoproperty:: HfssSimulationSetup.is_auto_setup

@@ -1,0 +1,33 @@
+﻿SpiceModel
+==========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.spice_model
+
+.. autoclass:: SpiceModel
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      SpiceModel.add_terminal
+      
+      
+      SpiceModel.clone
+      
+      
+      SpiceModel.create
+      
+      
+      SpiceModel.remove_terminal
+      
+   
+   
+
+   
+   
+   

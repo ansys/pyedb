@@ -1,0 +1,6 @@
+terminals
+=========
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.terminals

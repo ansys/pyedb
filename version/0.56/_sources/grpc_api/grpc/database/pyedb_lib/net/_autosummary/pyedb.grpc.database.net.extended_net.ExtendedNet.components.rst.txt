@@ -1,0 +1,6 @@
+components
+==========
+
+.. currentmodule:: pyedb.grpc.database.net.extended_net
+
+.. autoproperty:: ExtendedNet.components

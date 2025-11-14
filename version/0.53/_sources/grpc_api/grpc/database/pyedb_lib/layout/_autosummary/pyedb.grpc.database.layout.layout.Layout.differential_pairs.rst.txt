@@ -1,0 +1,6 @@
+differential\_pairs
+===================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. autoproperty:: Layout.differential_pairs

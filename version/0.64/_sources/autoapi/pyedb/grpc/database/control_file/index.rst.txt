@@ -1,0 +1,244 @@
+
+
+
+
+
+
+The ``control_file.py`` module
+==============================
+
+.. py:module:: pyedb.grpc.database.control_file
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: control_file
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlProperty`
+            - Represents a property in the control file with name, value, and type.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlFileMaterial`
+            - Represents a material in the control file.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlFileDielectric`
+            - Represents a dielectric layer in the control file.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlFileLayer`
+            - Represents a general layer in the control file.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlFileVia`
+            - Represents a via layer in the control file.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlFileStackup`
+            - Manages stackup information for the control file.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlFileImportOptions`
+            - Manages import options for the control file.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlExtent`
+            - Represents extent options for boundaries.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlCircuitPt`
+            - Represents a circuit port.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlFileComponent`
+            - Represents a component in the control file.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlFileComponents`
+            - Manages components for the control file.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlFileBoundaries`
+            - Manages boundaries for the control file.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlFileSweep`
+            - Represents a frequency sweep.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlFileMeshOp`
+            - Represents a mesh operation.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlFileSetup`
+            - Represents a simulation setup.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlFileSetups`
+            - Manages simulation setups.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file.ControlFile`
+            - Main class for EDB control file creation and management.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~convert_technology_file`
+            - Convert a technology file to EDB control file (XML).
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> ControlProperty</autoapi/pyedb/grpc/database/control_file/ControlProperty>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileMaterial</autoapi/pyedb/grpc/database/control_file/ControlFileMaterial>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileDielectric</autoapi/pyedb/grpc/database/control_file/ControlFileDielectric>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileLayer</autoapi/pyedb/grpc/database/control_file/ControlFileLayer>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileVia</autoapi/pyedb/grpc/database/control_file/ControlFileVia>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileStackup</autoapi/pyedb/grpc/database/control_file/ControlFileStackup>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileImportOptions</autoapi/pyedb/grpc/database/control_file/ControlFileImportOptions>
+    <span class="nf nf-cod-symbol_class"></span> ControlExtent</autoapi/pyedb/grpc/database/control_file/ControlExtent>
+    <span class="nf nf-cod-symbol_class"></span> ControlCircuitPt</autoapi/pyedb/grpc/database/control_file/ControlCircuitPt>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileComponent</autoapi/pyedb/grpc/database/control_file/ControlFileComponent>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileComponents</autoapi/pyedb/grpc/database/control_file/ControlFileComponents>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileBoundaries</autoapi/pyedb/grpc/database/control_file/ControlFileBoundaries>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileSweep</autoapi/pyedb/grpc/database/control_file/ControlFileSweep>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileMeshOp</autoapi/pyedb/grpc/database/control_file/ControlFileMeshOp>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileSetup</autoapi/pyedb/grpc/database/control_file/ControlFileSetup>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileSetups</autoapi/pyedb/grpc/database/control_file/ControlFileSetups>
+    <span class="nf nf-cod-symbol_class"></span> ControlFile</autoapi/pyedb/grpc/database/control_file/ControlFile>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: convert_technology_file(tech_file, edbversion=None, control_file=None)
+
+   
+   Convert a technology file to EDB control file (XML).
+
+   .. warning::
+       Do not execute this function with untrusted function argument, environment
+       variables or pyedb global settings.
+       See the :ref:`security guide<ref_security_consideration>` for details.
+
+   :Parameters:
+
+       **tech_file** : :class:`python:str`
+           Full path to technology file.
+
+       **edbversion** : :class:`python:str`, :obj:`optional`
+           EDB version to use. If ``None``, uses latest available version.
+
+       **control_file** : :class:`python:str`, :obj:`optional`
+           Output control file path. If ``None``, uses same path and name as ``tech_file``.
+
+   :Returns:
+
+       :class:`python:str` or :ref:`bool <python:bltin-boolean-values>`
+           Full path to created control file if successful, ``False`` otherwise.
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   This function is only supported on Linux systems.
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

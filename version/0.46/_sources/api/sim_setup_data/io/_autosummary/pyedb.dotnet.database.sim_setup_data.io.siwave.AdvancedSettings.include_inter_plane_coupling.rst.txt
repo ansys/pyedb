@@ -1,0 +1,6 @@
+include\_inter\_plane\_coupling
+===============================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoproperty:: AdvancedSettings.include_inter_plane_coupling

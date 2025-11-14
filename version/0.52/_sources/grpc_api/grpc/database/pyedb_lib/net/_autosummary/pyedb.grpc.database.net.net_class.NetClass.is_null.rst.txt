@@ -1,0 +1,6 @@
+is\_null
+========
+
+.. currentmodule:: pyedb.grpc.database.net.net_class
+
+.. autoproperty:: NetClass.is_null

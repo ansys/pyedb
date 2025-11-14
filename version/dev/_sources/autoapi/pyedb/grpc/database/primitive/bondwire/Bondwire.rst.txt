@@ -1,0 +1,218 @@
+
+
+
+
+
+
+:class:`Bondwire`
+=================
+
+
+.. py:class:: pyedb.grpc.database.primitive.bondwire.Bondwire(_pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.primitive.bondwire.Bondwire`
+
+
+   
+   Class representing a bond-wire object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Bondwire
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~material`
+            - Bondwire material
+          * - :py:attr:`~type`
+            - str: Bondwire-type of a bondwire object. Supported values for setter: `"apd"`, `"jedec4"`, `"jedec5"`,
+          * - :py:attr:`~cross_section_type`
+            - str: Bondwire-cross-section-type of a bondwire object. Supported values for setter: `"round",
+          * - :py:attr:`~cross_section_height`
+            - float: Bondwire-cross-section height of a bondwire object.
+          * - :py:attr:`~width`
+            - :class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.primitive.bondwire import Bondwire
+
+Property detail
+---------------
+
+.. py:property:: material
+
+   
+   Bondwire material
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Material name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: type
+
+   
+   str: Bondwire-type of a bondwire object. Supported values for setter: `"apd"`, `"jedec4"`, `"jedec5"`,
+   `"num_of_type"`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cross_section_type
+
+   
+   str: Bondwire-cross-section-type of a bondwire object. Supported values for setter: `"round",
+   `"rectangle"`
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           cross section type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cross_section_height
+
+   
+   float: Bondwire-cross-section height of a bondwire object.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Cross section height.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: width
+
+   
+   :class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Width value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

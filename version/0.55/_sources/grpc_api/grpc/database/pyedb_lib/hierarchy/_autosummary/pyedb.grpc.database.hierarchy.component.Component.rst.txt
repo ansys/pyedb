@@ -1,0 +1,152 @@
+﻿Component
+=========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoclass:: Component
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Component.add_member
+      
+      
+      Component.assign_rlc_model
+      
+      
+      Component.assign_s_param_model
+      
+      
+      Component.assign_spice_model
+      
+      
+      Component.cast
+      
+      
+      Component.create
+      
+      
+      Component.create_3d_comp
+      
+      
+      Component.create_clearance_on_component
+      
+      
+      Component.create_hfss
+      
+      
+      Component.create_package_def
+      
+      
+      Component.create_stride
+      
+      
+      Component.delete
+      
+      
+      Component.find
+      
+      
+      Component.find_by_def
+      
+      
+      Component.find_by_id
+      
+      
+      Component.get_product_property
+      
+      
+      Component.get_product_property_ids
+      
+      
+      Component.remove_member
+      
+      
+      Component.set_product_property
+      
+      
+      Component.ungroup
+      
+      
+      Component.use_s_parameter_model
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Component.bounding_box
+      Component.cap_value
+      Component.center
+      Component.component
+      Component.component_def
+      Component.component_instance
+      Component.component_property
+      Component.component_type
+      Component.edb_uid
+      Component.enabled
+      Component.group
+      Component.group_type
+      Component.ic_die_properties
+      Component.id
+      Component.ind_value
+      Component.is_enabled
+      Component.is_mcad
+      Component.is_mcad_3d_comp
+      Component.is_mcad_hfss
+      Component.is_mcad_stride
+      Component.is_null
+      Component.is_parallel_rlc
+      Component.is_top_mounted
+      Component.layer
+      Component.layout
+      Component.layout_instance
+      Component.layout_obj_type
+      Component.location
+      Component.lower_elevation
+      Component.members
+      Component.model
+      Component.model_type
+      Component.msg
+      Component.name
+      Component.net
+      Component.netlist_model
+      Component.nets
+      Component.num_pins
+      Component.numpins
+      Component.obj_type
+      Component.package_def
+      Component.part_name
+      Component.partname
+      Component.pinlist
+      Component.pins
+      Component.placement_layer
+      Component.refdes
+      Component.res_value
+      Component.rlc_values
+      Component.rotation
+      Component.s_param_model
+      Component.solder_ball_diameter
+      Component.solder_ball_height
+      Component.solder_ball_placement
+      Component.solder_ball_shape
+      Component.solve_independent_preference
+      Component.spice_model
+      Component.top_bottom_association
+      Component.transform
+      Component.type
+      Component.upper_elevation
+      Component.value
+   
+   

@@ -1,0 +1,58 @@
+
+
+
+
+
+
+:class:`NetlistModel`
+=====================
+
+
+.. py:class:: pyedb.dotnet.database.cell.hierarchy.netlist_model.NetlistModel(edb_model)
+
+   Bases: :py:obj:`object`
+
+
+
+.. py:currentmodule:: NetlistModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~netlist`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.hierarchy.netlist_model import NetlistModel
+
+Property detail
+---------------
+
+.. py:property:: netlist
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+is\_mcad\_3d\_comp
+==================
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. autoproperty:: Rectangle.is_mcad_3d_comp

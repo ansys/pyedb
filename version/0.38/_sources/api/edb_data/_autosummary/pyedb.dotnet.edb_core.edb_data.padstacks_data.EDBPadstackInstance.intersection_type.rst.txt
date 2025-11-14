@@ -1,0 +1,6 @@
+intersection\_type
+==================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. automethod:: EDBPadstackInstance.intersection_type

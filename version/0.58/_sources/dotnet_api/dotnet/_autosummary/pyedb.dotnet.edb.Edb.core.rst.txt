@@ -1,0 +1,6 @@
+core
+====
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.core

@@ -1,0 +1,264 @@
+
+
+
+
+
+
+:class:`HFSS3DLayoutBatchOptions`
+=================================
+
+
+.. py:class:: pyedb.workflows.job_manager.backend.job_submission.HFSS3DLayoutBatchOptions(**data)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   HFSS-specific solver flags and environment settings.
+
+   Defaults are **platform aware** (Windows vs Linux).
+
+   :Parameters:
+
+       **create_starting_mesh** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Generate initial mesh.  Defaults to ``True``.
+
+       **default_process_priority** : :class:`python:str`, :obj:`optional`
+           OS process priority.  Defaults to ``"Normal"``.
+
+       **enable_gpu** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           GPU acceleration.  Defaults to ``False``.
+
+       **mpi_vendor** : :class:`python:str`, :obj:`optional`
+           MPI implementation.  Auto-detected.
+
+       **mpi_version** : :class:`python:str`, :obj:`optional`
+           Version string.  Defaults to ``"Default"``.
+
+       **remote_spawn_command** : :class:`python:str`, :obj:`optional`
+           Remote shell command.  Auto-detected.
+
+       **solve_adaptive_only** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Skip frequency sweep.  Defaults to ``False``.
+
+       **validate_only** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Check setup only.  Defaults to ``False``.
+
+       **temp_directory** : :class:`python:str`, :obj:`optional`
+           Scratch path.  Auto-detected.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSS3DLayoutBatchOptions
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~validate_fields`
+            - Validate all HFSS 3D layout options for correctness.
+          * - :py:attr:`~to_batch_options_dict`
+            - Convert options to HFSS batch options dictionary format.
+          * - :py:attr:`~to_batch_options_string`
+            - Return the Windows-safe string:
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create_starting_mesh`
+            - 
+          * - :py:attr:`~default_process_priority`
+            - 
+          * - :py:attr:`~enable_gpu`
+            - 
+          * - :py:attr:`~mpi_vendor`
+            - 
+          * - :py:attr:`~mpi_version`
+            - 
+          * - :py:attr:`~remote_spawn_command`
+            - 
+          * - :py:attr:`~solve_adaptive_only`
+            - 
+          * - :py:attr:`~validate_only`
+            - 
+          * - :py:attr:`~temp_directory`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.job_manager.backend.job_submission import HFSS3DLayoutBatchOptions
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: create_starting_mesh
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: default_process_priority
+   :type:  str
+   :value: 'Normal'
+
+
+.. py:attribute:: enable_gpu
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: mpi_vendor
+   :type:  str
+   :value: 'Intel'
+
+
+.. py:attribute:: mpi_version
+   :type:  str
+   :value: 'Default'
+
+
+.. py:attribute:: remote_spawn_command
+   :type:  str
+   :value: 'Scheduler'
+
+
+.. py:attribute:: solve_adaptive_only
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: validate_only
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: temp_directory
+   :type:  str
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: validate_fields() -> None
+
+   
+   Validate all HFSS 3D layout options for correctness.
+
+   Performs comprehensive validation of HFSS-specific parameters including
+   priority levels, MPI vendors, and directory paths.
+
+
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If any parameter is invalid or unsupported.
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_batch_options_dict() -> Dict[str, str]
+
+   
+   Convert options to HFSS batch options dictionary format.
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`python:str`]
+           Key-value pairs suitable for the ``-batchoptions`` switch.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_batch_options_string() -> str
+
+   
+   Return the Windows-safe string:
+   "'key1'='value1' 'key2'='value2' ..."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

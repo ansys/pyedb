@@ -1,0 +1,6 @@
+create\_raptorx\_setup
+======================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.create_raptorx_setup

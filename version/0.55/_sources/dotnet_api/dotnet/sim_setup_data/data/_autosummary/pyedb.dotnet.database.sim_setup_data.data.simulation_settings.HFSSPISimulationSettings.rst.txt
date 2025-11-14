@@ -1,0 +1,41 @@
+﻿HFSSPISimulationSettings
+========================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings
+
+.. autoclass:: HFSSPISimulationSettings
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HFSSPISimulationSettings.auto_select_nets_for_simulation
+      HFSSPISimulationSettings.enabled
+      HFSSPISimulationSettings.ignore_dummy_nets_for_selected_nets
+      HFSSPISimulationSettings.ignore_small_holes
+      HFSSPISimulationSettings.ignore_small_holes_min_diameter
+      HFSSPISimulationSettings.improved_loss_model
+      HFSSPISimulationSettings.include_enhanced_bond_wire_modeling
+      HFSSPISimulationSettings.include_nets
+      HFSSPISimulationSettings.min_plane_area_to_mesh
+      HFSSPISimulationSettings.min_void_area_to_mesh
+      HFSSPISimulationSettings.model_type
+      HFSSPISimulationSettings.perform_erc
+      HFSSPISimulationSettings.pi_slider_pos
+      HFSSPISimulationSettings.rms_surface_roughness
+      HFSSPISimulationSettings.signal_nets_conductor_modeling
+      HFSSPISimulationSettings.signal_nets_error_tolerance
+      HFSSPISimulationSettings.signal_nets_include_improved_dielectric_fill_refinement
+      HFSSPISimulationSettings.signal_nets_include_improved_loss_handling
+      HFSSPISimulationSettings.snap_length_threshold
+      HFSSPISimulationSettings.surface_roughness_model
+   
+   

@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`HFSSDCRSettings`
+========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.hfss_simulation_settings.HFSSDCRSettings`
+
+
+   
+   PyEDB-core HFSS DC settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_dcr_settings import HFSSDCRSettings
+
+
+
+
+
