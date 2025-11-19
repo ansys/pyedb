@@ -23,6 +23,7 @@
 from pyedb.dotnet.database.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.database.edb_data.primitives_data import cast
 from pyedb.dotnet.database.general import convert_pytuple_to_nettuple, pascal_to_snake
+from pyedb.dotnet.database.utilities.value import Value
 
 
 class HfssExtentInfo:
@@ -90,6 +91,10 @@ class HfssExtentInfo:
         info.AirBoxHorizontalExtent = convert_pytuple_to_nettuple((size, is_multiple))
         self._update_hfss_extent_info(info)
 
+    def get_air_box_horizontal_extent(self):
+        info = self._edb_hfss_extent_info
+        return info.AirBoxHorizontalExtent.Item1, info.AirBoxHorizontalExtent.Item2
+
     @property
     def air_box_positive_vertical_extent_enabled(self):
         """Whether positive vertical extent is enabled for the air box."""
@@ -119,6 +124,10 @@ class HfssExtentInfo:
         info = self._edb_hfss_extent_info
         info.AirBoxPositiveVerticalExtent = convert_pytuple_to_nettuple((size, is_multiple))
         self._update_hfss_extent_info(info)
+
+    def get_air_box_positive_vertical_extent(self):
+        info = self._edb_hfss_extent_info
+        return info.AirBoxPositiveVerticalExtent.Item1, info.AirBoxPositiveVerticalExtent.Item2
 
     @property
     def air_box_negative_vertical_extent_enabled(self):
@@ -150,6 +159,10 @@ class HfssExtentInfo:
         info.AirBoxNegativeVerticalExtent = convert_pytuple_to_nettuple((size, is_multiple))
         self._update_hfss_extent_info(info)
 
+    def get_air_box_negative_vertical_extent(self):
+        info = self._edb_hfss_extent_info
+        return info.AirBoxNegativeVerticalExtent.Item1, info.AirBoxNegativeVerticalExtent.Item2
+
     @property
     def base_polygon(self):
         """Base polygon.
@@ -175,7 +188,7 @@ class HfssExtentInfo:
         -------
         :class:`dotnet.database.edb_data.primitives_data.EDBPrimitive`
         """
-        return cast(self._edb_hfss_extent_info.DielectricBasePolygon, self._pedb)
+        return cast(self._edb_hfss_extent_info.DielectricBasePolygon, self._pedb).aedt_name
 
     @dielectric_base_polygon.setter
     def dielectric_base_polygon(self, value):
@@ -210,6 +223,10 @@ class HfssExtentInfo:
         hfss_extent = self._edb_hfss_extent_info
         hfss_extent.DielectricExtentSize = convert_pytuple_to_nettuple((size, is_multiple))
         self._update_hfss_extent_info(hfss_extent)
+
+    def get_dielectric_extent(self):
+        hfss_extent = self._edb_hfss_extent_info
+        return hfss_extent.DielectricExtentSize.Item1, hfss_extent.DielectricExtentSize.Item2
 
     @property
     def dielectric_extent_type(self):
@@ -275,7 +292,7 @@ class HfssExtentInfo:
         -------
         pyedb.dotnet.database.edb_data.edbvalue.EdbValue
         """
-        return EdbValue(self._edb_hfss_extent_info.OperatingFreq)
+        return Value(self._pedb, self._edb_hfss_extent_info.OperatingFreq)
 
     @operating_freq.setter
     def operating_freq(self, value):
@@ -287,7 +304,7 @@ class HfssExtentInfo:
     @property
     def radiation_level(self):
         """PML Radiation level to calculate the thickness of boundary."""
-        return EdbValue(self._edb_hfss_extent_info.RadiationLevel)
+        return Value(self._pedb, self._edb_hfss_extent_info.RadiationLevel)
 
     @radiation_level.setter
     def radiation_level(self, value):

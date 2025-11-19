@@ -156,41 +156,67 @@ class Configuration:
         boundaries = self.cfg_data.boundaries
         edb_hfss_extent_info = self._pedb.hfss.hfss_extent_info
 
-        if boundaries.open_region is not None:
-            edb_hfss_extent_info.use_open_region = boundaries.open_region
+        if boundaries.use_open_region is not None:
+            edb_hfss_extent_info.use_open_region = boundaries.use_open_region
         if boundaries.open_region_type:
             edb_hfss_extent_info.open_region_type = boundaries.open_region_type.lower()
-        if boundaries.pml_visible is not None:
-            edb_hfss_extent_info.is_pml_visible = boundaries.pml_visible
-        if boundaries.pml_operation_frequency:
-            edb_hfss_extent_info.operating_freq = boundaries.pml_operation_frequency
+        if boundaries.is_pml_visible is not None:
+            edb_hfss_extent_info.is_pml_visible = boundaries.is_pml_visible
+        if boundaries.operating_freq:
+            edb_hfss_extent_info.operating_freq = boundaries.operating_freq
         if boundaries.pml_radiation_factor:
             edb_hfss_extent_info.pml_radiation_factor = boundaries.pml_radiation_factor
         if boundaries.dielectric_extent_type:
-            edb_hfss_extent_info.extent_type = boundaries.dielectric_extent_type.lower()
-        if boundaries.horizontal_padding:
-            edb_hfss_extent_info.set_dielectric_extent(**boundaries.horizontal_padding.model_dump())
-        if boundaries.honor_primitives_on_dielectric_layers is not None:
-            edb_hfss_extent_info.honor_user_dielectric = boundaries.honor_primitives_on_dielectric_layers
-        if boundaries.air_box_extent_type:
-            edb_hfss_extent_info.extent_type = boundaries.air_box_extent_type.lower()
-        if boundaries.air_box_truncate_model_ground_layers is not None:
-            edb_hfss_extent_info.truncate_air_box_at_ground = boundaries.air_box_truncate_model_ground_layers
-        if boundaries.air_box_horizontal_padding:
-            edb_hfss_extent_info.set_air_box_horizontal_extent(**boundaries.air_box_horizontal_padding.model_dump())
-        if boundaries.air_box_positive_vertical_padding:
+            edb_hfss_extent_info.dielectric_extent_type = boundaries.dielectric_extent_type.lower()
+        if boundaries.dielectric_extent_size:
+            edb_hfss_extent_info.set_dielectric_extent(**boundaries.dielectric_extent_size.model_dump())
+        if boundaries.honor_user_dielectric is not None:
+            edb_hfss_extent_info.honor_user_dielectric = boundaries.honor_user_dielectric
+        if boundaries.extent_type:
+            edb_hfss_extent_info.extent_type = boundaries.extent_type.lower()
+        if boundaries.truncate_air_box_at_ground is not None:
+            edb_hfss_extent_info.truncate_air_box_at_ground = boundaries.truncate_air_box_at_ground
+        if boundaries.air_box_horizontal_extent:
+            edb_hfss_extent_info.set_air_box_horizontal_extent(**boundaries.air_box_horizontal_extent.model_dump())
+        if boundaries.air_box_positive_vertical_extent:
             edb_hfss_extent_info.set_air_box_positive_vertical_extent(
-                **boundaries.air_box_positive_vertical_padding.model_dump()
+                **boundaries.air_box_positive_vertical_extent.model_dump()
             )
-        if boundaries.air_box_negative_vertical_padding:
+        if boundaries.air_box_negative_vertical_extent:
             edb_hfss_extent_info.set_air_box_negative_vertical_extent(
-                **boundaries.air_box_negative_vertical_padding.model_dump()
+                **boundaries.air_box_negative_vertical_extent.model_dump()
             )
-        if boundaries.air_box_base_polygon is not None:
-            edb_hfss_extent_info.base_polygon = boundaries.air_box_base_polygon
+        if boundaries.base_polygon is not None:
+            edb_hfss_extent_info.base_polygon = boundaries.base_polygon
         if boundaries.dielectric_base_polygon is not None:
             edb_hfss_extent_info.dielectric_base_polygon = boundaries.dielectric_base_polygon
+        if boundaries.sync_air_box_vertical_extent is not None:
+            edb_hfss_extent_info.sync_air_box_vertical_extent = boundaries.sync_air_box_vertical_extent
 
+    def get_boundaries(self):
+        boundaries = self.cfg_data.boundaries
+        edb_hfss_extent_info = self._pedb.hfss.hfss_extent_info
+
+        boundaries.use_open_region = edb_hfss_extent_info.use_open_region
+        boundaries.open_region_type = edb_hfss_extent_info.open_region_type
+        boundaries.is_pml_visible = edb_hfss_extent_info.is_pml_visible
+        boundaries.operating_freq = edb_hfss_extent_info.operating_freq
+        boundaries.pml_radiation_factor = edb_hfss_extent_info.pml_radiation_factor
+        boundaries.dielectric_extent_type = edb_hfss_extent_info.dielectric_extent_type
+        size, is_multiple = edb_hfss_extent_info.get_dielectric_extent()
+        boundaries.dielectric_extent_size = {"size" : size, "is_multiple": is_multiple}
+        boundaries.honor_user_dielectric = edb_hfss_extent_info.honor_user_dielectric
+        boundaries.extent_type = edb_hfss_extent_info.extent_type
+        boundaries.truncate_air_box_at_ground = edb_hfss_extent_info.truncate_air_box_at_ground
+        size, is_multiple = edb_hfss_extent_info.get_air_box_horizontal_extent()
+        boundaries.air_box_horizontal_extent = {"size" : size, "is_multiple": is_multiple}
+        size, is_multiple = edb_hfss_extent_info.get_air_box_positive_vertical_extent()
+        boundaries.air_box_positive_vertical_extent = {"size" : size, "is_multiple": is_multiple}
+        size, is_multiple = edb_hfss_extent_info.get_air_box_negative_vertical_extent()
+        boundaries.air_box_negative_vertical_extent = {"size" : size, "is_multiple": is_multiple}
+        boundaries.base_polygon = edb_hfss_extent_info.base_polygon
+        boundaries.dielectric_base_polygon = edb_hfss_extent_info.dielectric_base_polygon
+        boundaries.sync_air_box_vertical_extent = edb_hfss_extent_info.sync_air_box_vertical_extent
 
     def apply_modeler(self):
         modeler = self.cfg_data.modeler
@@ -457,17 +483,17 @@ class Configuration:
 
         """
         self._pedb.logger.info("Getting data from layout database.")
-        self.get_variables()
+
         self.get_materials()
-        self.get_stackup()
-        self.get_operations()
 
         data = {}
         if kwargs.get("general", False):
             data["general"] = self.cfg_data.general.get_data_from_db()
         if kwargs.get("variables", False):
+            self.get_variables()
             data.update(self.cfg_data.variables.model_dump(exclude_none=True))
         if kwargs.get("stackup", False):
+            self.get_stackup()
             data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True)
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
@@ -499,6 +525,7 @@ class Configuration:
         if kwargs.get("pin_groups", False):
             data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
         if kwargs.get("operations", False):
+            self.get_operations()
             data["operations"] = self.cfg_data.operations.model_dump()
         if kwargs.get("padstacks", False):
             self.cfg_data.padstacks.retrieve_parameters_from_edb()
@@ -513,8 +540,8 @@ class Configuration:
             data["padstacks"]["instances"] = instances
 
         if kwargs.get("boundaries", False):
-            data["boundaries"] = self.cfg_data.boundaries.get_data_from_db()
-
+            self.get_boundaries()
+            data["boundaries"] = self.cfg_data.boundaries.model_dump(exclude_none=True)
         return data
 
     @execution_timer("Applying operations")

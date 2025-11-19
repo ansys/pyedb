@@ -229,7 +229,7 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         hfss_extent.dielectric = (value, True)
         self._update_hfss_extent_info(hfss_extent)
 
-    def set_dielectric_extent(self, size: float, is_multiple: bool=True):
+    def set_dielectric_extent_size(self, size: float, is_multiple: bool=True):
         hfss_extent = self._hfss_extent_info
         hfss_extent.dielectric_extent_size = (size, is_multiple)
         self._update_hfss_extent_info(hfss_extent)
@@ -244,12 +244,12 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
             Dielectric extent type.
 
         """
-        return self._hfss_extent_info.dielectric_extent_type.name.lower()
+        return self._hfss_extent_info.extent_type.name.lower()
 
     @dielectric_extent_type.setter
     def dielectric_extent_type(self, value):
         hfss_extent = self._hfss_extent_info
-        hfss_extent.dielectric_extent_type = value
+        hfss_extent.extent_type = value
         self._update_hfss_extent_info(hfss_extent)
 
     @property
