@@ -171,7 +171,7 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         -------
         :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
         """
-        return self._hfss_extent_info.base_polygon.aedt_name
+        return self._hfss_extent_info.base_polygon
 
     @base_polygon.setter
     def base_polygon(self, value):
@@ -187,13 +187,12 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         -------
         :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
         """
-        return super().dielectric_base_polygon.aedt_name
+        return super().dielectric_base_polygon
 
     @dielectric_base_polygon.setter
     def dielectric_base_polygon(self, value):
         hfss_extent = self._hfss_extent_info
-        obj = self._pedb.layout.find_primitive(name = value)[0]
-        hfss_extent.dielectric_base_polygon = obj._edb_object
+        hfss_extent.dielectric_base_polygon = value
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -229,11 +228,6 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         hfss_extent.dielectric = (value, True)
         self._update_hfss_extent_info(hfss_extent)
 
-    def set_dielectric_extent_size(self, size: float, is_multiple: bool=True):
-        hfss_extent = self._hfss_extent_info
-        hfss_extent.dielectric_extent_size = (size, is_multiple)
-        self._update_hfss_extent_info(hfss_extent)
-
     @property
     def dielectric_extent_type(self) -> str:
         """Dielectric extent type.
@@ -244,12 +238,12 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
             Dielectric extent type.
 
         """
-        return self._hfss_extent_info.extent_type.name.lower()
+        return self._hfss_extent_info.dielectric_extent_type.name.lower()
 
     @dielectric_extent_type.setter
     def dielectric_extent_type(self, value):
         hfss_extent = self._hfss_extent_info
-        hfss_extent.extent_type = value
+        hfss_extent.dielectric_extent_type = value
         self._update_hfss_extent_info(hfss_extent)
 
     @property
