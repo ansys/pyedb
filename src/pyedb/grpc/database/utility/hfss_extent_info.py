@@ -171,7 +171,7 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         -------
         :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
         """
-        return self._hfss_extent_info.base_polygon
+        return self._hfss_extent_info.base_polygon.aedt_name
 
     @base_polygon.setter
     def base_polygon(self, value):
@@ -187,12 +187,13 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         -------
         :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
         """
-        return super().dielectric_base_polygon
+        return super().dielectric_base_polygon.aedt_name
 
     @dielectric_base_polygon.setter
     def dielectric_base_polygon(self, value):
         hfss_extent = self._hfss_extent_info
-        hfss_extent.dielectric_base_polygon = value
+        obj = self._pedb.layout.find_primitive(name = value)[0]
+        hfss_extent.dielectric_base_polygon = obj._edb_object
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -226,6 +227,11 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
     def dielectric_extent_size(self, value):
         hfss_extent = self._hfss_extent_info
         hfss_extent.dielectric = (value, True)
+        self._update_hfss_extent_info(hfss_extent)
+
+    def set_dielectric_extent(self, size: float, is_multiple: bool=True):
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.dielectric_extent_size = (size, is_multiple)
         self._update_hfss_extent_info(hfss_extent)
 
     @property

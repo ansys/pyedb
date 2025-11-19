@@ -122,9 +122,7 @@ class Configuration:
         if self.cfg_data.general:
             self.cfg_data.general.apply()
 
-        # Configure boundary settings
-        if self.cfg_data.boundaries:
-            self.__apply_with_logging("Updating boundaries", self.cfg_data.boundaries.apply)
+        self.apply_boundaries()
 
         if self.cfg_data.nets:
             self.__apply_with_logging("Updating nets", self.cfg_data.nets.apply)
@@ -153,6 +151,46 @@ class Configuration:
         self.cfg_data.setups.apply()
 
         return True
+
+    def apply_boundaries(self):
+        boundaries = self.cfg_data.boundaries
+        edb_hfss_extent_info = self._pedb.hfss.hfss_extent_info
+
+        if boundaries.open_region is not None:
+            edb_hfss_extent_info.use_open_region = boundaries.open_region
+        if boundaries.open_region_type:
+            edb_hfss_extent_info.open_region_type = boundaries.open_region_type.lower()
+        if boundaries.pml_visible is not None:
+            edb_hfss_extent_info.is_pml_visible = boundaries.pml_visible
+        if boundaries.pml_operation_frequency:
+            edb_hfss_extent_info.operating_freq = boundaries.pml_operation_frequency
+        if boundaries.pml_radiation_factor:
+            edb_hfss_extent_info.pml_radiation_factor = boundaries.pml_radiation_factor
+        if boundaries.dielectric_extent_type:
+            edb_hfss_extent_info.extent_type = boundaries.dielectric_extent_type.lower()
+        if boundaries.horizontal_padding:
+            edb_hfss_extent_info.set_dielectric_extent(**boundaries.horizontal_padding.model_dump())
+        if boundaries.honor_primitives_on_dielectric_layers is not None:
+            edb_hfss_extent_info.honor_user_dielectric = boundaries.honor_primitives_on_dielectric_layers
+        if boundaries.air_box_extent_type:
+            edb_hfss_extent_info.extent_type = boundaries.air_box_extent_type.lower()
+        if boundaries.air_box_truncate_model_ground_layers is not None:
+            edb_hfss_extent_info.truncate_air_box_at_ground = boundaries.air_box_truncate_model_ground_layers
+        if boundaries.air_box_horizontal_padding:
+            edb_hfss_extent_info.set_air_box_horizontal_extent(**boundaries.air_box_horizontal_padding.model_dump())
+        if boundaries.air_box_positive_vertical_padding:
+            edb_hfss_extent_info.set_air_box_positive_vertical_extent(
+                **boundaries.air_box_positive_vertical_padding.model_dump()
+            )
+        if boundaries.air_box_negative_vertical_padding:
+            edb_hfss_extent_info.set_air_box_negative_vertical_extent(
+                **boundaries.air_box_negative_vertical_padding.model_dump()
+            )
+        if boundaries.air_box_base_polygon is not None:
+            edb_hfss_extent_info.base_polygon = boundaries.air_box_base_polygon
+        if boundaries.dielectric_base_polygon is not None:
+            edb_hfss_extent_info.dielectric_base_polygon = boundaries.dielectric_base_polygon
+
 
     def apply_modeler(self):
         modeler = self.cfg_data.modeler

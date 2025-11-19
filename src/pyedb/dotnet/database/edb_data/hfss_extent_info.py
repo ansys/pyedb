@@ -85,6 +85,11 @@ class HfssExtentInfo:
         info.AirBoxHorizontalExtent = convert_pytuple_to_nettuple((value, self.air_box_horizontal_extent_enabled))
         self._update_hfss_extent_info(info)
 
+    def set_air_box_horizontal_extent(self, size:float, is_multiple:bool=True):
+        info = self._edb_hfss_extent_info
+        info.AirBoxHorizontalExtent = convert_pytuple_to_nettuple((size, is_multiple))
+        self._update_hfss_extent_info(info)
+
     @property
     def air_box_positive_vertical_extent_enabled(self):
         """Whether positive vertical extent is enabled for the air box."""
@@ -108,6 +113,11 @@ class HfssExtentInfo:
         info.AirBoxPositiveVerticalExtent = convert_pytuple_to_nettuple(
             (value, self.air_box_positive_vertical_extent_enabled)
         )
+        self._update_hfss_extent_info(info)
+
+    def set_air_box_positive_vertical_extent(self, size:float, is_multiple:bool=True):
+        info = self._edb_hfss_extent_info
+        info.AirBoxPositiveVerticalExtent = convert_pytuple_to_nettuple((size, is_multiple))
         self._update_hfss_extent_info(info)
 
     @property
@@ -135,6 +145,11 @@ class HfssExtentInfo:
         )
         self._update_hfss_extent_info(info)
 
+    def set_air_box_negative_vertical_extent(self, size:float, is_multiple:bool=True):
+        info = self._edb_hfss_extent_info
+        info.AirBoxNegativeVerticalExtent = convert_pytuple_to_nettuple((size, is_multiple))
+        self._update_hfss_extent_info(info)
+
     @property
     def base_polygon(self):
         """Base polygon.
@@ -143,12 +158,13 @@ class HfssExtentInfo:
         -------
         :class:`dotnet.database.edb_data.primitives_data.EDBPrimitive`
         """
-        return cast(self._edb_hfss_extent_info.BasePolygon, self._pedb)
+        return cast(self._edb_hfss_extent_info.BasePolygon, self._pedb).aedt_name
 
     @base_polygon.setter
     def base_polygon(self, value):
         info = self._edb_hfss_extent_info
-        info.BasePolygon = value.primitive_object
+        obj = self._pedb.layout.find_primitive(name=value)[0]
+        info.BasePolygon = obj._edb_object
         self._update_hfss_extent_info(info)
 
     @property
@@ -164,7 +180,8 @@ class HfssExtentInfo:
     @dielectric_base_polygon.setter
     def dielectric_base_polygon(self, value):
         info = self._edb_hfss_extent_info
-        info.DielectricBasePolygon = value.primitive_object
+        obj = self._pedb.layout.find_primitive(name=value)[0]
+        info.DielectricBasePolygon = obj.primitive_object
         self._update_hfss_extent_info(info)
 
     @property
@@ -188,6 +205,11 @@ class HfssExtentInfo:
         info = self._edb_hfss_extent_info
         info.DielectricExtentSize = convert_pytuple_to_nettuple((value, self.dielectric_extent_size_enabled))
         self._update_hfss_extent_info(info)
+
+    def set_dielectric_extent(self, size: float, is_multiple: bool=True):
+        hfss_extent = self._edb_hfss_extent_info
+        hfss_extent.DielectricExtentSize = convert_pytuple_to_nettuple((size, is_multiple))
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def dielectric_extent_type(self):
@@ -273,6 +295,15 @@ class HfssExtentInfo:
         info = self._edb_hfss_extent_info
         info.RadiationLevel = value
         self._update_hfss_extent_info(info)
+
+    @property
+    def pml_radiation_factor(self):
+        """PML Radiation level to calculate the thickness of boundary."""
+        return self.radiation_level
+
+    @pml_radiation_factor.setter
+    def pml_radiation_factor(self, value):
+        self.radiation_level = value
 
     @property
     def sync_air_box_vertical_extent(self):

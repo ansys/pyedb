@@ -19,31 +19,44 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from typing import Optional, Any, Union
+from pydantic import BaseModel, Field
 
-from pyedb.configuration.cfg_common import CfgBase
+
+class CfgBase(BaseModel):
+    model_config = {
+        "populate_by_name": True,
+        "extra": "forbid",
+    }
+
+
+class PaddingData(CfgBase):
+    size: Union[float, str]
+    is_multiple: bool
 
 
 class CfgBoundaries(CfgBase):
-    def __init__(self, pedb, boundary_data):
-        self._pedb = pedb
-        self.boundary_data = boundary_data
+    open_region: Optional[Any] = Field(default=None)
+    open_region_type: Optional[Any] = Field(default=None)
+    pml_visible: Optional[Any] = Field(default=None)
+    pml_operation_frequency: Optional[Any] = Field(default=None)
+    pml_radiation_factor: Optional[Any] = Field(default=None)
 
-        self.open_region = self.boundary_data.get("open_region", None)
-        self.open_region_type = self.boundary_data.get("map_open_region_type", None)
-        self.pml_visible = self.boundary_data.get("pml_visible", None)
-        self.pml_operation_frequency = self.boundary_data.get("pml_operation_frequency", None)
-        self.pml_radiation_factor = self.boundary_data.get("pml_radiation_factor", None)
-        self.dielectric_extent_type = self.boundary_data.get("dielectric_extent_type", None)
-        self.horizontal_padding = self.boundary_data.get("horizontal_padding", None)
-        self.honor_primitives_on_dielectric_layers = self.boundary_data.get(
-            "honor_primitives_on_dielectric_layers", False
-        )
-        self.air_box_extent_type = self.boundary_data.get("air_box_extent_type", None)
-        self.air_box_base_polygon = self.boundary_data.get("air_box_base_polygon", None)
-        self.air_box_truncate_model_ground_layers = self.boundary_data.get("air_box_truncate_model_ground_layers", None)
-        self.air_box_horizontal_padding = self.boundary_data.get("air_box_horizontal_padding", None)
-        self.air_box_positive_vertical_padding = self.boundary_data.get("air_box_positive_vertical_padding", None)
-        self.air_box_negative_vertical_padding = self.boundary_data.get("air_box_negative_vertical_padding", None)
+    dielectric_extent_type: Optional[str] = Field(default=None)
+    dielectric_base_polygon: Optional[str] = Field(default=None)
+    horizontal_padding:  Optional[PaddingData] = Field(default=None)
+    honor_primitives_on_dielectric_layers: bool = Field(default=False)
+
+    air_box_extent_type: Optional[Any] = Field(default=None)
+    air_box_base_polygon: Optional[Any] = Field(default=None)
+    air_box_truncate_model_ground_layers: Optional[Any] = Field(default=None)
+    air_box_horizontal_padding: Optional[PaddingData] = Field(default=None)
+    air_box_positive_vertical_padding: Optional[PaddingData] = Field(default=None)
+    air_box_negative_vertical_padding: Optional[PaddingData] = Field(default=None)
+
+    @classmethod
+    def create(cls, **kwargs):
+        return cls(**kwargs)
 
     def get_parameters_from_edb(self):
         self.open_region = self._pedb.hfss.hfss_extent_info.use_open_region
@@ -97,9 +110,3 @@ class CfgBoundaries(CfgBase):
                 self.air_box_negative_vertical_padding
             )
 
-    def apply(self):
-        """Imports boundary information from JSON."""
-        self.set_parameters_to_edb()
-
-    def get_data_from_db(self):
-        return self.get_parameters_from_edb()

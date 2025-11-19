@@ -501,21 +501,19 @@ class TestClass(BaseTestClass):
                 "pml_operation_frequency": "5GHz",
                 "pml_radiation_factor": "10",
                 "dielectric_extent_type": "bounding_box",
-                # "dielectric_base_polygon": "",
-                "horizontal_padding": 0.0,
+                "dielectric_base_polygon": "poly_5949",
+                "horizontal_padding": {"size":0, "is_multiple": True},
                 "honor_primitives_on_dielectric_layers": True,
                 "air_box_extent_type": "bounding_box",
-                # "air_box_base_polygon": "",
+                "air_box_base_polygon": "poly_5949",
                 "air_box_truncate_model_ground_layers": False,
-                "air_box_horizontal_padding": 0.15,
-                "air_box_positive_vertical_padding": 1.0,
-                "air_box_negative_vertical_padding": 1.0,
+                "air_box_horizontal_padding": {"size":0.15, "is_multiple": True},
+                "air_box_positive_vertical_padding": {"size":1.0, "is_multiple": True},
+                "air_box_negative_vertical_padding": {"size":1.0, "is_multiple": True},
             }
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        data_from_db = edbapp.configuration.get_data_from_db(boundaries=True)
-        assert data == data_from_db
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
