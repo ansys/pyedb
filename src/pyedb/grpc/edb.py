@@ -431,7 +431,6 @@ class Edb(EdbInit):
         self._source_excitation = SourceExcitation(self)
         self._differential_pairs = DifferentialPairs(self)
         self._extended_nets = ExtendedNets(self)
-        self._job_manager = JobManagerHandler(self)
 
     def value(self, val) -> float:
         """Convert a value into a pyedb value."""

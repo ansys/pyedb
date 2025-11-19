@@ -429,7 +429,6 @@ class Edb:
         self._core_primitives = Modeler(self)
         self._stackup2 = self._stackup
         self._materials = Materials(self)
-        self._job_manager = JobManagerHandler(self)
 
     @property
     def pedb_class(self):
