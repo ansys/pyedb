@@ -19,7 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from typing import Optional, Any, Union
+from typing import Any, Optional, Union
+
 from pydantic import BaseModel, Field
 
 
@@ -44,7 +45,7 @@ class CfgBoundaries(CfgBase):
 
     dielectric_extent_type: Optional[str] = Field(default=None)
     dielectric_base_polygon: Optional[str] = Field(default=None)
-    dielectric_extent_size:  Optional[PaddingData] = Field(default=None)
+    dielectric_extent_size: Optional[PaddingData] = Field(default=None)
     honor_user_dielectric: bool = Field(default=False)
 
     extent_type: Optional[Any] = Field(default=None)

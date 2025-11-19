@@ -86,7 +86,7 @@ class HfssExtentInfo:
         info.AirBoxHorizontalExtent = convert_pytuple_to_nettuple((value, self.air_box_horizontal_extent_enabled))
         self._update_hfss_extent_info(info)
 
-    def set_air_box_horizontal_extent(self, size:float, is_multiple:bool=True):
+    def set_air_box_horizontal_extent(self, size: float, is_multiple: bool = True):
         info = self._edb_hfss_extent_info
         info.AirBoxHorizontalExtent = convert_pytuple_to_nettuple((size, is_multiple))
         self._update_hfss_extent_info(info)
@@ -120,7 +120,7 @@ class HfssExtentInfo:
         )
         self._update_hfss_extent_info(info)
 
-    def set_air_box_positive_vertical_extent(self, size:float, is_multiple:bool=True):
+    def set_air_box_positive_vertical_extent(self, size: float, is_multiple: bool = True):
         info = self._edb_hfss_extent_info
         info.AirBoxPositiveVerticalExtent = convert_pytuple_to_nettuple((size, is_multiple))
         self._update_hfss_extent_info(info)
@@ -154,7 +154,7 @@ class HfssExtentInfo:
         )
         self._update_hfss_extent_info(info)
 
-    def set_air_box_negative_vertical_extent(self, size:float, is_multiple:bool=True):
+    def set_air_box_negative_vertical_extent(self, size: float, is_multiple: bool = True):
         info = self._edb_hfss_extent_info
         info.AirBoxNegativeVerticalExtent = convert_pytuple_to_nettuple((size, is_multiple))
         self._update_hfss_extent_info(info)
@@ -219,7 +219,7 @@ class HfssExtentInfo:
         info.DielectricExtentSize = convert_pytuple_to_nettuple((value, self.dielectric_extent_size_enabled))
         self._update_hfss_extent_info(info)
 
-    def set_dielectric_extent(self, size: float, is_multiple: bool=True):
+    def set_dielectric_extent(self, size: float, is_multiple: bool = True):
         hfss_extent = self._edb_hfss_extent_info
         hfss_extent.DielectricExtentSize = convert_pytuple_to_nettuple((size, is_multiple))
         self._update_hfss_extent_info(hfss_extent)

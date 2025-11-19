@@ -1690,7 +1690,6 @@ class TestClassSetups(BaseTestClass):
 
 @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassBoundaries(BaseTestClass):
-
     def test_open_region_radiation(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
 
