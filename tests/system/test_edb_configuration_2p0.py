@@ -492,33 +492,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
-    def test_07_boundaries(self, edb_examples):
-        data = {
-            "boundaries": {
-                "open_region": True,
-                "open_region_type": "radiation",
-                "pml_visible": False,
-                "pml_operation_frequency": "5GHz",
-                "pml_radiation_factor": "10",
-                "dielectric_extent_type": "bounding_box",
-                # "dielectric_base_polygon": "",
-                "horizontal_padding": 0.0,
-                "honor_primitives_on_dielectric_layers": True,
-                "air_box_extent_type": "bounding_box",
-                # "air_box_base_polygon": "",
-                "air_box_truncate_model_ground_layers": False,
-                "air_box_horizontal_padding": 0.15,
-                "air_box_positive_vertical_padding": 1.0,
-                "air_box_negative_vertical_padding": 1.0,
-            }
-        }
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        data_from_db = edbapp.configuration.get_data_from_db(boundaries=True)
-        assert data == data_from_db
-        edbapp.close(terminate_rpc_session=False)
-
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_operations_cutout_auto_identify_nets(self, edb_examples):
         data = {
             "ports": [
@@ -1712,4 +1685,108 @@ class TestClassSetups(BaseTestClass):
         ]
         sweep2 = setup["freq_sweep"][1]
         assert sweep2["type"] == "discrete"
+        edbapp.close(terminate_rpc_session=False)
+
+
+@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+class TestClassBoundaries(BaseTestClass):
+    def test_open_region_radiation(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+
+        data = {
+            "boundaries": {
+                "use_open_region": False,
+                "open_region_type": "radiation",
+            }
+        }
+        edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.hfss.hfss_extent_info.use_open_region is False
+
+        data = {
+            "boundaries": {
+                "use_open_region": True,
+                "open_region_type": "radiation",
+            }
+        }
+        edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.hfss.hfss_extent_info.open_region_type == "radiation"
+
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_open_region_pml(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+
+        data = {
+            "boundaries": {
+                "use_open_region": True,
+                "open_region_type": "pml",
+                "is_pml_visible": True,
+                "operating_freq": "3GHz",
+                "pml_radiation_factor": "20",
+            }
+        }
+        edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.hfss.hfss_extent_info.open_region_type == "pml"
+        assert edbapp.hfss.hfss_extent_info.is_pml_visible is True
+        assert edbapp.hfss.hfss_extent_info.operating_freq == 3e9
+        assert edbapp.hfss.hfss_extent_info.radiation_level == 20
+
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_extent_dielectric(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        data = {
+            "boundaries": {
+                "dielectric_extent_type": "bounding_box",
+                "dielectric_extent_size": {"size": 0.01, "is_multiple": True},
+                "honor_user_dielectric": False,
+            }
+        }
+        edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.hfss.hfss_extent_info.dielectric_extent_type == "bounding_box"
+        assert edbapp.hfss.hfss_extent_info.dielectric_extent_size == 0.01
+        assert edbapp.hfss.hfss_extent_info.honor_user_dielectric is False
+
+        data = {
+            "boundaries": {
+                "dielectric_extent_type": "polygon",
+                "dielectric_base_polygon": "poly_5949",
+                "honor_user_dielectric": True,
+            }
+        }
+        edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.hfss.hfss_extent_info.dielectric_extent_type == "polygon"
+        assert edbapp.hfss.hfss_extent_info.dielectric_base_polygon == "poly_5949"
+        assert edbapp.hfss.hfss_extent_info.honor_user_dielectric is True
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_extent_air(self, edb_examples):
+        data = {
+            "boundaries": {
+                "extent_type": "bounding_box",
+                "truncate_air_box_at_ground": True,
+                "air_box_horizontal_extent": {"size": 0.15, "is_multiple": True},
+                "air_box_positive_vertical_extent": {"size": 1.0, "is_multiple": True},
+                "air_box_negative_vertical_extent": {"size": 2.0, "is_multiple": True},
+                "sync_air_box_vertical_extent": True,
+            }
+        }
+        edbapp = edb_examples.get_si_verse()
+        edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.hfss.hfss_extent_info.extent_type == "bounding_box"
+        assert edbapp.hfss.hfss_extent_info.truncate_air_box_at_ground is True
+        assert edbapp.hfss.hfss_extent_info.air_box_horizontal_extent == 0.15
+        assert edbapp.hfss.hfss_extent_info.air_box_positive_vertical_extent == 1.0
+        assert edbapp.hfss.hfss_extent_info.air_box_negative_vertical_extent == 2.0
+        assert edbapp.hfss.hfss_extent_info.sync_air_box_vertical_extent is True
+
+        data = {
+            "boundaries": {
+                "extent_type": "polygon",
+                "base_polygon": "poly_5949",
+            }
+        }
+        edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.hfss.hfss_extent_info.extent_type == "polygon"
+        assert edbapp.hfss.hfss_extent_info.base_polygon == "poly_5949"
         edbapp.close(terminate_rpc_session=False)
