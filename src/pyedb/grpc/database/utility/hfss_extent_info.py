@@ -28,7 +28,7 @@ from ansys.edb.core.utility.hfss_extent_info import (
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 
-class HfssExtentInfo(GrpcHfssExtentInfo):
+class HfssExtentInfo:
     """Manages EDB functionalities for HFSS extent information.
 
     Parameters
@@ -39,7 +39,6 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     def __init__(self, pedb):
         self._pedb = pedb
-        super().__init__()
         self.extent_type_mapping = {
             "bounding_box": GrpcHfssExtentInfoType.BOUNDING_BOX,
             "conforming": GrpcHfssExtentInfoType.CONFORMING,
