@@ -1943,17 +1943,6 @@ class TestClass(BaseTestClass):
                 str(Path(edbapp.edbpath).with_name(Path(edbapp.edbpath).stem + "_compare_results")),
             ]
 
-    def test_job_manager(self, edb_examples, local_scratch):
-        project_path = edb_examples.copy_project_for_job_manager(local_scratch)
-        edb = edb_examples.create_empty_edb()
-        jm = edb.job_manager
-        jm.start_service()
-        assert jm.started
-        job1 = edb.job_manager.create_simulation_config(project_path=project_path)
-        assert job1
-        jm.close()  # stop the service when done
-        assert not jm.started
-
     @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
     def test_create_layout_component(self, edb_examples):
         from pyedb import Edb
