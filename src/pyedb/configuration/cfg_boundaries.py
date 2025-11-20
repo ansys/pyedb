@@ -36,25 +36,111 @@ class PaddingData(CfgBase):
     is_multiple: bool
 
 
+from typing import Optional, Any
+from pydantic import Field
+
+
 class CfgBoundaries(CfgBase):
-    use_open_region: Optional[Any] = Field(default=None)
-    open_region_type: Optional[Any] = Field(default=None)
-    is_pml_visible: Optional[Any] = Field(default=None)
-    operating_freq: Optional[Any] = Field(default=None)
-    pml_radiation_factor: Optional[int] = Field(default=None)
+    use_open_region: Optional[bool] = Field(default=None, description="Whether to enable the use of an open region")
+    open_region_type: Optional[str] = Field(default=None, description="Type of open region to use; e.g., `radiation` or `pml` as defined.")
+    is_pml_visible: Optional[bool] = Field(
+        default=None,
+        description=(
+            "Whether the PML (Perfectly Matched Layer) boundary is visible when using PML."
+            "If `True`, the PML volume is shown in the model; otherwise it is hidden. "
+        ),
+    )
+    operating_freq: Optional[Any] = Field(
+        default=None,
+        description=(
+            "Operating frequency (in Hz) used to compute PML boundary thickness. "
+            "This parameter influences how thick the PML layer is calculated. "
+        ),
+    )
+    pml_radiation_factor: Optional[int] = Field(
+        default=None,
+        description=(
+            "Radiation factor for PML, controlling the relative thickness of the PML boundary. "
+            "Typically ranges on a scale (e.g., 0–10) to define how aggressively the PML absorbs. "
+        ),
+    )
 
-    dielectric_extent_type: Optional[str] = Field(default=None)
-    dielectric_base_polygon: Optional[str] = Field(default=None)
-    dielectric_extent_size: Optional[PaddingData] = Field(default=None)
-    honor_user_dielectric: bool = Field(default=False)
+    dielectric_extent_type: Optional[str] = Field(
+        default=None,
+        description=(
+            "Method used to derive the base polygon for the dielectric region. "
+            "Can be e.g. `Bounding Box`, `Conformal`, `Convex Hull`, or `Polygon` as in HFSS geometry extents. "
+        ),
+    )
+    dielectric_base_polygon: Optional[str] = Field(
+        default=None,
+        description=(
+            "Name of the base polygon used for the dielectric extent. "
+            "When `dielectric_extent_type` is `Polygon`, this defines which polygon to use. "
+        ),
+    )
+    dielectric_extent_size: Optional[PaddingData] = Field(
+        default=None,
+        description=(
+            "Padding (size, is_multiple) for the dielectric extent. "
+            "Specifies how much to expand the dielectric base polygon, either as an absolute value or scaled factor. "
+        ),
+    )
+    honor_user_dielectric: bool = Field(
+        default=False,
+        description=(
+            "If `True`, honors user-defined geometry on dielectric layers; otherwise, the base polygon is expanded "
+            "to define the dielectric region. "
+        ),
+    )
 
-    extent_type: Optional[Any] = Field(default=None)
-    base_polygon: Optional[Any] = Field(default=None)
-    truncate_air_box_at_ground: Optional[Any] = Field(default=None)
-    air_box_horizontal_extent: Optional[PaddingData] = Field(default=None)
-    air_box_positive_vertical_extent: Optional[PaddingData] = Field(default=None)
-    air_box_negative_vertical_extent: Optional[PaddingData] = Field(default=None)
-    sync_air_box_vertical_extent: Optional[bool] = Field(default=None)
+    extent_type: Optional[str] = Field(
+        default=None,
+        description=(
+            "Type of overall HFSS extent. This determines how the base polygon for both airbox and dielectric is computed. "
+        ),
+    )
+    base_polygon: Optional[str] = Field(
+        default=None,
+        description=(
+            "Base polygon name for the extent region, used when the extent type is `Polygon`. "
+        ),
+    )
+    truncate_air_box_at_ground: Optional[bool] = Field(
+        default=None,
+        description=(
+            "Whether to truncate (cap) the airbox at ground layers. "
+            "If `True`, the simulation volume is limited by the ground layer instead of extending indefinitely. "
+        ),
+    )
+    air_box_horizontal_extent: Optional[PaddingData] = Field(
+        default=None,
+        description=(
+            "Horizontal padding of the airbox (size, is_multiple). "
+            "Defines how far the airbox extends in the X-Y direction. "
+        ),
+    )
+    air_box_positive_vertical_extent: Optional[PaddingData] = Field(
+        default=None,
+        description=(
+            "Vertical padding (positive Z direction) of the airbox (size, is_multiple). "
+            "Controls the top extension of the airbox. "
+        ),
+    )
+    air_box_negative_vertical_extent: Optional[PaddingData] = Field(
+        default=None,
+        description=(
+            "Vertical padding (negative Z direction) of the airbox (size, is_multiple). "
+            "Controls how far below the model the airbox extends. "
+        ),
+    )
+    sync_air_box_vertical_extent: Optional[bool] = Field(
+        default=None,
+        description=(
+            "If `True`, synchronizes the positive and negative vertical airbox extents. "
+            "This means both directions use the same padding value. "
+        ),
+    )
 
     @classmethod
     def create(cls, **kwargs):
