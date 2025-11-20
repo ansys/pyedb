@@ -191,14 +191,10 @@ class Configuration:
             info.set_air_box_horizontal_extent(**boundaries.air_box_horizontal_extent.model_dump())
 
         if boundaries.air_box_positive_vertical_extent:
-            info.set_air_box_positive_vertical_extent(
-                **boundaries.air_box_positive_vertical_extent.model_dump()
-            )
+            info.set_air_box_positive_vertical_extent(**boundaries.air_box_positive_vertical_extent.model_dump())
 
         if boundaries.air_box_negative_vertical_extent:
-            info.set_air_box_negative_vertical_extent(
-                **boundaries.air_box_negative_vertical_extent.model_dump()
-            )
+            info.set_air_box_negative_vertical_extent(**boundaries.air_box_negative_vertical_extent.model_dump())
 
     def get_boundaries(self):
         boundaries = self.cfg_data.boundaries
