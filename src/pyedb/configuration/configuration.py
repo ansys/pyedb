@@ -154,44 +154,51 @@ class Configuration:
 
     def apply_boundaries(self):
         boundaries = self.cfg_data.boundaries
-        edb_hfss_extent_info = self._pedb.hfss.hfss_extent_info
+        info = self._pedb.hfss.hfss_extent_info
 
-        if boundaries.use_open_region is not None:
-            edb_hfss_extent_info.use_open_region = boundaries.use_open_region
-        if boundaries.open_region_type:
-            edb_hfss_extent_info.open_region_type = boundaries.open_region_type.lower()
-        if boundaries.is_pml_visible is not None:
-            edb_hfss_extent_info.is_pml_visible = boundaries.is_pml_visible
-        if boundaries.operating_freq:
-            edb_hfss_extent_info.operating_freq = boundaries.operating_freq
-        if boundaries.pml_radiation_factor:
-            edb_hfss_extent_info.pml_radiation_factor = boundaries.pml_radiation_factor
-        if boundaries.dielectric_extent_type:
-            edb_hfss_extent_info.dielectric_extent_type = boundaries.dielectric_extent_type.lower()
+        # Simple direct-assign attributes:
+        attr_map = {
+            "use_open_region": "use_open_region",
+            "open_region_type": "open_region_type",
+            "is_pml_visible": "is_pml_visible",
+            "operating_freq": "operating_freq",
+            "pml_radiation_factor": "pml_radiation_factor",
+            "dielectric_extent_type": "dielectric_extent_type",
+            "honor_user_dielectric": "honor_user_dielectric",
+            "extent_type": "extent_type",
+            "truncate_air_box_at_ground": "truncate_air_box_at_ground",
+            "base_polygon": "base_polygon",
+            "dielectric_base_polygon": "dielectric_base_polygon",
+            "sync_air_box_vertical_extent": "sync_air_box_vertical_extent",
+        }
+
+        for b_attr, info_attr in attr_map.items():
+            value = getattr(boundaries, b_attr, None)
+            if value is not None:
+                # Lowercase only string-based HFSS enum-like values
+                if b_attr in ("open_region_type", "dielectric_extent_type", "extent_type") and isinstance(value, str):
+                    value = value.lower()
+                if hasattr(info, info_attr):
+                    setattr(info, info_attr, value)
+                else:  # pragma: no cover
+                    raise
+
+        # Attributes requiring specific setter functions
         if boundaries.dielectric_extent_size:
-            edb_hfss_extent_info.set_dielectric_extent(**boundaries.dielectric_extent_size.model_dump())
-        if boundaries.honor_user_dielectric is not None:
-            edb_hfss_extent_info.honor_user_dielectric = boundaries.honor_user_dielectric
-        if boundaries.extent_type:
-            edb_hfss_extent_info.extent_type = boundaries.extent_type.lower()
-        if boundaries.truncate_air_box_at_ground is not None:
-            edb_hfss_extent_info.truncate_air_box_at_ground = boundaries.truncate_air_box_at_ground
+            info.set_dielectric_extent(**boundaries.dielectric_extent_size.model_dump())
+
         if boundaries.air_box_horizontal_extent:
-            edb_hfss_extent_info.set_air_box_horizontal_extent(**boundaries.air_box_horizontal_extent.model_dump())
+            info.set_air_box_horizontal_extent(**boundaries.air_box_horizontal_extent.model_dump())
+
         if boundaries.air_box_positive_vertical_extent:
-            edb_hfss_extent_info.set_air_box_positive_vertical_extent(
+            info.set_air_box_positive_vertical_extent(
                 **boundaries.air_box_positive_vertical_extent.model_dump()
             )
+
         if boundaries.air_box_negative_vertical_extent:
-            edb_hfss_extent_info.set_air_box_negative_vertical_extent(
+            info.set_air_box_negative_vertical_extent(
                 **boundaries.air_box_negative_vertical_extent.model_dump()
             )
-        if boundaries.base_polygon is not None:
-            edb_hfss_extent_info.base_polygon = boundaries.base_polygon
-        if boundaries.dielectric_base_polygon is not None:
-            edb_hfss_extent_info.dielectric_base_polygon = boundaries.dielectric_base_polygon
-        if boundaries.sync_air_box_vertical_extent is not None:
-            edb_hfss_extent_info.sync_air_box_vertical_extent = boundaries.sync_air_box_vertical_extent
 
     def get_boundaries(self):
         boundaries = self.cfg_data.boundaries
