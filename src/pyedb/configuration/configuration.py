@@ -181,7 +181,7 @@ class Configuration:
                 if hasattr(info, info_attr):
                     setattr(info, info_attr, value)
                 else:  # pragma: no cover
-                    raise
+                    raise AttributeError(f"Attribute {info_attr} not found in {info.__name__}")
 
         # Attributes requiring specific setter functions
         if boundaries.dielectric_extent_size:
