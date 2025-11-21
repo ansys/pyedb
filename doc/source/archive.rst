@@ -38,15 +38,15 @@ to avoid confusion and keep the main branch clean.
 **You can access the final version of the `dotnet` code here:**
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    dotnet_api/index
 
 .. warning::
 
    This code is provided **as-is** for reference and migration purposes only. Do not use it for
-new projects. If you need to maintain an old script that uses the ``dotnet`` API, your goal should be to migrate it to
-the gRPC client.
+   new projects. If you need to maintain an old script that uses the ``dotnet`` API, your goal should be to migrate it to
+   the gRPC client.
 
 Migration Guide
 ---------------

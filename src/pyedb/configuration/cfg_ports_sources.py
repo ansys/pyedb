@@ -460,12 +460,17 @@ class CfgCircuitElement(CfgBase):
         if terminal_type == "pin":
             for i in terminal_value:
                 pins.update(get_pin_obj(i))
+        elif terminal_type == "padstack":
+            for i in self._pedb.layout.find_padstack_instances(aedt_name=terminal_value):
+                pins[i.component_pin] = i
         else:
             if terminal_type == "net":
                 temp = self._pedb.components.get_pins(reference_designator, terminal_value[0])
             elif terminal_type == "pin_group":
                 pin_group = self._pedb.siwave.pin_groups[terminal_value[0]]
                 temp = pin_group.pins
+            else:
+                temp = {}
             pins.update({f"{reference_designator}_{terminal_value[0]}_{i}": j for i, j in temp.items()})
         return pins
 
