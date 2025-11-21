@@ -229,8 +229,13 @@ class CommonNets:
                         except KeyError:
                             pass
                 cbb = comp.bounding_box
-                x = [cbb[0], cbb[0], cbb[2], cbb[2]]
-                y = [cbb[1], cbb[3], cbb[3], cbb[1]]
+                if isinstance(cbb, tuple):
+                    x = [cbb[0][0], cbb[0][0], cbb[1][0], cbb[1][0]]
+                    y = [cbb[0][1], cbb[1][1], cbb[1][1], cbb[0][1]]
+                else:
+                    # falling back to list format for bbox
+                    x = [cbb[0], cbb[0], cbb[2], cbb[2]]
+                    y = [cbb[1], cbb[3], cbb[3], cbb[1]]
                 vertices = [(i, j) for i, j in zip(x, y)]
                 vertices = mirror_poly(vertices)
                 poly = Polygon(vertices)
