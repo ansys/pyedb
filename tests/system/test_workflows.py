@@ -61,7 +61,6 @@ class TestClass:
         assert log_parser.adaptive_passes()
         assert log_parser.memory_on_convergence() == 263
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Failing on GRPC")
     def test_hfss_auto_setup(self, edb_examples):
         from pyedb.workflows.sipi.hfss_auto_configuration import create_hfss_auto_configuration
 
