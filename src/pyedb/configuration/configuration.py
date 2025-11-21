@@ -122,9 +122,7 @@ class Configuration:
         if self.cfg_data.general:
             self.cfg_data.general.apply()
 
-        # Configure boundary settings
-        if self.cfg_data.boundaries:
-            self.__apply_with_logging("Updating boundaries", self.cfg_data.boundaries.apply)
+        self.apply_boundaries()
 
         if self.cfg_data.nets:
             self.__apply_with_logging("Updating nets", self.cfg_data.nets.apply)
@@ -153,6 +151,75 @@ class Configuration:
         self.cfg_data.setups.apply()
 
         return True
+
+    def apply_boundaries(self):
+        boundaries = self.cfg_data.boundaries
+        info = self._pedb.hfss.hfss_extent_info
+
+        # Simple direct-assign attributes:
+        attr_map = {
+            "use_open_region": "use_open_region",
+            "open_region_type": "open_region_type",
+            "is_pml_visible": "is_pml_visible",
+            "operating_freq": "operating_freq",
+            "pml_radiation_factor": "pml_radiation_factor",
+            "dielectric_extent_type": "dielectric_extent_type",
+            "honor_user_dielectric": "honor_user_dielectric",
+            "extent_type": "extent_type",
+            "truncate_air_box_at_ground": "truncate_air_box_at_ground",
+            "base_polygon": "base_polygon",
+            "dielectric_base_polygon": "dielectric_base_polygon",
+            "sync_air_box_vertical_extent": "sync_air_box_vertical_extent",
+        }
+
+        for b_attr, info_attr in attr_map.items():
+            value = getattr(boundaries, b_attr, None)
+            if value is not None:
+                # Lowercase only string-based HFSS enum-like values
+                if b_attr in ("open_region_type", "dielectric_extent_type", "extent_type") and isinstance(value, str):
+                    value = value.lower()
+                if hasattr(info, info_attr):
+                    setattr(info, info_attr, value)
+                else:  # pragma: no cover
+                    raise AttributeError(f"Attribute {info_attr} not found in {info.__name__}")
+
+        # Attributes requiring specific setter functions
+        if boundaries.dielectric_extent_size:
+            info.set_dielectric_extent(**boundaries.dielectric_extent_size.model_dump())
+
+        if boundaries.air_box_horizontal_extent:
+            info.set_air_box_horizontal_extent(**boundaries.air_box_horizontal_extent.model_dump())
+
+        if boundaries.air_box_positive_vertical_extent:
+            info.set_air_box_positive_vertical_extent(**boundaries.air_box_positive_vertical_extent.model_dump())
+
+        if boundaries.air_box_negative_vertical_extent:
+            info.set_air_box_negative_vertical_extent(**boundaries.air_box_negative_vertical_extent.model_dump())
+
+    def get_boundaries(self):
+        boundaries = self.cfg_data.boundaries
+        edb_hfss_extent_info = self._pedb.hfss.hfss_extent_info
+
+        boundaries.use_open_region = edb_hfss_extent_info.use_open_region
+        boundaries.open_region_type = edb_hfss_extent_info.open_region_type
+        boundaries.is_pml_visible = edb_hfss_extent_info.is_pml_visible
+        boundaries.operating_freq = edb_hfss_extent_info.operating_freq
+        boundaries.pml_radiation_factor = edb_hfss_extent_info.pml_radiation_factor
+        boundaries.dielectric_extent_type = edb_hfss_extent_info.dielectric_extent_type
+        size, is_multiple = edb_hfss_extent_info.get_dielectric_extent()
+        boundaries.dielectric_extent_size = {"size": size, "is_multiple": is_multiple}
+        boundaries.honor_user_dielectric = edb_hfss_extent_info.honor_user_dielectric
+        boundaries.extent_type = edb_hfss_extent_info.extent_type
+        boundaries.truncate_air_box_at_ground = edb_hfss_extent_info.truncate_air_box_at_ground
+        size, is_multiple = edb_hfss_extent_info.get_air_box_horizontal_extent()
+        boundaries.air_box_horizontal_extent = {"size": size, "is_multiple": is_multiple}
+        size, is_multiple = edb_hfss_extent_info.get_air_box_positive_vertical_extent()
+        boundaries.air_box_positive_vertical_extent = {"size": size, "is_multiple": is_multiple}
+        size, is_multiple = edb_hfss_extent_info.get_air_box_negative_vertical_extent()
+        boundaries.air_box_negative_vertical_extent = {"size": size, "is_multiple": is_multiple}
+        boundaries.base_polygon = edb_hfss_extent_info.base_polygon
+        boundaries.dielectric_base_polygon = edb_hfss_extent_info.dielectric_base_polygon
+        boundaries.sync_air_box_vertical_extent = edb_hfss_extent_info.sync_air_box_vertical_extent
 
     def apply_modeler(self):
         modeler = self.cfg_data.modeler
@@ -419,17 +486,17 @@ class Configuration:
 
         """
         self._pedb.logger.info("Getting data from layout database.")
-        self.get_variables()
+
         self.get_materials()
-        self.get_stackup()
-        self.get_operations()
 
         data = {}
         if kwargs.get("general", False):
             data["general"] = self.cfg_data.general.get_data_from_db()
         if kwargs.get("variables", False):
+            self.get_variables()
             data.update(self.cfg_data.variables.model_dump(exclude_none=True))
         if kwargs.get("stackup", False):
+            self.get_stackup()
             data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True)
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
@@ -461,6 +528,7 @@ class Configuration:
         if kwargs.get("pin_groups", False):
             data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
         if kwargs.get("operations", False):
+            self.get_operations()
             data["operations"] = self.cfg_data.operations.model_dump()
         if kwargs.get("padstacks", False):
             self.cfg_data.padstacks.retrieve_parameters_from_edb()
@@ -475,8 +543,8 @@ class Configuration:
             data["padstacks"]["instances"] = instances
 
         if kwargs.get("boundaries", False):
-            data["boundaries"] = self.cfg_data.boundaries.get_data_from_db()
-
+            self.get_boundaries()
+            data["boundaries"] = self.cfg_data.boundaries.model_dump(exclude_none=True)
         return data
 
     @execution_timer("Applying operations")
