@@ -100,7 +100,8 @@ class CfgBoundaries(CfgBase):
     extent_type: Optional[str] = Field(
         default=None,
         description=(
-            "Type of overall HFSS extent. This determines how the base polygon for both airbox and dielectric is computed. "
+            "Type of overall HFSS extent. "
+            "This determines how the base polygon for both airbox and dielectric is computed. "
         ),
     )
     base_polygon: Optional[str] = Field(
