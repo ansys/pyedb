@@ -488,6 +488,6 @@ class HfssExtentInfo:
             else:
                 try:
                     config[i] = getattr(self, i)
-                except:
+                except (AttributeError, TypeError, ValueError, RuntimeError):
                     pass  # Skip properties that can't be accessed
         return config
