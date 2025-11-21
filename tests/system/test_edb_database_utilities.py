@@ -116,10 +116,8 @@ class TestDatabaseUtilities(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_transform(self, edb_examples):
-        from pyedb.dotnet.database.utilities.transform import Transform
-
         edbapp = edb_examples.create_empty_edb()
-        transform = Transform(edbapp, edbapp.core.Utility.Transform())
+        transform = edbapp.pedb_class.database.utilities.transform.Transform.create(edbapp)
         transform.set_rotation("180deg")
         assert str(transform.rotation) == "180deg"
         transform.set_x_offset("1mm")

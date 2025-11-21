@@ -27,6 +27,10 @@ class Transform(ObjBase):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
 
+    @classmethod
+    def create(cls, pedb):
+        return cls(pedb, pedb.core.Utility.Transform())
+
     @property
     def rotation(self):
         return self._pedb.value(self._edb_object.Rotation)
