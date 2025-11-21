@@ -2135,4 +2135,15 @@ class TestClass(BaseTestClass):
         assert edbapp.design_mode == "general"
         edbapp.design_mode = "IC"
         assert edbapp.design_mode == "ic"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_insert_cell(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edb2_path = edb_examples.get_package(edbapp=False)
+        cell = edbapp.copy_cell_from_edb(edb2_path)
+        cell_inst = edbapp.insert_cell_instance(cell.name)
+        cell_inst.set_placement_layer("1_Top")
+        transform = cell_inst.get_transform()
+        transform.set_x_offset("10mm")
+        assert cell_inst.set_transform(transform)
+        edbapp.close(terminate_rpc_session=False)

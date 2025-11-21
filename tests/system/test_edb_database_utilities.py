@@ -114,3 +114,19 @@ class TestDatabaseUtilities(BaseTestClass):
         assert str(value2) == "(var1)**0.5"
 
         edbapp.close(terminate_rpc_session=False)
+
+    def test_transform(self, edb_examples):
+        from pyedb.dotnet.database.utilities.transform import Transform
+
+        edbapp = edb_examples.create_empty_edb()
+        transform = Transform(edbapp, edbapp.core.Utility.Transform())
+        transform.set_rotation("180deg")
+        assert str(transform.rotation) == "180deg"
+        transform.set_x_offset("1mm")
+        assert str(transform.x_offset) == "1mm"
+        transform.set_y_offset("1mm")
+        assert str(transform.y_offset) == "1mm"
+        transform.set_mirror(True)
+        assert transform.mirror
+
+        edbapp.close(terminate_rpc_session=False)

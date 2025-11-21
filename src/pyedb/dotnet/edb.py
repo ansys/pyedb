@@ -4864,3 +4864,21 @@ class Edb:
             raise RuntimeError(
                 "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
             ) from e
+
+    def copy_cell_from_edb(self, edb_path):
+        edb2= Edb(edbpath=edb_path)
+        cells = self._db.CopyCells(convert_py_list_to_net_list([edb2.active_cell]))
+        cell2 = list(cells)[0]
+        cell2.SetBlackBox(True)
+        return self.pedb_class.database.cell.cell.Cell(self, cell2)
+
+    def insert_cell_instance(self, cell_name,
+                             instance_name=None,
+                             ):
+        instance_name = instance_name if instance_name else generate_unique_name(cell_name, n=2)
+        cell2 = [i for i in list(self._db.CircuitCells) if i.GetName() == cell_name][0]
+        CellInst = self.core.Cell.Hierarchy.CellInstance.Create(
+            self.active_layout, instance_name, cell2.GetLayout()
+        )
+        cell_inst = self.pedb_class.database.cell.hierarchy.hierarchy_obj.CellInstance(self, CellInst)
+        return cell_inst

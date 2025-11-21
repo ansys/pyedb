@@ -44,6 +44,13 @@ class HierarchyObj(Connectable):
             logging.warning(f"Failed to get location of '{self.name}'.")
             return
 
+    def get_transform(self):
+        edb_object = self._edb_object.GetTransform()
+        return self._pedb.pedb_class.database.utilities.transform.Transform(self._pedb, edb_object)
+
+    def set_transform(self, transform):
+        return self._edb_object.SetTransform(transform._edb_object)
+
 
 class Group(HierarchyObj):
     def __init__(self, pedb, edb_object):
@@ -59,3 +66,18 @@ class Group(HierarchyObj):
 
         """
         return self._edb_object.Ungroup(recursive)
+
+
+class CellInstance(HierarchyObj):
+
+    def __init__(self, pedb, edb_object):
+        super().__init__(pedb, edb_object)
+
+    @property
+    def placement_3d(self):
+        return self._edb_object.Is3DPlacement()
+
+    def set_placement_layer(self, layer_name):
+        layer = self._pedb.stackup.layers[layer_name]._edb_object
+        self._edb_object.SetPlacementLayer(layer)
+

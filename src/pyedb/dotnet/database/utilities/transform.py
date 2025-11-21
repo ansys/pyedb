@@ -20,4 +20,37 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.database.utilities import transform
+from pyedb.dotnet.database.utilities.obj_base import ObjBase
+
+
+class Transform(ObjBase):
+    def __init__(self, pedb, edb_object):
+        super().__init__(pedb, edb_object)
+
+    @property
+    def rotation(self):
+        return self._pedb.value(self._edb_object.Rotation)
+
+    @property
+    def x_offset(self):
+        return self._pedb.value(self._edb_object.XOffset)
+
+    @property
+    def y_offset(self):
+        return self._pedb.value(self._edb_object.YOffset)
+
+    @property
+    def mirror(self):
+        return self._edb_object.Mirror
+
+    def set_rotation(self, rotation):
+        return self._edb_object.SetRotationValue(self._pedb.value(rotation)._edb_object)
+
+    def set_x_offset(self, x_offset):
+        return self._edb_object.SetXOffsetValue(self._pedb.value(x_offset)._edb_object)
+
+    def set_y_offset(self, y_offset):
+        return self._edb_object.SetYOffsetValue(self._pedb.value(y_offset)._edb_object)
+
+    def set_mirror(self, mirror:bool):
+        return self._edb_object.SetMirror(mirror)
