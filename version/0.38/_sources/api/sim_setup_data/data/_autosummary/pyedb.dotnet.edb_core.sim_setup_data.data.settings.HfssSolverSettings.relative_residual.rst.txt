@@ -1,0 +1,6 @@
+relative\_residual
+==================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: HfssSolverSettings.relative_residual

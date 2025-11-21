@@ -1,0 +1,6 @@
+create\_resistor\_on\_pin
+=========================
+
+.. currentmodule:: pyedb.grpc.database.source_excitations
+
+.. automethod:: SourceExcitation.create_resistor_on_pin

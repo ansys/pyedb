@@ -1,0 +1,6 @@
+is\_void
+========
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. autoproperty:: Rectangle.is_void

@@ -1,0 +1,6 @@
+interpolation\_use\_full\_basis
+===============================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.sweep_data
+
+.. autoproperty:: SweepData.interpolation_use_full_basis

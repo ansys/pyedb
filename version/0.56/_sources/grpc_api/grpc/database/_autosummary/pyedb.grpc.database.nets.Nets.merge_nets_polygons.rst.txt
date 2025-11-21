@@ -1,0 +1,6 @@
+merge\_nets\_polygons
+=====================
+
+.. currentmodule:: pyedb.grpc.database.nets
+
+.. automethod:: Nets.merge_nets_polygons

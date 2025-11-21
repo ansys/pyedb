@@ -1,0 +1,71 @@
+﻿ExtendedNet
+===========
+
+.. currentmodule:: pyedb.grpc.database.net.extended_net
+
+.. autoclass:: ExtendedNet
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      ExtendedNet.add_net
+      
+      
+      ExtendedNet.contains_net
+      
+      
+      ExtendedNet.create
+      
+      
+      ExtendedNet.delete
+      
+      
+      ExtendedNet.find_by_name
+      
+      
+      ExtendedNet.get_product_property
+      
+      
+      ExtendedNet.get_product_property_ids
+      
+      
+      ExtendedNet.remove_all_nets
+      
+      
+      ExtendedNet.remove_net
+      
+      
+      ExtendedNet.set_product_property
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ExtendedNet.components
+      ExtendedNet.description
+      ExtendedNet.id
+      ExtendedNet.is_null
+      ExtendedNet.is_power_ground
+      ExtendedNet.layout
+      ExtendedNet.layout_obj_type
+      ExtendedNet.msg
+      ExtendedNet.name
+      ExtendedNet.nets
+      ExtendedNet.obj_type
+      ExtendedNet.rlc
+      ExtendedNet.serial_rlc
+      ExtendedNet.shunt_rlc
+   
+   

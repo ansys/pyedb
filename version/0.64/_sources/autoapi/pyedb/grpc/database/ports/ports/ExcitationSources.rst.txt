@@ -1,0 +1,63 @@
+
+
+
+
+
+
+:class:`ExcitationSources`
+==========================
+
+
+.. py:class:: pyedb.grpc.database.ports.ports.ExcitationSources(pedb, edb_terminal)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.terminal.terminal.Terminal`
+
+
+   
+   Manage sources properties.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`pyedb.edb.Edb`
+           Edb object from Edblib.
+
+       **edb_terminal** : :obj:`Ansys.Ansoft.Edb.Cell.Terminal.EdgeTerminal`
+           Edge terminal instance from Edb.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   This example shows how to access this class.
+   >>> from pyedb import Edb
+   >>> edb = Edb("myaedb.aedb")
+   >>> all_sources = edb.sources
+   >>> print(all_sources["VSource1"].name)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.ports.ports import ExcitationSources
+
+
+
+
+

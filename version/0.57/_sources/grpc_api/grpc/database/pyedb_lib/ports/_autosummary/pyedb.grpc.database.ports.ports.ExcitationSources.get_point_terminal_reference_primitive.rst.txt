@@ -1,0 +1,6 @@
+get\_point\_terminal\_reference\_primitive
+==========================================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. automethod:: ExcitationSources.get_point_terminal_reference_primitive

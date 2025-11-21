@@ -1,0 +1,108 @@
+
+
+
+
+
+
+:class:`ProjectInfo`
+====================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.ProjectInfo
+
+   
+   Basic meta-data extracted from the header of an HFSS batch log.
+
+   :ivar str name: Project name (without extension).
+   :ivar ~pathlib.Path file: Full path to the project file.
+   :ivar str design: Active design name (may be empty).
+   :ivar str user: OS user that launched the solve.
+   :ivar str cmd_line: Exact command line used for the run.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ProjectInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~file`
+            - 
+          * - :py:attr:`~design`
+            - 
+          * - :py:attr:`~user`
+            - 
+          * - :py:attr:`~cmd_line`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import ProjectInfo
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: file
+   :type:  pathlib.Path
+
+.. py:attribute:: design
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: user
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: cmd_line
+   :type:  str
+   :value: ''
+
+
+
+
+
+

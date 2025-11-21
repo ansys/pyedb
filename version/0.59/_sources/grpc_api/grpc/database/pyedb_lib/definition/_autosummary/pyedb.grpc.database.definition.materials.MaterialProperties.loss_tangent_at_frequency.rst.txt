@@ -1,0 +1,6 @@
+loss\_tangent\_at\_frequency
+============================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoattribute:: MaterialProperties.loss_tangent_at_frequency

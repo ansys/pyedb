@@ -1,0 +1,6 @@
+find\_layer\_by\_name
+=====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.stackup
+
+.. automethod:: Stackup.find_layer_by_name

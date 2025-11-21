@@ -1,0 +1,6 @@
+is\_power\_ground
+=================
+
+.. currentmodule:: pyedb.grpc.database.net.differential_pair
+
+.. autoproperty:: DifferentialPair.is_power_ground

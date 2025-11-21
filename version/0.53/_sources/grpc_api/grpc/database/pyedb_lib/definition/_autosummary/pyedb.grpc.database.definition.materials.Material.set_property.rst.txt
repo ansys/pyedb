@@ -1,0 +1,6 @@
+set\_property
+=============
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Material.set_property

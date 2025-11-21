@@ -1,0 +1,6 @@
+representation\_type
+====================
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. autoproperty:: Rectangle.representation_type

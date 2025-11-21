@@ -1,0 +1,33 @@
+﻿Model
+=====
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.model
+
+.. autoclass:: Model
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Model.clone
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Model.id
+      Model.is_null
+      Model.msg
+   
+   

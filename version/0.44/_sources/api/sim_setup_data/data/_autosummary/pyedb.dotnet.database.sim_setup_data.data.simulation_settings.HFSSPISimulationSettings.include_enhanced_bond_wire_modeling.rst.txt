@@ -1,0 +1,6 @@
+include\_enhanced\_bond\_wire\_modeling
+=======================================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.include_enhanced_bond_wire_modeling

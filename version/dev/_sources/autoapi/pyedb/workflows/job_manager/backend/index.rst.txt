@@ -1,0 +1,99 @@
+
+
+
+
+
+
+The ``backend`` package
+===========================
+
+.. py:module:: pyedb.workflows.job_manager.backend
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: backend
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.job_manager_handler`
+            - Thread-safe façade for the async ANSYS Job Manager.
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.job_submission`
+            - ``job_submission`` --- Cross-platform HFSS simulation runner with enterprise scheduler support
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.service`
+            - Async job manager with pool scheduling and REST/WebSocket API.
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.start_service`
+            - Start the PyEDB Job-Manager service via JobManagerHandler.
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.submit_batch_jobs`
+            - Submit multiple HFSS jobs to the local job-manager service by scanning a directory.
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.submit_job_on_scheduler`
+            - Submit an HFSS job to the *scheduler* back-end service.
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.submit_local_job`
+            - Submit an HFSS job to the local job-manager service.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> job_manager_handler</autoapi/pyedb/workflows/job_manager/backend/job_manager_handler/index>
+    <span class="nf nf-fa-file"></span> job_submission</autoapi/pyedb/workflows/job_manager/backend/job_submission/index>
+    <span class="nf nf-fa-file"></span> service</autoapi/pyedb/workflows/job_manager/backend/service/index>
+    <span class="nf nf-fa-file"></span> start_service</autoapi/pyedb/workflows/job_manager/backend/start_service/index>
+    <span class="nf nf-fa-file"></span> submit_batch_jobs</autoapi/pyedb/workflows/job_manager/backend/submit_batch_jobs/index>
+    <span class="nf nf-fa-file"></span> submit_job_on_scheduler</autoapi/pyedb/workflows/job_manager/backend/submit_job_on_scheduler/index>
+    <span class="nf nf-fa-file"></span> submit_local_job</autoapi/pyedb/workflows/job_manager/backend/submit_local_job/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

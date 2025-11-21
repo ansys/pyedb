@@ -1,0 +1,6 @@
+cell\_names
+===========
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.cell_names

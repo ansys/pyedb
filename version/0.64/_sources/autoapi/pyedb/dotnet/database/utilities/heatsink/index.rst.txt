@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``heatsink.py`` module
+==========================
+
+.. py:module:: pyedb.dotnet.database.utilities.heatsink
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: heatsink
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.heatsink.HeatSink`
+            - Heatsink model description.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> HeatSink</autoapi/pyedb/dotnet/database/utilities/heatsink/HeatSink>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

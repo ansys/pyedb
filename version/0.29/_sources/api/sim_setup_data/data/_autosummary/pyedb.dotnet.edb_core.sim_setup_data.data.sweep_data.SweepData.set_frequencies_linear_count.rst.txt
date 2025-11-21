@@ -1,0 +1,6 @@
+set\_frequencies\_linear\_count
+===============================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data
+
+.. automethod:: SweepData.set_frequencies_linear_count

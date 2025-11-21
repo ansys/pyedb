@@ -1,0 +1,6 @@
+add\_cpa\_analysis
+==================
+
+.. currentmodule:: pyedb.dotnet.database.siwave
+
+.. automethod:: EdbSiwave.add_cpa_analysis

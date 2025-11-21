@@ -1,0 +1,6 @@
+export\_dc\_simulation\_report
+==============================
+
+.. currentmodule:: pyedb.siwave
+
+.. automethod:: Siwave.export_dc_simulation_report

@@ -1,0 +1,162 @@
+
+
+
+
+
+
+:class:`AdvancedMeshSettings`
+=============================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.settings.AdvancedMeshSettings(parent)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods for advanced mesh settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AdvancedMeshSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~layer_snap_tol`
+            - Layer snap tolerance. Attempt to align independent stackups in the mesher.
+          * - :py:attr:`~mesh_display_attributes`
+            - Mesh display attributes. Set color for mesh display (i.e. ``"#000000"``).
+          * - :py:attr:`~replace_3d_triangles`
+            - Whether to turn on replace 3D triangles.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.settings import AdvancedMeshSettings
+
+Property detail
+---------------
+
+.. py:property:: layer_snap_tol
+
+   
+   Layer snap tolerance. Attempt to align independent stackups in the mesher.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_display_attributes
+
+   
+   Mesh display attributes. Set color for mesh display (i.e. ``"#000000"``).
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: replace_3d_triangles
+
+   
+   Whether to turn on replace 3D triangles.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if replace 3D triangles is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

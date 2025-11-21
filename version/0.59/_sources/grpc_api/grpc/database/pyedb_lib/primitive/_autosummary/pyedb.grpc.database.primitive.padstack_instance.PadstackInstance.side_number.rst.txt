@@ -1,0 +1,6 @@
+side\_number
+============
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. autoproperty:: PadstackInstance.side_number

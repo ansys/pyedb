@@ -1,0 +1,27 @@
+﻿SparamModel
+===========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.s_parameter_model
+
+.. autoclass:: SparamModel
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      SparamModel.clone
+      
+      
+      SparamModel.create
+      
+   
+   
+
+   
+   
+   

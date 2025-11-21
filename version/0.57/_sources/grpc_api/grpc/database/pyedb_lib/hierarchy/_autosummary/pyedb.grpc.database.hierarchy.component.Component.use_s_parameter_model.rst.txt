@@ -1,0 +1,6 @@
+use\_s\_parameter\_model
+========================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. automethod:: Component.use_s_parameter_model

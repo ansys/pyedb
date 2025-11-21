@@ -1,0 +1,6 @@
+cast
+====
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. automethod:: GapPort.cast

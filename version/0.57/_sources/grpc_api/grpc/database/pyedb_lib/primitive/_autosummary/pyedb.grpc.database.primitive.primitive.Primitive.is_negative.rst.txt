@@ -1,0 +1,6 @@
+is\_negative
+============
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. autoproperty:: Primitive.is_negative

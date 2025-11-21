@@ -1,0 +1,6 @@
+pi\_slider\_pos
+===============
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.pi_slider_pos

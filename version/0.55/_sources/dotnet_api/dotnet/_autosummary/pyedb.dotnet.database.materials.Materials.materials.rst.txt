@@ -1,0 +1,6 @@
+materials
+=========
+
+.. currentmodule:: pyedb.dotnet.database.materials
+
+.. autoproperty:: Materials.materials

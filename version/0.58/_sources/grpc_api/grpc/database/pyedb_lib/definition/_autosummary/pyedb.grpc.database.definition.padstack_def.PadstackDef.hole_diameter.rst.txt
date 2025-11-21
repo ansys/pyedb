@@ -1,0 +1,6 @@
+hole\_diameter
+==============
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadstackDef.hole_diameter

@@ -1,0 +1,6 @@
+split\_to\_microvias
+====================
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. automethod:: PadstackDef.split_to_microvias

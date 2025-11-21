@@ -1,0 +1,6 @@
+horizontal\_extent\_factor
+==========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.ports
+
+.. autoproperty:: WavePort.horizontal_extent_factor

@@ -1,0 +1,107 @@
+
+
+
+
+
+
+:class:`CoaxPort`
+=================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.ports.CoaxPort(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal`
+
+
+   
+   Manages bundle wave port properties.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`pyedb.edb.Edb`
+           EDB object from the ``Edblib`` library.
+
+       **edb_object** : :obj:`Ansys.Ansoft.Edb.Cell.Terminal.PadstackInstanceTerminal`
+           PadstackInstanceTerminal instance from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CoaxPort
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~radial_extent_factor`
+            - Radial extent factor.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.ports import CoaxPort
+
+Property detail
+---------------
+
+.. py:property:: radial_extent_factor
+
+   
+   Radial extent factor.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

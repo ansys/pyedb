@@ -1,0 +1,6 @@
+rlc\_boundary\_parameters
+=========================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: WavePort.rlc_boundary_parameters

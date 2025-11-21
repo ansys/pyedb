@@ -1,0 +1,28 @@
+
+
+
+
+
+
+:class:`Q3D`
+============
+
+
+.. py:class:: pyedb.generic.constants.CATEGORIESQ3D.Q3D
+
+   Bases: :py:obj:`object`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants.CATEGORIESQ3D import Q3D
+
+
+
+
+

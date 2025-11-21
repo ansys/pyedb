@@ -1,0 +1,72 @@
+﻿Layer
+=====
+
+.. currentmodule:: pyedb.grpc.database.layers.layer
+
+.. autoclass:: Layer
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Layer.cast
+      
+      
+      Layer.clone
+      
+      
+      Layer.create
+      
+      
+      Layer.get_product_property
+      
+      
+      Layer.get_product_property_ids
+      
+      
+      Layer.is_in_zone
+      
+      
+      Layer.set_is_in_zone
+      
+      
+      Layer.set_product_property
+      
+      
+      Layer.update
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Layer.color
+      Layer.draw_override
+      Layer.id
+      Layer.is_null
+      Layer.is_stackup_layer
+      Layer.is_via_layer
+      Layer.layer_id
+      Layer.layout_obj_type
+      Layer.locked
+      Layer.msg
+      Layer.name
+      Layer.properties
+      Layer.top_bottom_association
+      Layer.transparency
+      Layer.type
+      Layer.visibility_mask
+      Layer.zone
+      Layer.zones
+   
+   

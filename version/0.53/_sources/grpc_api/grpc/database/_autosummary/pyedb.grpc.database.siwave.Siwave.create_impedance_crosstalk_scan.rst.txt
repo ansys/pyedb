@@ -1,0 +1,6 @@
+create\_impedance\_crosstalk\_scan
+==================================
+
+.. currentmodule:: pyedb.grpc.database.siwave
+
+.. automethod:: Siwave.create_impedance_crosstalk_scan

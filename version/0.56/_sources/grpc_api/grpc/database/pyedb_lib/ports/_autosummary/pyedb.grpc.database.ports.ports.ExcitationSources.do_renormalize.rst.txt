@@ -1,0 +1,6 @@
+do\_renormalize
+===============
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: ExcitationSources.do_renormalize

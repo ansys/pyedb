@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.dotnet.database.nets
+
+.. automethod:: EdbNets.delete
