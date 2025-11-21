@@ -36,13 +36,16 @@ class PaddingData(CfgBase):
     is_multiple: bool
 
 
-from typing import Optional, Any
+from typing import Any, Optional
+
 from pydantic import Field
 
 
 class CfgBoundaries(CfgBase):
     use_open_region: Optional[bool] = Field(default=None, description="Whether to enable the use of an open region")
-    open_region_type: Optional[str] = Field(default=None, description="Type of open region to use; e.g., `radiation` or `pml` as defined.")
+    open_region_type: Optional[str] = Field(
+        default=None, description="Type of open region to use; e.g., `radiation` or `pml` as defined."
+    )
     is_pml_visible: Optional[bool] = Field(
         default=None,
         description=(
@@ -102,9 +105,7 @@ class CfgBoundaries(CfgBase):
     )
     base_polygon: Optional[str] = Field(
         default=None,
-        description=(
-            "Base polygon name for the extent region, used when the extent type is `Polygon`. "
-        ),
+        description=("Base polygon name for the extent region, used when the extent type is `Polygon`. "),
     )
     truncate_air_box_at_ground: Optional[bool] = Field(
         default=None,
