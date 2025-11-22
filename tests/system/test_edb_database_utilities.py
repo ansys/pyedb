@@ -115,14 +115,10 @@ class TestDatabaseUtilities(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
+    pytest.skipif(conftest.config["use_grpc"], reason="Only applicable to dotnet.")
     def test_transform(self, edb_examples):
-
         edbapp = edb_examples.create_empty_edb()
-        if edbapp.grpc:
-            from pyedb.grpc.database.utility.transform import Transform
-            transform = Transform.create(edbapp)
-        else:
-            transform = edbapp.pedb_class.database.utilities.transform.Transform.create(edbapp)
+        transform = edbapp.pedb_class.database.utilities.transform.Transform.create(edbapp)
         transform.rotation = "180deg"
         assert transform.rotation == pytest.approx(3.141592653589793)
         transform.offset_x = "1mm"
@@ -133,5 +129,4 @@ class TestDatabaseUtilities(BaseTestClass):
         assert transform.mirror
         transform.scale = 2
         assert transform.scale == 2
-
         edbapp.close(terminate_rpc_session=False)
