@@ -20,4 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.database.utilities import transform
+from pyedb.dotnet.database.utilities.obj_base import ObjBase
+
+
+class Cell(ObjBase):
+    def __init__(self, pedb, edb_object):
+        super().__init__(pedb, edb_object)

@@ -3257,3 +3257,10 @@ class Edb(EdbInit):
         return GrpcLayoutComponent.export_layout_component(
             layout=self.active_layout, output_aedb_comp_path=component_path
         )
+
+    def copy_cell_from_edb(self, edb_path: Union[Path, str]):
+        """Copy Cells from another Edb Database into this Database."""
+        edb2 = Edb(edbpath=edb_path, edbversion=self.version)
+        cells = self.copy_cells([edb2.active_cell])
+        cell = cells[0]
+        cell.is_blackbox = True

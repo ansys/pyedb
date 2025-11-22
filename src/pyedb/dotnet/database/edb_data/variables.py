@@ -85,7 +85,7 @@ class Variable:
 
     @value.setter
     def value(self, value):
-        self._var_server.SetVariableValue(self.name, self._pedb.value(value)._edb_obj)
+        self._var_server.SetVariableValue(self.name, self._pedb.value(value)._edb_object)
 
     @property
     def description(self):
