@@ -116,6 +116,7 @@ class TestDatabaseUtilities(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     pytest.skipif(conftest.config["use_grpc"], reason="Only applicable to dotnet.")
+
     def test_transform(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
         transform = edbapp.pedb_class.database.utilities.transform.Transform.create(edbapp)

@@ -22,8 +22,8 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from pyedb.dotnet.edb import Edb
     from pyedb.dotnet.database.utilities.value import Value
+    from pyedb.dotnet.edb import Edb
 
 from pyedb.dotnet.database.utilities.obj_base import ObjBase
 
@@ -47,7 +47,7 @@ class Transform(ObjBase):
         super().__init__(pedb, edb_object)
 
     @classmethod
-    def create(cls, pedb: "Edb")->"Transform":
+    def create(cls, pedb: "Edb") -> "Transform":
         """
         Create a new ``Transform`` object.
 
@@ -73,7 +73,7 @@ class Transform(ObjBase):
         self._edb_object.SetScaleValue(self._pedb.value(value)._edb_object)
 
     @property
-    def rotation(self)-> "Value":
+    def rotation(self) -> "Value":
         """
         float: Rotation value in degrees.
         """
@@ -84,7 +84,7 @@ class Transform(ObjBase):
         self._edb_object.SetRotationValue(self._pedb.value(value)._edb_object)
 
     @property
-    def offset_x(self)-> "Value":
+    def offset_x(self) -> "Value":
         """
         float: X-axis offset value.
         """
@@ -95,7 +95,7 @@ class Transform(ObjBase):
         self._edb_object.SetXOffsetValue(self._pedb.value(value)._edb_object)
 
     @property
-    def offset_y(self)-> "Value":
+    def offset_y(self) -> "Value":
         """
         float: Y-axis offset value.
         """
@@ -106,7 +106,7 @@ class Transform(ObjBase):
         self._edb_object.SetYOffsetValue(self._pedb.value(value)._edb_object)
 
     @property
-    def mirror(self)-> bool:
+    def mirror(self) -> bool:
         """
         bool: Indicates whether the transform applies mirroring.
         """

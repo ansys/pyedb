@@ -25,8 +25,8 @@ This module contains these classes: `EdbLayout` and `Shape`.
 """
 
 import math
-import warnings
 from typing import Union
+import warnings
 
 from pyedb.dotnet.clr_module import Tuple
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
@@ -1529,17 +1529,20 @@ class Modeler(object):
                 obj.SetNet(net_obj[0])
         return self._pedb.siwave.pin_groups[name]
 
-    def insert_cell_instance(self, cell_name,
-                             placement_layer,
-                             instance_name=None,
-                             scale:Union[float]=1,
-                             rotation:Union[float, str]=0,
-                             offset_x:Union[float, str]=0,
-                             offset_y:Union[float, str]=0,
-                             mirror:bool=False,
-                             ):
+    def insert_cell_instance(
+        self,
+        cell_name,
+        placement_layer,
+        instance_name=None,
+        scale: Union[float] = 1,
+        rotation: Union[float, str] = 0,
+        offset_x: Union[float, str] = 0,
+        offset_y: Union[float, str] = 0,
+        mirror: bool = False,
+    ):
         """Insert a layout instance into the active layout."""
         from pyedb.generic.general_methods import generate_unique_name
+
         instance_name = instance_name if instance_name else generate_unique_name(cell_name, n=2)
         cell2 = [i for i in list(self._pedb._db.CircuitCells) if i.GetName() == cell_name][0]
         CellInst = self._pedb.core.Cell.Hierarchy.CellInstance.Create(

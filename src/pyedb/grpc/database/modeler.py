@@ -1531,19 +1531,22 @@ class Modeler(object):
                 return flag
         return True
 
-    def insert_cell_instance(self, cell_name,
-                             placement_layer,
-                             instance_name=None,
-                             scale:Union[float]=1,
-                             rotation:Union[float, str]=0,
-                             offset_x:Union[float, str]=0,
-                             offset_y:Union[float, str]=0,
-                             mirror:bool=False,
-                             )-> CellInstance:
+    def insert_cell_instance(
+        self,
+        cell_name,
+        placement_layer,
+        instance_name=None,
+        scale: Union[float] = 1,
+        rotation: Union[float, str] = 0,
+        offset_x: Union[float, str] = 0,
+        offset_y: Union[float, str] = 0,
+        mirror: bool = False,
+    ) -> CellInstance:
         """Insert a layout instance into the active layout."""
-        from pyedb.generic.general_methods import generate_unique_name
         from ansys.edb.core.hierarchy.cell_instance import CellInstance
         from ansys.edb.core.layout.cell import Cell, CellType
+
+        from pyedb.generic.general_methods import generate_unique_name
 
         instance_name = instance_name if instance_name else generate_unique_name(cell_name, n=2)
         cell = Cell.find(self._pedb._db, CellType.CIRCUIT_CELL, cell_name)
