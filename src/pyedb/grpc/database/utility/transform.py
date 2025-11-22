@@ -134,53 +134,8 @@ class Transform(ObjBase):
         """
         bool: Indicates whether the transform applies mirroring.
         """
-        return self.core_object.Mirror
+        return self.core_object.mirror
 
-    def set_x_offset(self, x_offset: float) -> bool:
-        """
-        Set the X offset.
-
-        Parameters
-        ----------
-        x_offset : float
-            X-axis offset value.
-
-        Returns
-        -------
-        bool
-            True if the operation succeeded.
-        """
-        return self.core_object.SetXOffsetValue(self._pedb.value(x_offset).core_object)
-
-    def set_y_offset(self, y_offset: float) -> bool:
-        """
-        Set the Y offset.
-
-        Parameters
-        ----------
-        y_offset : float
-            Y-axis offset value.
-
-        Returns
-        -------
-        bool
-            True if the operation succeeded.
-        """
-        return self.core_object.SetYOffsetValue(self._pedb.value(y_offset).core_object)
-
-    def set_mirror(self, mirror: bool) -> bool:
-        """
-        Set the mirror flag.
-
-        Parameters
-        ----------
-        mirror : bool
-            ``True`` to enable mirroring, ``False`` to disable.
-
-        Returns
-        -------
-        bool
-            True if the operation succeeded.
-        """
-        return self.core_object.SetMirror(mirror)
-
+    @mirror.setter
+    def mirror(self, value: bool):
+        self.core_object.mirror = value

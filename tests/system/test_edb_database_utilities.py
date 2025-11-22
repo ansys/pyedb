@@ -124,11 +124,11 @@ class TestDatabaseUtilities(BaseTestClass):
         else:
             transform = edbapp.pedb_class.database.utilities.transform.Transform.create(edbapp)
         transform.rotation = "180deg"
-        assert str(transform.rotation) == "180deg"
+        assert transform.rotation == pytest.approx(3.141592653589793)
         transform.offset_x = "1mm"
-        assert str(transform.offset_x) == "1mm"
+        assert transform.offset_x == pytest.approx(0.001)
         transform.offset_y = "1mm"
-        assert str(transform.offset_y) == "1mm"
+        assert transform.offset_y == pytest.approx(0.001)
         transform.mirror = True
         assert transform.mirror
         transform.scale = 2
