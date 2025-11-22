@@ -80,6 +80,10 @@ class Value(float):
         edb_object = self._pedb.core.Utility.Value(f"({self._edb_object.ToString()})**0.5")
         return self.__class__(self._pedb, edb_object)
 
+    @property
+    def value(self):
+        return self
+
     def log10(self):
         """Base-10 logarithm of the value."""
         edb_object = self._pedb.core.Utility.Value(f"log10({self._edb_object.ToString()})")
