@@ -116,15 +116,22 @@ class TestDatabaseUtilities(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_transform(self, edb_examples):
+
         edbapp = edb_examples.create_empty_edb()
-        transform = edbapp.pedb_class.database.utilities.transform.Transform.create(edbapp)
-        transform.set_rotation("180deg")
+        if edbapp.grpc:
+            from pyedb.grpc.database.utility.transform import Transform
+            transform = Transform.create(edbapp)
+        else:
+            transform = edbapp.pedb_class.database.utilities.transform.Transform.create(edbapp)
+        transform.rotation = "180deg"
         assert str(transform.rotation) == "180deg"
-        transform.set_x_offset("1mm")
-        assert str(transform.x_offset) == "1mm"
-        transform.set_y_offset("1mm")
-        assert str(transform.y_offset) == "1mm"
-        transform.set_mirror(True)
+        transform.offset_x = "1mm"
+        assert str(transform.offset_x) == "1mm"
+        transform.offset_y = "1mm"
+        assert str(transform.offset_y) == "1mm"
+        transform.mirror = True
         assert transform.mirror
+        transform.scale = 2
+        assert transform.scale == 2
 
         edbapp.close(terminate_rpc_session=False)

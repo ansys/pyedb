@@ -19,42 +19,99 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyedb.dotnet.edb import Edb
+    from pyedb.dotnet.database.utilities.value import Value
 
 from pyedb.dotnet.database.utilities.obj_base import ObjBase
 
 
 class Transform(ObjBase):
+    """
+    Wrapper around the EDB ``Transform`` object.
+
+    This class exposes transformation properties such as rotation, offsets, and mirroring,
+    and provides setters for updating these values.
+
+    Parameters
+    ----------
+    pedb : Edb
+        The parent EDB instance.
+    edb_object : Ansys.EdB.Utility.Transform
+        The underlying .NET Transform object.
+    """
+
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
 
     @classmethod
-    def create(cls, pedb):
+    def create(cls, pedb: "Edb")->"Transform":
+        """
+        Create a new ``Transform`` object.
+
+        Parameters
+        ----------
+        pedb : Edb
+            The parent EDB database instance.
+
+        Returns
+        -------
+        Transform
+            A new Transform wrapper object.
+        """
         return cls(pedb, pedb.core.Utility.Transform())
 
     @property
-    def rotation(self):
+    def scale(self) -> "Value":
+        """Scale property."""
+        return self._pedb.value(self._edb_object.Scale)
+
+    @scale.setter
+    def scale(self, value):
+        self._edb_object.SetScaleValue(self._pedb.value(value)._edb_object)
+
+    @property
+    def rotation(self)-> "Value":
+        """
+        float: Rotation value in degrees.
+        """
         return self._pedb.value(self._edb_object.Rotation)
 
+    @rotation.setter
+    def rotation(self, value):
+        self._edb_object.SetRotationValue(self._pedb.value(value)._edb_object)
+
     @property
-    def x_offset(self):
+    def offset_x(self)-> "Value":
+        """
+        float: X-axis offset value.
+        """
         return self._pedb.value(self._edb_object.XOffset)
 
+    @offset_x.setter
+    def offset_x(self, value):
+        self._edb_object.SetXOffsetValue(self._pedb.value(value)._edb_object)
+
     @property
-    def y_offset(self):
+    def offset_y(self)-> "Value":
+        """
+        float: Y-axis offset value.
+        """
         return self._pedb.value(self._edb_object.YOffset)
 
+    @offset_y.setter
+    def offset_y(self, value):
+        self._edb_object.SetYOffsetValue(self._pedb.value(value)._edb_object)
+
     @property
-    def mirror(self):
+    def mirror(self)-> bool:
+        """
+        bool: Indicates whether the transform applies mirroring.
+        """
         return self._edb_object.Mirror
 
-    def set_rotation(self, rotation):
-        return self._edb_object.SetRotationValue(self._pedb.value(rotation)._edb_object)
-
-    def set_x_offset(self, x_offset):
-        return self._edb_object.SetXOffsetValue(self._pedb.value(x_offset)._edb_object)
-
-    def set_y_offset(self, y_offset):
-        return self._edb_object.SetYOffsetValue(self._pedb.value(y_offset)._edb_object)
-
-    def set_mirror(self, mirror:bool):
-        return self._edb_object.SetMirror(mirror)
+    @mirror.setter
+    def mirror(self, value):
+        self._edb_object.SetMirror(value)
