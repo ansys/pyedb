@@ -49,7 +49,6 @@ from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.grpc.database.utility.value import Value
 
 
-
 def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
     """
     Convert any reasonable point description into [[x1, y1], [x2, y2], …]
@@ -1617,7 +1616,7 @@ class Modeler(object):
 
         # Rotation X
         t3d_rotation_x = t3d.create_from_axis_and_angle(
-            axis= GrpcPoint3DData(1.0, 0.0, 0.0), angle=self._pedb.value(rotation_x)
+            axis=GrpcPoint3DData(1.0, 0.0, 0.0), angle=self._pedb.value(rotation_x)
         )
         t3d = t3d + t3d_rotation_x
 
@@ -1634,9 +1633,9 @@ class Modeler(object):
         t3d = t3d + t3d_rotation_z
 
         # Place
-        location = GrpcPoint3DData(self._pedb.value(x)._edb_object,
-                                   self._pedb.value(y)._edb_object,
-                                   self._pedb.value(z)._edb_object)
+        location = GrpcPoint3DData(
+            self._pedb.value(x)._edb_object, self._pedb.value(y)._edb_object, self._pedb.value(z)._edb_object
+        )
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
 

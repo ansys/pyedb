@@ -28,7 +28,7 @@ from pathlib import Path
 import pytest
 
 from pyedb.generic.settings import settings
-from tests.conftest import local_path, test_subfolder, config
+from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
