@@ -1538,7 +1538,7 @@ class Modeler(object):
         offset_x: Union[float, str] = 0,
         offset_y: Union[float, str] = 0,
         mirror: bool = False,
-    )-> Any:
+    ) -> Any:
         """Insert a layout instance into the active layout.
 
         Parameters
@@ -1607,11 +1607,11 @@ class Modeler(object):
             Rotation angle around Z-axis, specified counter-clockwise in radians.
         """
 
-        from ansys.edb.core.layout.cell import Cell, CellType
-        from ansys.edb.core.hierarchy.cell_instance import CellInstance
-        from pyedb.generic.general_methods import generate_unique_name
         from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
+        from ansys.edb.core.hierarchy.cell_instance import CellInstance
+        from ansys.edb.core.layout.cell import Cell, CellType
 
+        from pyedb.generic.general_methods import generate_unique_name
 
         instance_name = generate_unique_name(cell_name, n=2)
         cell = Cell.find(self._pedb._db, CellType.CIRCUIT_CELL, cell_name)
