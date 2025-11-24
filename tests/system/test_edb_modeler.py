@@ -623,6 +623,15 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
+    def test_insert_layout_instance_placement_3d(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edb2_path = edb_examples.get_package(edbapp=False)
+        edbapp.copy_cell_from_edb(edb2_path)
+        cell_inst = edbapp.modeler.insert_layout_placement_3d("analysis", rotation_x="180deg", z="-0.33mm")
+        assert not cell_inst.is_null
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
     def test_insert_3d_component_placement_3d(self, edb_examples):
         edbapp = edb_examples.get_si_board(additional_files_folders=["si_board/SMA.a3dcomp"])
         cell_inst_1 = edbapp.modeler.insert_3d_component_placement_3d(
@@ -632,6 +641,7 @@ class TestClass(BaseTestClass):
             z="3mm",
             rotation_x="180deg",
         )
+        assert not cell_inst_1.is_null
         assert cell_inst_1.transform3d.shift.x.value == pytest.approx(0.001)
         assert cell_inst_1.transform3d.shift.y.value == pytest.approx(0.002)
         assert cell_inst_1.transform3d.shift.z.value == pytest.approx(0.003)
