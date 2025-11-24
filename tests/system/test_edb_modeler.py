@@ -23,6 +23,7 @@
 """Tests related to Edb modeler"""
 
 import os
+from pathlib import Path
 
 import pytest
 
@@ -619,4 +620,18 @@ class TestClass(BaseTestClass):
         assert cell_inst.transform.offset_x.value == pytest.approx(0.001)
         assert cell_inst.transform.offset_y.value == pytest.approx(0.002)
         assert cell_inst.transform.mirror
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_insert_3d_component_placement_3d(self, edb_examples):
+        edbapp = edb_examples.get_si_board(additional_files_folders=["si_board/SMA.a3dcomp"])
+        cell_inst_1 = edbapp.modeler.insert_3d_component_placement_3d(
+            a3dcomp_path=Path(edbapp.edbpath).with_name("SMA.a3dcomp"),
+            x="1mm",
+            y="2mm",
+            z="3mm",
+            rotation_x="180deg",
+        )
+        assert cell_inst_1.transform3d.shift.x.value == pytest.approx(0.001)
+        assert cell_inst_1.transform3d.shift.y.value == pytest.approx(0.002)
+        assert cell_inst_1.transform3d.shift.z.value == pytest.approx(0.003)
         edbapp.close(terminate_rpc_session=False)

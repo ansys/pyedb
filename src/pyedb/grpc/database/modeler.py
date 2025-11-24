@@ -1561,7 +1561,6 @@ class Modeler(object):
             Y offset.
         """
 
-        from ansys.edb.core.hierarchy.cell_instance import CellInstance
         from ansys.edb.core.layout.cell import Cell, CellType
 
         from pyedb.generic.general_methods import generate_unique_name
@@ -1577,4 +1576,51 @@ class Modeler(object):
         transform.offset_y = offset_y
         transform.mirror = mirror
         cell_inst.transform = transform
+        return cell_inst
+
+    def insert_3d_component_placement_3d(
+        self,
+        a3dcomp_path: Union[str, Path],
+        x: Union[float, str] = 0.0,
+        y: Union[float, str] = 0.0,
+        z: Union[float, str] = 0.0,
+        rotation_x: Union[float, str] = 0.0,
+        rotation_y: Union[float, str] = 0.0,
+        rotation_z: Union[float, str] = 0.0,
+    ) -> bool:
+        from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
+        from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
+
+        mcad_model = GrpcMcadModel.create_3d_comp(layout=self._pedb.active_layout, filename=str(a3dcomp_path))
+        cell_inst = mcad_model.cell_instance
+        cell_inst.placement_3d = True
+        t3d = cell_inst.transform3d
+
+        # Rotation X
+        t3d_rotation_x = t3d.create_from_axis_and_angle(
+            axis= GrpcPoint3DData(1.0, 0.0, 0.0), angle=self._pedb.value(rotation_x)
+        )
+        t3d = t3d + t3d_rotation_x
+
+        # Rotation Y
+        t3d_rotation_y = mcad_model.cell_instance.transform3d.create_from_axis_and_angle(
+            axis=GrpcPoint3DData(0.0, 1.0, 0.0), angle=self._pedb.value(rotation_y)
+        )
+        t3d = t3d + t3d_rotation_y
+
+        # Rotation Z
+        t3d_rotation_z = mcad_model.cell_instance.transform3d.create_from_axis_and_angle(
+            axis=GrpcPoint3DData(0.0, 0.0, 1.0), angle=self._pedb.value(rotation_z)
+        )
+        t3d = t3d + t3d_rotation_z
+
+        # Place
+        location = GrpcPoint3DData(self._pedb.value(x)._edb_object,
+                                   self._pedb.value(y)._edb_object,
+                                   self._pedb.value(z)._edb_object)
+        t3d_offset = t3d.create_from_offset(offset=location)
+        t3d = t3d + t3d_offset
+
+        # Set transform3d back into instance
+        cell_inst.transform3d = t3d
         return cell_inst
