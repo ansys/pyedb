@@ -9,6 +9,77 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.64.1 <https://github.com/ansys/pyedb/releases/tag/v0.64.1>`_ - November 24, 2025
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Add grpc padstack instance bounding box property
+          - `#1642 <https://github.com/ansys/pyedb/pull/1642>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/checkout from 5.0.0 to 5.0.1
+          - `#1655 <https://github.com/ansys/pyedb/pull/1655>`_
+
+        * - Update jupyterlab requirement from <4.5,>=4.0.0 to >=4.0.0,<4.6
+          - `#1656 <https://github.com/ansys/pyedb/pull/1656>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Remove JobManager from Edb class
+          - `#1657 <https://github.com/ansys/pyedb/pull/1657>`_
+
+        * - Fixing hfss extent
+          - `#1660 <https://github.com/ansys/pyedb/pull/1660>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.64.0
+          - `#1652 <https://github.com/ansys/pyedb/pull/1652>`_
+
+        * - Bump dev version into v0.65.dev0
+          - `#1653 <https://github.com/ansys/pyedb/pull/1653>`_
+
+        * - Delete accidentally added files
+          - `#1661 <https://github.com/ansys/pyedb/pull/1661>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Edb cfg boundaries
+          - `#1659 <https://github.com/ansys/pyedb/pull/1659>`_
+
+        * - Add docstring to edb cfg boundaries
+          - `#1663 <https://github.com/ansys/pyedb/pull/1663>`_
+
+
 `0.64.0 <https://github.com/ansys/pyedb/releases/tag/v0.64.0>`_ - November 13, 2025
 ===================================================================================
 
