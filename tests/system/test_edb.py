@@ -1130,10 +1130,10 @@ class TestClass(BaseTestClass):
         extent_info.operating_freq = original_freq
 
         # Test pml_radiation_factor
-        original_rad_factor = extent_info.pml_radiation_factor
-        extent_info.pml_radiation_factor = 0.02
-        assert abs(extent_info.pml_radiation_factor - 0.02) < 0.001
-        extent_info.pml_radiation_factor = original_rad_factor
+        original_rad_factor = extent_info.radiation_level
+        extent_info.radiation_level = 0.02
+        assert abs(extent_info.radiation_level - 0.02) < 0.001
+        extent_info.radiation_level = original_rad_factor
 
         # Test load_config and export_config
         config = extent_info.export_config()

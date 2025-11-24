@@ -157,31 +157,19 @@ class Configuration:
         info = self._pedb.hfss.hfss_extent_info
 
         # Simple direct-assign attributes:
-        attr_map = {
-            "use_open_region": "use_open_region",
-            "open_region_type": "open_region_type",
-            "is_pml_visible": "is_pml_visible",
-            "operating_freq": "operating_freq",
-            "pml_radiation_factor": "pml_radiation_factor",
-            "dielectric_extent_type": "dielectric_extent_type",
-            "honor_user_dielectric": "honor_user_dielectric",
-            "extent_type": "extent_type",
-            "truncate_air_box_at_ground": "truncate_air_box_at_ground",
-            "base_polygon": "base_polygon",
-            "dielectric_base_polygon": "dielectric_base_polygon",
-            "sync_air_box_vertical_extent": "sync_air_box_vertical_extent",
-        }
+        attr_map = [
+            "use_open_region", "open_region_type", "is_pml_visible", "operating_freq", "radiation_level",
+            "dielectric_extent_type",
+            "honor_user_dielectric", "extent_type", "truncate_air_box_at_ground", "base_polygon",
+            "dielectric_base_polygon", "sync_air_box_vertical_extent",
+        ]
 
-        for b_attr, info_attr in attr_map.items():
+        for b_attr in attr_map:
+            if not hasattr(info, b_attr) or not hasattr(boundaries, b_attr):
+                raise AttributeError(f"Attribute {b_attr} not found in {info.__name__}")
             value = getattr(boundaries, b_attr, None)
             if value is not None:
-                # Lowercase only string-based HFSS enum-like values
-                if b_attr in ("open_region_type", "dielectric_extent_type", "extent_type") and isinstance(value, str):
-                    value = value.lower()
-                if hasattr(info, info_attr):
-                    setattr(info, info_attr, value)
-                else:  # pragma: no cover
-                    raise AttributeError(f"Attribute {info_attr} not found in {info.__name__}")
+                setattr(info, b_attr, value)
 
         # Attributes requiring specific setter functions
         if boundaries.dielectric_extent_size:
@@ -204,7 +192,7 @@ class Configuration:
         boundaries.open_region_type = edb_hfss_extent_info.open_region_type
         boundaries.is_pml_visible = edb_hfss_extent_info.is_pml_visible
         boundaries.operating_freq = edb_hfss_extent_info.operating_freq
-        boundaries.pml_radiation_factor = edb_hfss_extent_info.pml_radiation_factor
+        boundaries.radiation_level = edb_hfss_extent_info.radiation_level
         boundaries.dielectric_extent_type = edb_hfss_extent_info.dielectric_extent_type
         size, is_multiple = edb_hfss_extent_info.get_dielectric_extent()
         boundaries.dielectric_extent_size = {"size": size, "is_multiple": is_multiple}
@@ -739,23 +727,23 @@ class Configuration:
                 raise RuntimeError(f"Terminal type {i.terminal_type} not supported.")
 
     def export(
-        self,
-        file_path,
-        stackup=True,
-        package_definitions=False,
-        setups=True,
-        sources=True,
-        ports=True,
-        nets=True,
-        pin_groups=True,
-        operations=True,
-        components=True,
-        boundaries=True,
-        s_parameters=True,
-        padstacks=True,
-        general=True,
-        variables=True,
-        terminals=False,
+            self,
+            file_path,
+            stackup=True,
+            package_definitions=False,
+            setups=True,
+            sources=True,
+            ports=True,
+            nets=True,
+            pin_groups=True,
+            operations=True,
+            components=True,
+            boundaries=True,
+            s_parameters=True,
+            padstacks=True,
+            general=True,
+            variables=True,
+            terminals=False,
     ):
         """Export the configuration data from layout to a file.
 

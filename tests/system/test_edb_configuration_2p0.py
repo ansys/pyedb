@@ -1722,7 +1722,7 @@ class TestClassBoundaries(BaseTestClass):
                 "open_region_type": "pml",
                 "is_pml_visible": True,
                 "operating_freq": "3GHz",
-                "pml_radiation_factor": "20",
+                "radiation_level": "20",
             }
         }
         edbapp.configuration.load(data, apply_file=True)
@@ -1744,7 +1744,7 @@ class TestClassBoundaries(BaseTestClass):
         }
         edbapp.configuration.load(data, apply_file=True)
         assert edbapp.hfss.hfss_extent_info.dielectric_extent_type == "bounding_box"
-        assert edbapp.hfss.hfss_extent_info.dielectric_extent_size == 0.01
+        assert edbapp.hfss.hfss_extent_info.get_dielectric_extent_size() == (0.01, True)
         assert edbapp.hfss.hfss_extent_info.honor_user_dielectric is False
 
         data = {

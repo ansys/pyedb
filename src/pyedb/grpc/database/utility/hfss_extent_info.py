@@ -179,12 +179,14 @@ class HfssExtentInfo:
         -------
         :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
         """
-        return self._hfss_extent_info.base_polygon
+        obj = self._hfss_extent_info.base_polygon.name
+        return obj.name if obj else None
 
     @base_polygon.setter
     def base_polygon(self, value):
+        obj = self._pedb.layout.find_primitive(name=value)[0]
         hfss_extent = self._hfss_extent_info
-        hfss_extent.base_polygon = value
+        hfss_extent.base_polygon = obj._edb_object
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -195,12 +197,13 @@ class HfssExtentInfo:
         -------
         :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
         """
-        return self._hfss_extent_info.dielectric_base_polygon
+        return self._hfss_extent_info.dielectric_base_polygon.name
 
     @dielectric_base_polygon.setter
     def dielectric_base_polygon(self, value):
+        obj = self._pedb.layout.find_primitive(name=value)[0]
         hfss_extent = self._hfss_extent_info
-        hfss_extent.dielectric_base_polygon = value
+        hfss_extent.dielectric_base_polygon = obj._edb_object
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -220,8 +223,7 @@ class HfssExtentInfo:
         hfss_extent.dielectric = (current_size, value)
         self._update_hfss_extent_info(hfss_extent)
 
-    @property
-    def dielectric_extent_size(self) -> float:
+    def get_dielectric_extent_size(self) -> (float, bool):
         """Dielectric extent size.
 
         Returns
@@ -229,15 +231,14 @@ class HfssExtentInfo:
         float
             Dielectric extent size value.
         """
-        value = self._hfss_extent_info.dielectric[0]
+        value, is_multiple = self._hfss_extent_info.dielectric
         if hasattr(value, "value"):
             return float(value.value)
-        return float(value)
+        return float(value), is_multiple
 
-    @dielectric_extent_size.setter
-    def dielectric_extent_size(self, value):
+    def set_dielectric_extent(self, size: float, is_multiple: bool = True):
         hfss_extent = self._hfss_extent_info
-        hfss_extent.dielectric = (float(value), True)
+        hfss_extent.dielectric = (float(size), is_multiple)
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -255,7 +256,7 @@ class HfssExtentInfo:
     @dielectric_extent_type.setter
     def dielectric_extent_type(self, value):
         hfss_extent = self._hfss_extent_info
-        hfss_extent.dielectric_extent_type = value
+        hfss_extent.dielectric_extent_type = self.extent_type_mapping[value]
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -272,18 +273,7 @@ class HfssExtentInfo:
     @extent_type.setter
     def extent_type(self, value):
         hfss_extent = self._hfss_extent_info
-        if isinstance(value, str):
-            if value.lower() == "bounding_box":
-                value = GrpcHfssExtentInfoType.BOUNDING_BOX
-            elif value.lower() == "conforming":
-                value = GrpcHfssExtentInfoType.CONFORMING
-            elif value.lower() == "convex_hul":
-                value = GrpcHfssExtentInfoType.CONVEX_HUL
-            elif value.lower() == "polygon":
-                value = GrpcHfssExtentInfoType.POLYGON
-            else:
-                raise f"Invalid extent type : {value}"
-        hfss_extent.extent_type = value
+        hfss_extent.extent_type = self.extent_type_mapping[value]
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -333,7 +323,7 @@ class HfssExtentInfo:
     @open_region_type.setter
     def open_region_type(self, value):
         hfss_extent = self._hfss_extent_info
-        hfss_extent.open_region_type = value
+        hfss_extent.open_region_type = self._open_region_type[value]
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -358,7 +348,7 @@ class HfssExtentInfo:
         self._update_hfss_extent_info(hfss_extent)
 
     @property
-    def pml_radiation_factor(self) -> float:
+    def radiation_level(self) -> float:
         """PML Radiation level to calculate the thickness of boundary.
 
         Returns
@@ -372,8 +362,8 @@ class HfssExtentInfo:
             return float(rad_level.value)
         return float(rad_level)
 
-    @pml_radiation_factor.setter
-    def pml_radiation_factor(self, value):
+    @radiation_level.setter
+    def radiation_level(self, value):
         hfss_extent = self._hfss_extent_info
         hfss_extent.radiation_level = GrpcValue(value)
         self._update_hfss_extent_info(hfss_extent)
