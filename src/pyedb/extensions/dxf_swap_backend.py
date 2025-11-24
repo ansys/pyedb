@@ -229,7 +229,7 @@ def swap_polygon_with_dxf_center_point(edb: Edb, dxf_path: str, layer_name: str,
 
     dxf_polygon = create_polygon_from_dxf(edb, dxf_path, layer_name)
     point_dxf = dxf_polygon.center
-    point_dxf = [f"{x.value * 1000}mm" for x in point_dxf]
+    point_dxf = [f"{float(x) * 1000}mm" for x in point_dxf]
 
     point_dxf_double = [
         edb.value(point_dxf[0]),
@@ -244,8 +244,8 @@ def swap_polygon_with_dxf_center_point(edb: Edb, dxf_path: str, layer_name: str,
         point_aedt_double[1] - point_dxf_double[1],
     ]
     move_vector = [
-        f"{1000 * move_vector_double[0].value}mm",
-        f"{1000 * move_vector_double[1].value}mm",
+        f"{1000 * float(move_vector_double[0])}mm",
+        f"{1000 * float(move_vector_double[1])}mm",
     ]
 
     dxf_polygon.move(vector=move_vector)
