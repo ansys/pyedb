@@ -1559,8 +1559,9 @@ class Modeler(object):
             Y offset.
         """
 
-        from ansys.edb.core.layout.cell import Cell, CellType
         from ansys.edb.core.hierarchy.cell_instance import CellInstance
+        from ansys.edb.core.layout.cell import Cell, CellType
+
         from pyedb.generic.general_methods import generate_unique_name
 
         instance_name = generate_unique_name(cell_name, n=2)
