@@ -613,7 +613,7 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         edb2_path = edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
-        cell_inst = edbapp.modeler.insert_layout_instance("analysis", "1_Top", None, 2, "180deg", "1mm", "2mm", True)
+        cell_inst = edbapp.modeler.insert_layout_nstance("analysis", "1_Top", None, 2, "180deg", "1mm", "2mm", True)
         assert cell_inst.transform.rotation.value == pytest.approx(3.14159265358979)
         assert cell_inst.transform.scale.value == pytest.approx(2)
         assert cell_inst.transform.offset_x.value == pytest.approx(0.001)

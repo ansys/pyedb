@@ -1533,22 +1533,40 @@ class Modeler(object):
 
     def insert_layout_instance(
         self,
-        cell_name,
-        placement_layer,
-        instance_name=None,
+        cell_name:str,
+        placement_layer:str,
         scale: Union[float] = 1,
         rotation: Union[float, str] = 0,
         offset_x: Union[float, str] = 0,
         offset_y: Union[float, str] = 0,
         mirror: bool = False,
     ) -> CellInstance:
-        """Insert a layout instance into the active layout."""
+        """Insert a layout instance into the active layout.
+
+        Parameters
+        ----------
+        cell_name: str
+            Name of the layout to insert.
+        placement_layer: str
+            Placement Layer.
+        scale : float
+            Scale parameter.
+        rotation : float or str
+            Rotation angle, specified counter-clockwise in radians.
+        mirror : bool
+            Mirror about Y-axis.
+        offset_x : float or str
+            X offset.
+        offset_y : float or str
+            Y offset.
+        """
+
         from ansys.edb.core.hierarchy.cell_instance import CellInstance
         from ansys.edb.core.layout.cell import Cell, CellType
 
         from pyedb.generic.general_methods import generate_unique_name
 
-        instance_name = instance_name if instance_name else generate_unique_name(cell_name, n=2)
+        instance_name = generate_unique_name(cell_name, n=2)
         cell = Cell.find(self._pedb._db, CellType.CIRCUIT_CELL, cell_name)
         cell_inst = CellInstance.create(self._pedb.active_layout, instance_name, cell.layout)
         cell_inst.placement_layer = self._pedb.stackup.layers[placement_layer]._edb_object
