@@ -59,7 +59,7 @@ deprecation_warning()
 #
 
 pyedb_path = os.path.dirname(__file__)
-__version__ = "0.64.0"
+__version__ = "0.64.1"
 version = __version__
 
 #
