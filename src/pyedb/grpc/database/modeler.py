@@ -38,7 +38,6 @@ from ansys.edb.core.primitive.rectangle import (
     RectangleRepresentationType as GrpcRectangleRepresentationType,
 )
 
-from pyedb.dotnet.database.cell.hierarchy.hierarchy_obj import CellInstance
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.circle import Circle
 from pyedb.grpc.database.primitive.path import Path
@@ -1539,7 +1538,7 @@ class Modeler(object):
         offset_x: Union[float, str] = 0,
         offset_y: Union[float, str] = 0,
         mirror: bool = False,
-    ) -> CellInstance:
+    ):
         """Insert a layout instance into the active layout.
 
         Parameters
@@ -1561,7 +1560,7 @@ class Modeler(object):
         """
 
         from ansys.edb.core.layout.cell import Cell, CellType
-
+        from ansys.edb.core.hierarchy.cell_instance import CellInstance
         from pyedb.generic.general_methods import generate_unique_name
 
         instance_name = generate_unique_name(cell_name, n=2)
