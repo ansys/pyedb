@@ -2136,4 +2136,3 @@ class TestClass(BaseTestClass):
         edbapp.design_mode = "IC"
         assert edbapp.design_mode == "ic"
         edbapp.close(terminate_rpc_session=False)
-

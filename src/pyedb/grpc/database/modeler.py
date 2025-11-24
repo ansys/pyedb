@@ -1533,8 +1533,8 @@ class Modeler(object):
 
     def insert_layout_instance(
         self,
-        cell_name:str,
-        placement_layer:str,
+        cell_name: str,
+        placement_layer: str,
         scale: Union[float] = 1,
         rotation: Union[float, str] = 0,
         offset_x: Union[float, str] = 0,
