@@ -179,8 +179,10 @@ class EdbExamples:
 
     def get_si_board(self, edbapp=True, additional_files_folders="", version=None):
         return self._get_test_board(
-            edbapp, additional_files_folders, version, source_file_path="si_board/si_board.aedb",
-
+            edbapp,
+            additional_files_folders,
+            version,
+            source_file_path="si_board/si_board.aedb",
         )
 
     def load_edb(self, edb_path, copy_to_temp=True, **kwargs):
