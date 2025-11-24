@@ -1543,7 +1543,7 @@ class Modeler(object):
         """Insert a layout instance into the active layout."""
         from pyedb.generic.general_methods import generate_unique_name
 
-        instance_name = instance_name if instance_name else generate_unique_name(cell_name, n=2)
+        instance_name = generate_unique_name(cell_name, n=2)
         cell2 = [i for i in list(self._pedb._db.CircuitCells) if i.GetName() == cell_name][0]
         CellInst = self._pedb.core.Cell.Hierarchy.CellInstance.Create(
             self._pedb.active_layout, instance_name, cell2.GetLayout()
