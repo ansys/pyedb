@@ -1535,8 +1535,8 @@ class Modeler(object):
         placement_layer: str,
         scale: Union[float] = 1,
         rotation: Union[float, str] = 0,
-        offset_x: Union[float, str] = 0,
-        offset_y: Union[float, str] = 0,
+        x: Union[float, str] = 0,
+        y: Union[float, str] = 0,
         mirror: bool = False,
     ) -> Any:
         """Insert a layout instance into the active layout.
@@ -1553,9 +1553,9 @@ class Modeler(object):
             Rotation angle, specified counter-clockwise in radians.
         mirror : bool
             Mirror about Y-axis.
-        offset_x : float or str
+        x : float or str
             X offset.
-        offset_y : float or str
+        y : float or str
             Y offset.
         """
 
@@ -1571,8 +1571,8 @@ class Modeler(object):
         transform = cell_inst.transform
         transform.scale = scale
         transform.rotation = rotation
-        transform.offset_x = offset_x
-        transform.offset_y = offset_y
+        transform.offset_x = x
+        transform.offset_y = y
         transform.mirror = mirror
         cell_inst.transform = transform
         return cell_inst

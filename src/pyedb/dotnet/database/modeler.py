@@ -1536,8 +1536,8 @@ class Modeler(object):
         placement_layer,
         scale: Union[float] = 1,
         rotation: Union[float, str] = 0,
-        offset_x: Union[float, str] = 0,
-        offset_y: Union[float, str] = 0,
+        x: Union[float, str] = 0,
+        y: Union[float, str] = 0,
         mirror: bool = False,
     ):
         """Insert a layout instance into the active layout."""
@@ -1553,8 +1553,8 @@ class Modeler(object):
         transform = cell_inst.transform
         transform.scale = scale
         transform.rotation = rotation
-        transform.offset_x = offset_x
-        transform.offset_y = offset_y
+        transform.offset_x = x
+        transform.offset_y = y
         transform.mirror = mirror
         cell_inst.transform = transform
 
