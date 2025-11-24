@@ -1531,7 +1531,7 @@ class Modeler(object):
                 return flag
         return True
 
-    def insert_cell_instance(
+    def insert_layout_instance(
         self,
         cell_name,
         placement_layer,

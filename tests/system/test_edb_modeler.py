@@ -608,3 +608,15 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         primitives = edbapp.modeler.primitives
         assert primitives[0].aedt_name == "line_0"
+
+    def test_insert_layout_instance(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edb2_path = edb_examples.get_package(edbapp=False)
+        edbapp.copy_cell_from_edb(edb2_path)
+        cell_inst = edbapp.modeler.insert_layout_instance("analysis", "1_Top", None, 2, "180deg", "1mm", "2mm", True)
+        assert cell_inst.transform.rotation.value == pytest.approx(3.14159265358979)
+        assert cell_inst.transform.scale.value == pytest.approx(2)
+        assert cell_inst.transform.offset_x.value == pytest.approx(0.001)
+        assert cell_inst.transform.offset_y.value == pytest.approx(0.002)
+        assert cell_inst.transform.mirror
+        edbapp.close(terminate_rpc_session=False)

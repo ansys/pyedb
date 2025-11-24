@@ -1529,7 +1529,7 @@ class Modeler(object):
                 obj.SetNet(net_obj[0])
         return self._pedb.siwave.pin_groups[name]
 
-    def insert_cell_instance(
+    def insert_layout_instance(
         self,
         cell_name,
         placement_layer,
