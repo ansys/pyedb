@@ -76,7 +76,7 @@ class Value(float, GrpcValue):
 
     @property
     def value(self):
-        return self
+        return self._edb_object.value
 
     def log10(self):
         """Base-10 logarithm of the value."""
