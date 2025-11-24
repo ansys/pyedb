@@ -166,7 +166,8 @@ class Configuration:
 
         for b_attr in attr_map:
             if not hasattr(info, b_attr) or not hasattr(boundaries, b_attr):
-                raise AttributeError(f"Attribute {b_attr} not found in {info.__name__}")
+                self._pedb.logger.error(f"Attribute {b_attr} not found")
+                raise AttributeError(f"Attribute {b_attr} not found")
             value = getattr(boundaries, b_attr, None)
             if value is not None:
                 setattr(info, b_attr, value)

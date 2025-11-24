@@ -1775,9 +1775,9 @@ class TestClassBoundaries(BaseTestClass):
         edbapp.configuration.load(data, apply_file=True)
         assert edbapp.hfss.hfss_extent_info.extent_type == "bounding_box"
         assert edbapp.hfss.hfss_extent_info.truncate_air_box_at_ground is True
-        assert edbapp.hfss.hfss_extent_info.air_box_horizontal_extent == 0.15
-        assert edbapp.hfss.hfss_extent_info.air_box_positive_vertical_extent == 1.0
-        assert edbapp.hfss.hfss_extent_info.air_box_negative_vertical_extent == 2.0
+        assert edbapp.hfss.hfss_extent_info.get_air_box_horizontal_extent() == (0.15, True)
+        assert edbapp.hfss.hfss_extent_info.get_air_box_positive_vertical_extent() == (1.0, True)
+        assert edbapp.hfss.hfss_extent_info.get_air_box_negative_vertical_extent() == (2.0, True)
         assert edbapp.hfss.hfss_extent_info.sync_air_box_vertical_extent is True
 
         data = {
