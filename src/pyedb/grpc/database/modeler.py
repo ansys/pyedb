@@ -47,7 +47,7 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecate_argument_name
+
 
 
 def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
@@ -1588,6 +1588,25 @@ class Modeler(object):
         rotation_y: Union[float, str] = 0.0,
         rotation_z: Union[float, str] = 0.0,
     ) -> bool:
+        """Insert a 3D component placement into the active layout.
+
+        Parameters
+        ----------
+        a3dcomp_path: str or Path
+            File path to the 3D component.
+        x: float or str
+            X coordinate.
+        y: float or str
+            Y coordinate.
+        z: float or str
+            Z coordinate.
+        rotation_x: float or str
+            Rotation angle around X-axis, specified counter-clockwise in radians.
+        rotation_y: float or str
+            Rotation angle around Y-axis, specified counter-clockwise in radians.
+        rotation_z: float or str
+            Rotation angle around Z-axis, specified counter-clockwise in radians.
+        """
         from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
         from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
 

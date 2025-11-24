@@ -117,8 +117,10 @@ class TestDatabaseUtilities(BaseTestClass):
 
     @pytest.mark.skipif(conftest.config["use_grpc"], reason="Only applicable to dotnet.")
     def test_transform(self, edb_examples):
+        from pyedb.dotnet.database.utilities.transform import Transform
+
         edbapp = edb_examples.create_empty_edb()
-        transform = edbapp.pedb_class.database.utilities.transform.Transform.create(edbapp)
+        transform = Transform.create(edbapp)
         transform.rotation = "180deg"
         assert transform.rotation == pytest.approx(3.141592653589793)
         transform.offset_x = "1mm"

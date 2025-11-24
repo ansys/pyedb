@@ -25,6 +25,7 @@ This module contains these classes: `EdbLayout` and `Shape`.
 """
 
 import math
+from pathlib import Path
 from typing import Union
 import warnings
 

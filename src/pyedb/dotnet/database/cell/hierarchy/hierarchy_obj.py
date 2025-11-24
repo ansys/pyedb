@@ -47,7 +47,8 @@ class HierarchyObj(Connectable):
     @property
     def transform(self):
         edb_object = self._edb_object.GetTransform()
-        return self._pedb.pedb_class.database.utilities.transform.Transform(self._pedb, edb_object)
+        from pyedb.dotnet.database.utilities.transform import Transform
+        return Transform(self._pedb, edb_object)
 
     @transform.setter
     def transform(self, value):

@@ -28,7 +28,7 @@ from pathlib import Path
 import pytest
 
 from pyedb.generic.settings import settings
-from tests.conftest import local_path, test_subfolder
+from tests.conftest import local_path, test_subfolder, config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -622,6 +622,7 @@ class TestClass(BaseTestClass):
         assert cell_inst.transform.mirror
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
     def test_insert_3d_component_placement_3d(self, edb_examples):
         edbapp = edb_examples.get_si_board(additional_files_folders=["si_board/SMA.a3dcomp"])
         cell_inst_1 = edbapp.modeler.insert_3d_component_placement_3d(
