@@ -1533,7 +1533,6 @@ class Modeler(object):
         self,
         cell_name,
         placement_layer,
-        instance_name=None,
         scale: Union[float] = 1,
         rotation: Union[float, str] = 0,
         offset_x: Union[float, str] = 0,
