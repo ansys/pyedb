@@ -90,7 +90,7 @@ class HfssExtentInfo:
             return float(value.value)
         return float(value), is_multiple
 
-    def set_air_box_positive_vertical_extent(self, size: float, is_multiple:bool):
+    def set_air_box_positive_vertical_extent(self, size: float, is_multiple: bool):
         hfss_exent = self._hfss_extent_info
         hfss_exent.airbox_vertical_positive = (GrpcValue(size).value, is_multiple)
         self._update_hfss_extent_info(hfss_exent)
@@ -123,6 +123,7 @@ class HfssExtentInfo:
         :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
         """
         from pyedb.grpc.database.primitive.polygon import Polygon
+
         obj = self._hfss_extent_info.base_polygon
         return Polygon(self._pedb, obj).aedt_name if obj else None
 
@@ -142,6 +143,7 @@ class HfssExtentInfo:
         :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
         """
         from pyedb.grpc.database.primitive.polygon import Polygon
+
         obj = self._hfss_extent_info.dielectric_base_polygon
         return Polygon(self._pedb, obj).aedt_name if obj else None
 

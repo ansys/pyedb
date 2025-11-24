@@ -158,10 +158,18 @@ class Configuration:
 
         # Simple direct-assign attributes:
         attr_map = [
-            "use_open_region", "open_region_type", "is_pml_visible", "operating_freq", "radiation_level",
+            "use_open_region",
+            "open_region_type",
+            "is_pml_visible",
+            "operating_freq",
+            "radiation_level",
             "dielectric_extent_type",
-            "honor_user_dielectric", "extent_type", "truncate_air_box_at_ground", "base_polygon",
-            "dielectric_base_polygon", "sync_air_box_vertical_extent",
+            "honor_user_dielectric",
+            "extent_type",
+            "truncate_air_box_at_ground",
+            "base_polygon",
+            "dielectric_base_polygon",
+            "sync_air_box_vertical_extent",
         ]
 
         for b_attr in attr_map:
@@ -728,23 +736,23 @@ class Configuration:
                 raise RuntimeError(f"Terminal type {i.terminal_type} not supported.")
 
     def export(
-            self,
-            file_path,
-            stackup=True,
-            package_definitions=False,
-            setups=True,
-            sources=True,
-            ports=True,
-            nets=True,
-            pin_groups=True,
-            operations=True,
-            components=True,
-            boundaries=True,
-            s_parameters=True,
-            padstacks=True,
-            general=True,
-            variables=True,
-            terminals=False,
+        self,
+        file_path,
+        stackup=True,
+        package_definitions=False,
+        setups=True,
+        sources=True,
+        ports=True,
+        nets=True,
+        pin_groups=True,
+        operations=True,
+        components=True,
+        boundaries=True,
+        s_parameters=True,
+        padstacks=True,
+        general=True,
+        variables=True,
+        terminals=False,
     ):
         """Export the configuration data from layout to a file.
 
