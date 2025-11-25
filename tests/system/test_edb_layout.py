@@ -71,4 +71,3 @@ class TestClass(BaseTestClass):
         assert isinstance(self.point_data[0], float)
         assert isinstance(self.point_data[1], float)
         edbapp.close(terminate_rpc_session=False)
-
