@@ -27,8 +27,8 @@ import os
 import pytest
 
 from pyedb.generic.general_methods import is_windows
-from tests.conftest import config, local_path, test_subfolder
 from tests import conftest
+from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
