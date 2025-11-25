@@ -236,7 +236,7 @@ jobs:
           timeout_minutes: 60
           command: |
             . .venv\Scripts\Activate.ps1
-            pytest tests/system -n auto --dist loadfile -v --cov
+            pytest tests/system -n 1 --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
@@ -524,7 +524,7 @@ jobs:
           command: |
             export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
             . .venv/bin/activate
-            pytest tests/system -n auto --dist loadfile -v --cov
+            pytest tests/system -n 1 --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
