@@ -1744,7 +1744,7 @@ class TestClassBoundaries(BaseTestClass):
         }
         edbapp.configuration.load(data, apply_file=True)
         assert edbapp.hfss.hfss_extent_info.dielectric_extent_type == "bounding_box"
-        assert edbapp.hfss.hfss_extent_info.get_dielectric_extent_size() == (0.01, True)
+        assert edbapp.hfss.hfss_extent_info.get_dielectric_extent() == (0.01, True)
         assert edbapp.hfss.hfss_extent_info.honor_user_dielectric is False
 
         data = {

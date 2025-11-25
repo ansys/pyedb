@@ -154,7 +154,7 @@ class HfssExtentInfo:
         hfss_extent.dielectric_base_polygon = obj._edb_object
         self._update_hfss_extent_info(hfss_extent)
 
-    def get_dielectric_extent_size(self) -> (float, bool):
+    def get_dielectric_extent(self) -> (float, bool):
         """Dielectric extent size.
 
         Returns
