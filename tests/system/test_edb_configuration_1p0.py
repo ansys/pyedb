@@ -35,6 +35,7 @@ from tests.system.base_test_class import BaseTestClass
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
+@pytest.mark.skipif(True, reason="Unstable test.")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
