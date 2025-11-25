@@ -28,6 +28,7 @@ import pytest
 
 from pyedb.generic.general_methods import is_windows
 from tests.conftest import config, local_path, test_subfolder
+from tests import conftest
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -162,6 +163,7 @@ class TestClass(BaseTestClass):
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_0(self, edb_examples):
         # Done
         edbapp = edb_examples.get_package()
@@ -179,6 +181,7 @@ class TestClass(BaseTestClass):
         assert "$TOP_value" in parameters
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_1(self, edb_examples):
         # Done
         edbapp = edb_examples.get_package()
@@ -188,6 +191,7 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.keys())) == len(list(edbapp.stackup.layers.keys()))
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_2(self, edb_examples):
         # Done
         edbapp = edb_examples.get_package()
@@ -247,6 +251,7 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.values())) == 3
         edbapp.close()
 
+    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_7(self, edb_examples):
         # Done
         edbapp = edb_examples.get_package()
