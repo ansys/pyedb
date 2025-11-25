@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import math
+
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.primitive.circle import Circle as GrpcCircle
@@ -353,6 +355,80 @@ class Primitive(GrpcPrimitive):
                 arc = i
                 len = i.length
         return arc
+
+    def rotate(self, angle, center=None) -> bool:
+        """Rotate polygon around a center point by an angle.
+
+        Parameters
+        ----------
+        angle : float
+            Value of the rotation angle in degree.
+        center : List of float or str [x,y], optional
+            If None rotation is done from polygon center.
+
+        Returns
+        -------
+        bool
+           ``True`` when successful, ``False`` when failed.
+        """
+        if angle and hasattr(self, "polygon_data"):
+            if center is None:
+                center = self.cast().polygon_data.bounding_circle()[0]
+            self.cast().polygon_data = self.polygon_data.rotate(angle * math.pi / 180, center)
+            return True
+        return False
+
+    def move(self, vector) -> bool:
+        """Move polygon along a vector.
+
+        Parameters
+        ----------
+        vector : List of float or str [x,y].
+
+        Returns
+        -------
+        bool
+           ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> edbapp = ansys.aedt.core.Edb("myproject.aedb")
+        >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
+        >>> for polygon in top_layer_polygon:
+        >>>     polygon.move(vector=["2mm", "100um"])
+        """
+        if vector and isinstance(vector, list) and len(vector) == 2:
+            _vector = [Value(pt) for pt in vector]
+            self.cast().polygon_data = self.polygon_data.move(_vector)
+            return True
+        return False
+
+    def scale(self, factor, center=None) -> bool:
+        """Scales the polygon relative to a center point by a factor.
+
+        Parameters
+        ----------
+        factor : float
+            Scaling factor.
+        center : List of float or str [x,y], optional
+            If None scaling is done from polygon center.
+
+        Returns
+        -------
+        bool
+           ``True`` when successful, ``False`` when failed.
+        """
+        if not isinstance(factor, str) and hasattr(self, "polygon_data"):
+            factor = float(factor)
+            if not center:
+                center = self.cast().polygon_data.bounding_circle()[0]
+            elif isinstance(center, list) and len(center) == 2:
+                center = GrpcPointData([Value(center[0]), Value(center[1])])
+            else:
+                self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
+            self.cast().polygon_data = self.polygon_data.scale(factor, center)
+            return True
+        return False
 
     def subtract(self, primitives) -> list[any]:
         """Subtract active primitive with one or more primitives.

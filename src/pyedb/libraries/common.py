@@ -358,8 +358,10 @@ class MicroStripTechnologyStackup:
     >>> stack.substrate.material.permittivity = 9.8
     """
 
-    def __init__(self, pedb):
+    def __init__(
+        self, pedb, botton_layer_name="BOT_METAL", substrate_layer_name="Substrate", top_layer_name="TOP_METAL"
+    ):
         self._pedb = pedb
-        self.bottom_metal = MetalLayer(pedb, name="BOT_METAL", thickness=4e-6, material="Gold")
-        self.substrate = DielectricLayer(pedb, name="Substrate", thickness=100e-6, material="Silicon")
-        self.top_metal = MetalLayer(pedb, name="TOP_METAL", thickness=4e-6, material="Gold")
+        self.bottom_metal = MetalLayer(pedb, name=botton_layer_name, thickness=4e-6, material="Gold")
+        self.substrate = DielectricLayer(pedb, name=substrate_layer_name, thickness=100e-6, material="Silicon")
+        self.top_metal = MetalLayer(pedb, name=top_layer_name, thickness=4e-6, material="Gold")
