@@ -48,8 +48,3 @@ class BaseTestClass:
         """Code after yield runs after each test."""
         yield
         return
-
-    def test_dummy_test(self, edb_examples):
-        """Dummy test to initialize Edb the first time."""
-        edbapp = edb_examples.create_empty_edb()
-        edbapp.close(terminate_rpc_session=False)

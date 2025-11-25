@@ -614,6 +614,7 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         edb2_path = edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
+        edb2_path.close(terminate_rpc_session=False)
         cell_inst = edbapp.modeler.insert_layout_instance("analysis", "1_Top", 2, "180deg", "1mm", "2mm", True)
         assert cell_inst.transform.rotation.value == pytest.approx(3.14159265358979)
         assert cell_inst.transform.scale.value == pytest.approx(2)
@@ -627,6 +628,8 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         edb2_path = edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
+        edb2_path.close(terminate_rpc_session=False)
+
         cell_inst = edbapp.modeler.insert_layout_placement_3d("analysis", rotation_x="180deg", z="-0.33mm")
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
