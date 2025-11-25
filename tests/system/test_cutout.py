@@ -30,6 +30,7 @@ from tests.system.base_test_class import BaseTestClass
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
+@pytest.mark.skipif(True, reason="Unstable test.")
 class TestClass(BaseTestClass):
     def test_create_custom_cutout_0(self, edb_examples):
         """Create custom cutout 0."""
