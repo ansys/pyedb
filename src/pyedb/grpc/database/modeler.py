@@ -1529,7 +1529,7 @@ class Modeler(object):
                 return flag
         return True
 
-    def insert_layout_instance(
+    def insert_layout_instance_on_layer(
         self,
         cell_name: str,
         placement_layer: str,
@@ -1577,7 +1577,7 @@ class Modeler(object):
         cell_inst.transform = transform
         return cell_inst
 
-    def insert_layout_placement_3d(
+    def insert_layout_instance_placement_3d(
         self,
         cell_name: Union[str, Path],
         x: Union[float, str] = 0.0,
