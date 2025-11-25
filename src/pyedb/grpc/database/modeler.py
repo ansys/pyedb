@@ -1538,7 +1538,6 @@ class Modeler(object):
         x: Union[float, str] = 0,
         y: Union[float, str] = 0,
         mirror: bool = False,
-        place_on_bottom: bool = False,
     ) -> Any:
         """Insert a layout instance into the active layout.
 
@@ -1568,28 +1567,14 @@ class Modeler(object):
         instance_name = generate_unique_name(cell_name, n=2)
         cell = Cell.find(self._pedb._db, CellType.CIRCUIT_CELL, cell_name)
         cell_inst = CellInstance.create(self._pedb.active_layout, instance_name, cell.layout)
-
-        placement_layer = self._pedb.stackup.layers[placement_layer]
-        if place_on_bottom is False:
-            cell_inst.placement_layer = placement_layer._edb_object
-            transform = cell_inst.transform
-            transform.scale = scale
-            transform.rotation = rotation
-            transform.offset_x = x
-            transform.offset_y = y
-            transform.mirror = mirror
-            cell_inst.transform = transform
-        else:
-            placement_layer
-            self.insert_layout_instance_placement_3d(
-                cell_name=cell_name,
-                x=x,
-                y=y,
-                z=,
-                rotation_x="180deg",
-                rotation_y=0,
-                rotation_z=rotation
-            )
+        cell_inst.placement_layer = self._pedb.stackup.layers[placement_layer]._edb_object
+        transform = cell_inst.transform
+        transform.scale = scale
+        transform.rotation = rotation
+        transform.offset_x = x
+        transform.offset_y = y
+        transform.mirror = mirror
+        cell_inst.transform = transform
         return cell_inst
 
     def insert_layout_instance_placement_3d(
