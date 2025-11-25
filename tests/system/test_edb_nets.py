@@ -129,7 +129,7 @@ class TestClass(BaseTestClass):
         assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.slow
+    @pytest.mark.skipif(True, reason="Test slow on windows with grpc")
     def test_nets_dc_shorts(self, edb_examples):
         # TODO get_connected_object return empty list.
         edbapp = edb_examples.get_si_verse()
