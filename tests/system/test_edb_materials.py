@@ -61,6 +61,7 @@ STR_VALUE = "12"
 VALUES = (FLOAT_VALUE, INT_VALUE, STR_VALUE)
 MATERIAL_NAME = "DummyMaterial"
 
+
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)

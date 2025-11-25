@@ -60,6 +60,7 @@ def _assert_final_ic_die_properties(component: dict):
     assert component["ic_die_properties"]["orientation"] == "chip_down"
     assert component["solder_ball_properties"]["diameter"] == "244um"
 
+
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")

@@ -24,12 +24,12 @@
 
 import json
 import os
-import time
 from pathlib import Path
 import secrets
 import shutil
 import string
 import tempfile
+import time
 
 import pytest
 
