@@ -646,3 +646,13 @@ class TestClass(BaseTestClass):
         assert cell_inst_1.transform3d.shift.y.value == pytest.approx(0.002)
         assert cell_inst_1.transform3d.shift.z.value == pytest.approx(0.003)
         edbapp.close(terminate_rpc_session=False)
+
+    def test_net_classes_queries(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.net_classes.items
+        assert edbapp.net_classes.create("DDR4_ADD", ["DDR4_A0", "DDR4_A1"])
+        assert edbapp.net_classes["DDR4_ADD"].name == "DDR4_ADD"
+        assert edbapp.net_classes["DDR4_ADD"].nets
+        edbapp.net_classes["DDR4_ADD"].name = "DDR4_ADD_RENAMED"
+        assert not edbapp.net_classes["DDR4_ADD_RENAMED"].is_null
+        edbapp.close()
