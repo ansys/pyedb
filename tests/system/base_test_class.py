@@ -32,11 +32,9 @@ class BaseTestClass:
         # Set up the EDB app once per class
 
         # Finalizer to close the EDB app after all tests
-        def teardown():
-            dummy_edb = edb_examples.create_empty_edb()
-            dummy_edb.close(terminate_rpc_session=True)
-
-        request.addfinalizer(teardown)
+        yield
+        dummy_edb = edb_examples.create_empty_edb()
+        dummy_edb.close(terminate_rpc_session=True)
 
     @pytest.fixture(autouse=True)
     def init(self, edb_examples):
