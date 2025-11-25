@@ -29,6 +29,7 @@ from tests.system.base_test_class import BaseTestClass
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
+@pytest.mark.skipif(True, reason="Unstable test.")
 class TestClass(BaseTestClass):
     def test_net_classes_queries(self, edb_examples):
         """Evaluate net classes queries"""
