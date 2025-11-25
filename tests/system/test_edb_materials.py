@@ -70,12 +70,6 @@ class TestClass(BaseTestClass):
         if MATERIAL_NAME in self.edbapp.materials:
             self.edbapp.materials[MATERIAL_NAME].delete()
 
-    @pytest.fixture(autouse=True)
-    def teardown(self, request, edb_examples):
-        """Code after yield runs after each test."""
-        yield
-        self.edbapp.close(terminate_rpc_session=True)
-
     def test_material_name(self):
         """Evaluate material properties."""
         material = self.edbapp.materials.add_material(MATERIAL_NAME)
