@@ -30,7 +30,6 @@ from tests.system.base_test_class import BaseTestClass
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
-@pytest.mark.skipif(True, reason="Unstable test.")
 class TestClass(BaseTestClass):
     def test_create_custom_cutout_0(self, edb_examples):
         """Create custom cutout 0."""
@@ -155,6 +154,7 @@ class TestClass(BaseTestClass):
         )
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_custom_cutout_5(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "MicrostripSpliGnd.aedb")
 
@@ -171,6 +171,7 @@ class TestClass(BaseTestClass):
         )
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_custom_cutout_6(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "Multizone_GroundVoids.aedb")
 

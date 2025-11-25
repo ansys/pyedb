@@ -35,7 +35,6 @@ from tests.system.base_test_class import BaseTestClass
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
-@pytest.mark.skipif(True, reason="Unstable test.")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
@@ -274,6 +273,7 @@ class TestClass(BaseTestClass):
         assert round(edbapp.components["U1"].solder_ball_height, 6) == 0.00035
         edbapp.close()
 
+    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_build_siwave_project_from_config_file(self):
         """Build Siwave simulation project from configuration file."""
         example_project = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
@@ -287,6 +287,7 @@ class TestClass(BaseTestClass):
         sim_config = SimulationConfiguration(cfg_file)
         assert Edb(target_path, edbversion=desktop_version).build_simulation_project(sim_config)
 
+    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_adaptive_broadband_setup_from_configfile(self):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_adaptive_broadband.aedb")
