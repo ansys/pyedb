@@ -24,6 +24,7 @@
 
 import json
 import os
+import time
 from pathlib import Path
 import secrets
 import shutil
@@ -244,3 +245,15 @@ def target_path4(local_scratch):
 @pytest.fixture(scope="class", autouse=True)
 def edb_examples(local_scratch):
     return EdbExamples(local_scratch, GRPC)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def close_rpc_session(init_scratch):
+    """Provide a module-scoped scratch directory."""
+
+    yield
+    if GRPC:
+        scratch = Scratch(init_scratch)
+        sub_folder = Path(scratch.path) / generate_random_string(6) / ".aedb"
+        dummy_edb = Edb(str(sub_folder), version=desktop_version, grpc=True)
+        dummy_edb.close(terminate_rpc_session=True)

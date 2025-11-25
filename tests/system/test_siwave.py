@@ -32,7 +32,7 @@ from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
-
+@pytest.mark.usefixtures("close_rpc_session")
 @pytest.mark.skipif(True, reason="skipping test on CI because they fail in non-graphical")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
