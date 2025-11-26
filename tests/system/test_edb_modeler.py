@@ -661,3 +661,23 @@ class TestClass(BaseTestClass):
         assert cell_inst_1.transform3d.shift.y.value == pytest.approx(0.002)
         assert cell_inst_1.transform3d.shift.z.value == pytest.approx(0.003)
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
+    def test_insert_3d_component_on_layer(self, edb_examples):
+        edbapp = edb_examples.get_si_board(additional_files_folders=["si_board/SMA.a3dcomp"])
+        cell_inst_1 = edbapp.modeler.insert_3d_component_on_layer(
+            a3dcomp_path=Path(edbapp.edbpath).with_name("SMA.a3dcomp"),
+            x="1mm",
+            y="2mm",
+            placement_layer="s1"
+        )
+        assert not cell_inst_1.is_null
+        cell_inst_2 = edbapp.modeler.insert_3d_component_on_layer(
+            a3dcomp_path=Path(edbapp.edbpath).with_name("SMA.a3dcomp"),
+            x="5mm",
+            y="2mm",
+            placement_layer="s3",
+            place_on_bottom=True
+        )
+        assert not cell_inst_2.is_null
+        edbapp.close(terminate_rpc_session=False)
