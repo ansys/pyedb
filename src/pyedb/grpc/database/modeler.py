@@ -1538,6 +1538,9 @@ class Modeler(object):
         x: Union[float, str] = 0,
         y: Union[float, str] = 0,
         mirror: bool = False,
+        place_on_bottom: bool = False,
+        local_origin_x: Optional[Union[float, str]] = 0,
+        local_origin_y: Optional[Union[float, str]] = 0,
     ) -> Any:
         """Insert a layout instance into the active layout.
 
@@ -1557,6 +1560,12 @@ class Modeler(object):
             X offset.
         y : float or str
             Y offset.
+        place_on_bottom : bool
+            Whether to place the layout instance on the bottom of the layer.
+        local_origin_x: float or str
+            Local origin X coordinate.
+        local_origin_y: float or str
+            Local origin Y coordinate.
         """
 
         from ansys.edb.core.hierarchy.cell_instance import CellInstance
@@ -1564,17 +1573,31 @@ class Modeler(object):
 
         from pyedb.generic.general_methods import generate_unique_name
 
-        instance_name = generate_unique_name(cell_name, n=2)
-        cell = Cell.find(self._pedb._db, CellType.CIRCUIT_CELL, cell_name)
-        cell_inst = CellInstance.create(self._pedb.active_layout, instance_name, cell.layout)
-        cell_inst.placement_layer = self._pedb.stackup.layers[placement_layer]._edb_object
-        transform = cell_inst.transform
-        transform.scale = scale
-        transform.rotation = rotation
-        transform.offset_x = x
-        transform.offset_y = y
-        transform.mirror = mirror
-        cell_inst.transform = transform
+        placement_layer = self._pedb.stackup.layers[placement_layer]
+        if not place_on_bottom:
+            instance_name = generate_unique_name(cell_name, n=2)
+            cell = Cell.find(self._pedb._db, CellType.CIRCUIT_CELL, cell_name)
+            cell_inst = CellInstance.create(self._pedb.active_layout, instance_name, cell.layout)
+            cell_inst.placement_layer = placement_layer._edb_object
+            transform = cell_inst.transform
+            transform.scale = scale
+            transform.rotation = rotation
+            transform.offset_x = self._pedb.value(x) - self._pedb.value(local_origin_x)
+            transform.offset_y = self._pedb.value(y) - self._pedb.value(local_origin_y)
+            transform.mirror = mirror
+            cell_inst.transform = transform
+        else:
+            cell_inst = self.insert_layout_instance_placement_3d(
+                cell_name=cell_name,
+                x=x,
+                y=y,
+                z=placement_layer.lower_elevation,
+                rotation_x="180deg",
+                rotation_y=0,
+                rotation_z=rotation,
+                local_origin_x=local_origin_x,
+                local_origin_y=local_origin_y,
+            )
         return cell_inst
 
     def insert_layout_instance_placement_3d(
@@ -1586,6 +1609,9 @@ class Modeler(object):
         rotation_x: Union[float, str] = 0.0,
         rotation_y: Union[float, str] = 0.0,
         rotation_z: Union[float, str] = 0.0,
+        local_origin_x: Union[float, str] = 0.0,
+        local_origin_y: Union[float, str] = 0.0,
+        local_origin_z: Union[float, str] = 0.0,
     ) -> Any:
         """Insert a 3D component placement into the active layout.
 
@@ -1605,6 +1631,12 @@ class Modeler(object):
             Rotation angle around Y-axis, specified counter-clockwise in radians.
         rotation_z: float or str
             Rotation angle around Z-axis, specified counter-clockwise in radians.
+        local_origin_x: float or str
+            Local origin X coordinate.
+        local_origin_y: float or str
+            Local origin Y coordinate.
+        local_origin_z: float or str
+            Local origin Z coordinate.
         """
 
         from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
@@ -1618,6 +1650,15 @@ class Modeler(object):
         cell_inst = CellInstance.create(self._pedb.active_layout, instance_name, cell.layout)
         cell_inst.placement_3d = True
         t3d = cell_inst.transform3d
+
+        # offsets
+        location = GrpcPoint3DData(
+            (self._pedb.value(local_origin_x) * -1)._edb_object,
+            (self._pedb.value(local_origin_y) * -1)._edb_object,
+            (self._pedb.value(local_origin_z) * -1)._edb_object
+        )
+        t3d_offset = t3d.create_from_offset(offset=location)
+        t3d = t3d + t3d_offset
 
         # Rotation X
         t3d_rotation_x = t3d.create_from_axis_and_angle(

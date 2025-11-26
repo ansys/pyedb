@@ -624,12 +624,25 @@ class TestClass(BaseTestClass):
         assert cell_inst.transform.mirror
         edbapp.close(terminate_rpc_session=False)
 
+    def test_insert_layout_instance_place_on_bottom(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edb2_path = edb_examples.get_package(edbapp=False)
+        edbapp.copy_cell_from_edb(edb2_path)
+        cell_inst = edbapp.modeler.insert_layout_instance_on_layer("analysis", "16_Bottom", 2, "180deg", "32mm", "-1mm", True, True)
+        assert not cell_inst.is_null
+        edbapp.close(terminate_rpc_session=False)
+
     @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
     def test_insert_layout_instance_placement_3d(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         edb2_path = edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
-        cell_inst = edbapp.modeler.insert_layout_instance_placement_3d("analysis", rotation_x="180deg", z="-0.33mm")
+        cell_inst = edbapp.modeler.insert_layout_instance_placement_3d("analysis",
+                                                                       rotation_z="30deg",
+                                                                       z="-0.33mm",
+                                                                       local_origin_x="4.4mm",
+                                                                       local_origin_y="4.4mm",
+                                                                       )
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
 
