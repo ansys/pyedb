@@ -100,10 +100,9 @@ class TestClass(BaseTestClass):
         assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.01, 0.0]]
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
     def test_hatch_grounded(self, edb_examples):
         edb = edb_examples.create_empty_edb()
-        MicroStripTechnologyStackup(edb)
+        MicroStripTechnologyStackup(edb, botton_layer_name="METAL_BOT")
         hatch = HatchGround(
             edb_cell=edb,
             width=100e-6,
