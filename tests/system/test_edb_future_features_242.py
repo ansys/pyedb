@@ -30,6 +30,7 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 VERSION = 2024.2
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 @pytest.mark.skipif(True, reason="AEDT 2024.2 is not installed")
 class TestClass(BaseTestClass):
     def test_add_raptorx_setup(self, edb_examples):

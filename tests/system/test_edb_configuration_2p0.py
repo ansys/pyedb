@@ -61,6 +61,7 @@ def _assert_final_ic_die_properties(component: dict):
     assert component["solder_ball_properties"]["diameter"] == "244um"
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_13b_stackup_materials(self, edb_examples):
@@ -1354,6 +1355,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassTerminals(BaseTestClass):
     @pytest.fixture(autouse=True)
@@ -1553,6 +1555,7 @@ class TestClassTerminals(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassSetups(BaseTestClass):
     @pytest.fixture(autouse=True)
@@ -1688,6 +1691,7 @@ class TestClassSetups(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassBoundaries(BaseTestClass):
     def test_open_region_radiation(self, edb_examples):

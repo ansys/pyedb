@@ -23,16 +23,18 @@
 """Tests related to Edb modeler"""
 
 import os
+from pathlib import Path
 
 import pytest
 
 from pyedb.generic.settings import settings
-from tests.conftest import local_path, test_subfolder
+from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
@@ -608,3 +610,41 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         primitives = edbapp.modeler.primitives
         assert primitives[0].aedt_name == "line_0"
+
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
+    def test_insert_layout_instance(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edb2_path = edb_examples.get_package(edbapp=False)
+        edbapp.copy_cell_from_edb(edb2_path)
+        cell_inst = edbapp.modeler.insert_layout_instance_on_layer("analysis", "1_Top", 2, "180deg", "1mm", "2mm", True)
+        assert cell_inst.transform.rotation.value == pytest.approx(3.14159265358979)
+        assert cell_inst.transform.scale.value == pytest.approx(2)
+        assert cell_inst.transform.offset_x.value == pytest.approx(0.001)
+        assert cell_inst.transform.offset_y.value == pytest.approx(0.002)
+        assert cell_inst.transform.mirror
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
+    def test_insert_layout_instance_placement_3d(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edb2_path = edb_examples.get_package(edbapp=False)
+        edbapp.copy_cell_from_edb(edb2_path)
+        cell_inst = edbapp.modeler.insert_layout_instance_placement_3d("analysis", rotation_x="180deg", z="-0.33mm")
+        assert not cell_inst.is_null
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
+    def test_insert_3d_component_placement_3d(self, edb_examples):
+        edbapp = edb_examples.get_si_board(additional_files_folders=["si_board/SMA.a3dcomp"])
+        cell_inst_1 = edbapp.modeler.insert_3d_component_placement_3d(
+            a3dcomp_path=Path(edbapp.edbpath).with_name("SMA.a3dcomp"),
+            x="1mm",
+            y="2mm",
+            z="3mm",
+            rotation_x="180deg",
+        )
+        assert not cell_inst_1.is_null
+        assert cell_inst_1.transform3d.shift.x.value == pytest.approx(0.001)
+        assert cell_inst_1.transform3d.shift.y.value == pytest.approx(0.002)
+        assert cell_inst_1.transform3d.shift.z.value == pytest.approx(0.003)
+        edbapp.close(terminate_rpc_session=False)

@@ -233,7 +233,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 20
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/system -n auto --dist loadfile -v --cov
@@ -371,7 +371,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 20
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/unit -n auto --dist loadfile -v --cov
@@ -520,7 +520,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 20
           command: |
             export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
             . .venv/bin/activate
@@ -595,7 +595,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 20
           command: |
             export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
             . .venv/bin/activate
@@ -670,7 +670,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 20
           command: |
             export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
             . .venv/bin/activate
