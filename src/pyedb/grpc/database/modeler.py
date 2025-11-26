@@ -1649,7 +1649,7 @@ class Modeler(object):
         location = GrpcPoint3DData(
             (self._pedb.value(local_origin_x) * -1)._edb_object,
             (self._pedb.value(local_origin_y) * -1)._edb_object,
-            (self._pedb.value(local_origin_z) * -1)._edb_object
+            (self._pedb.value(local_origin_z) * -1)._edb_object,
         )
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset

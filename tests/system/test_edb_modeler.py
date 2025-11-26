@@ -628,7 +628,9 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         edb2_path = edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
-        cell_inst = edbapp.modeler.insert_layout_instance_on_layer("analysis", "16_Bottom", 2, "180deg", "32mm", "-1mm", True, True)
+        cell_inst = edbapp.modeler.insert_layout_instance_on_layer(
+            "analysis", "16_Bottom", 2, "180deg", "32mm", "-1mm", True, True
+        )
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
 
@@ -637,12 +639,13 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         edb2_path = edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
-        cell_inst = edbapp.modeler.insert_layout_instance_placement_3d("analysis",
-                                                                       rotation_z="30deg",
-                                                                       z="-0.33mm",
-                                                                       local_origin_x="4.4mm",
-                                                                       local_origin_y="4.4mm",
-                                                                       )
+        cell_inst = edbapp.modeler.insert_layout_instance_placement_3d(
+            "analysis",
+            rotation_z="30deg",
+            z="-0.33mm",
+            local_origin_x="4.4mm",
+            local_origin_y="4.4mm",
+        )
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
 
