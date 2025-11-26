@@ -640,7 +640,6 @@ class PadstackInstance(GrpcPadstackInstance):
             self._position = [Value(pt) for pt in position[:2]]
         return self._position
 
-
     @position.setter
     def position(self, value):
         pos = []
