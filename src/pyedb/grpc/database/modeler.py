@@ -1533,11 +1533,9 @@ class Modeler(object):
         self,
         cell_name: str,
         placement_layer: str,
-        scale: Union[float] = 1,
         rotation: Union[float, str] = 0,
         x: Union[float, str] = 0,
         y: Union[float, str] = 0,
-        mirror: bool = False,
         place_on_bottom: bool = False,
         local_origin_x: Optional[Union[float, str]] = 0,
         local_origin_y: Optional[Union[float, str]] = 0,
@@ -1550,7 +1548,7 @@ class Modeler(object):
             Name of the layout to insert.
         placement_layer: str
             Placement Layer.
-        scale : float
+        scaling : float
             Scale parameter.
         rotation : float or str
             Rotation angle, specified counter-clockwise in radians.
@@ -1568,24 +1566,19 @@ class Modeler(object):
             Local origin Y coordinate.
         """
 
-        from ansys.edb.core.hierarchy.cell_instance import CellInstance
-        from ansys.edb.core.layout.cell import Cell, CellType
-
-        from pyedb.generic.general_methods import generate_unique_name
-
         placement_layer = self._pedb.stackup.layers[placement_layer]
         if not place_on_bottom:
-            instance_name = generate_unique_name(cell_name, n=2)
-            cell = Cell.find(self._pedb._db, CellType.CIRCUIT_CELL, cell_name)
-            cell_inst = CellInstance.create(self._pedb.active_layout, instance_name, cell.layout)
-            cell_inst.placement_layer = placement_layer._edb_object
-            transform = cell_inst.transform
-            transform.scale = scale
-            transform.rotation = rotation
-            transform.offset_x = self._pedb.value(x) - self._pedb.value(local_origin_x)
-            transform.offset_y = self._pedb.value(y) - self._pedb.value(local_origin_y)
-            transform.mirror = mirror
-            cell_inst.transform = transform
+            cell_inst = self.insert_layout_instance_placement_3d(
+                cell_name=cell_name,
+                x=x,
+                y=y,
+                z=placement_layer.upper_elevation,
+                rotation_x="0deg",
+                rotation_y=0,
+                rotation_z=rotation,
+                local_origin_x=local_origin_x,
+                local_origin_y=local_origin_y,
+            )
         else:
             cell_inst = self.insert_layout_instance_placement_3d(
                 cell_name=cell_name,
