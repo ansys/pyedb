@@ -624,6 +624,7 @@ class TestClass(BaseTestClass):
         assert cell_inst.transform3d.shift.z.value == pytest.approx(edbapp.stackup.layers["1_Top"].lower_elevation)
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
     def test_insert_layout_instance_place_on_bottom(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         edb2_path = edb_examples.get_package(edbapp=False)
