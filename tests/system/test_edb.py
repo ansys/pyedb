@@ -38,6 +38,7 @@ pytestmark = [pytest.mark.system, pytest.mark.grpc]
 ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
@@ -2135,4 +2136,4 @@ class TestClass(BaseTestClass):
         assert edbapp.design_mode == "general"
         edbapp.design_mode = "IC"
         assert edbapp.design_mode == "ic"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)

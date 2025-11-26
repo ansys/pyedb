@@ -29,6 +29,7 @@ from tests.system.base_test_class import BaseTestClass
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 class TestDatabaseUtilities(BaseTestClass):
     def test_value(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()

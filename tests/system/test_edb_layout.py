@@ -28,6 +28,7 @@ from tests.system.base_test_class import BaseTestClass
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     def test_find(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
