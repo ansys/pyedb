@@ -32,7 +32,6 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_custom_cutout_0(self, edb_examples):
         """Create custom cutout 0."""
         # Done
@@ -58,7 +57,6 @@ class TestClass(BaseTestClass):
         points.append([bounding[0][0], bounding[0][1]])
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_custom_cutout_1(self, edb_examples):
         """Create custom cutout 1."""
         # Done
@@ -90,7 +88,6 @@ class TestClass(BaseTestClass):
         assert edbapp.layout_validation.fix_self_intersections()
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_custom_cutout_2(self, edb_examples):
         """Create custom cutout 2."""
         # Done
@@ -114,7 +111,6 @@ class TestClass(BaseTestClass):
         )
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_custom_cutout_3(self, edb_examples):
         """Create custom cutout 3."""
         # Done
@@ -140,7 +136,6 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_custom_cutout_4(self, edb_examples):
         """Create custom cutout 4."""
         # Done
@@ -160,7 +155,6 @@ class TestClass(BaseTestClass):
         )
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_custom_cutout_5(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "MicrostripSpliGnd.aedb")
 
@@ -177,7 +171,6 @@ class TestClass(BaseTestClass):
         )
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_custom_cutout_6(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "Multizone_GroundVoids.aedb")
 

@@ -20,9 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.database.utilities.obj_base import ObjBase
+
+import pytest
+
+from tests.system.base_test_class import BaseTestClass
+
+pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
-class Cell(ObjBase):
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
+class TestClass(BaseTestClass):
+    def test_point_data(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        path = edbapp.layout.find_primitive(name="line_272")[0]
+        self.path_center_line_polygon_data = path.center_line
+        self.point_data = path.center_line[0]
+        assert isinstance(self.point_data[0], float)
+        assert isinstance(self.point_data[1], float)
+        edbapp.close(terminate_rpc_session=False)

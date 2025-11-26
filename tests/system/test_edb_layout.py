@@ -63,12 +63,3 @@ class TestClass(BaseTestClass):
             path_obj.center_line = center_line
             assert path_obj.center_line[0] == [0, 0]
         edbapp.close(terminate_rpc_session=False)
-
-    def test_point_data(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        path = edbapp.layout.find_primitive(name="line_272")[0]
-        self.path_center_line_polygon_data = path.center_line
-        self.point_data = path.center_line[0]
-        assert isinstance(self.point_data[0], float)
-        assert isinstance(self.point_data[1], float)
-        edbapp.close(terminate_rpc_session=False)

@@ -4864,10 +4864,3 @@ class Edb:
             raise RuntimeError(
                 "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
             ) from e
-
-    def copy_cell_from_edb(self, edb_path: Union[Path, str]):
-        """Copy Cells from another Edb Database into this Database."""
-        edb2 = Edb(edbpath=edb_path)
-        cells = self._db.CopyCells(convert_py_list_to_net_list([edb2.active_cell]))
-        cell2 = list(cells)[0]
-        cell2.SetBlackBox(True)

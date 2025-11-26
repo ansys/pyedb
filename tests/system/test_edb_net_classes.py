@@ -20,6 +20,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pathlib import Path
+"""Tests related to Edb net classes"""
 
-workdir = Path(__file__).parent
+import pytest
+
+from tests.system.base_test_class import BaseTestClass
+
+pytestmark = [pytest.mark.system, pytest.mark.legacy]
+
+
+class TestClass(BaseTestClass):
+    def test_net_classes_queries(self, edb_examples):
+        """Evaluate net classes queries"""
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.net_classes.items
+        assert edbapp.net_classes.create("DDR4_ADD", ["DDR4_A0", "DDR4_A1"])
+        assert edbapp.net_classes["DDR4_ADD"].name == "DDR4_ADD"
+        assert edbapp.net_classes["DDR4_ADD"].nets
+        edbapp.net_classes["DDR4_ADD"].name = "DDR4_ADD_RENAMED"
+        assert not edbapp.net_classes["DDR4_ADD_RENAMED"].is_null
+        edbapp.close()

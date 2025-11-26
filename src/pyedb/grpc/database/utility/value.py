@@ -27,8 +27,9 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 class Value(float, GrpcValue):
     """Class defining Edb Value properties."""
 
-    def __new__(cls, edb_object, owner=None) -> float:
-        inst = super().__new__(cls, float(GrpcValue(edb_object, owner).double))
+    def __new__(cls, val, owner=None) -> float:
+        edb_object = GrpcValue(val, owner)
+        inst = super().__new__(cls, float(edb_object.double))
         inst._edb_object = edb_object
         inst._context = owner
         return inst
@@ -73,10 +74,6 @@ class Value(float, GrpcValue):
         """Square root of the value."""
         edb_object = ansys.edb.core.utility.value.Value(f"({str(self._edb_object)})**0.5", self._context)
         return self.__class__(edb_object)
-
-    @property
-    def value(self):
-        return self._edb_object.value
 
     def log10(self):
         """Base-10 logarithm of the value."""
