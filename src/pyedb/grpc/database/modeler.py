@@ -463,10 +463,10 @@ class Modeler(object):
         return polygons
 
     def get_primitive_by_layer_and_point(
-            self,
-            point: Optional[List[float]] = None,
-            layer: Optional[Union[str, List[str]]] = None,
-            nets: Optional[Union[str, List[str]]] = None,
+        self,
+        point: Optional[List[float]] = None,
+        layer: Optional[Union[str, List[str]]] = None,
+        nets: Optional[Union[str, List[str]]] = None,
     ) -> List[Primitive]:
         """Get primitive at specified point on layer.
 
@@ -664,14 +664,14 @@ class Modeler(object):
         return True
 
     def _create_path(
-            self,
-            points,
-            layer_name,
-            width=1,
-            net_name="",
-            start_cap_style="Round",
-            end_cap_style="Round",
-            corner_style="Round",
+        self,
+        points,
+        layer_name,
+        width=1,
+        net_name="",
+        start_cap_style="Round",
+        end_cap_style="Round",
+        corner_style="Round",
     ):
         """
         Create a path based on a list of points.
@@ -754,14 +754,14 @@ class Modeler(object):
         return Path(self._pedb, path)
 
     def create_trace(
-            self,
-            path_list: Union[Iterable[float], GrpcPolygonData],
-            layer_name: str,
-            width: float = 1,
-            net_name: str = "",
-            start_cap_style: str = "Round",
-            end_cap_style: str = "Round",
-            corner_style: str = "Round",
+        self,
+        path_list: Union[Iterable[float], GrpcPolygonData],
+        layer_name: str,
+        width: float = 1,
+        net_name: str = "",
+        start_cap_style: str = "Round",
+        end_cap_style: str = "Round",
+        corner_style: str = "Round",
     ) -> Optional[Primitive]:
         """Create trace path.
 
@@ -802,11 +802,11 @@ class Modeler(object):
         return primitive
 
     def create_polygon(
-            self,
-            points: Union[List[List[float]], GrpcPolygonData],
-            layer_name: str,
-            voids: Optional[List[Any]] = [],
-            net_name: str = "",
+        self,
+        points: Union[List[List[float]], GrpcPolygonData],
+        layer_name: str,
+        voids: Optional[List[Any]] = [],
+        net_name: str = "",
     ) -> Optional[Primitive]:
         """Create polygon primitive.
 
@@ -863,17 +863,17 @@ class Modeler(object):
         return Polygon(self._pedb, polygon)
 
     def create_rectangle(
-            self,
-            layer_name: str,
-            net_name: str = "",
-            lower_left_point: str = "",
-            upper_right_point: str = "",
-            center_point: str = "",
-            width: Union[str, float] = "",
-            height: Union[str, float] = "",
-            representation_type: str = "lower_left_upper_right",
-            corner_radius: str = "0mm",
-            rotation: str = "0deg",
+        self,
+        layer_name: str,
+        net_name: str = "",
+        lower_left_point: str = "",
+        upper_right_point: str = "",
+        center_point: str = "",
+        width: Union[str, float] = "",
+        height: Union[str, float] = "",
+        representation_type: str = "lower_left_upper_right",
+        corner_radius: str = "0mm",
+        rotation: str = "0deg",
     ) -> Optional[Primitive]:
         """Create rectangle primitive.
 
@@ -953,8 +953,7 @@ class Modeler(object):
         return False
 
     def create_circle(
-            self, layer_name: str, x: Union[float, str], y: Union[float, str], radius: Union[float, str],
-            net_name: str = ""
+        self, layer_name: str, x: Union[float, str], y: Union[float, str], radius: Union[float, str], net_name: str = ""
     ) -> Optional[Primitive]:
         """Create circle primitive.
 
@@ -1013,11 +1012,11 @@ class Modeler(object):
         return True
 
     def get_primitives(
-            self,
-            net_name: Optional[str] = None,
-            layer_name: Optional[str] = None,
-            prim_type: Optional[str] = None,
-            is_void: bool = False,
+        self,
+        net_name: Optional[str] = None,
+        layer_name: Optional[str] = None,
+        prim_type: Optional[str] = None,
+        is_void: bool = False,
     ) -> List[Primitive]:
         """Get primitives with filtering.
 
@@ -1129,11 +1128,11 @@ class Modeler(object):
             return False
 
     def parametrize_trace_width(
-            self,
-            nets_name: Union[str, List[str]],
-            layers_name: Optional[Union[str, List[str]]] = None,
-            parameter_name: str = "trace_width",
-            variable_value: Optional[Union[float, str]] = None,
+        self,
+        nets_name: Union[str, List[str]],
+        layers_name: Optional[Union[str, List[str]]] = None,
+        parameter_name: str = "trace_width",
+        variable_value: Optional[Union[float, str]] = None,
     ) -> bool:
         """Parametrize trace width.
 
@@ -1177,10 +1176,10 @@ class Modeler(object):
         return True
 
     def unite_polygons_on_layer(
-            self,
-            layer_name: Optional[Union[str, List[str]]] = None,
-            delete_padstack_gemometries: bool = False,
-            net_names_list: Optional[List[str]] = None,
+        self,
+        layer_name: Optional[Union[str, List[str]]] = None,
+        delete_padstack_gemometries: bool = False,
+        net_names_list: Optional[List[str]] = None,
     ) -> bool:
         """Unite polygons on layer.
 
@@ -1271,7 +1270,7 @@ class Modeler(object):
         return True
 
     def get_layout_statistics(
-            self, evaluate_area: bool = False, net_list: Optional[List[str]] = None
+        self, evaluate_area: bool = False, net_list: Optional[List[str]] = None
     ) -> LayoutStatistics:
         """Get layout statistics.
 
@@ -1295,7 +1294,7 @@ class Modeler(object):
         bbox = self._pedb._hfss.get_layout_bounding_box(self._active_layout)
         stat_model._layout_size = round(bbox[2] - bbox[0], 6), round(bbox[3] - bbox[1], 6)
         stat_model.num_discrete_components = (
-                len(self._pedb.components.Others) + len(self._pedb.components.ICs) + len(self._pedb.components.IOs)
+            len(self._pedb.components.Others) + len(self._pedb.components.ICs) + len(self._pedb.components.IOs)
         )
         stat_model.num_inductors = len(self._pedb.components.inductors)
         stat_model.num_resistors = len(self._pedb.components.resistors)
@@ -1324,21 +1323,21 @@ class Modeler(object):
         return stat_model
 
     def create_bondwire(
-            self,
-            definition_name: str,
-            placement_layer: str,
-            width: Union[float, str],
-            material: str,
-            start_layer_name: str,
-            start_x: Union[float, str],
-            start_y: Union[float, str],
-            end_layer_name: str,
-            end_x: Union[float, str],
-            end_y: Union[float, str],
-            net: str,
-            start_cell_instance_name: Optional[str] = None,
-            end_cell_instance_name: Optional[str] = None,
-            bondwire_type: str = "jedec4",
+        self,
+        definition_name: str,
+        placement_layer: str,
+        width: Union[float, str],
+        material: str,
+        start_layer_name: str,
+        start_x: Union[float, str],
+        start_y: Union[float, str],
+        end_layer_name: str,
+        end_x: Union[float, str],
+        end_y: Union[float, str],
+        net: str,
+        start_cell_instance_name: Optional[str] = None,
+        end_cell_instance_name: Optional[str] = None,
+        bondwire_type: str = "jedec4",
     ) -> Optional[Primitive]:
         """Create bondwire.
 
@@ -1432,11 +1431,11 @@ class Modeler(object):
         return bondwire
 
     def create_pin_group(
-            self,
-            name: str,
-            pins_by_id: Optional[List[int]] = None,
-            pins_by_aedt_name: Optional[List[str]] = None,
-            pins_by_name: Optional[List[str]] = None,
+        self,
+        name: str,
+        pins_by_id: Optional[List[int]] = None,
+        pins_by_aedt_name: Optional[List[str]] = None,
+        pins_by_name: Optional[List[str]] = None,
     ) -> bool:
         """Create pin group.
 
@@ -1531,15 +1530,15 @@ class Modeler(object):
         return True
 
     def insert_layout_instance_on_layer(
-            self,
-            cell_name: str,
-            placement_layer: str,
-            rotation: Union[float, str] = 0,
-            x: Union[float, str] = 0,
-            y: Union[float, str] = 0,
-            place_on_bottom: bool = False,
-            local_origin_x: Optional[Union[float, str]] = 0,
-            local_origin_y: Optional[Union[float, str]] = 0,
+        self,
+        cell_name: str,
+        placement_layer: str,
+        rotation: Union[float, str] = 0,
+        x: Union[float, str] = 0,
+        y: Union[float, str] = 0,
+        place_on_bottom: bool = False,
+        local_origin_x: Optional[Union[float, str]] = 0,
+        local_origin_y: Optional[Union[float, str]] = 0,
     ) -> Any:
         """Insert a layout instance into the active layout.
 
@@ -1595,17 +1594,17 @@ class Modeler(object):
         return cell_inst
 
     def insert_layout_instance_placement_3d(
-            self,
-            cell_name: Union[str, Path],
-            x: Union[float, str] = 0.0,
-            y: Union[float, str] = 0.0,
-            z: Union[float, str] = 0.0,
-            rotation_x: Union[float, str] = 0.0,
-            rotation_y: Union[float, str] = 0.0,
-            rotation_z: Union[float, str] = 0.0,
-            local_origin_x: Union[float, str] = 0.0,
-            local_origin_y: Union[float, str] = 0.0,
-            local_origin_z: Union[float, str] = 0.0,
+        self,
+        cell_name: Union[str, Path],
+        x: Union[float, str] = 0.0,
+        y: Union[float, str] = 0.0,
+        z: Union[float, str] = 0.0,
+        rotation_x: Union[float, str] = 0.0,
+        rotation_y: Union[float, str] = 0.0,
+        rotation_z: Union[float, str] = 0.0,
+        local_origin_x: Union[float, str] = 0.0,
+        local_origin_y: Union[float, str] = 0.0,
+        local_origin_z: Union[float, str] = 0.0,
     ) -> Any:
         """Insert a 3D component placement into the active layout.
 
@@ -1684,17 +1683,17 @@ class Modeler(object):
         return cell_inst
 
     def insert_3d_component_placement_3d(
-            self,
-            a3dcomp_path: Union[str, Path],
-            x: Union[float, str] = 0.0,
-            y: Union[float, str] = 0.0,
-            z: Union[float, str] = 0.0,
-            rotation_x: Union[float, str] = 0.0,
-            rotation_y: Union[float, str] = 0.0,
-            rotation_z: Union[float, str] = 0.0,
-            local_origin_x: Union[float, str] = 0.0,
-            local_origin_y: Union[float, str] = 0.0,
-            local_origin_z: Union[float, str] = 0.0,
+        self,
+        a3dcomp_path: Union[str, Path],
+        x: Union[float, str] = 0.0,
+        y: Union[float, str] = 0.0,
+        z: Union[float, str] = 0.0,
+        rotation_x: Union[float, str] = 0.0,
+        rotation_y: Union[float, str] = 0.0,
+        rotation_z: Union[float, str] = 0.0,
+        local_origin_x: Union[float, str] = 0.0,
+        local_origin_y: Union[float, str] = 0.0,
+        local_origin_z: Union[float, str] = 0.0,
     ) -> Any:
         """Insert a 3D component placement into the active layout.
 
@@ -1733,7 +1732,7 @@ class Modeler(object):
         location = GrpcPoint3DData(
             (self._pedb.value(local_origin_x) * -1)._edb_object,
             (self._pedb.value(local_origin_y) * -1)._edb_object,
-            (self._pedb.value(local_origin_z) * -1)._edb_object
+            (self._pedb.value(local_origin_z) * -1)._edb_object,
         )
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
@@ -1768,16 +1767,16 @@ class Modeler(object):
         return cell_inst
 
     def insert_3d_component_on_layer(
-            self,
-            a3dcomp_path: Union[str, Path],
-            placement_layer: str,
-            rotation: Union[float, str] = 0,
-            x: Union[float, str] = 0,
-            y: Union[float, str] = 0,
-            place_on_bottom: bool = False,
-            local_origin_x: Optional[Union[float, str]] = 0,
-            local_origin_y: Optional[Union[float, str]] = 0,
-            local_origin_z: Optional[Union[float, str]] = 0,
+        self,
+        a3dcomp_path: Union[str, Path],
+        placement_layer: str,
+        rotation: Union[float, str] = 0,
+        x: Union[float, str] = 0,
+        y: Union[float, str] = 0,
+        place_on_bottom: bool = False,
+        local_origin_x: Optional[Union[float, str]] = 0,
+        local_origin_y: Optional[Union[float, str]] = 0,
+        local_origin_z: Optional[Union[float, str]] = 0,
     ) -> Any:
         """Insert a layout instance into the active layout.
 
