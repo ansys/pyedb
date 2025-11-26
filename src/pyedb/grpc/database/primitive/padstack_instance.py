@@ -632,16 +632,14 @@ class PadstackInstance(GrpcPadstackInstance):
         list
             List of ``[x, y]`` coordinates for the padstack instance position.
         """
-        try:
-            position = self.get_position_and_rotation()
-            if self.component:
-                out2 = self.component.transform.transform_point(GrpcPointData(position[:2]))
-                self._position = [Value(out2[0]), Value(out2[1])]
-            else:
-                self._position = [Value(pt) for pt in position[:2]]
-            return self._position
-        except Exception:
-            return False
+        position = self.get_position_and_rotation()
+        if self.component:
+            out2 = self.component.transform.transform_point(GrpcPointData(position[:2]))
+            self._position = [Value(out2[0]), Value(out2[1])]
+        else:
+            self._position = [Value(pt) for pt in position[:2]]
+        return self._position
+
 
     @position.setter
     def position(self, value):
