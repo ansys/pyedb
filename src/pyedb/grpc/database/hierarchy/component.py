@@ -763,7 +763,7 @@ class Component(GrpcComponentGroup):
             super(Component, self.__class__).location.__set__(self, _location)
 
     @property
-    def bounding_box(self) -> list[float]:
+    def bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         """Component's bounding box.
 
         Returns
@@ -776,7 +776,7 @@ class Component(GrpcComponentGroup):
         bbox = self.component_instance.get_bbox().points
         pt1 = bbox[0]
         pt2 = bbox[2]
-        return [Value(pt1.x), Value(pt1.y), Value(pt2.x), Value(pt2.y)]
+        return (Value(pt1.x), Value(pt1.y)), (Value(pt2.x), Value(pt2.y))
 
     @property
     def rotation(self) -> float:
@@ -1199,10 +1199,10 @@ class Component(GrpcComponentGroup):
             bool
         """
         bounding_box = self.bounding_box
-        opening = [bounding_box[0] - extra_soldermask_clearance]
-        opening.append(bounding_box[1] - extra_soldermask_clearance)
-        opening.append(bounding_box[2] + extra_soldermask_clearance)
-        opening.append(bounding_box[3] + extra_soldermask_clearance)
+        opening = [bounding_box[0][0] - extra_soldermask_clearance]
+        opening.append(bounding_box[0][1] - extra_soldermask_clearance)
+        opening.append(bounding_box[1][0] + extra_soldermask_clearance)
+        opening.append(bounding_box[1][1] + extra_soldermask_clearance)
 
         comp_layer = self.layer
         layer_names = list(self._pedb.stackup.layers.keys())
