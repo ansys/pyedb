@@ -9,6 +9,48 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.65.0 <https://github.com/ansys/pyedb/releases/tag/v0.65.0>`_ - November 27, 2025
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/checkout from 5.0.1 to 6.0.0
+          - `#1665 <https://github.com/ansys/pyedb/pull/1665>`_
+
+        * - Bump actions/setup-python from 6.0.0 to 6.1.0
+          - `#1674 <https://github.com/ansys/pyedb/pull/1674>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Fixing hatched ground plane bug with grpc
+          - `#1675 <https://github.com/ansys/pyedb/pull/1675>`_
+
+        * - Issue 1621 fix
+          - `#1677 <https://github.com/ansys/pyedb/pull/1677>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.64.1
+          - `#1669 <https://github.com/ansys/pyedb/pull/1669>`_
+
+
 `0.64.1 <https://github.com/ansys/pyedb/releases/tag/v0.64.1>`_ - November 24, 2025
 ===================================================================================
 
