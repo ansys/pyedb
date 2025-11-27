@@ -111,12 +111,6 @@ if is_linux:  # pragma: no cover
                 dotnet_root=str(dotnet_root),
             )
             os.environ["DOTNET_ROOT"] = dotnet_root.as_posix()
-            # if "mono" not in os.getenv("LD_LIBRARY_PATH", ""):
-            #     warnings.warn("LD_LIBRARY_PATH needs to be setup to use pyedb.")
-            #     warnings.warn("export ANSYSEM_ROOT242=/path/to/AnsysEM/v242/Linux64")
-            #     msg = "export LD_LIBRARY_PATH="
-            #     msg += "$ANSYSEM_ROOT242/common/mono/Linux64/lib64:$LD_LIBRARY_PATH"
-            #     warnings.warn(msg)
             is_clr = True
         except ImportError:
             msg = "pythonnet or dotnetcore not installed. Pyedb will work only in client mode."
