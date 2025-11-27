@@ -372,9 +372,9 @@ class Edb:
         sys.path.append(self.base_path)
         if is_linux:
             ctypes.cdll.LoadLibrary(
-                os.path.join(self.edbpath, "common", "mono", "Linux64", "lib", "libmonosgen-2.0.so.1")
+                os.path.join(self.base_path, "common", "mono", "Linux64", "lib", "libmonosgen-2.0.so.1")
             )
-            ctypes.cdll.LoadLibrary(os.path.join(self.edbpath, "libEDBCWrapper.so"))
+            ctypes.cdll.LoadLibrary(os.path.join(self.base_path, "libEDBCWrapper.so"))
         _clr.AddReference("Ansys.Ansoft.Edb")
         _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
         _clr.AddReference("Ansys.Ansoft.SimSetupData")
