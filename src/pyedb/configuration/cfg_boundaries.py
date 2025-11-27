@@ -60,7 +60,7 @@ class CfgBoundaries(CfgBase):
             "This parameter influences how thick the PML layer is calculated. "
         ),
     )
-    pml_radiation_factor: Optional[int] = Field(
+    radiation_level: Optional[int] = Field(
         default=None,
         description=(
             "Radiation factor for PML, controlling the relative thickness of the PML boundary. "
