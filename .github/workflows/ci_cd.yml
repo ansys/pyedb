@@ -447,8 +447,8 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
-            export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-            . .venv/bin/activate
+#            export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+#            . .venv/bin/activate
             pytest tests/system -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
@@ -522,8 +522,8 @@ jobs:
           retry_on: error
           timeout_minutes: 20
           command: |
-            export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-            . .venv/bin/activate
+#            export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+#            . .venv/bin/activate
             pytest tests/system -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
@@ -597,8 +597,8 @@ jobs:
           retry_on: error
           timeout_minutes: 20
           command: |
-            export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-            . .venv/bin/activate
+#            export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+#            . .venv/bin/activate
             pytest tests/unit -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
@@ -672,8 +672,8 @@ jobs:
           retry_on: error
           timeout_minutes: 20
           command: |
-            export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-            . .venv/bin/activate
+#            export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+#            . .venv/bin/activate
             pytest tests/unit -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
@@ -843,16 +843,16 @@ jobs:
         env:
           ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
         run: |
-          export LD_LIBRARY_PATH="${ANSYSEM}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-          . .venv/bin/activate
+#          export LD_LIBRARY_PATH="${ANSYSEM}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+#          . .venv/bin/activate
           pip install --no-cache-dir external/pyaedt[tests]
 
       - name: Install PyEDB
         env:
           ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
         run: |
-          export LD_LIBRARY_PATH="${ANSYSEM}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-          . .venv/bin/activate
+#          export LD_LIBRARY_PATH="${ANSYSEM}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+#          . .venv/bin/activate
           python -m pip install .
 
       - name: Run PyAEDT tests
@@ -864,8 +864,8 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-            . .venv/bin/activate
+#            export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+#            . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/general/test_01_3dlayout_edb.py
             pytest -v external/pyaedt/tests/system/general/test_01_configuration_files.py
             pytest -v external/pyaedt/tests/system/general/test_21_Circuit.py
@@ -879,8 +879,8 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-            . .venv/bin/activate
+#            export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+#            . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
             pytest -v external/pyaedt/tests/system/solvers/test_00_analyze.py
 
@@ -893,8 +893,8 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-            . .venv/bin/activate
+#            export LD_LIBRARY_PATH="${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+#            . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
             pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
             pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
