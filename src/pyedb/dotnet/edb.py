@@ -358,9 +358,11 @@ class Edb:
         self.logger.info(f"Edb version {self.version}")
 
         """Initialize DLLs."""
+        import ctypes
+
         from pyedb import __version__
         from pyedb.dotnet.clr_module import _clr, edb_initialized
-        import ctypes
+
         if not edb_initialized:  # pragma: no cover
             raise RuntimeWarning("Failed to initialize Dlls.")
         self.logger.info(f"Logger is initialized. Log file is saved to {self.logger.log_file}.")
@@ -369,8 +371,10 @@ class Edb:
 
         sys.path.append(self.base_path)
         if is_linux:
-            ctypes.cdll.LoadLibrary(os.path.join(self.edbpath, "common", "mono", "Linux64", "lib", "libmonosgen-2.0.so.1"))
-            ctypes.cdll.LoadLibrary(os.path.join(self.edbpath,  "libEDBCWrapper.so"))
+            ctypes.cdll.LoadLibrary(
+                os.path.join(self.edbpath, "common", "mono", "Linux64", "lib", "libmonosgen-2.0.so.1")
+            )
+            ctypes.cdll.LoadLibrary(os.path.join(self.edbpath, "libEDBCWrapper.so"))
         _clr.AddReference("Ansys.Ansoft.Edb")
         _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
         _clr.AddReference("Ansys.Ansoft.SimSetupData")
