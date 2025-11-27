@@ -1,0 +1,6 @@
+is\_circuit\_port
+=================
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoproperty:: PinGroupTerminal.is_circuit_port

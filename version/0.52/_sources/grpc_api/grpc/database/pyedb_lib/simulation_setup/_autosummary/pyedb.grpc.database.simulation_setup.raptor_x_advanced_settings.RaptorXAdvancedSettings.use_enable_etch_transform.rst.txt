@@ -1,0 +1,6 @@
+use\_enable\_etch\_transform
+============================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings
+
+.. autoproperty:: RaptorXAdvancedSettings.use_enable_etch_transform

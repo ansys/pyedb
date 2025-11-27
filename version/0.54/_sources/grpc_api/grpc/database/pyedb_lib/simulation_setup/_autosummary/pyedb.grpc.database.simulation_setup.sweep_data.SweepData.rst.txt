@@ -1,0 +1,22 @@
+﻿SweepData
+=========
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.sweep_data
+
+.. autoclass:: SweepData
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      SweepData.frequency_string
+   
+   

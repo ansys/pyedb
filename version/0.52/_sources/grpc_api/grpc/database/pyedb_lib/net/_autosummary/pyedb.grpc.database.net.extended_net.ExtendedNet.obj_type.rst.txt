@@ -1,0 +1,6 @@
+obj\_type
+=========
+
+.. currentmodule:: pyedb.grpc.database.net.extended_net
+
+.. autoproperty:: ExtendedNet.obj_type

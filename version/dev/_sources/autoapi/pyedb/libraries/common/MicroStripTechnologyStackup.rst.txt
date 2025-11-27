@@ -1,0 +1,103 @@
+
+
+
+
+
+
+:class:`MicroStripTechnologyStackup`
+====================================
+
+
+.. py:class:: pyedb.libraries.common.MicroStripTechnologyStackup(pedb, botton_layer_name='BOT_METAL', substrate_layer_name='Substrate', top_layer_name='TOP_METAL')
+
+   
+   Pre-defined micro-strip stackup with bottom metal, substrate and top metal.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`ansys.edb.core.database.Database`
+           Active EDB session.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> stack = MicroStripTechnologyStackup(edb)
+   >>> stack.top_metal.thickness = 5e-6
+   >>> stack.substrate.material.permittivity = 9.8
+
+   :Attributes:
+
+       **bottom_metal** : :obj:`MetalLayer`
+           Bottom metal layer.
+
+       **substrate** : :obj:`DielectricLayer`
+           Substrate dielectric layer.
+
+       **top_metal** : :obj:`MetalLayer`
+           Top metal layer.
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: MicroStripTechnologyStackup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~bottom_metal`
+            - 
+          * - :py:attr:`~substrate`
+            - 
+          * - :py:attr:`~top_metal`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.common import MicroStripTechnologyStackup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: bottom_metal
+
+.. py:attribute:: substrate
+
+.. py:attribute:: top_metal
+
+
+
+
+

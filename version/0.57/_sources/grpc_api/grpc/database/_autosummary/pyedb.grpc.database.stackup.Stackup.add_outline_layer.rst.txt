@@ -1,0 +1,6 @@
+add\_outline\_layer
+===================
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: Stackup.add_outline_layer

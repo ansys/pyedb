@@ -1,0 +1,242 @@
+
+
+
+
+
+
+:class:`ControlFileComponent`
+=============================
+
+
+.. py:class:: pyedb.grpc.database.control_file.ControlFileComponent
+
+   
+   Represents a component in the control file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileComponent
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_pin`
+            - Add a pin to the component.
+          * - :py:attr:`~add_port`
+            - Add a port to the component.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~refdes`
+            - 
+          * - :py:attr:`~partname`
+            - 
+          * - :py:attr:`~parttype`
+            - 
+          * - :py:attr:`~die_type`
+            - 
+          * - :py:attr:`~die_orientation`
+            - 
+          * - :py:attr:`~solderball_shape`
+            - 
+          * - :py:attr:`~solder_diameter`
+            - 
+          * - :py:attr:`~solder_height`
+            - 
+          * - :py:attr:`~solder_material`
+            - 
+          * - :py:attr:`~pins`
+            - 
+          * - :py:attr:`~ports`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.control_file import ControlFileComponent
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: refdes
+   :type:  str
+   :value: 'U1'
+
+
+.. py:attribute:: partname
+   :type:  str
+   :value: 'BGA'
+
+
+.. py:attribute:: parttype
+   :type:  str
+   :value: 'IC'
+
+
+.. py:attribute:: die_type
+   :type:  str
+   :value: 'None'
+
+
+.. py:attribute:: die_orientation
+   :type:  str
+   :value: 'Chip down'
+
+
+.. py:attribute:: solderball_shape
+   :type:  str
+   :value: 'None'
+
+
+.. py:attribute:: solder_diameter
+   :type:  str
+   :value: '65um'
+
+
+.. py:attribute:: solder_height
+   :type:  str
+   :value: '65um'
+
+
+.. py:attribute:: solder_material
+   :type:  str
+   :value: 'solder'
+
+
+.. py:attribute:: pins
+   :type:  List[Dict[str, Union[str, float]]]
+   :value: []
+
+
+.. py:attribute:: ports
+   :type:  List[Dict[str, Union[str, float, None]]]
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_pin(name: str, x: float, y: float, layer: str) -> None
+
+   
+   Add a pin to the component.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Pin name.
+
+       **x** : :class:`python:float`
+           X-coordinate.
+
+       **y** : :class:`python:float`
+           Y-coordinate.
+
+       **layer** : :class:`python:str`
+           Layer name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_port(name: str, z0: float, pospin: str, refpin: Optional[str] = None, pos_type: str = 'pin', ref_type: str = 'pin') -> None
+
+   
+   Add a port to the component.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Port name.
+
+       **z0** : :class:`python:float`
+           Characteristic impedance.
+
+       **pospin** : :class:`python:str`
+           Positive pin/group name.
+
+       **refpin** : :class:`python:str`, :obj:`optional`
+           Reference pin/group name.
+
+       **pos_type** : :class:`python:str`, :obj:`optional`
+           Positive element type ("pin" or "pingroup"). Default is "pin".
+
+       **ref_type** : :class:`python:str`, :obj:`optional`
+           Reference element type ("pin", "pingroup", or "net"). Default is "pin".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

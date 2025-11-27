@@ -1,0 +1,6 @@
+close\_edb
+==========
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.close_edb

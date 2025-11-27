@@ -1,0 +1,102 @@
+
+
+
+
+
+
+:class:`SweepBlockParser`
+=========================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.SweepBlockParser(lines: List[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Extract frequency-sweep summary (if present).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SweepBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Return sweep information or ``None`` if the log contains no sweep block.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import SweepBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> Optional[Sweep]
+
+   
+   Return sweep information or ``None`` if the log contains no sweep block.
+
+   :return: Sweep summary object.
+   :rtype: Sweep | None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

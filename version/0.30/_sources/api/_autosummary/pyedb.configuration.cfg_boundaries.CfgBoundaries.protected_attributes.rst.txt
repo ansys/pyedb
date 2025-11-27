@@ -1,0 +1,6 @@
+protected\_attributes
+=====================
+
+.. currentmodule:: pyedb.configuration.cfg_boundaries
+
+.. autoattribute:: CfgBoundaries.protected_attributes

@@ -1,0 +1,117 @@
+
+
+
+
+
+
+:class:`JobStatus`
+==================
+
+
+.. py:class:: pyedb.workflows.job_manager.backend.service.JobStatus
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   
+   Terminal and non-terminal job states used internally and exposed via REST.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: JobStatus
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~PENDING`
+            - 
+          * - :py:attr:`~RUNNING`
+            - 
+          * - :py:attr:`~COMPLETED`
+            - 
+          * - :py:attr:`~FAILED`
+            - 
+          * - :py:attr:`~CANCELLED`
+            - 
+          * - :py:attr:`~SCHEDULED`
+            - 
+          * - :py:attr:`~QUEUED`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.job_manager.backend.service import JobStatus
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: PENDING
+   :value: 'pending'
+
+
+.. py:attribute:: RUNNING
+   :value: 'running'
+
+
+.. py:attribute:: COMPLETED
+   :value: 'completed'
+
+
+.. py:attribute:: FAILED
+   :value: 'failed'
+
+
+.. py:attribute:: CANCELLED
+   :value: 'cancelled'
+
+
+.. py:attribute:: SCHEDULED
+   :value: 'scheduled'
+
+
+.. py:attribute:: QUEUED
+   :value: 'queued'
+
+
+
+
+
+

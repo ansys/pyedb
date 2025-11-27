@@ -1,0 +1,6 @@
+terminal\_type
+==============
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. autoproperty:: PointTerminal.terminal_type

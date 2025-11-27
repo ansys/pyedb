@@ -1,0 +1,104 @@
+
+
+
+
+
+
+:class:`DefinitionObj`
+======================
+
+
+.. py:class:: pyedb.dotnet.database.definition.definition_obj.DefinitionObj(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.dotnet.database.utilities.obj_base.ObjBase`
+
+
+   
+   Base class for definition objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DefinitionObj
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~definition_obj_type`
+            - 
+          * - :py:attr:`~name`
+            - Name of the definition.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.definition.definition_obj import DefinitionObj
+
+Property detail
+---------------
+
+.. py:property:: definition_obj_type
+
+.. py:property:: name
+
+   
+   Name of the definition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

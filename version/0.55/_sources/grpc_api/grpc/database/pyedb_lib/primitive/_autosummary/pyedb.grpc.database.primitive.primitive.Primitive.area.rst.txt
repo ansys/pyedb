@@ -1,0 +1,6 @@
+area
+====
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. automethod:: Primitive.area

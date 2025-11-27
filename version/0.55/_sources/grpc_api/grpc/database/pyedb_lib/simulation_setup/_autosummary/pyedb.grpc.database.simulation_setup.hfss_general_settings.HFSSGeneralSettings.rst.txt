@@ -1,0 +1,31 @@
+﻿HFSSGeneralSettings
+===================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_general_settings
+
+.. autoclass:: HFSSGeneralSettings
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HFSSGeneralSettings.adaptive_solution_type
+      HFSSGeneralSettings.broadband_adaptive_solution
+      HFSSGeneralSettings.mesh_region_name
+      HFSSGeneralSettings.msg
+      HFSSGeneralSettings.multi_frequency_adaptive_solution
+      HFSSGeneralSettings.save_fields
+      HFSSGeneralSettings.save_rad_fields_only
+      HFSSGeneralSettings.single_frequency_adaptive_solution
+      HFSSGeneralSettings.use_mesh_region
+      HFSSGeneralSettings.use_parallel_refinement
+   
+   

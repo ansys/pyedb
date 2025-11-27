@@ -1,0 +1,129 @@
+
+
+
+
+
+
+:class:`ControlCircuitPt`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.control_file.ControlCircuitPt(name, x1, y1, lay1, x2, y2, lay2, z0)
+
+   
+   Represents a circuit port.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Port name.
+
+       **x1** : :class:`python:float`
+           X-coordinate of first point.
+
+       **y1** : :class:`python:float`
+           Y-coordinate of first point.
+
+       **lay1** : :class:`python:str`
+           Layer of first point.
+
+       **x2** : :class:`python:float`
+           X-coordinate of second point.
+
+       **y2** : :class:`python:float`
+           Y-coordinate of second point.
+
+       **lay2** : :class:`python:str`
+           Layer of second point.
+
+       **z0** : :class:`python:float`
+           Characteristic impedance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlCircuitPt
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~x1`
+            - 
+          * - :py:attr:`~x2`
+            - 
+          * - :py:attr:`~lay1`
+            - 
+          * - :py:attr:`~lay2`
+            - 
+          * - :py:attr:`~y1`
+            - 
+          * - :py:attr:`~y2`
+            - 
+          * - :py:attr:`~z0`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.control_file import ControlCircuitPt
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+.. py:attribute:: x1
+
+.. py:attribute:: x2
+
+.. py:attribute:: lay1
+
+.. py:attribute:: lay2
+
+.. py:attribute:: y1
+
+.. py:attribute:: y2
+
+.. py:attribute:: z0
+
+
+
+
+

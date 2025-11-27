@@ -1,0 +1,76 @@
+﻿Value
+=====
+
+.. currentmodule:: pyedb.grpc.database.utility.value
+
+.. autoclass:: Value
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Value.acos
+      
+      
+      Value.as_integer_ratio
+      
+      
+      Value.asin
+      
+      
+      Value.atan
+      
+      
+      Value.conjugate
+      
+      
+      Value.cos
+      
+      
+      Value.equals
+      
+      
+      Value.fromhex
+      
+      
+      Value.hex
+      
+      
+      Value.is_integer
+      
+      
+      Value.log10
+      
+      
+      Value.sin
+      
+      
+      Value.sqrt
+      
+      
+      Value.tan
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Value.complex
+      Value.double
+      Value.imag
+      Value.is_complex
+      Value.is_parametric
+      Value.real
+      Value.value
+   
+   

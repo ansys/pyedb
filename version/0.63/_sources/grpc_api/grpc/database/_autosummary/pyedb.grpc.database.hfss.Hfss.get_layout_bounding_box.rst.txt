@@ -1,0 +1,6 @@
+get\_layout\_bounding\_box
+==========================
+
+.. currentmodule:: pyedb.grpc.database.hfss
+
+.. automethod:: Hfss.get_layout_bounding_box

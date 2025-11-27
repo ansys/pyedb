@@ -1,0 +1,143 @@
+
+
+
+
+
+
+:class:`RaptorXSimulationSettings`
+==================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.raptor_x_simulation_settings.RaptorXSimulationSettings(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.raptor_x_simulation_setup.RaptorXSimulationSettings`
+
+
+   
+   Raptor X simulation settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: RaptorXSimulationSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~advanced`
+            - Advanced class.
+          * - :py:attr:`~general`
+            - General settings class.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.raptor_x_simulation_settings import RaptorXSimulationSettings
+
+Property detail
+---------------
+
+.. py:property:: advanced
+   :type: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings.RaptorXAdvancedSettings
+
+
+   
+   Advanced class.
+
+
+
+   :Returns:
+
+       :class:`RaptorXAdvancedSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       raptor_x_advanced_settings.RaptorXAdvancedSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: general
+   :type: pyedb.grpc.database.simulation_setup.raptor_x_general_settings.RaptorXGeneralSettings
+
+
+   
+   General settings class.
+
+
+
+   :Returns:
+
+       :class:`RaptorXGeneralSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       raptor_x_general_settings.RaptorXGeneralSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

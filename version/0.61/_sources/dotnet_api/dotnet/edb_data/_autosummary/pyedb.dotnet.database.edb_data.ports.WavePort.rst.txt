@@ -1,0 +1,48 @@
+﻿WavePort
+========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoclass:: WavePort
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      WavePort.couple_ports
+      
+      
+      WavePort.delete
+      
+      
+      WavePort.get_connected_object_id_set
+      
+      
+      WavePort.get_connected_objects
+      
+      
+      WavePort.get_edge_terminal_reference_primitive
+      
+      
+      WavePort.get_pad_edge_terminal_reference_pin
+      
+      
+      WavePort.get_padstack_terminal_reference_pin
+      
+      
+      WavePort.get_pin_group_terminal_reference_pin
+      
+      
+      WavePort.get_point_terminal_reference_primitive
+      
+   
+   
+
+   
+   
+   

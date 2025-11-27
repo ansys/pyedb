@@ -1,0 +1,6 @@
+is\_in\_zone
+============
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. automethod:: StackupLayer.is_in_zone

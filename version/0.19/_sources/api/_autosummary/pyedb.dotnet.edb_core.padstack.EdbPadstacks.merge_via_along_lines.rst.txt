@@ -1,0 +1,6 @@
+merge\_via\_along\_lines
+========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.padstack
+
+.. automethod:: EdbPadstacks.merge_via_along_lines

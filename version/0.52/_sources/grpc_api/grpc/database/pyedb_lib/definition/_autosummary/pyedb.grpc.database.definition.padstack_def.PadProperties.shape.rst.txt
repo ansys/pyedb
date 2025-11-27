@@ -1,0 +1,6 @@
+shape
+=====
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadProperties.shape

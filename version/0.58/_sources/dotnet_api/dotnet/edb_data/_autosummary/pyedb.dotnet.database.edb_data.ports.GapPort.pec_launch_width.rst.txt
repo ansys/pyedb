@@ -1,0 +1,6 @@
+pec\_launch\_width
+==================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: GapPort.pec_launch_width

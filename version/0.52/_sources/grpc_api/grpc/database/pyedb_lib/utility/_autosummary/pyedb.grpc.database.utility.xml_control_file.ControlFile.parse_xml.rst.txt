@@ -1,0 +1,6 @@
+parse\_xml
+==========
+
+.. currentmodule:: pyedb.grpc.database.utility.xml_control_file
+
+.. automethod:: ControlFile.parse_xml

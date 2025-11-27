@@ -1,0 +1,6 @@
+layout\_obj\_type
+=================
+
+.. currentmodule:: pyedb.grpc.database.net.differential_pair
+
+.. autoattribute:: DifferentialPair.layout_obj_type

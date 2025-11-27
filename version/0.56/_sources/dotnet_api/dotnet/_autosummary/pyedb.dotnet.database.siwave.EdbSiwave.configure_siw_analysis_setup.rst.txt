@@ -1,0 +1,6 @@
+configure\_siw\_analysis\_setup
+===============================
+
+.. currentmodule:: pyedb.dotnet.database.siwave
+
+.. automethod:: EdbSiwave.configure_siw_analysis_setup

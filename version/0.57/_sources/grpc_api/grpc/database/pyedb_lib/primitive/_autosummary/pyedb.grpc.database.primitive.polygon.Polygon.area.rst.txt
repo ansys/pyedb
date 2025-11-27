@@ -1,0 +1,6 @@
+area
+====
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. automethod:: Polygon.area

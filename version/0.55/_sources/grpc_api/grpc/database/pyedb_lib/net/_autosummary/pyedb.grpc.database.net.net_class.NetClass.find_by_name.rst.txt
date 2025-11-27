@@ -1,0 +1,6 @@
+find\_by\_name
+==============
+
+.. currentmodule:: pyedb.grpc.database.net.net_class
+
+.. automethod:: NetClass.find_by_name

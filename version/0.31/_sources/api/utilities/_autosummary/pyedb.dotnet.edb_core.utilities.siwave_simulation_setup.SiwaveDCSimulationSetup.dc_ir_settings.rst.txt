@@ -1,0 +1,6 @@
+dc\_ir\_settings
+================
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.siwave_simulation_setup
+
+.. autoproperty:: SiwaveDCSimulationSetup.dc_ir_settings

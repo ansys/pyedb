@@ -1,0 +1,6 @@
+rotation
+========
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. autoproperty:: PadstackInstance.rotation

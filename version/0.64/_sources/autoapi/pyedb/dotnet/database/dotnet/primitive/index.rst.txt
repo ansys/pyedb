@@ -1,0 +1,171 @@
+
+
+
+
+
+
+The ``primitive.py`` module
+===========================
+
+.. py:module:: pyedb.dotnet.database.dotnet.primitive
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: primitive
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.primitive.PrimitiveDotNet`
+            - Base class representing primitive objects.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.primitive.RectangleDotNet`
+            - Class representing a rectangle object.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.primitive.CircleDotNet`
+            - Class representing a circle object.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.primitive.TextDotNet`
+            - Class representing a text object.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.primitive.PathDotNet`
+            - Class representing a path object.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.primitive.BondwireDotNet`
+            - Class representing a bondwire object.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.primitive.PadstackInstanceDotNet`
+            - Class representing a Padstack Instance object.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.primitive.BoardBendDef`
+            - Class representing board bending definitions.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~cast`
+            - Cast the primitive object to correct concrete type.
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> PrimitiveDotNet</autoapi/pyedb/dotnet/database/dotnet/primitive/PrimitiveDotNet>
+    <span class="nf nf-cod-symbol_class"></span> RectangleDotNet</autoapi/pyedb/dotnet/database/dotnet/primitive/RectangleDotNet>
+    <span class="nf nf-cod-symbol_class"></span> CircleDotNet</autoapi/pyedb/dotnet/database/dotnet/primitive/CircleDotNet>
+    <span class="nf nf-cod-symbol_class"></span> TextDotNet</autoapi/pyedb/dotnet/database/dotnet/primitive/TextDotNet>
+    <span class="nf nf-cod-symbol_class"></span> PathDotNet</autoapi/pyedb/dotnet/database/dotnet/primitive/PathDotNet>
+    <span class="nf nf-cod-symbol_class"></span> BondwireDotNet</autoapi/pyedb/dotnet/database/dotnet/primitive/BondwireDotNet>
+    <span class="nf nf-cod-symbol_class"></span> PadstackInstanceDotNet</autoapi/pyedb/dotnet/database/dotnet/primitive/PadstackInstanceDotNet>
+    <span class="nf nf-cod-symbol_class"></span> BoardBendDef</autoapi/pyedb/dotnet/database/dotnet/primitive/BoardBendDef>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Primitive.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: cast(api, prim_object)
+
+   
+   Cast the primitive object to correct concrete type.
+
+
+
+   :Returns:
+
+       :obj:`PrimitiveDotNet`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

@@ -1,0 +1,154 @@
+
+
+
+
+
+
+The ``simulation_setup`` package
+====================================
+
+.. py:module:: pyedb.grpc.database.simulation_setup
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: simulation_setup
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.adaptive_frequency`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_advanced_settings`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_dcr_settings`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_general_settings`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_settings_options`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_simulation_settings`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_simulation_setup`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_solver_settings`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.mesh_operation`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.raptor_x_general_settings`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.raptor_x_simulation_settings`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.siwave_simulation_setup`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.sweep_data`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> adaptive_frequency</autoapi/pyedb/grpc/database/simulation_setup/adaptive_frequency/index>
+    <span class="nf nf-fa-file"></span> hfss_advanced_meshing_settings</autoapi/pyedb/grpc/database/simulation_setup/hfss_advanced_meshing_settings/index>
+    <span class="nf nf-fa-file"></span> hfss_advanced_settings</autoapi/pyedb/grpc/database/simulation_setup/hfss_advanced_settings/index>
+    <span class="nf nf-fa-file"></span> hfss_dcr_settings</autoapi/pyedb/grpc/database/simulation_setup/hfss_dcr_settings/index>
+    <span class="nf nf-fa-file"></span> hfss_general_settings</autoapi/pyedb/grpc/database/simulation_setup/hfss_general_settings/index>
+    <span class="nf nf-fa-file"></span> hfss_settings_options</autoapi/pyedb/grpc/database/simulation_setup/hfss_settings_options/index>
+    <span class="nf nf-fa-file"></span> hfss_simulation_settings</autoapi/pyedb/grpc/database/simulation_setup/hfss_simulation_settings/index>
+    <span class="nf nf-fa-file"></span> hfss_simulation_setup</autoapi/pyedb/grpc/database/simulation_setup/hfss_simulation_setup/index>
+    <span class="nf nf-fa-file"></span> hfss_solver_settings</autoapi/pyedb/grpc/database/simulation_setup/hfss_solver_settings/index>
+    <span class="nf nf-fa-file"></span> mesh_operation</autoapi/pyedb/grpc/database/simulation_setup/mesh_operation/index>
+    <span class="nf nf-fa-file"></span> raptor_x_advanced_settings</autoapi/pyedb/grpc/database/simulation_setup/raptor_x_advanced_settings/index>
+    <span class="nf nf-fa-file"></span> raptor_x_general_settings</autoapi/pyedb/grpc/database/simulation_setup/raptor_x_general_settings/index>
+    <span class="nf nf-fa-file"></span> raptor_x_simulation_settings</autoapi/pyedb/grpc/database/simulation_setup/raptor_x_simulation_settings/index>
+    <span class="nf nf-fa-file"></span> raptor_x_simulation_setup</autoapi/pyedb/grpc/database/simulation_setup/raptor_x_simulation_setup/index>
+    <span class="nf nf-fa-file"></span> siwave_cpa_simulation_setup</autoapi/pyedb/grpc/database/simulation_setup/siwave_cpa_simulation_setup/index>
+    <span class="nf nf-fa-file"></span> siwave_dcir_simulation_setup</autoapi/pyedb/grpc/database/simulation_setup/siwave_dcir_simulation_setup/index>
+    <span class="nf nf-fa-file"></span> siwave_simulation_setup</autoapi/pyedb/grpc/database/simulation_setup/siwave_simulation_setup/index>
+    <span class="nf nf-fa-file"></span> sweep_data</autoapi/pyedb/grpc/database/simulation_setup/sweep_data/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

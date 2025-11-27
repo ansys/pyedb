@@ -1,0 +1,6 @@
+boundary\_type
+==============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: WavePort.boundary_type

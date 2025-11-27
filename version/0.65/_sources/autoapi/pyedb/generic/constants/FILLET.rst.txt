@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`FILLET`
+===============
+
+
+.. py:class:: pyedb.generic.constants.FILLET
+
+   Bases: :py:obj:`object`
+
+
+   
+   FilletType Enumerator class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import FILLET
+
+
+
+
+

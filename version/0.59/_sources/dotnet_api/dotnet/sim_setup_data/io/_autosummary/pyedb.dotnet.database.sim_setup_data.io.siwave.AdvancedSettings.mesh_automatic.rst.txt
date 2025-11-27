@@ -1,0 +1,6 @@
+mesh\_automatic
+===============
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoproperty:: AdvancedSettings.mesh_automatic

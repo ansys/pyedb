@@ -1,0 +1,6 @@
+is\_auto\_port
+==============
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. autoproperty:: PointTerminal.is_auto_port

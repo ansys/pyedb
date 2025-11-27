@@ -1,0 +1,6 @@
+get\_product\_property
+======================
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. automethod:: Primitive.get_product_property

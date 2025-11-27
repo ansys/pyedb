@@ -1,0 +1,524 @@
+
+
+
+
+
+
+:class:`HfssSimulationSetup`
+============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup(pedb, edb_object, name: str = None)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.hfss_simulation_setup.HfssSimulationSetup`
+
+
+   
+   HFSS simulation setup class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HfssSimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_solution_single_frequency`
+            - Set HFSS single frequency solution.
+          * - :py:attr:`~set_solution_multi_frequencies`
+            - Set HFSS setup multi frequencies adaptive.
+          * - :py:attr:`~set_solution_broadband`
+            - Set solution to broadband.
+          * - :py:attr:`~add_adaptive_frequency_data`
+            - Add adaptive frequency data to simulation setup.
+          * - :py:attr:`~add_length_mesh_operation`
+            - Add a mesh operation to the setup.
+          * - :py:attr:`~add_skin_depth_mesh_operation`
+            - Add a mesh operation to the setup.
+          * - :py:attr:`~add_sweep`
+            - Add a HFSS frequency sweep.
+          * - :py:attr:`~auto_mesh_operation`
+            - Automatically create and apply a length-based mesh operation for all nets in the design.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~hfss_solver_settings`
+            - Legacy compatibility to settings properties.
+          * - :py:attr:`~adaptive_settings`
+            - Legacy compatibility to general settings.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
+
+Property detail
+---------------
+
+.. py:property:: hfss_solver_settings
+
+   
+   Legacy compatibility to settings properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: adaptive_settings
+
+   
+   Legacy compatibility to general settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_solution_single_frequency(frequency='5GHz', max_num_passes=10, max_delta_s=0.02) -> bool
+
+   
+   Set HFSS single frequency solution.
+   Parameters
+   ----------
+   frequency : str, optional
+       Adaptive frequency.
+   max_num_passes : int, optional
+       Maxmímum passes number. Default value `10`.
+   max_delta_s : float, optional
+       Maximum delta S value. Default value `0.02`,
+
+
+
+   :Returns:
+
+       bool.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_solution_multi_frequencies(frequencies='5GHz', max_delta_s=0.02) -> bool
+
+   
+   Set HFSS setup multi frequencies adaptive.
+
+
+   :Parameters:
+
+       **frequencies** : :class:`python:str`, :obj:`List`\[:class:`python:str`].
+           Adaptive frequencies.
+
+       **max_delta_s** : :class:`python:float`, :obj:`List`\[:class:`python:float`].
+           Max delta S values.
+
+   :Returns:
+
+       bool.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_solution_broadband(low_frequency='1GHz', high_frequency='10GHz', max_delta_s=0.02, max_num_passes=10)
+
+   
+   Set solution to broadband.
+
+
+   :Parameters:
+
+       **low_frequency** : :class:`python:str`
+           Low frequency value.
+
+       **high_frequency** : :class:`python:str`
+           High frequency value.
+
+       **max_delta_s** : :class:`python:float`
+           Max delta S value.
+
+       **max_num_passes** : :class:`python:int`
+           Maximum number of passes.
+
+   :Returns:
+
+       bool.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_adaptive_frequency_data(frequency='5GHz', max_delta_s='0.01')
+
+   
+   Add adaptive frequency data to simulation setup.
+
+
+   :Parameters:
+
+       **frequency** : :class:`python:str`
+           Adaptive frequency value.
+
+       **max_delta_s** : :class:`python:str`
+           Maximum delta S value.
+
+   :Returns:
+
+       bool.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_length_mesh_operation(net_layer_list, name=None, max_elements=1000, max_length='1mm', restrict_elements=True, restrict_length=True, refine_inside=False, mesh_region=None)
+
+   
+   Add a mesh operation to the setup.
+
+
+   :Parameters:
+
+       **net_layer_list** : :class:`python:dict`
+           Dictionary containing nets and layers on which enable Mesh operation. Example ``{"A0_N": ["TOP", "PWR"]}``.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Mesh operation name.
+
+       **max_elements** : :class:`python:int`, :obj:`optional`
+           Maximum number of elements. Default is ``1000``.
+
+       **max_length** : :class:`python:str`, :obj:`optional`
+           Maximum length of elements. Default is ``1mm``.
+
+       **restrict_elements** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to restrict number of elements. Default is ``True``.
+
+       **restrict_length** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to restrict length of elements. Default is ``True``.
+
+       **mesh_region** : :class:`python:str`, :obj:`optional`
+           Mesh region name.
+
+       **refine_inside** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to refine inside or not.  Default is ``False``.
+
+   :Returns:
+
+       :class:`LengthMeshOperation <ansys.edb.core.simulation_setup.mesh_operation.LengthMeshOperation>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_skin_depth_mesh_operation(net_layer_list, name=None, max_elements=1000, skin_depth='1um', restrict_elements=True, surface_triangle_length='1mm', number_of_layers=2, refine_inside=False, mesh_region=None)
+
+   
+   Add a mesh operation to the setup.
+
+
+   :Parameters:
+
+       **net_layer_list** : :class:`python:dict`
+           Dictionary containing nets and layers on which enable Mesh operation. Example ``{"A0_N": ["TOP", "PWR"]}``.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Mesh operation name.
+
+       **max_elements** : :class:`python:int`, :obj:`optional`
+           Maximum number of elements. Default is ``1000``.
+
+       **skin_depth** : :class:`python:str`, :obj:`optional`
+           Skin Depth. Default is ``1um``.
+
+       **restrict_elements** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to restrict number of elements. Default is ``True``.
+
+       **surface_triangle_length** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Surface Triangle length. Default is ``1mm``.
+
+       **number_of_layers** : :class:`python:int`, :class:`python:str`, :obj:`optional`
+           Number of layers. Default is ``2``.
+
+       **mesh_region** : :class:`python:str`, :obj:`optional`
+           Mesh region name.
+
+       **refine_inside** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to refine inside or not.  Default is ``False``.
+
+   :Returns:
+
+       :class:`LengthMeshOperation <ansys.edb.core.simulation_setup.mesh_operation.LengthMeshOperation>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_sweep(name=None, distribution='linear', start_freq='0GHz', stop_freq='20GHz', step='10MHz', discrete=False, frequency_set=None)
+
+   
+   Add a HFSS frequency sweep.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Sweep name.
+
+       **distribution** : :class:`python:str`, :obj:`optional`
+           Type of the sweep. The default is `"linear"`. Options are:
+           - `"linear"`
+           - `"linear_count"`
+           - `"decade_count"`
+           - `"octave_count"`
+           - `"exponential"`
+
+       **start_freq** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Starting frequency. The default is ``1``.
+
+       **stop_freq** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Stopping frequency. The default is ``1e9``.
+
+       **step** : :class:`python:str`, :class:`python:float`, :class:`python:int`, :obj:`optional`
+           Frequency step. The default is ``1e6``. or used for `"decade_count"`, "linear_count"`, "octave_count"`
+           distribution. Must be integer in that case.
+
+       **discrete** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether the sweep is discrete. The default is ``False``.
+
+       **frequency_set** : :obj:`List`, :obj:`optional`
+           Frequency set is a list adding one or more frequency sweeps. If ``frequency_set`` is provided, the other
+           arguments are ignored except ``discrete``. Default value is ``None``.
+           example of frequency_set : [['linear_scale', '50MHz', '200MHz', '10MHz']].
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: auto_mesh_operation(trace_ratio_seeding: float = 3, signal_via_side_number: int = 12, power_ground_via_side_number: int = 6) -> bool
+
+   
+   Automatically create and apply a length-based mesh operation for all nets in the design.
+
+   The method inspects every signal net, determines the smallest trace width, and
+   seeds a :class:`GrpcLengthMeshOperation` whose maximum element length is
+   ``smallest_width * trace_ratio_seeding``. Signal vias (padstack instances) are
+   configured with the requested number of polygon sides, while power/ground vias
+   are updated through the global ``num_via_sides`` advanced setting.
+
+   :Parameters:
+
+       **trace_ratio_seeding** : :class:`python:float`, :obj:`optional`
+           Ratio used to compute the maximum allowed element length from the
+           smallest trace width found in the design.  The resulting length is
+           ``min_width * trace_ratio_seeding``.  Defaults to ``3``.
+
+       **signal_via_side_number** : :class:`python:int`, :obj:`optional`
+           Number of sides (i.e. faceting resolution) assigned to **signal**
+           padstack instances that belong to the nets being meshed.
+           Defaults to ``12``.
+
+       **power_ground_via_side_number** : :class:`python:int`, :obj:`optional`
+           Number of sides assigned to **power/ground** vias via the global
+           ``advanced.num_via_sides`` setting.  Defaults to ``6``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If the design contains no terminals, making mesh seeding impossible.
+
+
+
+
+   .. rubric:: Notes
+
+   * Only primitives of type ``"path"`` are considered when determining the
+     smallest trace width.
+   * Every ``(net, layer, sheet)`` tuple required by the mesher is
+     automatically populated; sheet are explicitly marked as ``False``.
+   * Existing contents of :attr:`mesh_operations` are **replaced** by the
+     single new operation.
+
+
+   .. rubric:: Examples
+
+   >>> setup = edbapp.setups["my_setup"]
+   >>> setup.auto_mesh_operation(trace_ratio_seeding=4, signal_via_side_number=16)
+   >>> setup.mesh_operations[0].max_length
+   '2.5um'
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

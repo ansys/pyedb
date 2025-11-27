@@ -1,0 +1,6 @@
+MultiFrequency
+==============
+
+.. currentmodule:: pyedb.dotnet.database.utilities.simulation_setup
+
+.. autoattribute:: AdaptiveType.MultiFrequency

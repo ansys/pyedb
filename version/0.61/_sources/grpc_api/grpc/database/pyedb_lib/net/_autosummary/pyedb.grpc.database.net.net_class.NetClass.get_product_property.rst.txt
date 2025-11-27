@@ -1,0 +1,6 @@
+get\_product\_property
+======================
+
+.. currentmodule:: pyedb.grpc.database.net.net_class
+
+.. automethod:: NetClass.get_product_property

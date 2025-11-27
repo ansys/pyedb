@@ -1,0 +1,59 @@
+
+
+
+
+
+
+:class:`ControlFileDielectric`
+==============================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.control_file.ControlFileDielectric(name, properties)
+
+
+.. py:currentmodule:: ControlFileDielectric
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~properties`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.control_file import ControlFileDielectric
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+.. py:attribute:: properties
+
+
+
+
+

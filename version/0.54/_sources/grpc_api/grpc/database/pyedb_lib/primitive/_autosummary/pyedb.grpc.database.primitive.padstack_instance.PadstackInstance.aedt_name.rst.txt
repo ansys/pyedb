@@ -1,0 +1,6 @@
+aedt\_name
+==========
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. autoproperty:: PadstackInstance.aedt_name

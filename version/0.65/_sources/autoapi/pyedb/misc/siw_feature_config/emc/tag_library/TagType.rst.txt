@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`TagType`
+================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.emc.tag_library.TagType(element)
+
+   Bases: :py:obj:`pyedb.misc.siw_feature_config.emc.xml_generic.XmlGeneric`
+
+
+   
+   Manages tag type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.emc.tag_library import TagType
+
+
+
+
+

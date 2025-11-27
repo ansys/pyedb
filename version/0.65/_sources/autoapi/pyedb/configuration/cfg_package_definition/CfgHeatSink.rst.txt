@@ -1,0 +1,95 @@
+
+
+
+
+
+
+:class:`CfgHeatSink`
+====================
+
+
+.. py:class:: pyedb.configuration.cfg_package_definition.CfgHeatSink(**kwargs)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBase`
+
+
+   
+   Configuration heat sink class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgHeatSink
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~fin_base_height`
+            - 
+          * - :py:attr:`~fin_height`
+            - 
+          * - :py:attr:`~fin_orientation`
+            - 
+          * - :py:attr:`~fin_spacing`
+            - 
+          * - :py:attr:`~fin_thickness`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_package_definition import CfgHeatSink
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: fin_base_height
+
+.. py:attribute:: fin_height
+
+.. py:attribute:: fin_orientation
+
+.. py:attribute:: fin_spacing
+
+.. py:attribute:: fin_thickness
+
+
+
+
+

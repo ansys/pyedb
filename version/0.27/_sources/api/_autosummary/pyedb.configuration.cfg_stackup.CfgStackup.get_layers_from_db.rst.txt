@@ -1,0 +1,6 @@
+get\_layers\_from\_db
+=====================
+
+.. currentmodule:: pyedb.configuration.cfg_stackup
+
+.. automethod:: CfgStackup.get_layers_from_db

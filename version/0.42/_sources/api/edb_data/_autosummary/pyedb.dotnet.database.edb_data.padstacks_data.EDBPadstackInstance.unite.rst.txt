@@ -1,0 +1,6 @@
+unite
+=====
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. automethod:: EDBPadstackInstance.unite

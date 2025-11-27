@@ -1,0 +1,6 @@
+find\_by\_id
+============
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.find_by_id
