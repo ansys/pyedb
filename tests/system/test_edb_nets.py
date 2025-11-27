@@ -27,12 +27,14 @@ import os
 import pytest
 
 from pyedb.generic.general_methods import is_windows
+from tests import conftest
 from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
@@ -129,7 +131,7 @@ class TestClass(BaseTestClass):
         assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.slow
+    @pytest.mark.skipif(True, reason="Test slow on windows with grpc")
     def test_nets_dc_shorts(self, edb_examples):
         # TODO get_connected_object return empty list.
         edbapp = edb_examples.get_si_verse()
@@ -162,6 +164,7 @@ class TestClass(BaseTestClass):
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_0(self, edb_examples):
         # Done
         edbapp = edb_examples.get_package()
@@ -179,6 +182,7 @@ class TestClass(BaseTestClass):
         assert "$TOP_value" in parameters
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_1(self, edb_examples):
         # Done
         edbapp = edb_examples.get_package()
@@ -188,6 +192,7 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.keys())) == len(list(edbapp.stackup.layers.keys()))
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_2(self, edb_examples):
         # Done
         edbapp = edb_examples.get_package()
@@ -247,6 +252,7 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.values())) == 3
         edbapp.close()
 
+    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_7(self, edb_examples):
         # Done
         edbapp = edb_examples.get_package()

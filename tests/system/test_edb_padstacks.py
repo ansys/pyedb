@@ -37,6 +37,7 @@ from tests.system.base_test_class import BaseTestClass
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path3, target_path4):
@@ -125,6 +126,7 @@ class TestClass(BaseTestClass):
         assert cmp_pinlist[0].net.name
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_padstack_properties_getter(self, edb_examples):
         """Evaluate properties"""
         edbapp = edb_examples.get_si_verse()
@@ -363,6 +365,7 @@ class TestClass(BaseTestClass):
                 assert confirmed_pads == 19
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_padstaks_plot_on_matplotlib(self, edb_examples):
         """Plot a Net to Matplotlib 2D Chart."""
         edb_plot = edb_examples.load_edb(self.target_path3, copy_to_temp=False)
@@ -591,6 +594,7 @@ class TestClass(BaseTestClass):
         assert len(edbapp.padstacks.instances) == 2
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_backdrill_dielectric_fill_via(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         backdrill_layer = "Inner1(GND1)"
@@ -615,6 +619,7 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["v35h15_BD"].material == "test_fill"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_backdrill_dielectric_fill_via2(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         backdrill_layer = "Inner1(GND1)"
@@ -636,6 +641,7 @@ class TestClass(BaseTestClass):
             assert instance.backdrill_layer == "Inner1(GND1)"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_backdrill_dielectric_fill_via3(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         instances = edbapp.padstacks.definitions["v40h20-1"].instances

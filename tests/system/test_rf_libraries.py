@@ -50,6 +50,7 @@ pytestmark = [pytest.mark.system, pytest.mark.grpc]
 ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     def test_stackup(self, edb_examples):
         edb = edb_examples.create_empty_edb()
