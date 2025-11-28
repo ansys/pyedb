@@ -434,7 +434,7 @@ class PadstackInstance(GrpcPadstackInstance):
         return self._object_instance
 
     @property
-    def bounding_box(self) -> list[float]:
+    def bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         """Padstack instance bounding box.
         Because this method is slow, the bounding box is stored in a variable and reused.
 
@@ -442,9 +442,12 @@ class PadstackInstance(GrpcPadstackInstance):
         -------
         list of float
         """
-        # TODO check to implement in grpc
         if self._bounding_box:
             return self._bounding_box
+        bbox = self.layout_object_instance.get_bbox()
+        pt1 = bbox.points[0]
+        pt2 = bbox.points[2]
+        self._bounding_box = ((pt1.x.value, pt1.y.value), (pt2.x.value, pt2.y.value))
         return self._bounding_box
 
     def in_polygon(self, polygon_data, include_partial=True, arbitrary_extent_value=300e-6) -> bool:
@@ -587,14 +590,9 @@ class PadstackInstance(GrpcPadstackInstance):
         :class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`
 
         """
-        obj_inst = [
-            obj
-            for obj in self._pedb.layout_instance.query_layout_obj_instances(
-                spatial_filter=GrpcPointData(self.position)
-            )
-            if obj.layout_obj.id == self.id
-        ]
-        return obj_inst[0] if obj_inst else None
+        if not self._object_instance:
+            self._object_instance = self.layout.layout_instance.get_layout_obj_instance_in_context(self, None)
+        return self._object_instance
 
     @property
     def is_pin(self) -> bool:
@@ -634,16 +632,13 @@ class PadstackInstance(GrpcPadstackInstance):
         list
             List of ``[x, y]`` coordinates for the padstack instance position.
         """
-        try:
-            position = self.get_position_and_rotation()
-            if self.component:
-                out2 = self.component.transform.transform_point(GrpcPointData(position[:2]))
-                self._position = [Value(out2[0]), Value(out2[1])]
-            else:
-                self._position = [Value(pt) for pt in position[:2]]
-            return self._position
-        except Exception:
-            return False
+        position = self.get_position_and_rotation()
+        if self.component:
+            out2 = self.component.transform.transform_point(GrpcPointData(position[:2]))
+            self._position = [Value(out2[0]), Value(out2[1])]
+        else:
+            self._position = [Value(pt) for pt in position[:2]]
+        return self._position
 
     @position.setter
     def position(self, value):

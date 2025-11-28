@@ -25,18 +25,14 @@ import pytest
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 class BaseTestClass:
     @classmethod
     @pytest.fixture(scope="class", autouse=True)
     def setup_class(cls, request, edb_examples):
         # Set up the EDB app once per class
-
         # Finalizer to close the EDB app after all tests
-        def teardown():
-            dummy_edb = edb_examples.create_empty_edb()
-            dummy_edb.close(terminate_rpc_session=True)
-
-        request.addfinalizer(teardown)
+        yield
 
     @pytest.fixture(autouse=True)
     def init(self, edb_examples):
@@ -48,8 +44,3 @@ class BaseTestClass:
         """Code after yield runs after each test."""
         yield
         return
-
-    def test_dummy_test(self, edb_examples):
-        """Dummy test to initialize Edb the first time."""
-        edbapp = edb_examples.create_empty_edb()
-        edbapp.close(terminate_rpc_session=False)

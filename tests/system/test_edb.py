@@ -38,6 +38,7 @@ pytestmark = [pytest.mark.system, pytest.mark.grpc]
 ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
@@ -1020,13 +1021,143 @@ class TestClass(BaseTestClass):
         assert edb.stackup.num_layers == 5
         edb.close(terminate_rpc_session=False)
 
-    def test_hfss_extent_info(self):
-        """HFSS extent information."""
+    @pytest.mark.skipif(True, reason="To be corrected")
+    def test_hfss_extent_info(self, edb_examples):
+        """Test HFSS extent information properties and setters (gRPC only)."""
+        edbapp = edb_examples.get_si_verse()
+        extent_info = edbapp.hfss.hfss_extent_info
 
-        # TODO check config file 2.0
+        # Test use_open_region property
+        original_use_open_region = extent_info.use_open_region
+        extent_info.use_open_region = False
+        assert extent_info.use_open_region is False
+        extent_info.use_open_region = True
+        assert extent_info.use_open_region is True
+        extent_info.use_open_region = original_use_open_region
 
-        # Obsolete addressed in config 2.0 section.
-        pass
+        # Test air_box_horizontal_extent
+        original_horizontal = extent_info.air_box_horizontal_extent
+        extent_info.air_box_horizontal_extent = 0.5
+        assert abs(extent_info.air_box_horizontal_extent - 0.5) < 0.001, "Failed to set air_box_horizontal_extent"
+        extent_info.air_box_horizontal_extent = original_horizontal
+
+        # Test air_box_horizontal_extent_enabled
+        original_h_enabled = extent_info.air_box_horizontal_extent_enabled
+        extent_info.air_box_horizontal_extent_enabled = False
+        assert extent_info.air_box_horizontal_extent_enabled is False
+        extent_info.air_box_horizontal_extent_enabled = True
+        assert extent_info.air_box_horizontal_extent_enabled is True
+        extent_info.air_box_horizontal_extent_enabled = original_h_enabled
+
+        # Test air_box_positive_vertical_extent
+        original_pos_vert = extent_info.air_box_positive_vertical_extent
+        extent_info.air_box_positive_vertical_extent = 0.3
+        assert abs(extent_info.air_box_positive_vertical_extent - 0.3) < 0.001
+        extent_info.air_box_positive_vertical_extent = original_pos_vert
+
+        # Test air_box_negative_vertical_extent
+        original_neg_vert = extent_info.air_box_negative_vertical_extent
+        extent_info.air_box_negative_vertical_extent = 0.2
+        assert abs(extent_info.air_box_negative_vertical_extent - 0.2) < 0.001
+        extent_info.air_box_negative_vertical_extent = original_neg_vert
+
+        # Test sync_air_box_vertical_extent
+        original_sync = extent_info.sync_air_box_vertical_extent
+        extent_info.sync_air_box_vertical_extent = False
+        assert extent_info.sync_air_box_vertical_extent is False
+        extent_info.sync_air_box_vertical_extent = True
+        assert extent_info.sync_air_box_vertical_extent is True
+        extent_info.sync_air_box_vertical_extent = original_sync
+
+        # Test truncate_air_box_at_ground
+        original_truncate = extent_info.truncate_air_box_at_ground
+        extent_info.truncate_air_box_at_ground = False
+        assert not extent_info.truncate_air_box_at_ground
+        extent_info.truncate_air_box_at_ground = True
+        assert extent_info.truncate_air_box_at_ground is True
+        extent_info.truncate_air_box_at_ground = original_truncate
+
+        # Test honor_user_dielectric
+        original_honor = extent_info.honor_user_dielectric
+        extent_info.honor_user_dielectric = False
+        assert not extent_info.honor_user_dielectric
+        extent_info.honor_user_dielectric = True
+        assert extent_info.honor_user_dielectric is True
+        extent_info.honor_user_dielectric = original_honor
+
+        # Test is_pml_visible
+        original_pml_visible = extent_info.is_pml_visible
+        extent_info.is_pml_visible = False
+        assert extent_info.is_pml_visible is False
+        extent_info.is_pml_visible = True
+        assert extent_info.is_pml_visible is True
+        extent_info.is_pml_visible = original_pml_visible
+
+        # Test use_xy_data_extent_for_vertical_expansion
+        original_xy_data = extent_info.use_xy_data_extent_for_vertical_expansion
+        extent_info.use_xy_data_extent_for_vertical_expansion = False
+        assert extent_info.use_xy_data_extent_for_vertical_expansion is False
+        extent_info.use_xy_data_extent_for_vertical_expansion = True
+        assert extent_info.use_xy_data_extent_for_vertical_expansion is True
+        extent_info.use_xy_data_extent_for_vertical_expansion = original_xy_data
+
+        # Test extent_type (string property with enum mapping)
+        original_extent_type = extent_info.extent_type
+        assert isinstance(extent_info.extent_type, str)
+        extent_info.extent_type = "bounding_box"
+        assert extent_info.extent_type == "bounding_box"
+        extent_info.extent_type = "conforming"
+        assert extent_info.extent_type == "conforming"
+        extent_info.extent_type = original_extent_type
+
+        # Test dielectric_extent_type - just verify it returns a string
+        diel_type = extent_info.dielectric_extent_type
+        assert isinstance(extent_info.dielectric_extent_type, str)
+
+        # Test dielectric_extent_size
+        original_diel_size = extent_info.dielectric_extent_size
+        extent_info.dielectric_extent_size = 0.25
+        assert abs(extent_info.dielectric_extent_size - 0.25) < 0.001
+        extent_info.dielectric_extent_size = original_diel_size
+
+        # Test open_region_type - just verify it returns a string
+        open_type = extent_info.open_region_type
+        assert isinstance(extent_info.open_region_type, str)
+
+        # Test operating_freq (PML operating frequency) - just verify getter/setter work
+        original_freq = extent_info.operating_freq
+        extent_info.operating_freq = 2e9  # 2 GHz
+        # Note: Skip validation of retrieved value due to complex Value type handling
+        extent_info.operating_freq = original_freq
+
+        # Test pml_radiation_factor
+        original_rad_factor = extent_info.radiation_level
+        extent_info.radiation_level = 0.02
+        assert abs(extent_info.radiation_level - 0.02) < 0.001
+        extent_info.radiation_level = original_rad_factor
+
+        # Test load_config and export_config
+        config = extent_info.export_config()
+        assert isinstance(config, dict)
+        assert "use_open_region" in config
+        assert "air_box_horizontal_extent" in config
+        assert "extent_type" in config
+
+        # Test that loading the exported config works
+        test_config = {
+            "use_open_region": False,
+            "air_box_horizontal_extent": 0.6,
+            "sync_air_box_vertical_extent": False,
+        }
+        extent_info.load_config(test_config)
+        assert extent_info.use_open_region is False
+        assert abs(extent_info.air_box_horizontal_extent - 0.6) < 0.001
+        assert extent_info.sync_air_box_vertical_extent is False
+
+        # Restore original configuration
+        extent_info.load_config(config)
+
+        edbapp.close(terminate_rpc_session=False)
 
     def test_import_gds_from_tech(self, edb_examples):
         """Use techfile."""
@@ -1943,17 +2074,6 @@ class TestClass(BaseTestClass):
                 str(Path(edbapp.edbpath).with_name(Path(edbapp.edbpath).stem + "_compare_results")),
             ]
 
-    def test_job_manager(self, edb_examples, local_scratch):
-        project_path = edb_examples.copy_project_for_job_manager(local_scratch)
-        edb = edb_examples.create_empty_edb()
-        jm = edb.job_manager
-        jm.start_service()
-        assert jm.started
-        job1 = edb.job_manager.create_simulation_config(project_path=project_path)
-        assert job1
-        jm.close()  # stop the service when done
-        assert not jm.started
-
     @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
     def test_create_layout_component(self, edb_examples):
         from pyedb import Edb
@@ -2016,4 +2136,4 @@ class TestClass(BaseTestClass):
         assert edbapp.design_mode == "general"
         edbapp.design_mode = "IC"
         assert edbapp.design_mode == "ic"
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)

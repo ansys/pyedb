@@ -231,8 +231,9 @@ class JobManagerHandler:
                 else:
                     self.ansys_path = os.path.join(installed_versions[version], "ansysedt.exe")
         self.scheduler_type = self._detect_scheduler()
-        self.manager = JobManager(scheduler_type=self.scheduler_type)
-        self.manager.resource_limits = ResourceLimits(max_concurrent_jobs=1)
+        # Create resource limits with default values
+        resource_limits = ResourceLimits(max_concurrent_jobs=1)
+        self.manager = JobManager(resource_limits=resource_limits, scheduler_type=self.scheduler_type)
         self.manager.jobs = {}  # In-memory job store -TODO add persistence database
         # Pass the detected ANSYS path to the manager
         self.manager.ansys_path = self.ansys_path

@@ -19,87 +19,131 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from typing import Any, Optional, Union
 
-from pyedb.configuration.cfg_common import CfgBase
+from pydantic import BaseModel, Field
+
+
+class CfgBase(BaseModel):
+    model_config = {
+        "populate_by_name": True,
+        "extra": "forbid",
+    }
+
+
+class PaddingData(CfgBase):
+    size: Union[float, str]
+    is_multiple: bool
+
+
+from typing import Any, Optional
+
+from pydantic import Field
 
 
 class CfgBoundaries(CfgBase):
-    def __init__(self, pedb, boundary_data):
-        self._pedb = pedb
-        self.boundary_data = boundary_data
+    use_open_region: Optional[bool] = Field(default=None, description="Whether to enable the use of an open region")
+    open_region_type: Optional[str] = Field(
+        default=None, description="Type of open region to use; e.g., `radiation` or `pml` as defined."
+    )
+    is_pml_visible: Optional[bool] = Field(
+        default=None,
+        description=(
+            "Whether the PML (Perfectly Matched Layer) boundary is visible when using PML."
+            "If `True`, the PML volume is shown in the model; otherwise it is hidden. "
+        ),
+    )
+    operating_freq: Optional[Any] = Field(
+        default=None,
+        description=(
+            "Operating frequency (in Hz) used to compute PML boundary thickness. "
+            "This parameter influences how thick the PML layer is calculated. "
+        ),
+    )
+    radiation_level: Optional[int] = Field(
+        default=None,
+        description=(
+            "Radiation factor for PML, controlling the relative thickness of the PML boundary. "
+            "Typically ranges on a scale (e.g., 0–10) to define how aggressively the PML absorbs. "
+        ),
+    )
 
-        self.open_region = self.boundary_data.get("open_region", None)
-        self.open_region_type = self.boundary_data.get("map_open_region_type", None)
-        self.pml_visible = self.boundary_data.get("pml_visible", None)
-        self.pml_operation_frequency = self.boundary_data.get("pml_operation_frequency", None)
-        self.pml_radiation_factor = self.boundary_data.get("pml_radiation_factor", None)
-        self.dielectric_extent_type = self.boundary_data.get("dielectric_extent_type", None)
-        self.horizontal_padding = self.boundary_data.get("horizontal_padding", None)
-        self.honor_primitives_on_dielectric_layers = self.boundary_data.get(
-            "honor_primitives_on_dielectric_layers", False
-        )
-        self.air_box_extent_type = self.boundary_data.get("air_box_extent_type", None)
-        self.air_box_base_polygon = self.boundary_data.get("air_box_base_polygon", None)
-        self.air_box_truncate_model_ground_layers = self.boundary_data.get("air_box_truncate_model_ground_layers", None)
-        self.air_box_horizontal_padding = self.boundary_data.get("air_box_horizontal_padding", None)
-        self.air_box_positive_vertical_padding = self.boundary_data.get("air_box_positive_vertical_padding", None)
-        self.air_box_negative_vertical_padding = self.boundary_data.get("air_box_negative_vertical_padding", None)
+    dielectric_extent_type: Optional[str] = Field(
+        default=None,
+        description=(
+            "Method used to derive the base polygon for the dielectric region. "
+            "Can be e.g. `Bounding Box`, `Conformal`, `Convex Hull`, or `Polygon` as in HFSS geometry extents. "
+        ),
+    )
+    dielectric_base_polygon: Optional[str] = Field(
+        default=None,
+        description=(
+            "Name of the base polygon used for the dielectric extent. "
+            "When `dielectric_extent_type` is `Polygon`, this defines which polygon to use. "
+        ),
+    )
+    dielectric_extent_size: Optional[PaddingData] = Field(
+        default=None,
+        description=(
+            "Padding (size, is_multiple) for the dielectric extent. "
+            "Specifies how much to expand the dielectric base polygon, either as an absolute value or scaled factor. "
+        ),
+    )
+    honor_user_dielectric: bool = Field(
+        default=False,
+        description=(
+            "If `True`, honors user-defined geometry on dielectric layers; otherwise, the base polygon is expanded "
+            "to define the dielectric region. "
+        ),
+    )
 
-    def get_parameters_from_edb(self):
-        self.open_region = self._pedb.hfss.hfss_extent_info.use_open_region
-        self.open_region_type = self._pedb.hfss.hfss_extent_info.open_region_type
-        self.pml_visible = self._pedb.hfss.hfss_extent_info.is_pml_visible
-        self.pml_operation_frequency = self._pedb.hfss.hfss_extent_info.operating_freq.tostring
-        self.pml_radiation_factor = self._pedb.hfss.hfss_extent_info.radiation_level.tostring
-        self.dielectric_extent_type = self._pedb.hfss.hfss_extent_info.extent_type
-        self.horizontal_padding = self._pedb.hfss.hfss_extent_info.dielectric_extent_size
-        self.honor_primitives_on_dielectric_layers = self._pedb.hfss.hfss_extent_info.honor_user_dielectric
-        self.air_box_extent_type = self._pedb.hfss.hfss_extent_info.extent_type
-        self.air_box_truncate_model_ground_layers = self._pedb.hfss.hfss_extent_info.truncate_air_box_at_ground
-        self.air_box_horizontal_padding = self._pedb.hfss.hfss_extent_info.air_box_horizontal_extent
-        self.air_box_positive_vertical_padding = self._pedb.hfss.hfss_extent_info.air_box_positive_vertical_extent
-        self.air_box_negative_vertical_padding = self._pedb.hfss.hfss_extent_info.air_box_negative_vertical_extent
-        return self.get_attributes(exclude="boundary_data")
+    extent_type: Optional[str] = Field(
+        default=None,
+        description=(
+            "Type of overall HFSS extent. "
+            "This determines how the base polygon for both airbox and dielectric is computed. "
+        ),
+    )
+    base_polygon: Optional[str] = Field(
+        default=None,
+        description=("Base polygon name for the extent region, used when the extent type is `Polygon`. "),
+    )
+    truncate_air_box_at_ground: Optional[bool] = Field(
+        default=None,
+        description=(
+            "Whether to truncate (cap) the airbox at ground layers. "
+            "If `True`, the simulation volume is limited by the ground layer instead of extending indefinitely. "
+        ),
+    )
+    air_box_horizontal_extent: Optional[PaddingData] = Field(
+        default=None,
+        description=(
+            "Horizontal padding of the airbox (size, is_multiple). "
+            "Defines how far the airbox extends in the X-Y direction. "
+        ),
+    )
+    air_box_positive_vertical_extent: Optional[PaddingData] = Field(
+        default=None,
+        description=(
+            "Vertical padding (positive Z direction) of the airbox (size, is_multiple). "
+            "Controls the top extension of the airbox. "
+        ),
+    )
+    air_box_negative_vertical_extent: Optional[PaddingData] = Field(
+        default=None,
+        description=(
+            "Vertical padding (negative Z direction) of the airbox (size, is_multiple). "
+            "Controls how far below the model the airbox extends. "
+        ),
+    )
+    sync_air_box_vertical_extent: Optional[bool] = Field(
+        default=None,
+        description=(
+            "If `True`, synchronizes the positive and negative vertical airbox extents. "
+            "This means both directions use the same padding value. "
+        ),
+    )
 
-    def set_parameters_to_edb(self):
-        """Imports boundary information from JSON."""
-        if self.open_region is not None:
-            self._pedb.hfss.hfss_extent_info.use_open_region = self.open_region
-        if self.open_region_type:
-            self._pedb.hfss.hfss_extent_info.open_region_type = self.open_region_type.lower()
-        if self.pml_visible is not None:
-            self._pedb.hfss.hfss_extent_info.is_pml_visible = self.pml_visible
-        if self.pml_operation_frequency:
-            self._pedb.hfss.hfss_extent_info.operating_freq = self.pml_operation_frequency
-        if self.pml_radiation_factor:
-            if self._pedb.grpc:
-                self._pedb.hfss.hfss_extent_info.pml_radiation_factor = self.pml_radiation_factor
-            else:
-                self._pedb.hfss.hfss_extent_info.radiation_level = self.pml_radiation_factor
-        if self.dielectric_extent_type:
-            self._pedb.hfss.hfss_extent_info.extent_type = self.dielectric_extent_type.lower()
-        if self.horizontal_padding:
-            self._pedb.hfss.hfss_extent_info.dielectric_extent_size = float(self.horizontal_padding)
-        if self.honor_primitives_on_dielectric_layers is not None:
-            self._pedb.hfss.hfss_extent_info.honor_user_dielectric = self.honor_primitives_on_dielectric_layers
-        if self.air_box_extent_type:
-            self._pedb.hfss.hfss_extent_info.extent_type = self.air_box_extent_type.lower()
-        if self.air_box_truncate_model_ground_layers is not None:
-            self._pedb.hfss.hfss_extent_info.truncate_air_box_at_ground = self.air_box_truncate_model_ground_layers
-        if self.air_box_horizontal_padding:
-            self._pedb.hfss.hfss_extent_info.air_box_horizontal_extent = float(self.air_box_horizontal_padding)
-        if self.air_box_positive_vertical_padding:
-            self._pedb.hfss.hfss_extent_info.air_box_positive_vertical_extent = float(
-                self.air_box_positive_vertical_padding
-            )
-        if self.air_box_negative_vertical_padding:
-            self._pedb.hfss.hfss_extent_info.air_box_negative_vertical_extent = float(
-                self.air_box_negative_vertical_padding
-            )
-
-    def apply(self):
-        """Imports boundary information from JSON."""
-        self.set_parameters_to_edb()
-
-    def get_data_from_db(self):
-        return self.get_parameters_from_edb()
+    @classmethod
+    def create(cls, **kwargs):
+        return cls(**kwargs)

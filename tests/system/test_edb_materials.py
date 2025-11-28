@@ -62,18 +62,13 @@ VALUES = (FLOAT_VALUE, INT_VALUE, STR_VALUE)
 MATERIAL_NAME = "DummyMaterial"
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, edb_examples):
         self.edbapp = edb_examples.create_empty_edb()
         if MATERIAL_NAME in self.edbapp.materials:
             self.edbapp.materials[MATERIAL_NAME].delete()
-
-    @pytest.fixture(autouse=True)
-    def teardown(self, request, edb_examples):
-        """Code after yield runs after each test."""
-        yield
-        self.edbapp.close(terminate_rpc_session=True)
 
     def test_material_name(self):
         """Evaluate material properties."""

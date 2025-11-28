@@ -46,7 +46,6 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecate_argument_name
 
 
 def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
@@ -1529,3 +1528,305 @@ class Modeler(object):
             if not flag:
                 return flag
         return True
+
+    def insert_layout_instance_on_layer(
+        self,
+        cell_name: str,
+        placement_layer: str,
+        rotation: Union[float, str] = 0,
+        x: Union[float, str] = 0,
+        y: Union[float, str] = 0,
+        place_on_bottom: bool = False,
+        local_origin_x: Optional[Union[float, str]] = 0,
+        local_origin_y: Optional[Union[float, str]] = 0,
+    ) -> Any:
+        """Insert a layout instance into the active layout.
+
+        Parameters
+        ----------
+        cell_name: str
+            Name of the layout to insert.
+        placement_layer: str
+            Placement Layer.
+        scaling : float
+            Scale parameter.
+        rotation : float or str
+            Rotation angle, specified counter-clockwise in radians.
+        mirror : bool
+            Mirror about Y-axis.
+        x : float or str
+            X offset.
+        y : float or str
+            Y offset.
+        place_on_bottom : bool
+            Whether to place the layout instance on the bottom of the layer.
+        local_origin_x: float or str
+            Local origin X coordinate.
+        local_origin_y: float or str
+            Local origin Y coordinate.
+        """
+
+        placement_layer = self._pedb.stackup.layers[placement_layer]
+        if not place_on_bottom:
+            cell_inst = self.insert_layout_instance_placement_3d(
+                cell_name=cell_name,
+                x=x,
+                y=y,
+                z=placement_layer.upper_elevation,
+                rotation_x="0deg",
+                rotation_y=0,
+                rotation_z=rotation,
+                local_origin_x=local_origin_x,
+                local_origin_y=local_origin_y,
+            )
+        else:
+            cell_inst = self.insert_layout_instance_placement_3d(
+                cell_name=cell_name,
+                x=x,
+                y=y,
+                z=placement_layer.lower_elevation,
+                rotation_x="180deg",
+                rotation_y=0,
+                rotation_z=rotation,
+                local_origin_x=local_origin_x,
+                local_origin_y=local_origin_y,
+            )
+        return cell_inst
+
+    def insert_layout_instance_placement_3d(
+        self,
+        cell_name: Union[str, Path],
+        x: Union[float, str] = 0.0,
+        y: Union[float, str] = 0.0,
+        z: Union[float, str] = 0.0,
+        rotation_x: Union[float, str] = 0.0,
+        rotation_y: Union[float, str] = 0.0,
+        rotation_z: Union[float, str] = 0.0,
+        local_origin_x: Union[float, str] = 0.0,
+        local_origin_y: Union[float, str] = 0.0,
+        local_origin_z: Union[float, str] = 0.0,
+    ) -> Any:
+        """Insert a 3D component placement into the active layout.
+
+        Parameters
+        ----------
+        cell_name: str
+            Name of the layout to insert.
+        x: float or str
+            X coordinate.
+        y: float or str
+            Y coordinate.
+        z: float or str
+            Z coordinate.
+        rotation_x: float or str
+            Rotation angle around X-axis, specified counter-clockwise in radians.
+        rotation_y: float or str
+            Rotation angle around Y-axis, specified counter-clockwise in radians.
+        rotation_z: float or str
+            Rotation angle around Z-axis, specified counter-clockwise in radians.
+        local_origin_x: float or str
+            Local origin X coordinate.
+        local_origin_y: float or str
+            Local origin Y coordinate.
+        local_origin_z: float or str
+            Local origin Z coordinate.
+        """
+
+        from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
+        from ansys.edb.core.hierarchy.cell_instance import CellInstance
+        from ansys.edb.core.layout.cell import Cell, CellType
+
+        from pyedb.generic.general_methods import generate_unique_name
+
+        instance_name = generate_unique_name(cell_name, n=2)
+        cell = Cell.find(self._pedb._db, CellType.CIRCUIT_CELL, cell_name)
+        cell_inst = CellInstance.create(self._pedb.active_layout, instance_name, cell.layout)
+        cell_inst.placement_3d = True
+        t3d = cell_inst.transform3d
+
+        # offsets
+        location = GrpcPoint3DData(
+            (self._pedb.value(local_origin_x) * -1)._edb_object,
+            (self._pedb.value(local_origin_y) * -1)._edb_object,
+            (self._pedb.value(local_origin_z) * -1)._edb_object,
+        )
+        t3d_offset = t3d.create_from_offset(offset=location)
+        t3d = t3d + t3d_offset
+
+        # Rotation X
+        t3d_rotation_x = t3d.create_from_axis_and_angle(
+            axis=GrpcPoint3DData(1.0, 0.0, 0.0), angle=self._pedb.value(rotation_x)
+        )
+        t3d = t3d + t3d_rotation_x
+
+        # Rotation Y
+        t3d_rotation_y = t3d.create_from_axis_and_angle(
+            axis=GrpcPoint3DData(0.0, 1.0, 0.0), angle=self._pedb.value(rotation_y)
+        )
+        t3d = t3d + t3d_rotation_y
+
+        # Rotation Z
+        t3d_rotation_z = t3d.create_from_axis_and_angle(
+            axis=GrpcPoint3DData(0.0, 0.0, 1.0), angle=self._pedb.value(rotation_z)
+        )
+        t3d = t3d + t3d_rotation_z
+
+        # Place
+        location = GrpcPoint3DData(
+            self._pedb.value(x)._edb_object, self._pedb.value(y)._edb_object, self._pedb.value(z)._edb_object
+        )
+        t3d_offset = t3d.create_from_offset(offset=location)
+        t3d = t3d + t3d_offset
+
+        # Set transform3d back into instance
+        cell_inst.transform3d = t3d
+        return cell_inst
+
+    def insert_3d_component_placement_3d(
+        self,
+        a3dcomp_path: Union[str, Path],
+        x: Union[float, str] = 0.0,
+        y: Union[float, str] = 0.0,
+        z: Union[float, str] = 0.0,
+        rotation_x: Union[float, str] = 0.0,
+        rotation_y: Union[float, str] = 0.0,
+        rotation_z: Union[float, str] = 0.0,
+        local_origin_x: Union[float, str] = 0.0,
+        local_origin_y: Union[float, str] = 0.0,
+        local_origin_z: Union[float, str] = 0.0,
+    ) -> Any:
+        """Insert a 3D component placement into the active layout.
+
+        Parameters
+        ----------
+        a3dcomp_path: str or Path
+            File path to the 3D component.
+        x: float or str
+            X coordinate.
+        y: float or str
+            Y coordinate.
+        z: float or str
+            Z coordinate.
+        rotation_x: float or str
+            Rotation angle around X-axis, specified counter-clockwise in radians.
+        rotation_y: float or str
+            Rotation angle around Y-axis, specified counter-clockwise in radians.
+        rotation_z: float or str
+            Rotation angle around Z-axis, specified counter-clockwise in radians.
+        local_origin_x: float or str
+            Local origin X coordinate.
+        local_origin_y: float or str
+            Local origin Y coordinate.
+        local_origin_z: float or str
+            Local origin Z coordinate.
+        """
+        from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
+        from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
+
+        mcad_model = GrpcMcadModel.create_3d_comp(layout=self._pedb.active_layout, filename=str(a3dcomp_path))
+        cell_inst = mcad_model.cell_instance
+        cell_inst.placement_3d = True
+        t3d = cell_inst.transform3d
+
+        # offsets
+        location = GrpcPoint3DData(
+            (self._pedb.value(local_origin_x) * -1)._edb_object,
+            (self._pedb.value(local_origin_y) * -1)._edb_object,
+            (self._pedb.value(local_origin_z) * -1)._edb_object,
+        )
+        t3d_offset = t3d.create_from_offset(offset=location)
+        t3d = t3d + t3d_offset
+
+        # Rotation X
+        t3d_rotation_x = t3d.create_from_axis_and_angle(
+            axis=GrpcPoint3DData(1.0, 0.0, 0.0), angle=self._pedb.value(rotation_x)
+        )
+        t3d = t3d + t3d_rotation_x
+
+        # Rotation Y
+        t3d_rotation_y = t3d.create_from_axis_and_angle(
+            axis=GrpcPoint3DData(0.0, 1.0, 0.0), angle=self._pedb.value(rotation_y)
+        )
+        t3d = t3d + t3d_rotation_y
+
+        # Rotation Z
+        t3d_rotation_z = t3d.create_from_axis_and_angle(
+            axis=GrpcPoint3DData(0.0, 0.0, 1.0), angle=self._pedb.value(rotation_z)
+        )
+        t3d = t3d + t3d_rotation_z
+
+        # Place
+        location = GrpcPoint3DData(
+            self._pedb.value(x)._edb_object, self._pedb.value(y)._edb_object, self._pedb.value(z)._edb_object
+        )
+        t3d_offset = t3d.create_from_offset(offset=location)
+        t3d = t3d + t3d_offset
+
+        # Set transform3d back into instance
+        cell_inst.transform3d = t3d
+        return cell_inst
+
+    def insert_3d_component_on_layer(
+        self,
+        a3dcomp_path: Union[str, Path],
+        placement_layer: str,
+        rotation: Union[float, str] = 0,
+        x: Union[float, str] = 0,
+        y: Union[float, str] = 0,
+        place_on_bottom: bool = False,
+        local_origin_x: Optional[Union[float, str]] = 0,
+        local_origin_y: Optional[Union[float, str]] = 0,
+        local_origin_z: Optional[Union[float, str]] = 0,
+    ) -> Any:
+        """Insert a layout instance into the active layout.
+
+        Parameters
+        ----------
+        a3dcomp_path: str or Path
+            File path to the 3D component.
+        placement_layer: str
+            Placement Layer.
+        rotation : float or str
+            Rotation angle, specified counter-clockwise in radians.
+        x : float or str
+            X offset.
+        y : float or str
+            Y offset.
+        place_on_bottom : bool
+            Whether to place the layout instance on the bottom of the layer.
+        local_origin_x: float or str
+            Local origin X coordinate.
+        local_origin_y: float or str
+            Local origin Y coordinate.
+        local_origin_z: float or str
+            Local origin Z coordinate.
+        """
+
+        placement_layer = self._pedb.stackup.layers[placement_layer]
+        if not place_on_bottom:
+            cell_inst = self.insert_3d_component_placement_3d(
+                a3dcomp_path=a3dcomp_path,
+                x=x,
+                y=y,
+                z=placement_layer.upper_elevation,
+                rotation_x=0,
+                rotation_y=0,
+                rotation_z=rotation,
+                local_origin_x=local_origin_x,
+                local_origin_y=local_origin_y,
+                local_origin_z=local_origin_z,
+            )
+        else:
+            cell_inst = self.insert_3d_component_placement_3d(
+                a3dcomp_path=a3dcomp_path,
+                x=x,
+                y=y,
+                z=placement_layer.lower_elevation,
+                rotation_x="180deg",
+                rotation_y=0,
+                rotation_z=rotation,
+                local_origin_x=local_origin_x,
+                local_origin_y=local_origin_y,
+                local_origin_z=local_origin_z,
+            )
+        return cell_inst

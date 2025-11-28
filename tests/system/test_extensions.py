@@ -105,6 +105,7 @@ PADSTACK_DEFS = [
 ]
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch):

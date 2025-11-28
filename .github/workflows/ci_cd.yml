@@ -134,13 +134,13 @@ jobs:
       USE_GRPC: '0'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           persist-credentials: false
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -203,13 +203,13 @@ jobs:
       USE_GRPC: '1'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           persist-credentials: false
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -233,7 +233,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 20
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/system -n auto --dist loadfile -v --cov
@@ -272,13 +272,13 @@ jobs:
       USE_GRPC: '0'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           persist-credentials: false
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -341,13 +341,13 @@ jobs:
       USE_GRPC: '1'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           persist-credentials: false
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -371,7 +371,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 20
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/unit -n auto --dist loadfile -v --cov
@@ -412,19 +412,19 @@ jobs:
       USE_GRPC: '0'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           persist-credentials: false
 
       - name: "Set up Python"
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
       - name: "Install os packages"
         run: |
           sudo apt update
-          sudo apt install libgl1-mesa-glx xvfb -y
+          sudo apt install libgl1-mesa-glx -y
 
       - name: Create Python venv
         run: |
@@ -447,9 +447,8 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            xvfb-run pytest tests/system -n auto --dist loadfile -v --cov
+            pytest tests/system -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
@@ -487,19 +486,19 @@ jobs:
       USE_GRPC: '1'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           persist-credentials: false
 
       - name: "Set up Python"
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
       - name: "Install os packages"
         run: |
           sudo apt update
-          sudo apt install libgl1-mesa-glx xvfb -y
+          sudo apt install libgl1-mesa-glx -y
 
       - name: Create Python venv
         run: |
@@ -520,11 +519,10 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 20
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            xvfb-run pytest tests/system -n auto --dist loadfile -v --cov
+            pytest tests/system -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
@@ -562,19 +560,19 @@ jobs:
       USE_GRPC: '0'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           persist-credentials: false
 
       - name: "Set up Python"
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
       - name: "Install os packages"
         run: |
           sudo apt update
-          sudo apt install libgl1-mesa-glx xvfb -y
+          sudo apt install libgl1-mesa-glx -y
 
       - name: Create Python venv
         run: |
@@ -595,11 +593,10 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 20
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            xvfb-run pytest tests/unit -n auto --dist loadfile -v --cov
+            pytest tests/unit -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
@@ -637,19 +634,19 @@ jobs:
       USE_GRPC: '1'
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           persist-credentials: false
 
       - name: "Set up Python"
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
       - name: "Install os packages"
         run: |
           sudo apt update
-          sudo apt install libgl1-mesa-glx xvfb -y
+          sudo apt install libgl1-mesa-glx -y
 
       - name: Create Python venv
         run: |
@@ -670,11 +667,10 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 20
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            xvfb-run pytest tests/unit -n auto --dist loadfile -v --cov
+            pytest tests/unit -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
@@ -709,12 +705,15 @@ jobs:
     runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: Install Git and checkout project
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           persist-credentials: false
 
+      - name: Set up headless display
+        uses: pyvista/setup-headless-display-action@7d84ae825e6d9297a8e99bdbbae20d1b919a0b19 # v4.2
+
       - name: Setup Python
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -729,7 +728,7 @@ jobs:
           python -m pip install -U pip
 
       - name: Clone PyAEDT on main branch
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           repository: ansys/pyaedt
           path: "external/pyaedt"
@@ -745,13 +744,6 @@ jobs:
         run: |
           . .venv\Scripts\Activate.ps1
           python -m pip install .
-
-      - name: Install CI dependencies (e.g. vtk-osmesa)
-        run: |
-          .venv\Scripts\Activate.ps1
-          # Uninstall conflicting dependencies
-          pip uninstall --yes vtk
-          pip install --index-url https://wheels.vtk.org vtk-osmesa==9.3.1
 
       - name: Run PyAEDT tests
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -809,9 +801,12 @@ jobs:
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           persist-credentials: false
+
+      - name: Set up headless display
+        uses: pyvista/setup-headless-display-action@7d84ae825e6d9297a8e99bdbbae20d1b919a0b19 # v4.2
 
       - name: Install OS packages
         run: |
@@ -819,7 +814,7 @@ jobs:
           sudo apt-get install tk -y
 
       - name: Setup Python
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -833,7 +828,7 @@ jobs:
           python -m pip install -U pip
 
       - name: Clone PyAEDT on main branch
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           repository: ansys/pyaedt
           path: "external/pyaedt"
@@ -844,7 +839,6 @@ jobs:
         env:
           ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
         run: |
-          export LD_LIBRARY_PATH=${ANSYSEM}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           pip install --no-cache-dir external/pyaedt[tests]
 
@@ -852,19 +846,7 @@ jobs:
         env:
           ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
         run: |
-          export LD_LIBRARY_PATH=${ANSYSEM}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
-          . .venv/bin/activate
           python -m pip install .
-
-      - name: Install CI dependencies (e.g. vtk-osmesa)
-        env:
-          ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
-        run: |
-          export LD_LIBRARY_PATH=${ANSYSEM}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
-          . .venv/bin/activate
-          # Uninstall conflicting dependencies
-          pip uninstall --yes vtk
-          pip install --index-url https://wheels.vtk.org vtk-osmesa==9.3.1
 
       - name: Run PyAEDT tests
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -875,7 +857,6 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/general/test_01_3dlayout_edb.py
             pytest -v external/pyaedt/tests/system/general/test_01_configuration_files.py
@@ -890,7 +871,6 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
             pytest -v external/pyaedt/tests/system/solvers/test_00_analyze.py
@@ -904,7 +884,6 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT252 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
             pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py

@@ -1,7 +1,7 @@
 .. _ref_drc:
 
 ==================================================================
-Design-rule checking (DRC)–self-contained, multi-threaded engine
+Design-rule checking (DRC)—self-contained, multi-threaded engine
 ==================================================================
 
 .. currentmodule:: pyedb.workflows.drc.drc
@@ -85,7 +85,7 @@ Rule models
    BackDrillStubLength
    CopperBalance
 
-DRC engine
+DRC Engine
 ~~~~~~~~~~
 
 .. autosummary::
@@ -129,7 +129,7 @@ Load a rule deck from JSON
        rules = Rules.from_dict(json.load(f))
 
 Export violations to CSV
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 

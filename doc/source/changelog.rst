@@ -9,6 +9,196 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.65.0 <https://github.com/ansys/pyedb/releases/tag/v0.65.0>`_ - November 27, 2025
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/checkout from 5.0.1 to 6.0.0
+          - `#1665 <https://github.com/ansys/pyedb/pull/1665>`_
+
+        * - Bump actions/setup-python from 6.0.0 to 6.1.0
+          - `#1674 <https://github.com/ansys/pyedb/pull/1674>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Fixing hatched ground plane bug with grpc
+          - `#1675 <https://github.com/ansys/pyedb/pull/1675>`_
+
+        * - Issue 1621 fix
+          - `#1677 <https://github.com/ansys/pyedb/pull/1677>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.64.1
+          - `#1669 <https://github.com/ansys/pyedb/pull/1669>`_
+
+
+`0.64.1 <https://github.com/ansys/pyedb/releases/tag/v0.64.1>`_ - November 24, 2025
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Add grpc padstack instance bounding box property
+          - `#1642 <https://github.com/ansys/pyedb/pull/1642>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/checkout from 5.0.0 to 5.0.1
+          - `#1655 <https://github.com/ansys/pyedb/pull/1655>`_
+
+        * - Update jupyterlab requirement from <4.5,>=4.0.0 to >=4.0.0,<4.6
+          - `#1656 <https://github.com/ansys/pyedb/pull/1656>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Remove JobManager from Edb class
+          - `#1657 <https://github.com/ansys/pyedb/pull/1657>`_
+
+        * - Fixing hfss extent
+          - `#1660 <https://github.com/ansys/pyedb/pull/1660>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.64.0
+          - `#1652 <https://github.com/ansys/pyedb/pull/1652>`_
+
+        * - Bump dev version into v0.65.dev0
+          - `#1653 <https://github.com/ansys/pyedb/pull/1653>`_
+
+        * - Delete accidentally added files
+          - `#1661 <https://github.com/ansys/pyedb/pull/1661>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Edb cfg boundaries
+          - `#1659 <https://github.com/ansys/pyedb/pull/1659>`_
+
+        * - Add docstring to edb cfg boundaries
+          - `#1663 <https://github.com/ansys/pyedb/pull/1663>`_
+
+
+`0.64.0 <https://github.com/ansys/pyedb/releases/tag/v0.64.0>`_ - November 13, 2025
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Adding CLI for batch submission
+          - `#1635 <https://github.com/ansys/pyedb/pull/1635>`_
+
+        * - Job manager concurrent job bug
+          - `#1640 <https://github.com/ansys/pyedb/pull/1640>`_
+
+        * - Siwave log parser
+          - `#1646 <https://github.com/ansys/pyedb/pull/1646>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump ansys/actions from 10.1.4 to 10.1.5
+          - `#1623 <https://github.com/ansys/pyedb/pull/1623>`_
+
+        * - Update pypandoc requirement from <1.16,>=1.10.0 to >=1.10.0,<1.17
+          - `#1643 <https://github.com/ansys/pyedb/pull/1643>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Introduce \`\`sphinx-autoapi\`\` for API documentation
+          - `#1632 <https://github.com/ansys/pyedb/pull/1632>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bux fixed
+          - `#1626 <https://github.com/ansys/pyedb/pull/1626>`_
+
+        * - Create port on component (grpc) bug fixed
+          - `#1628 <https://github.com/ansys/pyedb/pull/1628>`_
+
+        * - Cfg_ports_sources.py
+          - `#1644 <https://github.com/ansys/pyedb/pull/1644>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.63.0
+          - `#1624 <https://github.com/ansys/pyedb/pull/1624>`_
+
+        * - Bump release 0.64.dev0
+          - `#1634 <https://github.com/ansys/pyedb/pull/1634>`_
+
+        * - Leverage new \`\`vtk-osmesa\`\` logic in CI
+          - `#1651 <https://github.com/ansys/pyedb/pull/1651>`_
+
+
 `0.63.0 <https://github.com/ansys/pyedb/releases/tag/v0.63.0>`_ - November 03, 2025
 ===================================================================================
 

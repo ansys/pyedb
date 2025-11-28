@@ -50,6 +50,7 @@ pytestmark = [pytest.mark.system, pytest.mark.grpc]
 ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     def test_stackup(self, edb_examples):
         edb = edb_examples.create_empty_edb()
@@ -99,10 +100,9 @@ class TestClass(BaseTestClass):
         assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.01, 0.0]]
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
     def test_hatch_grounded(self, edb_examples):
         edb = edb_examples.create_empty_edb()
-        MicroStripTechnologyStackup(edb)
+        MicroStripTechnologyStackup(edb, botton_layer_name="METAL_BOT")
         hatch = HatchGround(
             edb_cell=edb,
             width=100e-6,

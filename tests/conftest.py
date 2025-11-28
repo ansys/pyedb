@@ -177,6 +177,14 @@ class EdbExamples:
         aedb = self._copy_file_folder_into_local_folder("TEDB/component_no_ref_pins.aedb")
         return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
 
+    def get_si_board(self, edbapp=True, additional_files_folders="", version=None):
+        return self._get_test_board(
+            edbapp,
+            additional_files_folders,
+            version,
+            source_file_path="si_board/si_board.aedb",
+        )
+
     def load_edb(self, edb_path, copy_to_temp=True, **kwargs):
         if copy_to_temp:
             aedb = self._copy_file_folder_into_local_folder(edb_path)
@@ -196,6 +204,9 @@ class EdbExamples:
 
     def get_log_file_example(self):
         return os.path.join(self.example_models_path, "test.log")
+
+    def get_siwave_log_file_example(self):
+        return os.path.join(self.example_models_path, "siwave.log")
 
 
 @pytest.fixture(scope="class", autouse=True)
@@ -233,3 +244,15 @@ def target_path4(local_scratch):
 @pytest.fixture(scope="class", autouse=True)
 def edb_examples(local_scratch):
     return EdbExamples(local_scratch, GRPC)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def close_rpc_session(init_scratch):
+    """Provide a module-scoped scratch directory."""
+
+    yield
+    if GRPC:
+        scratch = Scratch(init_scratch)
+        sub_folder = Path(scratch.path) / generate_random_string(6) / ".aedb"
+        dummy_edb = Edb(str(sub_folder), version=desktop_version, grpc=True)
+        dummy_edb.close(terminate_rpc_session=True)

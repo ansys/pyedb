@@ -46,7 +46,7 @@ class CfgData(object):
         self._pedb = pedb
         self.general = CfgGeneral(self._pedb, kwargs.get("general", {}))
 
-        self.boundaries = CfgBoundaries(self._pedb, kwargs.get("boundaries", {}))
+        self.boundaries = CfgBoundaries.create(**kwargs.get("boundaries", {}))
 
         self.nets = CfgNets(
             self._pedb,

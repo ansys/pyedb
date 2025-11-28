@@ -35,6 +35,7 @@ from tests.system.base_test_class import BaseTestClass
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
+@pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
@@ -271,7 +272,7 @@ class TestClass(BaseTestClass):
         edbapp.build_simulation_project(simconfig)
         assert round(edbapp.components["X1"].solder_ball_height, 6) == 0.00025
         assert round(edbapp.components["U1"].solder_ball_height, 6) == 0.00035
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_build_siwave_project_from_config_file(self):
         """Build Siwave simulation project from configuration file."""
