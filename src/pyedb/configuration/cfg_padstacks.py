@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from typing import Union
 
-from pyedb.configuration.cfg_common import CfgBase
+from pydantic import BaseModel, Field
+
 from pyedb.dotnet.database.general import (
     convert_py_list_to_net_list,
     pascal_to_snake,
@@ -384,15 +386,64 @@ class CfgPadstackInstance(CfgBase):
         self._pedb = pedb
         self.pyedb_obj = pyedb_obj
 
-        self.name = kwargs.get("name", None)
         self.is_pin = kwargs.get("is_pin", False)
         self.net_name = kwargs.get("net_name", None)
         self.layer_range = kwargs.get("layer_range", [None, None])
         self.definition = kwargs.get("definition", None)
-        self.backdrill_parameters = kwargs.get("backdrill_parameters", None)
-        self._id = kwargs.get("id", None)
         self.position = kwargs.get("position", [])
         self.rotation = kwargs.get("rotation", None)
         self.hole_override_enabled = kwargs.get("hole_override_enabled", None)
         self.hole_override_diameter = kwargs.get("hole_override_diameter", None)
         self.solder_ball_layer = kwargs.get("solder_ball_layer", None)
+
+
+class CfgBase(BaseModel):
+    model_config = {
+        "populate_by_name": True,
+        "extra": "forbid",
+    }
+
+
+
+class CfgBackdrillParameters(BaseModel):
+    class DrillParametersByLayer(CfgBase):
+        drill_to_layer: str
+        diameter: str
+
+    class DrillParametersByLayerWithStub(DrillParametersByLayer):
+        stub_length: Union[str, None]
+
+    class DrillParameters(CfgBase):
+        drill_depth: str
+        diameter: str
+
+    from_top: Union[None, DrillParameters, DrillParametersByLayer, DrillParametersByLayerWithStub] = None
+    from_bottom: Union[None, DrillParameters, DrillParametersByLayer, DrillParametersByLayerWithStub] = None
+
+    def add_backdrill_to_layer(self, drill_to_layer, diameter, stub_length=None, drill_from_bottom=True):
+        if stub_length is None:
+            drill = self.DrillParametersByLayer(
+                drill_to_layer=drill_to_layer,
+                diameter=diameter)
+        else:
+            drill = self.DrillParametersByLayerWithStub(
+                drill_to_layer=drill_to_layer,
+                diameter=diameter,
+                stub_length=stub_length)
+
+        if drill_from_bottom:
+            self.from_bottom = drill
+        else:
+            self.from_top = drill
+
+
+class CfgPadstackInstance(CfgBase):
+    name: str = None
+    _id: Union[int, None] = Field(None, alias="id")
+    backdrill_parameters: Union[CfgBackdrillParameters, None] = None
+
+    @classmethod
+    def create(cls, **kwargs):
+        obj = cls(**kwargs)
+        obj.backdrill_parameters = CfgBackdrillParameters()
+        return obj
