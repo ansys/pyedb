@@ -24,9 +24,9 @@
 from ansys.edb.core.definition.component_pin import ComponentPin as GrpcComponentPin
 
 
-class ComponentPin(GrpcComponentPin):
+class ComponentPin:
     """Class managing :class:`ComponentPin <ansys.edb.core.definition.component_pin.ComponentPin>`."""
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+        self.core = GrpcComponentPin.__init__(edb_object.msg)
         self._pedb = pedb
