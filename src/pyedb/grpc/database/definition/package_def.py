@@ -29,7 +29,7 @@ from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecated_property
 
 
-class PackageDef(GrpcPackageDef):
+class PackageDef:
     """Manages EDB package definitions.
 
     Parameters
@@ -51,7 +51,7 @@ class PackageDef(GrpcPackageDef):
                 edb_object = GrpcPackageDef.create(db=pedb.active_db, name=name)
             else:
                 raise AttributeError("Name must be provided to create and instantiate a PackageDef object.")
-        super(GrpcPackageDef, self).__init__(edb_object.msg)
+        self.core = GrpcPackageDef.__init__(edb_object.msg)
         self._pedb = pedb
         self._edb_object = edb_object
         self._heat_sink = None
@@ -71,7 +71,7 @@ class PackageDef(GrpcPackageDef):
         edb_object: object
             EDB PackageDef Object
         """
-        edb_object = GrpcPackageDef.create(self._pedb.active_db, name)
+        self._edb_object = GrpcPackageDef.create(self._pedb.active_db, name)
         if component_part_name:
             x_pt1, y_pt1, x_pt2, y_pt2 = list(
                 self._pedb.components.definitions[component_part_name].components.values()
@@ -89,7 +89,6 @@ class PackageDef(GrpcPackageDef):
         polygon_data = GrpcPolygonData(points=bbox)
 
         self.exterior_boundary = polygon_data
-        return edb_object
 
     @property
     def exterior_boundary(self) -> GrpcPolygonData:
@@ -100,11 +99,11 @@ class PackageDef(GrpcPackageDef):
         :class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
 
         """
-        return GrpcPolygonData(super().exterior_boundary.points)
+        return GrpcPolygonData(self.core.exterior_boundary.points)
 
     @exterior_boundary.setter
     def exterior_boundary(self, value):
-        super(PackageDef, self.__class__).exterior_boundary.__set__(self, value)
+        self.core.exterior_boundary = value
 
     @property
     def maximum_power(self) -> float:
@@ -115,11 +114,11 @@ class PackageDef(GrpcPackageDef):
         float
             maximum power value.
         """
-        return Value(super().maximum_power)
+        return Value(self.core.maximum_power)
 
     @maximum_power.setter
     def maximum_power(self, value):
-        super(PackageDef, self.__class__).maximum_power.__set__(self, Value(value))
+        self.core.maximum_power = Value(value)
 
     @property
     def therm_cond(self) -> float:
@@ -131,11 +130,11 @@ class PackageDef(GrpcPackageDef):
             Thermal conductivity value.
 
         """
-        return Value(super().thermal_conductivity)
+        return Value(self.core.thermal_conductivity)
 
     @therm_cond.setter
     def therm_cond(self, value):
-        super(PackageDef, self.__class__).thermal_conductivity.__set__(self, Value(value))
+        self.core.thermal_conductivity = Value(value)
 
     @property
     def theta_jb(self) -> float:
@@ -146,11 +145,11 @@ class PackageDef(GrpcPackageDef):
         float
             Theta jb value.
         """
-        return Value(super().theta_jb)
+        return Value(self.core.theta_jb)
 
     @theta_jb.setter
     def theta_jb(self, value):
-        super(PackageDef, self.__class__).theta_jb.__set__(self, Value(value))
+        self.core.theta_jb = Value(value)
 
     @property
     def theta_jc(self) -> float:
@@ -161,11 +160,11 @@ class PackageDef(GrpcPackageDef):
         float
             Theta jc value.
         """
-        return Value(super().theta_jc)
+        return Value(self.core.theta_jc)
 
     @theta_jc.setter
     def theta_jc(self, value):
-        super(PackageDef, self.__class__).theta_jc.__set__(self, Value(value))
+        self.core.theta_jc = Value(value)
 
     @property
     def height(self) -> float:
@@ -176,11 +175,11 @@ class PackageDef(GrpcPackageDef):
         float
             Height value.
         """
-        return Value(super().height)
+        return Value(self.core.height)
 
     @height.setter
     def height(self, value):
-        super(PackageDef, self.__class__).height.__set__(self, Value(value))
+        self.core.height = Value(value)
 
     @property
     def heat_sink(self) -> HeatSink:
@@ -192,7 +191,7 @@ class PackageDef(GrpcPackageDef):
             HeatSink object.
         """
         try:
-            return HeatSink(self._pedb, super().heat_sink)
+            return HeatSink(self._pedb, self.core.heat_sink)
         except Exception as e:
             settings.logger.error(
                 f"A(n) {type(e).__name__} error occurred while attempting to access 'heatsink' "
@@ -235,14 +234,11 @@ class PackageDef(GrpcPackageDef):
             fin_orientation = GrpcHeatSinkFinOrientation.Y_ORIENTED
         else:
             fin_orientation = GrpcHeatSinkFinOrientation.OTHER_ORIENTED
-        super(PackageDef, self.__class__).heat_sink.__set__(
-            self,
-            GrpcHeatSink(
-                Value(fin_thickness),
-                Value(fin_spacing),
-                Value(fin_base_height),
-                Value(fin_height),
-                fin_orientation,
-            ),
+        self.core.heat_sink = GrpcHeatSink(
+            Value(fin_thickness),
+            Value(fin_spacing),
+            Value(fin_base_height),
+            Value(fin_height),
+            fin_orientation,
         )
         return self.heat_sink
