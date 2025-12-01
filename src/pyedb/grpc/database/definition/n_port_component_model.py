@@ -26,9 +26,9 @@ from ansys.edb.core.definition.component_model import (
 )
 
 
-class NPortComponentModel(GrpcNPortComponentModel):
+class NPortComponentModel:
     """Class managing :class:`NPortComponentModel <ansys.edb.core.definition.component_model.NPortComponentModel>`"""
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+        self.core = GrpcNPortComponentModel.__init__(edb_object)
         self._pedb = pedb
