@@ -121,7 +121,7 @@ class Material:
     """Manage EDB methods for material property management."""
 
     def __init__(self, edb: Edb, edb_material_def):
-        self.core = GrpcMaterialDef.__init__(edb_material_def.msg)
+        self.core = edb_material_def
         self.__edb: Edb = edb
         self.__name: str = edb_material_def.name
         self.__material_def = edb_material_def
@@ -532,7 +532,7 @@ class Material:
 
     def set_djordjecvic_sarkar_model(self):
         """Set Djordjecvic-Sarkar model on current material."""
-        self.core.dielectric_material_model.__set__(self, GrpcDjordjecvicSarkarModel.create())
+        self.core.dielectric_material_model = GrpcDjordjecvicSarkarModel.create()
 
     def to_dict(self):
         """Convert material into dictionary."""
