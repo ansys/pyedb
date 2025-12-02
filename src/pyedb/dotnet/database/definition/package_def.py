@@ -46,31 +46,10 @@ class PackageDef(ObjBase):
 
     """
 
-    PAD_SHAPE_PARAMETERS = {
-        "circle": ["diameter"],
-        "square": ["size"],
-        "rectangle": ["x_size", "y_size"],
-        "oval": ["x_size", "y_size", "corner_radius"],
-        "bullet": ["x_size", "y_size", "corner_radius"],
-        "round45": ["inner", "channel_width", "isolation_gap"],
-        "round90": ["inner", "channel_width", "isolation_gap"],
-        "no_geometry": [],
-    }
+
 
     def __init__(self, pedb, edb_object=None, name=None, component_part_name=None, extent_bounding_box=None):
         super().__init__(pedb, edb_object)
-
-        definition = self._pedb._edb.Definition
-        self._solder_shape_type = {
-            "no_solder_ball": definition.SolderballShape.NoSolderball,
-            "cylinder": definition.SolderballShape.Cylinder,
-            "spheroid": definition.SolderballShape.Spheroid,
-        }
-        self._solder_placement = {
-            "above_padstack": definition.SolderballPlacement.AbovePadstack,
-            "below_padstack": definition.SolderballPlacement.BelowPadstack,
-        }
-
         if self._edb_object is None and name is not None:
             self._edb_object = self.__create_from_name(name, component_part_name, extent_bounding_box)
         else:
@@ -216,93 +195,3 @@ class PackageDef(ObjBase):
             return HeatSink(self._pedb, edb_object)
         else:
             return None
-
-    def get_pad_parameters(self):
-        """Pad parameters.
-
-        Returns
-        -------
-        dict
-            params = {
-            'regular_pad': [
-                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0.1mm', 'offset_y': '0',
-                'rotation': '0', 'diameter': '0.5mm'}
-            ],
-            'anti_pad': [
-                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
-                'diameter': '1mm'}
-            ],
-            'thermal_pad': [
-                {'layer_name': '1_Top', 'shape': 'round90', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
-                'inner': '1mm', 'channel_width': '0.2mm', 'isolation_gap': '0.3mm'},
-            ],
-            'hole': [
-                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
-                 'diameter': '0.1499997mm'},
-            ]
-        }
-        """
-        from pyedb.dotnet.database.general import (
-            pascal_to_snake,
-        )
-
-        pdef_data = self._edb_object._padstack_def_data
-        pad_type_list = [
-            self._pedb._edb.Definition.PadType.RegularPad,
-            self._pedb._edb.Definition.PadType.AntiPad,
-            self._pedb._edb.Definition.PadType.ThermalPad,
-            # self._ppadstack._pedb._edb.Definition.PadType.Hole,
-            # This property doesn't appear in UI. It is unclear what it is used for.
-            # Suppressing this property for now.
-        ]
-        data = {}
-        for pad_type in pad_type_list:
-            pad_type_name = pascal_to_snake(pad_type.ToString())
-            temp_list = []
-            for lyr_name in list(pdef_data.GetLayerNames()):
-                result = pdef_data.GetPadParametersValue(lyr_name, pad_type)
-                _, pad_shape, params, offset_x, offset_y, rotation = result
-                pad_shape = pascal_to_snake(pad_shape.ToString())
-
-                pad_params = {}
-                pad_params["layer_name"] = lyr_name
-                pad_params["shape"] = pad_shape
-                pad_params["offset_x"] = offset_x.ToString()
-                pad_params["offset_y"] = offset_y.ToString()
-                pad_params["rotation"] = rotation.ToString()
-
-                for idx, i in enumerate(self.PAD_SHAPE_PARAMETERS[pad_shape]):
-                    pad_params[i] = params[idx].ToString()
-                temp_list.append(pad_params)
-            data[pad_type_name] = temp_list
-        return data
-
-    def get_hole_parameters(self):
-        pdef_data = self._edb_object._padstack_def_data
-        _, hole_shape, params, offset_x, offset_y, rotation = pdef_data.GetHoleParametersValue()
-        hole_shape = pascal_to_snake(hole_shape.ToString())
-
-        hole_params = {}
-        hole_params["shape"] = hole_shape
-        for idx, i in enumerate(self.PAD_SHAPE_PARAMETERS[hole_shape]):
-            hole_params[i] = params[idx].ToString()
-        hole_params["offset_x"] = offset_x.ToString()
-        hole_params["offset_y"] = offset_y.ToString()
-        hole_params["rotation"] = rotation.ToString()
-        return hole_params
-
-    def get_solder_parameters(self):
-        pdef_data = self._edb_object._padstack_def_data
-        shape = pdef_data.GetSolderBallShape()
-        _, diameter, mid_diameter = pdef_data.GetSolderBallParameterValue()
-        placement = pdef_data.GetSolderBallPlacement()
-        material = pdef_data.GetSolderBallMaterial()
-
-        parameters = {
-            "shape": [i for i, j in self._solder_shape_type.items() if j == shape][0],
-            "diameter": self._pedb.edb_value(diameter).ToString(),
-            "mid_diameter": self._pedb.edb_value(mid_diameter).ToString(),
-            "placement": [i for i, j in self._solder_placement.items() if j == placement][0],
-            "material": material,
-        }
-        return parameters

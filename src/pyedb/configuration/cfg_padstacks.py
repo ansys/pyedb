@@ -234,7 +234,7 @@ class _CfgPadstackDefinition:
         self.get_solder_ball_definition()
 
 
-class _CfgPadstackInstance(CfgBase):
+class _CfgPadstackInstance:
     """Instance data class."""
 
     def set_parameters_to_edb(self):
@@ -321,7 +321,7 @@ class CfgBackdrillParameters(BaseModel):
 
 class CfgPadstackInstance(CfgBase):
     name: str = None
-    _id: Union[int, None] = Field(None, alias="id")
+    eid: Union[int, None] = Field(None, alias="id")
     backdrill_parameters: Union[CfgBackdrillParameters, None] = None
     is_pin: bool = Field(default=False)
     net_name: Optional[str] = None
@@ -332,6 +332,10 @@ class CfgPadstackInstance(CfgBase):
     hole_override_enabled: Optional[bool] = None
     hole_override_diameter: Optional[Union[str, float]] = None
     solder_ball_layer: Optional[str] = None
+
+    @property
+    def _id(self):
+        return self.eid
 
     @classmethod
     def create(cls, **kwargs):
