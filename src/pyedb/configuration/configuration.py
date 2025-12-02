@@ -474,6 +474,22 @@ class Configuration:
         for name, obj in self._pedb.stackup.all_layers.items():
             self.cfg_data.stackup.add_layer_at_bottom(**obj.properties)
 
+    def get_padstacks(self):
+        padstacks = self.cfg_data.padstacks
+        padstacks.clean()
+        for name, obj in self._pedb.padstacks.definitions.items():
+            if name.lower() == "symbol":
+                continue
+            padstacks.add_padstack_definition(
+                name = obj.name,
+            hole_plating_thickness = obj.hole_plating_thickness,
+            material = obj.material,
+            hole_range = obj.hole_range,
+            pad_parameters = obj.get_pad_parameters(),
+            hole_parameters = obj.get_hole_parameters(),
+            solder_ball_parameters = obj.get_solder_parameters()
+            )
+
     def get_data_from_db(self, **kwargs):
         """Get configuration data from layout.
 

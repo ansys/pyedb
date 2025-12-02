@@ -1794,3 +1794,4 @@ class TestClassBoundaries(BaseTestClass):
         assert edbapp.hfss.hfss_extent_info.extent_type == "polygon"
         assert edbapp.hfss.hfss_extent_info.base_polygon == "poly_5949"
         edbapp.close(terminate_rpc_session=False)
+
