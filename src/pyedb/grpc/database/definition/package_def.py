@@ -90,6 +90,14 @@ class PackageDef:
         self.exterior_boundary = polygon_data
 
     @property
+    def name(self):
+        return self.core.name
+
+    @name.setter
+    def name(self, value):
+        self.core.name = value
+
+    @property
     def exterior_boundary(self) -> GrpcPolygonData:
         """Get the exterior boundary of a package definition.
 
@@ -120,7 +128,7 @@ class PackageDef:
         self.core.maximum_power = Value(value)
 
     @property
-    def therm_cond(self) -> float:
+    def thermal_conductivity(self) -> float:
         """Thermal conductivity of the package.
 
         Returns
@@ -131,8 +139,8 @@ class PackageDef:
         """
         return Value(self.core.thermal_conductivity)
 
-    @therm_cond.setter
-    def therm_cond(self, value):
+    @thermal_conductivity.setter
+    def thermal_conductivity(self, value):
         self.core.thermal_conductivity = Value(value)
 
     @property
