@@ -30,69 +30,11 @@ from pyedb.dotnet.database.general import (
 )
 
 
-class _CfgPadstacks:
-    """Padstack data class."""
-
-    def __init__(self, pedb, padstack_dict=None):
-        self._pedb = pedb
-        self.definitions = []
-        self.instances = []
-
-        if padstack_dict:
-            padstack_defs_layout = self._pedb.padstacks.definitions
-            for pdef in padstack_dict.get("definitions", []):
-                obj = padstack_defs_layout[pdef["name"]]
-                self.definitions.append(CfgPadstackDefinition(self._pedb, obj, **pdef))
-
-            inst_from_layout = self._pedb.padstacks.instances_by_name
-            for inst in padstack_dict.get("instances", []):
-                obj = inst_from_layout[inst["name"]]
-                self.instances.append(CfgPadstackInstance(self._pedb, obj, **inst))
-
-    def apply(self):
-        """Apply padstack definition and instances on layout."""
-        if self.definitions:
-            for pdef in self.definitions:
-                pdef.set_parameters_to_edb()
-        if self.instances:
-            for inst in self.instances:
-                inst.set_parameters_to_edb()
-
-
-class _CfgPadstackInstance:
-    """Instance data class."""
-
-    def set_parameters_to_edb(self):
-        if self.name is not None:
-            self.pyedb_obj.aedt_name = self.name
-        self.pyedb_obj.is_pin = self.is_pin
-        if self.net_name is not None:
-            self.pyedb_obj.net_name = self._pedb.nets.find_or_create_net(self.net_name).name
-        if self.layer_range[0] is not None:
-            self.pyedb_obj.start_layer = self.layer_range[0]
-        if self.layer_range[1] is not None:
-            self.pyedb_obj.stop_layer = self.layer_range[1]
-        if self.backdrill_parameters:
-            self.pyedb_obj.backdrill_parameters = self.backdrill_parameters
-        if self.solder_ball_layer:
-            self.pyedb_obj._edb_object.SetSolderBallLayer(self._pedb.stackup[self.solder_ball_layer]._edb_object)
-
-        hole_override_enabled, hole_override_diam = self.pyedb_obj._edb_object.GetHoleOverrideValue()
-        hole_override_enabled = self.hole_override_enabled if self.hole_override_enabled else hole_override_enabled
-        hole_override_diam = self.hole_override_diameter if self.hole_override_diameter else hole_override_diam
-        self.pyedb_obj._edb_object.SetHoleOverride(hole_override_enabled, self._pedb.edb_value(hole_override_diam))
-
-    def __init__(self, pedb, pyedb_obj, **kwargs):
-        self._pedb = pedb
-        self.pyedb_obj = pyedb_obj
-
-
 class CfgBase(BaseModel):
     model_config = {
         "populate_by_name": True,
         "extra": "forbid",
     }
-
 
 
 class CfgBackdrillParameters(BaseModel):
