@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from typing import Union
+from typing import Union, Optional, List, Any, Dict
 
 from pydantic import BaseModel, Field
 
@@ -77,7 +77,7 @@ class CfgPadstacks:
             self.instances.append(inst)
 
 
-class CfgPadstackDefinition(CfgBase):
+class _CfgPadstackDefinition(CfgBase):
     """Padstack definition data class."""
 
     PAD_SHAPE_PARAMETERS = {
@@ -342,7 +342,7 @@ class CfgPadstackDefinition(CfgBase):
         self.get_solder_ball_definition()
 
 
-class CfgPadstackInstance(CfgBase):
+class _CfgPadstackInstance(CfgBase):
     """Instance data class."""
 
     def set_parameters_to_edb(self):
@@ -385,16 +385,6 @@ class CfgPadstackInstance(CfgBase):
     def __init__(self, pedb, pyedb_obj, **kwargs):
         self._pedb = pedb
         self.pyedb_obj = pyedb_obj
-
-        self.is_pin = kwargs.get("is_pin", False)
-        self.net_name = kwargs.get("net_name", None)
-        self.layer_range = kwargs.get("layer_range", [None, None])
-        self.definition = kwargs.get("definition", None)
-        self.position = kwargs.get("position", [])
-        self.rotation = kwargs.get("rotation", None)
-        self.hole_override_enabled = kwargs.get("hole_override_enabled", None)
-        self.hole_override_diameter = kwargs.get("hole_override_diameter", None)
-        self.solder_ball_layer = kwargs.get("solder_ball_layer", None)
 
 
 class CfgBase(BaseModel):
@@ -441,9 +431,28 @@ class CfgPadstackInstance(CfgBase):
     name: str = None
     _id: Union[int, None] = Field(None, alias="id")
     backdrill_parameters: Union[CfgBackdrillParameters, None] = None
+    is_pin: bool = Field(default=False)
+    net_name: Optional[str] = None
+    layer_range: Optional[List[str]] = None
+    definition: Optional[str] = None
+    position: Optional[List[Union[str, float]]] = None
+    rotation: Optional[str] = None
+    hole_override_enabled: Optional[bool] = None
+    hole_override_diameter: Optional[Union[str, float]] = None
+    solder_ball_layer: Optional[str] = None
 
     @classmethod
     def create(cls, **kwargs):
         obj = cls(**kwargs)
         obj.backdrill_parameters = CfgBackdrillParameters()
         return obj
+
+
+class CfgPadstackDefinition(CfgBase):
+    name: str
+    hole_plating_thickness: Optional[float] = None
+    material: Optional[str] = Field(default=None, alias="hole_material")
+    hole_range: Optional[str] = None
+    pad_parameters: Optional[Dict] = None
+    hole_parameters: Optional[Dict] = None
+    solder_ball_parameters: Optional[Dict] = None
