@@ -58,181 +58,6 @@ class _CfgPadstacks:
             for inst in self.instances:
                 inst.set_parameters_to_edb()
 
-    def retrieve_parameters_from_edb(self):
-        self.clean()
-        for name, obj in self._pedb.padstacks.definitions.items():
-            if name.lower() == "symbol":
-                continue
-            pdef = CfgPadstackDefinition(self._pedb, obj)
-            pdef.retrieve_parameters_from_edb()
-            self.definitions.append(pdef)
-
-        for obj in self._pedb.layout.padstack_instances:
-            inst = CfgPadstackInstance(self._pedb, obj)
-            inst.retrieve_parameters_from_edb()
-            self.instances.append(inst)
-
-
-class _CfgPadstackDefinition:
-    """Padstack definition data class."""
-
-    def get_solder_ball_definition(self):
-        definition = self._pedb._edb.Definition
-        self._solder_shape_type = {
-            "no_solder_ball": definition.SolderballShape.NoSolderball,
-            "cylinder": definition.SolderballShape.Cylinder,
-            "spheroid": definition.SolderballShape.Spheroid,
-        }
-        self._solder_placement = {
-            "above_padstack": definition.SolderballPlacement.AbovePadstack,
-            "below_padstack": definition.SolderballPlacement.BelowPadstack,
-        }
-
-    def set_hole_parameters_to_edb(self, params):
-        original_params = self.hole_parameters
-        pdef_data = self.pyedb_obj._padstack_def_data
-
-        temp_param = []
-        shape = params["shape"]
-        if shape == "no_geometry":
-            return  # .net api doesn't tell how to set no_geometry shape.
-        for i in self.PAD_SHAPE_PARAMETERS[shape]:
-            temp_param.append(params[i])
-            pedb_shape = getattr(self._pedb._edb.Definition.PadGeometryType, snake_to_pascal(shape))
-
-        pdef_data.SetHoleParameters(
-            pedb_shape,
-            convert_py_list_to_net_list([self._pedb.edb_value(i) for i in temp_param]),
-            self._pedb.edb_value(params.get("offset_x", original_params.get("offset_x", 0))),
-            self._pedb.edb_value(params.get("offset_y", original_params.get("offset_y", 0))),
-            self._pedb.edb_value(params.get("rotation", original_params.get("rotation", 0))),
-        )
-        self.pyedb_obj._padstack_def_data = pdef_data
-
-    def set_solder_parameters_to_edb(self, parameters):
-        pdef_data = self.pyedb_obj._padstack_def_data
-
-        shape = parameters.get("shape", "no_solder_ball")
-        diameter = parameters.get("diameter", "0.4mm")
-        mid_diameter = parameters.get("mid_diameter", diameter)
-        placement = parameters.get("placement", "above_padstack")
-        material = parameters.get("material", None)
-
-        pdef_data.SetSolderBallShape(self._solder_shape_type[shape])
-        if not shape == "no_solder_ball":
-            pdef_data.SetSolderBallParameter(self._pedb.edb_value(diameter), self._pedb.edb_value(mid_diameter))
-            pdef_data.SetSolderBallPlacement(self._solder_placement[placement])
-
-        if material:
-            pdef_data.SetSolderBallMaterial(material)
-        self.pyedb_obj._padstack_def_data = pdef_data
-
-
-    def set_pad_parameters_to_edb(self, param):
-        pdef_data = self.pyedb_obj._padstack_def_data
-
-        pad_type_list = [
-            self._pedb._edb.Definition.PadType.RegularPad,
-            self._pedb._edb.Definition.PadType.AntiPad,
-            self._pedb._edb.Definition.PadType.ThermalPad,
-            self._pedb._edb.Definition.PadType.Hole,
-        ]
-        for pad_type in pad_type_list:
-            pad_type_name = pascal_to_snake(pad_type.ToString())
-            rpp = param.get(pad_type_name, [])
-            for idx, layer_data in enumerate(rpp):
-                # Get geometry type from kwargs
-                p = layer_data.get("shape")
-                temp_param = []
-
-                # Handle Circle geometry type
-                if p == pascal_to_snake(self._pedb._edb.Definition.PadGeometryType.Circle.ToString()):
-                    temp_param.append(layer_data["diameter"])
-                    pad_shape = self._pedb._edb.Definition.PadGeometryType.Circle
-
-                # Handle Square geometry type
-                elif p == pascal_to_snake(self._pedb._edb.Definition.PadGeometryType.Square.ToString()):
-                    temp_param.append(layer_data["size"])
-                    pad_shape = self._pedb._edb.Definition.PadGeometryType.Square
-
-                elif p == pascal_to_snake(self._pedb._edb.Definition.PadGeometryType.Rectangle.ToString()):
-                    temp_param.append(layer_data["x_size"])
-                    temp_param.append(layer_data["y_size"])
-                    pad_shape = self._pedb._edb.Definition.PadGeometryType.Rectangle
-
-                # Handle Oval geometry type
-                elif p == pascal_to_snake(self._pedb._edb.Definition.PadGeometryType.Oval.ToString()):
-                    temp_param.append(layer_data["x_size"])
-                    temp_param.append(layer_data["y_size"])
-                    temp_param.append(layer_data["corner_radius"])
-                    pad_shape = self._pedb._edb.Definition.PadGeometryType.Oval
-
-                # Handle Bullet geometry type
-                elif p == pascal_to_snake(self._pedb._edb.Definition.PadGeometryType.Bullet.ToString()):
-                    temp_param.append(layer_data["x_size"])
-                    temp_param.append(layer_data["y_size"])
-                    temp_param.append(layer_data["corner_radius"])
-                    pad_shape = self._pedb._edb.Definition.PadGeometryType.Bullet
-
-                # Handle Round45 geometry type
-                elif p == pascal_to_snake(self._pedb._edb.Definition.PadGeometryType.Round45.ToString()):
-                    temp_param.append(layer_data["inner"])
-                    temp_param.append(layer_data["channel_width"])
-                    temp_param.append(layer_data["isolation_gap"])
-                    pad_shape = self._pedb._edb.Definition.PadGeometryType.Round45
-
-                # Handle Round90 geometry type
-                elif p == pascal_to_snake(self._pedb._edb.Definition.PadGeometryType.Round90.ToString()):
-                    temp_param.append(layer_data["inner"])
-                    temp_param.append(layer_data["channel_width"])
-                    temp_param.append(layer_data["isolation_gap"])
-                    pad_shape = self._pedb._edb.Definition.PadGeometryType.Round90
-                elif p == pascal_to_snake(self._pedb._edb.Definition.PadGeometryType.NoGeometry.ToString()):
-                    continue
-
-                # Set pad parameters for the current layer
-                pdef_data.SetPadParameters(
-                    layer_data["layer_name"],
-                    pad_type,
-                    pad_shape,
-                    convert_py_list_to_net_list([self._pedb.edb_value(i) for i in temp_param]),
-                    self._pedb.edb_value(layer_data.get("offset_x", 0)),
-                    self._pedb.edb_value(layer_data.get("offset_y", 0)),
-                    self._pedb.edb_value(layer_data.get("rotation", 0)),
-                )
-        self.pyedb_obj._padstack_def_data = pdef_data
-
-
-    def set_parameters_to_edb(self):
-        if self.hole_parameters:
-            self.set_hole_parameters_to_edb(self.hole_parameters)
-        if self.hole_range:
-            self.pyedb_obj.hole_range = self.hole_range
-        if self.hole_plating_thickness:
-            self.pyedb_obj.hole_plating_thickness = self.hole_plating_thickness
-        if self.material:
-            self.pyedb_obj.material = self.material
-        if self.pad_parameters:
-            self.set_pad_parameters_to_edb(self.pad_parameters)
-        if self.solder_ball_parameters:
-            self.set_solder_parameters_to_edb(self.solder_ball_parameters)
-
-    def __init__(self, pedb, pedb_object, **kwargs):
-        self._pedb = pedb
-        self.pyedb_obj = pedb_object
-
-        self.name = kwargs.get("name", None)
-        self.hole_plating_thickness = kwargs.get("hole_plating_thickness", None)
-        self.material = kwargs.get("hole_material", None)
-        self.hole_range = kwargs.get("hole_range", None)
-        self.pad_parameters = kwargs.get("pad_parameters", None)
-        self.hole_parameters = kwargs.get("hole_parameters", None)
-        self.solder_ball_parameters = kwargs.get("solder_ball_parameters", None)
-
-        self._solder_shape_type = None
-        self._solder_placement = None
-        self.get_solder_ball_definition()
-
 
 class _CfgPadstackInstance:
     """Instance data class."""
@@ -256,23 +81,6 @@ class _CfgPadstackInstance:
         hole_override_enabled = self.hole_override_enabled if self.hole_override_enabled else hole_override_enabled
         hole_override_diam = self.hole_override_diameter if self.hole_override_diameter else hole_override_diam
         self.pyedb_obj._edb_object.SetHoleOverride(hole_override_enabled, self._pedb.edb_value(hole_override_diam))
-
-    def retrieve_parameters_from_edb(self):
-        self.name = self.pyedb_obj.aedt_name
-        self.is_pin = self.pyedb_obj.is_pin
-        self.definition = self.pyedb_obj.padstack_definition
-        self.backdrill_parameters = self.pyedb_obj.backdrill_parameters
-        _, position, rotation = self.pyedb_obj._edb_object.GetPositionAndRotationValue()
-        self.position = [position.X.ToString(), position.Y.ToString()]
-        self.rotation = rotation.ToString()
-        self._id = self.pyedb_obj.id
-        (
-            self.hole_override_enabled,
-            hole_override_diameter,
-        ) = self.pyedb_obj._edb_object.GetHoleOverrideValue()
-        self.hole_override_diameter = hole_override_diameter.ToString()
-        self.solder_ball_layer = self.pyedb_obj._edb_object.GetSolderBallLayer().GetName()
-        self.layer_range = [self.pyedb_obj.start_layer, self.pyedb_obj.stop_layer]
 
     def __init__(self, pedb, pyedb_obj, **kwargs):
         self._pedb = pedb
@@ -346,7 +154,7 @@ class CfgPadstackInstance(CfgBase):
 
 class CfgPadstackDefinition(CfgBase):
     name: str
-    hole_plating_thickness: Optional[float] = None
+    hole_plating_thickness: Optional[Union[str, float]] = None
     material: Optional[str] = Field(default=None, alias="hole_material")
     hole_range: Optional[str] = None
     pad_parameters: Optional[Dict] = None
@@ -373,4 +181,9 @@ class CfgPadstacks(CfgBase):
     def add_padstack_definition(self, **kwargs):
         obj = CfgPadstackDefinition(**kwargs)
         self.definitions.append(obj)
+        return obj
+
+    def add_padstack_instance(self, **kwargs):
+        obj = CfgPadstackInstance(**kwargs)
+        self.instances.append(obj)
         return obj
