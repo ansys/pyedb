@@ -51,12 +51,11 @@ class PackageDef:
                 edb_object = GrpcPackageDef.create(db=pedb.active_db, name=name)
             else:
                 raise AttributeError("Name must be provided to create and instantiate a PackageDef object.")
-        self.core = GrpcPackageDef.__init__(edb_object.msg)
+        self.core = edb_object
         self._pedb = pedb
-        self._edb_object = edb_object
         self._heat_sink = None
-        if self._edb_object is None and name is not None:
-            self._edb_object = self.__create_from_name(name, component_part_name, extent_bounding_box)
+        if not self.core and name:
+            self.core = self.__create_from_name(name, component_part_name, extent_bounding_box)
 
     def __create_from_name(self, name, component_part_name=None, extent_bounding_box=None):
         """Create a package definition.
@@ -207,6 +206,27 @@ class PackageDef:
 
         """
         return self.heat_sink
+
+    @staticmethod
+    def create(edb, name: str) -> "PackageDef":
+        """Create a package definition.
+
+        Parameters
+        ----------
+        edb : :class:`Edb <pyedb.grpc.edb.Edb>`
+            Edb object.
+        name: str
+            Name of the package definition.
+
+        Returns
+        -------
+        :class:`PackageDef <pyedb.grpc.database.definition.package_def.PackageDef>`
+            PackageDef object.
+        """
+        grpc_package = GrpcPackageDef.create(edb.active_db, name)
+        if grpc_package.is_null:
+            raise RuntimeError(f"Package {name} does not exist")
+        return PackageDef(edb, grpc_package)
 
     def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness) -> HeatSink:
         """Set Heat sink.
