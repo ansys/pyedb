@@ -23,11 +23,6 @@ import warnings
 
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.dotnet.database.utilities.obj_base import ObjBase
-from pyedb.dotnet.database.general import (
-    convert_py_list_to_net_list,
-    pascal_to_snake,
-    snake_to_pascal,
-)
 
 
 class PackageDef(ObjBase):
@@ -45,8 +40,6 @@ class PackageDef(ObjBase):
         Bounding box defines the shape of the package. For example, [[0, 0], ["2mm", "2mm"]].
 
     """
-
-
 
     def __init__(self, pedb, edb_object=None, name=None, component_part_name=None, extent_bounding_box=None):
         super().__init__(pedb, edb_object)

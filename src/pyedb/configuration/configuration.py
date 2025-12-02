@@ -537,6 +537,7 @@ class Configuration:
                 layer_range=[obj.start_layer, obj.stop_layer]
             )
 
+    @execution_timer("Applying padstack definitions and instances")
     def apply_padstacks(self):
         padstacks = self.cfg_data.padstacks
 
