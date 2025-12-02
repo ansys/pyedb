@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from typing import Union, Optional, List, Dict
+from typing import Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field
 
@@ -48,14 +48,11 @@ class CfgBackdrillParameters(BaseModel):
 
     def add_backdrill_to_layer(self, drill_to_layer, diameter, stub_length=None, drill_from_bottom=True):
         if stub_length is None:
-            drill = self.DrillParametersByLayer(
-                drill_to_layer=drill_to_layer,
-                diameter=diameter)
+            drill = self.DrillParametersByLayer(drill_to_layer=drill_to_layer, diameter=diameter)
         else:
             drill = self.DrillParametersByLayerWithStub(
-                drill_to_layer=drill_to_layer,
-                diameter=diameter,
-                stub_length=stub_length)
+                drill_to_layer=drill_to_layer, diameter=diameter, stub_length=stub_length
+            )
 
         if drill_from_bottom:
             self.from_bottom = drill

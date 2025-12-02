@@ -1590,6 +1590,7 @@ class TestClassBoundaries(BaseTestClass):
         assert edbapp.hfss.hfss_extent_info.base_polygon == "poly_5949"
         edbapp.close(terminate_rpc_session=False)
 
+
 @pytest.mark.usefixtures("close_rpc_session")
 @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassPadstacks(BaseTestClass):

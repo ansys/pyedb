@@ -518,7 +518,7 @@ class Configuration:
                 hole_range=obj.hole_range,
                 pad_parameters=obj.get_pad_parameters(),
                 hole_parameters=obj.get_hole_parameters(),
-                solder_ball_parameters=obj.get_solder_parameters()
+                solder_ball_parameters=obj.get_solder_parameters(),
             )
 
         for obj in self._pedb.layout.padstack_instances:
@@ -534,7 +534,7 @@ class Configuration:
                 eid=obj.id,
                 hole_override_diameter=hole_override_diameter.ToString(),
                 solder_ball_layer=obj._edb_object.GetSolderBallLayer().GetName(),
-                layer_range=[obj.start_layer, obj.stop_layer]
+                layer_range=[obj.start_layer, obj.stop_layer],
             )
 
     @execution_timer("Applying padstack definitions and instances")
@@ -548,7 +548,6 @@ class Configuration:
         for inst in padstacks.instances:
             inst_obj = self._pedb.padstacks.instances_by_name[inst.name]
             set_padstack_instance(inst, inst_obj)
-
 
     def get_data_from_db(self, **kwargs):
         """Get configuration data from layout.
@@ -807,23 +806,23 @@ class Configuration:
                 raise RuntimeError(f"Terminal type {i.terminal_type} not supported.")
 
     def export(
-            self,
-            file_path,
-            stackup=True,
-            package_definitions=False,
-            setups=True,
-            sources=True,
-            ports=True,
-            nets=True,
-            pin_groups=True,
-            operations=True,
-            components=True,
-            boundaries=True,
-            s_parameters=True,
-            padstacks=True,
-            general=True,
-            variables=True,
-            terminals=False,
+        self,
+        file_path,
+        stackup=True,
+        package_definitions=False,
+        setups=True,
+        sources=True,
+        ports=True,
+        nets=True,
+        pin_groups=True,
+        operations=True,
+        components=True,
+        boundaries=True,
+        s_parameters=True,
+        padstacks=True,
+        general=True,
+        variables=True,
+        terminals=False,
     ):
         """Export the configuration data from layout to a file.
 

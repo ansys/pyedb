@@ -427,6 +427,7 @@ class EDBPadstack(object):
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_padstack = edb.padstacks.definitions["MyPad"]
     """
+
     PAD_SHAPE_PARAMETERS = {
         "circle": ["diameter"],
         "square": ["size"],
@@ -1378,13 +1379,14 @@ class EDBPadstack(object):
 
         pdef_data.SetSolderBallShape(self._solder_shape_type[shape])
         if not shape == "no_solder_ball":
-            pdef_data.SetSolderBallParameter(self._ppadstack._pedb.edb_value(diameter), self._ppadstack._pedb.edb_value(mid_diameter))
+            pdef_data.SetSolderBallParameter(
+                self._ppadstack._pedb.edb_value(diameter), self._ppadstack._pedb.edb_value(mid_diameter)
+            )
             pdef_data.SetSolderBallPlacement(self._solder_placement[placement])
 
         if material:
             pdef_data.SetSolderBallMaterial(material)
         self._padstack_def_data = pdef_data
-
 
 
 class EDBPadstackInstance(Connectable):
