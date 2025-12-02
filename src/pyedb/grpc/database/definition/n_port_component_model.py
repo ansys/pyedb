@@ -29,6 +29,21 @@ from ansys.edb.core.definition.component_model import (
 class NPortComponentModel:
     """Class managing :class:`NPortComponentModel <ansys.edb.core.definition.component_model.NPortComponentModel>`"""
 
-    def __init__(self, pedb, edb_object):
-        self.core = GrpcNPortComponentModel.__init__(edb_object)
-        self._pedb = pedb
+    def __init__(self, edb_object):
+        self.core = edb_object
+
+    @staticmethod
+    def create(name: str = None) -> "NPortComponentModel":
+        """Create a new NPortComponentModel object.
+
+        Returns
+        -------
+        NPortComponentModel
+            The newly created NPortComponentModel object.
+        """
+        if not name:
+            raise ValueError("Name must be provided to create NPortComponentModel.")
+        grpc_nport_component_model = GrpcNPortComponentModel.create(name=name)
+        if grpc_nport_component_model.is_null:
+            raise ValueError("Failed to create NPortComponentModel.")
+        return NPortComponentModel(grpc_nport_component_model)
