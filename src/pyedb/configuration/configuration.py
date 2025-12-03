@@ -532,6 +532,7 @@ class Configuration:
                 position=[position.X.ToString(), position.Y.ToString()],
                 rotation=rotation.ToString(),
                 eid=obj.id,
+                hole_override_enabled=hole_override_enabled,
                 hole_override_diameter=hole_override_diameter.ToString(),
                 solder_ball_layer=obj._edb_object.GetSolderBallLayer().GetName(),
                 layer_range=[obj.start_layer, obj.stop_layer],

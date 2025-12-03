@@ -1208,9 +1208,6 @@ class EDBPadstack(object):
             ]
         }
         """
-        from pyedb.dotnet.database.general import (
-            pascal_to_snake,
-        )
 
         pdef_data = self._padstack_def_data
         pad_type_list = [
@@ -1255,7 +1252,7 @@ class EDBPadstack(object):
         for pad_type in pad_type_list:
             pad_type_name = pascal_to_snake(pad_type.ToString())
             rpp = param.get(pad_type_name, [])
-            for idx, layer_data in enumerate(rpp):
+            for _, layer_data in enumerate(rpp):
                 # Get geometry type from kwargs
                 p = layer_data.get("shape")
                 temp_param = []
