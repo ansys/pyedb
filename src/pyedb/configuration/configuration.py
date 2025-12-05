@@ -33,6 +33,42 @@ from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.misc.decorators import execution_timer
 
 
+def set_padstack_definition(pdef, pdef_obj):
+    if pdef.hole_parameters:
+        pdef_obj.set_hole_parameters(pdef.hole_parameters)
+    if pdef.hole_range:
+        pdef_obj.hole_range = pdef.hole_range
+    if pdef.hole_plating_thickness:
+        pdef_obj.hole_plating_thickness = pdef.hole_plating_thickness
+    if pdef.material:
+        pdef_obj.material = pdef.material
+    if pdef.pad_parameters:
+        pdef_obj.set_pad_parameters(pdef.pad_parameters)
+    if pdef.solder_ball_parameters:
+        pdef_obj.set_solder_parameters(pdef.solder_ball_parameters)
+
+
+def set_padstack_instance(inst, inst_obj):
+    inst_obj.is_pin = inst.is_pin
+    if inst.name is not None:
+        inst_obj.aedt_name = inst.name
+    if inst.net_name is not None:
+        inst_obj.net_name = inst_obj._pedb.nets.find_or_create_net(inst.net_name).name
+    if inst.layer_range is not None:
+        inst_obj.start_layer = inst.layer_range[0]
+    if inst.layer_range is not None:
+        inst_obj.stop_layer = inst.layer_range[1]
+    if inst.backdrill_parameters:
+        inst_obj.backdrill_parameters = inst.backdrill_parameters.model_dump(exclude_none=True)
+    if inst.solder_ball_layer:
+        inst_obj._edb_object.SetSolderBallLayer(inst_obj._pedb.stackup[inst.solder_ball_layer]._edb_object)
+
+    hole_override_enabled, hole_override_diam = inst_obj._edb_object.GetHoleOverrideValue()
+    hole_override_enabled = inst.hole_override_enabled if inst.hole_override_enabled else hole_override_enabled
+    hole_override_diam = inst.hole_override_diameter if inst.hole_override_diameter else hole_override_diam
+    inst_obj._edb_object.SetHoleOverride(hole_override_enabled, inst_obj._pedb.edb_value(hole_override_diam))
+
+
 class Configuration:
     """Enables export and import of a JSON configuration file that can be applied to a new or existing design."""
 
@@ -134,8 +170,7 @@ class Configuration:
         self.__apply_with_logging("Applying materials", self.apply_materials)
         self.__apply_with_logging("Updating stackup", self.apply_stackup)
 
-        if self.cfg_data.padstacks:
-            self.__apply_with_logging("Applying padstacks", self.cfg_data.padstacks.apply)
+        self.apply_padstacks()
 
         self.__apply_with_logging("Applying S-parameters", self.cfg_data.s_parameters.apply)
 
@@ -253,8 +288,7 @@ class Configuration:
                 pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
                 pdef.SetData(pdata)
                 pdef = self._pedb.pedb_class.database.edb_data.padstacks_data.EDBPadstack(pdef, self._pedb.padstacks)
-                p.pyedb_obj = pdef
-                p.set_parameters_to_edb()
+                set_padstack_definition(p, pdef)
 
         if modeler.padstack_instances:
             for p in modeler.padstack_instances:
@@ -265,8 +299,7 @@ class Configuration:
                     definition_name=p.definition,
                     rotation=p.rotation if p.rotation is not None else 0,
                 )
-                p.pyedb_obj = p_inst
-                p.set_parameters_to_edb()
+                set_padstack_instance(p, p_inst)
 
         if modeler.planes:
             for p in modeler.planes:
@@ -471,6 +504,52 @@ class Configuration:
         for name, obj in self._pedb.stackup.all_layers.items():
             self.cfg_data.stackup.add_layer_at_bottom(**obj.properties)
 
+    def get_padstacks(self):
+        padstacks = self.cfg_data.padstacks
+        padstacks.clean()
+
+        for name, obj in self._pedb.padstacks.definitions.items():
+            if name.lower() == "symbol":
+                continue
+            padstacks.add_padstack_definition(
+                name=obj.name,
+                hole_plating_thickness=obj.hole_plating_thickness,
+                material=obj.material,
+                hole_range=obj.hole_range,
+                pad_parameters=obj.get_pad_parameters(),
+                hole_parameters=obj.get_hole_parameters(),
+                solder_ball_parameters=obj.get_solder_parameters(),
+            )
+
+        for obj in self._pedb.layout.padstack_instances:
+            _, position, rotation = obj._edb_object.GetPositionAndRotationValue()
+            hole_override_enabled, hole_override_diameter = obj._edb_object.GetHoleOverrideValue()
+            padstacks.add_padstack_instance(
+                name=obj.aedt_name,
+                is_pin=obj.is_pin,
+                definition=obj.padstack_definition,
+                backdrill_parameters=obj.backdrill_parameters,
+                position=[position.X.ToString(), position.Y.ToString()],
+                rotation=rotation.ToString(),
+                eid=obj.id,
+                hole_override_enabled=hole_override_enabled,
+                hole_override_diameter=hole_override_diameter.ToString(),
+                solder_ball_layer=obj._edb_object.GetSolderBallLayer().GetName(),
+                layer_range=[obj.start_layer, obj.stop_layer],
+            )
+
+    @execution_timer("Applying padstack definitions and instances")
+    def apply_padstacks(self):
+        padstacks = self.cfg_data.padstacks
+
+        for pdef in padstacks.definitions:
+            pdef_obj = self._pedb.padstacks.definitions[pdef.name]
+            set_padstack_definition(pdef, pdef_obj)
+
+        for inst in padstacks.instances:
+            inst_obj = self._pedb.padstacks.instances_by_name[inst.name]
+            set_padstack_instance(inst, inst_obj)
+
     def get_data_from_db(self, **kwargs):
         """Get configuration data from layout.
 
@@ -528,16 +607,8 @@ class Configuration:
             self.get_operations()
             data["operations"] = self.cfg_data.operations.model_dump()
         if kwargs.get("padstacks", False):
-            self.cfg_data.padstacks.retrieve_parameters_from_edb()
-            definitions = []
-            for i in self.cfg_data.padstacks.definitions:
-                definitions.append(i.get_attributes())
-            instances = []
-            for i in self.cfg_data.padstacks.instances:
-                instances.append(i.get_attributes())
-            data["padstacks"] = dict()
-            data["padstacks"]["definitions"] = definitions
-            data["padstacks"]["instances"] = instances
+            self.get_padstacks()
+            data["padstacks"] = self.cfg_data.padstacks.model_dump(exclude_none=True)
 
         if kwargs.get("boundaries", False):
             self.get_boundaries()
