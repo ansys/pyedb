@@ -28,19 +28,17 @@ from pyedb.grpc.database.definition.component_pin import ComponentPin
 from pyedb.grpc.database.hierarchy.component import Component
 
 
-class ComponentDef(GrpcComponentDef):
+class ComponentDef:
     """Manages EDB functionalities for component definitions.
 
     Parameters
     ----------
-    pedb : :class:`Edb <pyedb.grpc.edb.Edb>`
-        Inherited AEDT object.
     edb_object : object
         Edb ComponentDef Object
     """
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+        self.core = edb_object
         self._pedb = pedb
 
     @property
@@ -53,11 +51,11 @@ class ComponentDef(GrpcComponentDef):
             Component part name.
 
         """
-        return self.name
+        return self.core.name
 
     @part_name.setter
     def part_name(self, name):
-        self.name = name
+        self.core.name = name
 
     @property
     def type(self) -> str:
@@ -108,6 +106,18 @@ class ComponentDef(GrpcComponentDef):
         return {comp.refdes: comp for comp in comp_list}
 
     @property
+    def is_null(self) -> bool:
+        """Check if the component definition is null.
+
+        Returns
+        -------
+        bool
+            True if the component definition is null, False otherwise.
+
+        """
+        return self.core.is_null
+
+    @property
     def component_pins(self) -> list[ComponentPin]:
         """Component pins.
 
@@ -116,7 +126,47 @@ class ComponentDef(GrpcComponentDef):
         list[:class:`ComponentPin <pyedb.grpc.database.definition.component_pin.ComponentPin>`]
 
         """
-        return [ComponentPin(self._pedb, pin) for pin in super().component_pins]
+        return [ComponentPin(pin) for pin in self.core.component_pins]
+
+    @classmethod
+    def find(cls, edb, name):
+        """Find component definition by name.
+
+        Parameters
+        ----------
+        edb : :class:`pyedb.grpc.edb.Edb`
+            EDB database object.
+        name : str
+            Component definition name.
+
+        Returns
+        -------
+        :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>` or None
+        """
+        core_comp_def = GrpcComponentDef.find(edb.db, name)
+        if not core_comp_def.is_null:
+            return ComponentDef(edb, core_comp_def)
+        return None
+
+    @classmethod
+    def create(cls, edb, name, fp=None):
+        """Create a new component definition.
+
+        Parameters
+        ----------
+        edb : :class:`pyedb.grpc.edb.Edb`
+            EDB database object.
+        name : str
+            Component definition name.
+        fp : str, optional
+           Footprint cell name.
+
+        Returns
+        -------
+        :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>`
+        """
+        component_def = GrpcComponentDef.create(edb.db, name, fp)
+        return ComponentDef(edb, component_def)
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False) -> bool:
         """Assign RLC to all components under this part name.
@@ -194,6 +244,33 @@ class ComponentDef(GrpcComponentDef):
         """
         return [model.reference_file for model in self.component_models]
 
+    @property
+    def component_models(self):
+        """Component models.
+
+        Returns
+        -------
+        list[:class:`ComponentModel <ansys.edb.core.definition.component_model.ComponentModel>`]
+
+        """
+        return self.core.component_models
+
+    @property
+    def name(self):
+        """Component definition name.
+
+        Returns
+        -------
+        str
+            Component definition name.
+
+        """
+        return self.core.name
+
+    @name.setter
+    def name(self, value):
+        self.core.name = value
+
     def add_n_port_model(self, fpath, name=None):
         """Add N-port model.
 
@@ -209,16 +286,13 @@ class ComponentDef(GrpcComponentDef):
 
         if not name:
             name = os.path.splitext(os.path.basename(fpath)[0])
-        for model in self.component_models:
-            if model.model_name == name:
-                self._pedb.logger.error(f"Model {name} already defined for component definition {self.name}")
-                return None
         model = [model for model in self.component_models if model.name == name]
-        if not model:
-            n_port_model = GrpcNPortComponentModel.create(name=name)
-            n_port_model.reference_file = fpath
-            self.add_component_model(n_port_model)
-            return n_port_model
+        if model:
+            raise RuntimeError(f"Model {name} already defined for component definition {self.name}")
+        n_port_model = GrpcNPortComponentModel.create(name=name)
+        n_port_model.reference_file = fpath
+        self.core.add_component_model(n_port_model)
+        return n_port_model
 
     def get_properties(self):
         data = {}
@@ -233,4 +307,4 @@ class ComponentDef(GrpcComponentDef):
         if pin_order:
             old = {i.name: i for i in self.component_pins}
             temp = [old[str(i)] for i in pin_order]
-            self.reorder_pins(temp)
+            self.core.reorder_pins(temp)
