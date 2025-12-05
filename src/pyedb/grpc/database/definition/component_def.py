@@ -33,14 +33,12 @@ class ComponentDef:
 
     Parameters
     ----------
-    pedb : :class:`Edb <pyedb.grpc.edb.Edb>`
-        Inherited AEDT object.
     edb_object : object
         Edb ComponentDef Object
     """
 
     def __init__(self, pedb, edb_object):
-        self.core = GrpcComponentDef.__init__(edb_object.msg)
+        self.core = edb_object
         self._pedb = pedb
 
     @property
@@ -108,6 +106,18 @@ class ComponentDef:
         return {comp.refdes: comp for comp in comp_list}
 
     @property
+    def is_null(self) -> bool:
+        """Check if the component definition is null.
+
+        Returns
+        -------
+        bool
+            True if the component definition is null, False otherwise.
+
+        """
+        return self.core.is_null
+
+    @property
     def component_pins(self) -> list[ComponentPin]:
         """Component pins.
 
@@ -116,7 +126,47 @@ class ComponentDef:
         list[:class:`ComponentPin <pyedb.grpc.database.definition.component_pin.ComponentPin>`]
 
         """
-        return [ComponentPin(self._pedb, pin) for pin in self.core.component_pins]
+        return [ComponentPin(pin) for pin in self.core.component_pins]
+
+    @classmethod
+    def find(cls, edb, name):
+        """Find component definition by name.
+
+        Parameters
+        ----------
+        edb : :class:`pyedb.grpc.edb.Edb`
+            EDB database object.
+        name : str
+            Component definition name.
+
+        Returns
+        -------
+        :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>` or None
+        """
+        core_comp_def = GrpcComponentDef.find(edb.db, name)
+        if not core_comp_def.is_null:
+            return ComponentDef(edb, core_comp_def)
+        return None
+
+    @classmethod
+    def create(cls, edb, name, fp=None):
+        """Create a new component definition.
+
+        Parameters
+        ----------
+        edb : :class:`pyedb.grpc.edb.Edb`
+            EDB database object.
+        name : str
+            Component definition name.
+        fp : str, optional
+           Footprint cell name.
+
+        Returns
+        -------
+        :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>`
+        """
+        component_def = GrpcComponentDef.create(edb.db, name, fp)
+        return ComponentDef(edb, component_def)
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False) -> bool:
         """Assign RLC to all components under this part name.

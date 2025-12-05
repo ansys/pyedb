@@ -992,13 +992,13 @@ class Components(object):
         :class:`pyedb.grpc.database.definition.component_def.ComponentDef` or None
             Component definition if successful, None otherwise.
         """
-        component_definition = ComponentDef.find(self._db, name)
-        if component_definition.is_null:
+        component_definition = ComponentDef.find(self._pedb, name)
+        if not component_definition:
             from ansys.edb.core.layout.cell import Cell as GrpcCell, CellType as GrpcCellType
 
             foot_print_cell = GrpcCell.create(self._pedb.active_db, GrpcCellType.FOOTPRINT_CELL, name)
-            component_definition = ComponentDef.create(self._db, name, fp=foot_print_cell)
-            if component_definition.is_null:
+            component_definition = ComponentDef.create(self._pedb, name, fp=foot_print_cell)
+            if component_definition.core.is_null:
                 self._logger.error(f"Failed to create component definition {name}")
                 return None
             ind = 1
@@ -1007,7 +1007,7 @@ class Components(object):
                     pin.name = str(ind)
                 ind += 1
                 component_definition_pin = ComponentPin.create(component_definition, pin.name)
-                if component_definition_pin.is_null:
+                if component_definition_pin.core.is_null:
                     self._logger.error(f"Failed to create component definition pin {name}-{pin.name}")
                     return None
         return component_definition
@@ -1690,10 +1690,7 @@ class Components(object):
                         if not pinlist:
                             continue
                         if not part_name in self.definitions:
-                            comp_def = ComponentDef.create(self._db, part_name, None)
-                            # for pin in range(len(pinlist)):
-                            #     ComponentPin.create(comp_def, str(pin))
-
+                            ComponentDef.create(self._pedb, part_name, None)
                         p_layer = comp.placement_layer
                         refdes_temp = comp.refdes + "_temp"
                         comp.refdes = refdes_temp
