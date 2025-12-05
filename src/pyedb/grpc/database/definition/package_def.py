@@ -232,7 +232,7 @@ class PackageDef:
         """
         grpc_package = GrpcPackageDef.create(edb.active_db, name)
         if grpc_package.is_null:
-            raise RuntimeError(f"Package {name} does not exist")
+            raise RuntimeError(f"Failed to create package {name}")
         return PackageDef(edb, grpc_package)
 
     def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness) -> HeatSink:
