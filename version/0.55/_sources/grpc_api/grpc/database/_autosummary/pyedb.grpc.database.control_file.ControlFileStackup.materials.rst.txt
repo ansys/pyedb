@@ -1,0 +1,6 @@
+materials
+=========
+
+.. currentmodule:: pyedb.grpc.database.control_file
+
+.. autoproperty:: ControlFileStackup.materials

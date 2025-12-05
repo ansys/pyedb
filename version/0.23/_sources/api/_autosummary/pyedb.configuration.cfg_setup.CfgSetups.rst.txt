@@ -1,0 +1,27 @@
+﻿CfgSetups
+=========
+
+.. currentmodule:: pyedb.configuration.cfg_setup
+
+.. autoclass:: CfgSetups
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgSetups.apply
+      
+      
+      CfgSetups.get_data_from_db
+      
+   
+   
+
+   
+   
+   

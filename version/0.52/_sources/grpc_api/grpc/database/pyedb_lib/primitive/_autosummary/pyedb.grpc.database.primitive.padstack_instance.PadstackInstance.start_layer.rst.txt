@@ -1,0 +1,6 @@
+start\_layer
+============
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. autoproperty:: PadstackInstance.start_layer

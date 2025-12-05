@@ -1,0 +1,27 @@
+﻿SIWaveDCIRSimulationSetup
+=========================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup
+
+.. autoclass:: SIWaveDCIRSimulationSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      SIWaveDCIRSimulationSetup.cast
+      
+      
+      SIWaveDCIRSimulationSetup.create
+      
+   
+   
+
+   
+   
+   

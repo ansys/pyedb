@@ -1,0 +1,6 @@
+arc\_height
+===========
+
+.. currentmodule:: pyedb.grpc.database.geometry.point_data
+
+.. autoproperty:: PointData.arc_height

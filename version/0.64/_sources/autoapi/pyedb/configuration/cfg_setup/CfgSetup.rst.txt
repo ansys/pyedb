@@ -1,0 +1,132 @@
+
+
+
+
+
+
+:class:`CfgSetup`
+=================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgSetup(pedb, pedb_obj, **kwargs)
+
+   
+
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           ..
+
+       **type** : :class:`python:str`
+           Type of the setup. Optionals are ``"hfss"``, ``"siwave_ac"``, ``"siwave_dc"``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: CfgSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~apply_freq_sweep`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pedb`
+            - 
+          * - :py:attr:`~pyedb_obj`
+            - 
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~freq_sweep`
+            - 
+
+
+   .. tab-item:: Static methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_frequency_string`
+            - 
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup import CfgSetup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: pedb
+
+.. py:attribute:: pyedb_obj
+
+.. py:attribute:: name
+
+.. py:attribute:: type
+   :value: ''
+
+
+.. py:attribute:: freq_sweep
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_frequency_string(sweep, freq_string)
+   :staticmethod:
+
+
+.. py:method:: apply_freq_sweep(edb_setup)
+
+
+
+

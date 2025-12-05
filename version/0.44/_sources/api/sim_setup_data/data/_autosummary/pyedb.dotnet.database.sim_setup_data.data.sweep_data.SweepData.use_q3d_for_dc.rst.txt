@@ -1,0 +1,6 @@
+use\_q3d\_for\_dc
+=================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.sweep_data
+
+.. autoproperty:: SweepData.use_q3d_for_dc

@@ -1,0 +1,71 @@
+﻿PointTerminal
+=============
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. autoclass:: PointTerminal
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      PointTerminal.cast
+      
+      
+      PointTerminal.create
+      
+      
+      PointTerminal.create_3d_comp
+      
+      
+      PointTerminal.create_hfss
+      
+      
+      PointTerminal.create_stride
+      
+      
+      PointTerminal.delete
+      
+      
+      PointTerminal.find
+      
+      
+      PointTerminal.find_by_id
+      
+      
+      PointTerminal.get_product_property
+      
+      
+      PointTerminal.get_product_property_ids
+      
+      
+      PointTerminal.product_solver_names
+      
+      
+      PointTerminal.product_solver_option
+      
+      
+      PointTerminal.set_product_property
+      
+      
+      PointTerminal.set_product_solver_option
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PointTerminal.layout_obj_type
+      PointTerminal.type
+   
+   

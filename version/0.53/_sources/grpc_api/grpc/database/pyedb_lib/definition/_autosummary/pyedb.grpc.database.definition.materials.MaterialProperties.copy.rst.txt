@@ -1,0 +1,6 @@
+copy
+====
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: MaterialProperties.copy

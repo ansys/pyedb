@@ -1,0 +1,230 @@
+
+
+
+
+
+
+:class:`ArcData`
+================
+
+
+.. py:class:: pyedb.grpc.database.geometry.arc_data.ArcData(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.geometry.arc_data.ArcData`
+
+
+   
+   Class managing ArcData.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ArcData
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~center`
+            - Arc data center.
+          * - :py:attr:`~start`
+            - Arc data start point.
+          * - :py:attr:`~end`
+            - Arc data end point.
+          * - :py:attr:`~mid_point`
+            - Arc data mid point.
+          * - :py:attr:`~points`
+            - Arc data points.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.geometry.arc_data import ArcData
+
+Property detail
+---------------
+
+.. py:property:: center
+   :type: list[float]
+
+
+   
+   Arc data center.
+
+
+
+   :Returns:
+
+       [:class:`python:float`, :class:`python:float`]
+           [x value, y value]
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: start
+   :type: list[float]
+
+
+   
+   Arc data start point.
+
+
+
+   :Returns:
+
+       [:class:`python:float`, :class:`python:float`]
+           [x value, y value]
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: end
+   :type: list[float]
+
+
+   
+   Arc data end point.
+
+
+
+   :Returns:
+
+       [:class:`python:float`, :class:`python:float`]
+           [x value, y value]
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mid_point
+   :type: list[float]
+
+
+   
+   Arc data mid point.
+
+
+
+   :Returns:
+
+       [:class:`python:float`, :class:`python:float`]
+           [x value, y value]
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: points
+   :type: list[list[float]]
+
+
+   
+   Arc data points.
+
+
+
+   :Returns:
+
+       [[:class:`python:float`, :class:`python:float`]]
+           [[x value, y value]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

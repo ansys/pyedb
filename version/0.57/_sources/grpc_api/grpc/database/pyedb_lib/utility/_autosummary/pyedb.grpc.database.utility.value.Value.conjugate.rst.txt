@@ -1,0 +1,6 @@
+conjugate
+=========
+
+.. currentmodule:: pyedb.grpc.database.utility.value
+
+.. automethod:: Value.conjugate

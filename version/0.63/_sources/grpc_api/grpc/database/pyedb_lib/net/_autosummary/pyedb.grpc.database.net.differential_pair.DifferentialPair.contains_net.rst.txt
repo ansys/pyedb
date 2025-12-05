@@ -1,0 +1,6 @@
+contains\_net
+=============
+
+.. currentmodule:: pyedb.grpc.database.net.differential_pair
+
+.. automethod:: DifferentialPair.contains_net

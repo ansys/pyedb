@@ -1,0 +1,6 @@
+enabled
+=======
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_simulation_settings
+
+.. autoproperty:: RaptorXSimulationSettings.enabled

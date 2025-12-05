@@ -1,0 +1,6 @@
+is\_parameter
+=============
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.is_parameter

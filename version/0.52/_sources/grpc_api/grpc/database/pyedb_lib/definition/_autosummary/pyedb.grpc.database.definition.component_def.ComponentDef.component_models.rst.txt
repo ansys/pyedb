@@ -1,0 +1,6 @@
+component\_models
+=================
+
+.. currentmodule:: pyedb.grpc.database.definition.component_def
+
+.. autoproperty:: ComponentDef.component_models

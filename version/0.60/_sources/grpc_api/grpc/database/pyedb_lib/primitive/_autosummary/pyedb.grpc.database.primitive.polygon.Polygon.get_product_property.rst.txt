@@ -1,0 +1,6 @@
+get\_product\_property
+======================
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. automethod:: Polygon.get_product_property

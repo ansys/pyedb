@@ -1,0 +1,6 @@
+clone
+=====
+
+.. currentmodule:: pyedb.grpc.database.layers.layer
+
+.. automethod:: Layer.clone

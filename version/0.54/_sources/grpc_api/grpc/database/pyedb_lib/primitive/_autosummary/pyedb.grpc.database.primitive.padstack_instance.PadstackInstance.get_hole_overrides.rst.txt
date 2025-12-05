@@ -1,0 +1,6 @@
+get\_hole\_overrides
+====================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. automethod:: PadstackInstance.get_hole_overrides

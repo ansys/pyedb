@@ -1,0 +1,6 @@
+params
+======
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. autoproperty:: PointTerminal.params

@@ -1,0 +1,6 @@
+dc\_model
+=========
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoproperty:: Material.dc_model

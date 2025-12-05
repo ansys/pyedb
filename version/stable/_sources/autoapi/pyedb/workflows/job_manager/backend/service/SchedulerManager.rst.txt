@@ -1,0 +1,185 @@
+
+
+
+
+
+
+:class:`SchedulerManager`
+=========================
+
+
+.. py:class:: pyedb.workflows.job_manager.backend.service.SchedulerManager(scheduler_type: pyedb.workflows.job_manager.backend.job_submission.SchedulerType)
+
+   
+   Thin async wrapper around cluster scheduler commands.
+
+   Provides live introspection of SLURM and LSF clusters including:
+
+   * List of partitions / queues with resource information
+   * Per-partition: total & free cores, total & free memory
+   * Global job table (running, pending, etc.)
+
+   All methods are **coroutines** so they can be awaited from the REST layer
+   without blocking the event-loop.
+
+   :Parameters:
+
+       **scheduler_type** : :obj:`SchedulerType`
+           Type of scheduler (SLURM or LSF only)
+
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If scheduler_type is not SLURM or LSF
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SchedulerManager
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_partitions`
+            - Get list of scheduler partitions/queues with resource information.
+          * - :py:attr:`~get_jobs`
+            - Get global job table (all users).
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~scheduler_type`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.job_manager.backend.service import SchedulerManager
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: scheduler_type
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_partitions() -> List[Dict[str, Any]]
+   :async:
+
+
+   
+   Get list of scheduler partitions/queues with resource information.
+
+
+
+   :Returns:
+
+       :obj:`List`\[:obj:`Dict`\[:class:`python:str`, :obj:`Any`]]
+           List of partition dictionaries with keys:
+           - name: Partition/queue name
+           - cores_total: Total available cores
+           - cores_used: Currently used cores
+           - memory_total_gb: Total memory in GB
+           - memory_used_gb: Currently used memory in GB
+
+
+
+
+   :Raises:
+
+       :obj:`RuntimeError`
+           If scheduler command execution fails
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_jobs() -> List[Dict[str, Any]]
+   :async:
+
+
+   
+   Get global job table (all users).
+
+
+
+   :Returns:
+
+       :obj:`List`\[:obj:`Dict`\[:class:`python:str`, :obj:`Any`]]
+           List of job dictionaries with keys:
+           - job_id: Scheduler job ID
+           - partition: Partition/queue name
+           - user: Job owner username
+           - state: Job state (RUNNING, PENDING, etc.)
+           - nodes: Number of nodes allocated
+           - cpus: Number of CPUs allocated
+           - memory_gb: Memory allocated in GB
+
+
+
+
+   :Raises:
+
+       :obj:`RuntimeError`
+           If scheduler command execution fails
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+mid\_point
+==========
+
+.. currentmodule:: pyedb.grpc.database.geometry.arc_data
+
+.. autoproperty:: ArcData.mid_point

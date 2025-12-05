@@ -1,0 +1,6 @@
+radial\_extent\_factor
+======================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: CoaxPort.radial_extent_factor

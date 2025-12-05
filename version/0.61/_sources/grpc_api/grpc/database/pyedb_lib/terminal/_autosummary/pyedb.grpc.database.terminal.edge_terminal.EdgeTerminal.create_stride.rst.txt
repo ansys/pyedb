@@ -1,0 +1,6 @@
+create\_stride
+==============
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. automethod:: EdgeTerminal.create_stride

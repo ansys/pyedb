@@ -1,0 +1,33 @@
+﻿CfgStackup
+==========
+
+.. currentmodule:: pyedb.configuration.cfg_stackup
+
+.. autoclass:: CfgStackup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgStackup.apply
+      
+      
+      CfgStackup.get_data_from_db
+      
+      
+      CfgStackup.get_layers_from_db
+      
+      
+      CfgStackup.get_materials_from_db
+      
+   
+   
+
+   
+   
+   

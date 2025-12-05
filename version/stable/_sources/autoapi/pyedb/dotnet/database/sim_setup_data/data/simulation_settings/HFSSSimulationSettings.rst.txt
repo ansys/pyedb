@@ -1,0 +1,58 @@
+
+
+
+
+
+
+:class:`HFSSSimulationSettings`
+===============================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings.HFSSSimulationSettings(pedb, sim_setup, edb_object)
+
+   Bases: :py:obj:`SimulationSettings`
+
+
+
+.. py:currentmodule:: HFSSSimulationSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~mesh_operations`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.simulation_settings import HFSSSimulationSettings
+
+Property detail
+---------------
+
+.. py:property:: mesh_operations
+
+
+
+
+
+

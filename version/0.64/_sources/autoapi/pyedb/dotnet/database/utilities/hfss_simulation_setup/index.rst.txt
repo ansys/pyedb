@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``hfss_simulation_setup.py`` module
+=======================================
+
+.. py:module:: pyedb.dotnet.database.utilities.hfss_simulation_setup
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: hfss_simulation_setup
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.hfss_simulation_setup.HfssSimulationSetup`
+            - Manages EDB methods for HFSS simulation setup.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.hfss_simulation_setup.HFSSPISimulationSetup`
+            - Manages EDB methods for HFSSPI simulation setup.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> HfssSimulationSetup</autoapi/pyedb/dotnet/database/utilities/hfss_simulation_setup/HfssSimulationSetup>
+    <span class="nf nf-cod-symbol_class"></span> HFSSPISimulationSetup</autoapi/pyedb/dotnet/database/utilities/hfss_simulation_setup/HFSSPISimulationSetup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

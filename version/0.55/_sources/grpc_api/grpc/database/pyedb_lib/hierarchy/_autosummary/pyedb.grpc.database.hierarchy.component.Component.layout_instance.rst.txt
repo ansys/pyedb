@@ -1,0 +1,6 @@
+layout\_instance
+================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoproperty:: Component.layout_instance

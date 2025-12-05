@@ -1,0 +1,23 @@
+﻿RaptorXGeneralSettings
+======================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data
+
+.. autoclass:: RaptorXGeneralSettings
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      RaptorXGeneralSettings.global_temperature
+      RaptorXGeneralSettings.max_frequency
+   
+   

@@ -1,0 +1,6 @@
+top\_bottom\_association
+========================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. autoproperty:: PadstackInstance.top_bottom_association

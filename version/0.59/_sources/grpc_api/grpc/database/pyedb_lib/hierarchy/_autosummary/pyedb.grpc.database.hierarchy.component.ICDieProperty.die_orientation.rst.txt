@@ -1,0 +1,6 @@
+die\_orientation
+================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoproperty:: ICDieProperty.die_orientation

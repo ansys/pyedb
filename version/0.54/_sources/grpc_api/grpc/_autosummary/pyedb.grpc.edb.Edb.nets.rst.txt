@@ -1,0 +1,6 @@
+nets
+====
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.nets

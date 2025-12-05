@@ -1,0 +1,27 @@
+﻿MeshOperation
+=============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.mesh_operation
+
+.. autoclass:: MeshOperation
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      MeshOperation.enabled
+      MeshOperation.mesh_region
+      MeshOperation.name
+      MeshOperation.net_layer_info
+      MeshOperation.refine_inside
+      MeshOperation.solve_inside
+   
+   

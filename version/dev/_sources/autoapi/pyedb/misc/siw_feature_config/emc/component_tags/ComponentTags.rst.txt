@@ -1,0 +1,79 @@
+
+
+
+
+
+
+:class:`ComponentTags`
+======================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.emc.component_tags.ComponentTags(element)
+
+   Bases: :py:obj:`pyedb.misc.siw_feature_config.emc.xml_generic.XmlGeneric`
+
+
+   
+   Manages component tags.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ComponentTags
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~CLS_MAPPING`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.emc.component_tags import ComponentTags
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: CLS_MAPPING
+
+
+
+
+

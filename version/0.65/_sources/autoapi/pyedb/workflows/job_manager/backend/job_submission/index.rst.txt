@@ -1,0 +1,256 @@
+
+
+
+
+
+
+The ``job_submission.py`` module
+================================
+
+.. py:module:: pyedb.workflows.job_manager.backend.job_submission
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: job_submission
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.job_submission.SchedulerOptions`
+            - Resource requirements and scheduler-specific directives.
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.job_submission.MachineNode`
+            - Compute-node descriptor for distributed HFSS runs.
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.job_submission.HFSS3DLayoutBatchOptions`
+            - HFSS-specific solver flags and environment settings.
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.job_submission.HFSSSimulationConfig`
+            - Complete, validated simulation configuration.
+
+
+
+    .. tab-item:: Enums
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.job_submission.SchedulerType`
+            - Supported enterprise job schedulers.
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~create_hfss_config`
+            - **Convenience factory** that hides all boilerplate and produces a
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~logger`
+            - 
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SchedulerOptions</autoapi/pyedb/workflows/job_manager/backend/job_submission/SchedulerOptions>
+    <span class="nf nf-cod-symbol_class"></span> MachineNode</autoapi/pyedb/workflows/job_manager/backend/job_submission/MachineNode>
+    <span class="nf nf-cod-symbol_class"></span> HFSS3DLayoutBatchOptions</autoapi/pyedb/workflows/job_manager/backend/job_submission/HFSS3DLayoutBatchOptions>
+    <span class="nf nf-cod-symbol_class"></span> HFSSSimulationConfig</autoapi/pyedb/workflows/job_manager/backend/job_submission/HFSSSimulationConfig>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_enum"></span> SchedulerType</autoapi/pyedb/workflows/job_manager/backend/job_submission/SchedulerType>
+
+
+
+
+
+
+
+
+Description
+-----------
+
+``job_submission`` --- Cross-platform HFSS simulation runner with enterprise scheduler support
+==============================================================================================
+
+This module provides a single entry point, :func:`create_hfss_config`, that
+builds a validated, JSON-serialisable configuration object and submits it to
+
+* local subprocess (default)
+* SLURM
+* LSF (IBM Platform)
+* PBS / Torque
+* Windows HPC Server
+
+The configuration is **immutable** (dataclass), **validated** on creation and
+can be round-tripped through JSON for persistence or REST transmission.
+
+Examples
+--------
+Local simulation::
+
+    >>> cfg = create_hfss_config(
+    ...     ansys_edt_path="/ansys/v241/Linux64/ansysedt",
+    ...     jobid="patch_antenna",
+    ...     project_path="/home/antenna.aedt")
+    >>> result = cfg.run_simulation(timeout=3600)
+    >>> result.returncode
+    0
+
+SLURM cluster::
+
+    >>> cfg = create_hfss_config(
+    ...     jobid="array_001",
+    ...     project_path="/shared/array.aedt",
+    ...     scheduler_type=SchedulerType.SLURM,
+    ...     scheduler_options=SchedulerOptions(
+    ...         queue="compute",
+    ...         nodes=4,
+    ...         memory="64GB",
+    ...         time="08:00:00"))
+    >>> job_id = cfg.run_simulation()
+    >>> print(job_id)
+    slurm_job_12345
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: create_hfss_config(project_path: str, jobid: Optional[str] = '', ansys_edt_path: Optional[str] = '', design_name: Optional[str] = '', setup_name: Optional[str] = '', machine_nodes: Optional[List[MachineNode]] = None, scheduler_type: SchedulerType = SchedulerType.NONE, scheduler_options: Optional[SchedulerOptions] = None, **kwargs) -> HFSSSimulationConfig
+
+   
+   **Convenience factory** that hides all boilerplate and produces a
+   **validated** configuration in a single call.
+
+
+   :Parameters:
+
+       **ansys_edt_path** : :class:`python:str`, :obj:`Optional`
+           Absolute path to ``ansysedt`` executable. If not provided the latest
+           installed version will be used.
+
+       **jobid** : :class:`python:str`, :obj:`Optional`
+           Unique job identifier (letters, digits, ``_``, ``-`` only).
+
+       **project_path** : :class:`python:str`
+           Absolute path to ``.aedt`` or ``.aedb`` project.
+
+       **design_name** : :class:`python:str`, :obj:`optional`
+           Design inside project.  Default ``""`` (active design).
+
+       **setup_name** : :class:`python:str`, :obj:`optional`
+           Setup name.  Default ``""`` (first setup).
+
+       **machine_nodes** : :class:`python:list`\[:obj:`MachineNode`], :obj:`optional`
+           Compute nodes for MPI.  Default ``[MachineNode()]``.
+
+       **scheduler_type** : :obj:`SchedulerType`, :obj:`optional`
+           External scheduler.  Default :attr:`SchedulerType.NONE`.
+
+       **scheduler_options** : :obj:`SchedulerOptions`, :obj:`optional`
+           Scheduler directives.  Default instance.
+
+       **\*\*kwargs**
+           Additional fields passed directly to ``HFSSSimulationConfig``.
+
+   :Returns:
+
+       :obj:`HFSSSimulationConfig`
+           Ready-to-run configuration.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg = create_hfss_config(
+   ...     ansys_edt_path="/ansys/v241/Linux64/ansysedt",
+   ...     jobid="patch",
+   ...     project_path="/shared/patch.aedt",
+   ...     scheduler_type=SchedulerType.SLURM,
+   ...     scheduler_options=SchedulerOptions(nodes=4, memory="32GB"),
+   ... )
+   >>> job = cfg.run_simulation()
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: logger
+
+
+

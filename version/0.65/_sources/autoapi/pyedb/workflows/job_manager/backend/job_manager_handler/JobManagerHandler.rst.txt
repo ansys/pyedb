@@ -1,0 +1,853 @@
+
+
+
+
+
+
+:class:`JobManagerHandler`
+==========================
+
+
+.. py:class:: pyedb.workflows.job_manager.backend.job_manager_handler.JobManagerHandler(edb=None, version=None, host='localhost', port=8080)
+
+   
+   Synchronous façade that controls an **async** Job Manager service.
+
+   This class provides a thread-safe interface to manage asynchronous job
+   execution while running the aiohttp server in a background thread.
+
+   :Parameters:
+
+       **edb** : :obj:`Optional`\[:obj:`Edb`]
+           PyEDB instance for automatic ANSYS path detection
+
+       **version** : :obj:`Optional`\[:class:`python:str`]
+           Specific ANSYS version to use (e.g., "2023.1")
+
+       **host** : :class:`python:str`
+           Hostname or IP address to bind the server
+
+       **port** : :class:`python:int`
+           TCP port to listen on
+
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If specified ANSYS version is not found
+
+       :obj:`RuntimeError`
+           If service fails to start within timeout
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> handler = JobManagerHandler()  # doctest: +SKIP
+   >>> handler.start_service()  # doctest: +SKIP
+   >>> print(f"Server running at {handler.url}")  # doctest: +SKIP
+   >>> # Submit jobs via REST API or handler methods
+   >>> handler.close()  # doctest: +SKIP
+
+   :Attributes:
+
+       **ansys_path** : :class:`python:str`
+           Path to ANSYS EDT executable
+
+       **scheduler_type** : :obj:`SchedulerType`
+           Detected scheduler type (SLURM, LSF, or NONE)
+
+       **manager** : :obj:`JobManager`
+           Underlying async job manager instance
+
+       **host** : :class:`python:str`
+           Server hostname
+
+       **port** : :class:`python:int`
+           Server port
+
+       **url** : :class:`python:str`
+           Full server URL
+
+       **started** : :ref:`bool <python:bltin-boolean-values>`
+           Whether the service is currently running
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: JobManagerHandler
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~submit_job`
+            - Synchronously submit a simulation job.
+          * - :py:attr:`~wait_until_done`
+            - Block until the requested job reaches a terminal state
+          * - :py:attr:`~wait_until_all_done`
+            - Block until **every** job currently known to the manager
+          * - :py:attr:`~get_system_status`
+            - Get system status and scheduler information.
+          * - :py:attr:`~get_me`
+            - Get current user information.
+          * - :py:attr:`~get_jobs`
+            - Get list of all jobs with their current status.
+          * - :py:attr:`~get_scheduler_type`
+            - Get detected scheduler type.
+          * - :py:attr:`~get_cluster_partitions`
+            - Get available cluster partitions/queues.
+          * - :py:attr:`~get_job_log`
+            - Get parsed HFSS log for a finished job.
+          * - :py:attr:`~handle_submit_job`
+            - Submit a new simulation job.
+          * - :py:attr:`~get_queue_status`
+            - Get current queue status for UI display.
+          * - :py:attr:`~get_resources`
+            - Get current resource usage for UI display.
+          * - :py:attr:`~cancel_job`
+            - Cancel a running or queued job.
+          * - :py:attr:`~start_service`
+            - Start the job manager service in a background thread.
+          * - :py:attr:`~close`
+            - Gracefully shutdown the job manager service.
+          * - :py:attr:`~stop_service`
+            - Stop the aiohttp server and cleanup resources.
+          * - :py:attr:`~create_simulation_config`
+            - Create a validated HFSSSimulationConfig.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~url`
+            - Get the server URL.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~scheduler_type`
+            - 
+          * - :py:attr:`~manager`
+            - 
+          * - :py:attr:`~sio`
+            - 
+          * - :py:attr:`~app`
+            - 
+          * - :py:attr:`~runner`
+            - 
+          * - :py:attr:`~site`
+            - 
+          * - :py:attr:`~started`
+            - 
+          * - :py:attr:`~resource_limits`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.job_manager.backend.job_manager_handler import JobManagerHandler
+
+Property detail
+---------------
+
+.. py:property:: url
+   :type: str
+
+
+   
+   Get the server URL.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Full server URL (http://host:port)
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: scheduler_type
+
+.. py:attribute:: manager
+
+.. py:attribute:: sio
+
+.. py:attribute:: app
+
+.. py:attribute:: runner
+   :type:  Optional[aiohttp.web.AppRunner]
+   :value: None
+
+
+.. py:attribute:: site
+   :value: None
+
+
+.. py:attribute:: started
+   :value: False
+
+
+.. py:attribute:: resource_limits
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: submit_job(config: pyedb.workflows.job_manager.backend.job_submission.HFSSSimulationConfig, priority: int = 0, timeout: float = 30.0) -> str
+
+   
+   Synchronously submit a simulation job.
+
+   The method is thread-safe: it marshals the async work into the
+   background event-loop and returns the job identifier.
+
+   :Parameters:
+
+       **config** : :obj:`HFSSSimulationConfig`
+           Fully-built and validated simulation configuration.
+
+       **priority** : :class:`python:int`, :obj:`optional`
+           Job priority (higher → de-queued earlier).  Default 0.
+
+       **timeout** : :class:`python:float`, :obj:`optional`
+           Seconds to wait for the submission to complete.  Default 30 s.
+
+   :Returns:
+
+       :class:`python:str`
+           Unique job identifier (same as ``config.jobid``).
+
+
+
+
+   :Raises:
+
+       :obj:`RuntimeError`
+           If the service is not started or the submission times out.
+
+       :obj:`Exception`
+           Any validation / scheduler error raised by the underlying coroutine.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.workflows.job_manager.backend.job_manager_handler import JobManagerHandler
+   >>> from pyedb.workflows.job_manager.backend.job_submission import create_hfss_config, SchedulerType
+
+   >>> handler = JobManagerHandler()
+   >>> handler.start_service()
+   >>> cfg = create_hfss_config(
+   >>>     ansys_edt_path=...,
+   >>>     jobid="my_job",
+   >>>     project_path=...,
+   >>>     scheduler_type=SchedulerType.NONE
+   >>> )
+   >>> job_id = handler.submit_job(cfg, priority=0)
+   >>> print("submitted", job_id)
+   >>> # later
+   >>> handler.close()
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: wait_until_done(job_id: str, poll_every: float = 2.0) -> str
+
+   
+   Block until the requested job reaches a terminal state
+   (completed, failed, or cancelled).
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Terminal status string.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: wait_until_all_done(poll_every: float = 2.0) -> None
+
+   
+   Block until **every** job currently known to the manager
+   is in a terminal state.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_system_status(request)
+   :async:
+
+
+   
+   Get system status and scheduler information.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request object
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON response with system status
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_me(request)
+   :async:
+
+
+   
+   Get current user information.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request object
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON response with username
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_jobs(request)
+   :async:
+
+
+   
+   Get list of all jobs with their current status.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request object
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON array of job objects
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_scheduler_type(request)
+   :async:
+
+
+   
+   Get detected scheduler type.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request object
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON response with scheduler type
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_cluster_partitions(request)
+   :async:
+
+
+   
+   Get available cluster partitions/queues.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request object
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON array of partition information
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_job_log(request)
+   :async:
+
+
+   
+   Get parsed HFSS log for a finished job.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request with job_id in URL path
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           - 200: JSON with parsed log data
+           - 204: No log available yet
+           - 404: Job not found
+           - 500: Log parsing error
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: handle_submit_job(request)
+   :async:
+
+
+   
+   Submit a new simulation job.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request with JSON payload containing job configuration
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON response with job ID and status
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   Expected JSON payload:
+
+   .. code-block:: json
+
+       {
+           "config": {
+               "scheduler_type": "slurm|lsf|none",
+               "project_path": "/path/to/project.aedt",
+               ... other HFSS config fields
+           },
+           "user": "username",
+           "machine_nodes": [...],
+           "batch_options": {...}
+       }
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_queue_status(request)
+   :async:
+
+
+   
+   Get current queue status for UI display.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request object
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON with queue statistics
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_resources(request)
+   :async:
+
+
+   
+   Get current resource usage for UI display.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request object
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON with current resource usage
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: cancel_job(request)
+   :async:
+
+
+   
+   Cancel a running or queued job.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request with job_id in URL path
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON response with cancellation status
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: start_service() -> None
+
+   
+   Start the job manager service in a background thread.
+
+
+
+
+
+
+
+   :Raises:
+
+       :obj:`RuntimeError`
+           If service fails to start within 10 seconds
+
+
+
+
+   .. rubric:: Notes
+
+   This method is non-blocking and returns immediately.
+   The service runs in a daemon thread with its own event loop.
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: close() -> None
+
+   
+   Gracefully shutdown the job manager service.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   This method is automatically called on program exit via atexit,
+   but can also be called explicitly for clean shutdown.
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: stop_service() -> None
+   :async:
+
+
+   
+   Stop the aiohttp server and cleanup resources.
+
+   This is the async version of close() that runs in the event loop.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_simulation_config(project_path: str, ansys_edt_path: str | None = None, jobid: str | None = None, scheduler_type: pyedb.workflows.job_manager.backend.job_submission.SchedulerType | None = None, cpu_cores: int = 1, user: str = 'unknown') -> pyedb.workflows.job_manager.backend.job_submission.HFSSSimulationConfig
+
+   
+   Create a validated HFSSSimulationConfig.
+
+
+   :Parameters:
+
+       **project_path** : :class:`python:str`
+           Path to the AEDT project file
+
+       **ansys_edt_path** : :class:`python:str`, :obj:`optional`
+           Path to ANSYS EDT executable. Uses detected path if None.
+
+       **jobid** : :class:`python:str`, :obj:`optional`
+           Job identifier. Auto-generated if None.
+
+       **scheduler_type** : :obj:`SchedulerType`, :obj:`optional`
+           Scheduler type. Uses detected scheduler if None.
+
+       **cpu_cores** : :class:`python:int`
+           Number of CPU cores for local execution
+
+       **user** : :class:`python:str`
+           Username for job ownership
+
+   :Returns:
+
+       :obj:`HFSSSimulationConfig`
+           Validated simulation configuration
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If project_path is empty or invalid
+
+
+
+
+   .. rubric:: Notes
+
+   The cpu_cores parameter is only used when scheduler_type is NONE (local execution).
+   For cluster execution, cores are determined by the scheduler configuration.
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

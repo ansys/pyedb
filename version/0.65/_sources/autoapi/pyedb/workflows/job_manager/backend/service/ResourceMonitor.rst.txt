@@ -1,0 +1,140 @@
+
+
+
+
+
+
+:class:`ResourceMonitor`
+========================
+
+
+.. py:class:: pyedb.workflows.job_manager.backend.service.ResourceMonitor(update_interval: int = 5)
+
+   
+   **Async** background task that samples host telemetry every *N* seconds.
+
+   The monitor keeps a **thread-safe** in-memory cache used by
+   :meth:`JobPoolManager.can_start_job` to throttle submissions.
+
+   :Parameters:
+
+       **update_interval** : :class:`python:int`, :obj:`optional`
+           Sampling period in seconds. Default is ``5``.
+
+
+
+
+
+
+
+
+
+
+
+
+   :Attributes:
+
+       **current_usage** : :class:`python:dict`
+           Cached resource usage information with keys:
+           - cpu_percent: Current CPU usage percentage
+           - memory_percent: Current memory usage percentage
+           - memory_used_gb: Memory used in GB
+           - memory_total_gb: Total memory in GB
+           - memory_free_gb: Free memory in GB
+           - disk_usage_percent: Disk usage percentage
+           - disk_free_gb: Free disk space in GB
+           - timestamp: Last update timestamp
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ResourceMonitor
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~monitor_resources`
+            - **Infinite** coroutine that updates :attr:`current_usage`.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~update_interval`
+            - 
+          * - :py:attr:`~current_usage`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.job_manager.backend.service import ResourceMonitor
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: update_interval
+   :value: 5
+
+
+.. py:attribute:: current_usage
+
+
+
+Method detail
+-------------
+
+.. py:method:: monitor_resources()
+   :async:
+
+
+   
+   **Infinite** coroutine that updates :attr:`current_usage`.
+
+   Runs until the event-loop is shut down. Samples CPU, memory, and disk
+   usage at regular intervals.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

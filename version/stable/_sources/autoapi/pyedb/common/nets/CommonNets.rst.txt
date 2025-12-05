@@ -1,0 +1,128 @@
+
+
+
+
+
+
+:class:`CommonNets`
+===================
+
+
+.. py:class:: pyedb.common.nets.CommonNets(_pedb)
+
+
+.. py:currentmodule:: CommonNets
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~plot`
+            - Plot a Net to Matplotlib 2D Chart.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.common.nets import CommonNets
+
+
+
+Method detail
+-------------
+
+.. py:method:: plot(nets=None, layers=None, color_by_net=False, show_legend=True, save_plot=None, outline=None, size=(6000, 3000), plot_components=True, top_view=True, show=True, annotate_component_names=True, plot_vias=False, title=None, **kwargs)
+
+   
+   Plot a Net to Matplotlib 2D Chart.
+
+
+   :Parameters:
+
+       **nets** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           Name of the net or list of nets to plot. If ``None`` all nets will be plotted.
+
+       **layers** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           Name of the layers to include in the plot. If ``None`` all the signal layers will be considered.
+
+       **color_by_net** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           If ``True``  the plot will be colored by net.
+           If ``False`` the plot will be colored by layer. (default)
+
+       **show_legend** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           If ``True`` the legend is shown in the plot. (default)
+           If ``False`` the legend is not shown.
+
+       **save_plot** : :class:`python:str`, :obj:`optional`
+           If a path is specified the plot will be saved in this location.
+           If ``save_plot`` is provided, the ``show`` parameter is ignored.
+
+       **outline** : :class:`python:list`, :obj:`optional`
+           List of points of the outline to plot.
+
+       **size** : :class:`python:tuple`, :class:`python:int`, :obj:`optional`
+           Image size in pixel (width, height). Default value is ``(6000, 3000)``
+
+       **top_view** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether if use top view or bottom view. Components will be visible only for the highest layer in the view.
+
+       **plot_components** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           If ``True``  the components placed on top layer are plotted.
+           If ``False`` the components are not plotted. (default).
+           This may impact in the plot computation time.
+           If nets and/or layers is specified, only the components belonging to the specified nets/layers are plotted.
+
+       **annotate_component_names: bool, optional**
+           Whether to add the component names to the plot or not. Default is ``True``.
+
+       **plot_vias** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to plot vias (circular and rectangular) or not. This may impact in the plot computation time.
+           Default is ``False``.
+
+       **title** : :class:`python:str`, :obj:`optional`
+           Specify the default plot title. Is value is ``None`` the project name is assigned by default. Default value
+           is ``None``.
+
+       **show** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to show the plot or not. Default is `True`.
+
+   :Returns:
+
+       (:obj:`ax`, :obj:`fig`)
+           Matplotlib ax and figures.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

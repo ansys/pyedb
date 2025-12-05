@@ -1,0 +1,6 @@
+get\_closest\_arc\_midpoint
+===========================
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. automethod:: Rectangle.get_closest_arc_midpoint

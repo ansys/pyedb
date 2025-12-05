@@ -1,0 +1,6 @@
+auto\_identify\_power
+=====================
+
+.. currentmodule:: pyedb.grpc.database.net.extended_net
+
+.. automethod:: ExtendedNets.auto_identify_power

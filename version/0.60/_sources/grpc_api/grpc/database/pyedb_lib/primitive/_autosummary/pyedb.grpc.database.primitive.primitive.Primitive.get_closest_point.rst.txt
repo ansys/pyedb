@@ -1,0 +1,6 @@
+get\_closest\_point
+===================
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. automethod:: Primitive.get_closest_point
