@@ -55,7 +55,7 @@ class PackageDef:
         self._pedb = pedb
         self._heat_sink = None
         if not self.core and name:
-            self.core = self.__create_from_name(name, component_part_name, extent_bounding_box)
+            self.__create_from_name(name, component_part_name, extent_bounding_box)
 
     def __create_from_name(self, name, component_part_name=None, extent_bounding_box=None):
         """Create a package definition.
@@ -70,7 +70,7 @@ class PackageDef:
         edb_object: object
             EDB PackageDef Object
         """
-        self._edb_object = GrpcPackageDef.create(self._pedb.active_db, name)
+        self.core = GrpcPackageDef.create(self._pedb.active_db, name)
         if component_part_name:
             x_pt1, y_pt1, x_pt2, y_pt2 = list(
                 self._pedb.components.definitions[component_part_name].components.values()
@@ -86,7 +86,6 @@ class PackageDef:
                 "Please set argument 'component_part_name' or 'extent_bounding_box'."
             )
         polygon_data = GrpcPolygonData(points=bbox)
-
         self.exterior_boundary = polygon_data
 
     @property
