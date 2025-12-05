@@ -9,6 +9,54 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.65.1 <https://github.com/ansys/pyedb/releases/tag/v0.65.1>`_ - November 27, 2025
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Insert 3d layout gRPC
+          - `#1667 <https://github.com/ansys/pyedb/pull/1667>`_
+
+        * - Place layout component enhancement
+          - `#1680 <https://github.com/ansys/pyedb/pull/1680>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Working fine on local reverting test on grpc and cicd to check
+          - `#1664 <https://github.com/ansys/pyedb/pull/1664>`_
+
+        * - GRPC boundaries
+          - `#1670 <https://github.com/ansys/pyedb/pull/1670>`_
+
+        * - Remove try-except from property position
+          - `#1679 <https://github.com/ansys/pyedb/pull/1679>`_
+
+        * - Remove LD_LIBRARY_PATH need
+          - `#1683 <https://github.com/ansys/pyedb/pull/1683>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.65.0
+          - `#1681 <https://github.com/ansys/pyedb/pull/1681>`_
+
+
 `0.65.0 <https://github.com/ansys/pyedb/releases/tag/v0.65.0>`_ - November 27, 2025
 ===================================================================================
 
