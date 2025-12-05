@@ -686,18 +686,13 @@ class Edb(EdbInit):
         from ansys.edb.core.layout.cell import Cell as GrpcCell, CellType as GrpcCellType
 
         self.standalone = self.standalone
-        n_try = 3
+        n_try = 10
         while not self.db and n_try:
             try:
                 self._create(self.edbpath, restart_rpc_server=restart_rpc_server)
                 n_try -= 1
             except Exception as e:
                 self.logger.error(e.args[0])
-                self.logger.warning("Restart rpc server.")
-                try:
-                    self._create(self.edbpath, restart_rpc_server=True)
-                except Exception as e:
-                    raise RuntimeError(e.args[0])
         if not self.db:
             raise ValueError("Failed creating EDB.")
             self._active_cell = None
