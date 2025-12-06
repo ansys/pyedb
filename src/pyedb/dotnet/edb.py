@@ -102,7 +102,7 @@ from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflow import Workflow
 from pyedb.workflows.utilities.cutout import Cutout
-
+from pyedb.dotnet.database.source_excitations import SourceExcitation
 
 class Edb:
     """Provides the EDB application interface.
@@ -423,6 +423,7 @@ class Edb:
         self._active_cell = None
         self._layout = None
         self._configuration = None
+        self._source_excitation = None
 
     def _init_objects(self):
         self._components = Components(self)
@@ -434,6 +435,7 @@ class Edb:
         self._core_primitives = Modeler(self)
         self._stackup2 = self._stackup
         self._materials = Materials(self)
+        self._source_excitation = SourceExcitation(self)
 
     @property
     def pedb_class(self):
@@ -1079,6 +1081,10 @@ class Edb:
         >>> edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
         """
         return Stackup(self, self.layout.layer_collection)
+
+    @property
+    def source_excitation(self):
+        return self._source_excitation
 
     @property
     def materials(self):

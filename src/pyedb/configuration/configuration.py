@@ -29,7 +29,7 @@ import toml
 
 from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
-from pyedb.dotnet.database.general import convert_py_list_to_net_list
+
 from pyedb.misc.decorators import execution_timer
 
 
@@ -681,49 +681,36 @@ class Configuration:
         edge_terminals = {}
         for cfg_terminal in self.cfg_data.terminals.terminals:
             if cfg_terminal.terminal_type == "padstack_instance":
-                if cfg_terminal.padstack_instance_id:
-                    pds = self._pedb.layout.find_padstack_instances(
-                        instance_id=cfg_terminal.padstack_instance_id,
-                        aedt_name=None,
-                        component_name=None,
-                        component_pin_name=None,
-                    )[0]
-                else:
-                    pds = self._pedb.layout.find_padstack_instances(
-                        instance_id=None,
-                        aedt_name=cfg_terminal.padstack_instance,
-                        component_name=None,
-                        component_pin_name=None,
-                    )[0]
-                terminal = pds.create_terminal(name=cfg_terminal.name)
+                terminal = self._pedb.source_excitation.create_padstack_instance_terminal(
+                    name=cfg_terminal.name,
+                    padstack_instance_id=cfg_terminal.padstack_instance_id,
+                    padstack_instance_name=cfg_terminal.padstack_instance,
+                )
 
             elif cfg_terminal.terminal_type == "pin_group":
-                pg = self._pedb.siwave.pin_groups[cfg_terminal.pin_group]
-                terminal = pg.create_terminal(name=cfg_terminal.name)
+                terminal = self._pedb.source_excitation.create_pin_group_terminal(
+                    name=cfg_terminal.name,
+                    pin_group=cfg_terminal.pin_group,
+                )
             elif cfg_terminal.terminal_type == "point":
-                terminal = self._pedb.get_point_terminal(
-                    cfg_terminal.name, cfg_terminal.net, [cfg_terminal.x, cfg_terminal.y], cfg_terminal.layer
+                terminal = self._pedb.source_excitation.create_point_terminal(
+                    name = cfg_terminal.name,
+                    net=cfg_terminal.net,
+                    x=cfg_terminal.x,
+                    y=cfg_terminal.y,
+                    layer=cfg_terminal.layer
                 )
             elif cfg_terminal.terminal_type == "edge":
-                pt = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
-                    self._pedb, x=cfg_terminal.point_on_edge_x, y=cfg_terminal.point_on_edge_y
+                terminal = self._pedb.source_excitation.create_edge_terminal(
+                    primitive_name=cfg_terminal.primitive,
+                    x=cfg_terminal.point_on_edge_x,
+                    y=cfg_terminal.point_on_edge_y,
+                    name=cfg_terminal.name
                 )
-                primitive = self._pedb.layout.primitives_by_aedt_name[cfg_terminal.primitive]
-                edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, pt._edb_object)
-                edge = convert_py_list_to_net_list(edge, self._pedb.core.Cell.Terminal.Edge)
-                _terminal = self._pedb.core.Cell.Terminal.EdgeTerminal.Create(
-                    primitive._edb_object.GetLayout(),
-                    primitive._edb_object.GetNet(),
-                    cfg_terminal.name,
-                    edge,
-                    isRef=False,
-                )
-                terminal = self._pedb.pedb_class.database.cell.terminal.edge_terminal.EdgeTerminal(
-                    self._pedb, _terminal
-                )
-                terminal.horizontal_extent_factor = terminal.horizontal_extent_factor
-                terminal.vertical_extent_factor = terminal.vertical_extent_factor
-                terminal.pec_launch_width = terminal.pec_launch_width
+
+                terminal.horizontal_extent_factor = cfg_terminal.horizontal_extent_factor
+                terminal.vertical_extent_factor = cfg_terminal.vertical_extent_factor
+                terminal.pec_launch_width = cfg_terminal.pec_launch_width
                 terminal.do_renormalize = True
                 edge_terminals[cfg_terminal.name] = terminal
             elif cfg_terminal.terminal_type == "bundle":
@@ -748,12 +735,9 @@ class Configuration:
                 obj.reference_terminal = terminals_dict[cfg.reference_terminal][1]
 
         for i in bungle_terminals:
-            boundle_terminal = self._pedb.pedb_class.database.cell.terminal.bundle_terminal.BundleTerminal.create(
-                self._pedb, i.name, i.terminals
+            self._pedb.source_excitation.create_bundle_terminal(
+                terminals=i.terminals, name=i.name
             )
-            bundle_term = boundle_terminal.terminals
-            bundle_term[0].name = i.name + ":T1"
-            bundle_term[1].mame = i.name + ":T2"
 
     @execution_timer("Retrieving terminal information")
     def get_terminals(self):
