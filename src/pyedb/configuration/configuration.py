@@ -29,7 +29,6 @@ import toml
 
 from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
-
 from pyedb.misc.decorators import execution_timer
 
 
@@ -694,18 +693,18 @@ class Configuration:
                 )
             elif cfg_terminal.terminal_type == "point":
                 terminal = self._pedb.source_excitation.create_point_terminal(
-                    name = cfg_terminal.name,
+                    name=cfg_terminal.name,
                     net=cfg_terminal.net,
                     x=cfg_terminal.x,
                     y=cfg_terminal.y,
-                    layer=cfg_terminal.layer
+                    layer=cfg_terminal.layer,
                 )
             elif cfg_terminal.terminal_type == "edge":
                 terminal = self._pedb.source_excitation.create_edge_terminal(
                     primitive_name=cfg_terminal.primitive,
                     x=cfg_terminal.point_on_edge_x,
                     y=cfg_terminal.point_on_edge_y,
-                    name=cfg_terminal.name
+                    name=cfg_terminal.name,
                 )
 
                 terminal.horizontal_extent_factor = cfg_terminal.horizontal_extent_factor
@@ -735,9 +734,7 @@ class Configuration:
                 obj.reference_terminal = terminals_dict[cfg.reference_terminal][1]
 
         for i in bungle_terminals:
-            self._pedb.source_excitation.create_bundle_terminal(
-                terminals=i.terminals, name=i.name
-            )
+            self._pedb.source_excitation.create_bundle_terminal(terminals=i.terminals, name=i.name)
 
     @execution_timer("Retrieving terminal information")
     def get_terminals(self):

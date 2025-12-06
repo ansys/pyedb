@@ -45,7 +45,9 @@ class SourceExcitation:
         _name = name if name else generate_unique_name(pds.aedt_name)
         terminal = pds.create_terminal(name=_name)
         if terminal.is_null:
-            raise RuntimeError(f"Failed to create terminal. Input arguments: padstack_instance_id={padstack_instance_id}, padstack_instance_name={padstack_instance_name}, name={name}.")
+            raise RuntimeError(
+                f"Failed to create terminal. Input arguments: padstack_instance_id={padstack_instance_id}, padstack_instance_name={padstack_instance_name}, name={name}."
+            )
         return terminal
 
     def create_pin_group_terminal(self, pin_group, name=""):
@@ -64,18 +66,17 @@ class SourceExcitation:
         point_terminal = PointTerminal(self._pedb)
         terminal = point_terminal.create(name, net, location, layer)
         if terminal.is_null:
-            raise RuntimeError(f"Failed to create terminal. Input arguments: x={x}, y={y}, layer={layer}, net={net}, name={name}.")
+            raise RuntimeError(
+                f"Failed to create terminal. Input arguments: x={x}, y={y}, layer={layer}, net={net}, name={name}."
+            )
         return terminal
 
     def create_edge_terminal(self, primitive_name, x, y, name=""):
-
         from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
 
         _name = name if name else f"{primitive_name}_{x}_{y}"
 
-        pt = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
-            self._pedb, x=x, y=y
-        )
+        pt = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(self._pedb, x=x, y=y)
         primitive = self._pedb.layout.primitives_by_aedt_name[primitive_name]
         edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, pt._edb_object)
         edge = convert_py_list_to_net_list(edge, self._pedb.core.Cell.Terminal.Edge)
@@ -86,12 +87,12 @@ class SourceExcitation:
             edge,
             isRef=False,
         )
-        terminal = EdgeTerminal(
-            self._pedb, _terminal
-        )
+        terminal = EdgeTerminal(self._pedb, _terminal)
 
         if terminal.is_null:
-            raise RuntimeError(f"Failed to create terminal. Input arguments: primitive_name={primitive_name}, x={x}, y={y}, name={name}.")
+            raise RuntimeError(
+                f"Failed to create terminal. Input arguments: primitive_name={primitive_name}, x={x}, y={y}, name={name}."
+            )
         return terminal
 
     def create_bundle_terminal(self, terminals, name=""):
@@ -99,9 +100,7 @@ class SourceExcitation:
 
         _name = name if name else f"{generate_unique_name('bundle')}"
 
-        terminal = BundleTerminal.create(
-            self._pedb, _name, terminals
-        )
+        terminal = BundleTerminal.create(self._pedb, _name, terminals)
         bundle_term = terminal.terminals
         bundle_term[0].name = _name + ":T1"
         bundle_term[1].mame = _name + ":T2"
