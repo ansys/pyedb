@@ -53,6 +53,8 @@ class BundleTerminal(Terminal):
         terminal_list = [pedb.terminals[i]._edb_object for i in terminals]
         edb_list = convert_py_list_to_net_list(terminal_list, pedb._edb.Cell.Terminal.Terminal)
         _edb_boundle_terminal = pedb._edb.Cell.Terminal.BundleTerminal.Create(edb_list)
+        if _edb_boundle_terminal.IsNull():  # pragma no cover
+            raise ValueError(f"Failed to create bundle terminal: {name}.")
         _edb_boundle_terminal.SetName(name)
         pos, neg = list(_edb_boundle_terminal.GetTerminals())
         pos.SetName(name + ":T1")

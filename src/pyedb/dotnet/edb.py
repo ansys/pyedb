@@ -82,6 +82,7 @@ from pyedb.dotnet.database.net_class import (
 from pyedb.dotnet.database.nets import EdbNets
 from pyedb.dotnet.database.padstack import EdbPadstacks
 from pyedb.dotnet.database.siwave import EdbSiwave
+from pyedb.dotnet.database.source_excitations import SourceExcitation
 from pyedb.dotnet.database.stackup import Stackup
 from pyedb.dotnet.database.utilities.hfss_simulation_setup import (
     HFSSPISimulationSetup,
@@ -423,6 +424,7 @@ class Edb:
         self._active_cell = None
         self._layout = None
         self._configuration = None
+        self._source_excitation = None
 
     def _init_objects(self):
         self._components = Components(self)
@@ -434,6 +436,7 @@ class Edb:
         self._core_primitives = Modeler(self)
         self._stackup2 = self._stackup
         self._materials = Materials(self)
+        self._source_excitation = SourceExcitation(self)
 
     @property
     def pedb_class(self):
@@ -1079,6 +1082,10 @@ class Edb:
         >>> edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
         """
         return Stackup(self, self.layout.layer_collection)
+
+    @property
+    def source_excitation(self):
+        return self._source_excitation
 
     @property
     def materials(self):
