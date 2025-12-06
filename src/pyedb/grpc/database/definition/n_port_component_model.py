@@ -32,8 +32,8 @@ class NPortComponentModel:
     def __init__(self, edb_object):
         self.core = edb_object
 
-    @staticmethod
-    def create(name: str = None) -> "NPortComponentModel":
+    @classmethod
+    def create(cls, name: str = None) -> "NPortComponentModel":
         """Create a new NPortComponentModel object.
 
         Returns
@@ -46,4 +46,4 @@ class NPortComponentModel:
         grpc_nport_component_model = GrpcNPortComponentModel.create(name=name)
         if grpc_nport_component_model.is_null:
             raise ValueError("Failed to create NPortComponentModel.")
-        return NPortComponentModel(grpc_nport_component_model)
+        return cls(grpc_nport_component_model)
