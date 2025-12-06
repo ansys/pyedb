@@ -83,6 +83,7 @@ import rtree
 
 from pyedb.configuration.configuration import Configuration
 from pyedb.generic.constants import unit_converter
+from pyedb.generic.control_file import ControlFile
 from pyedb.generic.general_methods import (
     generate_unique_name,
     get_string_version,
@@ -92,7 +93,6 @@ from pyedb.generic.general_methods import (
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.components import Components
-from pyedb.generic.control_file import ControlFile
 from pyedb.grpc.database.definition.materials import Materials
 from pyedb.grpc.database.hfss import Hfss
 from pyedb.grpc.database.layout.layout import Layout
