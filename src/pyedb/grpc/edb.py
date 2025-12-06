@@ -65,7 +65,7 @@ import sys
 import tempfile
 import time
 import traceback
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Union
 import warnings
 from zipfile import ZipFile as zpf
 
@@ -92,7 +92,7 @@ from pyedb.generic.general_methods import (
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.components import Components
-from pyedb.grpc.database.control_file import ControlFile
+from pyedb.generic.control_file import ControlFile
 from pyedb.grpc.database.definition.materials import Materials
 from pyedb.grpc.database.hfss import Hfss
 from pyedb.grpc.database.layout.layout import Layout
