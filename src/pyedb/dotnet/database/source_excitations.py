@@ -46,7 +46,8 @@ class SourceExcitation:
         terminal = pds.create_terminal(name=_name)
         if terminal.is_null:
             raise RuntimeError(
-                f"Failed to create terminal. Input arguments: padstack_instance_id={padstack_instance_id}, padstack_instance_name={padstack_instance_name}, name={name}."
+                f"Failed to create terminal. Input arguments: padstack_instance_id={padstack_instance_id}, "
+                f"padstack_instance_name={padstack_instance_name}, name={name}."
             )
         return terminal
 
