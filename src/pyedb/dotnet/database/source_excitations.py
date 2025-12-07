@@ -92,7 +92,8 @@ class SourceExcitation:
 
         if terminal.is_null:
             raise RuntimeError(
-                f"Failed to create terminal. Input arguments: primitive_name={primitive_name}, x={x}, y={y}, name={name}."
+                f"Failed to create terminal. Input arguments: primitive_name={primitive_name}, x={x}, y={y},"
+                f" name={name}."
             )
         return terminal
 
