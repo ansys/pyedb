@@ -26,13 +26,12 @@ from ansys.edb.core.geometry.arc_data import ArcData as GrpcArcData
 from pyedb.grpc.database.utility.value import Value
 
 
-class ArcData(GrpcArcData):
+class ArcData:
     """Class managing ArcData."""
 
-    def __init__(self, pedb, edb_object):
-        self._pedb = pedb
+    def __init__(self, edb_object):
         optional = {"height": edb_object.height, "direction": edb_object.direction}
-        super.__init__(edb_object.start, edb_object.end, optional)
+        self.core = GrpcArcData.__init__(edb_object.start, edb_object.end, optional)
 
     @property
     def center(self) -> list[float]:
@@ -44,7 +43,7 @@ class ArcData(GrpcArcData):
             [x value, y value]
 
         """
-        return [Value(super().center.x), Value(super().center.y)]
+        return [Value(self.core.center.x), Value(self.core.center.y)]
 
     @property
     def start(self) -> list[float]:
@@ -56,7 +55,7 @@ class ArcData(GrpcArcData):
             [x value, y value]
 
         """
-        return [Value(super().start.x), Value(super().start.y)]
+        return [Value(self.core.start.x), Value(self.core.start.y)]
 
     @property
     def end(self) -> list[float]:
@@ -68,7 +67,7 @@ class ArcData(GrpcArcData):
             [x value, y value]
 
         """
-        return [Value(self.end.x), Value(self.end.y)]
+        return [Value(self.core.end.x), Value(self.core.end.y)]
 
     @property
     def mid_point(self) -> list[float]:
@@ -80,7 +79,7 @@ class ArcData(GrpcArcData):
             [x value, y value]
 
         """
-        return [Value(self.midpoint.x), Value(self.midpoint.y)]
+        return [Value(self.core.midpoint.x), Value(self.core.midpoint.y)]
 
     @property
     def points(self) -> list[list[float]]:
@@ -92,4 +91,4 @@ class ArcData(GrpcArcData):
             [[x value, y value]]
 
         """
-        return [[Value(pt.x), Value(pt.y)] for pt in self.points]
+        return [[Value(pt.x), Value(pt.y)] for pt in self.core.points]

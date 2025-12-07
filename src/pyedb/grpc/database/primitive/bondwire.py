@@ -29,13 +29,12 @@ from ansys.edb.core.primitive.bondwire import (
 from pyedb.grpc.database.utility.value import Value
 
 
-class Bondwire(GrpcBondWire):
+class Bondwire:
     """Class representing a bond-wire object."""
 
     def __init__(self, _pedb, edb_object):
-        super().__init__(edb_object.msg)
+        self.core = edb_object
         self._pedb = _pedb
-        self._edb_object = edb_object
         # TODO add create and delete methods to keep cache in sync
 
     @property
@@ -48,17 +47,17 @@ class Bondwire(GrpcBondWire):
             Material name.
 
         """
-        return self.get_material().value
+        return self.core.get_material().value
 
     @material.setter
     def material(self, value):
-        self.set_material(value)
+        self.core.set_material(value)
 
     @property
     def type(self):
         """str: Bondwire-type of a bondwire object. Supported values for setter: `"apd"`, `"jedec4"`, `"jedec5"`,
         `"num_of_type"`"""
-        return super().type.name.lower()
+        return self.core.type.name.lower()
 
     @type.setter
     def type(self, bondwire_type):
@@ -68,7 +67,7 @@ class Bondwire(GrpcBondWire):
             "jedec5": GrpcBondWireType.JEDEC5,
             "num_of_type": GrpcBondWireType.NUM_OF_TYPE,
         }
-        super(Bondwire, self.__class__).type.__set__(self, mapping[bondwire_type])
+        self.core.type = mapping[bondwire_type]
 
     @property
     def cross_section_type(self):
@@ -80,12 +79,12 @@ class Bondwire(GrpcBondWire):
         str
             cross section type.
         """
-        return super().cross_section_type.name.lower()
+        return self.core.cross_section_type.name.lower()
 
     @cross_section_type.setter
     def cross_section_type(self, cross_section_type):
         mapping = {"round": GrpcBondwireCrossSectionType.ROUND, "rectangle": GrpcBondwireCrossSectionType.RECTANGLE}
-        super(Bondwire, self.__class__).cross_section_type.__set__(self, mapping[cross_section_type])
+        self.core.cross_section_type = mapping[cross_section_type]
 
     @property
     def cross_section_height(self):
@@ -96,11 +95,11 @@ class Bondwire(GrpcBondWire):
         float
             Cross section height.
         """
-        return Value(super().cross_section_height)
+        return Value(self.core.cross_section_height)
 
     @cross_section_height.setter
     def cross_section_height(self, cross_section_height):
-        super(Bondwire, self.__class__).cross_section_height.__set__(self, Value(cross_section_height))
+        self.core.cross_section_height = Value(cross_section_height)
 
     @property
     def width(self):
@@ -111,8 +110,8 @@ class Bondwire(GrpcBondWire):
         float
             Width value.
         """
-        return Value(super().width)
+        return Value(self.core.width)
 
     @width.setter
     def width(self, width):
-        super(Bondwire, self.__class__).width.__set__(self, Value(width))
+        self.core.width = Value(width)

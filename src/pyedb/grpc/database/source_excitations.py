@@ -1027,11 +1027,10 @@ class SourceExcitation:
             port_name = generate_unique_name(port_name, n=2)
             self._logger.info("An existing port already has this same name. Renaming to {}.".format(port_name))
         PadstackInstanceTerminal.create(
-            layout=self._pedb.active_layout,
+            self._pedb,
             name=port_name,
             padstack_instance=padstackinstance,
             layer=terminal_layer,
-            net=padstackinstance.net,
             is_ref=False,
         )
         return port_name
@@ -1542,25 +1541,25 @@ class SourceExcitation:
             pos_pingroup_terminal.name = name
 
         elif source_type == "current_source":
-            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
-            neg_pingroup_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
-            pos_pingroup_terminal.source_amplitude = Value(magnitude)
-            pos_pingroup_terminal.source_phase = Value(phase)
-            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
-            pos_pingroup_terminal.name = name
+            pos_pingroup_terminal.core.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
+            neg_pingroup_terminal.core.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
+            pos_pingroup_terminal.core.source_amplitude = Value(magnitude)
+            pos_pingroup_terminal.core.source_phase = Value(phase)
+            pos_pingroup_terminal.core.reference_terminal = neg_pingroup_terminal
+            pos_pingroup_terminal.core.name = name
 
         elif source_type == "voltage_source":
-            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
-            neg_pingroup_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
-            pos_pingroup_terminal.source_amplitude = Value(magnitude)
-            pos_pingroup_terminal.source_phase = Value(phase)
-            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
-            pos_pingroup_terminal.name = name
+            pos_pingroup_terminal.core.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
+            neg_pingroup_terminal.core.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
+            pos_pingroup_terminal.core.source_amplitude = Value(magnitude)
+            pos_pingroup_terminal.core.source_phase = Value(phase)
+            pos_pingroup_terminal.core.reference_terminal = neg_pingroup_terminal.core
+            pos_pingroup_terminal.core.name = name
 
         elif source_type == "rlc":
-            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.RLC
-            neg_pingroup_terminal.boundary_type = GrpcBoundaryType.RLC
-            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
+            pos_pingroup_terminal.core.boundary_type = GrpcBoundaryType.RLC
+            neg_pingroup_terminal.core.boundary_type = GrpcBoundaryType.RLC
+            pos_pingroup_terminal.core.reference_terminal = neg_pingroup_terminal.core
             Rlc = GrpcRlc()
             Rlc.r_enabled = bool(r)
             Rlc.l_enabled = bool(l)
@@ -1568,10 +1567,10 @@ class SourceExcitation:
             Rlc.r = Value(r)
             Rlc.l = Value(l)
             Rlc.c = Value(c)
-            pos_pingroup_terminal.rlc_boundary_parameters = Rlc
+            pos_pingroup_terminal.core.rlc_boundary_parameters = Rlc
 
         elif source_type == "dc_terminal":
-            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.DC_TERMINAL
+            pos_pingroup_terminal.core.boundary_type = GrpcBoundaryType.DC_TERMINAL
         else:
             pass
         return pos_pingroup_terminal.name

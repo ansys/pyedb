@@ -639,7 +639,7 @@ class Padstacks(object):
 
     def delete_batch_instances(self, instances_to_delete):
         for inst in instances_to_delete:
-            inst._edb_object.delete()
+            inst.core.delete()
         self.clear_instances_cache()
 
     def delete_padstack_instances(self, net_names: Union[str, List[str]]) -> bool:
@@ -929,7 +929,7 @@ class Padstacks(object):
                         self._pedb.logger.info(
                             f"No antipad defined for padstack definition {padstack.name}-layer{layer}"
                         )
-                padstack.data = cloned_padstack_data
+                padstack.core.data = cloned_padstack_data
             return all_succeed
 
     def check_and_fix_via_plating(
@@ -1224,7 +1224,7 @@ class Padstacks(object):
                     sizes=antipad_array,
                 )
 
-        padstack_definition = PadstackDef.create(self.db, padstackname)
+        padstack_definition = PadstackDef.create(self._pedb, padstackname)
         padstack_definition.data = padstack_data
         self._logger.info(f"Padstack {padstackname} create correctly")
         return padstackname

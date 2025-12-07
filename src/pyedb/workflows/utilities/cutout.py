@@ -203,7 +203,7 @@ class GrpcCutout:
                 _polys.append(rectangle_data)
         for prim in self._edb.modeler.primitives:
             if prim is not None and prim.net_name in self.signals:
-                _polys.append(prim.polygon_data)
+                _polys.append(prim.core.polygon_data)
         if self.smart_cutout:
             objs_data = self._smart_cut()
             if objs_data:
@@ -336,13 +336,13 @@ class GrpcCutout:
                     "SParameterModel",
                     "NetlistModel",
                 ] and list(set(el.nets[:]) & set(self.signals[:])):
-                    _pins_to_preserve.extend([i.edb_uid for i in el.pins.values()])
+                    _pins_to_preserve.extend([i.id for i in el.pins.values()])
                     _nets_to_preserve.extend(el.nets)
         if self.include_pingroups:
             for pingroup in self._edb.padstacks.pingroups:
                 for pin in pingroup.pins.values():
                     if pin.net_name in self.references:
-                        _pins_to_preserve.append(pin.edb_uid)
+                        _pins_to_preserve.append(pin.id)
         return _pins_to_preserve, _nets_to_preserve
 
     def _compute_pyaedt_extent(self):

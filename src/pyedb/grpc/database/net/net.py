@@ -36,7 +36,7 @@ from pyedb.grpc.database.primitive.polygon import Polygon
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 
 
-class Net(GrpcNet):
+class Net:
     """Manages EDB functionalities for net objects and their primitives.
 
     Inherits properties from EDB objects and provides additional functionality
@@ -59,11 +59,44 @@ class Net(GrpcNet):
     """
 
     def __init__(self, pedb, raw_net):
-        super().__init__(raw_net.msg)
+        self.core = raw_net
         self._pedb = pedb
         self._core_components = pedb.components
         self._core_primitive = pedb.modeler
         self.__primitives = []
+
+    @property
+    def name(self):
+        """Name of the net.
+
+        Returns
+        -------
+        str
+            Name of the net.
+        """
+        return self.core.name
+
+    @name.setter
+    def name(self, value: str):
+        """Set the name of the net.
+
+        Parameters
+        ----------
+        value : str
+            New name for the net.
+        """
+        self.core.name = value
+
+    @property
+    def is_null(self) -> bool:
+        """Check if the net is a null net.
+
+        Returns
+        -------
+        bool
+            ``True`` if the net is a null net, ``False`` otherwise.
+        """
+        return self.core.is_null
 
     @property
     def primitives(self) -> list[Union[Path, Polygon, Circle, Rectangle, Bondwire]]:
@@ -80,7 +113,7 @@ class Net(GrpcNet):
             - :class:`Bondwire <pyedb.grpc.database.primitive.bondwire.Bondwire>`
         """
 
-        primitives = super().primitives
+        primitives = self.core.primitives
         if not len(self.__primitives) == len(primitives):
             for primitive in primitives:
                 if primitive.primitive_type == GrpcPrimitiveType.PATH:
@@ -106,7 +139,7 @@ class Net(GrpcNet):
         """
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
-        return [PadstackInstance(self._pedb, i) for i in super().padstack_instances]
+        return [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
 
     @property
     def components(self) -> dict[str, any]:
@@ -191,7 +224,7 @@ class Net(GrpcNet):
             Smallest width found in database units. Returns 1e10 if no paths exist.
         """
         current_value = 1e10
-        paths = [prim for prim in self.primitives if prim.primitive_type == GrpcPrimitiveType.PATH]
+        paths = [prim for prim in self.primitives if prim.primitive_type == "path"]
         for path in paths:
             if path.width < current_value:
                 current_value = path.width
@@ -214,3 +247,27 @@ class Net(GrpcNet):
             return self._pedb.extended_nets.items[self.name]
         else:
             return None
+
+    def delete(self):
+        """Delete the net from the EDB database."""
+        self.core.delete()
+
+    @classmethod
+    def find_by_name(cls, layout, name):
+        """Find a net by name in a given layout.
+
+        Parameters
+        ----------
+        layout : :class:`.Layout`
+            Layout to search for the net.
+        name : str
+            Name of net.
+
+        Returns
+        -------
+        Net
+            Net found. Check the :obj:`is_null <.Net.is_null>` property
+            of the returned net to see if it exists.
+        """
+        net = GrpcNet.find_by_name(layout.core, name)
+        return Net(layout._pedb, net)

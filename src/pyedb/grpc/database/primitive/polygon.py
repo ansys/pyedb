@@ -28,18 +28,83 @@ from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.primitive.polygon import Polygon as GrpcPolygon
 
+from pyedb.grpc.database.geometry.polygon_data import PolygonData
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.layout.layout import Layout
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
 
-class Polygon(GrpcPolygon, Primitive):
+class Polygon(Primitive):
     def __init__(self, pedb, edb_object=None):
         if edb_object:
-            GrpcPolygon.__init__(self, edb_object.msg)
+            self.core = edb_object
             Primitive.__init__(self, pedb, edb_object)
         self._pedb = pedb
+
+    @property
+    def polygon_data(self) -> "PolygonData":
+        """Polygon data.
+
+        Returns
+        -------
+        :class:`PolygonData <pyedb.edb.database.geometry.polygon_data.PolygonData>`
+            Polygon data object.
+
+        """
+
+        return PolygonData(self.core.polygon_data)
+
+    @polygon_data.setter
+    def polygon_data(self, value: Union["PolygonData", GrpcPolygonData]):
+        """Set polygon data.
+
+        Parameters
+        ----------
+        value : :class:`PolygonData <pyedb.edb.database.geometry.polygon_data.PolygonData>` or GrpcPolygonData
+            Polygon data object.
+
+        """
+        if isinstance(value, PolygonData):
+            self.core.polygon_data = value.core
+        elif isinstance(value, GrpcPolygonData):
+            self.core.polygon_data = value
+        else:
+            raise TypeError("Value must be a PolygonData or GrpcPolygonData object.")
+
+    @property
+    def layer(self) -> Layer:
+        """Layer of the polygon.
+
+        Returns
+        -------
+        :class:`Layer <pyedb.edb.database.layers.layer.Layer>`
+            Layer object.
+
+        """
+        from pyedb.grpc.database.layers.layer import Layer
+
+        return Layer(self._pedb, self.core.layer)
+
+    @layer.setter
+    def layer(self, value: Union[str, Layer]):
+        """Set layer of the polygon.
+
+        Parameters
+        ----------
+        value : Union[str, :class:`Layer <pyedb.edb.database.layers.layer.Layer>`]
+            Layer name or Layer object.
+
+        """
+        if isinstance(value, str):
+            if value in self._pedb.stackup.layers:
+                self.core.layer = self._pedb.stackup.layers[value].core
+            else:
+                raise ValueError(f"Layer {value} does not exist in the stackup.")
+        elif isinstance(value, Layer):
+            self.core.layer = value.core
+        else:
+            raise TypeError("Value must be a string or Layer object.")
 
     @property
     def type(self) -> str:
@@ -51,7 +116,7 @@ class Polygon(GrpcPolygon, Primitive):
             Polygon type.
 
         """
-        return self.primitive_type.name.lower()
+        return self.core.primitive_type.name.lower()
 
     @property
     def has_self_intersections(self) -> bool:
@@ -61,20 +126,19 @@ class Polygon(GrpcPolygon, Primitive):
         -------
         bool
         """
-        return self.polygon_data.has_self_intersections()
+        return self.core.polygon_data.has_self_intersections()
 
-    def create(
-        self, layout: Layout = None, layer: Union[str, Layer] = None, net: Union[str, "Net"] = None, polygon_data=None
-    ):
+    @classmethod
+    def create(cls, layout: Layout, layer: Union[str, Layer], net: Union[str, "Net"] = None, polygon_data=None):
         """
         Create a polygon in the specified layout, layer, and net using the provided polygon data.
 
         Parameters
         ----------
-        layout : Layout, optional
+        layout : Layout
             The layout in which the polygon will be created. If not provided, the active layout of the `pedb`
             instance will be used.
-        layer : Union[str, Layer], optional
+        layer : Union[str, Layer]
             The layer in which the polygon will be created. This parameter is required and must be specified.
         net : Union[str, Net], optional
             The net to which the polygon will belong. If not provided, the polygon will not be associated with a
@@ -102,7 +166,7 @@ class Polygon(GrpcPolygon, Primitive):
 
         """
         if not layout:
-            layout = self._pedb.active_layout
+            raise Exception("Layout is required to create a polygon.")
         if not layer:
             raise ValueError("Layer is required to create a polygon.")
         if not polygon_data:
@@ -111,10 +175,12 @@ class Polygon(GrpcPolygon, Primitive):
             polygon_data = GrpcPolygonData(polygon_data)
 
         # call into the gRPC layer to actually create the polygon
-        edb_object = super().create(layout=layout, layer=layer, net=net, polygon_data=polygon_data)
-        new_polygon = Polygon(self._pedb, edb_object)
+        if isinstance(polygon_data, PolygonData):
+            polygon_data = polygon_data.core
+        edb_object = GrpcPolygon.create(layout=layout.core, layer=layer, net=net.core, polygon_data=polygon_data)
+        new_polygon = cls(layout._pedb, edb_object)
         # keep modeler cache in sync
-        self._pedb.modeler._add_primitive(new_polygon)
+        layout._pedb.modeler._add_primitive(new_polygon)
 
         return new_polygon
 
@@ -122,7 +188,7 @@ class Polygon(GrpcPolygon, Primitive):
         """Delete polygon from layout."""
         # keeping cache in sync
         self._pedb.modeler._remove_primitive(self)
-        super().delete()
+        self.core.delete()
 
     def fix_self_intersections(self) -> list[any]:
         """Remove self intersections if they exist.
@@ -135,7 +201,7 @@ class Polygon(GrpcPolygon, Primitive):
         """
         new_polys = []
         if self.has_self_intersections:
-            new_polygons = self.polygon_data.remove_self_intersections()
+            new_polygons = self.polygon_data.core.remove_self_intersections()
             self.polygon_data = new_polygons[0]
             for p in new_polygons[1:]:
                 cloned_poly = self.create(
@@ -214,7 +280,7 @@ class Polygon(GrpcPolygon, Primitive):
         """
         if vector and isinstance(vector, list) and len(vector) == 2:
             _vector = [Value(pt) for pt in vector]
-            self.polygon_data = self.polygon_data.move(_vector)
+            self.polygon_data = PolygonData(self.polygon_data.core.move(_vector))
             return True
         return False
 
@@ -236,15 +302,15 @@ class Polygon(GrpcPolygon, Primitive):
         if not isinstance(factor, str):
             factor = float(factor)
             if not center:
-                center = self.polygon_data.bounding_circle()[0]
+                center = self.polygon_data.core.bounding_circle()[0]
                 if center:
-                    self.polygon_data = self.polygon_data.scale(factor, center)
+                    self.polygon_data = PolygonData(self.polygon_data.core.scale(factor, center))
                     return True
                 else:
                     self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
             elif isinstance(center, list) and len(center) == 2:
                 center = GrpcPointData([Value(center[0]), Value(center[1])])
-                self.polygon_data = self.polygon_data.scale(factor, center)
+                self.polygon_data = PolygonData(self.polygon_data.core.scale(factor, center))
                 return True
         return False
 
@@ -272,12 +338,12 @@ class Polygon(GrpcPolygon, Primitive):
         """
         if angle:
             if not center:
-                center = self.polygon_data.bounding_circle()[0]
+                center = self.polygon_data.core.bounding_circle()[0]
                 if center:
-                    self.polygon_data = self.polygon_data.rotate(angle * math.pi / 180, center)
+                    self.polygon_data = self.polygon_data.core.rotate(angle * math.pi / 180, center)
                     return True
             elif isinstance(center, list) and len(center) == 2:
-                self.polygon_data = self.polygon_data.rotate(angle * math.pi / 180, center)
+                self.polygon_data = self.polygon_data.core.rotate(angle * math.pi / 180, center)
                 return True
         return False
 
@@ -317,11 +383,11 @@ class Polygon(GrpcPolygon, Primitive):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        int_val = 1 if self.polygon_data.is_inside(GrpcPointData(point_data)) else 0
+        int_val = 1 if self.polygon_data.core.is_inside(GrpcPointData(point_data)) else 0
         if int_val == 0:
             return False
         else:
-            int_val = self.polygon_data.intersection_type(GrpcPolygonData(point_data))
+            int_val = self.polygon_data.core.intersection_type(GrpcPolygonData(point_data))
         # Intersection type:
         # 0 = objects do not intersect
         # 1 = this object fully inside other (no common contour points)
@@ -341,4 +407,4 @@ class Polygon(GrpcPolygon, Primitive):
             polygon = self._pedb.modeler.create_polygon(
                 points=polygon, layer_name=self.layer.name, net_name=self.net_name
             )
-        self._edb_object.add_void(polygon)
+        self.core.add_void(polygon)

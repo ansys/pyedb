@@ -29,13 +29,58 @@ from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecated_property
 
 
-class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
+class PadstackInstanceTerminal:
     """Manages bundle terminal properties."""
 
     def __init__(self, pedb, edb_object=None):
         if edb_object:
-            super().__init__(edb_object.msg)
+            self.core = edb_object
         self._pedb = pedb
+
+    @classmethod
+    def create(cls, pedb, name, padstack_instance, layer, is_ref=False):
+        """Create a padstack instance terminal.
+        Parameters
+        ----------
+        pedb : Edb
+            Edb object.
+        name : str
+            Terminal name.
+        padstack_instance : PadstackInstance
+            Padstack instance object.
+        layer : str
+            Layer name.
+        is_ref : bool, optional
+            Whether the terminal is a reference terminal. Default is False.
+        Returns
+        -------
+        PadstackInstanceTerminal
+            Padstack instance terminal object.
+        """
+        edb_terminal_inst = GrpcPadstackInstanceTerminal.create(
+            layout=pedb.layout.core,
+            name=name,
+            padstack_instance=padstack_instance.core,
+            layer=layer,
+            net=padstack_instance.net.core,
+            is_ref=is_ref,
+        )
+        return cls(pedb, edb_terminal_inst)
+
+    @property
+    def name(self):
+        """Terminal name.
+
+        Returns
+        -------
+        str
+            Terminal name.
+        """
+        return self.core.name
+
+    @name.setter
+    def name(self, value):
+        self.core.name = value
 
     @property
     def position(self) -> list[float]:
@@ -52,13 +97,13 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
     def padstack_instance(self) -> any:
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
-        return PadstackInstance(self._pedb, super().padstack_instance)
+        return PadstackInstance(self._pedb, self.padstack_instance)
 
     @property
     def component(self) -> any:
         from pyedb.grpc.database.hierarchy.component import Component
 
-        return Component(self._pedb, super().component)
+        return Component(self._pedb, self.component)
 
     @property
     def location(self) -> list[float]:
@@ -68,7 +113,7 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         -------
         Position [x,y] : [float, float]
         """
-        p_inst, _ = self.params
+        p_inst, _ = self.core.params
         pos_x, pos_y, _ = p_inst.get_position_and_rotation()
         return [Value(pos_x), Value(pos_y)]
 
@@ -80,17 +125,17 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         -------
         str : name of the net.
         """
-        if self.is_null:
+        if self.core.is_null:
             return ""
-        elif self.net.is_null:
+        elif self.core.net.is_null:
             return ""
         else:
-            return self.net.name
+            return self.core.net.name
 
     @net_name.setter
     def net_name(self, val):
-        if not self.is_null and self.net.is_null:
-            self.net.name = val
+        if not self.core.is_null and self.core.net.is_null:
+            self.core.net.name = val
 
     @property
     def magnitude(self) -> float:
@@ -114,11 +159,11 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         -------
         float : phase value.
         """
-        return self.source_phase
+        return self.core.source_phase
 
     @phase.setter
     def phase(self, value):
-        self.source_phase = value
+        self.core.source_phase = value
 
     @property
     def source_amplitude(self) -> float:
@@ -128,11 +173,11 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         -------
         float : amplitude value.
         """
-        return super().source_amplitude
+        return self.core.source_amplitude
 
     @source_amplitude.setter
     def source_amplitude(self, value):
-        super(PadstackInstanceTerminal, self.__class__).source_amplitude.__set__(self, value)
+        self.core.source_amplitude = value
 
     @property
     def source_phase(self) -> float:
@@ -142,11 +187,11 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         -------
         float : phase value.
         """
-        return Value(super().source_phase)
+        return self.core.source_phase
 
     @source_phase.setter
     def source_phase(self, value):
-        super(PadstackInstanceTerminal, self.__class__).source_phase.__set__(self, value)
+        self.core.source_phase = value
 
     @property
     def impedance(self) -> float:
@@ -156,11 +201,11 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         -------
         float : impedance value.
         """
-        return Value(super().impedance)
+        return Value(self.core.impedance)
 
     @impedance.setter
     def impedance(self, value):
-        super(PadstackInstanceTerminal, self.__class__).impedance.__set__(self, value)
+        self.core.impedance = value
 
     @property
     def boundary_type(self) -> str:
@@ -170,7 +215,7 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         -------
         str : Boundary type.
         """
-        return super().boundary_type.name.lower()
+        return self.core.boundary_type.name.lower()
 
     @boundary_type.setter
     def boundary_type(self, value):
@@ -191,7 +236,7 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         if new_boundary_type is None:
             valid_types = ", ".join(mapping.keys())
             raise ValueError(f"Invalid boundary type '{value}'. Valid types are: {valid_types}")
-        super(PadstackInstanceTerminal, self.__class__).boundary_type.__set__(self, new_boundary_type)
+        self.core.boundary_type = new_boundary_type
 
     @property
     def is_port(self) -> bool:

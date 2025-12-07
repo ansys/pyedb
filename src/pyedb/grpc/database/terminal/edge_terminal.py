@@ -26,11 +26,10 @@ from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundle
 from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal
 
 
-class EdgeTerminal(GrpcEdgeTerminal):
+class EdgeTerminal:
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+        self.core = edb_object
         self._pedb = pedb
-        self._edb_object = edb_object
         self._hfss_type = "Gap"
 
     @property
@@ -41,14 +40,14 @@ class EdgeTerminal(GrpcEdgeTerminal):
         -------
         str : boundary type.
         """
-        return super().boundary_type.name.lower()
+        return self.core.boundary_type.name.lower()
 
     @property
     def _edb_properties(self):
         from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 
         try:
-            p = self._edb_object.get_product_property(GrpcProductIdType.DESIGNER, 1)
+            p = self.core.get_product_property(GrpcProductIdType.DESIGNER, 1)
         except:
             p = ""
         return p
@@ -57,7 +56,7 @@ class EdgeTerminal(GrpcEdgeTerminal):
     def _edb_properties(self, value):
         from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 
-        self._edb_object.set_product_property(GrpcProductIdType.DESIGNER, 1, value)
+        self.core.set_product_property(GrpcProductIdType.DESIGNER, 1, value)
 
     @property
     def is_wave_port(self) -> bool:
@@ -135,12 +134,12 @@ class EdgeTerminal(GrpcEdgeTerminal):
 
         """
         self._pedb.logger.warning("ref_terminal is deprecated, use reference_terminal property instead.")
-        return self.reference_terminal
+        return self.core.reference_terminal
 
     @ref_terminal.setter
     def ref_terminal(self, value):
         self._pedb.logger.warning("ref_terminal is deprecated, use reference_terminal property instead.")
-        self.reference_terminal = value
+        self.core.reference_terminal = value
 
     @property
     def hfss_type(self) -> str:

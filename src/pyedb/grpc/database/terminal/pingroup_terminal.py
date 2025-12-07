@@ -24,6 +24,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from numba.core.ir import Raise
+
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 from ansys.edb.core.terminal.pin_group_terminal import (
@@ -35,13 +37,26 @@ from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecated_property
 
 
-class PinGroupTerminal(GrpcPinGroupTerminal):
+class PinGroupTerminal:
     """Manages pin group terminal properties."""
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
-        self._edb_object = edb_object
+        self.core = edb_object
         self._pedb = pedb
+
+    @property
+    def name(self) -> str:
+        """Terminal name.
+
+        Returns
+        -------
+        str : terminal name.
+        """
+        return self.core.name
+
+    @name.setter
+    def name(self, value):
+        self.core.name = value
 
     @property
     def boundary_type(self) -> str:
@@ -51,7 +66,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         -------
         str : boundary type.
         """
-        return super().boundary_type.name.lower()
+        return self.core.boundary_type.name.lower()
 
     @boundary_type.setter
     def boundary_type(self, value):
@@ -63,7 +78,9 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
             value = GrpcBoundaryType.PORT
         if value == "voltage_probe":
             value = GrpcBoundaryType.VOLTAGE_PROBE
-        super(PinGroupTerminal, self.__class__).boundary_type.__set__(self, value)
+        else:
+            raise Exception(f"Unknown boundary type")
+        self.core.boundary_type = value
 
     @property
     def is_port(self) -> bool:
@@ -110,11 +127,11 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         float : source magnitude.
 
         """
-        return Value(super().source_amplitude)
+        return Value(self.core.source_amplitude)
 
     @source_amplitude.setter
     def source_amplitude(self, value):
-        super(PinGroupTerminal, self.__class__).source_amplitude.__set__(self, Value(value))
+        self.core.source_amplitude = Value(value)
 
     @property
     def source_phase(self) -> float:
@@ -125,11 +142,11 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         foat : source phase.
 
         """
-        return Value(super().source_amplitude)
+        return self.core.source_amplitude
 
     @source_phase.setter
     def source_phase(self, value):
-        super(PinGroupTerminal, self.__class__).source_phase.__set__(self, Value(value))
+        self.core.source_phase = Value(value)
 
     @property
     def impedance(self) -> float:
@@ -140,11 +157,11 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         float : terminal impedance.
 
         """
-        return Value(super().impedance)
+        return self.core.impedance
 
     @impedance.setter
     def impedance(self, value):
-        super(PinGroupTerminal, self.__class__).impedance.__set__(self, Value(value))
+        self.core.impedance = Value(value)
 
     @property
     def net(self) -> Net:
@@ -158,11 +175,11 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         """
         from pyedb.grpc.database.net.net import Net
 
-        return Net(self._pedb, super().net)
+        return Net(self._pedb, self.core.net)
 
     @net.setter
     def net(self, value):
-        super(PinGroupTerminal, self.__class__).net.__set__(self, value)
+        self.core.net = value
 
     @property
     def pin_group(self) -> any:
@@ -176,7 +193,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         """
         from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 
-        return PinGroup(self._pedb, super().pin_group)
+        return PinGroup(self._pedb, self.core.pin_group)
 
     @property
     def terminal_type(self) -> str:
@@ -191,13 +208,13 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
            Use: func:`reference_terminal` property instead.
 
         """
-        self._pedb.logger.warning("ref_terminal property is deprecated, use reference_terminal property instead.")
-        return PinGroupTerminal(self._pedb, self.reference_terminal)
+        Exception("ref_terminal property is deprecated, use reference_terminal property instead.", DeprecationWarning)
+        return PinGroupTerminal(self._pedb, self.core.reference_terminal)
 
     @ref_terminal.setter
     def ref_terminal(self, value):
-        self._pedb.logger.warning("ref_terminal is deprecated, use reference_terminal instead.")
-        self.reference_terminal = value
+        Exception("ref_terminal property is deprecated, use reference_terminal property instead.", DeprecationWarning)
+        self.core.reference_terminal = value
 
     @property
     def hfss_type(self) -> str:
@@ -214,3 +231,25 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         if self.boundary_type == "voltage_source":
             return True
         return False
+
+    @classmethod
+    def create(cls, layout, name, pin_group, net=None, is_ref=False):
+        """Create a pin group terminal.
+        Parameters
+        ----------
+        layout : :class:`.Layout`
+            Layout to create the pin group terminal in.
+        name : :obj:`str`
+            Name of the pin group terminal.
+        pin_group : :class:`.PinGroup`
+            Pin group.
+        net : :class:`.Net` or :obj:`str`, optional
+            Net.
+        is_ref : :obj:`bool`, default: False
+            Whether the pin group terminal is a reference terminal.
+        Returns
+        -------
+        PinGroupTerminal
+        """
+        term = GrpcPinGroupTerminal.create(layout.core, name, pin_group.core, net.core, is_ref)
+        return cls(layout._pedb, term)

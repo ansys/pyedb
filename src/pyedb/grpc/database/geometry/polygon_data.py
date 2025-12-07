@@ -28,12 +28,11 @@ from pyedb.grpc.database.geometry.arc_data import ArcData
 from pyedb.grpc.database.utility.value import Value
 
 
-class PolygonData(GrpcPolygonData):
+class PolygonData:
     """Class managing Polygon Data."""
 
     def __init__(
         self,
-        pedb,
         edb_object=None,
         create_from_points=None,
         create_from_circle=None,
@@ -41,18 +40,16 @@ class PolygonData(GrpcPolygonData):
         create_from_bounding_box=None,
         **kwargs,
     ):
-        self._pedb = pedb
-        super().__init__()
         if create_from_points:
-            self._edb_object = self.create_from_points(**kwargs)
+            self.core = self.create_from_points(**kwargs)
         elif create_from_circle:
             x_center, y_center, radius = kwargs
         elif create_from_rectangle:
             x_lower_left, y_lower_left, x_upper_right, y_upper_right = kwargs
         elif create_from_bounding_box:
-            self._edb_object = self.create_from_bounding_box(**kwargs)
+            self.core = self.create_from_bounding_box(**kwargs)
         else:  # pragma: no cover
-            self._edb_object = edb_object
+            self.core = edb_object
 
     @property
     def bounding_box(self) -> list[float]:
@@ -65,7 +62,7 @@ class PolygonData(GrpcPolygonData):
             coordinates in this order: [X lower left corner, Y lower left corner,
             X upper right corner, Y upper right corner].
         """
-        bbox = self.bbox()
+        bbox = self.core.bbox()
         return [Value(bbox[0].x), Value(bbox[0].y), Value(bbox[1].x), Value(bbox[1].y)]
 
     @property
@@ -76,8 +73,37 @@ class PolygonData(GrpcPolygonData):
         -------
         List[:class:`ArcData <pyedb.grpc.database.geometry.arc_data.ArcData>`]
         """
-        arcs = [ArcData(self._pedb, i) for i in self.arc_data]
-        return arcs
+        return [ArcData(i) for i in self.core.arc_data]
+
+    @property
+    def is_closed(self) -> bool:
+        """Check if polygon is closed.
+
+        Returns
+        -------
+        bool
+        """
+        return self.core.is_closed
+
+    @property
+    def sense(self) -> any:
+        """Get the polygon sense type.
+
+        Returns
+        -------
+        :class: `PolygonSenseType <ansys.edb.core.geometry.polygon_data.PolygonSenseType>`
+        """
+        return self.core.sense
+
+    @property
+    def holes(self):
+        """Get all holes in polygon.
+
+        Returns
+        -------
+        list[:class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`]
+        """
+        return [PolygonData(i) for i in self.core.holes]
 
     @property
     def points(self) -> list[list[float]]:
@@ -87,16 +113,19 @@ class PolygonData(GrpcPolygonData):
         -------
         list[list[float]]
         """
-        return [[Value(i.x), Value(i.y)] for i in list(self.points)]
+        return [[Value(i.x), Value(i.y)] for i in list(self.core.points)]
 
-    def create_from_points(self, points, closed=True):
+    @classmethod
+    def create_from_points(cls, points, closed=True):
+        if not isinstance(points, list):
+            raise TypeError("Points must be provided as a list of PointData objects.")
         list_of_point_data = []
         for pt in points:
             list_of_point_data.append(GrpcPointData(pt))
-        return PolygonData.create_from_points(points=list_of_point_data, closed=closed)
+        return cls(GrpcPolygonData(points=list_of_point_data, closed=closed))
 
-    @staticmethod
-    def create_from_bounding_box(points) -> GrpcPolygonData:
+    @classmethod
+    def create_from_bounding_box(cls, points) -> GrpcPolygonData:
         """Create PolygonData from point list.
 
         Returns
@@ -104,7 +133,7 @@ class PolygonData(GrpcPolygonData):
         :class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`
 
         """
-        return PolygonData.create_from_bounding_box(points=points)
+        return cls(GrpcPolygonData(points=points))
 
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> bool:
         """Expand the polygon shape by an absolute value in all direction.
@@ -127,8 +156,8 @@ class PolygonData(GrpcPolygonData):
         bool
 
         """
-        new_poly = super().expand(offset, tolerance, round_corners, maximum_corner_extension)
+        new_poly = self.core.expand(offset, tolerance, round_corners, maximum_corner_extension)
         if not new_poly[0].points:
             return False
-        self._edb_object = new_poly[0]
+        self.core = new_poly[0]
         return True

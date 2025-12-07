@@ -279,12 +279,18 @@ class PadstackDef:
     """
 
     def __init__(self, pedb, edb_object):
-        self.core = edb_object.msg
+        self.core = edb_object
         self._pedb = pedb
         self._pad_by_layer = {}
         self._antipad_by_layer = {}
         self._thermalpad_by_layer = {}
         self._bounding_box = []
+
+    @classmethod
+    def create(cls, edb, name: str):
+        """Create a new padstack definition."""
+        padstack_def = GrpcPadstackDef.create(edb.db, name)
+        return cls(edb, padstack_def)
 
     @property
     def instances(self) -> list[any]:
@@ -320,6 +326,10 @@ class PadstackDef:
             Padstack definition data object.
         """
         return self.core.data
+
+    @data.setter
+    def data(self, value):
+        self.core.data = value
 
     @property
     def layers(self) -> list[str]:

@@ -728,7 +728,7 @@ class Nets(CommonNets):
             return net
         else:
             if not start_with and not contain and not end_with:
-                net = Net.find_by_name(self._active_layout, net_name)
+                net = Net.find_by_name(layout=self._active_layout, name=net_name)
                 if net.is_null:
                     net = Net.create(self._active_layout, net_name)
                 return net

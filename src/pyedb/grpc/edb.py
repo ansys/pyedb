@@ -420,7 +420,7 @@ class Edb(EdbInit):
 
     def _init_objects(self):
         self._components = Components(self)
-        self._stackup = Stackup(self, self.layout.layer_collection)
+        self._stackup = Stackup(self, self.layout.core.layer_collection)
         self._padstack = Padstacks(self)
         self._siwave = Siwave(self)
         self._hfss = Hfss(self)
@@ -522,7 +522,7 @@ class Edb(EdbInit):
         terms = [term for term in self.layout.terminals if term.boundary_type == "port"]
         temp = {}
         for term in terms:
-            if not term.bundle_terminal.is_null:
+            if not term.core.bundle_terminal.is_null:
                 temp[term.name] = BundleWavePort(self, term)
             else:
                 temp[term.name] = GapPort(self, term)

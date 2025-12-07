@@ -201,7 +201,7 @@ class Modeler(object):
             List of primitive objects to delete.
         """
         for prim in prim_list:
-            prim._edb_object.delete()
+            prim.core.delete()
         self._reload_all()
 
     @property
