@@ -95,7 +95,7 @@ class Definitions:
         ...     print(f"Custom package boundary: {custom_pkg.exterior_boundary}")
         """
         if not name in self.package:
-            package_def = PackageDef.create(self._pedb.active_db, name=name)
+            package_def = PackageDef.create(self._pedb, name)
             if component_part_name in self.component:
                 definition = self.component[component_part_name]
                 if not boundary_points and not definition.is_null:
@@ -104,5 +104,5 @@ class Definitions:
                     )
             if boundary_points:
                 package_def.exterior_boundary = GrpcPolygonData(points=boundary_points)
-            return PackageDef(self._pedb, package_def)
+            return package_def
         return False

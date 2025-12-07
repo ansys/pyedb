@@ -20,13 +20,42 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
 from ansys.edb.core.definition.component_pin import ComponentPin as GrpcComponentPin
 
 
-class ComponentPin(GrpcComponentPin):
+class ComponentPin:
     """Class managing :class:`ComponentPin <ansys.edb.core.definition.component_pin.ComponentPin>`."""
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
-        self._pedb = pedb
+    def __init__(self, edb_object):
+        self.core = edb_object
+
+    @classmethod
+    def create(cls, component_def, name):
+        """Create a component pin.
+
+        Parameters
+        ----------
+        component_def : :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>`
+            Component definition object.
+        name : str
+            Name of the component pin.
+
+        Returns
+        -------
+        :class:`ComponentPin <pyedb.grpc.database.definition.component_pin.ComponentPin>`
+            The created component pin object.
+        """
+        edb_obj = GrpcComponentPin.create(component_def.core, name)
+        return cls(edb_obj)
+
+    @property
+    def is_null(self):
+        return self.core.is_null
+
+    @property
+    def name(self):
+        return self.core.name
+
+    @name.setter
+    def name(self, value):
+        self.core.name = value
