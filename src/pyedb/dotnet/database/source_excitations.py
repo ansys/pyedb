@@ -65,7 +65,7 @@ class SourceExcitation:
         _name = name if name else f"point_{layer}_{x}_{y}"
         location = [x, y]
         point_terminal = PointTerminal(self._pedb)
-        terminal = point_terminal.create(name, net, location, layer)
+        terminal = point_terminal.create(_name, net, location, layer)
         if terminal.is_null:
             raise RuntimeError(
                 f"Failed to create terminal. Input arguments: x={x}, y={y}, layer={layer}, net={net}, name={name}."
