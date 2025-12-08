@@ -293,7 +293,7 @@ class PadstackInstance:
         if not name:
             name = self.name
         term = PadstackInstanceTerminal.create(
-            layout=self.core.layout,
+            layout=self.layout,
             name=name,
             padstack_instance=self,
             layer=self.core.get_layer_range()[0],

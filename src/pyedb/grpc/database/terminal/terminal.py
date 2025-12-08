@@ -49,12 +49,11 @@ mapping_boundary_type = {
 }
 
 
-class Terminal(GrpcTerminal):
+class Terminal:
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+        self.core = edb_object
         self._pedb = pedb
         self._reference_object = None
-        self.edb_object = edb_object
 
         self._boundary_type_mapping = {
             "port": GrpcBoundaryType.PORT,
@@ -114,11 +113,30 @@ class Terminal(GrpcTerminal):
         :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
 
         """
-        return self.reference_terminal
+        return self.core.reference_terminal
 
     @ref_terminal.setter
     def ref_terminal(self, value):
-        self.reference_terminal = value
+        self.core.reference_terminal = value
+
+    @property
+    def reference_layer(self):
+        """Reference layer of the terminal.
+
+        Returns
+        -------
+        :class:`Layer <pyedb.grpc.database.layer.layer.Layer>`
+        """
+        return self.core.reference_layer.name
+
+    @reference_layer.setter
+    def reference_layer(self, value):
+        from ansys.edb.core.layer.layer import Layer as GrpcLayer
+
+        if isinstance(value, GrpcLayer):
+            self.core.reference_layer = value
+        if isinstance(value, str):
+            self.core.reference_layer = self._pedb.stackup.layers[value]
 
     @_hfss_port_property.setter
     def _hfss_port_property(self, value):
@@ -167,11 +185,11 @@ class Terminal(GrpcTerminal):
         bool
 
         """
-        return self.port_post_processing_prop.do_renormalize
+        return self.core.port_post_processing_prop.do_renormalize
 
     @do_renormalize.setter
     def do_renormalize(self, value):
-        self.port_post_processing_prop.do_renormalize = value
+        self.core.port_post_processing_prop.do_renormalize = value
 
     @property
     def net_name(self) -> str:
@@ -182,7 +200,7 @@ class Terminal(GrpcTerminal):
         str
             Net name.
         """
-        return self.net.name
+        return self.core.net.name
 
     @property
     def terminal_type(self) -> str:
@@ -193,11 +211,11 @@ class Terminal(GrpcTerminal):
         -------
         str
         """
-        return self.type.name.lower()
+        return self.core.type.name.lower()
 
     @terminal_type.setter
     def terminal_type(self, value):
-        self.type = self._terminal_type_mapping[value]
+        self.core.type = self._terminal_type_mapping[value]
 
     @property
     def boundary_type(self) -> str:
@@ -208,7 +226,7 @@ class Terminal(GrpcTerminal):
         str
             port, pec, rlc, current_source, voltage_source, nexxim_ground, nexxim_pPort, dc_terminal, voltage_probe.
         """
-        return super().boundary_type.name.lower()
+        return self.core.boundary_type.name.lower()
 
     @boundary_type.setter
     def boundary_type(self, value):
@@ -216,7 +234,7 @@ class Terminal(GrpcTerminal):
             value = mapping_boundary_type.get(value.lower(), None)
         if not isinstance(value, GrpcBoundaryType):
             raise ValueError("Value must be a string or BoundaryType enum.")
-        super(Terminal, self.__class__).boundary_type.__set__(self, value)
+        self.core.boundary_type = value
 
     @property
     def is_port(self) -> bool:
@@ -264,7 +282,7 @@ class Terminal(GrpcTerminal):
 
     @impedance.setter
     def impedance(self, value):
-        super(Terminal, self.__class__).impedance.__set__(self, self._pedb.value(value))
+        self.core.impedance = Value(value)
 
     @property
     def reference_object(self) -> any:
@@ -278,9 +296,9 @@ class Terminal(GrpcTerminal):
         """
         if not self._reference_object:
             if self.terminal_type == "edge":
-                edges = self.edges
-                edgeType = edges[0].type
-                if edgeType == GrpcEdgeType.PADSTACK:
+                edges = self.core.edges
+                edge_type = edges[0].type
+                if edge_type == GrpcEdgeType.PADSTACK:
                     self._reference_object = self.get_pad_edge_terminal_reference_pin()
                 else:
                     self._reference_object = self.get_edge_terminal_reference_primitive()
@@ -310,6 +328,20 @@ class Terminal(GrpcTerminal):
 
         return ""
 
+    @property
+    def is_null(self):
+        """Check if the terminal is a null terminal.
+
+        Returns
+        -------
+        bool
+            ``True`` if the terminal is a null terminal, ``False`` otherwise.
+        """
+        try:
+            return self.core.is_null
+        except:
+            return True
+
     def get_padstack_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance:
         """Get a list of pad stacks instances and serves Coax wave ports,
         pingroup terminals, PadEdge terminals.
@@ -324,12 +356,12 @@ class Terminal(GrpcTerminal):
         :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
         """
 
-        if self.is_circuit_port:
+        if self.core.is_circuit_port:
             return self.get_pin_group_terminal_reference_pin()
-        _, padStackInstance, _ = self.get_parameters()
+        _, padStackInstance, _ = self.core.get_parameters()
 
         # Get the pastack instance of the terminal
-        pins = self._pedb.components.get_pin_from_component(self.component.name)
+        pins = self._pedb.components.get_pin_from_component(self.core.component.name)
         return self._get_closest_pin(padStackInstance, pins, gnd_net_name_preference)
 
     def get_pin_group_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance:
@@ -345,14 +377,14 @@ class Terminal(GrpcTerminal):
         :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
         """
 
-        refTerm = self.reference_terminal
-        if self.type == GrpcTerminalType.PIN_GROUP:
-            padStackInstance = self.pin_group.pins[0]
+        refTerm = self.core.reference_terminal
+        if self.core.type == GrpcTerminalType.PIN_GROUP:
+            padStackInstance = self.core.pin_group.pins[0]
             pingroup = refTerm.pin_group
             refPinList = pingroup.pins
             return self._get_closest_pin(padStackInstance, refPinList, gnd_net_name_preference)
-        elif self.type == GrpcTerminalType.PADSTACK_INST:
-            _, padStackInstance, _ = self.get_parameters()
+        elif self.core.type == GrpcTerminalType.PADSTACK_INST:
+            _, padStackInstance, _ = self.core.get_parameters()
             if refTerm.type == GrpcTerminalType.PIN_GROUP:
                 pingroup = refTerm.pin_group
                 refPinList = pingroup.pins
@@ -375,7 +407,7 @@ class Terminal(GrpcTerminal):
         """
 
         ref_layer = self.reference_layer
-        edges = self.edges
+        edges = self.core.edges
         _, _, point_data = edges[0].get_parameters()
         # shape_pd = self._pedb.core.geometry.point_data(X, Y)
         layer_name = ref_layer.name
@@ -398,7 +430,7 @@ class Terminal(GrpcTerminal):
             or :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`.
         """
 
-        ref_term = self.reference_terminal  # return value is type terminal
+        ref_term = self.core.reference_terminal  # return value is type terminal
         _, point_data, layer = ref_term.get_parameters()
         # shape_pd = self._pedb.core.geometry.point_data(X, Y)
         layer_name = layer.name
@@ -429,9 +461,9 @@ class Terminal(GrpcTerminal):
         -------
         :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
         """
-        comp_inst = self.component
+        comp_inst = self.core.component
         pins = self._pedb.components.get_pin_from_component(comp_inst.name)
-        edges = self.edges
+        edges = self.core.edges
         _, pad_edge_pstack_inst, _, _ = edges[0].get_parameters()
         return self._get_closest_pin(pad_edge_pstack_inst, pins, gnd_net_name_preference)
 
@@ -473,11 +505,11 @@ class Terminal(GrpcTerminal):
         -------
         float : source magnitude.
         """
-        return Value(self.source_amplitude)
+        return Value(self.core.source_amplitude)
 
     @magnitude.setter
     def magnitude(self, value):
-        self.source_amplitude = Value(value)
+        self.core.source_amplitude = Value(value)
 
     @property
     def phase(self) -> float:
@@ -488,8 +520,8 @@ class Terminal(GrpcTerminal):
         float : source phase.
 
         """
-        return Value(self.source_phase)
+        return Value(self.core.source_phase)
 
     @phase.setter
     def phase(self, value):
-        self.source_phase = Value(value)
+        self.core.source_phase = Value(value)
