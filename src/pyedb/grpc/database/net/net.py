@@ -74,7 +74,10 @@ class Net:
         str
             Name of the net.
         """
-        return self.core.name
+        try:
+            return self.core.name
+        except:
+            return ""
 
     @name.setter
     def name(self, value: str):
@@ -96,7 +99,10 @@ class Net:
         bool
             ``True`` if the net is a null net, ``False`` otherwise.
         """
-        return self.core.is_null
+        try:
+            return self.core.is_null
+        except:
+            return True
 
     @property
     def primitives(self) -> list[Union[Path, Polygon, Circle, Rectangle, Bondwire]]:

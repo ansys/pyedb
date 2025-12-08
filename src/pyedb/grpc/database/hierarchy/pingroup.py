@@ -318,7 +318,7 @@ class PinGroup:
 
         """
         terminal = self.create_terminal()
-        terminal.boundary_type = GrpcBoundaryType.PORT
+        terminal.boundary_type = "port"
         terminal.impedance = Value(impedance)
         terminal.is_circuit_port = True
         return terminal

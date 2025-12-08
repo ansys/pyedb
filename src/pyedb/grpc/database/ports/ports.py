@@ -59,7 +59,7 @@ class GapPort(EdgeTerminal):
         float
             Magnitude value.
         """
-        return Value(self._edb_object.source_amplitude, self._pedb.active_cell)
+        return Value(self.core.source_amplitude, self._pedb.active_cell)
 
     @property
     def phase(self) -> float:
@@ -70,7 +70,7 @@ class GapPort(EdgeTerminal):
         float
             Phase value.
         """
-        return Value(self._edb_object.source_phase, self._pedb.active_cell)
+        return Value(self.core.source_phase, self._pedb.active_cell)
 
     @property
     def renormalize(self) -> bool:
@@ -80,7 +80,7 @@ class GapPort(EdgeTerminal):
         -------
         bool
         """
-        return self._edb_object.port_post_processing_prop.do_renormalize
+        return self.core.port_post_processing_prop.do_renormalize
 
     @property
     def deembed(self) -> bool:
@@ -91,7 +91,7 @@ class GapPort(EdgeTerminal):
         bool
 
         """
-        return self._edb_object.port_post_processing_prop.do_deembed
+        return self.core.port_post_processing_prop.do_deembed
 
     @property
     def renormalize_z0(self) -> tuple[float, float]:
@@ -103,8 +103,8 @@ class GapPort(EdgeTerminal):
             (Real value, Imaginary value).
         """
         return (
-            self._edb_object.port_post_processing_prop.renormalizion_z0[0],
-            self._edb_object.port_post_processing_prop.renormalizion_z0[1],
+            self.core.port_post_processing_prop.renormalizion_z0[0],
+            self.core.port_post_processing_prop.renormalizion_z0[1],
         )
 
     @property
@@ -115,7 +115,7 @@ class GapPort(EdgeTerminal):
         -------
         str
         """
-        return self._edb_object.terminal_type
+        return self.core.terminal_type
 
 
 class CircuitPort(GapPort):
@@ -218,13 +218,13 @@ class WavePort(EdgeTerminal):
         bool
 
         """
-        return self._edb_object.port_post_processing_prop.do_deembed
+        return self.core.port_post_processing_prop.do_deembed
 
     @deembed.setter
     def deembed(self, value):
-        p = self._edb_object.port_post_processing_prop
+        p = self.core.port_post_processing_prop
         p.DoDeembed = value
-        self._edb_object.port_post_processing_prop = p
+        self.core.port_post_processing_prop = p
 
     @property
     def deembed_length(self) -> float:
@@ -235,16 +235,16 @@ class WavePort(EdgeTerminal):
         float
             deembed value.
         """
-        return Value(self._edb_object.port_post_processing_prop.deembed_length, self._pedb.active_cell)
+        return Value(self.core.port_post_processing_prop.deembed_length, self._pedb.active_cell)
 
     @deembed_length.setter
     def deembed_length(self, value):
-        p = self._edb_object.port_post_processing_prop
+        p = self.core.port_post_processing_prop
         p.deembed_length = Value(value)
-        self._edb_object.port_post_processing_prop = p
+        self.core.port_post_processing_prop = p
 
 
-class ExcitationSources(Terminal):
+class ExcitationSources(EdgeTerminal):
     """Manage sources properties.
 
     Parameters
@@ -295,7 +295,7 @@ class BundleWavePort(BundleTerminal):
         :class:`WavePort <pyedb.grpc.ports.ports.WavePort>`
 
         """
-        return WavePort(self._pedb, self.terminals[0]._edb_object)
+        return WavePort(self._pedb, self.terminals[0].core)
 
     @property
     def horizontal_extent_factor(self) -> float:

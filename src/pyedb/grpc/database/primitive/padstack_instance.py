@@ -92,7 +92,7 @@ class PadstackInstance:
         """
 
         net = Net(self._pedb, self.core.net)
-        return net if not net.is_null else None
+        return net if net is not None else None
 
     @net.setter
     def net(self, value):

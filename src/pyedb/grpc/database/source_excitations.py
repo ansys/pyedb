@@ -1526,7 +1526,7 @@ class SourceExcitation:
                 is_ref=False,
             )
         if source_type in ["circuit_port", "lumped_port"]:
-            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.PORT
+            pos_pingroup_terminal.core.boundary_type = GrpcBoundaryType.PORT
             pos_pingroup_terminal.impedance = Value(impedance)
             if len(positive_pins) > 1 and len(negatives_pins) > 1:
                 if source_type == "lumped_port":

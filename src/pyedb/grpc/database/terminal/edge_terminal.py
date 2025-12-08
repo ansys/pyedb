@@ -33,6 +33,20 @@ class EdgeTerminal:
         self._hfss_type = "Gap"
 
     @property
+    def name(self):
+        """Terminal name.
+
+        Returns
+        -------
+        str : terminal name.
+        """
+        return self.core.name
+
+    @name.setter
+    def name(self, value):
+        self.core.name = value
+
+    @property
     def boundary_type(self) -> str:
         """Boundary type.
 

@@ -24,8 +24,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from numba.core.ir import Raise
-
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 from ansys.edb.core.terminal.pin_group_terminal import (
@@ -35,6 +33,13 @@ from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecated_property
+
+boundary_type_mapping = {
+    "voltage_source": GrpcBoundaryType.VOLTAGE_SOURCE,
+    "current_source": GrpcBoundaryType.CURRENT_SOURCE,
+    "port": GrpcBoundaryType.PORT,
+    "voltage_probe": GrpcBoundaryType.VOLTAGE_PROBE,
+}
 
 
 class PinGroupTerminal:
@@ -65,20 +70,15 @@ class PinGroupTerminal:
         Returns
         -------
         str : boundary type.
+        `"voltage_source"`, `"current_source"`, `"port"`, `"voltage_probe"`.
         """
         return self.core.boundary_type.name.lower()
 
     @boundary_type.setter
     def boundary_type(self, value):
-        if value == "voltage_source":
-            value = GrpcBoundaryType.VOLTAGE_SOURCE
-        if value == "current_source":
-            value = GrpcBoundaryType.CURRENT_SOURCE
-        if value == "port":
-            value = GrpcBoundaryType.PORT
-        if value == "voltage_probe":
-            value = GrpcBoundaryType.VOLTAGE_PROBE
-        else:
+        if isinstance(value, str):
+            value = boundary_type_mapping.get(value, None)
+        if value is None:
             raise Exception(f"Unknown boundary type")
         self.core.boundary_type = value
 
