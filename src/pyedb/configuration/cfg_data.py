@@ -56,7 +56,7 @@ class CfgData(object):
 
         self.components = CfgComponents(self._pedb, components_data=kwargs.get("components", []))
 
-        self.padstacks = CfgPadstacks(self._pedb, kwargs.get("padstacks", None))
+        self.padstacks = CfgPadstacks.create(**kwargs.get("padstacks", {}))
 
         self.pin_groups = CfgPinGroups(self._pedb, pingroup_data=kwargs.get("pin_groups", []))
 

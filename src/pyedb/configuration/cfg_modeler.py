@@ -80,8 +80,8 @@ class CfgModeler:
         self.traces = []
         self.planes = []
 
-        self.padstack_defs = [CfgPadstackDefinition(pedb, None, **i) for i in data.get("padstack_definitions", [])]
-        self.padstack_instances = [CfgPadstackInstance(pedb, None, **i) for i in data.get("padstack_instances", [])]
+        self.padstack_defs = [CfgPadstackDefinition.create(**i) for i in data.get("padstack_definitions", [])]
+        self.padstack_instances = [CfgPadstackInstance.create(**i) for i in data.get("padstack_instances", [])]
 
         self.components = [CfgComponent(pedb, None, **i) for i in data.get("components", [])]
         self.primitives_to_delete: PrimitivesToDeleteDict = data.get(
