@@ -1667,33 +1667,21 @@ class TestClassPadstacks(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_09_padstack_instance(self, edb_examples):
-        data = {
-            "padstacks": {
-                "instances": [
-                    {
-                        "name": "Via998",
-                        "definition": "v35h15",
-                        "backdrill_parameters": {
-                            "from_top": {
-                                "drill_to_layer": "Inner3(Sig1)",
-                                "diameter": "0.5mm",
-                                "stub_length": "0.2mm",
-                            },
-                            "from_bottom": {
-                                "drill_to_layer": "Inner4(Sig2)",
-                                "diameter": "0.5mm",
-                                "stub_length": "0.2mm",
-                            },
-                        },
-                        "hole_override_enabled": True,
-                        "hole_override_diameter": "0.5mm",
-                    }
-                ],
-            }
-        }
-
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
+        cfg_data = edbapp.configuration.cfg_data
+        cfg_pds = cfg_data.padstacks.add_padstack_instance(
+            name="Via998",
+            definition="v35h15",
+            hole_override_enabled=True,
+            hole_override_diameter="0.5mm",
+        )
+        cfg_pds.backdrill_parameters.add_backdrill_to_layer(
+            drill_to_layer="Inner3(Sig1)", diameter="0.5mm", stub_length="0.2mm", drill_from_bottom=False
+        )
+        cfg_pds.backdrill_parameters.add_backdrill_to_layer(drill_to_layer="Inner4(Sig2)", diameter="0.5mm",
+                                                            stub_length="0.2mm", drill_from_bottom=True)
+
+        assert edbapp.configuration.run()
         data_from_db = edbapp.configuration.get_data_from_db(padstacks=True)
         assert data_from_db["padstacks"]["instances"]
         edbapp.close(terminate_rpc_session=False)
