@@ -432,13 +432,13 @@ class GrpcCutout:
         _poly = self._extent()
         # Create new cutout cell/design
         # validate nets in layout
-        net_signals = [net for net in self._edb.layout.nets if net.name in self.signals]
+        net_signals = [net.core for net in self._edb.layout.nets if net.name in self.signals]
 
         # reference nets in layout
-        ref_nets = [net for net in self._edb.layout.nets if net.name in self.references]
+        ref_nets = [net.core for net in self._edb.layout.nets if net.name in self.references]
 
         # validate references in layout
-        _netsClip = [net for net in self._edb.layout.nets if net.name in self.references]
+        _netsClip = [net.core for net in self._edb.layout.nets if net.name in self.references]
         included_nets_list = net_signals + ref_nets
         # included_nets = [net for net in self._edb.layout.nets if net.name in included_nets_list]
         _cutout = self._edb.active_cell.cutout(included_nets_list, _netsClip, _poly, True)

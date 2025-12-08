@@ -1246,7 +1246,7 @@ class Edb(EdbInit):
             Current layout instance.
         """
         if not self._layout_instance:
-            self._layout_instance = self.layout.layout_instance
+            self._layout_instance = self.layout.core.layout_instance
         return self._layout_instance
 
     def get_connected_objects(self, layout_object_instance):
