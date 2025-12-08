@@ -1027,7 +1027,7 @@ class SourceExcitation:
             port_name = generate_unique_name(port_name, n=2)
             self._logger.info("An existing port already has this same name. Renaming to {}.".format(port_name))
         PadstackInstanceTerminal.create(
-            self._pedb,
+            self._pedb.layout,
             name=port_name,
             padstack_instance=padstackinstance,
             layer=terminal_layer,
@@ -1760,7 +1760,7 @@ class SourceExcitation:
                         pin_net = None
                     if pin_net and pin.net.is_null:
                         self._logger.warning(f"Pin {pin.id} has no net defined")
-                    elif pin.net.name in net_list:
+                    elif pin.net_name in net_list:
                         pin.is_pin = True
                         port_name = f"{ref}_{pin.net.name}_{pin.name}"
                         if self.check_before_terminal_assignement(

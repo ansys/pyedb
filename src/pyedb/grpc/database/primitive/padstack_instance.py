@@ -107,6 +107,17 @@ class PadstackInstance:
             self.core.net = value.core
 
     @property
+    def layout(self):
+        """Layout.
+
+        Returns
+        -------
+        :class:`Layout <pyedb.grpc.database.layout.layout.Layout>`
+            Layout object.
+        """
+        return self._pedb.active_layout
+
+    @property
     def is_null(self):
         """Check if the padstack instance is null.
 

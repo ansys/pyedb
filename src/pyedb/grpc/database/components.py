@@ -345,26 +345,25 @@ class Components(object):
         self._ics = {}
         self._ios = {}
         self._others = {}
+        type_map = {
+            "resistor": self._res,
+            "capacitor": self._cap,
+            "inductor": self._ind,
+            "ic": self._ics,
+            "io": self._ios,
+            "other": self._others,
+        }
         for i in self._pedb.layout.groups:
             self._cmp[i.name] = i
             try:
-                if i.type == "resistor":
-                    self._res[i.name] = i
-                elif i.type == "capacitor":
-                    self._cap[i.name] = i
-                elif i.type == "inductor":
-                    self._ind[i.name] = i
-                elif i.type == "ic":
-                    self._ics[i.name] = i
-                elif i.type == "io":
-                    self._ios[i.name] = i
-                elif i.type == "other":
-                    self._others[i.name] = i
-                else:
+                target = type_map.get(i.component_type)
+                if target is None:
                     self._logger.warning(
                         f"Unknown component type {i.name} found while refreshing components, will ignore"
                     )
-            except:
+                else:
+                    target[i.name] = i
+            except Exception:
                 self._logger.warning(f"Assigning component {i.name} as default type other.")
                 self._others[i.name] = i
         return True
@@ -1470,7 +1469,7 @@ class Components(object):
             sball_shape = GrpcSolderballShape.SOLDERBALL_SPHEROID
 
         cmp_property = cmp.component_property
-        if cmp.component_type == GrpcComponentType.IC:
+        if cmp.core.component_type == GrpcComponentType.IC:
             ic_die_prop = cmp_property.die_property
             ic_die_prop.die_type = GrpcDieType.FLIPCHIP
             if not cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:

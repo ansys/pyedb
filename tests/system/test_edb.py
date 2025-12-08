@@ -49,7 +49,6 @@ class TestClass(BaseTestClass):
 
     def test_hfss_create_coax_port_on_component_from_hfss(self, edb_examples):
         """Create a coaxial port on a component from its pin."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.hfss.create_coax_port_on_component("U1", "DDR4_DQS0_P")
         assert edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"], True)

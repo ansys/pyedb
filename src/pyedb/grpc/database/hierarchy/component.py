@@ -31,10 +31,7 @@ from ansys.edb.core.definition.component_model import (
 from ansys.edb.core.definition.die_property import DieOrientation as GrpcDieOrientation, DieType as GrpcDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.hierarchy.component_group import (
-    ComponentGroup as GrpcComponentGroup,
-    ComponentType as GrpcComponentType,
-)
+from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
 from ansys.edb.core.hierarchy.netlist_model import NetlistModel as GrpcNetlistModel
 from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as GrpcPinPairModel
 from ansys.edb.core.hierarchy.sparameter_model import (
@@ -61,6 +58,16 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
 )
 from pyedb.grpc.database.utility.value import Value
 
+component_type_mapping = {
+    GrpcComponentType.OTHER: "other",
+    GrpcComponentType.RESISTOR: "resistor",
+    GrpcComponentType.INDUCTOR: "inductor",
+    GrpcComponentType.CAPACITOR: "capacitor",
+    GrpcComponentType.IC: "ic",
+    GrpcComponentType.IO: "io",
+    GrpcComponentType.INVALID: "invalid",
+}
+
 
 class Component:
     """Manages EDB functionalities for components.
@@ -85,6 +92,24 @@ class Component:
     @property
     def group_type(self):
         return str(self.core.type).split(".")[-1].lower()
+
+    @property
+    def component_type(self) -> str:
+        """Component type.
+
+        Returns
+        -------
+        str
+        """
+        return component_type_mapping[self.core.component_type]
+
+    @component_type.setter
+    def component_type(self, value):
+        reverse_mapping = {v: k for k, v in component_type_mapping.items()}
+        if value in reverse_mapping:
+            self.core.component_type = GrpcComponentType(reverse_mapping[value])
+        else:
+            self._pedb.logger.error(f"Invalid component type: {value}")
 
     @property
     def layout_instance(self):
@@ -1053,6 +1078,16 @@ class Component:
         comp_prop.model = model
         self.component_property = comp_prop
         return model
+
+    def delete(self):
+        """Delete the component from the EDB.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        self.core.delete()
 
     def assign_spice_model(
         self,

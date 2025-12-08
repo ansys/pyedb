@@ -271,7 +271,6 @@ class Edb(EdbInit):
                 map_file=map_file,
             ):
                 raise AttributeError("Translation was unsuccessful")
-                return False
             if settings.enable_local_log_file and self.log_name:
                 self.logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)
@@ -289,7 +288,6 @@ class Edb(EdbInit):
                 map_file=map_file,
             ):
                 raise AttributeError("Translation was unsuccessful")
-                return False
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
             self.open(restart_rpc_server=restart_rpc_server)
@@ -368,7 +366,7 @@ class Edb(EdbInit):
             self.__getitem__(variable_name).description = description
 
     @property
-    def core(self) -> ansys.edb.core:
+    def core(self) -> "ansys.edb.core":
         """Ansys Edb Core module."""
         return ansys.edb.core
 

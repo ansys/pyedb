@@ -38,12 +38,12 @@ class PadstackInstanceTerminal:
         self._pedb = pedb
 
     @classmethod
-    def create(cls, pedb, name, padstack_instance, layer, is_ref=False):
+    def create(cls, layout, name, padstack_instance, layer, is_ref=False, net=None):
         """Create a padstack instance terminal.
         Parameters
         ----------
-        pedb : Edb
-            Edb object.
+        layout : :class: <``Layout` pyedb.grpc.database.layout.layout.Layout>
+            Layout object associated with the terminal.
         name : str
             Terminal name.
         padstack_instance : PadstackInstance
@@ -57,15 +57,17 @@ class PadstackInstanceTerminal:
         PadstackInstanceTerminal
             Padstack instance terminal object.
         """
+        if net is None:
+            net = padstack_instance.net
         edb_terminal_inst = GrpcPadstackInstanceTerminal.create(
-            layout=pedb.layout.core,
+            layout=layout.core,
             name=name,
             padstack_instance=padstack_instance.core,
             layer=layer,
-            net=padstack_instance.net.core,
+            net=net.core,
             is_ref=is_ref,
         )
-        return cls(pedb, edb_terminal_inst)
+        return cls(layout._pedb, edb_terminal_inst)
 
     @property
     def name(self):
@@ -81,6 +83,52 @@ class PadstackInstanceTerminal:
     @name.setter
     def name(self, value):
         self.core.name = value
+
+    @property
+    def is_null(self):
+        """Check if the terminal is null.
+
+        Returns
+        -------
+        bool
+            True if the terminal is null, False otherwise.
+        """
+        return self.core.is_null
+
+    @property
+    def id(self):
+        """Terminal ID.
+
+        Returns
+        -------
+        int
+            Terminal ID.
+        """
+        return self.core.edb_uid
+
+    @property
+    def edb_uid(self):
+        """Terminal EDB UID.
+
+        Returns
+        -------
+        int
+            Terminal EDB UID.
+        """
+        return self.core.edb_uid
+
+    @property
+    def net(self):
+        """Net.
+
+        Returns
+        -------
+        :class:`Net <pyedb.grpc.database.net.net.Net>`
+            Terminal net.
+        """
+        from pyedb.grpc.database.net.net import Net
+
+        return Net(self._pedb, self.core.net)
 
     @property
     def position(self) -> list[float]:
