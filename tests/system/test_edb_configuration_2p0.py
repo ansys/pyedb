@@ -1678,8 +1678,9 @@ class TestClassPadstacks(BaseTestClass):
         cfg_pds.backdrill_parameters.add_backdrill_to_layer(
             drill_to_layer="Inner3(Sig1)", diameter="0.5mm", stub_length="0.2mm", drill_from_bottom=False
         )
-        cfg_pds.backdrill_parameters.add_backdrill_to_layer(drill_to_layer="Inner4(Sig2)", diameter="0.5mm",
-                                                            stub_length="0.2mm", drill_from_bottom=True)
+        cfg_pds.backdrill_parameters.add_backdrill_to_layer(
+            drill_to_layer="Inner4(Sig2)", diameter="0.5mm", stub_length="0.2mm", drill_from_bottom=True
+        )
 
         assert edbapp.configuration.run()
         data_from_db = edbapp.configuration.get_data_from_db(padstacks=True)
