@@ -652,7 +652,7 @@ class PadstackInstance:
         from pyedb.grpc.database.hierarchy.component import Component
 
         comp = Component(self._pedb, self.core.component)
-        return comp if not comp.is_null else False
+        return comp if not comp.core.is_null else False
 
     @property
     def position(self) -> list[float]:
@@ -665,7 +665,7 @@ class PadstackInstance:
         """
         position = self.core.get_position_and_rotation()
         if self.component:
-            out2 = self.component.transform.transform_point(GrpcPointData(position[:2]))
+            out2 = self.component.core.transform.transform_point(GrpcPointData(position[:2]))
             self._position = [Value(out2[0]), Value(out2[1])]
         else:
             self._position = [Value(pt) for pt in position[:2]]

@@ -346,7 +346,7 @@ class GrpcCutout:
         return _pins_to_preserve, _nets_to_preserve
 
     def _compute_pyaedt_extent(self):
-        signal_nets = [self._edb.nets.nets[n] for n in self.signals]
+        signal_nets = [self._edb.nets.nets[n].core for n in self.signals]
 
         if str(self.extent_type).lower() in ["conforming", "conformal", "1"]:
             _poly = self._create_conformal(
@@ -354,7 +354,7 @@ class GrpcCutout:
             )
 
         elif str(self.extent_type).lower() in ["bounding", "0", "bounding_box", "bbox", "boundingbox"]:
-            _poly = self._edb.layout.expanded_extent(
+            _poly = self._edb.layout.core.expanded_extent(
                 signal_nets,
                 GrpcExtentType.BOUNDING_BOX,
                 self.expansion_size,
@@ -592,7 +592,7 @@ class GrpcCutout:
             if extent_poly.intersection_type(pdata) == 0:
                 prims_to_clip.append(path)
                 continue
-            if not path.set_clip_info(extent_poly, True):
+            if not path.core.set_clip_info(extent_poly, True):
                 # clipping failed – treat as polygon
                 reference_prims.append(path)
 

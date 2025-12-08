@@ -36,11 +36,10 @@ from pyedb.grpc.database.utility.value import Value
 
 
 class Polygon(Primitive):
-    def __init__(self, pedb, edb_object=None):
-        if edb_object:
-            self.core = edb_object
-            Primitive.__init__(self, pedb, edb_object)
+    def __init__(self, pedb, edb_object):
+        self.core = edb_object
         self._pedb = pedb
+        Primitive.__init__(self, pedb, edb_object)
 
     @property
     def polygon_data(self) -> "PolygonData":
@@ -126,7 +125,7 @@ class Polygon(Primitive):
         -------
         bool
         """
-        return self.core.polygon_data.has_self_intersections()
+        return self.polygon_data.has_self_intersections()
 
     @classmethod
     def create(cls, layout: Layout, layer: Union[str, Layer], net: Union[str, "Net"] = None, polygon_data=None):

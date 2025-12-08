@@ -135,6 +135,22 @@ class PolygonData:
         """
         return cls(GrpcPolygonData(points=points))
 
+    def has_self_intersections(self, tolerance=1e-12) -> bool:
+        """Check if the polygon has self-intersections.
+
+        Parameters
+        ----------
+        tolerance : float, optional
+            Tolerance in meters.
+
+        Returns
+        -------
+        bool
+            True if the polygon has self-intersections, False otherwise.
+
+        """
+        return self.core.has_self_intersections(tolerance)
+
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> bool:
         """Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.

@@ -192,6 +192,21 @@ class Component:
         return [self._edb_model.rlc(pin_pair) for pin_pair in self._edb_model.pin_pairs()]
 
     @property
+    def component_property(self):
+        """Component property.
+
+        Returns
+        -------
+        :class:`ComponentProperty <ansys.edb.core.hierarchy.component_property.ComponentProperty>`
+
+        """
+        return self.core.component_property
+
+    @component_property.setter
+    def component_property(self, value):
+        self.core.component_property = value
+
+    @property
     def model(self) -> Union[SparamModel, SpiceModel]:
         """Component model.
 

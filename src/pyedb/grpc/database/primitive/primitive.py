@@ -748,6 +748,17 @@ class Primitive:
         """
         return self.core.is_null
 
+    @property
+    def layer(self):
+        """Get the layer object of the primitive.
+
+        Returns
+        -------
+        :class:`Layer <pyedb.grpc.database.stackup.layer.Layer>`
+            Layer object.
+        """
+        return self.core.layer
+
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> list[any]:
         """Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
