@@ -94,6 +94,17 @@ class Component:
         return str(self.core.type).split(".")[-1].lower()
 
     @property
+    def is_null(self):
+        """Check if the component is null.
+
+        Returns
+        -------
+        bool
+            True if the component is null, False otherwise.
+        """
+        return self.core.is_null
+
+    @property
     def component_type(self) -> str:
         """Component type.
 

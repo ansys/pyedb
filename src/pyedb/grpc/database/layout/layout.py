@@ -38,7 +38,6 @@ from typing import TYPE_CHECKING, Dict, List, Union
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.primitive import Primitive
-from ansys.edb.core.layout.layout import Layout as GrpcLayout
 
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
@@ -138,6 +137,8 @@ class Layout:
         List[:class:`Net <pyedb.grpc.database.net.net.Net>`]
             List of Net.
         """
+        from pyedb.grpc.database.net.net import Net
+
         return [Net(self._pedb, net) for net in self.core.nets]
 
     @property

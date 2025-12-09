@@ -707,6 +707,10 @@ class Primitive:
         return self.core.edb_uid
 
     @property
+    def primitive_type(self):
+        return self.core.primitive_type.name.lower()
+
+    @property
     def net(self):
         from pyedb.grpc.database.net.net import Net
 

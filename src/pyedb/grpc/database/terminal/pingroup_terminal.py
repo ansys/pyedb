@@ -233,6 +233,18 @@ class PinGroupTerminal:
             raise TypeError("Value must be a PinGroupTerminal or GrpcPinGroupTerminal object.")
 
     @property
+    def is_reference_terminal(self) -> bool:
+        """Check if the terminal is a reference terminal.
+
+        Returns
+        -------
+        bool
+            True if the terminal is a reference terminal, False otherwise.
+
+        """
+        return self.core.is_reference_terminal
+
+    @property
     @deprecated_property
     def ref_terminal(self):
         """Property keeping DotNet compatibility
