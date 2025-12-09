@@ -1,0 +1,69 @@
+
+
+
+
+
+
+The ``pyedb.workflows.drc`` library
+===================================
+
+.. py:module:: pyedb.workflows.drc
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: drc
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.workflows.drc.drc`
+            - "
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> drc</autoapi/pyedb/workflows/drc/drc/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,98 @@
+
+
+
+
+
+
+:class:`XmlGeneric`
+===================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.emc.xml_generic.XmlGeneric(element)
+
+
+.. py:currentmodule:: XmlGeneric
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_sub_element`
+            - 
+          * - :py:attr:`~create`
+            - 
+          * - :py:attr:`~write_xml`
+            - 
+          * - :py:attr:`~write_dict`
+            - 
+          * - :py:attr:`~read_dict`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~DEBUG`
+            - 
+          * - :py:attr:`~CLS_MAPPING`
+            - 
+          * - :py:attr:`~sub_elements`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.emc.xml_generic import XmlGeneric
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: DEBUG
+   :value: False
+
+
+.. py:attribute:: CLS_MAPPING
+
+.. py:attribute:: sub_elements
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_sub_element(kwargs, elem_type)
+
+.. py:method:: create(kwargs)
+
+.. py:method:: write_xml(parent)
+
+.. py:method:: write_dict(parent)
+
+.. py:method:: read_dict(data)
+
+
+
+

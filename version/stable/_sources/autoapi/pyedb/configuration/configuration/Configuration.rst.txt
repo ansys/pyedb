@@ -1,0 +1,439 @@
+
+
+
+
+
+
+:class:`Configuration`
+======================
+
+
+.. py:class:: pyedb.configuration.configuration.Configuration(pedb: pyedb.Edb)
+
+   
+   Enables export and import of a JSON configuration file that can be applied to a new or existing design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Configuration
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~load`
+            - Import configuration settings from a configure file.
+          * - :py:attr:`~run`
+            - Apply configuration settings to the current design
+          * - :py:attr:`~apply_boundaries`
+            - 
+          * - :py:attr:`~get_boundaries`
+            - 
+          * - :py:attr:`~apply_modeler`
+            - 
+          * - :py:attr:`~apply_variables`
+            - Set variables into database.
+          * - :py:attr:`~get_variables`
+            - Retrieve variables from database.
+          * - :py:attr:`~apply_materials`
+            - Apply material settings to the current design
+          * - :py:attr:`~get_materials`
+            - Retrieve materials from the current design.
+          * - :py:attr:`~apply_stackup`
+            - 
+          * - :py:attr:`~get_stackup`
+            - 
+          * - :py:attr:`~get_data_from_db`
+            - Get configuration data from layout.
+          * - :py:attr:`~apply_operations`
+            - Apply operations to the current design.
+          * - :py:attr:`~get_operations`
+            - 
+          * - :py:attr:`~apply_terminals`
+            - 
+          * - :py:attr:`~get_terminals`
+            - 
+          * - :py:attr:`~export`
+            - Export the configuration data from layout to a file.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~data`
+            - 
+          * - :py:attr:`~cfg_data`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.configuration import Configuration
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: data
+
+.. py:attribute:: cfg_data
+
+
+
+Method detail
+-------------
+
+.. py:method:: load(config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True)
+
+   
+   Import configuration settings from a configure file.
+
+
+   :Parameters:
+
+       **config_file** : :class:`python:str`, :class:`python:dict`
+           Full path to configure file in JSON or TOML format. Dictionary is also supported.
+
+       **append** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether if the new file will append to existing properties or the properties will be cleared before import.
+           Default is ``True`` to keep stored properties
+
+       **apply_file** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to apply the file after the load or not. Default is ``False``.
+
+       **output_file** : :class:`python:str`, :obj:`optional`
+           Full path to the new aedb folder where the configured project will be saved.
+
+       **open_at_the_end** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to keep the new generated file opened at the end. Default is ``True``.
+
+   :Returns:
+
+       :class:`python:dict`
+           Config dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: run(**kwargs)
+
+   
+   Apply configuration settings to the current design
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply_boundaries()
+
+.. py:method:: get_boundaries()
+
+.. py:method:: apply_modeler()
+
+.. py:method:: apply_variables()
+
+   
+   Set variables into database.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_variables()
+
+   
+   Retrieve variables from database.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply_materials()
+
+   
+   Apply material settings to the current design
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_materials()
+
+   
+   Retrieve materials from the current design.
+
+
+   :Parameters:
+
+       **append: bool, optional**
+           If `True`, append materials to the current material list.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply_stackup()
+
+.. py:method:: get_stackup()
+
+.. py:method:: get_data_from_db(**kwargs)
+
+   
+   Get configuration data from layout.
+
+
+   :Parameters:
+
+       **stackup**
+           ..
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply_operations()
+
+   
+   Apply operations to the current design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_operations()
+
+.. py:method:: apply_terminals()
+
+.. py:method:: get_terminals()
+
+.. py:method:: export(file_path, stackup=True, package_definitions=False, setups=True, sources=True, ports=True, nets=True, pin_groups=True, operations=True, components=True, boundaries=True, s_parameters=True, padstacks=True, general=True, variables=True, terminals=False)
+
+   
+   Export the configuration data from layout to a file.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str`, :obj:`Path`
+           File path to export the configuration data.
+
+       **stackup** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export stackup or not.
+
+       **package_definitions** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export package definitions or not.
+
+       **setups** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export setups or not.
+
+       **sources** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export sources or not. Alternative to terminals.
+
+       **ports** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export ports or not. Alternative to terminals.
+
+       **nets** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export nets.
+
+       **pin_groups** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export pin groups.
+
+       **operations** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export operations.
+
+       **components** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export component.
+
+       **boundaries** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export boundaries.
+
+       **s_parameters** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export s_parameters.
+
+       **padstacks** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export padstacks.
+
+       **general** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export general information.
+
+       **variables** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export variable.
+
+       **terminals** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export terminals. Alternative to ports and sources.
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+       **bool**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

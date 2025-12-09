@@ -1,0 +1,6 @@
+is\_intersecting
+================
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. automethod:: Path.is_intersecting

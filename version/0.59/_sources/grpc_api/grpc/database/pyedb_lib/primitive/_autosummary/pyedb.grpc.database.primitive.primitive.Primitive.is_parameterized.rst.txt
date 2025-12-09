@@ -1,0 +1,6 @@
+is\_parameterized
+=================
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. autoproperty:: Primitive.is_parameterized

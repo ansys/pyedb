@@ -1,0 +1,6 @@
+reduce\_via\_by\_density
+========================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.reduce_via_by_density

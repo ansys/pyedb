@@ -1,0 +1,6 @@
+is\_current\_source
+===================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: ExcitationSources.is_current_source

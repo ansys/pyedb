@@ -1,0 +1,465 @@
+
+
+
+
+
+
+:class:`EDBArcs`
+================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.primitives_data.EDBArcs(app, arc)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB Arc Data functionalities.
+   It Inherits EDB primitives arcs properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(myedb, edbversion="2021.2")
+   >>> prim_arcs = edb.modeler.primitives[0].arcs
+   >>> prim_arcs.center  # arc center
+   >>> prim_arcs.points  # arc point list
+   >>> prim_arcs.mid_point  # arc mid point
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EDBArcs
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~start`
+            - Get the coordinates of the starting point.
+          * - :py:attr:`~end`
+            - Get the coordinates of the ending point.
+          * - :py:attr:`~height`
+            - Get the height of the arc.
+          * - :py:attr:`~center`
+            - Arc center.
+          * - :py:attr:`~length`
+            - Arc length.
+          * - :py:attr:`~mid_point`
+            - Arc mid point.
+          * - :py:attr:`~radius`
+            - Arc radius.
+          * - :py:attr:`~is_segment`
+            - Either if it is a straight segment or not.
+          * - :py:attr:`~is_point`
+            - Either if it is a point or not.
+          * - :py:attr:`~is_ccw`
+            - Test whether arc is counter clockwise.
+          * - :py:attr:`~points_raw`
+            - Return a list of Edb points.
+          * - :py:attr:`~points`
+            - Return the list of points with arcs converted to segments.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~arc_object`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.primitives_data import EDBArcs
+
+Property detail
+---------------
+
+.. py:property:: start
+
+   
+   Get the coordinates of the starting point.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List containing the X and Y coordinates of the starting point.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> appedb = Edb(fpath, edbversion="2024.2")
+   >>> start_coordinate = appedb.nets["V1P0_S0"].primitives[0].arcs[0].start
+   >>> print(start_coordinate)
+   [x_value, y_value]
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: end
+
+   
+   Get the coordinates of the ending point.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List containing the X and Y coordinates of the ending point.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> appedb = Edb(fpath, edbversion="2024.2")
+   >>> end_coordinate = appedb.nets["V1P0_S0"].primitives[0].arcs[0].end
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: height
+
+   
+   Get the height of the arc.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Height of the arc.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> appedb = Edb(fpath, edbversion="2024.2")
+   >>> arc_height = appedb.nets["V1P0_S0"].primitives[0].arcs[0].height
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: center
+
+   
+   Arc center.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: length
+
+   
+   Arc length.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mid_point
+
+   
+   Arc mid point.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: radius
+
+   
+   Arc radius.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_segment
+
+   
+   Either if it is a straight segment or not.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_point
+
+   
+   Either if it is a point or not.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_ccw
+
+   
+   Test whether arc is counter clockwise.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: points_raw
+
+   
+   Return a list of Edb points.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           Edb Points.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: points
+
+   
+   Return the list of points with arcs converted to segments.
+
+
+   :Parameters:
+
+       **arc_segments** : :class:`python:int`
+           Number of facets to convert an arc. Default is `6`.
+
+   :Returns:
+
+       :class:`python:list`, :class:`python:list`
+           x and y list of points.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: arc_object
+
+
+
+
+

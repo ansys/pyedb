@@ -1,0 +1,6 @@
+create\_rlc\_boundary\_on\_pins
+===============================
+
+.. currentmodule:: pyedb.grpc.database.source_excitations
+
+.. automethod:: SourceExcitation.create_rlc_boundary_on_pins

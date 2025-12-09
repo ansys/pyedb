@@ -1,0 +1,6 @@
+ic\_die\_properties
+===================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoproperty:: Component.ic_die_properties

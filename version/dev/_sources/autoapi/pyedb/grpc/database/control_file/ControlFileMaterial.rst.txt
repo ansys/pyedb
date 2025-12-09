@@ -1,0 +1,89 @@
+
+
+
+
+
+
+:class:`ControlFileMaterial`
+============================
+
+
+.. py:class:: pyedb.grpc.database.control_file.ControlFileMaterial(name: str, properties: Dict[str, Any])
+
+   
+   Represents a material in the control file.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Material name.
+
+       **properties** : :class:`python:dict`
+           Material properties dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileMaterial
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~properties`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.control_file import ControlFileMaterial
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: properties
+   :type:  Dict[str, ControlProperty]
+
+
+
+
+

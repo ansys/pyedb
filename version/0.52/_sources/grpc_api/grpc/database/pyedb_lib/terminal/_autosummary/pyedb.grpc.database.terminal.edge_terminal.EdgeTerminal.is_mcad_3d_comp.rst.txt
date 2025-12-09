@@ -1,0 +1,6 @@
+is\_mcad\_3d\_comp
+==================
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. autoproperty:: EdgeTerminal.is_mcad_3d_comp

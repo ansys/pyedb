@@ -1,0 +1,125 @@
+
+
+
+
+
+
+The ``pyedb.misc.decorators`` library
+=====================================
+
+.. py:module:: pyedb.misc.decorators
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: decorators
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~deprecated_property`
+            - This decorator marks a property as deprecated.
+
+
+          * - :py:obj:`~deprecate_argument_name`
+            - Decorator to deprecate certain argument names in favor of new ones.
+
+
+          * - :py:obj:`~execution_timer`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: deprecated_property(func)
+
+   
+   This decorator marks a property as deprecated.
+   It will emit a warning when the property is accessed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: deprecate_argument_name(argument_map)
+
+   
+   Decorator to deprecate certain argument names in favor of new ones.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: execution_timer(custom_text)
+
+
+

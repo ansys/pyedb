@@ -1,0 +1,6 @@
+boundary\_type
+==============
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. autoproperty:: PointTerminal.boundary_type

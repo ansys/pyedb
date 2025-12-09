@@ -1,0 +1,6 @@
+product\_solver\_names
+======================
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. automethod:: PinGroupTerminal.product_solver_names

@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``nets_data.py`` module
+===========================
+
+.. py:module:: pyedb.dotnet.database.edb_data.nets_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: nets_data
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.nets_data.EDBNetsData`
+            - Manages EDB functionalities for a primitives.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.nets_data.EDBNetClassData`
+            - Manages EDB functionalities for a primitives.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.nets_data.EDBExtendedNetData`
+            - Manages EDB functionalities for a primitives.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`
+            - Manages EDB functionalities for a primitive.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> EDBNetsData</autoapi/pyedb/dotnet/database/edb_data/nets_data/EDBNetsData>
+    <span class="nf nf-cod-symbol_class"></span> EDBNetClassData</autoapi/pyedb/dotnet/database/edb_data/nets_data/EDBNetClassData>
+    <span class="nf nf-cod-symbol_class"></span> EDBExtendedNetData</autoapi/pyedb/dotnet/database/edb_data/nets_data/EDBExtendedNetData>
+    <span class="nf nf-cod-symbol_class"></span> EDBDifferentialPairData</autoapi/pyedb/dotnet/database/edb_data/nets_data/EDBDifferentialPairData>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

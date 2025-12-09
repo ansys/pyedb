@@ -1,0 +1,6 @@
+remove\_hfss\_prop
+==================
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. automethod:: Polygon.remove_hfss_prop

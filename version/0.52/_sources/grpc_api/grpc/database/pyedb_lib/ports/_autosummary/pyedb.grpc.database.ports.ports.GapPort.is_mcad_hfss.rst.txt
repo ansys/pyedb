@@ -1,0 +1,6 @@
+is\_mcad\_hfss
+==============
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: GapPort.is_mcad_hfss

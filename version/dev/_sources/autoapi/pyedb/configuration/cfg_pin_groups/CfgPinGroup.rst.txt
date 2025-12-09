@@ -1,0 +1,89 @@
+
+
+
+
+
+
+:class:`CfgPinGroup`
+====================
+
+
+.. py:class:: pyedb.configuration.cfg_pin_groups.CfgPinGroup(pedb, **kwargs)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBase`
+
+
+
+.. py:currentmodule:: CfgPinGroup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - 
+          * - :py:attr:`~export_properties`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~reference_designator`
+            - 
+          * - :py:attr:`~pins`
+            - 
+          * - :py:attr:`~net`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_pin_groups import CfgPinGroup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+.. py:attribute:: reference_designator
+
+.. py:attribute:: pins
+
+.. py:attribute:: net
+
+
+
+Method detail
+-------------
+
+.. py:method:: create()
+
+.. py:method:: export_properties()
+
+
+
+

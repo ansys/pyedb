@@ -1,0 +1,6 @@
+get\_product\_property
+======================
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. automethod:: PointTerminal.get_product_property

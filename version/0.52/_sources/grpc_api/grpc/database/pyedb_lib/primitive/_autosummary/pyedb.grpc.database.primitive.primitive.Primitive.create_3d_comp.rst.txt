@@ -1,0 +1,6 @@
+create\_3d\_comp
+================
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. automethod:: Primitive.create_3d_comp

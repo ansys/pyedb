@@ -1,0 +1,6 @@
+set\_hfss\_prop
+===============
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. automethod:: Rectangle.set_hfss_prop

@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``obj_base.py`` module
+==========================
+
+.. py:module:: pyedb.dotnet.database.utilities.obj_base
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: obj_base
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.obj_base.BBox`
+            - Bounding box.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.obj_base.ObjBase`
+            - Manages EDB functionalities for a base object.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> BBox</autoapi/pyedb/dotnet/database/utilities/obj_base/BBox>
+    <span class="nf nf-cod-symbol_class"></span> ObjBase</autoapi/pyedb/dotnet/database/utilities/obj_base/ObjBase>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,86 @@
+
+
+
+
+
+
+:class:`SimulationSetup`
+========================
+
+
+.. py:class:: pyedb.workflows.sipi.hfss_auto_configuration.SimulationSetup
+
+
+.. py:currentmodule:: SimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~meshing_frequency`
+            - 
+          * - :py:attr:`~maximum_pass_number`
+            - 
+          * - :py:attr:`~start_frequency`
+            - 
+          * - :py:attr:`~stop_frequency`
+            - 
+          * - :py:attr:`~frequency_step`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.sipi.hfss_auto_configuration import SimulationSetup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: meshing_frequency
+   :type:  Union[str, float]
+   :value: '10GHz'
+
+
+.. py:attribute:: maximum_pass_number
+   :type:  int
+   :value: 15
+
+
+.. py:attribute:: start_frequency
+   :type:  Union[str, float]
+   :value: 0
+
+
+.. py:attribute:: stop_frequency
+   :type:  Union[str, float]
+   :value: '40GHz'
+
+
+.. py:attribute:: frequency_step
+   :type:  Union[str, float]
+   :value: '0.05GHz'
+
+
+
+
+
+

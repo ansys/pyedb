@@ -1,0 +1,6 @@
+use\_arc\_chord\_error\_approx
+==============================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings
+
+.. autoproperty:: HFSSAdvancedMeshingSettings.use_arc_chord_error_approx

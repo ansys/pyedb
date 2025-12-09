@@ -1,0 +1,6 @@
+relative\_s\_error
+==================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.sweep_data
+
+.. autoproperty:: SweepData.relative_s_error

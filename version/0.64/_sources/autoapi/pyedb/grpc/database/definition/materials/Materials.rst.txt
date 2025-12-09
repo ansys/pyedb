@@ -1,0 +1,771 @@
+
+
+
+
+
+
+:class:`Materials`
+==================
+
+
+.. py:class:: pyedb.grpc.database.definition.materials.Materials(edb: pyedb.Edb)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods for material management accessible from `Edb.materials` property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: Materials
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_material`
+            - Add a new material.
+          * - :py:attr:`~add_conductor_material`
+            - Add a new conductor material.
+          * - :py:attr:`~add_dielectric_material`
+            - Add a new dielectric material in library.
+          * - :py:attr:`~add_djordjevicsarkar_dielectric`
+            - Add a dielectric using the Djordjevic-Sarkar model.
+          * - :py:attr:`~add_debye_material`
+            - Add a dielectric with the Debye model.
+          * - :py:attr:`~add_multipole_debye_material`
+            - Add a dielectric with the Multipole Debye model.
+          * - :py:attr:`~duplicate`
+            - Duplicate a material from the database.
+          * - :py:attr:`~delete_material`
+            - .deprecated: pyedb 0.32.0 use `delete` instead.
+          * - :py:attr:`~delete`
+            - Remove a material from the database.
+          * - :py:attr:`~update_material`
+            - Update material attributes.
+          * - :py:attr:`~load_material`
+            - Load material.
+          * - :py:attr:`~material_property_to_id`
+            - Convert a material property name to a material property ID.
+          * - :py:attr:`~load_amat`
+            - Load materials from an AMAT file.
+          * - :py:attr:`~iterate_materials_in_amat`
+            - Iterate over material description in an AMAT file.
+          * - :py:attr:`~read_materials`
+            - Read materials from an AMAT file.
+          * - :py:attr:`~read_syslib_material`
+            - Read a specific material from syslib AMAT file.
+          * - :py:attr:`~update_materials_from_sys_library`
+            - Update material properties from syslib AMAT file.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~syslib`
+            - Get the project sys library.
+          * - :py:attr:`~materials`
+            - Get materials.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~default_conductor_property_values`
+            - 
+          * - :py:attr:`~default_dielectric_property_values`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__contains__`
+            - 
+          * - :py:attr:`~__getitem__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.definition.materials import Materials
+
+Property detail
+---------------
+
+.. py:property:: syslib
+
+   
+   Get the project sys library.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Syslib path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: materials
+   :type: dict[str, Material]
+
+
+   
+   Get materials.
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`Material <pyedb.grpc.database.definition.materials.Material>`]
+           Materials dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: default_conductor_property_values
+
+.. py:attribute:: default_dielectric_property_values
+
+
+
+Method detail
+-------------
+
+.. py:method:: __contains__(item)
+
+.. py:method:: __getitem__(item)
+
+.. py:method:: add_material(name: str, **kwargs) -> Material
+
+   
+   Add a new material.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Material name.
+
+   :Returns:
+
+       :class:`Material <pyedb.grpc.database.definition.materials.Material>`
+           Material object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_conductor_material(name, conductivity, **kwargs) -> Material
+
+   
+   Add a new conductor material.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the new material.
+
+       **conductivity** : :class:`python:str`, :class:`python:float`, :class:`python:int`
+           Conductivity of the new material.
+
+   :Returns:
+
+       :class:`Material <pyedb.grpc.database.definition.materials.Material>`
+           Material object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_dielectric_material(name, permittivity, dielectric_loss_tangent, **kwargs) -> Material
+
+   
+   Add a new dielectric material in library.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the new material.
+
+       **permittivity** : :class:`python:str`, :class:`python:float`, :class:`python:int`
+           Permittivity of the new material.
+
+       **dielectric_loss_tangent** : :class:`python:str`, :class:`python:float`, :class:`python:int`
+           Dielectric loss tangent of the new material.
+
+   :Returns:
+
+       :class:`Material <pyedb.grpc.database.definition.materials.Material>`
+           Material object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_djordjevicsarkar_dielectric(name, permittivity_at_frequency, loss_tangent_at_frequency, dielectric_model_frequency, dc_conductivity=None, dc_permittivity=None, **kwargs) -> Material
+
+   
+   Add a dielectric using the Djordjevic-Sarkar model.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the dielectric.
+
+       **permittivity_at_frequency** : :class:`python:str`, :class:`python:float`, :class:`python:int`
+           Relative permittivity of the dielectric.
+
+       **loss_tangent_at_frequency** : :class:`python:str`, :class:`python:float`, :class:`python:int`
+           Loss tangent for the material.
+
+       **dielectric_model_frequency** : :class:`python:str`, :class:`python:float`, :class:`python:int`
+           Test frequency in GHz for the dielectric.
+
+   :Returns:
+
+       :class:`Material <pyedb.grpc.database.definition.materials.Material>`
+           Material object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_debye_material(name, permittivity_low, permittivity_high, loss_tangent_low, loss_tangent_high, lower_freqency, higher_frequency, **kwargs) -> Material
+
+   
+   Add a dielectric with the Debye model.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the dielectric.
+
+       **permittivity_low** : :class:`python:float`, :class:`python:int`
+           Relative permittivity of the dielectric at the frequency specified
+           for ``lower_frequency``.
+
+       **permittivity_high** : :class:`python:float`, :class:`python:int`
+           Relative permittivity of the dielectric at the frequency specified
+           for ``higher_frequency``.
+
+       **loss_tangent_low** : :class:`python:float`, :class:`python:int`
+           Loss tangent for the material at the frequency specified
+           for ``lower_frequency``.
+
+       **loss_tangent_high** : :class:`python:float`, :class:`python:int`
+           Loss tangent for the material at the frequency specified
+           for ``higher_frequency``.
+
+       **lower_freqency** : :class:`python:str`, :class:`python:float`, :class:`python:int`
+           Value for the lower frequency.
+
+       **higher_frequency** : :class:`python:str`, :class:`python:float`, :class:`python:int`
+           Value for the higher frequency.
+
+   :Returns:
+
+       :class:`Material <pyedb.grpc.database.definition.materials.Material>`
+           Material object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_multipole_debye_material(name, frequencies, permittivities, loss_tangents, **kwargs) -> Material
+
+   
+   Add a dielectric with the Multipole Debye model.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the dielectric.
+
+       **frequencies** : :class:`python:list`
+           Frequencies in GHz.
+
+       **permittivities** : :class:`python:list`
+           Relative permittivities at each frequency.
+
+       **loss_tangents** : :class:`python:list`
+           Loss tangents at each frequency.
+
+   :Returns:
+
+       :class:`Material <pyedb.grpc.database.definition.materials.Material>`
+           Material object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> freq = [0, 2, 3, 4, 5, 6]
+   >>> rel_perm = [1e9, 1.1e9, 1.2e9, 1.3e9, 1.5e9, 1.6e9]
+   >>> loss_tan = [0.025, 0.026, 0.027, 0.028, 0.029, 0.030]
+   >>> diel = edb.materials.add_multipole_debye_material("My_MP_Debye", freq, rel_perm, loss_tan)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: duplicate(material_name, new_material_name) -> Material
+
+   
+   Duplicate a material from the database.
+
+
+   :Parameters:
+
+       **material_name** : :class:`python:str`
+           Name of the existing material.
+
+       **new_material_name** : :class:`python:str`
+           Name of the new duplicated material.
+
+   :Returns:
+
+       :class:`Material <pyedb.grpc.database.definition.materials.Material>`
+           Material object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_material(material_name)
+
+   
+   .deprecated: pyedb 0.32.0 use `delete` instead.
+
+
+   :Parameters:
+
+       **material_name** : :class:`python:str`
+           Name of the material to delete.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete(material_name) -> bool
+
+   
+   Remove a material from the database.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: update_material(material_name, input_dict)
+
+   
+   Update material attributes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: load_material(material: dict)
+
+   
+   Load material.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: material_property_to_id(property_name)
+
+   
+   Convert a material property name to a material property ID.
+
+
+   :Parameters:
+
+       **property_name** : :class:`python:str`
+           Name of the material property.
+
+   :Returns:
+
+       :obj:`Any`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: load_amat(amat_file) -> bool
+
+   
+   Load materials from an AMAT file.
+
+
+   :Parameters:
+
+       **amat_file** : :class:`python:str`
+           Full path to the AMAT file to read and add to the Edb.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: iterate_materials_in_amat(amat_file=None)
+
+   
+   Iterate over material description in an AMAT file.
+
+
+   :Parameters:
+
+       **amat_file** : :class:`python:str`
+           Full path to the AMAT file to read.
+
+
+   :Yields:
+
+       :class:`python:dict`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: read_materials(amat_file) -> dict[str, Material]
+
+   
+   Read materials from an AMAT file.
+
+
+   :Parameters:
+
+       **amat_file** : :class:`python:str`
+           Full path to the AMAT file to read.
+
+   :Returns:
+
+       :class:`python:dict`
+           {material name: dict of material properties}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: read_syslib_material(material_name) -> dict[str, Material]
+
+   
+   Read a specific material from syslib AMAT file.
+
+
+   :Parameters:
+
+       **material_name** : :class:`python:str`
+           Name of the material.
+
+   :Returns:
+
+       :class:`python:dict`
+           {material name: dict of material properties}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: update_materials_from_sys_library(update_all: bool = True, material_name: Union[str, list] = None)
+
+   
+   Update material properties from syslib AMAT file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

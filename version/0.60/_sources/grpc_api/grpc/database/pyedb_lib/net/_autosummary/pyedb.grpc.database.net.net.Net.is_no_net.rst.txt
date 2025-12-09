@@ -1,0 +1,6 @@
+is\_no\_net
+===========
+
+.. currentmodule:: pyedb.grpc.database.net.net
+
+.. autoproperty:: Net.is_no_net

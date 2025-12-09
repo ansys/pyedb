@@ -1,0 +1,6 @@
+is\_mcad\_3d\_comp
+==================
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. autoproperty:: Bondwire.is_mcad_3d_comp

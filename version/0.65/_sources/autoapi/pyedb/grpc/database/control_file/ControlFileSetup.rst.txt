@@ -1,0 +1,290 @@
+
+
+
+
+
+
+:class:`ControlFileSetup`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.control_file.ControlFileSetup(name: str)
+
+   
+   Represents a simulation setup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Setup name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_sweep`
+            - Add a frequency sweep.
+          * - :py:attr:`~add_mesh_operation`
+            - Add a mesh operation.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~enabled`
+            - 
+          * - :py:attr:`~save_fields`
+            - 
+          * - :py:attr:`~save_rad_fields`
+            - 
+          * - :py:attr:`~frequency`
+            - 
+          * - :py:attr:`~maxpasses`
+            - 
+          * - :py:attr:`~max_delta`
+            - 
+          * - :py:attr:`~union_polygons`
+            - 
+          * - :py:attr:`~small_voids_area`
+            - 
+          * - :py:attr:`~mode_type`
+            - 
+          * - :py:attr:`~ic_model_resolution`
+            - 
+          * - :py:attr:`~order_basis`
+            - 
+          * - :py:attr:`~solver_type`
+            - 
+          * - :py:attr:`~low_freq_accuracy`
+            - 
+          * - :py:attr:`~mesh_operations`
+            - 
+          * - :py:attr:`~sweeps`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.control_file import ControlFileSetup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: enabled
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: save_fields
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: save_rad_fields
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: frequency
+   :type:  str
+   :value: '1GHz'
+
+
+.. py:attribute:: maxpasses
+   :type:  int
+   :value: 10
+
+
+.. py:attribute:: max_delta
+   :type:  float
+   :value: 0.02
+
+
+.. py:attribute:: union_polygons
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: small_voids_area
+   :type:  int
+   :value: 0
+
+
+.. py:attribute:: mode_type
+   :type:  str
+   :value: 'IC'
+
+
+.. py:attribute:: ic_model_resolution
+   :type:  str
+   :value: 'Auto'
+
+
+.. py:attribute:: order_basis
+   :type:  str
+   :value: 'FirstOrder'
+
+
+.. py:attribute:: solver_type
+   :type:  str
+   :value: 'Auto'
+
+
+.. py:attribute:: low_freq_accuracy
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: mesh_operations
+   :type:  List[ControlFileMeshOp]
+   :value: []
+
+
+.. py:attribute:: sweeps
+   :type:  List[ControlFileSweep]
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_sweep(name: str, start: str, stop: str, step: str, sweep_type: str = 'Interpolating', step_type: str = 'LinearStep', use_q3d: bool = True) -> ControlFileSweep
+
+   
+   Add a frequency sweep.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Sweep name.
+
+       **start** : :class:`python:str`
+           Start frequency.
+
+       **stop** : :class:`python:str`
+           Stop frequency.
+
+       **step** : :class:`python:str`
+           Frequency step/count.
+
+       **sweep_type** : :class:`python:str`, :obj:`optional`
+           Sweep type ("Discrete" or "Interpolating"). Default is "Interpolating".
+
+       **step_type** : :class:`python:str`, :obj:`optional`
+           Step type ("LinearStep", "DecadeCount", or "LinearCount"). Default is "LinearStep".
+
+       **use_q3d** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to use Q3D for DC point. Default is ``True``.
+
+   :Returns:
+
+       :obj:`ControlFileSweep`
+           Created sweep object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_mesh_operation(name: str, region: str, type: str, nets_layers: Dict[str, str]) -> ControlFileMeshOp
+
+   
+   Add a mesh operation.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Operation name.
+
+       **region** : :class:`python:str`
+           Region name.
+
+       **type** : :class:`python:str`
+           Operation type ("MeshOperationLength" or "MeshOperationSkinDepth").
+
+       **nets_layers** : :class:`python:dict`
+           Dictionary of nets and layers.
+
+   :Returns:
+
+       :obj:`ControlFileMeshOp`
+           Created mesh operation object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

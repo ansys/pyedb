@@ -1,0 +1,6 @@
+find\_by\_id
+============
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. automethod:: PinGroupTerminal.find_by_id

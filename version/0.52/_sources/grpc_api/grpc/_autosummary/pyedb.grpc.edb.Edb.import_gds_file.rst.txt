@@ -1,0 +1,6 @@
+import\_gds\_file
+=================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.import_gds_file

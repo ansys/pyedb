@@ -1,0 +1,6 @@
+capacitance\_f
+==============
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. autoproperty:: MIMCapacitor.capacitance_f

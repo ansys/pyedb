@@ -1,0 +1,38 @@
+﻿CfgTerminalInfo
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. autoclass:: CfgTerminalInfo
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgTerminalInfo.export_properties
+      
+      
+      CfgTerminalInfo.get_attributes
+      
+      
+      CfgTerminalInfo.set_attributes
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CfgTerminalInfo.CFG_TERMINAL_TYPES
+      CfgTerminalInfo.protected_attributes
+   
+   

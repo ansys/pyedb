@@ -1,0 +1,6 @@
+find
+====
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. automethod:: EdgeTerminal.find

@@ -1,0 +1,6 @@
+﻿Cutout
+======
+
+.. currentmodule:: pyedb.workflows.utilities.cutout
+
+.. autoclass:: Cutout

@@ -1,0 +1,6 @@
+small\_void\_area
+=================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_advanced_settings
+
+.. autoproperty:: HFSSAdvancedSettings.small_void_area

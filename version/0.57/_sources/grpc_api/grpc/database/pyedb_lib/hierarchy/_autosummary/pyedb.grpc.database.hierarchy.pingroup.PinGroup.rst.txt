@@ -1,0 +1,103 @@
+﻿PinGroup
+========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pingroup
+
+.. autoclass:: PinGroup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      PinGroup.add_pins
+      
+      
+      PinGroup.cast
+      
+      
+      PinGroup.create
+      
+      
+      PinGroup.create_3d_comp
+      
+      
+      PinGroup.create_current_source_terminal
+      
+      
+      PinGroup.create_hfss
+      
+      
+      PinGroup.create_port_terminal
+      
+      
+      PinGroup.create_stride
+      
+      
+      PinGroup.create_terminal
+      
+      
+      PinGroup.create_voltage_probe_terminal
+      
+      
+      PinGroup.create_voltage_source_terminal
+      
+      
+      PinGroup.delete
+      
+      
+      PinGroup.find
+      
+      
+      PinGroup.find_by_id
+      
+      
+      PinGroup.get_product_property
+      
+      
+      PinGroup.get_product_property_ids
+      
+      
+      PinGroup.remove_pins
+      
+      
+      PinGroup.set_product_property
+      
+      
+      PinGroup.unique_name
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PinGroup.component
+      PinGroup.edb_uid
+      PinGroup.group
+      PinGroup.id
+      PinGroup.is_mcad
+      PinGroup.is_mcad_3d_comp
+      PinGroup.is_mcad_hfss
+      PinGroup.is_mcad_stride
+      PinGroup.is_null
+      PinGroup.layout
+      PinGroup.layout_obj_type
+      PinGroup.msg
+      PinGroup.name
+      PinGroup.net
+      PinGroup.net_name
+      PinGroup.obj_type
+      PinGroup.pin_group_terminal
+      PinGroup.pins
+      PinGroup.terminal
+   
+   

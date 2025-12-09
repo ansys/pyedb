@@ -1,0 +1,240 @@
+
+
+
+
+
+
+:class:`DCSettings`
+===================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.io.siwave.DCSettings(parent)
+
+   Bases: :py:obj:`SettingsBase`
+
+
+   
+   Provide base settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DCSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~compute_inductance`
+            - Whether to compute Inductance.
+          * - :py:attr:`~contact_radius`
+            - Circuit element contact radius.
+          * - :py:attr:`~dc_slider_position`
+            - DC simulation accuracy level slider position. This property only change slider position.
+          * - :py:attr:`~use_dc_custom_settings`
+            - Whether to use DC custom settings.
+          * - :py:attr:`~plot_jv`
+            - Plot current and voltage distributions.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~defaults`
+            - 
+          * - :py:attr:`~dc_defaults`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.io.siwave import DCSettings
+
+Property detail
+---------------
+
+.. py:property:: compute_inductance
+
+   
+   Whether to compute Inductance.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if inductances will be computed, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: contact_radius
+
+   
+   Circuit element contact radius.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_slider_position
+
+   
+   DC simulation accuracy level slider position. This property only change slider position.
+   Options:
+   0- ``optimal speed``
+   1- ``balanced``
+   2- ``optimal accuracy``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_dc_custom_settings
+
+   
+   Whether to use DC custom settings.
+   This setting is automatically enabled by other properties when needed.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if custom dc settings are used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: plot_jv
+
+   
+   Plot current and voltage distributions.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if plot JV is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: defaults
+
+.. py:attribute:: dc_defaults
+
+
+
+
+

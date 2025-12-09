@@ -1,0 +1,15 @@
+﻿AdaptiveFrequencyData
+=====================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.adaptive_frequency_data
+
+.. autoclass:: AdaptiveFrequencyData
+
+   
+
+   
+   
+
+   
+   
+   

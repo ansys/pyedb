@@ -1,0 +1,125 @@
+
+
+
+
+
+
+:class:`ControlFileSetups`
+==========================
+
+
+.. py:class:: pyedb.grpc.database.control_file.ControlFileSetups
+
+   
+   Manages simulation setups.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileSetups
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_setup`
+            - Add a simulation setup.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~setups`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.control_file import ControlFileSetups
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: setups
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_setup(name: str, frequency: str) -> ControlFileSetup
+
+   
+   Add a simulation setup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Setup name.
+
+       **frequency** : :class:`python:str`
+           Adaptive frequency.
+
+   :Returns:
+
+       :obj:`ControlFileSetup`
+           Created setup object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

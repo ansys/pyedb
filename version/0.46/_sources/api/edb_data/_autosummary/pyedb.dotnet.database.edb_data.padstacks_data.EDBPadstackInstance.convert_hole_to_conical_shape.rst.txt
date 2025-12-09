@@ -1,0 +1,6 @@
+convert\_hole\_to\_conical\_shape
+=================================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. automethod:: EDBPadstackInstance.convert_hole_to_conical_shape

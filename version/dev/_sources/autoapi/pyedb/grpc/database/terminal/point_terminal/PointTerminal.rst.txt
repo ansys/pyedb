@@ -1,0 +1,261 @@
+
+
+
+
+
+
+:class:`PointTerminal`
+======================
+
+
+.. py:class:: pyedb.grpc.database.terminal.point_terminal.PointTerminal(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.terminal.point_terminal.PointTerminal`
+
+
+   
+   Manages point terminal properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PointTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~boundary_type`
+            - Boundary type.
+          * - :py:attr:`~location`
+            - Terminal position.
+          * - :py:attr:`~layer`
+            - Terminal layer.
+          * - :py:attr:`~ref_terminal`
+            - Reference terminal.
+          * - :py:attr:`~reference_terminal`
+            - Reference terminal.
+          * - :py:attr:`~terminal_type`
+            - 
+          * - :py:attr:`~is_port`
+            - Adding DotNet compatibility.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.terminal.point_terminal import PointTerminal
+
+Property detail
+---------------
+
+.. py:property:: boundary_type
+
+   
+   Boundary type.
+
+
+
+   :Returns:
+
+       **str** : :obj:`boundary` type.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: location
+   :type: list[float]
+
+
+   
+   Terminal position.
+
+
+
+   :Returns:
+
+       **[float, float]** : [x,y]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer
+   :type: any
+
+
+   
+   Terminal layer.
+
+
+
+   :Returns:
+
+       :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ref_terminal
+   :type: any
+
+
+   
+   Reference terminal.
+
+
+
+   :Returns:
+
+       :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: reference_terminal
+   :type: any
+
+
+   
+   Reference terminal.
+
+
+
+   :Returns:
+
+       :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminal_type
+   :type: str
+
+
+.. py:property:: is_port
+   :type: bool
+
+
+   
+   Adding DotNet compatibility.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+use\_arc\_to\_chord\_error
+==========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: CurveApproxSettings.use_arc_to_chord_error

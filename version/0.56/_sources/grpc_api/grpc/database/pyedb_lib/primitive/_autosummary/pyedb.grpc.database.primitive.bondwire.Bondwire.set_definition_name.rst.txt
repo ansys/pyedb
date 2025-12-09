@@ -1,0 +1,6 @@
+set\_definition\_name
+=====================
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. automethod:: Bondwire.set_definition_name

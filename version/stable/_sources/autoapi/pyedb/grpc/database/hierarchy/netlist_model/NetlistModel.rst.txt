@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`NetlistModel`
+=====================
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.netlist_model.NetlistModel
+
+   Bases: :py:obj:`ansys.edb.core.hierarchy.netlist_model.NetlistModel`
+
+
+   
+   Manage :class:`NetlistModel <ansys.edb.core.hierarchy.netlist_model.NetlistModel>`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.netlist_model import NetlistModel
+
+
+
+
+

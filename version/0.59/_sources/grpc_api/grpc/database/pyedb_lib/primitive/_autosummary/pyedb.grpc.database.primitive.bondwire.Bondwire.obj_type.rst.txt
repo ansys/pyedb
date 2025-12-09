@@ -1,0 +1,6 @@
+obj\_type
+=========
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. autoproperty:: Bondwire.obj_type

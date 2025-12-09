@@ -1,0 +1,118 @@
+
+
+
+
+
+
+The ``primitive`` package
+=============================
+
+.. py:module:: pyedb.grpc.database.primitive
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: primitive
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.primitive.bondwire`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.primitive.circle`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.primitive.padstack_instance`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.primitive.path`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.primitive.polygon`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.primitive.primitive`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.primitive.rectangle`
+            - 
+
+
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~workdir`
+            - 
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> bondwire</autoapi/pyedb/grpc/database/primitive/bondwire/index>
+    <span class="nf nf-fa-file"></span> circle</autoapi/pyedb/grpc/database/primitive/circle/index>
+    <span class="nf nf-fa-file"></span> padstack_instance</autoapi/pyedb/grpc/database/primitive/padstack_instance/index>
+    <span class="nf nf-fa-file"></span> path</autoapi/pyedb/grpc/database/primitive/path/index>
+    <span class="nf nf-fa-file"></span> polygon</autoapi/pyedb/grpc/database/primitive/polygon/index>
+    <span class="nf nf-fa-file"></span> primitive</autoapi/pyedb/grpc/database/primitive/primitive/index>
+    <span class="nf nf-fa-file"></span> rectangle</autoapi/pyedb/grpc/database/primitive/rectangle/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: workdir
+
+
+

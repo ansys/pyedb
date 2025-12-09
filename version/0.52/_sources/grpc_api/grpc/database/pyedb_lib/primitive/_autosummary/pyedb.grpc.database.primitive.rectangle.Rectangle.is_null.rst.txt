@@ -1,0 +1,6 @@
+is\_null
+========
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. autoproperty:: Rectangle.is_null

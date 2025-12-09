@@ -1,0 +1,91 @@
+﻿Component
+=========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoclass:: Component
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Component.add_member
+      
+      
+      Component.assign_rlc_model
+      
+      
+      Component.assign_s_param_model
+      
+      
+      Component.assign_spice_model
+      
+      
+      Component.cast
+      
+      
+      Component.create
+      
+      
+      Component.create_3d_comp
+      
+      
+      Component.create_clearance_on_component
+      
+      
+      Component.create_hfss
+      
+      
+      Component.create_package_def
+      
+      
+      Component.create_stride
+      
+      
+      Component.delete
+      
+      
+      Component.find
+      
+      
+      Component.find_by_def
+      
+      
+      Component.find_by_id
+      
+      
+      Component.get_product_property
+      
+      
+      Component.get_product_property_ids
+      
+      
+      Component.remove_member
+      
+      
+      Component.set_product_property
+      
+      
+      Component.ungroup
+      
+      
+      Component.use_s_parameter_model
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Component.layout_obj_type
+   
+   

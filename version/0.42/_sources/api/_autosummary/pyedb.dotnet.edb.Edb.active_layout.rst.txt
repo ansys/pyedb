@@ -1,0 +1,6 @@
+active\_layout
+==============
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.active_layout
