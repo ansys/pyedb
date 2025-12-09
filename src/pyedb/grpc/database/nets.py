@@ -158,7 +158,7 @@ class Nets(CommonNets):
         >>> gnd_net = edb_nets["GND"]
         >>> print(gnd_net.name)
         """
-        return Net(self._pedb, Net.find_by_name(self._active_layout, name))
+        return Net.find_by_name(self._active_layout, name)
 
     def __contains__(self, name: str) -> bool:
         """Check if a net exists in the layout.

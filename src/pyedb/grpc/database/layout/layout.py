@@ -28,12 +28,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pyedb.dotnet.database.general import Primitives
+
 if TYPE_CHECKING:
     from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-from typing import Dict, List, Union
+from typing import TYPE_CHECKING, Dict, List, Union
 
+if TYPE_CHECKING:
+    from pyedb.grpc.database.primitive.primitive import Primitive
 from ansys.edb.core.layout.layout import Layout as GrpcLayout
 
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
@@ -93,7 +97,7 @@ class Layout:
         return self._pedb._active_cell
 
     @property
-    def primitives(self) -> list[any]:
+    def primitives(self) -> list["Primitive"]:
         primitives = self.core.primitives
         self.__primitives = []
         for prim in primitives:
@@ -126,7 +130,7 @@ class Layout:
         return temp
 
     @property
-    def nets(self) -> list[Net]:
+    def nets(self) -> list["Net"]:
         """Nets.
 
         Returns
@@ -134,8 +138,6 @@ class Layout:
         List[:class:`Net <pyedb.grpc.database.net.net.Net>`]
             List of Net.
         """
-        from pyedb.grpc.database.net.net import Net
-
         return [Net(self._pedb, net) for net in self.core.nets]
 
     @property

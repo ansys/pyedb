@@ -1545,7 +1545,7 @@ class SourceExcitation:
             neg_pingroup_terminal.core.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
             pos_pingroup_terminal.core.source_amplitude = Value(magnitude)
             pos_pingroup_terminal.core.source_phase = Value(phase)
-            pos_pingroup_terminal.core.reference_terminal = neg_pingroup_terminal
+            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
             pos_pingroup_terminal.core.name = name
 
         elif source_type == "voltage_source":
@@ -1553,13 +1553,13 @@ class SourceExcitation:
             neg_pingroup_terminal.core.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
             pos_pingroup_terminal.core.source_amplitude = Value(magnitude)
             pos_pingroup_terminal.core.source_phase = Value(phase)
-            pos_pingroup_terminal.core.reference_terminal = neg_pingroup_terminal.core
+            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal.core
             pos_pingroup_terminal.core.name = name
 
         elif source_type == "rlc":
             pos_pingroup_terminal.core.boundary_type = GrpcBoundaryType.RLC
             neg_pingroup_terminal.core.boundary_type = GrpcBoundaryType.RLC
-            pos_pingroup_terminal.core.reference_terminal = neg_pingroup_terminal.core
+            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
             Rlc = GrpcRlc()
             Rlc.r_enabled = bool(r)
             Rlc.l_enabled = bool(l)
@@ -2897,16 +2897,11 @@ class SourceExcitation:
         -------
         :class:`Terminal <pyedb.dotnet.database.edb_data.terminals.Terminal>`
         """
-        from pyedb.grpc.database.terminal.terminal import Terminal
 
-        term = Terminal(self._pedb, terminal)
-        term.boundary_type = "voltage_probe"
-
-        ref_term = Terminal(self._pedb, ref_terminal)
-        ref_term.boundary_type = "voltage_probe"
-
-        term.ref_terminal = ref_terminal
-        return term
+        terminal.boundary_type = "voltage_probe"
+        ref_terminal.boundary_type = "voltage_probe"
+        terminal.ref_terminal = ref_terminal
+        return terminal
 
     def create_voltage_probe_on_pin_group(
         self, probe_name: str, pos_pin_group_name: str, neg_pin_group_name: str, impedance: Union[int, float] = 1000000

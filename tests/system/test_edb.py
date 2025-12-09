@@ -139,7 +139,7 @@ class TestClass(BaseTestClass):
         )
         vprobe_2 = edbapp.terminals["vprobe_2"]
         ref_term = vprobe_2.ref_terminal
-        assert isinstance(ref_term.location, list)
+        assert isinstance(ref_term.location, list) or isinstance(ref_term.location, tuple)
         # ref_term.location = [0, 0] # position setter is crashing check pyedb-core bug #431
         assert ref_term.layer
         ref_term.layer.name = "Inner1(GND1"

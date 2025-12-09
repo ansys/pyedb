@@ -200,6 +200,39 @@ class PinGroupTerminal:
         return "PinGroupTerminal"
 
     @property
+    def is_null(self) -> bool:
+        """Check if the terminal is a null terminal.
+
+        Returns
+        -------
+        bool
+            True if the terminal is null, False otherwise.
+
+        """
+        return self.core.is_null
+
+    @property
+    def reference_terminal(self) -> any:
+        """Reference terminal.
+
+        Returns
+        -------
+        :class:`PinGroupTerminal <pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal>`
+            Reference terminal.
+
+        """
+        return PinGroupTerminal(self._pedb, self.core.reference_terminal)
+
+    @reference_terminal.setter
+    def reference_terminal(self, value):
+        if isinstance(value, PinGroupTerminal):
+            self.core.reference_terminal = value.core
+        elif isinstance(value, GrpcPinGroupTerminal):
+            self.core.reference_terminal = value
+        else:
+            raise TypeError("Value must be a PinGroupTerminal or GrpcPinGroupTerminal object.")
+
+    @property
     @deprecated_property
     def ref_terminal(self):
         """Property keeping DotNet compatibility
