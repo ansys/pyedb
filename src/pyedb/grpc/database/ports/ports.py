@@ -218,13 +218,13 @@ class WavePort(EdgeTerminal):
         bool
 
         """
-        return self.core.port_post_processing_prop.do_deembed
+        return self.port_post_processing_prop.do_deembed
 
     @deembed.setter
     def deembed(self, value):
-        p = self.core.port_post_processing_prop
-        p.DoDeembed = value
-        self.core.port_post_processing_prop = p
+        p = self.port_post_processing_prop
+        p.do_deembed = value
+        self.port_post_processing_prop = p
 
     @property
     def deembed_length(self) -> float:

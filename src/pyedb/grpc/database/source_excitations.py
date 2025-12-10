@@ -1074,10 +1074,8 @@ class SourceExcitation:
             self._pedb.logger.error(f"No primitive found for ID {prim_id}")
             return False
         prim = prim[0]
-        pos_edge = [GrpcPrimitiveEdge.create(prim, point_on_edge)]
-        return GrpcEdgeTerminal.create(
-            layout=prim.layout, name=terminal_name, edges=pos_edge, net=prim.net, is_ref=is_ref
-        )
+        pos_edge = [GrpcPrimitiveEdge.create(prim.core, point_on_edge)]
+        return EdgeTerminal.create(layout=prim.layout, name=terminal_name, edge=pos_edge, net=prim.net, is_ref=is_ref)
 
     def create_circuit_port_on_pin(
         self,
@@ -2569,10 +2567,10 @@ class SourceExcitation:
             reference_point = GrpcPointData(reference_point)
         if not port_name:
             port_name = generate_unique_name("Port_")
-        edge = GrpcPrimitiveEdge.create(polygon, terminal_point)
+        edge = GrpcPrimitiveEdge.create(polygon.core, terminal_point)
         edges = [edge]
         edge_term = GrpcEdgeTerminal.create(
-            layout=polygon.layout, edges=edges, net=polygon.net, name=port_name, is_ref=False
+            layout=polygon.core.layout, edges=edges, net=polygon.core.net, name=port_name, is_ref=False
         )
         if force_circuit_port:
             edge_term.is_circuit_port = True
@@ -2583,13 +2581,13 @@ class SourceExcitation:
             edge_term.impedance = Value(port_impedance)
         edge_term.name = port_name
         if reference_polygon and reference_point:
-            ref_edge = GrpcPrimitiveEdge.create(reference_polygon, reference_point)
+            ref_edge = GrpcPrimitiveEdge.create(reference_polygon.core, reference_point)
             ref_edges = [ref_edge]
             ref_edge_term = GrpcEdgeTerminal.create(
-                layout=reference_polygon.layout,
+                layout=reference_polygon.core.layout,
                 name=port_name + "_ref",
                 edges=ref_edges,
-                net=reference_polygon.net,
+                net=reference_polygon.core.net,
                 is_ref=True,
             )
             if reference_layer:

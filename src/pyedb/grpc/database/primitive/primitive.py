@@ -63,6 +63,17 @@ class Primitive:
         return self.core.primitive_type.name.lower()
 
     @property
+    def layout(self):
+        """Layout object.
+
+        Returns
+        -------
+        :class:`Layout <pyedb.grpc.database.layout.layout.Layout>`
+
+        """
+        return self._pedb.layout
+
+    @property
     def polygon_data(self):
         """Polygon data.
 

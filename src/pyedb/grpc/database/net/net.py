@@ -170,6 +170,23 @@ class Net:
                     )
         return components
 
+    @classmethod
+    def create(cls, layout, name: str):
+        """Create a new net in the EDB database.
+        Parameters
+        ----------
+        layout : :class:`pyedb.grpc.database.layout.layout.Layout`
+            Layout to create the net in.
+        name : str
+            Name of the new net.
+
+        Returns
+        -------
+        :class:`Net <pyedb.grpc.database.net.net.Net>`
+            Newly created net object.
+        """
+        return cls(layout._pedb, GrpcNet.create(layout=layout.core, name=name))
+
     def find_dc_short(self, fix=False) -> list[list[str, str]]:
         """Find DC-shorted nets connected to this net.
 

@@ -107,6 +107,7 @@ class Modeler(object):
         self._primitives: dict[str, Primitive] = {}
 
         # Lazy indexes
+        self.primitives  # type: ignore  # Force initial load
         self._primitives_by_name: dict[str, Primitive] | None = None
         self._primitives_by_net: dict[str, list[Primitive]] | None = None
         self._primitives_by_layer: dict[str, list[Primitive]] | None = None
@@ -128,7 +129,7 @@ class Modeler(object):
     def _add_primitive(self, prim: Any):
         """Add primitive wrapper to caches."""
         try:
-            self._primitives[prim.edb_uid] = prim
+            self._primitives[prim.id] = prim
             if self._primitives_by_name is not None:
                 self._primitives_by_name[prim.aedt_name] = prim
             if self._primitives_by_net is not None and hasattr(prim, "net"):
@@ -704,24 +705,6 @@ class Modeler(object):
             ``True`` when successful, ``False`` when failed.
         """
         net = self._pedb.nets.find_or_create_net(net_name)
-        if start_cap_style.lower() == "round":
-            start_cap_style = GrpcPathEndCapType.ROUND
-        elif start_cap_style.lower() == "extended":
-            start_cap_style = GrpcPathEndCapType.EXTENDED
-        else:
-            start_cap_style = GrpcPathEndCapType.FLAT
-        if end_cap_style.lower() == "round":
-            end_cap_style = GrpcPathEndCapType.ROUND
-        elif end_cap_style.lower() == "extended":
-            end_cap_style = GrpcPathEndCapType.EXTENDED
-        else:
-            end_cap_style = GrpcPathEndCapType.FLAT
-        if corner_style.lower() == "round":
-            corner_style = GrpcPathEndCapType.ROUND
-        elif corner_style.lower() == "sharp":
-            corner_style = GrpcPathCornerType.SHARP
-        else:
-            corner_style = GrpcPathCornerType.MITER
         _points = []
         if isinstance(points, (list, tuple)):
             points = normalize_pairs(points)
@@ -738,7 +721,7 @@ class Modeler(object):
             polygon_data = points
         else:
             raise TypeError("Points must be a list of points or a PolygonData object.")
-        path = Path(self._pedb).create(
+        path = Path.create(
             layout=self._active_layout,
             layer=layer_name,
             net=net,
@@ -751,7 +734,7 @@ class Modeler(object):
         if path.is_null:  # pragma: no cover
             self._logger.error("Null path created")
             return False
-        return Path(self._pedb, path)
+        return path
 
     def create_trace(
         self,

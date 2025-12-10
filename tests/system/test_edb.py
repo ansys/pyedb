@@ -304,17 +304,9 @@ class TestClass(BaseTestClass):
         edb = edb_examples.load_edb(
             edb_path=os.path.join(local_path, "example_models", test_subfolder, "edge_ports.aedb"),
         )
-        if edb.grpc:
-            # grpc PrimitiveType enum changed.
-            poly_list = [poly for poly in edb.layout.primitives if poly.primitive_type.value == 2]
-        else:
-            poly_list = [poly for poly in edb.layout.primitives if poly.primitive_type == "polygon"]
-        if edb.grpc:
-            port_poly = [poly for poly in poly_list if poly.edb_uid == 17][0]
-            ref_poly = [poly for poly in poly_list if poly.edb_uid == 19][0]
-        else:
-            port_poly = [poly for poly in poly_list if poly.id == 17][0]
-            ref_poly = [poly for poly in poly_list if poly.id == 19][0]
+        poly_list = [poly for poly in edb.layout.primitives if poly.primitive_type == "polygon"]
+        port_poly = [poly for poly in poly_list if poly.id == 17][0]
+        ref_poly = [poly for poly in poly_list if poly.id == 19][0]
         port_location = [-65e-3, -13e-3]
         ref_location = [-63e-3, -13e-3]
         if edb.grpc:
@@ -332,12 +324,8 @@ class TestClass(BaseTestClass):
                 terminal_point=port_location,
                 reference_point=ref_location,
             )
-        if edb.grpc:
-            port_poly = [poly for poly in poly_list if poly.edb_uid == 23][0]
-            ref_poly = [poly for poly in poly_list if poly.edb_uid == 22][0]
-        else:
-            port_poly = [poly for poly in poly_list if poly.id == 23][0]
-            ref_poly = [poly for poly in poly_list if poly.id == 22][0]
+        port_poly = [poly for poly in poly_list if poly.id == 23][0]
+        ref_poly = [poly for poly in poly_list if poly.id == 22][0]
         port_location = [-65e-3, -10e-3]
         ref_location = [-65e-3, -10e-3]
         if edb.grpc:
@@ -355,10 +343,7 @@ class TestClass(BaseTestClass):
                 terminal_point=port_location,
                 reference_point=ref_location,
             )
-        if edb.grpc:
-            port_poly = [poly for poly in poly_list if poly.edb_uid == 25][0]
-        else:
-            port_poly = [poly for poly in poly_list if poly.id == 25][0]
+        port_poly = [poly for poly in poly_list if poly.id == 25][0]
         port_location = [-65e-3, -7e-3]
         if edb.grpc:
             assert edb.source_excitation.create_edge_port_on_polygon(

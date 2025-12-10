@@ -85,7 +85,7 @@ class Path(Primitive):
     @classmethod
     def create(
         cls,
-        layout=None,
+        layout,
         layer: Union[str, Layer] = None,
         net: Union[str, "Net"] = None,
         width: float = 100e-6,
@@ -137,7 +137,7 @@ class Path(Primitive):
         - The created path is added to the modeler primitives of the `pedb` instance.
 
         """
-        if layout is not None:
+        if layout is None:
             raise Exception("Layout parameter is required to create a path.")
         end_cap_mapping = {
             "flat": GrpcPathEndCapType.FLAT,
@@ -280,7 +280,7 @@ class Path(Primitive):
         >>> sig.create_edge_port("pcb_port", "end", "Wave", None, 8, 8)
 
         """
-        center_line = self.core.center_line
+        center_line = self.get_center_line()
         pos = center_line[-1] if position.lower() == "end" else center_line[0]
 
         # if port_type.lower() == "wave":
@@ -405,7 +405,7 @@ class Path(Primitive):
             self._pedb.padstacks.place([x, y], padstack_name, net_name=net_name)
 
     @property
-    def center_line(self) -> list[float]:
+    def center_line(self) -> list[list[float]]:
         """Path center line
 
         Returns
@@ -413,7 +413,7 @@ class Path(Primitive):
         List[float]
 
         """
-        return self.core.get_center_line()
+        return self.get_center_line()
 
     def get_center_line(self) -> list[list[float]]:
         """Retrieve center line points list.

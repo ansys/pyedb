@@ -21,9 +21,13 @@
 # SOFTWARE.
 
 import re
+from typing import TYPE_CHECKING
 
 from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundleTerminal
 from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.hierarchy.component import Component
 
 
 class EdgeTerminal:
@@ -31,6 +35,52 @@ class EdgeTerminal:
         self.core = edb_object
         self._pedb = pedb
         self._hfss_type = "Gap"
+
+    @classmethod
+    def create(cls, layout, name, edge, net, is_ref=False):
+        """Create an edge terminal.
+
+        Parameters
+        ----------
+        layout : :class:`pyedb.grpc.database.layout.layout.Layout`
+            Layout object.
+        name : str
+            Terminal name.
+        edge : :class:`.Edge`
+            Edge object.
+        net : :class:`.Net` or str, optional
+            Net object or net name. If None, the terminal will not be assigned to any net.
+        is_ref : bool, optional
+            Whether the terminal is a reference terminal. Default is False.
+
+        Returns
+        -------
+        :class:`EdgeTerminal <pyedb.grpc.database.terminal.edge_terminal.EdgeTerminal>`
+            Edge terminal object.
+        """
+        if net is None:
+            raise Exception("Net must be specified to create an Edge Terminal.")
+        grpc_edge_terminal = GrpcEdgeTerminal.create(
+            layout.core,
+            name,
+            edge,
+            net.core,
+            is_ref,
+        )
+        return cls(layout._pedb, grpc_edge_terminal)
+
+    @property
+    def component(self):
+        """Component.
+
+        Returns
+        -------
+        Component object.
+            :class:`Component <pyedb.grpc.database.component.Component>`.
+        """
+        from pyedb.grpc.database.hierarchy.component import Component
+
+        return Component(self._pedb, self.core.component)
 
     @property
     def name(self):
@@ -47,6 +97,49 @@ class EdgeTerminal:
         self.core.name = value
 
     @property
+    def source_amplitude(self):
+        """Source amplitude.
+
+        Returns
+        -------
+        float : source amplitude.
+        """
+        return self.core.source_amplitude
+
+    @source_amplitude.setter
+    def source_amplitude(self, value):
+        """Source amplitude."""
+        self.core.source_amplitude = self._pedb.value(value)
+
+    @property
+    def source_phase(self):
+        """Source phase.
+
+        Returns
+        -------
+        float : source phase.
+        """
+        return self.core.source_phase
+
+    @property
+    def impedance(self):
+        """Impedance.
+
+        Returns
+        -------
+        float : impedance.
+        """
+        return self.core.impedance
+
+    @impedance.setter
+    def impedance(self, value):
+        self.core.impedance = self._pedb.value(value)
+
+    @source_phase.setter
+    def source_phase(self, value):
+        self.core.source_phase = self._pedb.value(value)
+
+    @property
     def boundary_type(self) -> str:
         """Boundary type.
 
@@ -55,6 +148,15 @@ class EdgeTerminal:
         str : boundary type.
         """
         return self.core.boundary_type.name.lower()
+
+    @property
+    def port_post_processing_prop(self):
+        """Port post-processing property."""
+        return self.core.port_post_processing_prop
+
+    @port_post_processing_prop.setter
+    def port_post_processing_prop(self, value):
+        self.core.port_post_processing_prop = value
 
     @property
     def _edb_properties(self):
@@ -113,6 +215,30 @@ class EdgeTerminal:
             txt.append("'{}'='{}'".format(k, v))
         txt = ",".join(txt)
         self._edb_properties = "HFSS({})".format(txt)
+
+    @property
+    def is_null(self) -> bool:
+        """Added for dotnet compatibility
+
+        Returns
+        -------
+        bool
+        """
+        return self.core.is_null
+
+    @property
+    def is_reference_terminal(self) -> bool:
+        """Added for dotnet compatibility
+
+        Returns
+        -------
+        bool
+        """
+        return self.core.is_reference_terminal
+
+    def set_product_solver_option(self, product_id, solver_name, option):
+        """Set product solver option."""
+        self.core.set_product_solver_option(product_id, solver_name, option)
 
     def couple_ports(self, port):
         """Create a bundle wave port.
