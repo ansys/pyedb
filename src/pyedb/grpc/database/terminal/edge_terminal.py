@@ -150,6 +150,32 @@ class EdgeTerminal:
         return self.core.boundary_type.name.lower()
 
     @property
+    def reference_terminal(self):
+        """Reference terminal.
+
+        Returns
+        -------
+        EdgeTerminal object.
+        """
+
+        return EdgeTerminal(self._pedb, self.core.reference_terminal)
+
+    @reference_terminal.setter
+    def reference_terminal(self, value):
+        if isinstance(value, EdgeTerminal):
+            self.core.reference_terminal = value.core
+
+    @property
+    def is_circuit_port(self) -> bool:
+        """Is circuit port.
+
+        Returns
+        -------
+        bool : circuit port.
+        """
+        return self.core.is_circuit_port
+
+    @property
     def port_post_processing_prop(self):
         """Port post-processing property."""
         return self.core.port_post_processing_prop

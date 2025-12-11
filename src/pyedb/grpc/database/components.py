@@ -1070,13 +1070,13 @@ class Components(object):
             compdef = self._get_component_definition(component_name, pins)
         if not compdef:
             return False
-        new_cmp = GrpcComponentGroup.create(self._active_layout, component_name, compdef.name)
+        new_cmp = GrpcComponentGroup.create(self._active_layout.core, component_name, compdef.name)
         if new_cmp.is_null:
             raise ValueError(f"Failed to create component {component_name}.")
         if hasattr(pins[0], "component") and pins[0].component:
             hosting_component_location = None
             if not pins[0].component.is_null:
-                hosting_component_location = pins[0].component.transform
+                hosting_component_location = pins[0].component.core.transform
         else:
             hosting_component_location = None
         if not len(pins) == len(compdef.component_pins):
@@ -1088,7 +1088,7 @@ class Components(object):
         for padstack_instance, component_pin in zip(pins, compdef.component_pins):
             padstack_instance.is_layout_pin = True
             padstack_instance.name = component_pin.name
-            new_cmp.add_member(padstack_instance)
+            new_cmp.add_member(padstack_instance.core)
         if not placement_layer:
             new_cmp_layer_name = pins[0].padstack_def.data.layer_names[0]
         else:

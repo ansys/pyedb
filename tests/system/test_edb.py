@@ -490,11 +490,7 @@ class TestClass(BaseTestClass):
         port_ver = edb.ports["port_ver"]
         assert not port_ver.is_null
         assert not port_ver.is_circuit_port
-        if edb.grpc:
-            assert port_ver.type.name == "EDGE"
-        else:
-            # grpc is too different
-            assert port_ver.boundary_type == "PortBoundary"
+        assert port_ver.boundary_type in ["PortBoundary", "port"]  # grpc returns 'port'
 
         port_hori = edb.ports["port_hori"]
         assert port_hori.reference_terminal

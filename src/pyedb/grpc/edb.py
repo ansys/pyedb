@@ -546,17 +546,17 @@ class Edb(EdbInit):
 
         for t in terminals:
             if isinstance(t, BundleTerminal):
-                bundle_ter = WavePort(self, t)
+                bundle_ter = WavePort(self, t.core)
                 ports[bundle_ter.name] = bundle_ter
             elif isinstance(t, PadstackInstanceTerminal):
-                ports[t.name] = CoaxPort(self, t)
+                ports[t.name] = CoaxPort(self, t.core)
             elif isinstance(t, EdgeTerminal):
                 if t.is_wave_port:
-                    ports[t.name] = WavePort(self, t)
+                    ports[t.name] = WavePort(self, t.core)
                 else:
-                    ports[t.name] = EdgeTerminal(self, t)
+                    ports[t.name] = EdgeTerminal(self, t.core)
             else:
-                ports[t.name] = GapPort(self, t)
+                ports[t.name] = GapPort(self, t.core)
         return ports
 
     @property

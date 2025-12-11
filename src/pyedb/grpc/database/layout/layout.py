@@ -88,6 +88,10 @@ class Layout:
         self.__padstack_instances = {}
 
     @property
+    def layout_instance(self):
+        return self.core.layout_instance
+
+    @property
     def cell(self):
         """:class:`Cell <ansys.edb.core.layout.cel.Cell>`: Owning cell for this layout.
 
