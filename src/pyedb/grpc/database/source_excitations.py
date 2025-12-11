@@ -1853,7 +1853,7 @@ class SourceExcitation:
             positive_primitive_id = positive_primitive_id.edb_uid
 
         if isinstance(negative_primitive_id, Primitive):
-            negative_primitive_id = negative_primitive_id.edb_uid
+            negative_primitive_id = negative_primitive_id.id
 
         _, pos_term = self.create_wave_port(
             positive_primitive_id,
@@ -1924,10 +1924,10 @@ class SourceExcitation:
             port_name = generate_unique_name("Terminal_")
 
         if isinstance(prim_id, Primitive):
-            prim_id = prim_id.edb_uid
+            prim_id = prim_id.id
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
         pos_edge_term.impedance = Value(impedance)
-        wave_port = WavePort(self._pedb, pos_edge_term)
+        wave_port = WavePort(self._pedb, pos_edge_term.core)
         wave_port.horizontal_extent_factor = horizontal_extent_factor
         wave_port.vertical_extent_factor = vertical_extent_factor
         wave_port.pec_launch_width = pec_launch_width

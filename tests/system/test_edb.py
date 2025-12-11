@@ -570,26 +570,26 @@ class TestClass(BaseTestClass):
             "end_cap_style": "Flat",
         }
         traces = []
-        trace_pathes = [
+        trace_paths = [
             [["-40mm", "-10mm"], ["-30mm", "-10mm"]],
             [["-40mm", "-10.2mm"], ["-30mm", "-10.2mm"]],
             [["-40mm", "-10.4mm"], ["-30mm", "-10.4mm"]],
         ]
-        for p in trace_pathes:
+        for p in trace_paths:
             t = edb.modeler.create_trace(path_list=p, **kwargs)
             traces.append(t)
 
-        assert edb.hfss.create_wave_port(traces[0], trace_pathes[0][0], "wave_port")
+        assert edb.hfss.create_wave_port(traces[0], trace_paths[0][0], "wave_port")
 
         assert edb.hfss.create_differential_wave_port(
             traces[0],
-            trace_pathes[0][0],
+            trace_paths[0][0],
             traces[1],
-            trace_pathes[1][0],
+            trace_paths[1][0],
             horizontal_extent_factor=8,
         )
 
-        paths = [i[1] for i in trace_pathes]
+        paths = [i[1] for i in trace_paths]
         assert edb.hfss.create_bundle_wave_port(traces, paths)
         p = edb.ports["wave_port"]
         p.horizontal_extent_factor = 6

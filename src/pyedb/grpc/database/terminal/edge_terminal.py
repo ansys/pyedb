@@ -175,6 +175,10 @@ class EdgeTerminal:
         """
         return self.core.is_circuit_port
 
+    @is_circuit_port.setter
+    def is_circuit_port(self, value):
+        self.core.is_circuit_port = value
+
     @property
     def port_post_processing_prop(self):
         """Port post-processing property."""
