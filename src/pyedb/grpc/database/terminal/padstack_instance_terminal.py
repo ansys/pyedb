@@ -20,11 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from ansys.edb.core.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
 )
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
+if TYPE_CHECKING:
+    from pyedb.grpc.database.hierarchy.component import Component
+    from pyedb.grpc.database.net.net import Net
+    from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecated_property
 
@@ -37,7 +45,7 @@ class PadstackInstanceTerminal:
         self._pedb = pedb
 
     @classmethod
-    def create(cls, layout, name, padstack_instance, layer, is_ref=False, net=None):
+    def create(cls, layout, name, padstack_instance, layer, is_ref=False, net=None) -> "PadstackInstanceTerminal":
         """Create a padstack instance terminal.
         Parameters
         ----------
@@ -69,7 +77,7 @@ class PadstackInstanceTerminal:
         return cls(layout._pedb, edb_terminal_inst)
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Terminal name.
 
         Returns
@@ -84,7 +92,7 @@ class PadstackInstanceTerminal:
         self.core.name = value
 
     @property
-    def is_null(self):
+    def is_null(self) -> bool:
         """Check if the terminal is null.
 
         Returns
@@ -95,7 +103,40 @@ class PadstackInstanceTerminal:
         return self.core.is_null
 
     @property
-    def id(self):
+    def is_circuit_port(self) -> bool:
+        """Check if the terminal is a circuit port.
+
+        Returns
+        -------
+        bool
+            True if the terminal is a circuit port, False otherwise.
+        """
+        return self.core.is_circuit_port
+
+    @is_circuit_port.setter
+    def is_circuit_port(self, value: bool):
+        """Set whether the terminal is a circuit port.
+
+        Parameters
+        ----------
+        value : bool
+            True to set the terminal as a circuit port, False otherwise.
+        """
+        self.core.is_circuit_port = value
+
+    @property
+    def is_reference_terminal(self) -> bool:
+        """Check if the terminal is a reference terminal.
+
+        Returns
+        -------
+        bool
+            True if the terminal is a reference terminal, False otherwise.
+        """
+        return self.core.is_reference_terminal
+
+    @property
+    def id(self) -> int:
         """Terminal ID.
 
         Returns
@@ -106,7 +147,7 @@ class PadstackInstanceTerminal:
         return self.core.edb_uid
 
     @property
-    def edb_uid(self):
+    def edb_uid(self) -> int:
         """Terminal EDB UID.
 
         Returns
@@ -117,7 +158,7 @@ class PadstackInstanceTerminal:
         return self.core.edb_uid
 
     @property
-    def net(self):
+    def net(self) -> Net:
         """Net.
 
         Returns
@@ -130,30 +171,30 @@ class PadstackInstanceTerminal:
         return Net(self._pedb, self.core.net)
 
     @property
-    def position(self) -> list[float]:
+    def position(self) -> tuple[float, float]:
         """Terminal position.
 
         Returns
         -------
         Position [x,y] : [float, float]
         """
-        pos_x, pos_y, rotation = self.padstack_instance.get_position_and_rotation()
-        return [Value(pos_x), Value(pos_y)]
+        pos_x, pos_y, rotation = self.padstack_instance.core.get_position_and_rotation()
+        return Value(pos_x.value), Value(pos_y.value)
 
     @property
-    def padstack_instance(self) -> any:
+    def padstack_instance(self) -> PadstackInstance:
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
-        return PadstackInstance(self._pedb, self.padstack_instance)
+        return PadstackInstance(self._pedb, self.core.padstack_instance)
 
     @property
-    def component(self) -> any:
+    def component(self) -> Component:
         from pyedb.grpc.database.hierarchy.component import Component
 
-        return Component(self._pedb, self.component)
+        return Component(self._pedb, self.core.component)
 
     @property
-    def location(self) -> list[float]:
+    def location(self) -> tuple[float, float]:
         """Terminal position.
 
         Returns
@@ -162,7 +203,7 @@ class PadstackInstanceTerminal:
         """
         p_inst, _ = self.core.params
         pos_x, pos_y, _ = p_inst.get_position_and_rotation()
-        return [Value(pos_x), Value(pos_y)]
+        return Value(pos_x), Value(pos_y)
 
     @property
     def net_name(self) -> str:

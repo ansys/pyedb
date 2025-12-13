@@ -19,11 +19,15 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from __future__ import annotations
 
 import math
 import re
+from typing import TYPE_CHECKING, Union
 import warnings
 
+if TYPE_CHECKING:
+    from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
@@ -43,6 +47,7 @@ from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
+from pyedb.grpc.database.utility.layer_map import LayerMap
 from pyedb.grpc.database.utility.value import Value
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -70,6 +75,77 @@ class PadstackInstance:
         self._side_number = None
         self._pdef = None
         self._object_instance = None
+
+    @classmethod
+    def create(
+        cls,
+        layout,
+        padstack_definition: str,
+        net: Union[Net, str],
+        position_x: float,
+        position_y: float,
+        rotation: float,
+        top_layer: StackupLayer,
+        bottom_layer: StackupLayer,
+        name: str = None,
+        solder_ball_layer: StackupLayer = None,
+        layer_map: str = "two_way",
+    ) -> PadstackInstance:
+        """Create a padstack instance.
+
+        Parameters
+        ----------
+        layout : :class:`Layout <py
+            edb.grpc.database.layout.layout.Layout>`
+            Layout object.
+        net : :class:`Net <pyedb.grpc.database.net.net.Net>` or str
+            Net object or net name.
+        padstack_definition : str
+            Padstack definition name.
+        position_x : float
+            X position.
+        position_y : float
+            Y position.
+        rotation : float
+            Rotation.
+        top_layer : :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`
+            Top layer.
+        bottom_layer : :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`
+            Bottom layer.
+        name : str, optional
+            Padstack instance name. The default is ``None``, in which case a name is automatically assigned.
+        solder_ball_layer : :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`, optional
+            Solder ball layer. The default is ``None``.
+        layer_map : str, optional
+            Layer map type. The default is ``"two_way"``. Options are ``"forward"``, ``"backward"``.
+
+        Returns
+        -------
+        :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
+            PadstackInstance object.
+        """
+        if isinstance(net, str):
+            net = layout._pedb.nets.nets.get(net, Net.create(layout, generate_unique_name("net")))
+        if not name:
+            name = generate_unique_name(padstack_definition)
+        layer_map = LayerMap.create(layer_map)
+        if not padstack_definition in layout._pedb.padstacks.definitions:
+            raise Exception(f"Padstack definition {padstack_definition} not found in layout.")
+        padstack_def = layout._pedb.padstacks.definitions[padstack_definition].core
+        inst = GrpcPadstackInstance.create(
+            layout=layout.core,
+            net=net.core,
+            padstack_def=padstack_def,
+            position_x=layout._pedb.value(position_x),
+            position_y=layout._pedb.value(position_y),
+            rotation=layout._pedb.value(rotation),
+            top_layer=top_layer.core,
+            bottom_layer=bottom_layer.core,
+            name=name,
+            solder_ball_layer=solder_ball_layer.core if solder_ball_layer else None,
+            layer_map=layer_map.core,
+        )
+        return cls(layout._pedb, inst)
 
     @property
     def is_pin(self):
@@ -300,7 +376,7 @@ class PadstackInstance:
             net=self.net,
             is_ref=False,
         )
-        return PadstackInstanceTerminal(self._pedb, term)
+        return term
 
     def get_terminal(self, create_new_terminal=True) -> PadstackInstanceTerminal:
         """Returns padstack instance terminal.
@@ -321,6 +397,7 @@ class PadstackInstance:
         inst_term = self.core.get_padstack_instance_terminal()
         if inst_term.is_null and create_new_terminal:
             inst_term = self.create_terminal()
+            inst_term = inst_term.core
         return PadstackInstanceTerminal(self._pedb, inst_term)
 
     def create_coax_port(self, name=None, radial_extent_factor=0):
@@ -554,7 +631,7 @@ class PadstackInstance:
     def start_layer(self, layer_name):
         stop_layer = self._pedb.stackup.signal_layers[self.stop_layer]
         start_layer = self._pedb.stackup.signal_layers[layer_name]
-        self.core.set_layer_range(start_layer, stop_layer)
+        self.core.set_layer_range(start_layer.core, stop_layer.core)
 
     @property
     def stop_layer(self) -> str:
@@ -571,7 +648,7 @@ class PadstackInstance:
     def stop_layer(self, layer_name):
         start_layer = self._pedb.stackup.signal_layers[self.start_layer]
         stop_layer = self._pedb.stackup.signal_layers[layer_name]
-        self.core.set_layer_range(start_layer, stop_layer)
+        self.core.set_layer_range(start_layer.core, stop_layer.core)
 
     @property
     def layer_range_names(self) -> list[str]:

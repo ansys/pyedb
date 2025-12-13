@@ -1269,6 +1269,7 @@ class Padstacks(object):
         tolayer: Optional[str] = None,
         solderlayer: Optional[str] = None,
         is_pin: bool = False,
+        layer_map: str = "two_way",
     ) -> PadstackInstance:
         """Place a padstack instance.
 
@@ -1292,6 +1293,9 @@ class Padstacks(object):
             Solder ball layer name.
         is_pin : bool, optional
             Whether the instance is a pin. Default is ``False``.
+        layer_map : str, optional
+            Layer mapping information. Valid input is ``"two_way"``, ``"backward"``, or ``"forward"``.
+            Default is ``two_way``.
 
         Returns
         -------
@@ -1331,20 +1335,20 @@ class Padstacks(object):
         if padstack_def:
             padstack_instance = PadstackInstance.create(
                 layout=self._active_layout,
-                net=net,
-                name=via_name,
-                padstack_def=padstack_def,
-                position_x=position.x,
-                position_y=position.y,
+                net=net_name,
+                padstack_definition=padstack_def.name,
+                position_x=position.x.value,
+                position_y=position.y.value,
                 rotation=rotation,
                 top_layer=fromlayer,
                 bottom_layer=tolayer,
+                name=via_name,
                 solder_ball_layer=solderlayer,
-                layer_map=None,
+                layer_map=layer_map,
             )
             padstack_instance.is_layout_pin = is_pin
             self.clear_instances_cache()
-            return PadstackInstance(self._pedb, padstack_instance)
+            return padstack_instance
         else:
             raise RuntimeError("Place padstack failed")
 

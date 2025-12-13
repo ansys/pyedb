@@ -96,6 +96,18 @@ class PointTerminal:
         self.core.name = value
 
     @property
+    def is_reference_terminal(self) -> bool:
+        """Whether the terminal is a reference terminal.
+
+        Returns
+        -------
+        bool
+            True if the terminal is a reference terminal, False otherwise.
+
+        """
+        return self.core.is_reference_terminal
+
+    @property
     def point(self) -> tuple[float, float]:
         """Terminal point.
 

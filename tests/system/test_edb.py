@@ -883,14 +883,9 @@ class TestClass(BaseTestClass):
         )
         assert pin_group
         U7.pins["R9"].create_port(name="test", reference=pin_group)
-        if edbapp.grpc:
-            padstack_instance_terminals = [
-                term for term in list(edbapp.terminals.values()) if term.type.name == "PADSTACK_INST"
-            ]
-        else:
-            padstack_instance_terminals = [
-                term for term in list(edbapp.terminals.values()) if term.terminal_type == "PadstackInstanceTerminal"
-            ]
+        padstack_instance_terminals = [
+            term for term in list(edbapp.terminals.values()) if term.terminal_type == "PadstackInstanceTerminal"
+        ]
         for term in padstack_instance_terminals:
             assert term.position
         pos_pin = edbapp.padstacks.get_pinlist_from_component_and_net("C173")[1]
