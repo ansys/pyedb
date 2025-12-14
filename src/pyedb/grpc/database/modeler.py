@@ -1321,7 +1321,7 @@ class Modeler(object):
         start_cell_instance_name: Optional[str] = None,
         end_cell_instance_name: Optional[str] = None,
         bondwire_type: str = "jedec4",
-    ) -> Optional[Primitive]:
+    ) -> Bondwire:
         """Create bondwire.
 
         Parameters
@@ -1367,11 +1367,11 @@ class Modeler(object):
 
         start_cell_inst = None
         end_cell_inst = None
-        cell_instances = {cell_inst.name: cell_inst for cell_inst in self._active_layout.cell_instances}
+        cell_instances = {cell_inst.name: cell_inst for cell_inst in self._active_layout.core.cell_instances}
         if start_cell_instance_name:
             if start_cell_instance_name not in cell_instances:
                 start_cell_inst = GrpcCellInstance.create(
-                    self._pedb.active_layout, start_cell_instance_name, ref=self._pedb.active_layout
+                    self._pedb.active_layout.core, start_cell_instance_name, ref=self._pedb.active_layout.core
                 )
             else:
                 start_cell_inst = cell_instances[start_cell_instance_name]
@@ -1383,15 +1383,6 @@ class Modeler(object):
                 )
             else:
                 end_cell_inst = cell_instances[end_cell_instance_name]
-
-        if bondwire_type == "jedec4":
-            bondwire_type = GrpcBondwireType.JEDEC4
-        elif bondwire_type == "jedec5":
-            bondwire_type = GrpcBondwireType.JEDEC5
-        elif bondwire_type == "apd":
-            bondwire_type = GrpcBondwireType.APD
-        else:
-            bondwire_type = GrpcBondwireType.JEDEC4
         bw = Bondwire.create(
             layout=self._active_layout,
             bondwire_type=bondwire_type,
@@ -1406,12 +1397,11 @@ class Modeler(object):
             end_x=Value(end_x),
             end_y=Value(end_y),
             net=net,
-            end_context=end_cell_inst,
-            start_context=start_cell_inst,
+            end_cell_inst=end_cell_inst,
+            start_cell_inst=start_cell_inst,
         )
-        bondwire = Bondwire(self._pedb, bw)
-        self._add_primitive(bondwire)
-        return bondwire
+        self._add_primitive(bw)
+        return bw
 
     def create_pin_group(
         self,
