@@ -30,6 +30,7 @@ from ansys.edb.core.primitive.polygon import Polygon as GrpcPolygon
 
 from pyedb.grpc.database.geometry.polygon_data import PolygonData
 from pyedb.grpc.database.layers.layer import Layer
+from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from pyedb.grpc.database.layout.layout import Layout
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
@@ -40,36 +41,6 @@ class Polygon(Primitive):
         self.core = edb_object
         self._pedb = pedb
         Primitive.__init__(self, pedb, edb_object)
-
-    # @property
-    # def polygon_data(self) -> "PolygonData":
-    #     """Polygon data.
-    #
-    #     Returns
-    #     -------
-    #     :class:`PolygonData <pyedb.edb.database.geometry.polygon_data.PolygonData>`
-    #         Polygon data object.
-    #
-    #     """
-    #
-    #     return PolygonData(self.core.polygon_data)
-    #
-    # @polygon_data.setter
-    # def polygon_data(self, value: Union["PolygonData", GrpcPolygonData]):
-    #     """Set polygon data.
-    #
-    #     Parameters
-    #     ----------
-    #     value : :class:`PolygonData <pyedb.edb.database.geometry.polygon_data.PolygonData>` or GrpcPolygonData
-    #         Polygon data object.
-    #
-    #     """
-    #     if isinstance(value, PolygonData):
-    #         self.core.polygon_data = value.core
-    #     elif isinstance(value, GrpcPolygonData):
-    #         self.core.polygon_data = value
-    #     else:
-    #         raise TypeError("Value must be a PolygonData or GrpcPolygonData object.")
 
     @property
     def layer(self) -> Layer:
@@ -100,7 +71,7 @@ class Polygon(Primitive):
                 self.core.layer = self._pedb.stackup.layers[value].core
             else:
                 raise ValueError(f"Layer {value} does not exist in the stackup.")
-        elif isinstance(value, Layer):
+        elif isinstance(value, StackupLayer) or isinstance(value, Layer):
             self.core.layer = value.core
         else:
             raise TypeError("Value must be a string or Layer object.")
@@ -360,8 +331,9 @@ class Polygon(Primitive):
            ``True`` when successful, ``False`` when failed.
         """
         if layer and isinstance(layer, str) and layer in self._pedb.stackup.signal_layers:
-            self.layer = self._pedb.stackup.layers[layer]
-            return True
+            self.layer = self._pedb.stackup.layers.get(layer, None)
+            if layer:
+                return True
         return False
 
     def in_polygon(

@@ -101,11 +101,27 @@ class Primitive:
 
         Returns
         -------
-        :class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
+        :class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`
 
         """
         primitive = self.core.cast()
         return PolygonData(primitive.polygon_data) if hasattr(primitive, "polygon_data") else None
+
+    @polygon_data.setter
+    def polygon_data(self, value):
+        """Set polygon data.
+
+        Parameters
+        ----------
+        value : :class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`
+
+        """
+        primitive = self.core.cast()
+        if hasattr(primitive, "polygon_data"):
+            if hasattr(value, "core"):
+                primitive.polygon_data = value.core
+            else:
+                primitive.polygon_data = value
 
     @property
     def object_instance(self):
@@ -252,7 +268,7 @@ class Primitive:
         return x, y
 
     @property
-    def center(self) -> list[float]:
+    def center(self) -> tuple[float, float]:
         """Return the primitive bounding box center coordinate.
 
         Returns
@@ -262,7 +278,7 @@ class Primitive:
 
         """
         center = self.core.cast().polygon_data.bounding_circle()[0]
-        return [Value(center.x), Value(center.y)]
+        return Value(center.x), Value(center.y)
 
     def get_connected_object_id_set(self) -> list[int]:
         """Produce a list of all geometries physically connected to a given layout object.

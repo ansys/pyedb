@@ -1371,7 +1371,7 @@ class TestClass(BaseTestClass):
         edbapp.stackup.add_layer("TOP", "Diel", thickness="0.05mm")
         points = [[0.0, -1e-3], [0.0, -10e-3], [100e-3, -10e-3], [100e-3, -1e-3], [0.0, -1e-3]]
         polygon = edbapp.modeler.create_polygon(points, "TOP")
-        assert polygon.center == [0.05, -0.0055]
+        assert polygon.center == [0.05, -0.0055] or polygon.center == (0.05, -0.0055)
         assert polygon.move(["1mm", 1e-3])
         assert round(polygon.center[0], 6) == 0.051
         assert round(polygon.center[1], 6) == -0.0045

@@ -843,7 +843,7 @@ class Modeler(object):
             self._logger.error("Null polygon created")
             return False
         self._add_primitive(polygon)
-        return Polygon(self._pedb, polygon)
+        return polygon
 
     def create_rectangle(
         self,
