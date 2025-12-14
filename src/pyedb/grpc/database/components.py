@@ -1095,7 +1095,7 @@ class Components(object):
             new_cmp_layer_name = placement_layer
         if new_cmp_layer_name in self._pedb.stackup.signal_layers:
             new_cmp_placement_layer = self._pedb.stackup.signal_layers[new_cmp_layer_name]
-            new_cmp.placement_layer = new_cmp_placement_layer
+            new_cmp.placement_layer = new_cmp_placement_layer.core
         if r_value:
             new_cmp.component_type = GrpcComponentType.RESISTOR
             is_rlc = True

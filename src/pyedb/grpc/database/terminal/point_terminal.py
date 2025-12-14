@@ -77,7 +77,11 @@ class PointTerminal:
             point = GrpcPointData([Value(i) for i in point])
         if isinstance(net, str):
             net = layout._pedb.nets[net]
-        core_terminal = GrpcPointTerminal.create(layout=layout.core, net=net.core, layer=layer, name=name, point=point)
+        if isinstance(layer, str):
+            layer = layout._pedb.stackup.layers[layer]
+        core_terminal = GrpcPointTerminal.create(
+            layout=layout.core, net=net.core, layer=layer.core, name=name, point=point
+        )
         return cls(layout._pedb, core_terminal)
 
     @property

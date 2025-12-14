@@ -568,7 +568,7 @@ class Stackup:
         >>> edb = Edb()
         >>> thickness = edb.stackup.thickness
         """
-        return self.core.get_layout_thickness().value
+        return self.get_layout_thickness()
 
     @property
     def num_layers(self) -> int:
@@ -585,7 +585,7 @@ class Stackup:
         >>> edb = Edb()
         >>> num_layers = edb.stackup.num_layers
         """
-        return len(self.core.layers)
+        return len(self.layers)
 
     def create_symmetric_stackup(
         self,

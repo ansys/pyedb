@@ -172,7 +172,7 @@ class StackupLayer:
         float
             Lower elevation.
         """
-        return self._pedb.value(self.core.lower_elevation, self._pedb.active_cell)
+        return Value(self.core.lower_elevation, self._pedb.active_cell)
 
     @lower_elevation.setter
     def lower_elevation(self, value):
