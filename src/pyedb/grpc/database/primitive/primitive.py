@@ -21,15 +21,37 @@
 # SOFTWARE.
 
 import math
+from typing import Any
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
+from ansys.edb.core.layer.layer import LayerType as GrpcLayerType
 from ansys.edb.core.primitive.circle import Circle as GrpcCircle
-from ansys.edb.core.primitive.primitive import Primitive as GrpcPrimitive
 
+from pyedb.grpc.database.geometry.polygon_data import PolygonData
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.utilities import compute_arc_points
 from pyedb.modeler.geometry_operators import GeometryOperators
+
+layer_type_mapping = {
+    "conducting": GrpcLayerType.CONDUCTING_LAYER,
+    "air_lines": GrpcLayerType.AIRLINES_LAYER,
+    "errors": GrpcLayerType.ERRORS_LAYER,
+    "symbol": GrpcLayerType.SYMBOL_LAYER,
+    "measure": GrpcLayerType.MEASURE_LAYER,
+    "assembly": GrpcLayerType.ASSEMBLY_LAYER,
+    "silkscreen": GrpcLayerType.SILKSCREEN_LAYER,
+    "solder_mask": GrpcLayerType.SOLDER_MASK_LAYER,
+    "solder_paste": GrpcLayerType.SOLDER_PASTE_LAYER,
+    "glue": GrpcLayerType.GLUE_LAYER,
+    "wirebond": GrpcLayerType.WIREBOND_LAYER,
+    "user": GrpcLayerType.USER_LAYER,
+    "siwave_hfss_solver_regions": GrpcLayerType.SIWAVE_HFSS_SOLVER_REGIONS,
+    "postprocessing": GrpcLayerType.POST_PROCESSING_LAYER,
+    "outline": GrpcLayerType.OUTLINE_LAYER,
+    "layer_types_count": GrpcLayerType.LAYER_TYPES_COUNT,
+    "undefined_layer_type": GrpcLayerType.UNDEFINED_LAYER_TYPE,
+}
 
 
 class Primitive:
@@ -82,7 +104,8 @@ class Primitive:
         :class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
 
         """
-        return self.core.cast().polygon_data
+        primitive = self.core.cast()
+        return PolygonData(primitive.polygon_data) if hasattr(primitive, "polygon_data") else None
 
     @property
     def object_instance(self):
@@ -132,7 +155,7 @@ class Primitive:
             self.core.layer = self._pedb.stackup.layers[value]
 
     @property
-    def voids(self) -> list[any]:
+    def voids(self) -> list[Any]:
         """Primitive voids.
 
         Returns
@@ -250,7 +273,7 @@ class Primitive:
             Found connected objects IDs with Layout object.
         """
         layout_inst = self.core.layout.layout_instance
-        layout_obj_inst = layout_inst.get_layout_obj_instance_in_context(self._edb_object, None)  # 2nd arg was []
+        layout_obj_inst = layout_inst.get_layout_obj_instance_in_context(self.core, None)  # 2nd arg was []
         return [loi.layout_obj.id for loi in layout_inst.get_connected_objects(layout_obj_inst)]
 
     @property
@@ -438,7 +461,7 @@ class Primitive:
             return True
         return False
 
-    def subtract(self, primitives) -> list[any]:
+    def subtract(self, primitives) -> list[Any]:
         """Subtract active primitive with one or more primitives.
 
         Parameters
@@ -487,7 +510,7 @@ class Primitive:
                 prim.core.delete()
         return new_polys
 
-    def intersect(self, primitives) -> list[any]:
+    def intersect(self, primitives) -> list[Any]:
         """Intersect active primitive with one or more primitives.
 
         Parameters
@@ -559,7 +582,7 @@ class Primitive:
             prim.delete()
         return new_polys
 
-    def unite(self, primitives) -> list[any]:
+    def unite(self, primitives) -> list[Any]:
         """Unite active primitive with one or more primitives.
 
         Parameters
@@ -774,7 +797,7 @@ class Primitive:
         """
         return self.core.layer
 
-    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> list[any]:
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> list[Any]:
         """Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
 

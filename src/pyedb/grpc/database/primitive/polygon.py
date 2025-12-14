@@ -41,35 +41,35 @@ class Polygon(Primitive):
         self._pedb = pedb
         Primitive.__init__(self, pedb, edb_object)
 
-    @property
-    def polygon_data(self) -> "PolygonData":
-        """Polygon data.
-
-        Returns
-        -------
-        :class:`PolygonData <pyedb.edb.database.geometry.polygon_data.PolygonData>`
-            Polygon data object.
-
-        """
-
-        return PolygonData(self.core.polygon_data)
-
-    @polygon_data.setter
-    def polygon_data(self, value: Union["PolygonData", GrpcPolygonData]):
-        """Set polygon data.
-
-        Parameters
-        ----------
-        value : :class:`PolygonData <pyedb.edb.database.geometry.polygon_data.PolygonData>` or GrpcPolygonData
-            Polygon data object.
-
-        """
-        if isinstance(value, PolygonData):
-            self.core.polygon_data = value.core
-        elif isinstance(value, GrpcPolygonData):
-            self.core.polygon_data = value
-        else:
-            raise TypeError("Value must be a PolygonData or GrpcPolygonData object.")
+    # @property
+    # def polygon_data(self) -> "PolygonData":
+    #     """Polygon data.
+    #
+    #     Returns
+    #     -------
+    #     :class:`PolygonData <pyedb.edb.database.geometry.polygon_data.PolygonData>`
+    #         Polygon data object.
+    #
+    #     """
+    #
+    #     return PolygonData(self.core.polygon_data)
+    #
+    # @polygon_data.setter
+    # def polygon_data(self, value: Union["PolygonData", GrpcPolygonData]):
+    #     """Set polygon data.
+    #
+    #     Parameters
+    #     ----------
+    #     value : :class:`PolygonData <pyedb.edb.database.geometry.polygon_data.PolygonData>` or GrpcPolygonData
+    #         Polygon data object.
+    #
+    #     """
+    #     if isinstance(value, PolygonData):
+    #         self.core.polygon_data = value.core
+    #     elif isinstance(value, GrpcPolygonData):
+    #         self.core.polygon_data = value
+    #     else:
+    #         raise TypeError("Value must be a PolygonData or GrpcPolygonData object.")
 
     @property
     def layer(self) -> Layer:

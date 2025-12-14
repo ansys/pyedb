@@ -106,14 +106,14 @@ class PolygonData:
         return [PolygonData(i) for i in self.core.holes]
 
     @property
-    def points(self) -> list[list[float]]:
+    def points(self) -> list[tuple[float, float]]:
         """Get all points in polygon.
 
         Returns
         -------
-        list[list[float]]
+        list[tuple[float, float]]
         """
-        return [[Value(i.x), Value(i.y)] for i in list(self.core.points)]
+        return [(pt.x.value, pt.y.value) for pt in self.core.points]
 
     @classmethod
     def create_from_points(cls, points, closed=True):

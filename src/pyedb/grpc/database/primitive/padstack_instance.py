@@ -815,7 +815,7 @@ class PadstackInstance:
             Backdrill type.
 
         """
-        return self.core.get_backdrill_type()
+        return self.get_backdrill_type()
 
     @property
     def backdrill_top(self) -> bool:
@@ -1200,7 +1200,7 @@ class PadstackInstance:
         if isinstance(drill_to_layer, str):
             drill_to_layer = self._pedb.stackup.layers[drill_to_layer]
         self.core.set_back_drill_by_layer(
-            drill_to_layer=drill_to_layer,
+            drill_to_layer=drill_to_layer.core,
             offset=Value(offset),
             diameter=Value(diameter),
             from_bottom=from_bottom,

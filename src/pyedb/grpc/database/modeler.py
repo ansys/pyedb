@@ -439,9 +439,9 @@ class Modeler(object):
         Returns
         -------
         list
-            List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Polygon` objects.
+            List of :class:`pyedb.grpc.database.primitive.polygon.Polygon` objects.
         """
-        return [Polygon(self._pedb, i) for i in self.primitives if i.type == "polygon"]
+        return [i for i in self.primitives if i.type == "polygon"]
 
     def get_polygons_by_layer(self, layer_name: str, net_list: Optional[List[str]] = None) -> List[Primitive]:
         """Retrieve polygons by layer.
