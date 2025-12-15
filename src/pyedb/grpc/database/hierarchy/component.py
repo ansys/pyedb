@@ -153,11 +153,18 @@ class Component:
         bool
 
         """
-        return self.core.enabled
+        comp_prop = self.core.component_property
+        if hasattr(comp_prop, "enabled"):
+            return comp_prop.enabled
+        else:
+            return True
 
     @is_enabled.setter
     def is_enabled(self, value):
-        self.enabled = value
+        comp_prop = self.core.component_property
+        if hasattr(comp_prop, "enabled"):
+            comp_prop.enabled = value
+            self.core.component_property = comp_prop
 
     @property
     def ic_die_properties(self) -> any:
@@ -823,7 +830,7 @@ class Component:
             [x value, y value].
         """
         location = self.core.location
-        return location.x.value, location.y.value
+        return location[0].value, location[1].value
 
     @center.setter
     def center(self, value):
@@ -945,7 +952,7 @@ class Component:
             Type of the component. Options are ``"resistor"``, ``"inductor"``, ``"capacitor"``,
             ``"ic"``, ``"io"`` and ``"other"``.
         """
-        return self.component_type.name.lower()
+        return self.component_type.lower()
 
     @type.setter
     def type(self, new_type):

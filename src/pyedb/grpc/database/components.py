@@ -1695,7 +1695,7 @@ class Components(object):
                         comp.refdes = refdes_temp
 
                         unmount_comp_list.remove(refdes)
-                        comp.ungroup(True)
+                        comp.core.ungroup(True)
                         self.create(pinlist, refdes, p_layer, part_name)
                         self.refresh_components()
                         comp = self.instances[refdes]
