@@ -1239,7 +1239,7 @@ class Component:
         if n_port_model.is_null:
             n_port_model = GrpcNPortComponentModel.create(name=name)
             n_port_model.reference_file = file_path
-            self.component_def.add_component_model(n_port_model)
+            self.component_definition.core.add_component_model(n_port_model)
 
         model = GrpcSParameterModel.create(name=name, ref_net=reference_net)
         return self._set_model(model)
