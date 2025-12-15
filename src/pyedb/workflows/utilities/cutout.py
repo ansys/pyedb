@@ -248,20 +248,20 @@ class GrpcCutout:
             unite_polys = []
             for i in _polys:
                 if hasattr(i, "polygon_data"):
-                    obj_data = i.polygon_data.expand(
+                    obj_data = i.polygon_data.core.expand(
                         offset=expansion_size,
                         round_corner=self.use_round_corner,
                         max_corner_ext=expansion_size,
                         tol=tolerance,
                     )
                 else:
-                    obj_data = i.expand(
+                    obj_data = i.core.expand(
                         offset=expansion_size,
                         round_corner=self.use_round_corner,
                         max_corner_ext=expansion_size,
                         tol=tolerance,
                     )
-                if self.include_voids_in_extents and hasattr(i, "polygon_data") and i.has_voids and obj_data:
+                if self.include_voids_in_extents and hasattr(i, "polygon_data") and i.core.has_voids and obj_data:
                     for void in i.voids:
                         void_data = void.polygon_data.expand(
                             offset=-1 * expansion_size,

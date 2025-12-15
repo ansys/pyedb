@@ -3235,7 +3235,9 @@ class Edb(EdbInit):
             class:`LayoutComponent <ansys.edb.core.hierarchy.layout_component.LayoutComponent>`.
         """
 
-        return GrpcLayoutComponent.import_layout_component(layout=self.active_layout, aedb_comp_path=component_path)
+        return GrpcLayoutComponent.import_layout_component(
+            layout=self.active_layout.core, aedb_comp_path=component_path
+        )
 
     def export_layout_component(self, component_path) -> bool:
         """Export a layout component from the current layout.
@@ -3253,7 +3255,7 @@ class Edb(EdbInit):
         """
 
         return GrpcLayoutComponent.export_layout_component(
-            layout=self.active_layout, output_aedb_comp_path=component_path
+            layout=self.active_layout.core, output_aedb_comp_path=component_path
         )
 
     def copy_cell_from_edb(self, edb_path: Union[Path, str]):

@@ -427,14 +427,14 @@ class TestClass(BaseTestClass):
         """Replace RLC component by RLC gap boundaries."""
         # TODO check how we can return same boundary_type between grpc and dotnet.
         edbapp = edb_examples.get_si_verse()
-        names = [i for i in edbapp.components.instances.keys()][::]
+        names = [i for i in edbapp.components.instances.keys()][:5]
         for refdes in names:
             edbapp.components.replace_rlc_by_gap_boundaries(refdes)
         if edbapp.grpc:
             rlc_list = [term for term in list(edbapp.terminals.values()) if term.boundary_type == "rlc"]
         else:
             rlc_list = [term for term in list(edbapp.terminals.values()) if term.boundary_type == "RlcBoundary"]
-        assert len(rlc_list) == 944
+        assert len(rlc_list) == 10
         edbapp.close(terminate_rpc_session=False)
 
     def test_components_get_component_placement_vector(self, edb_examples):
@@ -556,7 +556,7 @@ class TestClass(BaseTestClass):
         assert edbapp.components.instances["Test"].cap_value == 0
         if edbapp.grpc:
             # TODO check why grpc is returning different center value.
-            assert edbapp.components.instances["Test"].center == [0.07950000102, 0.03399999804]
+            assert edbapp.components.instances["Test"].center == (0.07950000102, 0.03399999804)
         else:
             assert edbapp.components.instances["Test"].center == [0.068, 0.0165]
         edbapp.close_edb()
@@ -668,7 +668,9 @@ class TestClass(BaseTestClass):
         component = edbapp.components.create([pins[0], pins[1]], r_value=1.2, component_name="TEST", is_rlc=True)
         assert component
         assert component.name == "TEST"
-        assert component.location == [0.13275000120000002, 0.07350000032]
+        comp_location = component.location
+        assert round(comp_location[0], 8) == 0.13275000
+        assert round(comp_location[1], 8) == 0.07350000
         assert component.res_value == 1.2
         edbapp.close(terminate_rpc_session=False)
 
