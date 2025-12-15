@@ -408,8 +408,6 @@ class SourceExcitation:
 
         if isinstance(refdes, str):
             refdes = self._pedb.components.instances[refdes]
-        elif isinstance(refdes, Component):
-            refdes = Component(self._pedb, refdes)
         pins = self._get_pins_for_ports(pins, refdes)
         if not pins:
             raise RuntimeWarning("No pins found during port creation. Port is not defined.")
@@ -695,8 +693,7 @@ class SourceExcitation:
                             self.create_port_on_pins(component, pin, ref_pins)
                         else:
                             if extend_reference_pins_outside_component:
-                                _pin = PadstackInstance(self._pedb, pin)
-                                ref_pin = _pin.get_reference_pins(
+                                ref_pin = pin.get_reference_pins(
                                     reference_net=reference_net[0],
                                     max_limit=1,
                                     component_only=False,

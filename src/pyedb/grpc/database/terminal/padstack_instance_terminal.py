@@ -345,9 +345,27 @@ class PadstackInstanceTerminal:
 
     @ref_terminal.setter
     def ref_terminal(self, value):
-        if isinstance(value, PadstackInstanceTerminal):
-            self.reference_terminal = value
+        self.reference_terminal = value
 
     @property
     def terminal_type(self) -> str:
         return "PadstackInstanceTerminal"
+
+    @property
+    def reference_terminal(self) -> PadstackInstanceTerminal:
+        """Return reference terminal.
+
+        Returns
+        -------
+        PadstackInstanceTerminal
+            Reference terminal object.
+        """
+
+        return PadstackInstanceTerminal(self._pedb, self.core.reference_terminal)
+
+    @reference_terminal.setter
+    def reference_terminal(self, value):
+        if isinstance(value, PadstackInstanceTerminal):
+            self.core.reference_terminal = value.core
+        else:
+            raise ValueError("Value must be a PadstackInstanceTerminal object.")
