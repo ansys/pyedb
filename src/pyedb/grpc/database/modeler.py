@@ -31,13 +31,11 @@ from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import (
     PolygonData as GrpcPolygonData,
 )
-from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
-from ansys.edb.core.primitive.bondwire import BondwireType as GrpcBondwireType
-from ansys.edb.core.primitive.path import PathCornerType as GrpcPathCornerType, PathEndCapType as GrpcPathEndCapType
 from ansys.edb.core.primitive.rectangle import (
     RectangleRepresentationType as GrpcRectangleRepresentationType,
 )
 
+from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.circle import Circle
 from pyedb.grpc.database.primitive.path import Path
@@ -1464,7 +1462,7 @@ class Modeler(object):
             self._logger.error("No pin found.")
             return False
         pins = list(pins.values())
-        obj = GrpcPinGroup.create(layout=self._pedb.active_layout, name=name, padstack_instances=pins)
+        obj = PinGroup.create(layout=self._pedb.active_layout, name=name, padstack_instances=pins)
         if obj.is_null:
             raise RuntimeError(f"Failed to create pin group {name}.")
         else:

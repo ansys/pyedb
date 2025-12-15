@@ -365,7 +365,7 @@ class PadstackInstanceTerminal:
 
     @reference_terminal.setter
     def reference_terminal(self, value):
-        if isinstance(value, PadstackInstanceTerminal):
+        try:
             self.core.reference_terminal = value.core
-        else:
-            raise ValueError("Value must be a PadstackInstanceTerminal object.")
+        except AttributeError:
+            raise ValueError("Failed to set reference terminal.")
