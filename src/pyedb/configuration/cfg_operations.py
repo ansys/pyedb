@@ -27,13 +27,15 @@ from pydantic import BaseModel, Field
 # from pyedb.configuration.cfg_common import CfgBase
 
 
+class CfgAutoIdentifyNets(BaseModel):
+    enabled: bool = False
+    resistor_below: float|str|None = 100
+    inductor_below: float|str|None = 1
+    capacitor_above: float |str|None = "10nF"
+
+
 class CfgCutout(BaseModel):
-    auto_identify_nets: Optional[Dict] = {
-        "enabled": False,
-        "resistor_below": 100,
-        "inductor_below": 1,
-        "capacitor_above": 1,
-    }
+    auto_identify_nets: CfgAutoIdentifyNets | None = CfgAutoIdentifyNets()
     signal_list: Optional[List[str]] = None
     reference_list: Optional[List[str]] = None
     extent_type: Optional[str] = "ConvexHull"
