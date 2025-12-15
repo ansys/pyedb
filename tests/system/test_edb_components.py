@@ -111,7 +111,9 @@ class TestClass(BaseTestClass):
         else:
             # grpc returns ComponentDef object while DotNet just the string for the name.
             assert edb.components.instances["R1"].component_def
-        assert edb.components.instances["R1"].location == [0.11167500144, 0.04072499856]
+        location = edb.components.instances["R1"].location
+        assert location[0] == 0.11167500144
+        assert location[1] == 0.04072499856
         assert edb.components.instances["R1"].lower_elevation == 0.0
         assert edb.components.instances["R1"].upper_elevation == pytest.approx(35e-6)
         assert edb.components.instances["R1"].top_bottom_association == 2

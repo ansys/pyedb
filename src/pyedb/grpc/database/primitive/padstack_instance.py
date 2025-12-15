@@ -556,7 +556,7 @@ class PadstackInstance:
 
         """
         if not self._object_instance:
-            self._object_instance = self.core.layout.layout_instance.get_layout_obj_instance_in_context(self, None)
+            self._object_instance = self.core.layout.layout_instance.get_layout_obj_instance_in_context(self.core, None)
         return self._object_instance
 
     @property
@@ -1325,7 +1325,7 @@ class PadstackInstance:
             * 4 Number of top/bottom association type.
             * -1 Undefined.
         """
-        return self._pedb.stackup.layers[self.component.placement_layer].top_bottom_association.value
+        return self._pedb.stackup.layers[self.component.placement_layer].core.top_bottom_association.value
 
     def create_rectangle_in_pad(self, layer_name, return_points=False, partition_max_order=16):
         """Create a rectangle inscribed inside a padstack instance pad.

@@ -228,6 +228,43 @@ class Component:
         return [self._edb_model.rlc(pin_pair) for pin_pair in self._edb_model.pin_pairs()]
 
     @property
+    def component_definition(self):
+        """Component definition.
+
+        Returns
+        -------
+        :class:`ComponentDef <ansys.edb.core.definition.component_def.ComponentDef>`
+
+        """
+        from pyedb.grpc.database.definition.component_def import ComponentDef
+
+        return ComponentDef(self._pedb, self.core.component_def)
+
+    @component_definition.setter
+    def component_definition(self, value):
+        from pyedb.grpc.database.definition.component_def import ComponentDef
+
+        if isinstance(value, ComponentDef):
+            self.core.component_def = value.core
+        else:
+            self._pedb.logger.error("Invalid input. Set component definition failed.")
+
+    @property
+    def component_def(self):
+        """Component definition.
+
+        deprecated: use `component_definition` instead.
+
+        """
+        warnings.warn("`component_def` is deprecated. Use `component_definition` instead.", DeprecationWarning)
+        return self.component_definition
+
+    @component_def.setter
+    def component_def(self, value):
+        warnings.warn("`component_def` is deprecated. Use `component_definition` instead.", DeprecationWarning)
+        self.component_definition = value
+
+    @property
     def component_property(self):
         """Component property.
 
@@ -643,19 +680,21 @@ class Component:
         float
             Value. ``None`` if not an RLC Type.
         """
-        _values = {"resistor": self.rlc_values[0], "inductor": self.rlc_values[1], "capacitor": self.rlc_values[2]}
-        if self.type in _values:
-            return _values[self.type]
-        else:
-            return 0.0
+        values_mapping = {
+            "resistor": self.rlc_values[0],
+            "inductor": self.rlc_values[1],
+            "capacitor": self.rlc_values[2],
+        }
+        return values_mapping.get(self.component_type, 0.0)
 
     @value.setter
     def value(self, value):
-        if self.type == "resistor":
+        component_type = self.component_type
+        if component_type == "resistor":
             self.res_value = value
-        elif self.type == "inductor":
+        elif component_type == "inductor":
             self.ind_value = value
-        elif self.type == "capacitor":
+        elif component_type == "capacitor":
             self.cap_value = value
 
     @property
@@ -667,11 +706,10 @@ class Component:
         float
             Resistance value or ``None`` if not an RLC type.
         """
-        cmp_type = self.component_type
-        if 0 < cmp_type.value < 4:
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
             result = [Value(rlc.r) for rlc in self._rlc]
-            if result == 1:
-                return result[0]
+            if result:
+                return result[0]  # -> first pin pair change for managing multi pin pair components
         return 0.0
 
     @res_value.setter
@@ -697,11 +735,10 @@ class Component:
         float
             Capacitance Value. ``None`` if not an RLC Type.
         """
-        cmp_type = self.component_type
-        if 0 < cmp_type.value < 4:
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
             result = [Value(rlc.c) for rlc in self._rlc]
             if result:
-                return result[0]
+                return result[0]  # -> first pin pair change for managing multi pin pair components
         return 0.0
 
     @cap_value.setter
@@ -728,11 +765,10 @@ class Component:
         float
             Inductance Value. ``None`` if not an RLC Type.
         """
-        cmp_type = self.component_type
-        if 0 < cmp_type.value < 4:
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
             result = [Value(rlc.l) for rlc in self._rlc]
             if result:
-                return result[0]
+                return result[0]  # -> first pin pair change for managing multi pin pair components
         return 0.0
 
     @ind_value.setter
@@ -761,9 +797,8 @@ class Component:
             `False` series RLC.
             `None` if not RLC Type.
         """
-        cmp_type = self.component_type
-        if 0 < cmp_type.value < 4:
-            return self._rlc[0].is_parallel
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
+            return self._rlc[0].is_parallel  # -> first pin pair change for managing multi pin pair components
         return False
 
     @is_parallel_rlc.setter
@@ -790,6 +825,12 @@ class Component:
         location = self.core.location
         return location.x.value, location.y.value
 
+    @center.setter
+    def center(self, value):
+        if isinstance(value, list):
+            value = Value(value[0], Value(value[1]))
+        self.core.location = value
+
     @property
     def location(self) -> tuple[float, float]:
         """Component center.
@@ -801,7 +842,7 @@ class Component:
 
         """
         location = self.core.location
-        return location.x.value, location.y.value
+        return location[0].value, location[1].value
 
     @location.setter
     def location(self, value):
@@ -845,7 +886,7 @@ class Component:
         list
             List of Pins of Component.
         """
-        return self.core.pins
+        return list(self.pins.values())
 
     @property
     def nets(self):
@@ -1073,7 +1114,7 @@ class Component:
             * 4 - Number of top/bottom associations.
             * -1 - Undefined
         """
-        return self.layer.top_bottom_association.value
+        return self.layer.core.top_bottom_association.value
 
     def _set_model(self, model):  # pragma: no cover
         """Set component model
