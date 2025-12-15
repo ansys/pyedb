@@ -141,7 +141,7 @@ class Component:
         :class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`
         """
         if self._comp_instance is None:
-            self._comp_instance = self.layout_instance.get_layout_obj_instance_in_context(self, None)
+            self._comp_instance = self.layout_instance.get_layout_obj_instance_in_context(self.core, None)
         return self._comp_instance
 
     @property
@@ -1328,10 +1328,10 @@ class Component:
             bool
         """
         bounding_box = self.bounding_box
-        opening = [bounding_box[0] - extra_soldermask_clearance]
-        opening.append(bounding_box[1] - extra_soldermask_clearance)
-        opening.append(bounding_box[2] + extra_soldermask_clearance)
-        opening.append(bounding_box[3] + extra_soldermask_clearance)
+        opening = [bounding_box[0][0] - extra_soldermask_clearance]
+        opening.append(bounding_box[0][1] - extra_soldermask_clearance)
+        opening.append(bounding_box[1][0] + extra_soldermask_clearance)
+        opening.append(bounding_box[1][1] + extra_soldermask_clearance)
 
         comp_layer = self.layer
         layer_names = list(self._pedb.stackup.layers.keys())

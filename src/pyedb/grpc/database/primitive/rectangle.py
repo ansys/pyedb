@@ -33,29 +33,18 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
 
-class Rectangle(GrpcRectangle, Primitive):
+class Rectangle(Primitive):
     """Class representing a rectangle object."""
 
     def __init__(self, pedb, edb_object=None):
         if edb_object:
             Primitive.__init__(self, pedb, edb_object)
-            GrpcRectangle.__init__(self, edb_object.msg)
+            self.core = edb_object
         self._pedb = pedb
         self._mapping_representation_type = {
             "center_width_height": GrpcRectangleRepresentationType.CENTER_WIDTH_HEIGHT,
             "lower_left_upper_right": GrpcRectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT,
         }
-
-    @property
-    def polygon_data(self):
-        """PolygonData.
-
-        Returns
-        -------
-        :class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
-
-        """
-        return self.cast().polygon_data
 
     @property
     def representation_type(self) -> str:
@@ -66,18 +55,19 @@ class Rectangle(GrpcRectangle, Primitive):
         str.
             ``"center_width_height"`` or ``"lower_left_upper_right"``.
         """
-        return super().representation_type.name.lower()
+        return self.core.representation_type.name.lower()
 
     @representation_type.setter
     def representation_type(self, value):
         if not value in self._mapping_representation_type:
-            super().representation_type = GrpcRectangleRepresentationType.INVALID_RECT_TYPE
+            self.core.representation_type = GrpcRectangleRepresentationType.INVALID_RECT_TYPE
         else:
-            super().representation_type = self._mapping_representation_type[value]
+            self.core.representation_type = self._mapping_representation_type[value]
 
+    @classmethod
     def create(
-        self,
-        layout=None,
+        cls,
+        layout,
         layer: Union[str, Layer] = None,
         net: Union[str, "Net"] = None,
         rep_type: str = "center_width_height",
@@ -93,7 +83,7 @@ class Rectangle(GrpcRectangle, Primitive):
 
         Parameters
         ----------
-        layout : Layout, optional
+        layout : Layout
             The layout in which the rectangle will be created. If not provided, the active layout of the `pedb` instance
             will be used.
         layer : Union[str, Layer], optional
@@ -138,7 +128,7 @@ class Rectangle(GrpcRectangle, Primitive):
             `param3` and `param4` represent the upper-right corner coordinates.
         """
         if not layout:
-            layout = self._pedb.active_layout
+            raise ValueError("Layout must be provided.")
         if not layer:
             raise ValueError("Layer must be provided.")
         if not net:
@@ -149,10 +139,10 @@ class Rectangle(GrpcRectangle, Primitive):
             "lower_left_upper_right": GrpcRectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT,
         }
         rep_type = rep_type_mapping.get(rep_type, GrpcRectangleRepresentationType.INVALID_RECT_TYPE)
-        edb_object = super().create(
-            layout=layout,
+        edb_object = GrpcRectangle.create(
+            layout=layout.core,
             layer=layer,
-            net=net,
+            net=net.core,
             rep_type=rep_type,
             param1=Value(param1),
             param2=Value(param2),
@@ -162,15 +152,15 @@ class Rectangle(GrpcRectangle, Primitive):
             rotation=Value(rotation),
         )
         # keep cache synced
-        new_rect = Rectangle(self._pedb, edb_object)
-        self._pedb.modeler._add_primitive(new_rect)
+        new_rect = cls(layout._pedb, edb_object)
+        layout._pedb.modeler._add_primitive(new_rect)
         return new_rect
 
     def delete(self):
         """Delete the rectangle primitive from the layout."""
         # Remove from cache
         self._pedb.modeler._remove_primitive(self)
-        super().delete()
+        self.core.delete()
 
     def get_parameters(self):
         """Get coordinates parameters.
@@ -205,7 +195,7 @@ class Rectangle(GrpcRectangle, Primitive):
 
             **rotation** : Rotation.
         """
-        parameters = super().get_parameters()
+        parameters = self.core.get_parameters()
         representation_type = parameters[0].name.lower()
         parameter1 = Value(parameters[1])
         parameter2 = Value(parameters[2])
@@ -236,7 +226,7 @@ class Rectangle(GrpcRectangle, Primitive):
             Rotation.
         """
 
-        return super().set_parameters(
+        return self.core.set_parameters(
             self.representation_type[rep_type],
             Value(param1),
             Value(param2),
