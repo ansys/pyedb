@@ -65,6 +65,17 @@ class PolygonData:
         bbox = self.core.bbox()
         return [Value(bbox[0].x), Value(bbox[0].y), Value(bbox[1].x), Value(bbox[1].y)]
 
+    def bounding_circle(self) -> tuple[tuple[float, float], float]:
+        """Get the bounding circle of the polygon.
+
+        Returns
+        -------
+        Tuple[Tuple[float, float], float]
+            Center point (x, y) and radius of the bounding circle.
+        """
+        center, radius = self.core.bounding_circle()
+        return (Value(center.x), Value(center.y)), Value(radius)
+
     @property
     def arcs(self) -> list[ArcData]:
         """Get the Primitive Arc Data.

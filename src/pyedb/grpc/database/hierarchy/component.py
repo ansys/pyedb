@@ -921,6 +921,21 @@ class Component:
         return _pins
 
     @property
+    def num_pins(self):
+        """Number of Pins of Component.
+
+        Returns
+        -------
+        int
+            Component pins number.
+        """
+        try:
+            return self.core.num_pins
+        except Exception as e:
+            self._pedb.logger.error(f"{e}")
+            return 0
+
+    @property
     def type(self) -> str:
         """Component type.
 

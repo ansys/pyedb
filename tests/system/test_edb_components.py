@@ -199,7 +199,6 @@ class TestClass(BaseTestClass):
 
     def test_components_delete_single_pin_rlc(self, edb_examples):
         """Delete all RLC components with a single pin."""
-        # Done
         edb = edb_examples.get_si_verse()
         assert len(edb.components.delete_single_pin_rlc()) == 0
         edb.close(terminate_rpc_session=False)

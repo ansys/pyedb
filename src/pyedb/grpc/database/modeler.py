@@ -628,8 +628,8 @@ class Modeler(object):
         polygon_data = polygon.polygon_data
         bound_center = polygon_data.bounding_circle()[0]
         bound_center2 = selection_polygon_data.bounding_circle()[0]
-        center = [Value(bound_center.x), Value(bound_center.y)]
-        center2 = [Value(bound_center2.x), Value(bound_center2.y)]
+        center = [Value(bound_center[0]), Value(bound_center[1])]
+        center2 = [Value(bound_center2[0]), Value(bound_center2[1])]
         x1, y1 = calc_slope(center2, center)
 
         if not origin:
