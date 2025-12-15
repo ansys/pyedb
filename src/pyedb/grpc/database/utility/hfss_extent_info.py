@@ -50,7 +50,7 @@ class HfssExtentInfo:
             "radiation": GrpcOpenRegionType.RADIATION,
             "pml": GrpcOpenRegionType.PML,
         }
-        self.hfss_extent_type = self._hfss_extent_info.extent_type
+        self.hfss_extent_type = self.core.extent_type
 
     def _update_hfss_extent_info(self, hfss_extent):
         return self._pedb.active_cell.set_hfss_extent_info(hfss_extent)
