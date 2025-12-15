@@ -325,7 +325,6 @@ class TestClass(BaseTestClass):
 
     def test_components_type(self, edb_examples):
         """Retrieve components type."""
-        # TODO adding lower on getter since DotNet is returning Capital letter for the first one.
         edb = edb_examples.get_si_verse()
         comp = edb.components["R4"]
         comp.type = "resistor"

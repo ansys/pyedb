@@ -952,7 +952,7 @@ class Component:
             Type of the component. Options are ``"resistor"``, ``"inductor"``, ``"capacitor"``,
             ``"ic"``, ``"io"`` and ``"other"``.
         """
-        return self.component_type.lower()
+        return self.component_type
 
     @type.setter
     def type(self, new_type):
@@ -965,20 +965,7 @@ class Component:
             ``"ic"``, ``"io"`` and ``"other"``.
         """
         new_type = new_type.lower()
-        if new_type == "resistor":
-            self.component_type = GrpcComponentType.RESISTOR
-        elif new_type == "inductor":
-            self.component_type = GrpcComponentType.INDUCTOR
-        elif new_type == "capacitor":
-            self.component_type = GrpcComponentType.CAPACITOR
-        elif new_type == "ic":
-            self.component_type = GrpcComponentType.IC
-        elif new_type == "io":
-            self.component_type = GrpcComponentType.IO
-        elif new_type == "other":
-            self.component_type = GrpcComponentType.OTHER
-        else:
-            return
+        self.component_type = new_type
 
     @property
     def numpins(self) -> int:
