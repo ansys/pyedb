@@ -224,9 +224,9 @@ class Path(Primitive):
         }
 
         cloned_path = GrpcPath.create(
-            layout=self._pedb.active_layout,
+            layout=self._pedb.active_layout.core,
             layer=self.layer,
-            net=self.net,
+            net=self.net.core,
             width=Value(self.width),
             end_cap1=self.core.get_end_cap_style()[0],
             end_cap2=self.core.get_end_cap_style()[1],

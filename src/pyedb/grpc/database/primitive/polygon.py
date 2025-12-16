@@ -147,7 +147,7 @@ class Polygon(Primitive):
         # call into the gRPC layer to actually create the polygon
         if isinstance(polygon_data, PolygonData):
             polygon_data = polygon_data.core
-        edb_object = GrpcPolygon.create(layout=layout.core, layer=layer, net=net.core, polygon_data=polygon_data)
+        edb_object = GrpcPolygon.create(layout=layout.core, layer=layer.core, net=net.core, polygon_data=polygon_data)
         new_polygon = cls(layout._pedb, edb_object)
         # keep modeler cache in sync
         layout._pedb.modeler._add_primitive(new_polygon)

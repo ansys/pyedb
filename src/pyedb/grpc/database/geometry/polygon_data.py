@@ -96,6 +96,15 @@ class PolygonData:
         """
         return self.core.is_closed
 
+    def is_inside(self, point: tuple[float, float]) -> bool:
+        """Check if polygon is inside.
+
+        Returns
+        -------
+        bool
+        """
+        return self.core.is_inside(point)
+
     @property
     def sense(self) -> any:
         """Get the polygon sense type.
@@ -125,6 +134,28 @@ class PolygonData:
         list[tuple[float, float]]
         """
         return [(pt.x.value, pt.y.value) for pt in self.core.points]
+
+    @property
+    def points_raw(self):
+        """Get all points in polygon.
+
+        Returns
+        -------
+        list[:class:`PointData <pyedb.grpc.database.geometry.point_data.PointData>`]
+        """
+        return self.core.points
+
+    @property
+    def arc_data(self):
+        """Get all arc data in polygon.
+
+        Returns
+        -------
+        list[:class:`ArcData <pyedb.grpc.database.geometry.arc_data.ArcData>`]
+        """
+        from pyedb.grpc.database.geometry.arc_data import ArcData
+
+        return ArcData(self.core.arc_data)
 
     @classmethod
     def create_from_points(cls, points, closed=True):

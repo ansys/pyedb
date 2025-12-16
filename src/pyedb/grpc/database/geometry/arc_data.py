@@ -30,8 +30,31 @@ class ArcData:
     """Class managing ArcData."""
 
     def __init__(self, edb_object):
-        optional = {"height": edb_object.height, "direction": edb_object.direction}
-        self.core = GrpcArcData.__init__(edb_object.start, edb_object.end, optional)
+        self.core = edb_object
+
+    @property
+    def height(self) -> float:
+        """Arc data height.
+
+        Returns
+        -------
+        float
+            Height value.
+
+        """
+        return Value(self.core.height)
+
+    @property
+    def direction(self) -> str:
+        """Arc data direction.
+
+        Returns
+        -------
+        str
+            Direction value.
+
+        """
+        return str(self.core.direction)
 
     @property
     def center(self) -> list[float]:
@@ -70,7 +93,7 @@ class ArcData:
         return [Value(self.core.end.x), Value(self.core.end.y)]
 
     @property
-    def mid_point(self) -> list[float]:
+    def midpoint(self) -> list[float]:
         """Arc data mid point.
 
         Returns
@@ -92,3 +115,48 @@ class ArcData:
 
         """
         return [[Value(pt.x), Value(pt.y)] for pt in self.core.points]
+
+    def is_segment(self) -> bool:
+        """Check if arc data is a segment.
+
+        Returns
+        -------
+        bool
+            True if arc data is a segment, false otherwise.
+
+        """
+        return self.core.is_segment()
+
+    @property
+    def length(self) -> list[float]:
+        """Arc data length.
+
+        Returns
+        -------
+        float
+            Length value.
+
+        """
+        return self.core.length
+
+    def is_point(self):
+        """Check if arc data is a point.
+
+        Returns
+        -------
+        bool
+            True if arc data is a point, false otherwise.
+
+        """
+        return self.core.is_point()
+
+    def is_ccw(self):
+        """Check if arc data is counter-clockwise.
+
+        Returns
+        -------
+        bool
+            True if arc data is counter-clockwise, false otherwise.
+
+        """
+        return self.core.is_ccw()

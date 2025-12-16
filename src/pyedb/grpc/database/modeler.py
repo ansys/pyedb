@@ -345,40 +345,17 @@ class Modeler(object):
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` or bool
             Primitive object if found, False otherwise.
         """
-        if edb_uid:
-            for p in self._layout.primitives:
-                if p.edb_uid == primitive_id:
-                    return self.__mapping_primitive_type(p)
-            for p in self._layout.primitives:
-                for v in p.voids:
-                    if v.edb_uid == primitive_id:
-                        return self.__mapping_primitive_type(v)
-        else:
-            for p in self._layout.primitives:
-                if p.id == primitive_id:
-                    return self.__mapping_primitive_type(p)
-            for p in self._layout.primitives:
-                for v in p.voids:
-                    if v.id == primitive_id:
-                        return self.__mapping_primitive_type(v)
+        for p in self._layout.primitives:
+            if (edb_uid and p.edb_uid == primitive_id) or (not edb_uid and p.id == primitive_id):
+                return p
+            for v in p.voids:
+                if (edb_uid and v.edb_uid == primitive_id) or (not edb_uid and v.id == primitive_id):
+                    return v
 
     def __mapping_primitive_type(self, primitive):
         from ansys.edb.core.primitive.primitive import (
             PrimitiveType as GrpcPrimitiveType,
         )
-
-        if primitive.primitive_type == GrpcPrimitiveType.POLYGON:
-            return Polygon(self._pedb, primitive)
-        elif primitive.primitive_type == GrpcPrimitiveType.PATH:
-            return Path(self._pedb, primitive)
-        elif primitive.primitive_type == GrpcPrimitiveType.RECTANGLE:
-            return Rectangle(self._pedb, primitive)
-        elif primitive.primitive_type == GrpcPrimitiveType.CIRCLE:
-            return Circle(self._pedb, primitive)
-        elif primitive.primitive_type == GrpcPrimitiveType.BONDWIRE:
-            return Bondwire(self._pedb, primitive)
-        else:
-            return False
 
     @property
     def polygons_by_layer(self) -> Dict[str, List[Primitive]]:
@@ -398,7 +375,7 @@ class Modeler(object):
         return polygon_by_layer
 
     @property
-    def rectangles(self) -> List[Rectangle]:
+    def rectangles(self) -> List[Union[Rectangle, Primitive]]:
         """All rectangle primitives.
 
         Returns
@@ -406,10 +383,10 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` objects.
         """
-        return [Rectangle(self._pedb, i) for i in self.primitives if i.type == "rectangle"]
+        return [i for i in self.primitives if i.type == "rectangle"]
 
     @property
-    def circles(self) -> List[Circle]:
+    def circles(self) -> List[Union[Circle, Primitive]]:
         """All circle primitives.
 
         Returns
@@ -417,10 +394,10 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Circle` objects.
         """
-        return [Circle(self._pedb, i) for i in self.primitives if i.type == "circle"]
+        return [i for i in self.primitives if i.type == "circle"]
 
     @property
-    def paths(self) -> List[Path]:
+    def paths(self) -> List[Union[Path, Primitive]]:
         """All path primitives.
 
         Returns
@@ -428,10 +405,10 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Path` objects.
         """
-        return [Path(self._pedb, i) for i in self.primitives if i.type == "path"]
+        return [i for i in self.primitives if i.type == "path"]
 
     @property
-    def polygons(self) -> List[Polygon]:
+    def polygons(self) -> List[Union[Polygon, Primitive]]:
         """All polygon primitives.
 
         Returns

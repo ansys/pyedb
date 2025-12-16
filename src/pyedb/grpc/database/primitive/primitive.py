@@ -182,6 +182,16 @@ class Primitive:
         return [Primitive(self._pedb, prim) for prim in self.core.voids]
 
     @property
+    def has_voids(self):
+        """Check if primitive has voids.
+
+        Returns
+        -------
+        bool
+        """
+        return self.core.has_voids
+
+    @property
     def aedt_name(self) -> str:
         """Name to be visualized in AEDT.
 
@@ -384,7 +394,9 @@ class Primitive:
         -------
         :class:`ArcData <ansys.edb.core.geometry.arc_data.ArcData>`
         """
-        return self.polygon_data.arc_data
+        from pyedb.grpc.database.geometry.arc_data import ArcData
+
+        return [ArcData(arc) for arc in self.polygon_data.core.arc_data]
 
     @property
     def longest_arc(self) -> float:
@@ -670,11 +682,10 @@ class Primitive:
         out = None
         for arc in self.arcs:
             mid_point = arc.midpoint
-            mid_point = [Value(mid_point.x), Value(mid_point.y)]
             if GeometryOperators.points_distance(mid_point, point) < dist:
                 out = arc.midpoint
                 dist = GeometryOperators.points_distance(mid_point, point)
-        return [Value(out.x), Value(out.y)]
+        return [Value(out[0]), Value(out[1])]
 
     @property
     def shortest_arc(self) -> float:
@@ -730,13 +741,12 @@ class Primitive:
         tuple(float, float)
             (X, Y).
         """
-        xt, yt = self._get_points_for_plot(self.polygon_data.points, arc_segments)
+        xt, yt = self._get_points_for_plot(self.polygon_data.core.points, arc_segments)
         if not xt:
             return []
         x, y = GeometryOperators.orient_polygon(xt, yt, clockwise=True)
         return x, y
 
-    @property
     def points_raw(self):
         """Return a list of Edb points.
 
@@ -746,7 +756,7 @@ class Primitive:
 
         """
 
-        return self.polygon_data.points
+        return self.polygon_data.points_raw
 
     @property
     def id(self):
@@ -834,7 +844,7 @@ class Primitive:
         List:[:class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`]
 
         """
-        return self.core.cast().polygon_data.expand(
+        return self.core.polygon_data.expand(
             offset=offset, round_corner=round_corners, max_corner_ext=maximum_corner_extension, tol=tolerance
         )
 

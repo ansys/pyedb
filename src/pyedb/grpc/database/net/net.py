@@ -105,6 +105,28 @@ class Net:
             return True
 
     @property
+    def is_power_ground(self):
+        """Check if the net is a power or ground net.
+
+        Returns
+        -------
+        bool
+            ``True`` if the net is a power or ground net, ``False`` otherwise.
+        """
+        return self.core.is_power_ground
+
+    @is_power_ground.setter
+    def is_power_ground(self, value: bool):
+        """Set the net as a power or ground net.
+
+        Parameters
+        ----------
+        value : bool
+            ``True`` to set the net as a power or ground net, ``False`` otherwise.
+        """
+        self.core.is_power_ground = value
+
+    @property
     def primitives(self) -> list[Union[Path, Polygon, Circle, Rectangle, Bondwire]]:
         """All primitives belonging to this net.
 
