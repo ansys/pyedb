@@ -128,7 +128,6 @@ class TestClass(BaseTestClass):
 
     def test_modeler_primitives_by_layer(self, edb_examples):
         """Evaluate modeler primitives by layer"""
-        # Done
         edbapp = edb_examples.get_si_verse()
         primmitive = edbapp.modeler.primitives_by_layer["1_Top"][0]
         assert primmitive.layer_name == "1_Top"

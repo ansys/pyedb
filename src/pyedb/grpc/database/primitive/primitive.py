@@ -192,6 +192,61 @@ class Primitive:
         return self.core.has_voids
 
     @property
+    def is_negative(self) -> bool:
+        """Check if primitive is negative.
+
+        Returns
+        -------
+        bool
+        """
+        return self.core.is_negative
+
+    @is_negative.setter
+    def is_negative(self, value: bool):
+        """Set primitive as negative.
+
+        Parameters
+        ----------
+        value : bool
+            Either to set primitive as negative or not.
+
+        """
+        self.core.is_negative = value
+
+    @property
+    def is_parameterized(self) -> bool:
+        """Check if any primitive is parameterized.
+
+        Returns
+        -------
+        bool
+            True if any primitive is parameterized, False otherwise.
+        """
+        return self.core.is_parameterized
+
+    @property
+    def is_zone_primitive(self) -> bool:
+        """Check if primitive is a zone primitive.
+
+        Returns
+        -------
+        bool
+            True if primitive is a zone primitive, False otherwise.
+        """
+        return self.core.is_zone_primitive
+
+    @property
+    def can_be_zone_primitive(self):
+        """Check if primitive can be a zone primitive.
+
+        Returns
+        -------
+        bool
+            True if primitive can be a zone primitive, False otherwise.
+        """
+        return self.core.can_be_zone_primitive
+
+    @property
     def aedt_name(self) -> str:
         """Name to be visualized in AEDT.
 
