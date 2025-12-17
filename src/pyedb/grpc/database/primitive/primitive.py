@@ -591,6 +591,7 @@ class Primitive:
         for prim in primitives:
             if isinstance(prim, Primitive):
                 prim.core.delete()
+        self._pedb.modeler._reload_all()
         return new_polys
 
     def intersect(self, primitives) -> list[Any]:

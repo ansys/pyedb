@@ -235,3 +235,155 @@ class Rectangle(Primitive):
             Value(corner_rad),
             Value(rotation),
         )
+
+    @property
+    def corner_radius(self):
+        """Get corner radius.
+
+        Returns
+        -------
+        float
+            Corner radius.
+        """
+        return self.core.get_parameters()[5].value
+
+    @corner_radius.setter
+    def corner_radius(self, value):
+        parameters = self.get_parameters()
+        self.set_parameters(
+            rep_type=parameters[0],
+            param1=parameters[1],
+            param2=parameters[2],
+            param3=parameters[3],
+            param4=parameters[4],
+            corner_rad=Value(value),
+            rotation=parameters[6],
+        )
+
+    @property
+    def rotation(self):
+        """Get rotation.
+
+        Returns
+        -------
+        float
+            Rotation.
+        """
+        return self.core.get_parameters()[6].value
+
+    @rotation.setter
+    def rotation(self, value):
+        parameters = self.get_parameters()
+        self.set_parameters(
+            rep_type=parameters[0],
+            param1=parameters[1],
+            param2=parameters[2],
+            param3=parameters[3],
+            param4=parameters[4],
+            corner_rad=parameters[5],
+            rotation=Value(value),
+        )
+
+    @property
+    def width(self):
+        """Get rectangle width.
+
+        Returns
+        -------
+        float
+            Rectangle width.
+        """
+        if self.representation_type == "center_width_height":
+            return self.core.get_parameters()[3].value
+        elif self.representation_type == "lower_left_upper_right":
+            lower_left_x = self.core.get_parameters()[1].value
+            upper_right_x = self.core.get_parameters()[3].value
+            return upper_right_x - lower_left_x
+        else:
+            return None
+
+    @width.setter
+    def width(self, value):
+        parameters = self.get_parameters()
+        self.set_parameters(
+            rep_type=parameters[0],
+            param1=parameters[1],
+            param2=parameters[2],
+            param3=Value(value),
+            param4=parameters[4],
+            corner_rad=parameters[5],
+            rotation=parameters[6],
+        )
+
+    @property
+    def height(self):
+        """Get rectangle height.
+
+        Returns
+        -------
+        float
+            Rectangle height.
+        """
+        if self.representation_type == "center_width_height":
+            return self.core.get_parameters()[4].value
+        elif self.representation_type == "lower_left_upper_right":
+            lower_left_y = self.core.get_parameters()[2].value
+            upper_right_y = self.core.get_parameters()[4].value
+            return upper_right_y - lower_left_y
+        else:
+            return None
+
+    @height.setter
+    def height(self, value):
+        parameters = self.get_parameters()
+        self.set_parameters(
+            rep_type=parameters[0],
+            param1=parameters[1],
+            param2=parameters[2],
+            param3=parameters[3],
+            param4=Value(value),
+            corner_rad=parameters[5],
+            rotation=parameters[6],
+        )
+
+    def duplicate_across_layers(self, layers) -> bool:
+        """Duplicate across layer a primitive object.
+
+        Parameters:
+
+        layers: list
+            list of str, with layer names
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        for layer in layers:
+            if layer in self._pedb.stackup.layers:
+                duplicate_rectangle = self.create(
+                    layout=self._pedb.active_layout,
+                    layer=layer,
+                    net=self.net.name,
+                    param1=self.center[0],
+                    param2=self.center[1],
+                    param3=self.width,
+                    param4=self.height,
+                    rep_type="center_width_height",
+                    corner_rad=self.corner_radius,
+                    rotation=self.rotation,
+                )
+                if duplicate_rectangle:
+                    from pyedb.grpc.database.primitive.polygon import Polygon
+
+                    for void in self.voids:
+                        duplicate_void = Polygon.create(
+                            layout=self._pedb.active_layout,
+                            layer=layer,
+                            net=self.net.name,
+                            polygon_data=void.polygon_data,
+                        )
+                        duplicate_rectangle.add_void(duplicate_void)
+            else:
+                return False
+        return True

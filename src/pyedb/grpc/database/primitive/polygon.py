@@ -226,7 +226,7 @@ class Polygon(Primitive):
                             layout=self._pedb.active_layout,
                             layer=layer,
                             net=self.net.name,
-                            polygon_data=void.cast().polygon_data,
+                            polygon_data=void.polygon_data,
                         )
                         duplicate_polygon.add_void(duplicate_void)
             else:

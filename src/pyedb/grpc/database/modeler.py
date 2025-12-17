@@ -863,12 +863,12 @@ class Modeler(object):
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` or bool
             Rectangle object if created, False otherwise.
         """
-        edb_net = self._pedb.nets.find_or_create_net(net_name)
+        net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "lower_left_upper_right":
             rect = Rectangle(self._pedb).create(
                 layout=self._active_layout,
                 layer=layer_name,
-                net=edb_net,
+                net=net,
                 rep_type=representation_type,
                 param1=Value(lower_left_point[0]),
                 param2=Value(lower_left_point[1]),
@@ -878,7 +878,7 @@ class Modeler(object):
                 rotation=Value(rotation),
             )
         else:
-            rep_type = GrpcRectangleRepresentationType.CENTER_WIDTH_HEIGHT
+            rep_type = "center_width_height"
             if isinstance(width, str):
                 if width in self._pedb.variables:
                     width = Value(width, self._pedb.active_cell)
@@ -893,10 +893,10 @@ class Modeler(object):
                     height = Value(width)
             else:
                 height = Value(width)
-            rect = Rectangle(self._pedb).create(
+            rect = Rectangle.create(
                 layout=self._active_layout,
                 layer=layer_name,
-                net=edb_net,
+                net=net,
                 rep_type=rep_type,
                 param1=Value(center_point[0]),
                 param2=Value(center_point[1]),
