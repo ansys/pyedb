@@ -383,7 +383,7 @@ class TestClass(BaseTestClass):
             "color": [128, 128, 128],
             "type": "dielectric",
             "material": "Megtron4_2",
-            "dielectric_fill": None,
+            "dielectric_fill": "",
             "thickness": 8.8e-05,
             "etch_factor": 0.0,
             "roughness_enabled": False,

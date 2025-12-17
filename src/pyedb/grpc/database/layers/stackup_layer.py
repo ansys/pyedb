@@ -183,7 +183,7 @@ class StackupLayer:
             self.core.lower_elevation = Value(value)
 
     @property
-    def fill_material(self) -> str:
+    def fill_material(self) -> Union[str, None]:
         """The layer's fill material.
 
         Returns
@@ -193,11 +193,12 @@ class StackupLayer:
         """
         if self.type == "signal":
             return self.core.get_fill_material()
+        else:
+            return None
 
     @fill_material.setter
     def fill_material(self, value):
-        if self.type == "signal":
-            self.core.set_fill_material(value)
+        self.core.set_fill_material(value)
 
     @property
     def upper_elevation(self) -> float:
@@ -677,6 +678,21 @@ class StackupLayer:
     @transparency.setter
     def transparency(self, value):
         self.core.transparency = value
+
+    @property
+    def roughness_enabled(self) -> bool:
+        """Roughness model enabled status.
+
+        Returns
+        -------
+        bool
+            True if roughness model is enabled, False otherwise.
+        """
+        return self.core.roughness_enabled
+
+    @roughness_enabled.setter
+    def roughness_enabled(self, value):
+        self.core.roughness_enabled = value
 
     def assign_roughness_model(
         self,
