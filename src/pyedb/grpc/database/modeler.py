@@ -1218,13 +1218,13 @@ class Modeler(object):
         bool
             True if successful, False otherwise.
         """
-        new_poly = poly.polygon_data.defeature(tol=tolerance)
+        new_poly = poly.polygon_data.core.defeature(tol=tolerance)
         if not new_poly.points:
             self._pedb.logger.error(
                 f"Defeaturing on polygon {poly.id} returned empty polygon, tolerance threshold might too large. "
             )
             return False
-        poly.polygon_data = new_poly
+        poly.core.polygon_data = new_poly
         return True
 
     def get_layout_statistics(
@@ -1468,10 +1468,10 @@ class Modeler(object):
             void_shape = [void_shape]
         for void in void_shape:
             if isinstance(void, Primitive):
-                shape._edb_object.add_void(void)
+                shape.core.add_void(void.core)
                 flag = True
             else:
-                shape._edb_object.add_void(void)
+                shape.core.add_void(void.core)
                 flag = True
             if not flag:
                 return flag

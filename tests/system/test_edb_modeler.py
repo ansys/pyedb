@@ -238,8 +238,8 @@ class TestClass(BaseTestClass):
         )
         poly_test = [poly for poly in edbapp.modeler.polygons if poly.net_name == "test"]
         assert len(poly_test) == 1
-        assert poly_test[0].center == [0.005, 0.005]
-        assert poly_test[0].bbox == [0.0, 0.0, 0.01, 0.01]
+        assert poly_test[0].center == [0.005, 0.005] or poly_test[0].center == (0.005, 0.005)
+        assert poly_test[0].bbox == [0.0, 0.0, 0.01, 0.01] or poly_test[0].bbox == ((0.0, 0.0), (0.01, 0.01))
         assert poly_test[0].move_layer("16_Bottom")
         poly_test = [poly for poly in edbapp.modeler.polygons if poly.net_name == "test"]
         assert len(poly_test) == 1
@@ -347,7 +347,6 @@ class TestClass(BaseTestClass):
 
     def test_modeler_defeature(self, edb_examples):
         """Defeature the polygon."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.modeler.defeature_polygon(edbapp.modeler.primitives_by_net["GND"][-1], 0.0001)
         edbapp.close(terminate_rpc_session=False)

@@ -219,3 +219,24 @@ class PolygonData:
             return False
         self.core = new_poly[0]
         return True
+
+    def unite(self, polygons):
+        """Create union of polygons.
+
+        Parameters
+        ----------
+        polygons : list[:class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`]
+            List of PolygonData objects to unite with the current polygon.
+
+        Returns
+        -------
+        bool
+        """
+        list_of_polygon_data = []
+        for poly in polygons:
+            list_of_polygon_data.append(poly.core)
+        new_poly = self.core.unite(list_of_polygon_data)
+        if not new_poly[0].points:
+            return False
+        self.core = new_poly[0]
+        return new_poly

@@ -575,7 +575,7 @@ class Primitive:
                 except:
                     primi_polys.append(prim)
         for v in self.voids[:]:
-            primi_polys.append(v.cast().polygon_data)
+            primi_polys.append(v.polygon_data)
         primi_polys = poly.unite(primi_polys)
         p_to_sub = poly.unite([poly] + voids_of_prims)
         list_poly = poly.subtract(p_to_sub, primi_polys)
@@ -613,7 +613,6 @@ class Primitive:
             primitives = [primitives]
         primi_polys = []
         for prim in primitives:
-            prim = prim.cast()
             if isinstance(prim, Primitive):
                 primi_polys.append(prim.polygon_data)
             else:

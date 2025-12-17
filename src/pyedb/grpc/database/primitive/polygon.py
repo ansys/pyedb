@@ -135,6 +135,8 @@ class Polygon(Primitive):
         - The created polygon is added to the modeler primitives of the `pedb` instance.
 
         """
+        from pyedb.grpc.database.net.net import Net
+
         if not layout:
             raise Exception("Layout is required to create a polygon.")
         if not layer:
@@ -143,11 +145,13 @@ class Polygon(Primitive):
             raise ValueError("Polygon data or point list is required to create a polygon.")
         if isinstance(polygon_data, list):
             polygon_data = GrpcPolygonData(polygon_data)
-
-        # call into the gRPC layer to actually create the polygon
         if isinstance(polygon_data, PolygonData):
             polygon_data = polygon_data.core
-        edb_object = GrpcPolygon.create(layout=layout.core, layer=layer.core, net=net.core, polygon_data=polygon_data)
+        if isinstance(layer, Layer):
+            layer = layer.core
+        if isinstance(net, Net):
+            net = net.core
+        edb_object = GrpcPolygon.create(layout=layout.core, layer=layer, net=net, polygon_data=polygon_data)
         new_polygon = cls(layout._pedb, edb_object)
         # keep modeler cache in sync
         layout._pedb.modeler._add_primitive(new_polygon)
@@ -378,4 +382,4 @@ class Polygon(Primitive):
             polygon = self._pedb.modeler.create_polygon(
                 points=polygon, layer_name=self.layer.name, net_name=self.net_name
             )
-        self.core.add_void(polygon)
+        self.core.add_void(polygon.core)
