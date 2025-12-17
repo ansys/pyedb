@@ -470,10 +470,10 @@ class Stackup:
         self._pedb = pedb
 
     def __getitem__(self, item):
-        if item in self.core.non_stackup_layers:
-            return Layer(self._pedb, self.core.find_by_name(item))
-        elif item in self.core.layers:
-            return StackupLayer(self._pedb, self.core.find_by_name(item))
+        if item in self.non_stackup_layers:
+            return Layer(edb_object=self.core.find_by_name(item))
+        elif item in self.layers:
+            return StackupLayer(self._pedb, edb_object=self.core.find_by_name(item))
         else:
             return None
 
@@ -496,10 +496,7 @@ class Stackup:
         >>> edb = Edb()
         >>> signal_layers = edb.stackup.signal_layers
         """
-        return {
-            layer.name: StackupLayer(self._pedb, layer)
-            for layer in self.core.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
-        }
+        return {layer.name: StackupLayer(layer) for layer in self.core.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)}
 
     @property
     def dielectric_layers(self):
@@ -510,8 +507,7 @@ class Stackup:
         dict[str, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
             Dictionary of dielectric layers."""
         return {
-            layer.name: StackupLayer(self._pedb, layer)
-            for layer in self.core.get_layers(GrpcLayerTypeSet.DIELECTRIC_LAYER_SET)
+            layer.name: StackupLayer(layer) for layer in self.core.get_layers(GrpcLayerTypeSet.DIELECTRIC_LAYER_SET)
         }
 
     @property
@@ -549,8 +545,8 @@ class Stackup:
         >>> non_stackup = edb.stackup.non_stackup_layers
         """
         return {
-            layer.name: Layer(self._pedb, layer)
-            for layer in self.core.get_layers(GrpcLayerTypeSet.NON_STACKUP_LAYER_SET)
+            layer.name: Layer(layer)
+            for layer in self._pedb.stackup.core.get_layers(GrpcLayerTypeSet.NON_STACKUP_LAYER_SET)
         }
 
     @property
@@ -670,8 +666,8 @@ class Stackup:
                 fillMaterial=dielectric_material,
                 method="add_on_bottom",
             )
-            self.core.layers["TOP"].dielectric_fill = "SolderMask"
-            self.core.layers["BOT"].dielectric_fill = "SolderMask"
+            self.layers["TOP"].dielectric_fill = "SolderMask"
+            self.layers["BOT"].dielectric_fill = "SolderMask"
 
         for layer_num in np.arange(int(layer_count / 2), 1, -1):
             # Generate upper half
@@ -770,7 +766,7 @@ class Stackup:
         bool
             ``True`` when successful.
         """
-        lc = self._pedb.layout.core.layer_collection
+        lc = self.core
         if operation in ["change_position", "change_attribute", "change_name"]:
             _lc = GrpcLayerCollection.create()
 
@@ -803,7 +799,7 @@ class Stackup:
             lc.add_stackup_layer_at_elevation(layer_clone.core)
         elif operation == "non_stackup":
             lc.add_layer_bottom(layer_clone.core)
-        self._pedb.layout.layer_collection = lc
+        self.core = lc
         return True
 
     def _create_stackup_layer(
@@ -815,6 +811,7 @@ class Stackup:
             material = "FR4_epoxy"
         thickness = Value(thickness, self._pedb.active_db)
         layer = StackupLayer.create(
+            layout=self._pedb.active_layout,
             name=layer_name,
             layer_type=layer_type,
             thickness=thickness,
@@ -824,41 +821,9 @@ class Stackup:
         return layer
 
     def _create_nonstackup_layer(self, layer_name: str, layer_type: str):
-        if layer_type == "conducting":  # pragma: no cover
-            _layer_type = GrpcLayerType.CONDUCTING_LAYER
-        elif layer_type == "airlines":  # pragma: no cover
-            _layer_type = GrpcLayerType.AIRLINES_LAYER
-        elif layer_type == "error":  # pragma: no cover
-            _layer_type = GrpcLayerType.ERRORS_LAYER
-        elif layer_type == "symbol":  # pragma: no cover
-            _layer_type = GrpcLayerType.SYMBOL_LAYER
-        elif layer_type == "measure":  # pragma: no cover
-            _layer_type = GrpcLayerType.MEASURE_LAYER
-        elif layer_type == "assembly":  # pragma: no cover
-            _layer_type = GrpcLayerType.ASSEMBLY_LAYER
-        elif layer_type == "silkscreen":  # pragma: no cover
-            _layer_type = GrpcLayerType.SILKSCREEN_LAYER
-        elif layer_type == "soldermask":  # pragma: no cover
-            _layer_type = GrpcLayerType.SOLDER_MASK_LAYER
-        elif layer_type == "solderpaste":  # pragma: no cover
-            _layer_type = GrpcLayerType.SOLDER_PASTE_LAYER
-        elif layer_type == "glue":  # pragma: no cover
-            _layer_type = GrpcLayerType.GLUE_LAYER
-        elif layer_type == "wirebond":  # pragma: no cover
-            _layer_type = GrpcLayerType.WIREBOND_LAYER
-        elif layer_type == "user":  # pragma: no cover
-            _layer_type = GrpcLayerType.USER_LAYER
-        elif layer_type == "siwavehfsssolverregions":  # pragma: no cover
-            _layer_type = GrpcLayerType.SIWAVE_HFSS_SOLVER_REGIONS
-        elif layer_type == "outline":  # pragma: no cover
-            _layer_type = GrpcLayerType.OUTLINE_LAYER
-        elif layer_type == "postprocessing":  # pragma: no cover
-            _layer_type = GrpcLayerType.POST_PROCESSING_LAYER
-        else:  # pragma: no cover
-            _layer_type = GrpcLayerType.UNDEFINED_LAYER_TYPE
-
-        result = Layer.create(layer_name, _layer_type)
-        return result
+        layer = Layer.create(layer_name, layer_type)
+        self.core.add_layer_top(layer.core)
+        return layer
 
     def add_outline_layer(self, name: str = "Outline") -> bool:
         """Add an outline layer named "Outline" if it is not present.
@@ -874,7 +839,7 @@ class Stackup:
         >>> edb = Edb()
         >>> edb.stackup.add_outline_layer()
         """
-        return self.core.add_document_layer(name="Outline", layer_type="outline")
+        return self.add_layer(layer_name="Outline", layer_type="outline")
 
     @deprecate_argument_name({"fillMaterial": "filling_material"})
     def add_layer(
@@ -984,11 +949,14 @@ class Stackup:
             self._set_layout_stackup(new_layer, method, base_layer)
             if len(self.layers) == l1:
                 self._set_layout_stackup(new_layer, method, base_layer, method=2)
+            if layer_name in self.layers:
+                return True
         else:
-            new_layer = self._create_nonstackup_layer(layer_name, layer_type)
-            self._set_layout_stackup(new_layer, "non_stackup")
-            return self.core.non_stackup_layers[layer_name]
-        return self.layers[layer_name]
+            self._create_nonstackup_layer(layer_name, layer_type)
+            if layer_name in self.non_stackup_layers:
+                return True
+            return False
+        return False
 
     def remove_layer(self, name: str) -> bool:
         """Remove a layer from stackup.
@@ -1006,9 +974,9 @@ class Stackup:
         new_layer_collection = LayerCollection.create()
         for layer_name, lyr in self.layers.items():
             if not (layer_name == name):
-                new_layer_collection.add_layer_bottom(lyr)
+                new_layer_collection.core.add_layer_bottom(lyr.core)
 
-        self._pedb.layout.layer_collection = new_layer_collection
+        self._pedb.layout.core.layer_collection = new_layer_collection.core
         return True
 
     def export(self, fpath: str, file_format: str = "xml", include_material_with_layer: bool = False) -> bool:
@@ -1765,8 +1733,8 @@ class Stackup:
         _angle = angle * math.pi / 180.0
         rotation_axis_to = GrpcPoint3DData(math.cos(_angle), -1 * math.sin(_angle), 0.0)
 
-        stackup_target = LayerCollection(self._pedb, self._pedb.layout.layer_collection)
-        res = stackup_target.get_top_bottom_stackup_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
+        stackup_target = LayerCollection(self._pedb, self._pedb.layout.core.layer_collection)
+        res = stackup_target.core.get_top_bottom_stackup_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
         target_top_elevation = res[1]
         target_bottom_elevation = res[3]
         flip_angle = Value("0deg")
@@ -1777,7 +1745,7 @@ class Stackup:
             elevation = target_bottom_elevation - offset_z
         h_stackup = Value(elevation)
         location = GrpcPoint3DData(offset_x, offset_y, h_stackup)
-        mcad_model = GrpcMcadModel.create_3d_comp(layout=self._pedb.active_layout, filename=a3dcomp_path)
+        mcad_model = GrpcMcadModel.create_3d_comp(layout=self._pedb.active_layout.core, filename=a3dcomp_path)
         if mcad_model.is_null:  # pragma: no cover
             logger.error("Failed to create MCAD model from a3dcomp")
             return False
@@ -1964,10 +1932,9 @@ class Stackup:
                     fillMaterial=default_layer["dielectric_fill"],
                     thickness=default_layer["thickness"],
                 )
-
-            new_layer.color = default_layer["color"]
+            new_layer = self.layers[layer_name]
+            new_layer.color = tuple(default_layer["color"])
             new_layer.etch_factor = default_layer["etch_factor"]
-
             new_layer.roughness_enabled = default_layer["roughness_enabled"]
             new_layer.top_hallhuray_nodule_radius = default_layer["top_hallhuray_nodule_radius"]
             new_layer.top_hallhuray_surface_ratio = default_layer["top_hallhuray_surface_ratio"]
@@ -1975,7 +1942,6 @@ class Stackup:
             new_layer.bottom_hallhuray_surface_ratio = default_layer["bottom_hallhuray_surface_ratio"]
             new_layer.side_hallhuray_nodule_radius = default_layer["side_hallhuray_nodule_radius"]
             new_layer.side_hallhuray_surface_ratio = default_layer["side_hallhuray_surface_ratio"]
-
         return True
 
     def _import_json(self, file_path: str, rename: bool = False) -> bool:
@@ -2025,7 +1991,7 @@ class Stackup:
                 layer.type = layer_type
             else:
                 layer = self.add_layer(name, layer_type=layer_type, material="copper", fillMaterial="copper")
-
+            layer = self.layers[name]
             layer.material = layer_info.Material
             layer.thickness = layer_info.Thickness
             if not str(layer_info.Dielectric_Fill) == "nan":
@@ -2034,10 +2000,10 @@ class Stackup:
         lc_new = GrpcLayerCollection.create()
         for name, _ in df.iterrows():
             layer = self.layers[name]
-            lc_new.add_layer_bottom(layer)
+            lc_new.add_layer_bottom(layer.core)
 
         for name, layer in self.non_stackup_layers.items():
-            lc_new.add_layer_bottom(layer)
+            lc_new.add_layer_bottom(layer.core)
 
         self._pedb.layout.layer_collection = lc_new
         return True

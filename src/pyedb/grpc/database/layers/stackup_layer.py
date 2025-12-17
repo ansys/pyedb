@@ -22,11 +22,13 @@
 
 from __future__ import absolute_import, annotations
 
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 from ansys.edb.core.layer.layer import LayerType as GrpcLayerType
 from ansys.edb.core.layer.stackup_layer import RoughnessRegion as GrpcRoughnessRegion, StackupLayer as GrpcStackupLayer
 
+if TYPE_CHECKING:
+    from pyedb.grpc.database.layout.layout import Layout
 from pyedb.grpc.database.utility.value import Value
 
 _mapping_layer_type = {
@@ -37,7 +39,7 @@ _mapping_layer_type = {
 
 
 class StackupLayer:
-    def __init__(self, pedb=None, edb_object=None):
+    def __init__(self, pedb, edb_object=None):
         self.core = edb_object
         self._pedb = pedb
 
@@ -57,6 +59,7 @@ class StackupLayer:
     @classmethod
     def create(
         cls,
+        layout: Layout,
         name: str,
         layer_type: str = "signal",
         thickness: Union[str, float] = "17um",
@@ -70,7 +73,7 @@ class StackupLayer:
             elevation=Value(elevation),
             material=material,
         )
-        return cls(None, layer)
+        return cls(layout._pedb, layer)
 
     @property
     def type(self) -> str:
@@ -365,8 +368,10 @@ class StackupLayer:
     def etch_factor(self, value):
         if not value:
             self.core.etch_factor_enabled = False
+
         else:
             self.core.etch_factor_enabled = True
+            self.core.etch_factor = Value(value, self._pedb.active_cell)
 
     @property
     def top_hallhuray_nodule_radius(self) -> float:
@@ -642,6 +647,36 @@ class StackupLayer:
             self._pedb.logger.error(
                 f"Failed to update property side_groisse_roughness with value {value} - {type(e).__name__}: {str(e)}"
             )
+
+    @property
+    def color(self) -> tuple[int, int, int]:
+        """Layer color.
+
+        Returns
+        -------
+        str
+            Layer color in hex format.
+        """
+        return self.core.color
+
+    @color.setter
+    def color(self, value):
+        self.core.color = value
+
+    @property
+    def transparency(self) -> int:
+        """Layer transparency.
+
+        Returns
+        -------
+        float
+            Layer transparency value between 0 and 100.
+        """
+        return self.core.transparency
+
+    @transparency.setter
+    def transparency(self, value):
+        self.core.transparency = value
 
     def assign_roughness_model(
         self,

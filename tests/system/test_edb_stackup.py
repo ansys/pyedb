@@ -84,7 +84,7 @@ class TestClass(BaseTestClass):
         try:
             layout = laminate_edb.active_layout
             if laminate_edb.grpc:
-                cell_instances = layout.cell_instances
+                cell_instances = layout.core.cell_instances
             else:
                 cell_instances = list(layout.CellInstances)
             assert len(cell_instances) == 0
@@ -96,7 +96,7 @@ class TestClass(BaseTestClass):
                 place_on_top=True,
             )
             if laminate_edb.grpc:
-                cell_instances = layout.cell_instances
+                cell_instances = layout.core.cell_instances
             else:
                 cell_instances = list(layout.CellInstances)
             assert len(cell_instances) == 1
@@ -161,7 +161,7 @@ class TestClass(BaseTestClass):
         try:
             layout = laminate_edb.active_layout
             if laminate_edb.grpc:
-                cell_instances = layout.cell_instances
+                cell_instances = layout.core.cell_instances
             else:
                 cell_instances = list(layout.CellInstances)
             assert len(cell_instances) == 0
@@ -173,7 +173,7 @@ class TestClass(BaseTestClass):
                 place_on_top=False,
             )
             if laminate_edb.grpc:
-                cell_instances = layout.cell_instances
+                cell_instances = layout.core.cell_instances
             else:
                 cell_instances = list(layout.CellInstances)
             assert len(cell_instances) == 1

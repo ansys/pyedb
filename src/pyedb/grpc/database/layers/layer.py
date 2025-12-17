@@ -54,9 +54,8 @@ layer_type_mapping = {
 class Layer:
     """Manages Layer."""
 
-    def __init__(self, pedb, edb_object=None, name="", layer_type="undefined", **kwargs):
+    def __init__(self, edb_object=None, name="", layer_type="undefined", **kwargs):
         self.core = edb_object
-        self._pedb = pedb
         self._name = name
         self._color = ()
         self._type = ""
@@ -82,14 +81,14 @@ class Layer:
         :class: `Layer <pyedb.`
         """
         layer = GrpcLayer.create(name=name, lyr_type=layer_type_mapping[layer_type])
-        return cls(layer)
+        return cls(edb_object=layer)
 
     def update(self, **kwargs):
         for k, v in kwargs.items():
             if k in dir(self):
                 self.__setattr__(k, v)
             else:
-                self._pedb.logger.error(f"{k} is not a valid layer attribute")
+                raise Exception(f"{k} is not a valid layer attribute")
 
     @property
     def name(self) -> str:
@@ -107,7 +106,7 @@ class Layer:
         from pyedb.grpc.database.stackup import StackupLayer
 
         if isinstance(self.core.cast(), GrpcStackupLayer):
-            return StackupLayer(self._pedb, self.core.cast()).properties
+            return StackupLayer(self.core.cast()).properties
         else:
             data = {"name": self.name, "type": self.type, "color": self.core.color}
             return data
@@ -131,3 +130,8 @@ class Layer:
     @property
     def _layer_name_mapping_reversed(self):
         return {j: i for i, j in self._layer_name_mapping.items()}
+
+    @property
+    def is_stackup_layer(self):
+        """Check if the layer is a stackup layer."""
+        return self.core.is_stackup_layer

@@ -54,7 +54,7 @@ class Polygon(Primitive):
         """
         from pyedb.grpc.database.layers.layer import Layer
 
-        return Layer(self._pedb, self.core.layer)
+        return Layer(self.core.layer)
 
     @layer.setter
     def layer(self, value: Union[str, Layer]):
