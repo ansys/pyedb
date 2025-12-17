@@ -1098,6 +1098,8 @@ class Padstacks(object):
         str
             Name of the created padstack definition.
         """
+        from pyedb.grpc.database.geometry.polygon_data import PolygonData
+
         holediam = Value(holediam)
         paddiam = Value(paddiam)
         antipaddiam = Value(antipaddiam)
@@ -1162,9 +1164,7 @@ class Padstacks(object):
             pad_shape = GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE
         elif pad_shape == "Polygon":
             if isinstance(pad_polygon, list):
-                pad_array = GrpcPolygonData(points=pad_polygon)
-            elif isinstance(pad_polygon, GrpcPolygonData):
-                pad_array = pad_polygon
+                pad_polygon = PolygonData(edb_object=GrpcPolygonData(points=pad_polygon))
         if antipad_shape == "Bullet":  # pragma no cover
             antipad_array = [x_size, y_size, corner_radius]
             antipad_shape = GrpcPadGeometryType.PADGEOMTYPE_BULLET
@@ -1173,9 +1173,7 @@ class Padstacks(object):
             antipad_shape = GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE
         elif antipad_shape == "Polygon":
             if isinstance(antipad_polygon, list):
-                antipad_array = GrpcPolygonData(points=antipad_polygon)
-            elif isinstance(antipad_polygon, GrpcPolygonData):
-                antipad_array = antipad_polygon
+                antipad_polygon = PolygonData(edb_object=GrpcPolygonData(points=antipad_polygon))
         else:
             if not isinstance(antipaddiam, list):
                 antipad_array = [antipaddiam]
@@ -1192,7 +1190,7 @@ class Padstacks(object):
                     offset_x=pad_offset_x,
                     offset_y=pad_offset_y,
                     rotation=pad_rotation,
-                    fp=pad_array,
+                    fp=pad_polygon.core,
                 )
                 padstack_data.set_pad_parameters(
                     layer=layer,
@@ -1200,7 +1198,7 @@ class Padstacks(object):
                     offset_x=pad_offset_x,
                     offset_y=pad_offset_y,
                     rotation=pad_rotation,
-                    fp=antipad_array,
+                    fp=antipad_polygon.core,
                 )
         else:
             for layer in layers:

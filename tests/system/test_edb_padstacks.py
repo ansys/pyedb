@@ -461,7 +461,7 @@ class TestClass(BaseTestClass):
         assert len(test) == 194
         edbapp.close(terminate_rpc_session=False)
 
-    def test_polygon_based_padsatck(self, edb_examples):
+    def test_polygon_based_padstack(self, edb_examples):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         edbapp = edb_examples.load_edb(source_path)
         polygon_data = edbapp.modeler.paths[0].polygon_data
