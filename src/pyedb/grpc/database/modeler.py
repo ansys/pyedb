@@ -405,7 +405,7 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Path` objects.
         """
-        return [i for i in self.primitives if i.type == "path"]
+        return [i for i in self.primitives if i.primitive_type == "path"]
 
     @property
     def polygons(self) -> List[Union[Polygon, Primitive]]:
@@ -416,7 +416,7 @@ class Modeler(object):
         list
             List of :class:`pyedb.grpc.database.primitive.polygon.Polygon` objects.
         """
-        return [i for i in self.primitives if i.type == "polygon"]
+        return [i for i in self.primitives if i.primitive_type == "polygon"]
 
     def get_polygons_by_layer(self, layer_name: str, net_list: Optional[List[str]] = None) -> List[Primitive]:
         """Retrieve polygons by layer.
@@ -811,9 +811,7 @@ class Modeler(object):
                 self._logger.error("Failed to create void polygon data")
                 return False
             polygon_data.holes.append(void_polygon_data)
-        polygon = Polygon(self._pedb, None).create(
-            layout=self._active_layout, layer=layer_name, net=net, polygon_data=polygon_data
-        )
+        polygon = Polygon.create(layout=self._active_layout, layer=layer_name, net=net, polygon_data=polygon_data)
         if polygon.is_null or polygon_data is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
@@ -1201,6 +1199,7 @@ class Modeler(object):
                 p1 = self._pedb.padstacks.definitions[pad].edb_padstack.data
                 if len(p1.get_layer_names()) > 1:
                     self._pedb.padstacks.remove_pads_from_padstack(pad)
+        self._reload_all()
         return True
 
     def defeature_polygon(self, poly: Polygon, tolerance: float = 0.001) -> bool:
@@ -1581,22 +1580,22 @@ class Modeler(object):
         """
 
         from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
-        from ansys.edb.core.hierarchy.cell_instance import CellInstance
+        from ansys.edb.core.hierarchy.cell_instance import CellInstance as GrpcCellInstance
         from ansys.edb.core.layout.cell import Cell, CellType
 
         from pyedb.generic.general_methods import generate_unique_name
 
         instance_name = generate_unique_name(cell_name, n=2)
-        cell = Cell.find(self._pedb._db, CellType.CIRCUIT_CELL, cell_name)
-        cell_inst = CellInstance.create(self._pedb.active_layout, instance_name, cell.layout)
+        edb_cell = Cell.find(self._pedb._db, CellType.CIRCUIT_CELL, cell_name)
+        cell_inst = GrpcCellInstance.create(self._pedb.active_layout.core, instance_name, edb_cell.layout)
         cell_inst.placement_3d = True
         t3d = cell_inst.transform3d
 
         # offsets
         location = GrpcPoint3DData(
-            (self._pedb.value(local_origin_x) * -1)._edb_object,
-            (self._pedb.value(local_origin_y) * -1)._edb_object,
-            (self._pedb.value(local_origin_z) * -1)._edb_object,
+            (self._pedb.value(local_origin_x) * -1),
+            (self._pedb.value(local_origin_y) * -1),
+            (self._pedb.value(local_origin_z) * -1),
         )
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
@@ -1671,7 +1670,7 @@ class Modeler(object):
         from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
         from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
 
-        mcad_model = GrpcMcadModel.create_3d_comp(layout=self._pedb.active_layout, filename=str(a3dcomp_path))
+        mcad_model = GrpcMcadModel.create_3d_comp(layout=self._pedb.active_layout.core, filename=str(a3dcomp_path))
         cell_inst = mcad_model.cell_instance
         cell_inst.placement_3d = True
         t3d = cell_inst.transform3d

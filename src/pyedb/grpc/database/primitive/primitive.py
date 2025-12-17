@@ -168,7 +168,7 @@ class Primitive:
     @layer_name.setter
     def layer_name(self, value):
         if value in self._pedb.stackup.layers:
-            self.core.layer = self._pedb.stackup.layers[value]
+            self.core.layer = self._pedb.stackup.layers[value].core
 
     @property
     def voids(self) -> list[Any]:
@@ -382,6 +382,7 @@ class Primitive:
         if self.type == "path":
             polygon = self._pedb.modeler.create_polygon(self.polygon_data, self.layer_name, [], self.net.name)
             self.core.delete()
+            self._pedb.modeler._reload_all()
             return polygon
         else:
             return False
