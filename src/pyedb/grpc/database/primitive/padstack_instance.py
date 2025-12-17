@@ -725,7 +725,7 @@ class PadstackInstance:
 
         """
         if not self._object_instance:
-            self._object_instance = self.core.layout.layout_instance.get_layout_obj_instance_in_context(self, None)
+            self._object_instance = self.core.layout.layout_instance.get_layout_obj_instance_in_context(self.core, None)
         return self._object_instance
 
     @property
@@ -1072,7 +1072,7 @@ class PadstackInstance:
         Returns
         -------
         """
-        stackup_layers = self._pedb.stackup.stackup_layers
+        stackup_layers = self._pedb.stackup.layers
         signal_layers = self._pedb.stackup.signal_layers
         layer_idx = list(signal_layers.keys()).index(self.start_layer)
 
@@ -1108,9 +1108,11 @@ class PadstackInstance:
             radius=Value(rad_l),
         )
 
-        s3d = GrpcStructure3D.create(layout, generate_unique_name("via3d_" + self.aedt_name.replace("via_", ""), n=3))
-        s3d.add_member(cloned_circle)
-        s3d.add_member(cloned_circle2)
+        s3d = GrpcStructure3D.create(
+            layout.core, generate_unique_name("via3d_" + self.aedt_name.replace("via_", ""), n=3)
+        )
+        s3d.add_member(cloned_circle.core)
+        s3d.add_member(cloned_circle2.core)
         s3d.set_material(self.definition.material)
         s3d.mesh_closure = GrpcMeshClosure.ENDS_CLOSED
         hole_override_enabled = True

@@ -240,3 +240,29 @@ class PolygonData:
             return False
         self.core = new_poly[0]
         return new_poly
+
+    def area(self):
+        """Get area of polygon.
+
+        Returns
+        -------
+        float
+        """
+        return self.core.area()
+
+    def intersection_type(self, polygon_data):
+        """Get intersection type of polygon.
+
+        Returns
+        -------
+        :class: `PolygonIntersectionType <ansys.edb.core.geometry.polygon_data.PolygonIntersectionType>`
+        Returned value can be one of the following:
+            - 0 : No Intersection
+            - 1 : Current Polygon Inside Other
+            - 2: Other polygon Inside Current
+            - 3: Common intersection
+            - 4: undifined intersection
+        """
+        if isinstance(polygon_data, PolygonData):
+            polygon_data = polygon_data.core
+        return self.core.intersection_type(polygon_data).value

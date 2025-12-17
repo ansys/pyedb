@@ -804,10 +804,10 @@ class PadstackDef:
                             Value(rad2),
                         )
                         s3d = GrpcStructure3D.create(
-                            layout, generate_unique_name("via3d_" + via.aedt_name.replace("via_", ""), n=3)
+                            layout.core, generate_unique_name("via3d_" + via.aedt_name.replace("via_", ""), n=3)
                         )
-                        s3d.add_member(cloned_circle)
-                        s3d.add_member(cloned_circle2)
+                        s3d.add_member(cloned_circle.core)
+                        s3d.add_member(cloned_circle2.core)
                         if not self.core.data.material.value:
                             self._pedb.logger.warning(
                                 f"Padstack definution {self.name} has no material defined.Defaulting to copper"
@@ -917,14 +917,14 @@ class PadstackDef:
                     layout=layout,
                     net=via.net,
                     name=generate_unique_name(instance.name),
-                    padstack_def=instance,
+                    padstack_definition=instance.name,
                     position_x=via.position[0],
                     position_y=via.position[1],
                     rotation=0.0,
                     top_layer=from_layer,
                     bottom_layer=to_layer,
                     solder_ball_layer=None,
-                    layer_map=None,
+                    layer_map="two_way",
                 )
                 padstack_instance.is_layout_pin = via.is_pin
                 i += 1

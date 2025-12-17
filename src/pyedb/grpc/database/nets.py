@@ -918,11 +918,11 @@ class NetClasses:
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
             return False
-        grpc_net_class = GrpcNetClass.create(self._pedb.active_layout, name)
+        grpc_net_class = GrpcNetClass.create(self._pedb.active_layout.core, name)
         if isinstance(net, str):
             net = [net]
         for i in net:
-            grpc_net_class.add_net(self._pedb.nets[i])
+            grpc_net_class.add_net(self._pedb.nets[i].core)
         net_class = NetClass(self._pedb, grpc_net_class)
         self.items[name] = net_class
         return net_class

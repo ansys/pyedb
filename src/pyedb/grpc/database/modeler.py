@@ -1183,7 +1183,7 @@ class Modeler(object):
                 self.create_polygon(item, layer_name=lay, voids=[], net_name=net)
             for void in all_voids:
                 for poly in poly_by_nets[net]:  # pragma no cover
-                    if void.polygon_data.intersection_type(poly.polygon_data).value >= 2:
+                    if void.polygon_data.intersection_type(poly.polygon_data) >= 2:
                         try:
                             id = delete_list.index(poly)
                         except ValueError:

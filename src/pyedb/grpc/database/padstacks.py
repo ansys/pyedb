@@ -568,7 +568,7 @@ class Padstacks(object):
         ... )
         """
 
-        padstack_def = PadstackDef.create(self._pedb.db, padstackname)
+        padstack_def = PadstackDef.create(self._pedb, padstackname)
 
         padstack_data = GrpcPadstackDefData.create()
         list_values = [Value(holediam), Value(paddiam), Value(antipaddiam)]
@@ -1254,7 +1254,7 @@ class Padstacks(object):
         new_padstack_definition_data = GrpcPadstackDefData(self.definitions[target_padstack_name].data.msg)
         if not new_padstack_name:
             new_padstack_name = generate_unique_name(target_padstack_name)
-        padstack_definition = PadstackDef.create(self.db, new_padstack_name)
+        padstack_definition = PadstackDef.create(self, new_padstack_name)
         padstack_definition.data = new_padstack_definition_data
         return new_padstack_name
 
@@ -1346,7 +1346,7 @@ class Padstacks(object):
                 solder_ball_layer=solderlayer,
                 layer_map=layer_map,
             )
-            padstack_instance.is_layout_pin = is_pin
+            padstack_instance.is_pin = is_pin
             self.clear_instances_cache()
             return padstack_instance
         else:
