@@ -76,6 +76,17 @@ class StackupLayer:
         return cls(layout._pedb, layer)
 
     @property
+    def id(self):
+        """Layer ID.
+
+        Returns
+        -------
+        int
+            Layer ID.
+        """
+        return self.core.id
+
+    @property
     def type(self) -> str:
         """Layer type.
 

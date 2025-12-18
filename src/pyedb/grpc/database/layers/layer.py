@@ -83,6 +83,11 @@ class Layer:
         layer = GrpcLayer.create(name=name, lyr_type=layer_type_mapping[layer_type])
         return cls(edb_object=layer)
 
+    @property
+    def id(self):
+        """Get the layer ID."""
+        return self.core.id
+
     def update(self, **kwargs):
         for k, v in kwargs.items():
             if k in dir(self):
