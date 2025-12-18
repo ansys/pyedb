@@ -3079,10 +3079,10 @@ class Edb(EdbInit):
         )
         for void_info in void_padstacks:
             port_poly = cloned_edb.modeler.create_polygon(
-                points=void_info[0].cast().polygon_data, layer_name="ref", net_name="GND"
+                points=void_info[0].polygon_data, layer_name="ref", net_name="GND"
             )
             pec_poly = cloned_edb.modeler.create_polygon(
-                points=port_poly.cast().polygon_data, layer_name="port_pec", net_name="GND"
+                points=port_poly.polygon_data, layer_name="port_pec", net_name="GND"
             )
             pec_poly.scale(1.5)
 

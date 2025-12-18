@@ -166,6 +166,7 @@ class HatchGround:
             if hatch_polygon_data.is_inside(void.center):
                 hatched_plan.add_void(void)
         grid.delete()
+        self._edb.modeler._reload_all()
 
     def _add_stripe(self, x0: float, y0: float, x1: float, y1: float) -> None:
         """Create one rectangular copper bar on the GND layer."""

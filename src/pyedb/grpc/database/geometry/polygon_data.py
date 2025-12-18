@@ -52,18 +52,18 @@ class PolygonData:
             self.core = edb_object
 
     @property
-    def bounding_box(self) -> list[float]:
+    def bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         """Bounding box.
 
         Returns
         -------
-        List[float]
-            List of coordinates for the component's bounding box, with the list of
-            coordinates in this order: [X lower left corner, Y lower left corner,
-            X upper right corner, Y upper right corner].
+        tuple[tuple[float, float], tuple[float, float]]
+            Tuple of coordinates for the component's bounding box, with the list of
+            coordinates in this order: (X lower left corner, Y lower left corner),
+            (X upper right corner, Y upper right corner).
         """
         bbox = self.core.bbox()
-        return [Value(bbox[0].x), Value(bbox[0].y), Value(bbox[1].x), Value(bbox[1].y)]
+        return (bbox[0].x.value, bbox[0].y.value), (bbox[1].x.value, bbox[1].y.value)
 
     def bounding_circle(self) -> tuple[tuple[float, float], float]:
         """Get the bounding circle of the polygon.

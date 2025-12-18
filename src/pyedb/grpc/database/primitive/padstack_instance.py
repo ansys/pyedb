@@ -126,6 +126,8 @@ class PadstackInstance:
         """
         if isinstance(net, str):
             net = layout._pedb.nets.nets.get(net, Net.create(layout, generate_unique_name("net")))
+        if isinstance(padstack_definition, PadstackDef):
+            padstack_definition = padstack_definition.name
         if not name:
             name = generate_unique_name(padstack_definition)
         layer_map = LayerMap.create(layer_map)

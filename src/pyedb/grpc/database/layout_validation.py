@@ -380,7 +380,7 @@ class LayoutValidation:
         counts = 0
         via_count = 1
         for obj in pds:
-            name = obj.get_product_property(GrpcProductIdType.DESIGNER, 11)
+            name = obj.core.get_product_property(GrpcProductIdType.DESIGNER, 11)
             name = str(name).strip("'")
             if name == "":
                 counts += 1
