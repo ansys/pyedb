@@ -385,7 +385,8 @@ class LayerCollection:
         >>> signal_layers = edb.stackup.signal_layers
         """
         return {
-            layer.name: StackupLayer(self._pedb, layer) for layer in self.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
+            layer.name: StackupLayer(self._pedb, layer)
+            for layer in self.core.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
         }
 
     @property
@@ -519,7 +520,10 @@ class Stackup:
         >>> edb = Edb()
         >>> signal_layers = edb.stackup.signal_layers
         """
-        return {layer.name: StackupLayer(layer) for layer in self.core.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)}
+        return {
+            layer.name: StackupLayer(self._pedb, layer)
+            for layer in self.core.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
+        }
 
     @property
     def dielectric_layers(self):
@@ -530,7 +534,8 @@ class Stackup:
         dict[str, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
             Dictionary of dielectric layers."""
         return {
-            layer.name: StackupLayer(layer) for layer in self.core.get_layers(GrpcLayerTypeSet.DIELECTRIC_LAYER_SET)
+            layer.name: StackupLayer(self._pedb, layer)
+            for layer in self.core.get_layers(GrpcLayerTypeSet.DIELECTRIC_LAYER_SET)
         }
 
     @property
