@@ -412,6 +412,8 @@ class TestClass(BaseTestClass):
                     # dotnet is returning 0 elevation on dielectric layer which is wrong.
                     assert data["layers"]["DE2"][parameter] == 0.0
                 else:
+                    if value == "":
+                        value = None
                     assert data["layers"]["DE2"][parameter] == value
         edbapp.close(terminate_rpc_session=False)
 
