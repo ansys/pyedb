@@ -22,8 +22,6 @@
 import math
 from typing import TYPE_CHECKING, Union
 
-from numba.core.ir import Raise
-
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 
