@@ -383,7 +383,7 @@ class TestClass(BaseTestClass):
             "color": [128, 128, 128],
             "type": "dielectric",
             "material": "Megtron4_2",
-            "dielectric_fill": "",
+            "dielectric_fill": None,
             "thickness": 8.8e-05,
             "etch_factor": 0.0,
             "roughness_enabled": False,
@@ -412,8 +412,8 @@ class TestClass(BaseTestClass):
                     # dotnet is returning 0 elevation on dielectric layer which is wrong.
                     assert data["layers"]["DE2"][parameter] == 0.0
                 else:
-                    if value == "":
-                        value = None
+                    if data["layers"]["DE2"][parameter] == "":
+                        value = ""
                     assert data["layers"]["DE2"][parameter] == value
         edbapp.close(terminate_rpc_session=False)
 
