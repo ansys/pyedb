@@ -1232,7 +1232,7 @@ class TestClass(BaseTestClass):
 
     def test_add_layer_api_with_control_file(self):
         """Add new layers with control file."""
-        from pyedb.grpc.database.control_file import ControlFile
+        from pyedb.generic.control_file import ControlFile
 
         # Done
         ctrl = ControlFile()

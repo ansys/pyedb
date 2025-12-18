@@ -246,6 +246,11 @@ class EdbExtendedNets(EdbCommon, object):
             resistor_below, inductor_below, capacitor_above, exception_list, True, True
         )
 
+    def clean(self):
+        """Remove all extended nets."""
+        for net in self.items.values():
+            net.delete()
+
 
 class EdbDifferentialPairs(EdbCommon, object):
     """Manages EDB methods for managing nets accessible from the ``Edb.differential_pairs`` property.
