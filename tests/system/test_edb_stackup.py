@@ -675,7 +675,7 @@ class TestClass(BaseTestClass):
             if chipEdb.grpc:
                 cellInstances = layout.core.cell_instances
             else:
-                cellInstances = list(layout.core.CellInstances)
+                cellInstances = list(layout.CellInstances)
             assert len(cellInstances) == 0
             assert chipEdb.stackup.place_in_layout_3d_placement(
                 laminateEdb,
