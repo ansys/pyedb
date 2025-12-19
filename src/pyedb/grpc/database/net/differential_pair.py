@@ -71,7 +71,7 @@ class DifferentialPairs:
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
             return False
-        GrpcDifferentialPair.create(layout=self._pedb.layout, name=name, pos_net=net_p, neg_net=net_n)
+        GrpcDifferentialPair.create(layout=self._pedb.layout.core, name=name, pos_net=net_p, neg_net=net_n)
         return self.items[name]
 
     def auto_identify(self, positive_differentiator="_P", negative_differentiator="_N") -> list[str]:

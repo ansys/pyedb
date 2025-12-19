@@ -20,7 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import math
-from typing import Union
+from typing import TYPE_CHECKING, Union
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.net.net import Net
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.primitive.path import (
@@ -34,12 +37,11 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
 
-class Path(GrpcPath, Primitive):
+class Path(Primitive):
     def __init__(self, pedb, edb_object=None):
         if edb_object:
-            GrpcPath.__init__(self, edb_object.msg)
+            self.core = edb_object
             Primitive.__init__(self, pedb, edb_object)
-        self._edb_object = edb_object
         self._pedb = pedb
 
     @property
@@ -51,11 +53,11 @@ class Path(GrpcPath, Primitive):
         float
             Path width or None.
         """
-        return Value(super().width)
+        return Value(self.core.width)
 
     @width.setter
     def width(self, value):
-        super(Path, self.__class__).width.__set__(self, Value(value))
+        self.core.width = Value(value)
 
     @property
     def length(self) -> float:
@@ -66,11 +68,11 @@ class Path(GrpcPath, Primitive):
         float
             Path length in meters.
         """
-        center_line_arcs = self._edb_object.cast().center_line.arc_data
+        center_line_arcs = self.core.center_line.arc_data
         path_length = 0.0
         for arc in center_line_arcs:
             path_length += arc.length
-        end_cap_style = self.get_end_cap_style()
+        end_cap_style = self.core.get_end_cap_style()
         if end_cap_style:
             if not end_cap_style[0].value == 1:
                 path_length += self.width / 2
@@ -78,9 +80,10 @@ class Path(GrpcPath, Primitive):
                 path_length += self.width / 2
         return round(path_length, 9)
 
+    @classmethod
     def create(
-        self,
-        layout=None,
+        cls,
+        layout,
         layer: Union[str, Layer] = None,
         net: Union[str, "Net"] = None,
         width: float = 100e-6,
@@ -133,7 +136,7 @@ class Path(GrpcPath, Primitive):
 
         """
         if layout is None:
-            layout = self._pedb.active_layout
+            raise Exception("Layout parameter is required to create a path.")
         end_cap_mapping = {
             "flat": GrpcPathEndCapType.FLAT,
             "round": GrpcPathEndCapType.ROUND,
@@ -155,10 +158,10 @@ class Path(GrpcPath, Primitive):
             raise ValueError("Points are required to create a path.")
         if isinstance(points, list):
             points = GrpcPolygonData(points=points)
-        self._edb_object = super().create(
-            layout=layout,
+        _path = GrpcPath.create(
+            layout=layout.core,
             layer=layer,
-            net=net,
+            net=net.core,
             width=Value(width),
             end_cap1=end_cap1,
             end_cap2=end_cap2,
@@ -167,15 +170,15 @@ class Path(GrpcPath, Primitive):
         )
 
         # keeping cache synced
-        new_path = Path(self._pedb, self._edb_object)
-        self._pedb.modeler._add_primitive(new_path)
+        new_path = cls(layout._pedb, _path)
+        layout._pedb.modeler._add_primitive(new_path)
         return new_path
 
     def delete(self):
         """Delete the path object."""
         # keeping cache synced
         self._pedb.modeler._remove_primitive(self)
-        super().delete()
+        self.core.delete()
 
     def add_point(self, x, y, incremental=True) -> bool:
         """Add a point at the end of the path.
@@ -198,13 +201,11 @@ class Path(GrpcPath, Primitive):
             points = self.center_line
             points.append([x, y])
             points = GrpcPolygonData(points=points)
-        GrpcPath.create(
-            layout=self.layout,
-            layer=self.layer,
-            net=self.net,
-        )
-        self.center_line = points
-        return True
+            self.core.center_line = points
+            return True
+        else:
+            Exception("Only incremental point addition is supported currently.")
+            return False
 
     def clone(self):
         """Clone a primitive object with keeping same definition and location.
@@ -221,12 +222,12 @@ class Path(GrpcPath, Primitive):
         }
 
         cloned_path = GrpcPath.create(
-            layout=self._pedb.active_layout,
+            layout=self._pedb.active_layout.core,
             layer=self.layer,
-            net=self.net,
+            net=self.net.core,
             width=Value(self.width),
-            end_cap1=self.get_end_cap_style()[0],
-            end_cap2=self.get_end_cap_style()[1],
+            end_cap1=self.core.get_end_cap_style()[0],
+            end_cap2=self.core.get_end_cap_style()[1],
             corner_style=mapping[self.corner_style],
             points=GrpcPolygonData(self.center_line),
         )
@@ -277,7 +278,7 @@ class Path(GrpcPath, Primitive):
         >>> sig.create_edge_port("pcb_port", "end", "Wave", None, 8, 8)
 
         """
-        center_line = self.center_line
+        center_line = self.get_center_line()
         pos = center_line[-1] if position.lower() == "end" else center_line[0]
 
         # if port_type.lower() == "wave":
@@ -402,7 +403,7 @@ class Path(GrpcPath, Primitive):
             self._pedb.padstacks.place([x, y], padstack_name, net_name=net_name)
 
     @property
-    def center_line(self) -> list[float]:
+    def center_line(self) -> list[list[float]]:
         """Path center line
 
         Returns
@@ -420,13 +421,7 @@ class Path(GrpcPath, Primitive):
         List[List[float, float]].
 
         """
-        return [[Value(pt.x), Value(pt.y)] for pt in super().center_line.points]
-
-    # def set_center_line(self, value):
-    #     if isinstance(value, list):
-    #         points = [GrpcPointData(i) for i in value]
-    #         polygon_data = GrpcPolygonData(points, False)
-    #         super(Path, self.__class__).polygon_data.__set__(self, polygon_data)
+        return [[Value(pt.x), Value(pt.y)] for pt in self.core.center_line.points]
 
     @property
     def corner_style(self) -> str:
@@ -438,7 +433,7 @@ class Path(GrpcPath, Primitive):
             Values supported for the setter `"round"`, `"mitter"`, `"sharp"`
 
         """
-        return super().corner_style.name.lower()
+        return self.core.corner_style.name.lower()
 
     @corner_style.setter
     def corner_style(self, corner_type):
@@ -460,7 +455,7 @@ class Path(GrpcPath, Primitive):
             Values supported for the setter `"flat"`, `"round"`, `"extended"`
 
         """
-        return self.get_end_cap_style()[0].name.lower()
+        return self.core.get_end_cap_style()[0].name.lower()
 
     @end_cap1.setter
     def end_cap1(self, end_cap_style):
@@ -470,7 +465,7 @@ class Path(GrpcPath, Primitive):
                 "round": GrpcPathEndCapType.ROUND,
                 "extended": GrpcPathEndCapType.EXTENDED,
             }
-            self.set_end_cap_style(mapping[end_cap_style], self.get_end_cap_style()[1].value)
+            self.core.set_end_cap_style(mapping[end_cap_style], self.core.get_end_cap_style()[1].value)
 
     @property
     def end_cap2(self) -> str:
@@ -482,7 +477,7 @@ class Path(GrpcPath, Primitive):
             Values supported for the setter `"flat"`, `"round"`, `"extended"`
 
         """
-        return self.get_end_cap_style()[1].name.lower()
+        return self.core.get_end_cap_style()[1].name.lower()
 
     @end_cap2.setter
     def end_cap2(self, end_cap_style):
@@ -492,4 +487,4 @@ class Path(GrpcPath, Primitive):
                 "round": GrpcPathEndCapType.ROUND,
                 "extended": GrpcPathEndCapType.EXTENDED,
             }
-            self.set_end_cap_style(self.get_end_cap_style()[0].value, mapping[end_cap_style])
+            self.core.set_end_cap_style(self.core.get_end_cap_style()[0].value, mapping[end_cap_style])

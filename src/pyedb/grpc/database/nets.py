@@ -158,7 +158,7 @@ class Nets(CommonNets):
         >>> gnd_net = edb_nets["GND"]
         >>> print(gnd_net.name)
         """
-        return Net(self._pedb, Net.find_by_name(self._active_layout, name))
+        return Net.find_by_name(self._active_layout, name)
 
     def __contains__(self, name: str) -> bool:
         """Check if a net exists in the layout.
@@ -728,7 +728,7 @@ class Nets(CommonNets):
             return net
         else:
             if not start_with and not contain and not end_with:
-                net = Net.find_by_name(self._active_layout, net_name)
+                net = Net.find_by_name(layout=self._active_layout, name=net_name)
                 if net.is_null:
                     net = Net.create(self._active_layout, net_name)
                 return net
@@ -918,11 +918,11 @@ class NetClasses:
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
             return False
-        grpc_net_class = GrpcNetClass.create(self._pedb.active_layout, name)
+        grpc_net_class = GrpcNetClass.create(self._pedb.active_layout.core, name)
         if isinstance(net, str):
             net = [net]
         for i in net:
-            grpc_net_class.add_net(self._pedb.nets[i])
+            grpc_net_class.add_net(self._pedb.nets[i].core)
         net_class = NetClass(self._pedb, grpc_net_class)
         self.items[name] = net_class
         return net_class

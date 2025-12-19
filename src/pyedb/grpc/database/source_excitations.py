@@ -408,8 +408,6 @@ class SourceExcitation:
 
         if isinstance(refdes, str):
             refdes = self._pedb.components.instances[refdes]
-        elif isinstance(refdes, Component):
-            refdes = Component(self._pedb, refdes)
         pins = self._get_pins_for_ports(pins, refdes)
         if not pins:
             raise RuntimeWarning("No pins found during port creation. Port is not defined.")
@@ -695,8 +693,7 @@ class SourceExcitation:
                             self.create_port_on_pins(component, pin, ref_pins)
                         else:
                             if extend_reference_pins_outside_component:
-                                _pin = PadstackInstance(self._pedb, pin)
-                                ref_pin = _pin.get_reference_pins(
+                                ref_pin = pin.get_reference_pins(
                                     reference_net=reference_net[0],
                                     max_limit=1,
                                     component_only=False,
@@ -1027,11 +1024,10 @@ class SourceExcitation:
             port_name = generate_unique_name(port_name, n=2)
             self._logger.info("An existing port already has this same name. Renaming to {}.".format(port_name))
         PadstackInstanceTerminal.create(
-            layout=self._pedb.active_layout,
+            self._pedb.layout,
             name=port_name,
             padstack_instance=padstackinstance,
             layer=terminal_layer,
-            net=padstackinstance.net,
             is_ref=False,
         )
         return port_name
@@ -1075,10 +1071,8 @@ class SourceExcitation:
             self._pedb.logger.error(f"No primitive found for ID {prim_id}")
             return False
         prim = prim[0]
-        pos_edge = [GrpcPrimitiveEdge.create(prim, point_on_edge)]
-        return GrpcEdgeTerminal.create(
-            layout=prim.layout, name=terminal_name, edges=pos_edge, net=prim.net, is_ref=is_ref
-        )
+        pos_edge = [GrpcPrimitiveEdge.create(prim.core, point_on_edge)]
+        return EdgeTerminal.create(layout=prim.layout, name=terminal_name, edge=pos_edge, net=prim.net, is_ref=is_ref)
 
     def create_circuit_port_on_pin(
         self,
@@ -1527,7 +1521,7 @@ class SourceExcitation:
                 is_ref=False,
             )
         if source_type in ["circuit_port", "lumped_port"]:
-            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.PORT
+            pos_pingroup_terminal.core.boundary_type = GrpcBoundaryType.PORT
             pos_pingroup_terminal.impedance = Value(impedance)
             if len(positive_pins) > 1 and len(negatives_pins) > 1:
                 if source_type == "lumped_port":
@@ -1542,24 +1536,24 @@ class SourceExcitation:
             pos_pingroup_terminal.name = name
 
         elif source_type == "current_source":
-            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
-            neg_pingroup_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
-            pos_pingroup_terminal.source_amplitude = Value(magnitude)
-            pos_pingroup_terminal.source_phase = Value(phase)
+            pos_pingroup_terminal.core.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
+            neg_pingroup_terminal.core.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
+            pos_pingroup_terminal.core.source_amplitude = Value(magnitude)
+            pos_pingroup_terminal.core.source_phase = Value(phase)
             pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
-            pos_pingroup_terminal.name = name
+            pos_pingroup_terminal.core.name = name
 
         elif source_type == "voltage_source":
-            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
-            neg_pingroup_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
-            pos_pingroup_terminal.source_amplitude = Value(magnitude)
-            pos_pingroup_terminal.source_phase = Value(phase)
-            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
-            pos_pingroup_terminal.name = name
+            pos_pingroup_terminal.core.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
+            neg_pingroup_terminal.core.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
+            pos_pingroup_terminal.core.source_amplitude = Value(magnitude)
+            pos_pingroup_terminal.core.source_phase = Value(phase)
+            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal.core
+            pos_pingroup_terminal.core.name = name
 
         elif source_type == "rlc":
-            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.RLC
-            neg_pingroup_terminal.boundary_type = GrpcBoundaryType.RLC
+            pos_pingroup_terminal.core.boundary_type = GrpcBoundaryType.RLC
+            neg_pingroup_terminal.core.boundary_type = GrpcBoundaryType.RLC
             pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
             Rlc = GrpcRlc()
             Rlc.r_enabled = bool(r)
@@ -1568,10 +1562,10 @@ class SourceExcitation:
             Rlc.r = Value(r)
             Rlc.l = Value(l)
             Rlc.c = Value(c)
-            pos_pingroup_terminal.rlc_boundary_parameters = Rlc
+            pos_pingroup_terminal.core.rlc_boundary_parameters = Rlc
 
         elif source_type == "dc_terminal":
-            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.DC_TERMINAL
+            pos_pingroup_terminal.core.boundary_type = GrpcBoundaryType.DC_TERMINAL
         else:
             pass
         return pos_pingroup_terminal.name
@@ -1761,7 +1755,7 @@ class SourceExcitation:
                         pin_net = None
                     if pin_net and pin.net.is_null:
                         self._logger.warning(f"Pin {pin.id} has no net defined")
-                    elif pin.net.name in net_list:
+                    elif pin.net_name in net_list:
                         pin.is_pin = True
                         port_name = f"{ref}_{pin.net.name}_{pin.name}"
                         if self.check_before_terminal_assignement(
@@ -1856,7 +1850,7 @@ class SourceExcitation:
             positive_primitive_id = positive_primitive_id.edb_uid
 
         if isinstance(negative_primitive_id, Primitive):
-            negative_primitive_id = negative_primitive_id.edb_uid
+            negative_primitive_id = negative_primitive_id.id
 
         _, pos_term = self.create_wave_port(
             positive_primitive_id,
@@ -1927,10 +1921,10 @@ class SourceExcitation:
             port_name = generate_unique_name("Terminal_")
 
         if isinstance(prim_id, Primitive):
-            prim_id = prim_id.edb_uid
+            prim_id = prim_id.id
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
         pos_edge_term.impedance = Value(impedance)
-        wave_port = WavePort(self._pedb, pos_edge_term)
+        wave_port = WavePort(self._pedb, pos_edge_term.core)
         wave_port.horizontal_extent_factor = horizontal_extent_factor
         wave_port.vertical_extent_factor = vertical_extent_factor
         wave_port.pec_launch_width = pec_launch_width
@@ -2570,10 +2564,10 @@ class SourceExcitation:
             reference_point = GrpcPointData(reference_point)
         if not port_name:
             port_name = generate_unique_name("Port_")
-        edge = GrpcPrimitiveEdge.create(polygon, terminal_point)
+        edge = GrpcPrimitiveEdge.create(polygon.core, terminal_point)
         edges = [edge]
         edge_term = GrpcEdgeTerminal.create(
-            layout=polygon.layout, edges=edges, net=polygon.net, name=port_name, is_ref=False
+            layout=polygon.core.layout, edges=edges, net=polygon.core.net, name=port_name, is_ref=False
         )
         if force_circuit_port:
             edge_term.is_circuit_port = True
@@ -2584,13 +2578,13 @@ class SourceExcitation:
             edge_term.impedance = Value(port_impedance)
         edge_term.name = port_name
         if reference_polygon and reference_point:
-            ref_edge = GrpcPrimitiveEdge.create(reference_polygon, reference_point)
+            ref_edge = GrpcPrimitiveEdge.create(reference_polygon.core, reference_point)
             ref_edges = [ref_edge]
             ref_edge_term = GrpcEdgeTerminal.create(
-                layout=reference_polygon.layout,
+                layout=reference_polygon.core.layout,
                 name=port_name + "_ref",
                 edges=ref_edges,
-                net=reference_polygon.net,
+                net=reference_polygon.core.net,
                 is_ref=True,
             )
             if reference_layer:
@@ -2898,16 +2892,11 @@ class SourceExcitation:
         -------
         :class:`Terminal <pyedb.dotnet.database.edb_data.terminals.Terminal>`
         """
-        from pyedb.grpc.database.terminal.terminal import Terminal
 
-        term = Terminal(self._pedb, terminal)
-        term.boundary_type = "voltage_probe"
-
-        ref_term = Terminal(self._pedb, ref_terminal)
-        ref_term.boundary_type = "voltage_probe"
-
-        term.ref_terminal = ref_terminal
-        return term
+        terminal.boundary_type = "voltage_probe"
+        ref_terminal.boundary_type = "voltage_probe"
+        terminal.ref_terminal = ref_terminal
+        return terminal
 
     def create_voltage_probe_on_pin_group(
         self, probe_name: str, pos_pin_group_name: str, neg_pin_group_name: str, impedance: Union[int, float] = 1000000

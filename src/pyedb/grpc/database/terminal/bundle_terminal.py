@@ -22,11 +22,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
+    from pyedb.grpc.database.ports.ports import WavePort
 from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundleTerminal
 from ansys.edb.core.terminal.terminal import (
     HfssPIType as GrpcHfssPIType,
@@ -36,10 +37,9 @@ from ansys.edb.core.terminal.terminal import (
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.rlc import Rlc
-from pyedb.grpc.database.utility.value import Value
 
 
-class BundleTerminal(GrpcBundleTerminal):
+class BundleTerminal:
     """Manages bundle terminal properties.
 
     Parameters
@@ -51,9 +51,34 @@ class BundleTerminal(GrpcBundleTerminal):
     """
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+        self.core = edb_object
         self._pedb = pedb
-        self._edb_object = edb_object
+
+    @classmethod
+    def create(cls, terminals: list[Union[Terminal, WavePort]]) -> BundleTerminal:
+        """Create a bundle terminal.
+
+        Parameters
+        ----------
+        terminals : list[Union[Terminal, WavePort]]
+            List of terminals to bundle.
+
+        Returns
+        -------
+        BundleTerminal
+            The created bundle terminal.
+        """
+        if not isinstance(terminals, list):
+            raise TypeError("Terminals must be a list of Terminal objects.")
+        if not terminals:
+            raise ValueError("Terminals list cannot be empty.")
+        pedb = terminals[0]._pedb
+        for term in terminals[1:]:
+            if term._pedb is not pedb:
+                raise ValueError("All terminals must belong to the same EDB.")
+        terminals = [term.core for term in terminals]
+        term = GrpcBundleTerminal.create(terminals=terminals)
+        return cls(pedb, term)
 
     @property
     def boundary_type(self) -> str:
@@ -63,7 +88,17 @@ class BundleTerminal(GrpcBundleTerminal):
         -------
         str : boundary type.
         """
-        return super().boundary_type.name.lower()
+        return self.core.boundary_type.name.lower()
+
+    @property
+    def is_reference_terminal(self) -> bool:
+        """Check if the bundle terminal is a reference terminal.
+
+        Returns
+        -------
+        bool
+        """
+        return self.core.is_reference_terminal
 
     def decouple(self) -> bool:
         """Ungroup a bundle of terminals.
@@ -72,7 +107,7 @@ class BundleTerminal(GrpcBundleTerminal):
         -------
         bool
         """
-        return self.ungroup()
+        return self.core.ungroup()
 
     @property
     def component(self) -> Component:
@@ -83,7 +118,7 @@ class BundleTerminal(GrpcBundleTerminal):
         :class:`Component <pyedb.grpc.database.hierarchy.component.Component`
         """
 
-        return Component(self._pedb, self.component)
+        return Component(self._pedb, self.core.component)
 
     @property
     def impedance(self) -> float:
@@ -94,11 +129,11 @@ class BundleTerminal(GrpcBundleTerminal):
         float
             Impedance value.
         """
-        return Value(self.impedance)
+        return self.core.impedance.value
 
     @impedance.setter
     def impedance(self, value):
-        self.impedance = Value(value)
+        self.core.impedance = self._pedb.value(value)
 
     @property
     def net(self) -> Net:
@@ -109,7 +144,7 @@ class BundleTerminal(GrpcBundleTerminal):
         :class:`Net <pyedb.grpc.database.net.net.Net>`
         """
 
-        return Net(self._pedb, self.net)
+        return Net(self._pedb, self.core.net)
 
     @property
     def hfss_pi_type(self) -> str:
@@ -119,20 +154,20 @@ class BundleTerminal(GrpcBundleTerminal):
         -------
         str
         """
-        return self.hfss_pi_type.name
+        return self.core.hfss_pi_type.name.lower()
 
     @hfss_pi_type.setter
     def hfss_pi_type(self, value):
         if value.upper() == "DEFAULT":
-            self.hfss_pi_type = GrpcHfssPIType.DEFAULT
+            self.core.hfss_pi_type = GrpcHfssPIType.DEFAULT
         elif value.upper() == "COAXIAL_OPEN":
-            self.hfss_pi_type = GrpcHfssPIType.COAXIAL_OPEN
+            self.core.hfss_pi_type = GrpcHfssPIType.COAXIAL_OPEN
         elif value.upper() == "COAXIAL_SHORTENED":
-            self.hfss_pi_type = GrpcHfssPIType.COAXIAL_SHORTENED
+            self.core.hfss_pi_type = GrpcHfssPIType.COAXIAL_SHORTENED
         elif value.upper() == "GAP":
-            self.hfss_pi_type = GrpcHfssPIType.GAP
+            self.core.hfss_pi_type = GrpcHfssPIType.GAP
         elif value.upper() == "LUMPED":
-            self.hfss_pi_type = GrpcHfssPIType.LUMPED
+            self.core.hfss_pi_type = GrpcHfssPIType.LUMPED
 
     @property
     def reference_layer(self) -> Layer:
@@ -140,16 +175,16 @@ class BundleTerminal(GrpcBundleTerminal):
 
         Returns
         -------
-        :class:`Layer <pyedb.grpc.database.layer.layer.Layer>`
+        :class:`Layer <pyedb.grpc.database.layers.layer.Layer>`
         """
-        return Layer(self._pedb, self.reference_layer)
+        return Layer(self._pedb, self.core.reference_layer)
 
     @reference_layer.setter
     def reference_layer(self, value):
         if isinstance(value, Layer):
-            self.reference_layer = value._edb_object
+            self.core.reference_layer = value.core
         elif isinstance(value, str):
-            self.reference_layer = self._pedb.stackup.signal_layer[value]._edb_object
+            self.core.reference_layer = self._pedb.stackup.signal_layer[value].core
 
     @property
     def reference_terminal(self) -> Terminal:
@@ -159,12 +194,12 @@ class BundleTerminal(GrpcBundleTerminal):
         -------
         :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`
         """
-        return Terminal(self._pedb, super().reference_terminal)
+        return Terminal(self._pedb, self.core.reference_terminal)
 
     @reference_terminal.setter
     def reference_terminal(self, value):
         if isinstance(value, Terminal):
-            self.reference_terminal = value._edb_object
+            self.core.reference_terminal = value.core
 
     @property
     def rlc_boundary_parameters(self) -> Rlc:
@@ -174,7 +209,7 @@ class BundleTerminal(GrpcBundleTerminal):
         -------
         :class:`Rlc <pyedb.grpc.database.utility.rlc.Rlc>`
         """
-        return Rlc(self._pedb, self.rlc)
+        return Rlc(self._pedb, self.core.rlc)
 
     @property
     def source_amplitude(self) -> float:
@@ -184,11 +219,11 @@ class BundleTerminal(GrpcBundleTerminal):
         -------
         float
         """
-        return Value(self.source_amplitude)
+        return self.core.source_amplitude.value
 
     @source_amplitude.setter
     def source_amplitude(self, value):
-        self.source_amplitude = Value(value)
+        self.core.source_amplitude = self._pedb.value(value)
 
     @property
     def source_phase(self) -> float:
@@ -198,11 +233,11 @@ class BundleTerminal(GrpcBundleTerminal):
         -------
         float
         """
-        return Value(self.source_phase)
+        return self.core.source_phase.value
 
     @source_phase.setter
     def source_phase(self, value):
-        self.source_phase = Value(value)
+        self.core.source_phase = self._pedb.value(value)
 
     @property
     def term_to_ground(self) -> str:
@@ -213,16 +248,16 @@ class BundleTerminal(GrpcBundleTerminal):
         str
             Terminal name.
         """
-        return self.term_to_ground.name
+        return self.core.term_to_ground.name
 
     @term_to_ground.setter
     def term_to_ground(self, value):
         if value.upper() == "NO_GROUND":
-            self.term_to_ground = GrpcSourceTermToGroundType.NO_GROUND
+            self.core.term_to_ground = GrpcSourceTermToGroundType.NO_GROUND
         elif value.upper() == "NEGATIVE":
-            self.term_to_ground = GrpcSourceTermToGroundType.NEGATIVE
+            self.core.term_to_ground = GrpcSourceTermToGroundType.NEGATIVE
         elif value.upper() == "POSITIVE":
-            self.term_to_ground = GrpcSourceTermToGroundType.POSITIVE
+            self.core.term_to_ground = GrpcSourceTermToGroundType.POSITIVE
 
     @property
     def terminals(self) -> list[Terminal]:
@@ -232,4 +267,4 @@ class BundleTerminal(GrpcBundleTerminal):
         -------
         List[:class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
         """
-        return [Terminal(self._pedb, terminal) for terminal in self.terminals]
+        return [Terminal(self._pedb, terminal) for terminal in self.core.terminals]

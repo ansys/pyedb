@@ -20,10 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from typing import TYPE_CHECKING
+
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.terminal.point_terminal import PointTerminal as GrpcPointTerminal
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
+if TYPE_CHECKING:
+    from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from pyedb.grpc.database.utility.value import Value
 
 mapping_boundary_type = {
@@ -37,12 +41,86 @@ mapping_boundary_type = {
 }
 
 
-class PointTerminal(GrpcPointTerminal):
+class PointTerminal:
     """Manages point terminal properties."""
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+        self.core = edb_object
         self._pedb = pedb
+
+    @classmethod
+    def create(cls, layout, net, layer, name, point):
+        """Create a point terminal.
+
+        Parameters
+        ----------
+        layout : :class: <``Layout` pyedb.grpc.database.layout.layout.Layout>
+            Layout object associated with the terminal.
+        net : Net
+            :class: `Net` <pyedb.grpc.database.net.net.Net> object associated with the terminal.
+        name : str
+            Terminal name.
+        point : [float, float]
+            [x,y] location of the terminal.
+        layer : str
+            Layer name.
+        net : :class: <``Net` pyedb.grpc.database.net.net.Net>, optional
+            Net object associated with the terminal. If None, the terminal will be
+            associated with the ground net.
+
+        Returns
+        -------
+        PointTerminal
+            Point terminal object.
+        """
+        if isinstance(point, list):
+            point = GrpcPointData([Value(i) for i in point])
+        if isinstance(net, str):
+            net = layout._pedb.nets[net]
+        if isinstance(layer, str):
+            layer = layout._pedb.stackup.layers[layer]
+        core_terminal = GrpcPointTerminal.create(
+            layout=layout.core, net=net.core, layer=layer.core, name=name, point=point
+        )
+        return cls(layout._pedb, core_terminal)
+
+    @property
+    def name(self) -> str:
+        """Terminal name.
+
+        Returns
+        -------
+        str : terminal name.
+
+        """
+        return self.core.name
+
+    @name.setter
+    def name(self, value):
+        self.core.name = value
+
+    @property
+    def is_reference_terminal(self) -> bool:
+        """Whether the terminal is a reference terminal.
+
+        Returns
+        -------
+        bool
+            True if the terminal is a reference terminal, False otherwise.
+
+        """
+        return self.core.is_reference_terminal
+
+    @property
+    def point(self) -> tuple[float, float]:
+        """Terminal point.
+
+        Returns
+        -------
+        tuple[float, float]
+
+        """
+        return self.core.point.x.value, self.core.point.y.value
 
     @property
     def boundary_type(self):
@@ -53,7 +131,7 @@ class PointTerminal(GrpcPointTerminal):
         str : boundary type.
 
         """
-        return super().boundary_type.name.lower()
+        return self.core.boundary_type.name.lower()
 
     @boundary_type.setter
     def boundary_type(self, value):
@@ -61,28 +139,28 @@ class PointTerminal(GrpcPointTerminal):
             value = mapping_boundary_type.get(value.lower(), None)
         if not isinstance(value, GrpcBoundaryType):
             raise ValueError("Value must be a string or BoundaryType enum.")
-        super(PointTerminal, self.__class__).boundary_type.__set__(self, value)
+        self.core.boundary_type = value
 
     @property
-    def location(self) -> list[float]:
+    def location(self) -> tuple[float, float]:
         """Terminal position.
 
         Returns
         -------
-        [float, float] : [x,y]
+        tuple[float, float] : (x,y])
 
         """
-        return [Value(self.point.x), Value(self.point.y)]
+        return self.core.point
 
     @location.setter
     def location(self, value):
         if not isinstance(value, list):
             return
         value = [Value(i) for i in value]
-        self.point = GrpcPointData(value)
+        self.core.point = GrpcPointData(value)
 
     @property
-    def layer(self) -> any:
+    def layer(self) -> "StackupLayer":
         """Terminal layer.
 
         Returns
@@ -92,15 +170,15 @@ class PointTerminal(GrpcPointTerminal):
         """
         from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 
-        return StackupLayer(self._pedb, super().layer)
+        return StackupLayer(self._pedb, self.core.layer)
 
     @layer.setter
     def layer(self, value):
         if value in self._pedb.stackup.layers:
-            super(PointTerminal, self.__class__).layer.__set__(self, value)
+            self.core.layer = value
 
     @property
-    def ref_terminal(self) -> any:
+    def ref_terminal(self) -> "PointTerminal":
         """Reference terminal.
 
         Returns
@@ -112,10 +190,10 @@ class PointTerminal(GrpcPointTerminal):
 
     @ref_terminal.setter
     def ref_terminal(self, value):
-        super().reference_terminal = value
+        self.core.reference_terminal = value.core
 
     @property
-    def reference_terminal(self) -> any:
+    def reference_terminal(self) -> "PointTerminal":
         """Reference terminal.
 
         Returns
@@ -123,11 +201,11 @@ class PointTerminal(GrpcPointTerminal):
         :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
 
         """
-        return PointTerminal(self._pedb, super().reference_terminal)
+        return PointTerminal(self._pedb, self.core.reference_terminal)
 
     @reference_terminal.setter
     def reference_terminal(self, value):
-        super(PointTerminal, self.__class__).reference_terminal.__set__(self, value)
+        self.core.reference_terminal = value.core
 
     @property
     def terminal_type(self) -> str:

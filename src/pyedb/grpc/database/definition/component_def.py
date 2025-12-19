@@ -102,7 +102,11 @@ class ComponentDef:
         -------
         dict[str, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`]
         """
-        comp_list = [Component(self._pedb, l) for l in Component.find_by_def(self._pedb.active_layout, self.part_name)]
+        from ansys.edb.core.hierarchy.component_group import ComponentGroup as GrpcComponent
+
+        comp_list = [
+            Component(self._pedb, l) for l in GrpcComponent.find_by_def(self._pedb.active_layout.core, self.part_name)
+        ]
         return {comp.refdes: comp for comp in comp_list}
 
     @property

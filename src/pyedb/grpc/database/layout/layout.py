@@ -29,12 +29,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from pyedb.dotnet.database.general import Primitives
     from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-from typing import Dict, List, Union
+from typing import TYPE_CHECKING, Dict, List, Union
 
-from ansys.edb.core.layout.layout import Layout as GrpcLayout
+if TYPE_CHECKING:
+    from pyedb.grpc.database.primitive.primitive import Primitive
 
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
@@ -75,14 +77,18 @@ def _get_wrapper_class(prim_type: str):
     return _WRAPPER_CLASS_CACHE.get(prim_type)
 
 
-class Layout(GrpcLayout):
+class Layout:
     """Manage Layout class."""
 
     def __init__(self, pedb):
-        super().__init__(pedb.active_cell._Cell__stub.GetLayout(pedb.active_cell.msg))
+        self.core = pedb.active_cell.layout
         self._pedb = pedb
         self.__primitives = []
         self.__padstack_instances = {}
+
+    @property
+    def layout_instance(self):
+        return self.core.layout_instance
 
     @property
     def cell(self):
@@ -93,8 +99,8 @@ class Layout(GrpcLayout):
         return self._pedb._active_cell
 
     @property
-    def primitives(self) -> list[any]:
-        primitives = super().primitives
+    def primitives(self) -> list["Primitive"]:
+        primitives = self.core.primitives
         self.__primitives = []
         for prim in primitives:
             wrapper_class = _get_wrapper_class(prim.__class__.__name__)
@@ -126,7 +132,7 @@ class Layout(GrpcLayout):
         return temp
 
     @property
-    def nets(self) -> list[Net]:
+    def nets(self) -> list["Net"]:
         """Nets.
 
         Returns
@@ -136,7 +142,7 @@ class Layout(GrpcLayout):
         """
         from pyedb.grpc.database.net.net import Net
 
-        return [Net(self._pedb, net) for net in super().nets]
+        return [Net(self._pedb, net) for net in self.core.nets]
 
     @property
     def bondwires(self) -> list[Bondwire]:
@@ -216,7 +222,7 @@ class Layout(GrpcLayout):
         """Get all padstack instances in a list."""
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
-        pad_stack_inst = super().padstack_instances
+        pad_stack_inst = self.core.padstack_instances
         self.__padstack_instances = {i.edb_uid: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
         return self.__padstack_instances
 

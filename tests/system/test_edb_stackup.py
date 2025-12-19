@@ -84,7 +84,7 @@ class TestClass(BaseTestClass):
         try:
             layout = laminate_edb.active_layout
             if laminate_edb.grpc:
-                cell_instances = layout.cell_instances
+                cell_instances = layout.core.cell_instances
             else:
                 cell_instances = list(layout.CellInstances)
             assert len(cell_instances) == 0
@@ -96,7 +96,7 @@ class TestClass(BaseTestClass):
                 place_on_top=True,
             )
             if laminate_edb.grpc:
-                cell_instances = layout.cell_instances
+                cell_instances = layout.core.cell_instances
             else:
                 cell_instances = list(layout.CellInstances)
             assert len(cell_instances) == 1
@@ -161,7 +161,7 @@ class TestClass(BaseTestClass):
         try:
             layout = laminate_edb.active_layout
             if laminate_edb.grpc:
-                cell_instances = layout.cell_instances
+                cell_instances = layout.core.cell_instances
             else:
                 cell_instances = list(layout.CellInstances)
             assert len(cell_instances) == 0
@@ -173,7 +173,7 @@ class TestClass(BaseTestClass):
                 place_on_top=False,
             )
             if laminate_edb.grpc:
-                cell_instances = layout.cell_instances
+                cell_instances = layout.core.cell_instances
             else:
                 cell_instances = list(layout.CellInstances)
             assert len(cell_instances) == 1
@@ -412,6 +412,8 @@ class TestClass(BaseTestClass):
                     # dotnet is returning 0 elevation on dielectric layer which is wrong.
                     assert data["layers"]["DE2"][parameter] == 0.0
                 else:
+                    if data["layers"]["DE2"][parameter] == "":
+                        value = ""
                     assert data["layers"]["DE2"][parameter] == value
         edbapp.close(terminate_rpc_session=False)
 
@@ -583,7 +585,7 @@ class TestClass(BaseTestClass):
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
-                cellInstances = layout.cell_instances
+                cellInstances = layout.core.cell_instances
             else:
                 cellInstances = list(layout.CellInstances)
             assert len(cellInstances) == 0
@@ -671,7 +673,7 @@ class TestClass(BaseTestClass):
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
-                cellInstances = layout.cell_instances
+                cellInstances = layout.core.cell_instances
             else:
                 cellInstances = list(layout.CellInstances)
             assert len(cellInstances) == 0
@@ -757,7 +759,7 @@ class TestClass(BaseTestClass):
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
-                cellInstances = layout.cell_instances
+                cellInstances = layout.core.cell_instances
             else:
                 cellInstances = list(layout.CellInstances)
             assert len(cellInstances) == 0
@@ -846,7 +848,7 @@ class TestClass(BaseTestClass):
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
-                cellInstances = layout.cell_instances
+                cellInstances = layout.core.cell_instances
             else:
                 cellInstances = list(layout.CellInstances)
             assert len(cellInstances) == 0
@@ -934,7 +936,7 @@ class TestClass(BaseTestClass):
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
-                cellInstances = layout.cell_instances
+                cellInstances = layout.core.cell_instances
             else:
                 cellInstances = list(layout.CellInstances)
             assert len(cellInstances) == 0
@@ -1022,7 +1024,7 @@ class TestClass(BaseTestClass):
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
-                cellInstances = layout.cell_instances
+                cellInstances = layout.core.cell_instances
             else:
                 cellInstances = list(layout.CellInstances)
             assert len(cellInstances) == 0
@@ -1110,7 +1112,7 @@ class TestClass(BaseTestClass):
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
-                cellInstances = layout.cell_instances
+                cellInstances = layout.core.cell_instances
             else:
                 cellInstances = list(layout.CellInstances)
             assert len(cellInstances) == 0
@@ -1198,7 +1200,7 @@ class TestClass(BaseTestClass):
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
-                cellInstances = layout.cell_instances
+                cellInstances = layout.core.cell_instances
             else:
                 cellInstances = list(layout.CellInstances)
             assert len(cellInstances) == 0

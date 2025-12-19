@@ -26,52 +26,83 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from __future__ import absolute_import
+from __future__ import absolute_import, annotations
 
 from ansys.edb.core.layer.layer import Layer as GrpcLayer, LayerType as GrpcLayerType
 
+layer_type_mapping = {
+    "conducting": GrpcLayerType.CONDUCTING_LAYER,
+    "air_lines": GrpcLayerType.AIRLINES_LAYER,
+    "errors": GrpcLayerType.ERRORS_LAYER,
+    "symbol": GrpcLayerType.SYMBOL_LAYER,
+    "measure": GrpcLayerType.MEASURE_LAYER,
+    "assembly": GrpcLayerType.ASSEMBLY_LAYER,
+    "silkscreen": GrpcLayerType.SILKSCREEN_LAYER,
+    "solder_mask": GrpcLayerType.SOLDER_MASK_LAYER,
+    "solder_paste": GrpcLayerType.SOLDER_PASTE_LAYER,
+    "glue": GrpcLayerType.GLUE_LAYER,
+    "wirebond": GrpcLayerType.WIREBOND_LAYER,
+    "user": GrpcLayerType.USER_LAYER,
+    "siwave_hfss_solver_regions": GrpcLayerType.SIWAVE_HFSS_SOLVER_REGIONS,
+    "postprocessing": GrpcLayerType.POST_PROCESSING_LAYER,
+    "outline": GrpcLayerType.OUTLINE_LAYER,
+    "layer_types_count": GrpcLayerType.LAYER_TYPES_COUNT,
+    "undefined_layer_type": GrpcLayerType.UNDEFINED_LAYER_TYPE,
+}
 
-class Layer(GrpcLayer):
+
+class Layer:
     """Manages Layer."""
 
-    def __init__(self, pedb, edb_object=None, name="", layer_type="undefined", **kwargs):
-        super().__init__(edb_object.msg)
-        self._pedb = pedb
+    def __init__(self, edb_object=None, name="", layer_type="undefined", **kwargs):
+        self.core = edb_object
         self._name = name
         self._color = ()
         self._type = ""
         if edb_object:
-            self._cloned_layer = self.clone()
+            self._cloned_layer = self.core.clone()
         else:
-            layer_type_mapping = {
-                "conducting_layer": GrpcLayerType.CONDUCTING_LAYER,
-                "air_lines_layer": GrpcLayerType.AIRLINES_LAYER,
-                "errors_layer": GrpcLayerType.ERRORS_LAYER,
-                "symbol_layer": GrpcLayerType.SYMBOL_LAYER,
-                "measure_layer": GrpcLayerType.MEASURE_LAYER,
-                "assembly_layer": GrpcLayerType.ASSEMBLY_LAYER,
-                "silkscreen_layer": GrpcLayerType.SILKSCREEN_LAYER,
-                "solder_mask_layer": GrpcLayerType.SOLDER_MASK_LAYER,
-                "solder_paste_layer": GrpcLayerType.SOLDER_PASTE_LAYER,
-                "glue_layer": GrpcLayerType.GLUE_LAYER,
-                "wirebond_layer": GrpcLayerType.WIREBOND_LAYER,
-                "user_layer": GrpcLayerType.USER_LAYER,
-                "siwave_hfss_solver_regions": GrpcLayerType.SIWAVE_HFSS_SOLVER_REGIONS,
-                "postprocessing_layer": GrpcLayerType.POST_PROCESSING_LAYER,
-                "outline_layer": GrpcLayerType.OUTLINE_LAYER,
-                "layer_types_count": GrpcLayerType.LAYER_TYPES_COUNT,
-                "undefined_layer_type": GrpcLayerType.UNDEFINED_LAYER_TYPE,
-            }
             if layer_type in layer_type_mapping:
-                self.create(name=name, lyr_type=layer_type_mapping[layer_type])
+                self.core.create(name=name, lyr_type=layer_type_mapping[layer_type])
                 self.update(**kwargs)
+
+    @classmethod
+    def create(cls, name, layer_type: str = "solder_mask") -> Layer:
+        """
+        Parameters
+        ----------
+        name : str
+            Layer name
+        layer_type : str
+            Layer type
+
+        Returns
+        -------
+        :class: `Layer <pyedb.`
+        """
+        layer = GrpcLayer.create(name=name, lyr_type=layer_type_mapping[layer_type])
+        return cls(edb_object=layer)
+
+    @property
+    def id(self):
+        """Get the layer ID."""
+        return self.core.id
 
     def update(self, **kwargs):
         for k, v in kwargs.items():
             if k in dir(self):
                 self.__setattr__(k, v)
             else:
-                self._pedb.logger.error(f"{k} is not a valid layer attribute")
+                raise Exception(f"{k} is not a valid layer attribute")
+
+    @property
+    def name(self) -> str:
+        """Get the layer name."""
+        return self.core.name
+
+    @name.setter
+    def name(self, value: str):
+        self.core.name = value
 
     @property
     def properties(self) -> dict[str, str]:
@@ -79,10 +110,10 @@ class Layer(GrpcLayer):
 
         from pyedb.grpc.database.stackup import StackupLayer
 
-        if isinstance(self.cast(), GrpcStackupLayer):
-            return StackupLayer(self._pedb, self.cast()).properties
+        if isinstance(self.core.cast(), GrpcStackupLayer):
+            return StackupLayer(self.core.cast()).properties
         else:
-            data = {"name": self.name, "type": self.type, "color": self.color}
+            data = {"name": self.name, "type": self.type, "color": self.core.color}
             return data
 
     @properties.setter
@@ -92,15 +123,20 @@ class Layer(GrpcLayer):
             self.name = name
         type = params.get("type", "")
         if type:
-            self.type = type
+            self.core.type = type
         color = params.get("color", "")
         if color:
-            self.color = color
+            self.core.color = color
 
     @property
     def type(self) -> str:
-        return super().type.name.lower().split("_")[0]
+        return self.core.type.name.lower().split("_")[0]
 
     @property
     def _layer_name_mapping_reversed(self):
         return {j: i for i, j in self._layer_name_mapping.items()}
+
+    @property
+    def is_stackup_layer(self):
+        """Check if the layer is a stackup layer."""
+        return self.core.is_stackup_layer
