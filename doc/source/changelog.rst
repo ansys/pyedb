@@ -9,6 +9,95 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.66.0 <https://github.com/ansys/pyedb/releases/tag/v0.66.0>`_ - December 19, 2025
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/upload-artifact from 5.0.0 to 6.0.0
+          - `#1707 <https://github.com/ansys/pyedb/pull/1707>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Fix typo in AUTHORS
+          - `#1695 <https://github.com/ansys/pyedb/pull/1695>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Fixing static folder creation
+          - `#1711 <https://github.com/ansys/pyedb/pull/1711>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump release 0.66.dev0
+          - `#1682 <https://github.com/ansys/pyedb/pull/1682>`_
+
+        * - Update CHANGELOG for v0.65.1
+          - `#1684 <https://github.com/ansys/pyedb/pull/1684>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Component_def refactoring
+          - `#1686 <https://github.com/ansys/pyedb/pull/1686>`_
+
+        * - Material refactoring
+          - `#1688 <https://github.com/ansys/pyedb/pull/1688>`_
+
+        * - Nport component def refactoring
+          - `#1689 <https://github.com/ansys/pyedb/pull/1689>`_
+
+        * - Package def refactoring
+          - `#1690 <https://github.com/ansys/pyedb/pull/1690>`_
+
+        * - Edb cfg padstacks
+          - `#1692 <https://github.com/ansys/pyedb/pull/1692>`_
+
+        * - Random failure test
+          - `#1694 <https://github.com/ansys/pyedb/pull/1694>`_
+
+        * - Move control_file.py to generic folder
+          - `#1701 <https://github.com/ansys/pyedb/pull/1701>`_
+
+        * - Edb configure terminal
+          - `#1702 <https://github.com/ansys/pyedb/pull/1702>`_
+
+        * - Configure cfg_padstacks.py
+          - `#1703 <https://github.com/ansys/pyedb/pull/1703>`_
+
+        * - EDB CFG cutout
+          - `#1706 <https://github.com/ansys/pyedb/pull/1706>`_
+
+        * - Removing edb-core inheritance
+          - `#1710 <https://github.com/ansys/pyedb/pull/1710>`_
+
+
 `0.65.1 <https://github.com/ansys/pyedb/releases/tag/v0.65.1>`_ - November 27, 2025
 ===================================================================================
 
