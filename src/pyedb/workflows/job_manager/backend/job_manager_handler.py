@@ -231,22 +231,15 @@ class JobManagerHandler:
                 else:
                     self.ansys_path = os.path.join(installed_versions[version], "ansysedt.exe")
         self.scheduler_type = self._detect_scheduler()
-        # Create resource limits with default values
-        resource_limits = ResourceLimits(max_concurrent_jobs=1)
-        self.manager = JobManager(resource_limits=resource_limits, scheduler_type=self.scheduler_type)
-        self.manager.jobs = {}  # In-memory job store -TODO add persistence database
-        # Pass the detected ANSYS path to the manager
-        self.manager.ansys_path = self.ansys_path
+
+        # Defer JobManager creation until start_service() is called
+        # This prevents the aiohttp app from creating the static/ folder immediately
+        self.manager: Optional[JobManager] = None
+        self.sio = None
+        self.app = None
 
         self.host, self.port = host, port
         self._url = f"http://{host}:{port}"
-
-        # Setup aiohttp and Socket.IO server ---
-        self.sio = self.manager.sio
-        self.app = self.manager.app
-        self.app.middlewares.append(cors_middleware)
-        self._add_routes()
-        # ----------------------------------------
 
         self.runner: Optional[web.AppRunner] = None
         self.site = None
@@ -255,10 +248,9 @@ class JobManagerHandler:
         self._thread: Optional[threading.Thread] = None
         self._start_event = threading.Event()
         self._shutdown = False
-        self.resource_limits = self.manager.resource_limits
+        self.resource_limits: Optional[ResourceLimits] = None
         atexit.register(self.close)
 
-        self.scheduler_type = self._detect_scheduler()
         self._sch_mgr: Optional[SchedulerManager] = None
         if self.scheduler_type != SchedulerType.NONE:
             self._sch_mgr = SchedulerManager(self.scheduler_type)
@@ -462,6 +454,9 @@ class JobManagerHandler:
         aiohttp.web.Response
             JSON array of job objects
         """
+        if self.manager is None:
+            return web.json_response([], status=503)  # Service Unavailable
+
         jobs_data = []
         for job_id, job_info in self.manager.jobs.items():
             jobs_data.append(
@@ -531,6 +526,9 @@ class JobManagerHandler:
             - 404: Job not found
             - 500: Log parsing error
         """
+        if self.manager is None:
+            return web.json_response({"error": "Service not started"}, status=503)
+
         job_id = request.match_info["job_id"]
         job_info = self.manager.jobs.get(job_id)
         if not job_info:
@@ -617,6 +615,9 @@ class JobManagerHandler:
         config = HFSSSimulationConfig(**config.model_dump())
 
         # 6.  submit to the async manager and return the job id
+        if self.manager is None:
+            return web.json_response({"error": "Service not started"}, status=503)
+
         job_id = await self.manager.submit_job(config)
         return web.json_response({"job_id": job_id, "status": "submitted"})
 
@@ -634,6 +635,9 @@ class JobManagerHandler:
         aiohttp.web.Response
             JSON with queue statistics
         """
+        if self.manager is None:
+            return web.json_response({}, status=503)
+
         queue_stats = self.manager.job_pool.get_queue_stats()
         return web.json_response(queue_stats)
 
@@ -651,6 +655,9 @@ class JobManagerHandler:
         aiohttp.web.Response
             JSON with current resource usage
         """
+        if self.manager is None:
+            return web.json_response({}, status=503)
+
         resources = self.manager.resource_monitor.current_usage
         return web.json_response(resources)
 
@@ -668,6 +675,9 @@ class JobManagerHandler:
         aiohttp.web.Response
             JSON response with cancellation status
         """
+        if self.manager is None:
+            return web.json_response({"error": "Service not started"}, status=503)
+
         job_id = request.match_info["job_id"]
         success = await self.manager.cancel_job(job_id)
         return web.json_response({"status": "cancelled" if success else "failed", "success": success})
@@ -723,6 +733,25 @@ class JobManagerHandler:
         """
         if self.started:
             return
+
+        # Initialize JobManager only when starting the service
+        # This prevents the static/ folder from being created during __init__
+        if self.manager is None:
+            resource_limits = ResourceLimits(max_concurrent_jobs=1)
+            self.manager = JobManager(resource_limits=resource_limits, scheduler_type=self.scheduler_type)
+            self.manager.jobs = {}  # In-memory job store -TODO add persistence database
+            # Pass the detected ANSYS path to the manager
+            self.manager.ansys_path = self.ansys_path
+
+            # Setup aiohttp and Socket.IO server
+            self.sio = self.manager.sio
+            self.app = self.manager.app
+            self.app.middlewares.append(cors_middleware)
+            self._add_routes()
+
+            # Set resource limits reference
+            self.resource_limits = self.manager.resource_limits
+
         self._thread = threading.Thread(target=self._run_event_loop, daemon=True)
         self._thread.start()
         if not self._start_event.wait(timeout=10):
