@@ -4877,3 +4877,11 @@ class Edb:
             raise RuntimeError(
                 "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
             ) from e
+
+    def generate_auto_hfss_regions(self):
+        """Generate auto HFSS regions.
+
+        This method automatically identifies areas for use as HFSS regions in SIwave simulations.
+        """
+        if not self.active_cell.GenerateAutoHFSSRegions():
+            raise RuntimeError("Failed to generate hfss regions.")

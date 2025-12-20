@@ -617,7 +617,8 @@ class Configuration:
     @execution_timer("Applying operations")
     def apply_operations(self):
         """Apply operations to the current design."""
-        op_cutout = self.cfg_data.operations.cutout
+        operations = self.cfg_data.operations
+        op_cutout = operations.cutout
         if op_cutout:
             cutout_params = op_cutout.model_dump()
             auto_identify_nets = cutout_params.pop("auto_identify_nets")
@@ -648,6 +649,9 @@ class Configuration:
             if "pyedb_cutout" not in self._pedb.stackup.all_layers:
                 self._pedb.stackup.add_document_layer(name="pyedb_cutout")
                 self._pedb.modeler.create_polygon(polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout")
+
+        if operations.generate_auto_hfss_regions:
+            self._pedb.generate_auto_hfss_regions()
 
     def get_operations(self):
         if "pyedb_cutout" not in self._pedb.stackup.all_layers:

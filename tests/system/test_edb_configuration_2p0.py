@@ -501,6 +501,12 @@ class TestClass(BaseTestClass):
                     "reference_designator": "U1",
                     "type": "coax",
                     "positive_terminal": {"pin": "AP18"},
+                },
+                {
+                    "name": "COAX_X1",
+                    "reference_designator": "X1",
+                    "type": "coax",
+                    "positive_terminal": {"pin": "B11"},
                 }
             ],
             "sources": [
@@ -522,7 +528,8 @@ class TestClass(BaseTestClass):
                     },
                     "reference_list": ["GND"],
                     "extent_type": "ConvexHull",
-                }
+                },
+                "generate_auto_hfss_regions": True
             },
         }
         edbapp = edb_examples.get_si_verse()
