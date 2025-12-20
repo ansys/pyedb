@@ -36,7 +36,7 @@ dependencies = [
     "toml == 0.10.2",
     "shapely",
     "scikit-rf",
-    "ansys-edb-core>=0.2.0,<0.2.4",
+    "ansys-edb-core>=0.2.0,<0.2.5",
     "psutil",
     "defusedxml>=0.7,<8.0",
     "matplotlib>=3.5.0,<3.11",
