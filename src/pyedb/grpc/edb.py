@@ -1220,7 +1220,7 @@ class Edb(EdbInit):
         """
         if self._layout:
             return self._layout
-        self._layout = Layout(self)
+        self._layout = Layout(self, self.active_cell.layout)
         return self._layout
 
     @property
