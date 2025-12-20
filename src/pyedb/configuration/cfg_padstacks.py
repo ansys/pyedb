@@ -43,8 +43,8 @@ class CfgBackdrillParameters(BaseModel):
         drill_depth: str
         diameter: str
 
-    from_top: Union[None, DrillParameters, DrillParametersByLayer, DrillParametersByLayerWithStub] = None
-    from_bottom: Union[None, DrillParameters, DrillParametersByLayer, DrillParametersByLayerWithStub] = None
+    from_top: DrillParameters | DrillParametersByLayer | DrillParametersByLayerWithStub | None = None
+    from_bottom: DrillParameters | DrillParametersByLayer | DrillParametersByLayerWithStub | None = None
 
     def add_backdrill_to_layer(self, drill_to_layer, diameter, stub_length=None, drill_from_bottom=True):
         if stub_length is None:
@@ -62,17 +62,20 @@ class CfgBackdrillParameters(BaseModel):
 
 class CfgPadstackInstance(CfgBase):
     name: str = None
-    eid: Union[int, None] = Field(None, alias="id")
-    backdrill_parameters: Union[CfgBackdrillParameters, None] = None
+    eid: int | None = Field(None, alias="id")
+
+    backdrill_parameters: CfgBackdrillParameters | None = CfgBackdrillParameters()
     is_pin: bool = Field(default=False)
-    net_name: Optional[str] = None
-    layer_range: Optional[List[str]] = None
-    definition: Optional[str] = None
-    position: Optional[List[Union[str, float]]] = None
-    rotation: Optional[str] = None
-    hole_override_enabled: Optional[bool] = None
-    hole_override_diameter: Optional[Union[str, float]] = None
-    solder_ball_layer: Optional[str] = None
+
+    net_name: str | None = None
+    layer_range: list[str] | None = None
+    definition: str | None = None
+    position: list[str | float] | None = None
+    rotation: str | None = None
+
+    hole_override_enabled: bool | None = None
+    hole_override_diameter: str | float | None = None
+    solder_ball_layer: str | None = None
 
     @property
     def _id(self):
@@ -87,12 +90,14 @@ class CfgPadstackInstance(CfgBase):
 
 class CfgPadstackDefinition(CfgBase):
     name: str
-    hole_plating_thickness: Optional[Union[str, float]] = None
-    material: Optional[str] = Field(default=None, alias="hole_material")
-    hole_range: Optional[str] = None
-    pad_parameters: Optional[Dict] = None
-    hole_parameters: Optional[Dict] = None
-    solder_ball_parameters: Optional[Dict] = None
+
+    hole_plating_thickness: str | float | None = None
+    material: str | None = Field(None, alias="hole_material")
+    hole_range: str | None = None
+
+    pad_parameters: dict | None = None
+    hole_parameters: dict | None = None
+    solder_ball_parameters: dict | None = None
 
     @classmethod
     def create(cls, **kwargs):
@@ -100,8 +105,8 @@ class CfgPadstackDefinition(CfgBase):
 
 
 class CfgPadstacks(CfgBase):
-    definitions: Optional[List[CfgPadstackDefinition]] = []
-    instances: Optional[List[CfgPadstackInstance]] = []
+    definitions: list[CfgPadstackDefinition] | None = []
+    instances: list[CfgPadstackInstance] | None = []
 
     @classmethod
     def create(cls, **kwargs):

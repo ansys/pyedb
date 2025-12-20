@@ -31,10 +31,7 @@ from ansys.edb.core.definition.component_model import (
 from ansys.edb.core.definition.die_property import DieOrientation as GrpcDieOrientation, DieType as GrpcDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.hierarchy.component_group import (
-    ComponentGroup as GrpcComponentGroup,
-    ComponentType as GrpcComponentType,
-)
+from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
 from ansys.edb.core.hierarchy.netlist_model import NetlistModel as GrpcNetlistModel
 from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as GrpcPinPairModel
 from ansys.edb.core.hierarchy.sparameter_model import (
@@ -61,8 +58,18 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
 )
 from pyedb.grpc.database.utility.value import Value
 
+component_type_mapping = {
+    GrpcComponentType.OTHER: "other",
+    GrpcComponentType.RESISTOR: "resistor",
+    GrpcComponentType.INDUCTOR: "inductor",
+    GrpcComponentType.CAPACITOR: "capacitor",
+    GrpcComponentType.IC: "ic",
+    GrpcComponentType.IO: "io",
+    GrpcComponentType.INVALID: "invalid",
+}
 
-class Component(GrpcComponentGroup):
+
+class Component:
     """Manages EDB functionalities for components.
 
     Parameters
@@ -75,7 +82,7 @@ class Component(GrpcComponentGroup):
     """
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+        self.core = edb_object
         self._pedb = pedb
         self._layout_instance = None
         self._comp_instance = None
@@ -84,7 +91,36 @@ class Component(GrpcComponentGroup):
 
     @property
     def group_type(self):
-        return str(self.type).split(".")[-1].lower()
+        return str(self.core.type).split(".")[-1].lower()
+
+    @property
+    def is_null(self):
+        """Check if the component is null.
+
+        Returns
+        -------
+        bool
+            True if the component is null, False otherwise.
+        """
+        return self.core.is_null
+
+    @property
+    def component_type(self) -> str:
+        """Component type.
+
+        Returns
+        -------
+        str
+        """
+        return component_type_mapping[self.core.component_type]
+
+    @component_type.setter
+    def component_type(self, value):
+        reverse_mapping = {v: k for k, v in component_type_mapping.items()}
+        if value in reverse_mapping:
+            self.core.component_type = GrpcComponentType(reverse_mapping[value])
+        else:
+            self._pedb.logger.error(f"Invalid component type: {value}")
 
     @property
     def layout_instance(self):
@@ -105,7 +141,7 @@ class Component(GrpcComponentGroup):
         :class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`
         """
         if self._comp_instance is None:
-            self._comp_instance = self.layout_instance.get_layout_obj_instance_in_context(self, None)
+            self._comp_instance = self.layout_instance.get_layout_obj_instance_in_context(self.core, None)
         return self._comp_instance
 
     @property
@@ -117,11 +153,18 @@ class Component(GrpcComponentGroup):
         bool
 
         """
-        return self.enabled
+        comp_prop = self.core.component_property
+        if hasattr(comp_prop, "enabled"):
+            return comp_prop.enabled
+        else:
+            return True
 
     @is_enabled.setter
     def is_enabled(self, value):
-        self.enabled = value
+        comp_prop = self.core.component_property
+        if hasattr(comp_prop, "enabled"):
+            comp_prop.enabled = value
+            self.core.component_property = comp_prop
 
     @property
     def ic_die_properties(self) -> any:
@@ -155,7 +198,7 @@ class Component(GrpcComponentGroup):
         :class:`Model <ansys.edb.core.hierarchy.model.Model>`
 
         """
-        comp_prop = self.component_property
+        comp_prop = self.core.component_property
         return comp_prop.model
 
     @property  # pragma: no cover
@@ -192,6 +235,58 @@ class Component(GrpcComponentGroup):
         return [self._edb_model.rlc(pin_pair) for pin_pair in self._edb_model.pin_pairs()]
 
     @property
+    def component_definition(self):
+        """Component definition.
+
+        Returns
+        -------
+        :class:`ComponentDef <ansys.edb.core.definition.component_def.ComponentDef>`
+
+        """
+        from pyedb.grpc.database.definition.component_def import ComponentDef
+
+        return ComponentDef(self._pedb, self.core.component_def)
+
+    @component_definition.setter
+    def component_definition(self, value):
+        from pyedb.grpc.database.definition.component_def import ComponentDef
+
+        if isinstance(value, ComponentDef):
+            self.core.component_def = value.core
+        else:
+            self._pedb.logger.error("Invalid input. Set component definition failed.")
+
+    @property
+    def component_def(self):
+        """Component definition.
+
+        deprecated: use `component_definition` instead.
+
+        """
+        warnings.warn("`component_def` is deprecated. Use `component_definition` instead.", DeprecationWarning)
+        return self.component_definition
+
+    @component_def.setter
+    def component_def(self, value):
+        warnings.warn("`component_def` is deprecated. Use `component_definition` instead.", DeprecationWarning)
+        self.component_definition = value
+
+    @property
+    def component_property(self):
+        """Component property.
+
+        Returns
+        -------
+        :class:`ComponentProperty <ansys.edb.core.hierarchy.component_property.ComponentProperty>`
+
+        """
+        return self.core.component_property
+
+    @component_property.setter
+    def component_property(self, value):
+        self.core.component_property = value
+
+    @property
     def model(self) -> Union[SparamModel, SpiceModel]:
         """Component model.
 
@@ -213,9 +308,9 @@ class Component(GrpcComponentGroup):
         if not isinstance(value, PinPairModel):
             self._pedb.logger.error("Invalid input. Set model failed.")
 
-        comp_prop = self.component_property
+        comp_prop = self.core.component_property
         comp_prop.model = value
-        self.component_property = comp_prop
+        self.core.component_property = comp_prop
 
     @property
     def package_def(self):
@@ -225,7 +320,7 @@ class Component(GrpcComponentGroup):
         -------
         :class:`PackageDef <ansys.edb.core.definition.package_def.PackageDef>`
         """
-        return self.component_property.package_def
+        return self.core.component_property.package_def
 
     @package_def.setter
     def package_def(self, value):
@@ -238,19 +333,19 @@ class Component(GrpcComponentGroup):
 
             self._package_def = GrpcPackageDef.create(self._pedb.db, name=value)
             self._package_def.exterior_boundary = GrpcPolygonData(points=self.bounding_box)
-            comp_prop = self.component_property
+            comp_prop = self.core.component_property
             comp_prop.package_def = self._package_def
-            self.component_property = comp_prop
+            self.core.component_property = comp_prop
         elif isinstance(value, str):
             package = next(package for package in self._pedb.package_defs if package.name == value)
             comp_prop = self.component_property
             comp_prop.package_def = package
-            self.component_property = comp_prop
+            self.core.component_property = comp_prop
 
         elif isinstance(value, PackageDef):
             comp_prop = self.component_property
             comp_prop.package_def = value
-            self.component_property = comp_prop
+            self.core.component_property = comp_prop
 
     @property
     def is_mcad(self) -> bool:
@@ -261,12 +356,12 @@ class Component(GrpcComponentGroup):
         bool
 
         """
-        return super().is_mcad.value
+        return self.core.is_mcad.value
 
     @is_mcad.setter
     def is_mcad(self, value):
         if isinstance(value, bool):
-            super(Component, self.__class__).is_mcad.__set__(self, Value(value))
+            self.core.is_mcad = value
 
     @property
     def is_mcad_3d_comp(self) -> bool:
@@ -277,12 +372,12 @@ class Component(GrpcComponentGroup):
         bool
 
         """
-        return super().is_mcad_3d_comp.value
+        return self.core.is_mcad_3d_comp
 
     @is_mcad_3d_comp.setter
     def is_mcad_3d_comp(self, value):
         if isinstance(value, bool):
-            super(Component, self.__class__).is_mcad_3d_comp.__set__(self, Value(value))
+            self.is_mcad_3d_comp = value
 
     @property
     def is_mcad_hfss(self) -> bool:
@@ -293,12 +388,12 @@ class Component(GrpcComponentGroup):
         bool
 
         """
-        return super().is_mcad_hfss.value
+        return self.core.is_mcad_hfss
 
     @is_mcad_hfss.setter
     def is_mcad_hfss(self, value):
         if isinstance(value, bool):
-            super(Component, self.__class__).is_mcad_hfss.__set__(self, Value(value))
+            self.core.is_mcad_hfss = value
 
     @property
     def is_mcad_stride(self) -> bool:
@@ -309,12 +404,12 @@ class Component(GrpcComponentGroup):
         bool
 
         """
-        return super().is_mcad_stride.value
+        return self.core.is_mcad_stride
 
     @is_mcad_stride.setter
     def is_mcad_stride(self, value):
         if isinstance(value, bool):
-            super(Component, self.__class__).is_mcad_stride.__set__(self, Value(value))
+            self.core.is_mcad_stride = value
 
     def create_package_def(self, name=None, component_part_name=None) -> bool:
         """Create a package definition and assign it to the component.
@@ -355,13 +450,13 @@ class Component(GrpcComponentGroup):
         if self.type.lower() in ["resistor", "capacitor", "inductor"]:
             return self.component_property.enabled
         else:
-            return
+            return False
 
     @enabled.setter
     def enabled(self, value):
-        cmp_prop = self.component_property
+        cmp_prop = self.core.component_property
         cmp_prop.enabled = value
-        self.component_property = cmp_prop
+        self.core.component_property = cmp_prop
 
     @property
     def spice_model(self) -> SpiceModel:
@@ -419,11 +514,11 @@ class Component(GrpcComponentGroup):
     @solder_ball_height.setter
     def solder_ball_height(self, value):
         if not self.component_property.solder_ball_property.is_null:
-            cmp_property = self.component_property
+            cmp_property = self.core.component_property
             solder_ball_prop = cmp_property.solder_ball_property
             solder_ball_prop.height = Value(value)
             cmp_property.solder_ball_property = solder_ball_prop
-            self.component_property = cmp_property
+            self.core.component_property = cmp_property
 
     @property
     def solder_ball_shape(self) -> str:
@@ -455,11 +550,11 @@ class Component(GrpcComponentGroup):
                 elif value.lower() == "spheroid":
                     shape = SolderballShape.SOLDERBALL_SPHEROID
             if shape:
-                cmp_property = self.component_property
+                cmp_property = self.core.component_property
                 solder_ball_prop = cmp_property.solder_ball_property
                 solder_ball_prop.shape = shape
                 cmp_property.solder_ball_property = solder_ball_prop
-                self.component_property = cmp_property
+                self.core.component_property = cmp_property
 
     @property
     def solder_ball_diameter(self) -> Union[tuple[float, float], None]:
@@ -489,11 +584,11 @@ class Component(GrpcComponentGroup):
             if isinstance(value, str) or isinstance(value, float):
                 diameter = Value(value)
                 mid_diameter = Value(value)
-            cmp_property = self.component_property
+            cmp_property = self.core.component_property
             solder_ball_prop = cmp_property.solder_ball_property
             solder_ball_prop.set_diameter(diameter, mid_diameter)
             cmp_property.solder_ball_property = solder_ball_prop
-            self.component_property = cmp_property
+            self.core.component_property = cmp_property
 
     @property
     def solder_ball_placement(self):
@@ -511,11 +606,11 @@ class Component(GrpcComponentGroup):
         str
             Reference Designator Name.
         """
-        return self.name
+        return self.core.name
 
     @refdes.setter
     def refdes(self, name):
-        self.name = name
+        self.core.name = name
 
     @property
     def model_type(self) -> str:
@@ -553,7 +648,7 @@ class Component(GrpcComponentGroup):
 
     @rlc_values.setter
     def rlc_values(self, value):
-        comp_property = self.component_property
+        comp_property = self.core.component_property
         if not isinstance(value, list) or isinstance(value, tuple):
             self._logger.error("RLC values must be provided as `List` or `Tuple` in this order.")
             return
@@ -581,7 +676,7 @@ class Component(GrpcComponentGroup):
         for ind in range(len(self._rlc)):
             self._edb_model.set_rlc(self._pin_pairs[ind], self._rlc[ind])
         comp_property.model = self._edb_model
-        self.component_property = comp_property
+        self.core.component_property = comp_property
 
     @property
     def value(self) -> float:
@@ -592,19 +687,21 @@ class Component(GrpcComponentGroup):
         float
             Value. ``None`` if not an RLC Type.
         """
-        _values = {"resistor": self.rlc_values[0], "inductor": self.rlc_values[1], "capacitor": self.rlc_values[2]}
-        if self.type in _values:
-            return _values[self.type]
-        else:
-            return 0.0
+        values_mapping = {
+            "resistor": self.rlc_values[0],
+            "inductor": self.rlc_values[1],
+            "capacitor": self.rlc_values[2],
+        }
+        return values_mapping.get(self.component_type, 0.0)
 
     @value.setter
     def value(self, value):
-        if self.type == "resistor":
+        component_type = self.component_type
+        if component_type == "resistor":
             self.res_value = value
-        elif self.type == "inductor":
+        elif component_type == "inductor":
             self.ind_value = value
-        elif self.type == "capacitor":
+        elif component_type == "capacitor":
             self.cap_value = value
 
     @property
@@ -616,14 +713,11 @@ class Component(GrpcComponentGroup):
         float
             Resistance value or ``None`` if not an RLC type.
         """
-        cmp_type = self.component_type
-        if 0 < cmp_type.value < 4:
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
             result = [Value(rlc.r) for rlc in self._rlc]
-            if len(result) == 1:
-                return result[0]
-            else:
-                return result
-        return None
+            if result:
+                return result[0]  # -> first pin pair change for managing multi pin pair components
+        return 0.0
 
     @res_value.setter
     def res_value(self, value):  # pragma no cover
@@ -635,9 +729,9 @@ class Component(GrpcComponentGroup):
             _rlc.append(rlc)
         for ind in range(len(self._pin_pairs)):
             model.set_rlc(self._pin_pairs[ind], _rlc[ind])
-        comp_prop = self.component_property
+        comp_prop = self.core.component_property
         comp_prop.model = model
-        self.component_property = comp_prop
+        self.core.component_property = comp_prop
 
     @property
     def cap_value(self) -> float:
@@ -648,14 +742,11 @@ class Component(GrpcComponentGroup):
         float
             Capacitance Value. ``None`` if not an RLC Type.
         """
-        cmp_type = self.component_type
-        if 0 < cmp_type.value < 4:
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
             result = [Value(rlc.c) for rlc in self._rlc]
-            if len(result) == 1:
-                return result[0]
-            else:
-                return result
-        return None
+            if result:
+                return result[0]  # -> first pin pair change for managing multi pin pair components
+        return 0.0
 
     @cap_value.setter
     def cap_value(self, value):  # pragma no cover
@@ -668,9 +759,9 @@ class Component(GrpcComponentGroup):
                 _rlc.append(rlc)
             for ind in range(len(self._pin_pairs)):
                 model.set_rlc(self._pin_pairs[ind], _rlc[ind])
-            comp_prop = self.component_property
+            comp_prop = self.core.component_property
             comp_prop.model = model
-            self.component_property = comp_prop
+            self.core.component_property = comp_prop
 
     @property
     def ind_value(self):
@@ -681,14 +772,11 @@ class Component(GrpcComponentGroup):
         float
             Inductance Value. ``None`` if not an RLC Type.
         """
-        cmp_type = self.component_type
-        if 0 < cmp_type.value < 4:
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
             result = [Value(rlc.l) for rlc in self._rlc]
-            if len(result) == 1:
-                return result[0]
-            else:
-                return result
-        return None
+            if result:
+                return result[0]  # -> first pin pair change for managing multi pin pair components
+        return 0.0
 
     @ind_value.setter
     def ind_value(self, value) -> float:
@@ -701,9 +789,9 @@ class Component(GrpcComponentGroup):
                 _rlc.append(rlc)
             for ind in range(len(self._pin_pairs)):
                 model.set_rlc(self._pin_pairs[ind], _rlc[ind])
-            comp_prop = self.component_property
+            comp_prop = self.core.component_property
             comp_prop.model = model
-            self.component_property = comp_prop
+            self.core.component_property = comp_prop
 
     @property
     def is_parallel_rlc(self) -> bool:
@@ -716,10 +804,9 @@ class Component(GrpcComponentGroup):
             `False` series RLC.
             `None` if not RLC Type.
         """
-        cmp_type = self.component_type
-        if 0 < cmp_type.value < 4:
-            return self._rlc[0].is_parallel
-        return None
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
+            return self._rlc[0].is_parallel  # -> first pin pair change for managing multi pin pair components
+        return False
 
     @is_parallel_rlc.setter
     def is_parallel_rlc(self, value):  # pragma no cover
@@ -734,7 +821,7 @@ class Component(GrpcComponentGroup):
                     self.component_property = comp_property
 
     @property
-    def center(self) -> list[float, float]:
+    def center(self) -> tuple[float, float]:
         """Compute the component center.
 
         Returns
@@ -742,10 +829,17 @@ class Component(GrpcComponentGroup):
         list
             [x value, y value].
         """
-        return self.location
+        location = self.core.location
+        return location[0].value, location[1].value
+
+    @center.setter
+    def center(self, value):
+        if isinstance(value, list):
+            value = Value(value[0], Value(value[1]))
+        self.core.location = value
 
     @property
-    def location(self):
+    def location(self) -> tuple[float, float]:
         """Component center.
 
         Returns
@@ -754,16 +848,17 @@ class Component(GrpcComponentGroup):
             [x, y].
 
         """
-        return [Value(pt) for pt in super().location]
+        location = self.core.location
+        return location[0].value, location[1].value
 
     @location.setter
     def location(self, value):
         if isinstance(value, list):
-            _location = [Value(val) for val in value]
-            super(Component, self.__class__).location.__set__(self, _location)
+            _location = Value(value[0], Value(value[1]))
+            self.core.location = _location
 
     @property
-    def bounding_box(self) -> list[float]:
+    def bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         """Component's bounding box.
 
         Returns
@@ -776,7 +871,7 @@ class Component(GrpcComponentGroup):
         bbox = self.component_instance.get_bbox().points
         pt1 = bbox[0]
         pt2 = bbox[2]
-        return [Value(pt1.x), Value(pt1.y), Value(pt2.x), Value(pt2.y)]
+        return (Value(pt1.x), Value(pt1.y)), (Value(pt2.x), Value(pt2.y))
 
     @property
     def rotation(self) -> float:
@@ -787,7 +882,7 @@ class Component(GrpcComponentGroup):
         float
             Rotation value.
         """
-        return Value(self.transform.rotation)
+        return Value(self.core.transform.rotation)
 
     @property
     def pinlist(self) -> list[PadstackInstance]:
@@ -798,7 +893,7 @@ class Component(GrpcComponentGroup):
         list
             List of Pins of Component.
         """
-        return self.pins
+        return list(self.pins.values())
 
     @property
     def nets(self):
@@ -825,12 +920,27 @@ class Component(GrpcComponentGroup):
             Component dictionary pins.
         """
         _pins = {}
-        for connectable in self.members:
+        for connectable in self.core.members:
             if isinstance(connectable, GrpcPadstackInstanceTerminal):
                 _pins[connectable.name] = PadstackInstanceTerminal(self._pedb, connectable)
             if isinstance(connectable, GrpcPadstackInstance):
                 _pins[connectable.name] = PadstackInstance(self._pedb, connectable)
         return _pins
+
+    @property
+    def num_pins(self):
+        """Number of Pins of Component.
+
+        Returns
+        -------
+        int
+            Component pins number.
+        """
+        try:
+            return self.core.num_pins
+        except Exception as e:
+            self._pedb.logger.error(f"{e}")
+            return 0
 
     @property
     def type(self) -> str:
@@ -842,7 +952,7 @@ class Component(GrpcComponentGroup):
             Type of the component. Options are ``"resistor"``, ``"inductor"``, ``"capacitor"``,
             ``"ic"``, ``"io"`` and ``"other"``.
         """
-        return self.component_type.name.lower()
+        return self.component_type
 
     @type.setter
     def type(self, new_type):
@@ -855,20 +965,7 @@ class Component(GrpcComponentGroup):
             ``"ic"``, ``"io"`` and ``"other"``.
         """
         new_type = new_type.lower()
-        if new_type == "resistor":
-            self.component_type = GrpcComponentType.RESISTOR
-        elif new_type == "inductor":
-            self.component_type = GrpcComponentType.INDUCTOR
-        elif new_type == "capacitor":
-            self.component_type = GrpcComponentType.CAPACITOR
-        elif new_type == "ic":
-            self.component_type = GrpcComponentType.IC
-        elif new_type == "io":
-            self.component_type = GrpcComponentType.IO
-        elif new_type == "other":
-            self.component_type = GrpcComponentType.OTHER
-        else:
-            return
+        self.component_type = new_type
 
     @property
     def numpins(self) -> int:
@@ -884,7 +981,7 @@ class Component(GrpcComponentGroup):
 
         warnings.warn("Use num_pins instead.", DeprecationWarning)
         try:
-            return self.num_pins
+            return self.core.num_pins
         except Exception as e:
             self._pedb.logger.error(f"{e}")
             return 0
@@ -906,6 +1003,37 @@ class Component(GrpcComponentGroup):
         self.part_name = name
 
     @property
+    def name(self):
+        """Component part name.
+
+        Returns
+        -------
+        str
+            Component part name.
+        """
+        return self.core.name
+
+    @name.setter
+    def name(self, name):  # pragma: no cover
+        """Set component part name."""
+        self.core.name = name
+
+    @property
+    def ref_des(self):
+        """Reference Designator Name.
+
+        Returns
+        -------
+        str
+            Reference Designator Name.
+        """
+        return self.name
+
+    @ref_des.setter
+    def ref_des(self, name):
+        self.name = name
+
+    @property
     def part_name(self) -> str:
         """Component part name.
 
@@ -914,12 +1042,12 @@ class Component(GrpcComponentGroup):
         str
             Component part name.
         """
-        return self.component_def.name
+        return self.core.component_def.name
 
     @part_name.setter
     def part_name(self, name):  # pragma: no cover
         """Set component part name."""
-        self.component_def.name = name
+        self.core.component_def.name = name
 
     @property
     def placement_layer(self) -> str:
@@ -930,7 +1058,7 @@ class Component(GrpcComponentGroup):
         str
            Placement layer name.
         """
-        return super().placement_layer.name
+        return self.core.placement_layer.name
 
     @property
     def layer(self) -> StackupLayer:
@@ -941,7 +1069,7 @@ class Component(GrpcComponentGroup):
         :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
            Placement layer.
         """
-        return StackupLayer(self._pedb, super().placement_layer)
+        return StackupLayer(self._pedb, self.core.placement_layer)
 
     @property
     def is_top_mounted(self) -> bool:
@@ -995,7 +1123,7 @@ class Component(GrpcComponentGroup):
             * 4 - Number of top/bottom associations.
             * -1 - Undefined
         """
-        return self.layer.top_bottom_association.value
+        return self.layer.core.top_bottom_association.value
 
     def _set_model(self, model):  # pragma: no cover
         """Set component model
@@ -1011,6 +1139,16 @@ class Component(GrpcComponentGroup):
         comp_prop.model = model
         self.component_property = comp_prop
         return model
+
+    def delete(self):
+        """Delete the component from the EDB.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        self.core.delete()
 
     def assign_spice_model(
         self,
@@ -1088,7 +1226,7 @@ class Component(GrpcComponentGroup):
         """
         if not name:
             name = get_filename_without_extension(file_path)
-        for model in self.component_def.component_models:
+        for model in self.core.component_def.component_models:
             if model.model_name == name:
                 self._pedb.logger.error(f"Model {name} already defined for component {self.refdes}")
                 return False
@@ -1097,11 +1235,11 @@ class Component(GrpcComponentGroup):
                 f"No reference net provided for S parameter file {file_path}, net `GND` is assigned by default"
             )
             reference_net = "GND"
-        n_port_model = GrpcNPortComponentModel.find_by_name(self.component_def, name)
+        n_port_model = GrpcNPortComponentModel.find_by_name(self.core.component_def, name)
         if n_port_model.is_null:
             n_port_model = GrpcNPortComponentModel.create(name=name)
             n_port_model.reference_file = file_path
-            self.component_def.add_component_model(n_port_model)
+            self.component_definition.core.add_component_model(n_port_model)
 
         model = GrpcSParameterModel.create(name=name, ref_net=reference_net)
         return self._set_model(model)
@@ -1132,7 +1270,7 @@ class Component(GrpcComponentGroup):
             ComponentModel as GrpcComponentModel,
         )
 
-        model = GrpcComponentModel.find_by_name(self.component_def, name)
+        model = GrpcComponentModel.find_by_name(self.core.component_def, name)
         if not model.is_null:
             s_param_model = GrpcSParameterModel.create(name=name, ref_net="GND")
             if reference_net:
@@ -1199,10 +1337,10 @@ class Component(GrpcComponentGroup):
             bool
         """
         bounding_box = self.bounding_box
-        opening = [bounding_box[0] - extra_soldermask_clearance]
-        opening.append(bounding_box[1] - extra_soldermask_clearance)
-        opening.append(bounding_box[2] + extra_soldermask_clearance)
-        opening.append(bounding_box[3] + extra_soldermask_clearance)
+        opening = [bounding_box[0][0] - extra_soldermask_clearance]
+        opening.append(bounding_box[0][1] - extra_soldermask_clearance)
+        opening.append(bounding_box[1][0] + extra_soldermask_clearance)
+        opening.append(bounding_box[1][1] + extra_soldermask_clearance)
 
         comp_layer = self.layer
         layer_names = list(self._pedb.stackup.layers.keys())

@@ -21,17 +21,123 @@
 # SOFTWARE.
 
 import re
+from typing import TYPE_CHECKING
 
 from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundleTerminal
 from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal
 
+if TYPE_CHECKING:
+    from pyedb.grpc.database.hierarchy.component import Component
 
-class EdgeTerminal(GrpcEdgeTerminal):
+
+class EdgeTerminal:
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+        self.core = edb_object
         self._pedb = pedb
-        self._edb_object = edb_object
         self._hfss_type = "Gap"
+
+    @classmethod
+    def create(cls, layout, name, edge, net, is_ref=False):
+        """Create an edge terminal.
+
+        Parameters
+        ----------
+        layout : :class:`pyedb.grpc.database.layout.layout.Layout`
+            Layout object.
+        name : str
+            Terminal name.
+        edge : :class:`.Edge`
+            Edge object.
+        net : :class:`.Net` or str, optional
+            Net object or net name. If None, the terminal will not be assigned to any net.
+        is_ref : bool, optional
+            Whether the terminal is a reference terminal. Default is False.
+
+        Returns
+        -------
+        :class:`EdgeTerminal <pyedb.grpc.database.terminal.edge_terminal.EdgeTerminal>`
+            Edge terminal object.
+        """
+        if net is None:
+            raise Exception("Net must be specified to create an Edge Terminal.")
+        grpc_edge_terminal = GrpcEdgeTerminal.create(
+            layout.core,
+            name,
+            edge,
+            net.core,
+            is_ref,
+        )
+        return cls(layout._pedb, grpc_edge_terminal)
+
+    @property
+    def component(self):
+        """Component.
+
+        Returns
+        -------
+        Component object.
+            :class:`Component <pyedb.grpc.database.component.Component>`.
+        """
+        from pyedb.grpc.database.hierarchy.component import Component
+
+        return Component(self._pedb, self.core.component)
+
+    @property
+    def name(self):
+        """Terminal name.
+
+        Returns
+        -------
+        str : terminal name.
+        """
+        return self.core.name
+
+    @name.setter
+    def name(self, value):
+        self.core.name = value
+
+    @property
+    def source_amplitude(self):
+        """Source amplitude.
+
+        Returns
+        -------
+        float : source amplitude.
+        """
+        return self.core.source_amplitude
+
+    @source_amplitude.setter
+    def source_amplitude(self, value):
+        """Source amplitude."""
+        self.core.source_amplitude = self._pedb.value(value)
+
+    @property
+    def source_phase(self):
+        """Source phase.
+
+        Returns
+        -------
+        float : source phase.
+        """
+        return self.core.source_phase
+
+    @property
+    def impedance(self):
+        """Impedance.
+
+        Returns
+        -------
+        float : impedance.
+        """
+        return self.core.impedance
+
+    @impedance.setter
+    def impedance(self, value):
+        self.core.impedance = self._pedb.value(value)
+
+    @source_phase.setter
+    def source_phase(self, value):
+        self.core.source_phase = self._pedb.value(value)
 
     @property
     def boundary_type(self) -> str:
@@ -41,14 +147,53 @@ class EdgeTerminal(GrpcEdgeTerminal):
         -------
         str : boundary type.
         """
-        return super().boundary_type.name.lower()
+        return self.core.boundary_type.name.lower()
+
+    @property
+    def reference_terminal(self):
+        """Reference terminal.
+
+        Returns
+        -------
+        EdgeTerminal object.
+        """
+
+        return EdgeTerminal(self._pedb, self.core.reference_terminal)
+
+    @reference_terminal.setter
+    def reference_terminal(self, value):
+        if isinstance(value, EdgeTerminal):
+            self.core.reference_terminal = value.core
+
+    @property
+    def is_circuit_port(self) -> bool:
+        """Is circuit port.
+
+        Returns
+        -------
+        bool : circuit port.
+        """
+        return self.core.is_circuit_port
+
+    @is_circuit_port.setter
+    def is_circuit_port(self, value):
+        self.core.is_circuit_port = value
+
+    @property
+    def port_post_processing_prop(self):
+        """Port post-processing property."""
+        return self.core.port_post_processing_prop
+
+    @port_post_processing_prop.setter
+    def port_post_processing_prop(self, value):
+        self.core.port_post_processing_prop = value
 
     @property
     def _edb_properties(self):
         from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 
         try:
-            p = self._edb_object.get_product_property(GrpcProductIdType.DESIGNER, 1)
+            p = self.core.get_product_property(GrpcProductIdType.DESIGNER, 1)
         except:
             p = ""
         return p
@@ -57,7 +202,7 @@ class EdgeTerminal(GrpcEdgeTerminal):
     def _edb_properties(self, value):
         from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 
-        self._edb_object.set_product_property(GrpcProductIdType.DESIGNER, 1, value)
+        self.core.set_product_property(GrpcProductIdType.DESIGNER, 1, value)
 
     @property
     def is_wave_port(self) -> bool:
@@ -101,6 +246,30 @@ class EdgeTerminal(GrpcEdgeTerminal):
         txt = ",".join(txt)
         self._edb_properties = "HFSS({})".format(txt)
 
+    @property
+    def is_null(self) -> bool:
+        """Added for dotnet compatibility
+
+        Returns
+        -------
+        bool
+        """
+        return self.core.is_null
+
+    @property
+    def is_reference_terminal(self) -> bool:
+        """Added for dotnet compatibility
+
+        Returns
+        -------
+        bool
+        """
+        return self.core.is_reference_terminal
+
+    def set_product_solver_option(self, product_id, solver_name, option):
+        """Set product solver option."""
+        self.core.set_product_solver_option(product_id, solver_name, option)
+
     def couple_ports(self, port):
         """Create a bundle wave port.
 
@@ -135,12 +304,12 @@ class EdgeTerminal(GrpcEdgeTerminal):
 
         """
         self._pedb.logger.warning("ref_terminal is deprecated, use reference_terminal property instead.")
-        return self.reference_terminal
+        return self.core.reference_terminal
 
     @ref_terminal.setter
     def ref_terminal(self, value):
         self._pedb.logger.warning("ref_terminal is deprecated, use reference_terminal property instead.")
-        self.reference_terminal = value
+        self.core.reference_terminal = value
 
     @property
     def hfss_type(self) -> str:

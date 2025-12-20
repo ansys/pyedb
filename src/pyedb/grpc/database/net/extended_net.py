@@ -44,7 +44,7 @@ class ExtendedNets:
         """
         nets = {}
         for extended_net in self._pedb.layout.extended_nets:
-            nets[extended_net.name] = ExtendedNet(self._pedb, extended_net)
+            nets[extended_net.name] = ExtendedNet(self._pedb, extended_net.core)
         return nets
 
     def create(self, name, net):
@@ -65,11 +65,11 @@ class ExtendedNets:
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
             return False
-        extended_net = GrpcExtendedNet.create(self._pedb.layout, name)
+        extended_net = ExtendedNet.create(self._pedb.layout, name)
         if isinstance(net, str):
             net = [net]
         for i in net:
-            extended_net.add_net(self._pedb.nets.nets[i])
+            extended_net.core.add_net(self._pedb.nets.nets[i].core)
         return self.items[name]
 
     def auto_identify_signal(self, resistor_below=10, inductor_below=1, capacitor_above=1e-9, exception_list=None):
@@ -249,31 +249,65 @@ class ExtendedNets:
                 if is_power:
                     if include_power:
                         ext_net = ExtendedNet.create(self._pedb.layout, i)
-                        ext_net.add_net(self._pedb.nets.nets[i])
+                        ext_net.core.add_net(self._pedb.nets.nets[i].core)
                         for net in new_ext:
-                            ext_net.add_net(self._pedb.nets.nets[net])
+                            ext_net.core.add_net(self._pedb.nets.nets[net].core)
                     else:  # pragma: no cover
                         pass
                 else:
                     if include_signal:
                         ext_net = ExtendedNet.create(self._pedb.layout, i)
-                        ext_net.add_net(self._pedb.nets.nets[i])
+                        ext_net.core.add_net(self._pedb.nets.nets[i].core)
                         for net in new_ext:
-                            ext_net.add_net(self._pedb.nets.nets[net])
+                            ext_net.core.add_net(self._pedb.nets.nets[net].core)
                     else:  # pragma: no cover
                         pass
 
         return _extended_nets
 
 
-class ExtendedNet(GrpcExtendedNet):
+class ExtendedNet:
     """Manages EDB functionalities for a primitives.
     It Inherits EDB Object properties.
     """
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+        self.core = edb_object
         self._pedb = pedb
+
+    @classmethod
+    def create(cls, layout, name):
+        """Create a extended net.
+
+        Parameters
+        ----------
+        layout : :class: <``Layout` pyedb.grpc.database.layout.layout.Layout>
+            Layout object associated with the extended net.
+        name : str
+            Name of the extended net.
+
+        Returns
+        -------
+        ExtendedNet
+            Extended net object.
+        """
+        core_extended_net = GrpcExtendedNet.create(layout.core, name)
+        return cls(layout._pedb, core_extended_net)
+
+    @property
+    def name(self):
+        """Extended net name.
+
+        Returns
+        -------
+        str
+            Extended net name.
+        """
+        return self.core.name
+
+    @name.setter
+    def name(self, value):
+        self.core.name = value
 
     @property
     def nets(self) -> dict[str, Net]:
@@ -286,7 +320,7 @@ class ExtendedNet(GrpcExtendedNet):
         """
         from pyedb.grpc.database.net.net import Net
 
-        return {net.name: Net(self._pedb, net) for net in super().nets}
+        return {net.name: Net(self._pedb, net) for net in self.core.nets}
 
     @property
     def components(self) -> dict[str, any]:

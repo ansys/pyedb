@@ -345,26 +345,25 @@ class Components(object):
         self._ics = {}
         self._ios = {}
         self._others = {}
+        type_map = {
+            "resistor": self._res,
+            "capacitor": self._cap,
+            "inductor": self._ind,
+            "ic": self._ics,
+            "io": self._ios,
+            "other": self._others,
+        }
         for i in self._pedb.layout.groups:
             self._cmp[i.name] = i
             try:
-                if i.type == "resistor":
-                    self._res[i.name] = i
-                elif i.type == "capacitor":
-                    self._cap[i.name] = i
-                elif i.type == "inductor":
-                    self._ind[i.name] = i
-                elif i.type == "ic":
-                    self._ics[i.name] = i
-                elif i.type == "io":
-                    self._ios[i.name] = i
-                elif i.type == "other":
-                    self._others[i.name] = i
-                else:
+                target = type_map.get(i.component_type)
+                if target is None:
                     self._logger.warning(
                         f"Unknown component type {i.name} found while refreshing components, will ignore"
                     )
-            except:
+                else:
+                    target[i.name] = i
+            except Exception:
                 self._logger.warning(f"Assigning component {i.name} as default type other.")
                 self._others[i.name] = i
         return True
@@ -1071,13 +1070,13 @@ class Components(object):
             compdef = self._get_component_definition(component_name, pins)
         if not compdef:
             return False
-        new_cmp = GrpcComponentGroup.create(self._active_layout, component_name, compdef.name)
+        new_cmp = GrpcComponentGroup.create(self._active_layout.core, component_name, compdef.name)
         if new_cmp.is_null:
             raise ValueError(f"Failed to create component {component_name}.")
         if hasattr(pins[0], "component") and pins[0].component:
             hosting_component_location = None
             if not pins[0].component.is_null:
-                hosting_component_location = pins[0].component.transform
+                hosting_component_location = pins[0].component.core.transform
         else:
             hosting_component_location = None
         if not len(pins) == len(compdef.component_pins):
@@ -1089,14 +1088,14 @@ class Components(object):
         for padstack_instance, component_pin in zip(pins, compdef.component_pins):
             padstack_instance.is_layout_pin = True
             padstack_instance.name = component_pin.name
-            new_cmp.add_member(padstack_instance)
+            new_cmp.add_member(padstack_instance.core)
         if not placement_layer:
             new_cmp_layer_name = pins[0].padstack_def.data.layer_names[0]
         else:
             new_cmp_layer_name = placement_layer
         if new_cmp_layer_name in self._pedb.stackup.signal_layers:
             new_cmp_placement_layer = self._pedb.stackup.signal_layers[new_cmp_layer_name]
-            new_cmp.placement_layer = new_cmp_placement_layer
+            new_cmp.placement_layer = new_cmp_placement_layer.core
         if r_value:
             new_cmp.component_type = GrpcComponentType.RESISTOR
             is_rlc = True
@@ -1329,12 +1328,12 @@ class Components(object):
         deleted_comps = []
         for comp, val in self.instances.items():
             if hasattr(val, "pins") and val.pins:
-                if val.num_pins == 1 and val.type in ["Resistor", "Capacitor", "Inductor"]:
+                if val.num_pins == 1 and val.component_type in ["resistor", "capacitor", "inductor"]:
                     if deactivate_only:
                         val.is_enabled = False
-                        val.model_type = "RLC"
+                        val.model_type = "rlc"
                     else:
-                        val.edbcomponent.delete()
+                        val.delete()
                         deleted_comps.append(comp)
         if not deactivate_only:
             self.refresh_components()
@@ -1470,7 +1469,7 @@ class Components(object):
             sball_shape = GrpcSolderballShape.SOLDERBALL_SPHEROID
 
         cmp_property = cmp.component_property
-        if cmp.component_type == GrpcComponentType.IC:
+        if cmp.core.component_type == GrpcComponentType.IC:
             ic_die_prop = cmp_property.die_property
             ic_die_prop.die_type = GrpcDieType.FLIPCHIP
             if not cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
@@ -1696,7 +1695,7 @@ class Components(object):
                         comp.refdes = refdes_temp
 
                         unmount_comp_list.remove(refdes)
-                        comp.ungroup(True)
+                        comp.core.ungroup(True)
                         self.create(pinlist, refdes, p_layer, part_name)
                         self.refresh_components()
                         comp = self.instances[refdes]
@@ -1858,7 +1857,7 @@ class Components(object):
         if pin.component.is_null:
             transformed_pt_pos = pt_pos
         else:
-            transformed_pt_pos = pin.component.transform.transform_point(pt_pos)
+            transformed_pt_pos = pin.component.core.transform.transform_point(pt_pos)
         return [Value(transformed_pt_pos[0]), Value(transformed_pt_pos[1])]
 
     def get_pins_name_from_net(self, net_name: str, pin_list: Optional[List[Any]] = None) -> List[str]:

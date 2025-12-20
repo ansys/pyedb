@@ -23,8 +23,8 @@
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 
 
-class PointData(GrpcPointData):
+class PointData:
     """Class managing :class:`Point Data <ansys.edb.core.geometry.point_data.PointData>`"""
 
     def __init__(self, edb_object=None):
-        super().__init__(edb_object)
+        self.core = edb_object

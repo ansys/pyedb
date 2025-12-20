@@ -65,7 +65,7 @@ import sys
 import tempfile
 import time
 import traceback
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Union
 import warnings
 from zipfile import ZipFile as zpf
 
@@ -83,6 +83,7 @@ import rtree
 
 from pyedb.configuration.configuration import Configuration
 from pyedb.generic.constants import unit_converter
+from pyedb.generic.control_file import ControlFile
 from pyedb.generic.general_methods import (
     generate_unique_name,
     get_string_version,
@@ -92,7 +93,6 @@ from pyedb.generic.general_methods import (
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.components import Components
-from pyedb.grpc.database.control_file import ControlFile
 from pyedb.grpc.database.definition.materials import Materials
 from pyedb.grpc.database.hfss import Hfss
 from pyedb.grpc.database.layout.layout import Layout
@@ -271,7 +271,6 @@ class Edb(EdbInit):
                 map_file=map_file,
             ):
                 raise AttributeError("Translation was unsuccessful")
-                return False
             if settings.enable_local_log_file and self.log_name:
                 self.logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)
@@ -289,7 +288,6 @@ class Edb(EdbInit):
                 map_file=map_file,
             ):
                 raise AttributeError("Translation was unsuccessful")
-                return False
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
             self.open(restart_rpc_server=restart_rpc_server)
@@ -368,7 +366,7 @@ class Edb(EdbInit):
             self.__getitem__(variable_name).description = description
 
     @property
-    def core(self) -> ansys.edb.core:
+    def core(self) -> "ansys.edb.core":
         """Ansys Edb Core module."""
         return ansys.edb.core
 
@@ -420,7 +418,7 @@ class Edb(EdbInit):
 
     def _init_objects(self):
         self._components = Components(self)
-        self._stackup = Stackup(self, self.layout.layer_collection)
+        self._stackup = Stackup(self, self.layout.core.layer_collection)
         self._padstack = Padstacks(self)
         self._siwave = Siwave(self)
         self._hfss = Hfss(self)
@@ -522,7 +520,7 @@ class Edb(EdbInit):
         terms = [term for term in self.layout.terminals if term.boundary_type == "port"]
         temp = {}
         for term in terms:
-            if not term.bundle_terminal.is_null:
+            if not term.core.bundle_terminal.is_null:
                 temp[term.name] = BundleWavePort(self, term)
             else:
                 temp[term.name] = GapPort(self, term)
@@ -548,17 +546,17 @@ class Edb(EdbInit):
 
         for t in terminals:
             if isinstance(t, BundleTerminal):
-                bundle_ter = WavePort(self, t)
+                bundle_ter = WavePort(self, t.core)
                 ports[bundle_ter.name] = bundle_ter
             elif isinstance(t, PadstackInstanceTerminal):
-                ports[t.name] = CoaxPort(self, t)
+                ports[t.name] = CoaxPort(self, t.core)
             elif isinstance(t, EdgeTerminal):
                 if t.is_wave_port:
-                    ports[t.name] = WavePort(self, t)
+                    ports[t.name] = WavePort(self, t.core)
                 else:
-                    ports[t.name] = EdgeTerminal(self, t)
+                    ports[t.name] = EdgeTerminal(self, t.core)
             else:
-                ports[t.name] = GapPort(self, t)
+                ports[t.name] = GapPort(self, t.core)
         return ports
 
     @property
@@ -1246,7 +1244,7 @@ class Edb(EdbInit):
             Current layout instance.
         """
         if not self._layout_instance:
-            self._layout_instance = self.layout.layout_instance
+            self._layout_instance = self.layout.core.layout_instance
         return self._layout_instance
 
     def get_connected_objects(self, layout_object_instance):
@@ -3081,10 +3079,10 @@ class Edb(EdbInit):
         )
         for void_info in void_padstacks:
             port_poly = cloned_edb.modeler.create_polygon(
-                points=void_info[0].cast().polygon_data, layer_name="ref", net_name="GND"
+                points=void_info[0].polygon_data, layer_name="ref", net_name="GND"
             )
             pec_poly = cloned_edb.modeler.create_polygon(
-                points=port_poly.cast().polygon_data, layer_name="port_pec", net_name="GND"
+                points=port_poly.polygon_data, layer_name="port_pec", net_name="GND"
             )
             pec_poly.scale(1.5)
 
@@ -3237,7 +3235,9 @@ class Edb(EdbInit):
             class:`LayoutComponent <ansys.edb.core.hierarchy.layout_component.LayoutComponent>`.
         """
 
-        return GrpcLayoutComponent.import_layout_component(layout=self.active_layout, aedb_comp_path=component_path)
+        return GrpcLayoutComponent.import_layout_component(
+            layout=self.active_layout.core, aedb_comp_path=component_path
+        )
 
     def export_layout_component(self, component_path) -> bool:
         """Export a layout component from the current layout.
@@ -3255,7 +3255,7 @@ class Edb(EdbInit):
         """
 
         return GrpcLayoutComponent.export_layout_component(
-            layout=self.active_layout, output_aedb_comp_path=component_path
+            layout=self.active_layout.core, output_aedb_comp_path=component_path
         )
 
     def copy_cell_from_edb(self, edb_path: Union[Path, str]):

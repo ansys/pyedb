@@ -568,7 +568,7 @@ class Padstacks(object):
         ... )
         """
 
-        padstack_def = PadstackDef.create(self._pedb.db, padstackname)
+        padstack_def = PadstackDef.create(self._pedb, padstackname)
 
         padstack_data = GrpcPadstackDefData.create()
         list_values = [Value(holediam), Value(paddiam), Value(antipaddiam)]
@@ -639,7 +639,7 @@ class Padstacks(object):
 
     def delete_batch_instances(self, instances_to_delete):
         for inst in instances_to_delete:
-            inst._edb_object.delete()
+            inst.core.delete()
         self.clear_instances_cache()
 
     def delete_padstack_instances(self, net_names: Union[str, List[str]]) -> bool:
@@ -929,7 +929,7 @@ class Padstacks(object):
                         self._pedb.logger.info(
                             f"No antipad defined for padstack definition {padstack.name}-layer{layer}"
                         )
-                padstack.data = cloned_padstack_data
+                padstack.core.data = cloned_padstack_data
             return all_succeed
 
     def check_and_fix_via_plating(
@@ -1098,6 +1098,8 @@ class Padstacks(object):
         str
             Name of the created padstack definition.
         """
+        from pyedb.grpc.database.geometry.polygon_data import PolygonData
+
         holediam = Value(holediam)
         paddiam = Value(paddiam)
         antipaddiam = Value(antipaddiam)
@@ -1162,9 +1164,7 @@ class Padstacks(object):
             pad_shape = GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE
         elif pad_shape == "Polygon":
             if isinstance(pad_polygon, list):
-                pad_array = GrpcPolygonData(points=pad_polygon)
-            elif isinstance(pad_polygon, GrpcPolygonData):
-                pad_array = pad_polygon
+                pad_polygon = PolygonData(edb_object=GrpcPolygonData(points=pad_polygon))
         if antipad_shape == "Bullet":  # pragma no cover
             antipad_array = [x_size, y_size, corner_radius]
             antipad_shape = GrpcPadGeometryType.PADGEOMTYPE_BULLET
@@ -1173,9 +1173,7 @@ class Padstacks(object):
             antipad_shape = GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE
         elif antipad_shape == "Polygon":
             if isinstance(antipad_polygon, list):
-                antipad_array = GrpcPolygonData(points=antipad_polygon)
-            elif isinstance(antipad_polygon, GrpcPolygonData):
-                antipad_array = antipad_polygon
+                antipad_polygon = PolygonData(edb_object=GrpcPolygonData(points=antipad_polygon))
         else:
             if not isinstance(antipaddiam, list):
                 antipad_array = [antipaddiam]
@@ -1192,7 +1190,7 @@ class Padstacks(object):
                     offset_x=pad_offset_x,
                     offset_y=pad_offset_y,
                     rotation=pad_rotation,
-                    fp=pad_array,
+                    fp=pad_polygon.core,
                 )
                 padstack_data.set_pad_parameters(
                     layer=layer,
@@ -1200,7 +1198,7 @@ class Padstacks(object):
                     offset_x=pad_offset_x,
                     offset_y=pad_offset_y,
                     rotation=pad_rotation,
-                    fp=antipad_array,
+                    fp=antipad_polygon.core,
                 )
         else:
             for layer in layers:
@@ -1224,7 +1222,7 @@ class Padstacks(object):
                     sizes=antipad_array,
                 )
 
-        padstack_definition = PadstackDef.create(self.db, padstackname)
+        padstack_definition = PadstackDef.create(self._pedb, padstackname)
         padstack_definition.data = padstack_data
         self._logger.info(f"Padstack {padstackname} create correctly")
         return padstackname
@@ -1254,7 +1252,7 @@ class Padstacks(object):
         new_padstack_definition_data = GrpcPadstackDefData(self.definitions[target_padstack_name].data.msg)
         if not new_padstack_name:
             new_padstack_name = generate_unique_name(target_padstack_name)
-        padstack_definition = PadstackDef.create(self.db, new_padstack_name)
+        padstack_definition = PadstackDef.create(self, new_padstack_name)
         padstack_definition.data = new_padstack_definition_data
         return new_padstack_name
 
@@ -1269,6 +1267,7 @@ class Padstacks(object):
         tolayer: Optional[str] = None,
         solderlayer: Optional[str] = None,
         is_pin: bool = False,
+        layer_map: str = "two_way",
     ) -> PadstackInstance:
         """Place a padstack instance.
 
@@ -1292,6 +1291,9 @@ class Padstacks(object):
             Solder ball layer name.
         is_pin : bool, optional
             Whether the instance is a pin. Default is ``False``.
+        layer_map : str, optional
+            Layer mapping information. Valid input is ``"two_way"``, ``"backward"``, or ``"forward"``.
+            Default is ``two_way``.
 
         Returns
         -------
@@ -1331,20 +1333,20 @@ class Padstacks(object):
         if padstack_def:
             padstack_instance = PadstackInstance.create(
                 layout=self._active_layout,
-                net=net,
-                name=via_name,
-                padstack_def=padstack_def,
-                position_x=position.x,
-                position_y=position.y,
+                net=net_name,
+                padstack_definition=padstack_def.name,
+                position_x=position.x.value,
+                position_y=position.y.value,
                 rotation=rotation,
                 top_layer=fromlayer,
                 bottom_layer=tolayer,
+                name=via_name,
                 solder_ball_layer=solderlayer,
-                layer_map=None,
+                layer_map=layer_map,
             )
-            padstack_instance.is_layout_pin = is_pin
+            padstack_instance.is_pin = is_pin
             self.clear_instances_cache()
-            return PadstackInstance(self._pedb, padstack_instance)
+            return padstack_instance
         else:
             raise RuntimeError("Place padstack failed")
 

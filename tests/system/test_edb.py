@@ -49,7 +49,6 @@ class TestClass(BaseTestClass):
 
     def test_hfss_create_coax_port_on_component_from_hfss(self, edb_examples):
         """Create a coaxial port on a component from its pin."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.hfss.create_coax_port_on_component("U1", "DDR4_DQS0_P")
         assert edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"], True)
@@ -140,7 +139,7 @@ class TestClass(BaseTestClass):
         )
         vprobe_2 = edbapp.terminals["vprobe_2"]
         ref_term = vprobe_2.ref_terminal
-        assert isinstance(ref_term.location, list)
+        assert isinstance(ref_term.location, list) or isinstance(ref_term.location, tuple)
         # ref_term.location = [0, 0] # position setter is crashing check pyedb-core bug #431
         assert ref_term.layer
         ref_term.layer.name = "Inner1(GND1"
@@ -305,17 +304,9 @@ class TestClass(BaseTestClass):
         edb = edb_examples.load_edb(
             edb_path=os.path.join(local_path, "example_models", test_subfolder, "edge_ports.aedb"),
         )
-        if edb.grpc:
-            # grpc PrimitiveType enum changed.
-            poly_list = [poly for poly in edb.layout.primitives if poly.primitive_type.value == 2]
-        else:
-            poly_list = [poly for poly in edb.layout.primitives if poly.primitive_type == "polygon"]
-        if edb.grpc:
-            port_poly = [poly for poly in poly_list if poly.edb_uid == 17][0]
-            ref_poly = [poly for poly in poly_list if poly.edb_uid == 19][0]
-        else:
-            port_poly = [poly for poly in poly_list if poly.id == 17][0]
-            ref_poly = [poly for poly in poly_list if poly.id == 19][0]
+        poly_list = [poly for poly in edb.layout.primitives if poly.primitive_type == "polygon"]
+        port_poly = [poly for poly in poly_list if poly.id == 17][0]
+        ref_poly = [poly for poly in poly_list if poly.id == 19][0]
         port_location = [-65e-3, -13e-3]
         ref_location = [-63e-3, -13e-3]
         if edb.grpc:
@@ -333,12 +324,8 @@ class TestClass(BaseTestClass):
                 terminal_point=port_location,
                 reference_point=ref_location,
             )
-        if edb.grpc:
-            port_poly = [poly for poly in poly_list if poly.edb_uid == 23][0]
-            ref_poly = [poly for poly in poly_list if poly.edb_uid == 22][0]
-        else:
-            port_poly = [poly for poly in poly_list if poly.id == 23][0]
-            ref_poly = [poly for poly in poly_list if poly.id == 22][0]
+        port_poly = [poly for poly in poly_list if poly.id == 23][0]
+        ref_poly = [poly for poly in poly_list if poly.id == 22][0]
         port_location = [-65e-3, -10e-3]
         ref_location = [-65e-3, -10e-3]
         if edb.grpc:
@@ -356,10 +343,7 @@ class TestClass(BaseTestClass):
                 terminal_point=port_location,
                 reference_point=ref_location,
             )
-        if edb.grpc:
-            port_poly = [poly for poly in poly_list if poly.edb_uid == 25][0]
-        else:
-            port_poly = [poly for poly in poly_list if poly.id == 25][0]
+        port_poly = [poly for poly in poly_list if poly.id == 25][0]
         port_location = [-65e-3, -7e-3]
         if edb.grpc:
             assert edb.source_excitation.create_edge_port_on_polygon(
@@ -506,11 +490,7 @@ class TestClass(BaseTestClass):
         port_ver = edb.ports["port_ver"]
         assert not port_ver.is_null
         assert not port_ver.is_circuit_port
-        if edb.grpc:
-            assert port_ver.type.name == "EDGE"
-        else:
-            # grpc is too different
-            assert port_ver.boundary_type == "PortBoundary"
+        assert port_ver.boundary_type in ["PortBoundary", "port"]  # grpc returns 'port'
 
         port_hori = edb.ports["port_hori"]
         assert port_hori.reference_terminal
@@ -590,26 +570,26 @@ class TestClass(BaseTestClass):
             "end_cap_style": "Flat",
         }
         traces = []
-        trace_pathes = [
+        trace_paths = [
             [["-40mm", "-10mm"], ["-30mm", "-10mm"]],
             [["-40mm", "-10.2mm"], ["-30mm", "-10.2mm"]],
             [["-40mm", "-10.4mm"], ["-30mm", "-10.4mm"]],
         ]
-        for p in trace_pathes:
+        for p in trace_paths:
             t = edb.modeler.create_trace(path_list=p, **kwargs)
             traces.append(t)
 
-        assert edb.hfss.create_wave_port(traces[0], trace_pathes[0][0], "wave_port")
+        assert edb.hfss.create_wave_port(traces[0], trace_paths[0][0], "wave_port")
 
         assert edb.hfss.create_differential_wave_port(
             traces[0],
-            trace_pathes[0][0],
+            trace_paths[0][0],
             traces[1],
-            trace_pathes[1][0],
+            trace_paths[1][0],
             horizontal_extent_factor=8,
         )
 
-        paths = [i[1] for i in trace_pathes]
+        paths = [i[1] for i in trace_paths]
         assert edb.hfss.create_bundle_wave_port(traces, paths)
         p = edb.ports["wave_port"]
         p.horizontal_extent_factor = 6
@@ -903,14 +883,9 @@ class TestClass(BaseTestClass):
         )
         assert pin_group
         U7.pins["R9"].create_port(name="test", reference=pin_group)
-        if edbapp.grpc:
-            padstack_instance_terminals = [
-                term for term in list(edbapp.terminals.values()) if term.type.name == "PADSTACK_INST"
-            ]
-        else:
-            padstack_instance_terminals = [
-                term for term in list(edbapp.terminals.values()) if term.terminal_type == "PadstackInstanceTerminal"
-            ]
+        padstack_instance_terminals = [
+            term for term in list(edbapp.terminals.values()) if term.terminal_type == "PadstackInstanceTerminal"
+        ]
         for term in padstack_instance_terminals:
             assert term.position
         pos_pin = edbapp.padstacks.get_pinlist_from_component_and_net("C173")[1]
@@ -1257,7 +1232,7 @@ class TestClass(BaseTestClass):
 
     def test_add_layer_api_with_control_file(self):
         """Add new layers with control file."""
-        from pyedb.grpc.database.control_file import ControlFile
+        from pyedb.generic.control_file import ControlFile
 
         # Done
         ctrl = ControlFile()
@@ -1396,7 +1371,7 @@ class TestClass(BaseTestClass):
         edbapp.stackup.add_layer("TOP", "Diel", thickness="0.05mm")
         points = [[0.0, -1e-3], [0.0, -10e-3], [100e-3, -10e-3], [100e-3, -1e-3], [0.0, -1e-3]]
         polygon = edbapp.modeler.create_polygon(points, "TOP")
-        assert polygon.center == [0.05, -0.0055]
+        assert polygon.center == [0.05, -0.0055] or polygon.center == (0.05, -0.0055)
         assert polygon.move(["1mm", 1e-3])
         assert round(polygon.center[0], 6) == 0.051
         assert round(polygon.center[1], 6) == -0.0045
