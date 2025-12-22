@@ -48,6 +48,7 @@ Examples
 
     # Basic EDB initialization
     from pyedb.grpc.edb import Edb
+
     edb = Edb(edbpath="myproject.aedb")
 
     # Importing a board file
