@@ -35,11 +35,17 @@ Feel free to open an issue or pull request if you would like to add new PyEDB-fo
 This examples are focused on using PyEDB to create, modify, and analyze PCB/IC packages and RF boards. The basic
 section covers fundamental tasks, while the advanced section demonstrates more complex workflows for Si-PI.
 
-PyEDB basic and advanced examples
-=================================
+PyEDB workflows
+===============
 
-.. toctree::
-   :maxdepth: 1
+PyEDB provides a powerful interface for automating PCB design tasks.
+The following sections contain examples that illustrate various workflows using PyEDB.
 
-   basic/index
-   advanced/index
+.. grid:: 2
+
+   .. grid-item-card:: PyEDB Worklows
+            :link: workflows/index
+            :link-type: doc
+            :margin: 2 2 0 0
+
+            Useful PyEDB workflows.

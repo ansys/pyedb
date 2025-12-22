@@ -1,5 +1,5 @@
-Getting Started: Your First Script
-==================================
+Basic tutorial
+==============
 
 This tutorial walks you through creating a simple EDB from scratch using the pure Python client connected to the
 ``ansys-edb-core`` gRPC service.

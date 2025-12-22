@@ -52,7 +52,7 @@ and analyze PCB designs by communicating with the ``ansys-edb-core`` gRPC servic
         :link: examples/index
         :link-type: doc
 
-        Explore examples that show how to use PyEDB to perform different types of simulations.
+        Explore examples that show how to use PyEDB to perform different types of automations.
 
 .. grid:: 2
 
