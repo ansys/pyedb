@@ -6,7 +6,7 @@ User guide
 
 This section provides brief tutorials for helping you understand how to use PyEDB effectively.
 
-For end-to-end examples, see `Examples <https://examples.aedt.docs.pyansys.com>`_.
+For end-to-end examples, see :doc:`pyedb_examples`.
 
 
 .. grid:: 2
@@ -18,12 +18,12 @@ For end-to-end examples, see `Examples <https://examples.aedt.docs.pyansys.com>`
 
             How to use PyEDB.
 
-   .. grid-item-card:: PyEDB libraries
-            :link: libraries/index
+   .. grid-item-card:: Common tasks
+            :link: common_tasks
             :link-type: doc
             :margin: 2 2 0 0
 
-            PyEDB advanced libraries.
+            Common automated tasks with PyEDB.
 
    .. grid-item-card:: Core concepts
             :link: core_concepts
@@ -32,12 +32,12 @@ For end-to-end examples, see `Examples <https://examples.aedt.docs.pyansys.com>`
 
             Core PyEDB concepts.
 
-   .. grid-item-card:: Common tasks
-            :link: common_tasks
+   .. grid-item-card:: PyEDB libraries
+            :link: libraries/index
             :link-type: doc
             :margin: 2 2 0 0
 
-            Common automated tasks with PyEDB.
+            PyEDB advanced libraries.
 
    .. grid-item-card:: Communication protocols
             :link: communication_protocols
@@ -58,23 +58,8 @@ For end-to-end examples, see `Examples <https://examples.aedt.docs.pyansys.com>`
    :maxdepth: 2
 
    intro
-   core_concepts
    common_tasks
+   core_concepts
+   libraries/index
    communication_protocols
    security_consideration
-
-
-
-User Guide
-==========
-
-This guide explains the core concepts of PyEDB and Ansys EDB to help you build effective automation scripts.
-
-.. toctree::
-   :maxdepth: 2
-
-   core_concepts
-   communication_protocols
-   getting_started
-   common_tasks
-   security_considerations

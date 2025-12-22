@@ -6,10 +6,6 @@ Welcome to PyEDB |version|
 `Source Repository <https://github.com/ansys/pyedb>`_ |
 `Issues <https://github.com/ansys/pyedb/issues>`_
 
-.. figure:: _static/logo.png
-    :align: center
-    :width: 640px
-
 PyEDB is a Python client library that provides a high-level interface to create, modify,
 and analyze PCB designs by communicating with the ``ansys-edb-core`` gRPC service.
 

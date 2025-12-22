@@ -1,6 +1,7 @@
-RF Basic Libraries
-==================
-These class is the containers of RF basic libraries.
+Common Libraries
+================
+
+These classes are the containers of the common libraries.
 
 
 .. currentmodule:: pyedb.libraries.common
