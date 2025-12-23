@@ -3269,4 +3269,3 @@ class Edb(EdbInit):
         cells = self.copy_cells([edb2.active_cell])
         cell = cells[0]
         cell.is_blackbox = True
-
