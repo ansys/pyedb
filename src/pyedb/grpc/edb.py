@@ -40,20 +40,25 @@ Key Functionality:
 - Simulation setup and execution
 - Design parametrization and optimization
 
+
 Examples
 --------
-Basic EDB initialization:
->>> from pyedb.grpc.edb import Edb
->>> edb = Edb(edbpath="myproject.aedb")
 
-Importing a board file:
->>> edb.import_layout_file("my_board.brd")
+.. code-block:: python
 
-Creating a cutout:
->>> edb.cutout(signal_list=["Net1", "Net2"], reference_list=["GND"])
+    # Basic EDB initialization
+    from pyedb.grpc.edb import Edb
 
-Exporting to HFSS:
->>> edb.export_hfss(r"C:\output_folder")
+    edb = Edb(edbpath="myproject.aedb")
+
+    # Importing a board file
+    edb.import_layout_file("my_board.brd")
+
+    # Creating a cutout
+    edb.cutout(signal_list=["Net1", "Net2"], reference_list=["GND"])
+
+    # Exporting to HFSS
+    edb.export_hfss("output_dir")
 """
 
 from itertools import combinations
@@ -1220,7 +1225,7 @@ class Edb(EdbInit):
         """
         if self._layout:
             return self._layout
-        self._layout = Layout(self)
+        self._layout = Layout(self, self.active_cell.layout)
         return self._layout
 
     @property

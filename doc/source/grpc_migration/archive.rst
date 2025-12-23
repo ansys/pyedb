@@ -50,5 +50,5 @@ to avoid confusion and keep the main branch clean.
 
 Migration Guide
 ---------------
-If you have existing scripts using `pyedb.dotnet`, see the :doc:`migration_guide` for help porting your code to the
+If you have existing scripts using `pyedb.dotnet`, see the :ref:`DotNet to gRPC migration guide <migration_guide>` for help porting your code to the
 modern gRPC API.

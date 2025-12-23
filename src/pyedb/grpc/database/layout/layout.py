@@ -80,8 +80,8 @@ def _get_wrapper_class(prim_type: str):
 class Layout:
     """Manage Layout class."""
 
-    def __init__(self, pedb):
-        self.core = pedb.active_cell.layout
+    def __init__(self, pedb, core):
+        self.core = core
         self._pedb = pedb
         self.__primitives = []
         self.__padstack_instances = {}
@@ -89,14 +89,6 @@ class Layout:
     @property
     def layout_instance(self):
         return self.core.layout_instance
-
-    @property
-    def cell(self):
-        """:class:`Cell <ansys.edb.core.layout.cel.Cell>`: Owning cell for this layout.
-
-        Read-Only.
-        """
-        return self._pedb._active_cell
 
     @property
     def primitives(self) -> list["Primitive"]:
