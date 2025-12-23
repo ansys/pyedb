@@ -651,7 +651,7 @@ class Configuration:
                 self._pedb.modeler.create_polygon(polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout")
 
         if operations.generate_auto_hfss_regions:
-            self._pedb.generate_auto_hfss_regions()
+            self._pedb.hfss.generate_auto_hfss_regions()
 
     def get_operations(self):
         if "pyedb_cutout" not in self._pedb.stackup.all_layers:

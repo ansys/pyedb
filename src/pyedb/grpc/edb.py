@@ -3265,9 +3265,3 @@ class Edb(EdbInit):
         cell = cells[0]
         cell.is_blackbox = True
 
-    def generate_auto_hfss_regions(self):
-        """Generate auto HFSS regions.
-
-        This method automatically identifies areas for use as HFSS regions in SIwave simulations.
-        """
-        self.active_cell.generate_auto_hfss_regions()
