@@ -31,3 +31,15 @@ class SparamModel:  # pragma: no cover
     def __init__(self, edb_object):
         self.core = edb_object
         self._edb_model = edb_object
+
+    @property
+    def is_null(self):
+        """Check if the S-parameter model is null.
+
+        Returns
+        -------
+        bool
+            True if the S-parameter model is null, False otherwise.
+
+        """
+        return self.core.is_null
