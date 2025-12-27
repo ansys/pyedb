@@ -33,11 +33,11 @@ from ansys.edb.core.layout.voltage_regulator import (
 from pyedb.grpc.database.utility.value import Value
 
 
-class VoltageRegulator(GrpcVoltageRegulator):
+class VoltageRegulator:
     """Class managing voltage regulator."""
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+        self.core = edb_object
         self._pedb = pedb
 
     @property
@@ -49,8 +49,8 @@ class VoltageRegulator(GrpcVoltageRegulator):
         :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`
             Component.
         """
-        if not self.component.is_null:
-            ref_des = self.component.name
+        if not self.core.component.is_null:
+            ref_des = self.core.component.name
             if not ref_des:
                 return False
             return self._pedb.components.instances[ref_des]
@@ -64,7 +64,7 @@ class VoltageRegulator(GrpcVoltageRegulator):
         if value not in self._pedb.components.instances:
             self._pedb.logger.error(f"component {value} not found in layout")
             return
-        self.group = self._pedb.components.instances[value]
+        self.core.group = self._pedb.components.instances[value].core
 
     @property
     def load_regulator_current(self) -> float:
@@ -75,11 +75,11 @@ class VoltageRegulator(GrpcVoltageRegulator):
         float
             Current value.
         """
-        return Value(self.load_regulator_current)
+        return Value(self.core.load_regulator_current)
 
     @load_regulator_current.setter
     def load_regulator_current(self, value):
-        self.load_regulation_percent = Value(value)
+        self.core.load_regulation_percent = Value(value)
 
     @property
     def load_regulation_percent(self) -> float:
@@ -90,11 +90,11 @@ class VoltageRegulator(GrpcVoltageRegulator):
         float
             Percent value.
         """
-        return Value(self.load_regulation_percent)
+        return Value(self.core.load_regulation_percent)
 
     @load_regulation_percent.setter
     def load_regulation_percent(self, value):
-        self.load_regulation_percent = Value(value)
+        self.core.load_regulation_percent = Value(value)
 
     @property
     def negative_remote_sense_pin(self) -> PadstackInstance:
@@ -105,15 +105,15 @@ class VoltageRegulator(GrpcVoltageRegulator):
         :class:`PadstackInstance pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`
             PadstackInstance.
         """
-        return self._pedb.padstacks.instances[self.negative_remote_sense_pin.id]
+        return self._pedb.padstacks.instances[self.core.negative_remote_sense_pin.id]
 
     @negative_remote_sense_pin.setter
     def negative_remote_sense_pin(self, value):
         if isinstance(value, int):
             if value in self._pedb.padsatcks.instances:
-                self.neg_remote_sense_pin = self._pedb.padsatcks.instances[value]
+                self.core.neg_remote_sense_pin = self._pedb.padsatcks.instances[value]
         elif isinstance(value, PadstackInstance):
-            self.neg_remote_sense_pin = value
+            self.core.neg_remote_sense_pin = value
 
     @property
     def positive_remote_sense_pin(self) -> PadstackInstance:
@@ -124,19 +124,19 @@ class VoltageRegulator(GrpcVoltageRegulator):
         :class:`PadstackInstance pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`
             PadstackInstance.
         """
-        return self._pedb.padstacks.instances[self.pos_remote_sense_pin.id]
+        return self._pedb.padstacks.instances[self.core.pos_remote_sense_pin.id]
 
     @positive_remote_sense_pin.setter
     def positive_remote_sense_pin(self, value):
         if isinstance(value, int):
             if value in self._pedb.padsatcks.instances:
-                self.positive_remote_sense_pin = self._pedb.padsatcks.instances[value]
+                self.core.positive_remote_sense_pin = self._pedb.padsatcks.instances[value]
                 if not self.component:
-                    self.component = self._pedb.padsatcks.instances[value].component.name
+                    self.core.component = self._pedb.padsatcks.instances[value].component.name
         elif isinstance(value, PadstackInstance):
             self.positive_remote_sense_pin = value
             if not self.component:
-                self.component = value.component.name
+                self.core.component = value.component.name
 
     @property
     def voltage(self) -> float:
@@ -147,8 +147,8 @@ class VoltageRegulator(GrpcVoltageRegulator):
         float
             Voltage value.
         """
-        return Value(self.voltage)
+        return Value(self.core.voltage)
 
     @voltage.setter
     def voltage(self, value):
-        self.voltage = Value(value)
+        self.core.voltage = Value(value)
