@@ -1,0 +1,6 @@
+apply
+=====
+
+.. currentmodule:: pyedb.configuration.cfg_components
+
+.. automethod:: CfgComponents.apply

@@ -1,0 +1,119 @@
+
+
+
+
+
+
+:class:`MetalLayer`
+===================
+
+
+.. py:class:: pyedb.libraries.common.MetalLayer(pedb, name, thickness=1e-06, material: str = 'Copper')
+
+   Bases: :py:obj:`Layer`
+
+
+   
+   Convenience wrapper for metallic layers.
+
+   Automatically creates a ``Conductor`` material.
+
+   :Parameters:
+
+       **pedb** : :obj:`ansys.edb.core.database.Database`
+           Active EDB session.
+
+       **name** : :class:`python:str`
+           Layer name.
+
+       **thickness** : :class:`python:float`, :obj:`optional`
+           Thickness in meters.  Default is 1 µm.
+
+       **material** : :class:`python:str`, :obj:`optional`
+           Name of the conductor material.  Default is ``"Copper"``.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> top = MetalLayer(edb, "TOP", thickness=18e-6, material="Gold")
+   >>> top.material.conductivity
+   58000000.0
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: MetalLayer
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~material`
+            - Material assigned to this layer.
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.common import MetalLayer
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: material
+
+   
+   Material assigned to this layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+

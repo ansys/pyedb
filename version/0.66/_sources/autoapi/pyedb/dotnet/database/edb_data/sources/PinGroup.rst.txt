@@ -1,0 +1,368 @@
+
+
+
+
+
+
+:class:`PinGroup`
+=================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.sources.PinGroup(name='', edb_pin_group=None, pedb=None)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages pin groups.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PinGroup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~remove_pins`
+            - Remove pins from the pin group.
+          * - :py:attr:`~get_terminal`
+            - Terminal.
+          * - :py:attr:`~create_terminal`
+            - Create a terminal.
+          * - :py:attr:`~create_current_source_terminal`
+            - 
+          * - :py:attr:`~create_voltage_source_terminal`
+            - 
+          * - :py:attr:`~create_voltage_probe_terminal`
+            - 
+          * - :py:attr:`~create_port_terminal`
+            - 
+          * - :py:attr:`~delete`
+            - Delete active pin group.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Name.
+          * - :py:attr:`~component`
+            - Component.
+          * - :py:attr:`~pins`
+            - Gets the pins belong to this pin group.
+          * - :py:attr:`~node_pins`
+            - Node pins.
+          * - :py:attr:`~net`
+            - Net.
+          * - :py:attr:`~net_name`
+            - 
+          * - :py:attr:`~terminal`
+            - Terminal.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.sources import PinGroup
+
+Property detail
+---------------
+
+.. py:property:: name
+
+   
+   Name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: component
+
+   
+   Component.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pins
+
+   
+   Gets the pins belong to this pin group.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: node_pins
+
+   
+   Node pins.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net
+
+   
+   Net.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net_name
+
+.. py:property:: terminal
+
+   
+   Terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: remove_pins(pins: Union[str, List[str]])
+
+   
+   Remove pins from the pin group.
+
+
+   :Parameters:
+
+       **pins** : :class:`python:str`, :class:`python:list`
+           List of padstack instance names.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_terminal(name=None, create_new_terminal=False)
+
+   
+   Terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_terminal(name=None)
+
+   
+   Create a terminal.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_current_source_terminal(magnitude=1, phase=0)
+
+.. py:method:: create_voltage_source_terminal(magnitude=1, phase=0, impedance=0.001)
+
+.. py:method:: create_voltage_probe_terminal(impedance=1000000)
+
+.. py:method:: create_port_terminal(impedance=50)
+
+.. py:method:: delete()
+
+   
+   Delete active pin group.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

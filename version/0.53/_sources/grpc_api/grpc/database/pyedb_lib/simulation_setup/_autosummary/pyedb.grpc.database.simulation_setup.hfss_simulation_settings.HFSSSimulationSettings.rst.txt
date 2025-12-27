@@ -1,0 +1,29 @@
+﻿HFSSSimulationSettings
+======================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_simulation_settings
+
+.. autoclass:: HFSSSimulationSettings
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HFSSSimulationSettings.advanced
+      HFSSSimulationSettings.advanced_meshing
+      HFSSSimulationSettings.dcr
+      HFSSSimulationSettings.enabled
+      HFSSSimulationSettings.general
+      HFSSSimulationSettings.msg
+      HFSSSimulationSettings.options
+      HFSSSimulationSettings.solver
+   
+   

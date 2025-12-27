@@ -1,0 +1,6 @@
+load\_material
+==============
+
+.. currentmodule:: pyedb.dotnet.database.materials
+
+.. automethod:: Materials.load_material

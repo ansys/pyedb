@@ -1,0 +1,1008 @@
+
+
+
+
+
+
+:class:`Nets`
+=============
+
+
+.. py:class:: pyedb.grpc.database.nets.Nets(p_edb: Any)
+
+   Bases: :py:obj:`pyedb.common.nets.CommonNets`
+
+
+   
+   Manages EDB methods for nets management accessible from `Edb.nets` property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+
+   >>> # Initialize EDB session
+   >>> edbapp = Edb(edbversion="2025.2")
+
+   >>> # Access Nets class
+   >>> nets = edbapp.nets
+
+   >>> # =================
+   >>> # Property examples
+   >>> # =================
+
+   >>> # Get all nets dictionary
+   >>> all_nets = nets.nets
+   >>> print("All nets:", list(all_nets.keys()))
+
+   >>> # Get net names list
+   >>> net_names = nets.netlist
+   >>> print("Net names:", net_names)
+
+   >>> # Get signal nets
+   >>> signal_nets = nets.signal
+   >>> print("Signal nets:", list(signal_nets.keys()))
+
+   >>> # Get power/ground nets
+   >>> power_nets = nets.power
+   >>> print("Power nets:", list(power_nets.keys()))
+
+   >>> # Get nets by components
+   >>> nets_by_comps = nets.nets_by_components
+   >>> print("Nets by components:", nets_by_comps)
+
+   >>> # Get components by nets
+   >>> comps_by_nets = nets.components_by_nets
+   >>> print("Components by nets:", comps_by_nets)
+
+   >>> # ===============
+   >>> # Method examples
+   >>> # ===============
+
+   >>> # Get net by name
+   >>> net_obj = nets["GND"]
+   >>> print(f"Net object: {net_obj.name}")
+
+   >>> # Check net existence
+   >>> if "PCIe_RX" in nets:
+   >>>    print("PCIe_RX exists")
+
+   >>> # Identify eligible power nets
+   >>> eligible_pwr = nets.eligible_power_nets(threshold=0.25)
+   >>> print("Eligible power nets:", [net.name for net in eligible_pwr])
+
+   >>> # Generate extended nets (deprecated)
+   >>> nets.generate_extended_nets(resistor_below=5, inductor_below=0.5, capacitor_above=0.1)
+
+   >>> # Classify nets
+   >>> nets.classify_nets(power_nets=["VDD_CPU", "VDD_MEM"], signal_nets=["PCIe_TX", "ETH_RX"])
+
+   >>> # Check power/ground status
+   >>> is_power = nets.is_power_gound_net(["VDD_CPU", "PCIe_TX"])
+   >>> print("Is power net:", is_power)
+
+   >>> # Get DC-connected nets
+   >>> dc_connected = nets.get_dcconnected_net_list(ground_nets=["GND"], res_value=0.002)
+       print("DC-connected nets:", dc_connected)
+
+   >>> # Get power tree
+   >>> comp_list, columns, net_group = nets.get_powertree(power_net_name="VDD_CPU", ground_nets=["GND"])
+   >>> print("Power tree components:", comp_list)
+
+   >>> # Find net by name
+   >>> found_net = nets.get_net_by_name("PCIe_TX")
+   >>> print(f"Found net: {found_net.name}")
+
+   >>> # Delete nets
+   >>> deleted = nets.delete(["Unused_Net", "Test_Net"])
+   >>> print("Deleted nets:", deleted)
+
+   >>> # Find or create net
+   >>> new_net = nets.find_or_create_net(net_name="New_Net")
+   >>> print(f"Created net: {new_net.name}")
+
+   >>> # Check net-component association
+   >>> in_component = nets.is_net_in_component("U1", "VDD_CPU")
+   >>> print("Net in component:", in_component)
+
+   >>> # Find and fix disjoint nets (deprecated)
+   >>> fixed_nets = nets.find_and_fix_disjoint_nets(net_list=["PCIe_TX"], clean_disjoints_less_than=1e-6)
+   >>> print("Fixed nets:", fixed_nets)
+
+   >>> # Merge net polygons
+   >>> merged = nets.merge_nets_polygons(["VDD_CPU", "VDD_MEM"])
+   >>> print("Polygons merged:", merged)
+
+       # Close EDB session
+   >>> edbapp.close()
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: Nets
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~eligible_power_nets`
+            - Identify nets eligible for power/ground classification based on area ratio.
+          * - :py:attr:`~generate_extended_nets`
+            - Generate extended nets based on component thresholds.
+          * - :py:attr:`~classify_nets`
+            - Reassign net classifications as power/ground or signal.
+          * - :py:attr:`~is_power_gound_net`
+            - Check if any net in a list is a power/ground net.
+          * - :py:attr:`~get_dcconnected_net_list`
+            - Get nets connected to DC through inductors and low-value resistors.
+          * - :py:attr:`~get_powertree`
+            - Retrieve power tree for a given power net.
+          * - :py:attr:`~get_net_by_name`
+            - Find a net by name.
+          * - :py:attr:`~delete`
+            - Delete one or more nets from the layout.
+          * - :py:attr:`~find_or_create_net`
+            - Find or create a net based on given criteria.
+          * - :py:attr:`~is_net_in_component`
+            - Check if a net belongs to a component.
+          * - :py:attr:`~find_and_fix_disjoint_nets`
+            - Find and fix disjoint nets.
+          * - :py:attr:`~merge_nets_polygons`
+            - Merge polygons for specified nets on each layer.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~db`
+            - Database object.
+          * - :py:attr:`~nets`
+            - All nets in the layout.
+          * - :py:attr:`~netlist`
+            - List of all net names.
+          * - :py:attr:`~signal`
+            - Signal nets in the layout.
+          * - :py:attr:`~power`
+            - Power and ground nets in the layout.
+          * - :py:attr:`~nets_by_components`
+            - Mapping of components to their associated nets.
+          * - :py:attr:`~components_by_nets`
+            - Mapping of nets to their associated components.
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getitem__`
+            - Get a net by name.
+          * - :py:attr:`~__contains__`
+            - Check if a net exists in the layout.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.nets import Nets
+
+Property detail
+---------------
+
+.. py:property:: db
+
+   
+   Database object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: nets
+   :type: Dict[str, pyedb.grpc.database.net.net.Net]
+
+
+   
+   All nets in the layout.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :obj:`pyedb.grpc.database.net.net.Net`]
+           Dictionary of net names to Net objects.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> all_nets = edb_nets.nets
+   >>> for net_name, net_obj in all_nets.items():
+   ...     print(net_name, net_obj.is_power_ground)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: netlist
+   :type: List[str]
+
+
+   
+   List of all net names.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           Names of all nets in the layout.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> net_names = edb_nets.netlist
+   >>> print("Total nets:", len(net_names))
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: signal
+   :type: Dict[str, pyedb.grpc.database.net.net.Net]
+
+
+   
+   Signal nets in the layout.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :obj:`pyedb.grpc.database.net.net.Net`]
+           Dictionary of signal net names to Net objects.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> signal_nets = edb_nets.signal
+   >>> print("Signal nets:", list(signal_nets.keys()))
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: power
+   :type: Dict[str, pyedb.grpc.database.net.net.Net]
+
+
+   
+   Power and ground nets in the layout.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :obj:`pyedb.grpc.database.net.net.Net`]
+           Dictionary of power/ground net names to Net objects.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> power_nets = edb_nets.power
+   >>> print("Power nets:", list(power_nets.keys()))
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: nets_by_components
+   :type: Dict[str, List[str]]
+
+
+   
+   Mapping of components to their associated nets.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`python:list`\[:class:`python:str`]]
+           Dictionary mapping component names to list of net names.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> nets_by_comps = edb_nets.nets_by_components
+   >>> print("U1 nets:", nets_by_comps.get("U1", []))
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: components_by_nets
+   :type: Dict[str, List[str]]
+
+
+   
+   Mapping of nets to their associated components.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`python:list`\[:class:`python:str`]]
+           Dictionary mapping net names to list of component names.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> comps_by_nets = edb_nets.components_by_nets
+   >>> print("Components on GND:", comps_by_nets.get("GND", []))
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getitem__(name: str) -> pyedb.grpc.database.net.net.Net
+
+   
+   Get a net by name.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the net to retrieve.
+
+   :Returns:
+
+       :obj:`pyedb.grpc.database.net.net.Net`
+           Net object if found, otherwise None.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> gnd_net = edb_nets["GND"]
+   >>> print(gnd_net.name)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __contains__(name: str) -> bool
+
+   
+   Check if a net exists in the layout.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the net to check.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the net exists, False otherwise.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> if "PCIe_RX" in edb_nets:
+   >>>     print("Net exists")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: eligible_power_nets(threshold: float = 0.3) -> List[pyedb.grpc.database.net.net.Net]
+
+   
+   Identify nets eligible for power/ground classification based on area ratio.
+
+   Uses the same algorithm implemented in SIwave.
+
+   :Parameters:
+
+       **threshold** : :class:`python:float`, :obj:`optional`
+           Area ratio threshold. Nets with plane area ratio above this value are
+           considered power/ground nets.
+
+   :Returns:
+
+       :class:`python:list`\[:obj:`pyedb.grpc.database.net.net.Net`]
+           List of nets eligible as power/ground nets.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> eligible_pwr = edb_nets.eligible_power_nets(threshold=0.25)
+   >>> print([net.name for net in eligible_pwr])
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: generate_extended_nets(resistor_below: Union[int, float] = 10, inductor_below: Union[int, float] = 1, capacitor_above: Union[int, float] = 1, exception_list: Optional[List[str]] = None, include_signal: bool = True, include_power: bool = True) -> List[Any]
+
+   
+   Generate extended nets based on component thresholds.
+
+   .. deprecated:: pyedb 0.30.0
+       Use :func:`pyedb.grpc.extended_nets.generate_extended_nets` instead.
+
+   :Parameters:
+
+       **resistor_below** : :class:`python:int` | :class:`python:float`, :obj:`optional`
+           Resistor threshold value. Components below this value are considered.
+
+       **inductor_below** : :class:`python:int` | :class:`python:float`, :obj:`optional`
+           Inductor threshold value. Components below this value are considered.
+
+       **capacitor_above** : :class:`python:int` | :class:`python:float`, :obj:`optional`
+           Capacitor threshold value. Components above this value are considered.
+
+       **exception_list** : :class:`python:list`, :obj:`optional`
+           List of components to bypass during threshold checks.
+
+       **include_signal** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to include signal nets in extended net generation.
+
+       **include_power** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to include power nets in extended net generation.
+
+   :Returns:
+
+       :class:`python:list`
+           List of generated extended nets.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edb_nets.generate_extended_nets(resistor_below=5, inductor_below=0.5, capacitor_above=0.1)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: classify_nets(power_nets: Optional[Union[str, List[str]]] = None, signal_nets: Optional[Union[str, List[str]]] = None) -> bool
+
+   
+   Reassign net classifications as power/ground or signal.
+
+
+   :Parameters:
+
+       **power_nets** : :class:`python:str` | :class:`python:list`\[:class:`python:str`], :obj:`optional`
+           Nets to classify as power/ground.
+
+       **signal_nets** : :class:`python:str` | :class:`python:list`\[:class:`python:str`], :obj:`optional`
+           Nets to classify as signal.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edb_nets.classify_nets(power_nets=["VDD_CPU", "VDD_MEM"], signal_nets=["PCIe_TX", "ETH_RX"])
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_power_gound_net(netname_list: Union[str, List[str]]) -> bool
+
+   
+   Check if any net in a list is a power/ground net.
+
+
+   :Parameters:
+
+       **netname_list** : :class:`python:str` | :class:`python:list`\[:class:`python:str`]
+           Net name or list of net names to check.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if any net is power/ground, False otherwise.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> is_power = edb_nets.is_power_gound_net(["VDD_CPU", "PCIe_TX"])
+   >>> print("Contains power net:", is_power)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_dcconnected_net_list(ground_nets: List[str] = ['GND'], res_value: float = 0.001) -> List[Set[str]]
+
+   
+   Get nets connected to DC through inductors and low-value resistors.
+
+
+   :Parameters:
+
+       **ground_nets** : :class:`python:tuple`, :obj:`optional`
+           Ground net names. Default is ("GND",).
+
+       **res_value** : :class:`python:float`, :obj:`optional`
+           Resistance threshold value. Default is 0.001 ohms.
+
+   :Returns:
+
+       :class:`python:list`\[:obj:`set`]
+           List of sets of connected nets.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> dc_connected = edb_nets.get_dcconnected_net_list(ground_nets=["GND"], res_value=0.002)
+   >>> for net_group in dc_connected:
+   ...     print("Connected nets:", net_group)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_powertree(power_net_name: str, ground_nets: List[str]) -> Tuple[List[List[str]], List[str], List[str]]
+
+   
+   Retrieve power tree for a given power net.
+
+
+   :Parameters:
+
+       **power_net_name** : :class:`python:str`
+           Name of the power net.
+
+       **ground_nets** : :class:`python:list`
+           List of ground net names.
+
+   :Returns:
+
+       :class:`python:tuple`
+           (component_list, component_list_columns, net_group)
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> comp_list, columns, net_group = edb_nets.get_powertree(power_net_name="VDD_CPU", ground_nets=["GND"])
+   >>> print("Power tree components:", comp_list)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_net_by_name(net_name: str) -> Optional[pyedb.grpc.database.net.net.Net]
+
+   
+   Find a net by name.
+
+
+   :Parameters:
+
+       **net_name** : :class:`python:str`
+           Name of the net to find.
+
+   :Returns:
+
+       :obj:`pyedb.grpc.database.net.net.Net`
+           Net object if found, otherwise None.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> found_net = edb_nets.get_net_by_name("PCIe_TX")
+   >>> if found_net:
+   ...     print("Net found:", found_net.name)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete(netlist: Union[str, List[str]]) -> List[str]
+
+   
+   Delete one or more nets from the layout.
+
+
+   :Parameters:
+
+       **netlist** : :class:`python:str` | :class:`python:list`\[:class:`python:str`]
+           Net name or list of net names to delete.
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           Names of nets that were deleted.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> deleted_nets = database.nets.delete(["Net1", "Net2"])
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_or_create_net(net_name: str = '', start_with: str = '', contain: str = '', end_with: str = '') -> Union[pyedb.grpc.database.net.net.Net, List[pyedb.grpc.database.net.net.Net]]
+
+   
+   Find or create a net based on given criteria.
+
+
+   :Parameters:
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Exact name of the net to find or create.
+
+       **start_with** : :class:`python:str`, :obj:`optional`
+           Find nets starting with this string.
+
+       **contain** : :class:`python:str`, :obj:`optional`
+           Find nets containing this string.
+
+       **end_with** : :class:`python:str`, :obj:`optional`
+           Find nets ending with this string.
+
+   :Returns:
+
+       :obj:`pyedb.grpc.database.net.net.Net` | :class:`python:list`\[:obj:`pyedb.grpc.database.net.net.Net`]
+           Net object or list of matching net objects.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> # Create new net
+   >>> new_net = edb_nets.find_or_create_net(net_name="New_Net")
+   >>>
+   >>> # Find existing net
+   >>> existing_net = edb_nets.find_or_create_net(net_name="GND")
+   >>>
+   >>> # Find nets starting with "VDD"
+   >>> vdd_nets = edb_nets.find_or_create_net(start_with="VDD")
+   >>>
+   >>> # Find nets ending with "_P"
+   >>> pos_nets = edb_nets.find_or_create_net(end_with="_P")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_net_in_component(component_name: str, net_name: str) -> bool
+
+   
+   Check if a net belongs to a component.
+
+
+   :Parameters:
+
+       **component_name** : :class:`python:str`
+           Name of the component.
+
+       **net_name** : :class:`python:str`
+           Name of the net.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the net is found in the component, False otherwise.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> in_component = edb_nets.is_net_in_component("U1", "VDD_CPU")
+   >>> print("Net in component:", in_component)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_and_fix_disjoint_nets(net_list: Optional[List[str]] = None, keep_only_main_net: bool = False, clean_disjoints_less_than: float = 0.0, order_by_area: bool = False) -> List[str]
+
+   
+   Find and fix disjoint nets.
+
+   .. deprecated:: pyedb 0.30.0
+       Use :func:`edb.layout_validation.disjoint_nets` instead.
+
+   :Parameters:
+
+       **net_list** : :class:`python:list`\[:class:`python:str`], :obj:`optional`
+           List of nets to check. Checks all nets if None.
+
+       **keep_only_main_net** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Keep only the main net segment if True.
+
+       **clean_disjoints_less_than** : :class:`python:float`, :obj:`optional`
+           Clean disjoint nets smaller than this area (in m²).
+
+       **order_by_area** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Order naming by area instead of object count.
+
+   :Returns:
+
+       :class:`python:list`
+           New ne
+           
+           New nets created.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> fixed_nets = edb_nets.find_and_fix_disjoint_nets(net_list=["PCIe_TX"], clean_disjoints_less_than=1e-6)
+   >>> print("Fixed nets:", fixed_nets)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: merge_nets_polygons(net_names_list: Union[str, List[str]]) -> bool
+
+   
+   Merge polygons for specified nets on each layer.
+
+
+   :Parameters:
+
+       **net_names_list** : :class:`python:str` | :class:`python:list`\[:class:`python:str`]
+           Net name or list of net names.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> merged = edb_nets.merge_nets_polygons(["VDD_CPU", "VDD_MEM"])
+   >>> print("Merge successful:", merged)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

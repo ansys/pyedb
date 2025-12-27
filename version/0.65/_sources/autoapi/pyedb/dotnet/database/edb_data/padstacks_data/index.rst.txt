@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``padstacks_data.py`` module
+================================
+
+.. py:module:: pyedb.dotnet.database.edb_data.padstacks_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: padstacks_data
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.padstacks_data.EDBPadProperties`
+            - Manages EDB functionalities for pad properties.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstack`
+            - Manages EDB functionalities for a padstack.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`
+            - Manages EDB functionalities for a padstack.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> EDBPadProperties</autoapi/pyedb/dotnet/database/edb_data/padstacks_data/EDBPadProperties>
+    <span class="nf nf-cod-symbol_class"></span> EDBPadstack</autoapi/pyedb/dotnet/database/edb_data/padstacks_data/EDBPadstack>
+    <span class="nf nf-cod-symbol_class"></span> EDBPadstackInstance</autoapi/pyedb/dotnet/database/edb_data/padstacks_data/EDBPadstackInstance>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,24 @@
+﻿AdaptiveType
+============
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.simulation_setup
+
+.. autoclass:: AdaptiveType
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      AdaptiveType.BroadBand
+      AdaptiveType.MultiFrequency
+      AdaptiveType.SingleFrequency
+   
+   

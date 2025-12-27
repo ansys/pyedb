@@ -1,0 +1,183 @@
+
+
+
+
+
+
+The ``pyedb.dotnet.clr_module`` library
+=======================================
+
+.. py:module:: pyedb.dotnet.clr_module
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: clr_module
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~custom_show_warning`
+            - Custom warning used to remove <stdin>:loc: pattern.
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~existing_showwarning`
+            - 
+
+
+          * - :py:obj:`~modules`
+            - 
+
+
+          * - :py:obj:`~cpython`
+            - 
+
+
+          * - :py:obj:`~is_linux`
+            - 
+
+
+          * - :py:obj:`~is_windows`
+            - 
+
+
+          * - :py:obj:`~is_clr`
+            - 
+
+
+          * - :py:obj:`~pyedb_path`
+            - 
+
+
+          * - :py:obj:`~dotnet_root`
+            - 
+
+
+          * - :py:obj:`~edb_initialized`
+            - 
+
+
+          * - :py:obj:`~win32_client`
+            - 
+
+
+
+    .. tab-item:: Constants
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~LINUX_WARNING`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: custom_show_warning(message, category, filename, lineno, file=None, line=None)
+
+   
+   Custom warning used to remove <stdin>:loc: pattern.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: LINUX_WARNING
+   :value: 'Due to compatibility issues between .NET Core and libssl on some Linux versions, for example...
+
+
+.. py:data:: existing_showwarning
+
+.. py:data:: modules
+
+.. py:data:: cpython
+   :value: True
+
+
+.. py:data:: is_linux
+
+.. py:data:: is_windows
+
+.. py:data:: is_clr
+   :value: False
+
+
+.. py:data:: pyedb_path
+
+.. py:data:: dotnet_root
+   :value: None
+
+
+.. py:data:: edb_initialized
+   :value: True
+
+
+.. py:data:: win32_client
+   :value: None
+
+
+
+

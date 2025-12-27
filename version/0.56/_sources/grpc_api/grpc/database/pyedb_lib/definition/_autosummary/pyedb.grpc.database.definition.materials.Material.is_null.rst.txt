@@ -1,0 +1,6 @@
+is\_null
+========
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoproperty:: Material.is_null

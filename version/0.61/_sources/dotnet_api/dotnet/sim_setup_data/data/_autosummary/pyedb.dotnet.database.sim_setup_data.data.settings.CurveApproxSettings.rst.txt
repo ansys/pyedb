@@ -1,0 +1,15 @@
+﻿CurveApproxSettings
+===================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+.. autoclass:: CurveApproxSettings
+
+   
+
+   
+   
+
+   
+   
+   

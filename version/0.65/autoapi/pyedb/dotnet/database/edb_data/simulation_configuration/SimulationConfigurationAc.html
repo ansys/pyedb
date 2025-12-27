@@ -1,0 +1,1691 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SimulationConfigurationAc &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../../../../_static/documentation_options.js?v=0045fa0a"></script>
+    <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/pyedb/dotnet/database/edb_data/simulation_configuration/SimulationConfigurationAc';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.65';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="SimulationConfiguration" href="SimulationConfiguration.html" />
+    <link rel="prev" title="SimulationConfigurationDc" href="SimulationConfigurationDc.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.65.2" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/autoapi/pyedb/dotnet/database/edb_data/simulation_configuration/SimulationConfigurationAc.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../why_pyedb.html">
+    Why PyEDB?
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../migration_guide.html">
+    Migration Guide: DotNet to gRPC
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../workflows/index.html">
+    Workflows
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../glossary.html">
+    Glossary
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../troubleshooting.html">
+    Troubleshooting
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../contribution_guide.html">
+    Contribution Guide
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../archive.html">
+    Legacy DotNet API (Archived)
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.65/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../why_pyedb.html">
+    Why PyEDB?
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../migration_guide.html">
+    Migration Guide: DotNet to gRPC
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../workflows/index.html">
+    Workflows
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../glossary.html">
+    Glossary
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../troubleshooting.html">
+    Troubleshooting
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../contribution_guide.html">
+    Contribution Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../../archive.html">
+    Legacy DotNet API (Archived)
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.65/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../../../../dotnet_api/index.html">API reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../../../index.html">The <code class="docutils literal notranslate"><span class="pre">dotnet</span></code> package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../../index.html"> <span class="nf nf-md-package"></span> database</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../cell/index.html"> <span class="nf nf-md-package"></span> cell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../definition/index.html"> <span class="nf nf-md-package"></span> definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dotnet/index.html"> <span class="nf nf-md-package"></span> dotnet</a></li>
+<li class="toctree-l4 current active"><a class="reference internal" href="../index.html"> <span class="nf nf-md-package"></span> edb_data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../geometry/index.html"> <span class="nf nf-md-package"></span> geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../sim_setup_data/index.html"> <span class="nf nf-md-package"></span> sim_setup_data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../utilities/index.html"> <span class="nf nf-md-package"></span> utilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Variables/index.html"> <span class="nf nf-fa-file"></span> Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../components/index.html"> <span class="nf nf-fa-file"></span> components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../general/index.html"> <span class="nf nf-fa-file"></span> general</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../hfss/index.html"> <span class="nf nf-fa-file"></span> hfss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../layout_obj_instance/index.html"> <span class="nf nf-fa-file"></span> layout_obj_instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../layout_validation/index.html"> <span class="nf nf-fa-file"></span> layout_validation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../materials/index.html"> <span class="nf nf-fa-file"></span> materials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modeler/index.html"> <span class="nf nf-fa-file"></span> modeler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../net_class/index.html"> <span class="nf nf-fa-file"></span> net_class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../nets/index.html"> <span class="nf nf-fa-file"></span> nets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../padstack/index.html"> <span class="nf nf-fa-file"></span> padstack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../siwave/index.html"> <span class="nf nf-fa-file"></span> siwave</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../stackup/index.html"> <span class="nf nf-fa-file"></span> stackup</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../clr_module/index.html"> <span class="nf nf-fa-file"></span> clr_module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../edb/index.html"> <span class="nf nf-fa-file"></span> edb</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../dotnet_api/dotnet/SiWave.html">SIwave manager</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../../../../../archive.html" class="nav-link">Legacy DotNet API (Archived)</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../../../../../dotnet_api/index.html" class="nav-link">API reference</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../../index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">dotnet</span></code> package</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">pyedb.dotnet.database</span></code> library</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">edb_data</span></code> package</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">simulation_configuration.py</span></code> module</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationConfigurationAc</span></code></span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="simulationconfigurationac">
+<h1><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationConfigurationAc</span></code><a class="headerlink" href="#simulationconfigurationac" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfigurationAc">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyedb.dotnet.database.edb_data.simulation_configuration.</span></span><span class="sig-name descname"><span class="pre">SimulationConfigurationAc</span></span><a class="headerlink" href="#pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfigurationAc" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Contains all AC analysis settings.
+The class is part of <cite>SimulationConfiguration</cite> class as a property.</p>
+</dd></dl>
+
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Properties</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.sweep_interpolating" title="SimulationConfigurationAc.sweep_interpolating"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sweep_interpolating</span></code></a></p></td>
+<td><p>Retrieve boolean to add a sweep interpolating sweep.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.use_q3d_for_dc" title="SimulationConfigurationAc.use_q3d_for_dc"><code class="xref py py-attr docutils literal notranslate"><span class="pre">use_q3d_for_dc</span></code></a></p></td>
+<td><p>Retrieve boolean to Q3D solver for DC point value computation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.relative_error" title="SimulationConfigurationAc.relative_error"><code class="xref py py-attr docutils literal notranslate"><span class="pre">relative_error</span></code></a></p></td>
+<td><p>Retrieve relative error used for the interpolating sweep convergence.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.use_error_z0" title="SimulationConfigurationAc.use_error_z0"><code class="xref py py-attr docutils literal notranslate"><span class="pre">use_error_z0</span></code></a></p></td>
+<td><p>Retrieve value for the error on Z0 for the port.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.percentage_error_z0" title="SimulationConfigurationAc.percentage_error_z0"><code class="xref py py-attr docutils literal notranslate"><span class="pre">percentage_error_z0</span></code></a></p></td>
+<td><p>Retrieve boolean to perform the cutout during the project build.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.enforce_causality" title="SimulationConfigurationAc.enforce_causality"><code class="xref py py-attr docutils literal notranslate"><span class="pre">enforce_causality</span></code></a></p></td>
+<td><p>Retrieve boolean to enforce causality for the frequency sweep.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.enforce_passivity" title="SimulationConfigurationAc.enforce_passivity"><code class="xref py py-attr docutils literal notranslate"><span class="pre">enforce_passivity</span></code></a></p></td>
+<td><p>Retrieve boolean to enforce passivity for the frequency sweep.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.passivity_tolerance" title="SimulationConfigurationAc.passivity_tolerance"><code class="xref py py-attr docutils literal notranslate"><span class="pre">passivity_tolerance</span></code></a></p></td>
+<td><p>Retrieve the value for the passivity tolerance when used.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.sweep_name" title="SimulationConfigurationAc.sweep_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sweep_name</span></code></a></p></td>
+<td><p>Retrieve frequency sweep name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.radiation_box" title="SimulationConfigurationAc.radiation_box"><code class="xref py py-attr docutils literal notranslate"><span class="pre">radiation_box</span></code></a></p></td>
+<td><p>Retrieve RadiationBoxType object selection defined for the radiation box type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.start_freq" title="SimulationConfigurationAc.start_freq"><code class="xref py py-attr docutils literal notranslate"><span class="pre">start_freq</span></code></a></p></td>
+<td><p>Starting frequency for the frequency sweep.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.stop_freq" title="SimulationConfigurationAc.stop_freq"><code class="xref py py-attr docutils literal notranslate"><span class="pre">stop_freq</span></code></a></p></td>
+<td><p>Retrieve stop frequency for the frequency sweep.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.sweep_type" title="SimulationConfigurationAc.sweep_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sweep_type</span></code></a></p></td>
+<td><p>Retrieve SweepType object for the frequency sweep.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.step_freq" title="SimulationConfigurationAc.step_freq"><code class="xref py py-attr docutils literal notranslate"><span class="pre">step_freq</span></code></a></p></td>
+<td><p>Retrieve step frequency for the frequency sweep.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.decade_count" title="SimulationConfigurationAc.decade_count"><code class="xref py py-attr docutils literal notranslate"><span class="pre">decade_count</span></code></a></p></td>
+<td><p>Retrieve decade count number for the frequency sweep in case of a log sweep selected.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.mesh_freq" title="SimulationConfigurationAc.mesh_freq"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mesh_freq</span></code></a></p></td>
+<td><p>Retrieve the meshing frequency for the HFSS adaptive convergence.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.max_num_passes" title="SimulationConfigurationAc.max_num_passes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">max_num_passes</span></code></a></p></td>
+<td><p>Retrieve maximum of points for the HFSS adaptive meshing.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.max_mag_delta_s" title="SimulationConfigurationAc.max_mag_delta_s"><code class="xref py py-attr docutils literal notranslate"><span class="pre">max_mag_delta_s</span></code></a></p></td>
+<td><p>Retrieve the magnitude of the delta S convergence criteria for the interpolating sweep.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.min_num_passes" title="SimulationConfigurationAc.min_num_passes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_num_passes</span></code></a></p></td>
+<td><p>Retrieve the minimum number of adaptive passes for HFSS convergence.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.basis_order" title="SimulationConfigurationAc.basis_order"><code class="xref py py-attr docutils literal notranslate"><span class="pre">basis_order</span></code></a></p></td>
+<td><p>Retrieve the BasisOrder object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.do_lambda_refinement" title="SimulationConfigurationAc.do_lambda_refinement"><code class="xref py py-attr docutils literal notranslate"><span class="pre">do_lambda_refinement</span></code></a></p></td>
+<td><p>Retrieve boolean to activate the lambda refinement.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.arc_angle" title="SimulationConfigurationAc.arc_angle"><code class="xref py py-attr docutils literal notranslate"><span class="pre">arc_angle</span></code></a></p></td>
+<td><p>Retrieve the value for the HFSS meshing arc angle.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.start_azimuth" title="SimulationConfigurationAc.start_azimuth"><code class="xref py py-attr docutils literal notranslate"><span class="pre">start_azimuth</span></code></a></p></td>
+<td><p>Retrieve the value of the starting azimuth for the HFSS meshing.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.max_arc_points" title="SimulationConfigurationAc.max_arc_points"><code class="xref py py-attr docutils literal notranslate"><span class="pre">max_arc_points</span></code></a></p></td>
+<td><p>Retrieve the value of the maximum arc points number for the HFSS meshing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.use_arc_to_chord_error" title="SimulationConfigurationAc.use_arc_to_chord_error"><code class="xref py py-attr docutils literal notranslate"><span class="pre">use_arc_to_chord_error</span></code></a></p></td>
+<td><p>Retrieve the boolean for activating the arc to chord for HFSS meshing.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.arc_to_chord_error" title="SimulationConfigurationAc.arc_to_chord_error"><code class="xref py py-attr docutils literal notranslate"><span class="pre">arc_to_chord_error</span></code></a></p></td>
+<td><p>Retrieve the value of arc to chord error for HFSS meshing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.defeature_abs_length" title="SimulationConfigurationAc.defeature_abs_length"><code class="xref py py-attr docutils literal notranslate"><span class="pre">defeature_abs_length</span></code></a></p></td>
+<td><p>Retrieve the value of arc to chord for HFSS meshing.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.defeature_layout" title="SimulationConfigurationAc.defeature_layout"><code class="xref py py-attr docutils literal notranslate"><span class="pre">defeature_layout</span></code></a></p></td>
+<td><p>Retrieve the boolean to activate the layout defeaturing.This method has been developed to simplify polygons</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.minimum_void_surface" title="SimulationConfigurationAc.minimum_void_surface"><code class="xref py py-attr docutils literal notranslate"><span class="pre">minimum_void_surface</span></code></a></p></td>
+<td><p>Retrieve the minimum void surface to be considered for the layout defeaturing.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.max_suf_dev" title="SimulationConfigurationAc.max_suf_dev"><code class="xref py py-attr docutils literal notranslate"><span class="pre">max_suf_dev</span></code></a></p></td>
+<td><p>Retrieve the value for the maximum surface deviation for the layout defeaturing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.process_padstack_definitions" title="SimulationConfigurationAc.process_padstack_definitions"><code class="xref py py-attr docutils literal notranslate"><span class="pre">process_padstack_definitions</span></code></a></p></td>
+<td><p>Retrieve the boolean for activating the padstack definition processing.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.return_current_distribution" title="SimulationConfigurationAc.return_current_distribution"><code class="xref py py-attr docutils literal notranslate"><span class="pre">return_current_distribution</span></code></a></p></td>
+<td><p>Boolean to activate the current distribution return with Siwave.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.ignore_non_functional_pads" title="SimulationConfigurationAc.ignore_non_functional_pads"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ignore_non_functional_pads</span></code></a></p></td>
+<td><p>Boolean to ignore nonfunctional pads with Siwave.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.include_inter_plane_coupling" title="SimulationConfigurationAc.include_inter_plane_coupling"><code class="xref py py-attr docutils literal notranslate"><span class="pre">include_inter_plane_coupling</span></code></a></p></td>
+<td><p>Boolean to activate the inter-plane coupling with Siwave.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.xtalk_threshold" title="SimulationConfigurationAc.xtalk_threshold"><code class="xref py py-attr docutils literal notranslate"><span class="pre">xtalk_threshold</span></code></a></p></td>
+<td><p>Return the value for Siwave cross talk threshold. THis value specifies the distance for the solver to</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.min_void_area" title="SimulationConfigurationAc.min_void_area"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_void_area</span></code></a></p></td>
+<td><p>Retrieve the value of minimum void area to be considered by Siwave.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.min_pad_area_to_mesh" title="SimulationConfigurationAc.min_pad_area_to_mesh"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_pad_area_to_mesh</span></code></a></p></td>
+<td><p>Retrieve the value of minimum pad area to be meshed by Siwave.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.snap_length_threshold" title="SimulationConfigurationAc.snap_length_threshold"><code class="xref py py-attr docutils literal notranslate"><span class="pre">snap_length_threshold</span></code></a></p></td>
+<td><p>Retrieve the boolean to activate the snapping threshold feature.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.min_plane_area_to_mesh" title="SimulationConfigurationAc.min_plane_area_to_mesh"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_plane_area_to_mesh</span></code></a></p></td>
+<td><p>Retrieve the minimum plane area to be meshed by Siwave.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.mesh_sizefactor" title="SimulationConfigurationAc.mesh_sizefactor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mesh_sizefactor</span></code></a></p></td>
+<td><p>Retrieve the Mesh Size factor value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.adaptive_type" title="SimulationConfigurationAc.adaptive_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">adaptive_type</span></code></a></p></td>
+<td><p>HFSS adaptive type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SimulationConfigurationAc.adaptive_low_freq" title="SimulationConfigurationAc.adaptive_low_freq"><code class="xref py py-attr docutils literal notranslate"><span class="pre">adaptive_low_freq</span></code></a></p></td>
+<td><p>HFSS broadband low frequency adaptive meshing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SimulationConfigurationAc.adaptive_high_freq" title="SimulationConfigurationAc.adaptive_high_freq"><code class="xref py py-attr docutils literal notranslate"><span class="pre">adaptive_high_freq</span></code></a></p></td>
+<td><p>HFSS broadband high frequency adaptive meshing.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="import-detail">
+<h2>Import detail<a class="headerlink" href="#import-detail" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.edb_data.simulation_configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationConfigurationAc</span>
+</pre></div>
+</div>
+</section>
+<section id="property-detail">
+<h2>Property detail<a class="headerlink" href="#property-detail" title="Link to this heading">#</a></h2>
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.sweep_interpolating">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">sweep_interpolating</span></span><a class="headerlink" href="#SimulationConfigurationAc.sweep_interpolating" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve boolean to add a sweep interpolating sweep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">True</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">when</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">a</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">sweep</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolating</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">is</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">defined</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">when</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">a</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">discrete</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">one</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">is</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">defined</span></code> instead.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.use_q3d_for_dc">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">use_q3d_for_dc</span></span><a class="headerlink" href="#SimulationConfigurationAc.use_q3d_for_dc" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve boolean to Q3D solver for DC point value computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">True</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">when</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">Q3D</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">solver</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">is</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">used</span></code> <code class="docutils literal notranslate"><span class="pre">False</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">when</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolating</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">is</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">used</span></code> instead.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.relative_error">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">relative_error</span></span><a class="headerlink" href="#SimulationConfigurationAc.relative_error" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve relative error used for the interpolating sweep convergence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">error</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolating</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">sweep</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">reach</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">convergence</span></code> criteria.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.use_error_z0">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">use_error_z0</span></span><a class="headerlink" href="#SimulationConfigurationAc.use_error_z0" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve value for the error on Z0 for the port.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">Z0</span></code> value.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.percentage_error_z0">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">percentage_error_z0</span></span><a class="headerlink" href="#SimulationConfigurationAc.percentage_error_z0" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve boolean to perform the cutout during the project build.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">True</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">when</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">clipping</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">design</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">is</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">applied</span></code> <code class="docutils literal notranslate"><span class="pre">False</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">if</span></code> not.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.enforce_causality">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">enforce_causality</span></span><a class="headerlink" href="#SimulationConfigurationAc.enforce_causality" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve boolean to enforce causality for the frequency sweep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">True</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">when</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">causality</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">is</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">enforced</span></code> <code class="docutils literal notranslate"><span class="pre">False</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">if</span></code> not.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.enforce_passivity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">enforce_passivity</span></span><a class="headerlink" href="#SimulationConfigurationAc.enforce_passivity" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve boolean to enforce passivity for the frequency sweep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">True</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">when</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">passivity</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">is</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">enforced</span></code> <code class="docutils literal notranslate"><span class="pre">False</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">if</span></code> not.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.passivity_tolerance">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">passivity_tolerance</span></span><a class="headerlink" href="#SimulationConfigurationAc.passivity_tolerance" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the value for the passivity tolerance when used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">passivity</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">tolerance</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">criteria</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">for</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">frequency</span></code> sweep.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.sweep_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">sweep_name</span></span><a class="headerlink" href="#SimulationConfigurationAc.sweep_name" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve frequency sweep name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">frequency</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">sweep</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">defined</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">in</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> project.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.radiation_box">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">radiation_box</span></span><a class="headerlink" href="#SimulationConfigurationAc.radiation_box" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve RadiationBoxType object selection defined for the radiation box type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">RadiationBoxType</span></code> <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></dt><dd></dd>
+<dt>3 <code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">can</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">be</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">chosen</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Conformal</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">BoundingBox</span></code> or ConvexHull.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.start_freq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">start_freq</span></span><a class="headerlink" href="#SimulationConfigurationAc.start_freq" title="Link to this definition">#</a></dt>
+<dd><p>Starting frequency for the frequency sweep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd><p>Value of the frequency point.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.stop_freq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">stop_freq</span></span><a class="headerlink" href="#SimulationConfigurationAc.stop_freq" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve stop frequency for the frequency sweep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">frequency</span></code> point.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.sweep_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">sweep_type</span></span><a class="headerlink" href="#SimulationConfigurationAc.sweep_type" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve SweepType object for the frequency sweep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">SweepType</span></code></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">SweepType</span></code> object,2 <code class="xref py py-obj docutils literal notranslate"><span class="pre">selections</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">are</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">supported</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">Linear</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">and</span></code> LogCount.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.step_freq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">step_freq</span></span><a class="headerlink" href="#SimulationConfigurationAc.step_freq" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve step frequency for the frequency sweep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">frequency</span></code> point.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.decade_count">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">decade_count</span></span><a class="headerlink" href="#SimulationConfigurationAc.decade_count" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve decade count number for the frequency sweep in case of a log sweep selected.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">decade</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code> number.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.mesh_freq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">mesh_freq</span></span><a class="headerlink" href="#SimulationConfigurationAc.mesh_freq" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the meshing frequency for the HFSS adaptive convergence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">frequency</span></code> point.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.max_num_passes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">max_num_passes</span></span><a class="headerlink" href="#SimulationConfigurationAc.max_num_passes" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve maximum of points for the HFSS adaptive meshing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">number</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">adaptive</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">passes</span></code> value.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.max_mag_delta_s">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">max_mag_delta_s</span></span><a class="headerlink" href="#SimulationConfigurationAc.max_mag_delta_s" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the magnitude of the delta S convergence criteria for the interpolating sweep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">convergence</span></code> criteria.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.min_num_passes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">min_num_passes</span></span><a class="headerlink" href="#SimulationConfigurationAc.min_num_passes" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the minimum number of adaptive passes for HFSS convergence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">number</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">adaptive</span></code> passes.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.basis_order">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">basis_order</span></span><a class="headerlink" href="#SimulationConfigurationAc.basis_order" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the BasisOrder object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">BasisOrder</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">class</span></code></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">This</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">class</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">supports</span></code> 4 <code class="xref py py-obj docutils literal notranslate"><span class="pre">selections</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">Mixed</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Zero</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">single</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">and</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">Double</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">for</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">HFSS</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">order</span></code> matrix.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.do_lambda_refinement">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">do_lambda_refinement</span></span><a class="headerlink" href="#SimulationConfigurationAc.do_lambda_refinement" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve boolean to activate the lambda refinement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">True</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">Enable</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">lambda</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">meshing</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">refinement</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">with</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">HFSS</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code> deactivate.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.arc_angle">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">arc_angle</span></span><a class="headerlink" href="#SimulationConfigurationAc.arc_angle" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the value for the HFSS meshing arc angle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">arc</span></code> angle.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.start_azimuth">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">start_azimuth</span></span><a class="headerlink" href="#SimulationConfigurationAc.start_azimuth" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the value of the starting azimuth for the HFSS meshing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">starting</span></code> azimuth.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.max_arc_points">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">max_arc_points</span></span><a class="headerlink" href="#SimulationConfigurationAc.max_arc_points" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the value of the maximum arc points number for the HFSS meshing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">arc</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">point</span></code> number.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.use_arc_to_chord_error">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">use_arc_to_chord_error</span></span><a class="headerlink" href="#SimulationConfigurationAc.use_arc_to_chord_error" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the boolean for activating the arc to chord for HFSS meshing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Activate</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">when</span></code> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">deactivated</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">when</span></code> <code class="docutils literal notranslate"><span class="pre">False</span></code>.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.arc_to_chord_error">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">arc_to_chord_error</span></span><a class="headerlink" href="#SimulationConfigurationAc.arc_to_chord_error" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the value of arc to chord error for HFSS meshing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">flot</span></code></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">arc</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">chord</span></code> error.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.defeature_abs_length">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">defeature_abs_length</span></span><a class="headerlink" href="#SimulationConfigurationAc.defeature_abs_length" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the value of arc to chord for HFSS meshing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">flot</span></code></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">arc</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">chord</span></code> error.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.defeature_layout">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">defeature_layout</span></span><a class="headerlink" href="#SimulationConfigurationAc.defeature_layout" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the boolean to activate the layout defeaturing.This method has been developed to simplify polygons
+with reducing the number of points to simplify the meshing with controlling its surface deviation. This method
+should be used at last resort when other methods failed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">True</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">when</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">activated</span></code> ‘False <code class="xref py py-obj docutils literal notranslate"><span class="pre">when</span></code> deactivated.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.minimum_void_surface">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">minimum_void_surface</span></span><a class="headerlink" href="#SimulationConfigurationAc.minimum_void_surface" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the minimum void surface to be considered for the layout defeaturing.
+Voids below this value will be ignored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">flot</span></code></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum</span></code> surface.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.max_suf_dev">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">max_suf_dev</span></span><a class="headerlink" href="#SimulationConfigurationAc.max_suf_dev" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the value for the maximum surface deviation for the layout defeaturing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">flot</span></code></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">surface</span></code> deviation.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.process_padstack_definitions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">process_padstack_definitions</span></span><a class="headerlink" href="#SimulationConfigurationAc.process_padstack_definitions" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the boolean for activating the padstack definition processing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">flot</span></code></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">arc</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">chord</span></code> error.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.return_current_distribution">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">return_current_distribution</span></span><a class="headerlink" href="#SimulationConfigurationAc.return_current_distribution" title="Link to this definition">#</a></dt>
+<dd><p>Boolean to activate the current distribution return with Siwave.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">flot</span></code></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">arc</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">chord</span></code> error.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.ignore_non_functional_pads">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">ignore_non_functional_pads</span></span><a class="headerlink" href="#SimulationConfigurationAc.ignore_non_functional_pads" title="Link to this definition">#</a></dt>
+<dd><p>Boolean to ignore nonfunctional pads with Siwave.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">flot</span></code></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">arc</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">chord</span></code> error.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.include_inter_plane_coupling">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">include_inter_plane_coupling</span></span><a class="headerlink" href="#SimulationConfigurationAc.include_inter_plane_coupling" title="Link to this definition">#</a></dt>
+<dd><p>Boolean to activate the inter-plane coupling with Siwave.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">True</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">activated</span></code> <code class="docutils literal notranslate"><span class="pre">False</span></code> deactivated.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.xtalk_threshold">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">xtalk_threshold</span></span><a class="headerlink" href="#SimulationConfigurationAc.xtalk_threshold" title="Link to this definition">#</a></dt>
+<dd><p>Return the value for Siwave cross talk threshold. THis value specifies the distance for the solver to
+consider lines coupled during the cross-section computation. Decreasing the value below -60dB can
+potentially cause solver failure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">flot</span></code></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> cross-talk threshold.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.min_void_area">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">min_void_area</span></span><a class="headerlink" href="#SimulationConfigurationAc.min_void_area" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the value of minimum void area to be considered by Siwave.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">flot</span></code></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">arc</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">chord</span></code> error.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.min_pad_area_to_mesh">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">min_pad_area_to_mesh</span></span><a class="headerlink" href="#SimulationConfigurationAc.min_pad_area_to_mesh" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the value of minimum pad area to be meshed by Siwave.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">flot</span></code></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">pad</span></code> surface.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.snap_length_threshold">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">snap_length_threshold</span></span><a class="headerlink" href="#SimulationConfigurationAc.snap_length_threshold" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the boolean to activate the snapping threshold feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">True</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">activate</span></code> <code class="docutils literal notranslate"><span class="pre">False</span></code> deactivated.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.min_plane_area_to_mesh">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">min_plane_area_to_mesh</span></span><a class="headerlink" href="#SimulationConfigurationAc.min_plane_area_to_mesh" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the minimum plane area to be meshed by Siwave.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">flot</span></code></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">plane</span></code> area.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.mesh_sizefactor">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">mesh_sizefactor</span></span><a class="headerlink" href="#SimulationConfigurationAc.mesh_sizefactor" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the Mesh Size factor value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.adaptive_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">adaptive_type</span></span><a class="headerlink" href="#SimulationConfigurationAc.adaptive_type" title="Link to this definition">#</a></dt>
+<dd><p>HFSS adaptive type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>class: <code class="xref py py-obj docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.simulation_setup.AdaptiveType</span></code></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.adaptive_low_freq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">adaptive_low_freq</span></span><a class="headerlink" href="#SimulationConfigurationAc.adaptive_low_freq" title="Link to this definition">#</a></dt>
+<dd><p>HFSS broadband low frequency adaptive meshing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SimulationConfigurationAc.adaptive_high_freq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SimulationConfigurationAc.</span></span><span class="sig-name descname"><span class="pre">adaptive_high_freq</span></span><a class="headerlink" href="#SimulationConfigurationAc.adaptive_high_freq" title="Link to this definition">#</a></dt>
+<dd><p>HFSS broadband high frequency adaptive meshing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfigurationAc"><code class="docutils literal notranslate"><span class="pre">SimulationConfigurationAc</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-detail">Import detail</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#property-detail">Property detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.sweep_interpolating"><code class="docutils literal notranslate"><span class="pre">sweep_interpolating</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.use_q3d_for_dc"><code class="docutils literal notranslate"><span class="pre">use_q3d_for_dc</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.relative_error"><code class="docutils literal notranslate"><span class="pre">relative_error</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.use_error_z0"><code class="docutils literal notranslate"><span class="pre">use_error_z0</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.percentage_error_z0"><code class="docutils literal notranslate"><span class="pre">percentage_error_z0</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.enforce_causality"><code class="docutils literal notranslate"><span class="pre">enforce_causality</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.enforce_passivity"><code class="docutils literal notranslate"><span class="pre">enforce_passivity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.passivity_tolerance"><code class="docutils literal notranslate"><span class="pre">passivity_tolerance</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.sweep_name"><code class="docutils literal notranslate"><span class="pre">sweep_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.radiation_box"><code class="docutils literal notranslate"><span class="pre">radiation_box</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.start_freq"><code class="docutils literal notranslate"><span class="pre">start_freq</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.stop_freq"><code class="docutils literal notranslate"><span class="pre">stop_freq</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.sweep_type"><code class="docutils literal notranslate"><span class="pre">sweep_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.step_freq"><code class="docutils literal notranslate"><span class="pre">step_freq</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.decade_count"><code class="docutils literal notranslate"><span class="pre">decade_count</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.mesh_freq"><code class="docutils literal notranslate"><span class="pre">mesh_freq</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.max_num_passes"><code class="docutils literal notranslate"><span class="pre">max_num_passes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.max_mag_delta_s"><code class="docutils literal notranslate"><span class="pre">max_mag_delta_s</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.min_num_passes"><code class="docutils literal notranslate"><span class="pre">min_num_passes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.basis_order"><code class="docutils literal notranslate"><span class="pre">basis_order</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.do_lambda_refinement"><code class="docutils literal notranslate"><span class="pre">do_lambda_refinement</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.arc_angle"><code class="docutils literal notranslate"><span class="pre">arc_angle</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.start_azimuth"><code class="docutils literal notranslate"><span class="pre">start_azimuth</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.max_arc_points"><code class="docutils literal notranslate"><span class="pre">max_arc_points</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.use_arc_to_chord_error"><code class="docutils literal notranslate"><span class="pre">use_arc_to_chord_error</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.arc_to_chord_error"><code class="docutils literal notranslate"><span class="pre">arc_to_chord_error</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.defeature_abs_length"><code class="docutils literal notranslate"><span class="pre">defeature_abs_length</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.defeature_layout"><code class="docutils literal notranslate"><span class="pre">defeature_layout</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.minimum_void_surface"><code class="docutils literal notranslate"><span class="pre">minimum_void_surface</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.max_suf_dev"><code class="docutils literal notranslate"><span class="pre">max_suf_dev</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.process_padstack_definitions"><code class="docutils literal notranslate"><span class="pre">process_padstack_definitions</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.return_current_distribution"><code class="docutils literal notranslate"><span class="pre">return_current_distribution</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.ignore_non_functional_pads"><code class="docutils literal notranslate"><span class="pre">ignore_non_functional_pads</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.include_inter_plane_coupling"><code class="docutils literal notranslate"><span class="pre">include_inter_plane_coupling</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.xtalk_threshold"><code class="docutils literal notranslate"><span class="pre">xtalk_threshold</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.min_void_area"><code class="docutils literal notranslate"><span class="pre">min_void_area</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.min_pad_area_to_mesh"><code class="docutils literal notranslate"><span class="pre">min_pad_area_to_mesh</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.snap_length_threshold"><code class="docutils literal notranslate"><span class="pre">snap_length_threshold</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.min_plane_area_to_mesh"><code class="docutils literal notranslate"><span class="pre">min_plane_area_to_mesh</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.mesh_sizefactor"><code class="docutils literal notranslate"><span class="pre">mesh_sizefactor</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.adaptive_type"><code class="docutils literal notranslate"><span class="pre">adaptive_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.adaptive_low_freq"><code class="docutils literal notranslate"><span class="pre">adaptive_low_freq</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SimulationConfigurationAc.adaptive_high_freq"><code class="docutils literal notranslate"><span class="pre">adaptive_high_freq</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="http://github.com/ansys/pyedb/edit/main/src/pyedb/dotnet/database/edb_data/simulation_configuration/SimulationConfigurationAc.py">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../../../../_sources/autoapi/pyedb/dotnet/database/edb_data/simulation_configuration/SimulationConfigurationAc.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../../../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../../../../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../../../../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2025 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.3. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,574 @@
+
+
+
+
+
+
+:class:`Path`
+=============
+
+
+.. py:class:: pyedb.grpc.database.primitive.path.Path(pedb, edb_object=None)
+
+   Bases: :py:obj:`pyedb.grpc.database.primitive.primitive.Primitive`
+
+
+   
+   Manages EDB functionalities for a primitives.
+   It inherits EDB Object properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(myedb, edbversion="2025.2", grpc=True)
+   >>> edb_prim = edb.modeler.primitives[0]
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Path
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a path in the specified layout, layer, and net with the given parameters.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~delete`
+            - Delete the path object.
+          * - :py:attr:`~add_point`
+            - Add a point at the end of the path.
+          * - :py:attr:`~clone`
+            - Clone a primitive object with keeping same definition and location.
+          * - :py:attr:`~create_edge_port`
+            - :Parameters:
+          * - :py:attr:`~create_via_fence`
+            - Create via fences on both sides of the trace.
+          * - :py:attr:`~get_center_line`
+            - Retrieve center line points list.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~width`
+            - Path width.
+          * - :py:attr:`~length`
+            - Path length in meters.
+          * - :py:attr:`~center_line`
+            - Path center line
+          * - :py:attr:`~corner_style`
+            - Path's corner style as string.
+          * - :py:attr:`~end_cap1`
+            - Path's start style as string.
+          * - :py:attr:`~end_cap2`
+            - Path's end style as string.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.primitive.path import Path
+
+Property detail
+---------------
+
+.. py:property:: width
+   :type: float
+
+
+   
+   Path width.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Path width or None.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: length
+   :type: float
+
+
+   
+   Path length in meters.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Path length in meters.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: center_line
+   :type: list[list[float]]
+
+
+   
+   Path center line
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:float`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: corner_style
+   :type: str
+
+
+   
+   Path's corner style as string.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Values supported for the setter `"round"`, `"mitter"`, `"sharp"`
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: end_cap1
+   :type: str
+
+
+   
+   Path's start style as string.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Values supported for the setter `"flat"`, `"round"`, `"extended"`
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: end_cap2
+   :type: str
+
+
+   
+   Path's end style as string.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Values supported for the setter `"flat"`, `"round"`, `"extended"`
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, layer: Union[str, pyedb.grpc.database.layers.layer.Layer] = None, net: Union[str, pyedb.grpc.database.net.net.Net] = None, width: float = 0.0001, end_cap1: Union[str, ansys.edb.core.primitive.path.PathEndCapType] = 'flat', end_cap2: Union[str, ansys.edb.core.primitive.path.PathEndCapType] = 'flat', corner_style: Union[str, ansys.edb.core.primitive.path.PathCornerType] = 'sharp', points: Union[list, ansys.edb.core.geometry.polygon_data.PolygonData] = None)
+   :classmethod:
+
+
+   
+   Create a path in the specified layout, layer, and net with the given parameters.
+
+
+   :Parameters:
+
+       **layout** : :obj:`Layout`, :obj:`optional`
+           The layout in which the path will be created. If not provided, the active layout of the `pedb` instance
+           will be used.
+
+       **layer** : :obj:`Union`\[:class:`python:str`, :obj:`Layer`], :obj:`optional`
+           The layer in which the path will be created. This parameter is required and must be specified.
+
+       **net** : :obj:`Union`\[:class:`python:str`, :obj:`Net`], :obj:`optional`
+           The net to which the path will belong. If not provided, the path will not be associated with a net.
+
+       **width** : :class:`python:float`, :obj:`optional`
+           The width of the path in meters. The default value is `100e-6`.
+
+       **end_cap1** : :class:`python:str`, :obj:`optional`
+           The style of the first end cap. Options are `"flat"`, `"round"`, `"extended"`, and `"clipped"`.
+           The default value is `"flat"`.
+
+       **end_cap2** : :class:`python:str`, :obj:`optional`
+           The style of the second end cap. Options are `"flat"`, `"round"`, `"extended"`, and `"clipped"`.
+           The default value is `"flat"`.
+
+       **corner_style** : :class:`python:str`, :obj:`optional`
+           The style of the path corners. Options are `"sharp"`, `"round"`, and `"mitter"`.
+           The default value is `"sharp"`.
+
+       **points** : :obj:`Union`\[:class:`python:list`, :obj:`GrpcPolygonData`], :obj:`optional`
+           The points defining the path. This can be a list of points or an instance of `GrpcPolygonData`.
+           This parameter is required and must be specified.
+
+   :Returns:
+
+       :class:`Path <pyedb.grpc.database.primitive.path.Path>`
+           The created path object.
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If the `points` parameter is not provided.
+
+
+
+
+   .. rubric:: Notes
+
+   - If `points` is provided as a list, it will be converted to a `GrpcPolygonData` object.
+   - The created path is added to the modeler primitives of the `pedb` instance.
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete()
+
+   
+   Delete the path object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_point(x, y, incremental=True) -> bool
+
+   
+   Add a point at the end of the path.
+
+
+   :Parameters:
+
+       **x: str, int, float**
+           X coordinate.
+
+       **y: str, in, float**
+           Y coordinate.
+
+       **incremental: bool**
+           Add point incrementally. If True, coordinates of the added point is incremental to the last point.
+           The default value is ``True``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: clone()
+
+   
+   Clone a primitive object with keeping same definition and location.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_edge_port(name, position='End', port_type='Wave', reference_layer=None, horizontal_extent_factor=5, vertical_extent_factor=3, pec_launch_width='0.01mm')
+
+   
+
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the port.
+
+       **position** : :class:`python:str`, :obj:`optional`
+           Position of the port. The default is ``"End"``, in which case the port is created at the end of the trace.
+           Options are ``"Start"`` and ``"End"``.
+
+       **port_type** : :class:`python:str`, :obj:`optional`
+           Type of the port. The default is ``"Wave"``, in which case a wave port is created. Options are ``"Wave"``
+            and ``"Gap"``.
+
+       **reference_layer** : :class:`python:str`, :obj:`optional`
+           Name of the references layer. The default is ``None``. Only available for gap port.
+
+       **horizontal_extent_factor** : :class:`python:int`, :obj:`optional`
+           Horizontal extent factor of the wave port. The default is ``5``.
+
+       **vertical_extent_factor** : :class:`python:int`, :obj:`optional`
+           Vertical extent factor of the wave port. The default is ``3``.
+
+       **pec_launch_width** : :class:`python:float`, :class:`python:str`, :obj:`optional`
+           Perfect electrical conductor width of the wave port. The default is ``"0.01mm"``.
+
+   :Returns:
+
+       :class:`GapPort <pyedb.grpc.database.ports.port.GapPort>`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edbapp = pyedb.dotnet.Edb("myproject.aedb")
+   >>> sig = appedb.modeler.create_trace([[0, 0], ["9mm", 0]], "TOP", "1mm", "SIG", "Flat", "Flat")
+   >>> sig.create_edge_port("pcb_port", "end", "Wave", None, 8, 8)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_via_fence(distance, gap, padstack_name, net_name='GND')
+
+   
+   Create via fences on both sides of the trace.
+
+
+   :Parameters:
+
+       **distance: str, float**
+           Distance between via fence and trace center line.
+
+       **gap: str, float**
+           Gap between vias.
+
+       **padstack_name: str**
+           Name of the via padstack.
+
+       **net_name: str, optional**
+           Name of the net.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_center_line() -> list[list[float]]
+
+   
+   Retrieve center line points list.
+
+
+
+   :Returns:
+
+       :obj:`List`\[:obj:`List`\[:class:`python:float`, :class:`python:float`]].
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

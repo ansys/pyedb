@@ -1,0 +1,6 @@
+clear\_instances\_cache
+=======================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.clear_instances_cache

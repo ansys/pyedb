@@ -1,0 +1,57 @@
+
+
+
+
+
+
+:class:`EdbRectangle`
+=====================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.primitives_data.EdbRectangle(raw_primitive, core_app)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.primitive.primitive.Primitive`, :py:obj:`pyedb.dotnet.database.dotnet.primitive.RectangleDotNet`
+
+
+   
+   Manages EDB functionalities for a primitives.
+   It inherits EDB Object properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(myedb, edbversion="2021.2")
+   >>> edb_prim = edb.modeler.primitives[0]
+   >>> edb_prim.is_void  # Class Property
+   >>> edb_prim.IsVoid()  # EDB Object Property
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.primitives_data import EdbRectangle
+
+
+
+
+

@@ -1,0 +1,6 @@
+create\_hfss
+============
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. automethod:: CoaxPort.create_hfss

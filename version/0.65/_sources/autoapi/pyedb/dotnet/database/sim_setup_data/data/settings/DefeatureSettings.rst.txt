@@ -1,0 +1,342 @@
+
+
+
+
+
+
+:class:`DefeatureSettings`
+==========================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.settings.DefeatureSettings(parent)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods for defeature settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DefeatureSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~defeature_abs_length`
+            - Absolute length for polygon defeaturing.
+          * - :py:attr:`~defeature_ratio`
+            - Defeature ratio.
+          * - :py:attr:`~healing_option`
+            - Whether to turn on healing of mis-aligned points and edges.
+          * - :py:attr:`~model_type`
+            - Model type.
+          * - :py:attr:`~remove_floating_geometry`
+            - Whether to remove floating geometries.
+          * - :py:attr:`~small_void_area`
+            - Small voids to remove area.
+          * - :py:attr:`~union_polygons`
+            - Whether to turn on the union of polygons before meshing.
+          * - :py:attr:`~use_defeature`
+            - Whether to turn on the defeature.
+          * - :py:attr:`~use_defeature_abs_length`
+            - Whether to turn on the defeature absolute length.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.settings import DefeatureSettings
+
+Property detail
+---------------
+
+.. py:property:: defeature_abs_length
+
+   
+   Absolute length for polygon defeaturing.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: defeature_ratio
+
+   
+   Defeature ratio.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: healing_option
+
+   
+   Whether to turn on healing of mis-aligned points and edges.
+   Options are:
+   0- Turn off.
+   1- Turn on.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: model_type
+
+   
+   Model type.
+   Options:
+   0- General.
+   1- IC.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: remove_floating_geometry
+
+   
+   Whether to remove floating geometries.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if floating geometry removal is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: small_void_area
+
+   
+   Small voids to remove area.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: union_polygons
+
+   
+   Whether to turn on the union of polygons before meshing.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if union polygons is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_defeature
+
+   
+   Whether to turn on the defeature.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if defeature is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_defeature_abs_length
+
+   
+   Whether to turn on the defeature absolute length.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if defeature absolute length is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

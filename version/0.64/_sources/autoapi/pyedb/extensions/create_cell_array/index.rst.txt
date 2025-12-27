@@ -1,0 +1,144 @@
+
+
+
+
+
+
+The ``pyedb.extensions.create_cell_array`` library
+==================================================
+
+.. py:module:: pyedb.extensions.create_cell_array
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: create_cell_array
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~create_array_from_unit_cell`
+            - Create a 2-D rectangular array from the current EDB unit cell.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains the array building feature from unit cell.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: create_array_from_unit_cell(edb: pyedb.Edb, x_number: int = 2, y_number: int = 2, offset_x: Optional[Union[int, float, str]] = None, offset_y: Optional[Union[int, float, str]] = None) -> bool
+
+   
+   Create a 2-D rectangular array from the current EDB unit cell.
+
+   The function duplicates every primitive (polygon, rectangle, circle), path,
+   padstack via, and component found in the active layout and places copies on
+   a regular grid defined by *offset_x* and *offset_y*. If the offsets are
+   omitted they are automatically derived from the bounding box of the first
+   primitive found on the layer called **outline** (case-insensitive).
+
+   :Parameters:
+
+       **edb** : :obj:`pyedb.Edb`
+           An open Edb instance whose active layout is used as the unit cell.
+
+       **x_number** : :class:`python:int`, :obj:`optional`
+           Number of columns (X-direction). Must be > 0.  Defaults to 2.
+
+       **y_number** : :class:`python:int`, :obj:`optional`
+           Number of rows (Y-direction). Must be > 0.  Defaults to 2.
+
+       **offset_x** : :class:`python:int` | :class:`python:float` | :class:`python:str`, :data:`python:None`, :obj:`optional`
+           Horizontal pitch (distance between cell origins).  When *None* the
+           value is derived from the outline geometry.
+
+       **offset_y** : :class:`python:int` | :class:`python:float` | :class:`python:str`, :data:`python:None`, :obj:`optional`
+           Vertical pitch (distance between cell origins).  When *None* the
+           value is derived from the outline geometry.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the operation completed successfully.
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If *x_number* or *y_number* are non-positive.
+
+       :obj:`RuntimeError`
+           If no outline is found and the offsets were not supplied, or if the
+           outline is not a supported type (polygon/rectangle).
+
+
+
+
+   .. rubric:: Notes
+
+   The routine is technology-agnostic; it delegates all EDB-specific calls to
+   small adapter classes that handle either the **gRPC** or **.NET** back-end
+   transparently.
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("unit_cell.aedb")
+   >>> create_array_from_unit_cell(edb, x_number=4, y_number=3)
+   True
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

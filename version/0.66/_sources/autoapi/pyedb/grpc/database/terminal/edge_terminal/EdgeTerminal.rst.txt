@@ -1,0 +1,590 @@
+
+
+
+
+
+
+:class:`EdgeTerminal`
+=====================
+
+
+.. py:class:: pyedb.grpc.database.terminal.edge_terminal.EdgeTerminal(pedb, edb_object)
+
+
+
+.. py:currentmodule:: EdgeTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create an edge terminal.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_product_solver_option`
+            - Set product solver option.
+          * - :py:attr:`~couple_ports`
+            - Create a bundle wave port.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~component`
+            - Component.
+          * - :py:attr:`~name`
+            - Terminal name.
+          * - :py:attr:`~source_amplitude`
+            - Source amplitude.
+          * - :py:attr:`~source_phase`
+            - Source phase.
+          * - :py:attr:`~impedance`
+            - Impedance.
+          * - :py:attr:`~boundary_type`
+            - Boundary type.
+          * - :py:attr:`~reference_terminal`
+            - Reference terminal.
+          * - :py:attr:`~is_circuit_port`
+            - Is circuit port.
+          * - :py:attr:`~port_post_processing_prop`
+            - Port post-processing property.
+          * - :py:attr:`~is_wave_port`
+            - 
+          * - :py:attr:`~is_null`
+            - Added for dotnet compatibility
+          * - :py:attr:`~is_reference_terminal`
+            - Added for dotnet compatibility
+          * - :py:attr:`~is_port`
+            - Added for dotnet compatibility
+          * - :py:attr:`~ref_terminal`
+            - Return refeference terminal.
+          * - :py:attr:`~hfss_type`
+            - 
+          * - :py:attr:`~terminal_type`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
+
+Property detail
+---------------
+
+.. py:property:: component
+
+   
+   Component.
+
+
+
+   :Returns:
+
+       :obj:`Component` object.
+           :class:`Component <pyedb.grpc.database.component.Component>`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   Terminal name.
+
+
+
+   :Returns:
+
+       **str** : :obj:`terminal` name.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_amplitude
+
+   
+   Source amplitude.
+
+
+
+   :Returns:
+
+       **float** : :obj:`source` amplitude.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_phase
+
+   
+   Source phase.
+
+
+
+   :Returns:
+
+       **float** : :obj:`source` phase.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: impedance
+
+   
+   Impedance.
+
+
+
+   :Returns:
+
+       **float** : impedance.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: boundary_type
+   :type: str
+
+
+   
+   Boundary type.
+
+
+
+   :Returns:
+
+       **str** : :obj:`boundary` type.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: reference_terminal
+
+   
+   Reference terminal.
+
+
+
+   :Returns:
+
+       :obj:`EdgeTerminal` object.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_circuit_port
+   :type: bool
+
+
+   
+   Is circuit port.
+
+
+
+   :Returns:
+
+       **bool** : :obj:`circuit` port.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: port_post_processing_prop
+
+   
+   Port post-processing property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_wave_port
+   :type: bool
+
+
+.. py:property:: is_null
+   :type: bool
+
+
+   
+   Added for dotnet compatibility
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_reference_terminal
+   :type: bool
+
+
+   
+   Added for dotnet compatibility
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_port
+   :type: bool
+
+
+   
+   Added for dotnet compatibility
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ref_terminal
+   :type: any
+
+
+   
+   Return refeference terminal.
+
+   ..deprecated:: 0.44.0
+      Use: func:`reference_terminal` property instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hfss_type
+   :type: str
+
+
+.. py:property:: terminal_type
+   :type: str
+
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, name, edge, net, is_ref=False)
+   :classmethod:
+
+
+   
+   Create an edge terminal.
+
+
+   :Parameters:
+
+       **layout** : :class:`pyedb.grpc.database.layout.layout.Layout`
+           Layout object.
+
+       **name** : :class:`python:str`
+           Terminal name.
+
+       **edge** : :class:`.Edge`
+           Edge object.
+
+       **net** : :class:`.Net` or :class:`python:str`, :obj:`optional`
+           Net object or net name. If None, the terminal will not be assigned to any net.
+
+       **is_ref** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether the terminal is a reference terminal. Default is False.
+
+   :Returns:
+
+       :class:`EdgeTerminal <pyedb.grpc.database.terminal.edge_terminal.EdgeTerminal>`
+           Edge terminal object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_product_solver_option(product_id, solver_name, option)
+
+   
+   Set product solver option.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: couple_ports(port)
+
+   
+   Create a bundle wave port.
+
+
+   :Parameters:
+
+       **port** : :class:`Waveport <pyedb.grpc.database.ports.ports.WavePort>`,
+           ..
+
+       **:class:`GapPOrt <pyedb.grpc.database.ports.ports.GapPort>`, list, optional**
+           Ports to be added.
+
+   :Returns:
+
+       :class:`BundleWavePort <pyedb.grpc.database.ports.ports.BundleWavePort>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+plot
+====
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. automethod:: Polygon.plot

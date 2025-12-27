@@ -1,0 +1,102 @@
+
+
+
+
+
+
+:class:`BatchSettingsBlockParser`
+=================================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.BatchSettingsBlockParser(lines: List[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Extract batch info and simulation settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: BatchSettingsBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Parse batch information and simulation settings.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import BatchSettingsBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> tuple[BatchInfo, SimSettings]
+
+   
+   Parse batch information and simulation settings.
+
+   :return: Tuple of (BatchInfo, SimSettings).
+   :rtype: tuple[BatchInfo, SimSettings]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

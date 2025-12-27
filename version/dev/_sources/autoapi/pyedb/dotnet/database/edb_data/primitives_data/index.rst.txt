@@ -1,0 +1,150 @@
+
+
+
+
+
+
+The ``primitives_data.py`` module
+=================================
+
+.. py:module:: pyedb.dotnet.database.edb_data.primitives_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: primitives_data
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.primitives_data.EdbRectangle`
+            - Manages EDB functionalities for a primitives.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.primitives_data.EdbCircle`
+            - Manages EDB functionalities for a primitives.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.primitives_data.EdbPolygon`
+            - Manages EDB functionalities for a primitives.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.primitives_data.EdbText`
+            - Manages EDB functionalities for a primitives.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.primitives_data.EdbBondwire`
+            - Manages EDB functionalities for a primitives.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.primitives_data.EDBArcs`
+            - Manages EDB Arc Data functionalities.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~cast`
+            - Cast the primitive object to correct concrete type.
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> EdbRectangle</autoapi/pyedb/dotnet/database/edb_data/primitives_data/EdbRectangle>
+    <span class="nf nf-cod-symbol_class"></span> EdbCircle</autoapi/pyedb/dotnet/database/edb_data/primitives_data/EdbCircle>
+    <span class="nf nf-cod-symbol_class"></span> EdbPolygon</autoapi/pyedb/dotnet/database/edb_data/primitives_data/EdbPolygon>
+    <span class="nf nf-cod-symbol_class"></span> EdbText</autoapi/pyedb/dotnet/database/edb_data/primitives_data/EdbText>
+    <span class="nf nf-cod-symbol_class"></span> EdbBondwire</autoapi/pyedb/dotnet/database/edb_data/primitives_data/EdbBondwire>
+    <span class="nf nf-cod-symbol_class"></span> EDBArcs</autoapi/pyedb/dotnet/database/edb_data/primitives_data/EDBArcs>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: cast(raw_primitive, core_app)
+
+   
+   Cast the primitive object to correct concrete type.
+
+
+
+   :Returns:
+
+       :obj:`Primitive`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

@@ -1,0 +1,122 @@
+
+
+
+
+
+
+The ``settings.py`` module
+==========================
+
+.. py:module:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: settings
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.settings.AdaptiveSettings`
+            - Manages EDB methods for adaptive settings.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.settings.DefeatureSettings`
+            - Manages EDB methods for defeature settings.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.settings.AdvancedMeshSettings`
+            - Manages EDB methods for advanced mesh settings.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.settings.ViaSettings`
+            - Manages EDB methods for via settings.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.settings.CurveApproxSettings`
+            - Manages EDB methods for curve approximate settings.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.settings.DcrSettings`
+            - Manages EDB methods for DCR settings.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.settings.HfssPortSettings`
+            - Manages EDB methods for HFSS port settings.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.settings.HfssSolverSettings`
+            - Manages EDB methods for HFSS solver settings.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> AdaptiveSettings</autoapi/pyedb/dotnet/database/sim_setup_data/data/settings/AdaptiveSettings>
+    <span class="nf nf-cod-symbol_class"></span> DefeatureSettings</autoapi/pyedb/dotnet/database/sim_setup_data/data/settings/DefeatureSettings>
+    <span class="nf nf-cod-symbol_class"></span> AdvancedMeshSettings</autoapi/pyedb/dotnet/database/sim_setup_data/data/settings/AdvancedMeshSettings>
+    <span class="nf nf-cod-symbol_class"></span> ViaSettings</autoapi/pyedb/dotnet/database/sim_setup_data/data/settings/ViaSettings>
+    <span class="nf nf-cod-symbol_class"></span> CurveApproxSettings</autoapi/pyedb/dotnet/database/sim_setup_data/data/settings/CurveApproxSettings>
+    <span class="nf nf-cod-symbol_class"></span> DcrSettings</autoapi/pyedb/dotnet/database/sim_setup_data/data/settings/DcrSettings>
+    <span class="nf nf-cod-symbol_class"></span> HfssPortSettings</autoapi/pyedb/dotnet/database/sim_setup_data/data/settings/HfssPortSettings>
+    <span class="nf nf-cod-symbol_class"></span> HfssSolverSettings</autoapi/pyedb/dotnet/database/sim_setup_data/data/settings/HfssSolverSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

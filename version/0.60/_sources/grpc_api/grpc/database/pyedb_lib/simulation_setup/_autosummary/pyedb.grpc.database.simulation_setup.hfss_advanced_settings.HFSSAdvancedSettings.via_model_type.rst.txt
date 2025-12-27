@@ -1,0 +1,6 @@
+via\_model\_type
+================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_advanced_settings
+
+.. autoproperty:: HFSSAdvancedSettings.via_model_type

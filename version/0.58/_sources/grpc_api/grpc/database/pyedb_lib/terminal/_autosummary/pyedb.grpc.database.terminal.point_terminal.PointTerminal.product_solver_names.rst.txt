@@ -1,0 +1,6 @@
+product\_solver\_names
+======================
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. automethod:: PointTerminal.product_solver_names

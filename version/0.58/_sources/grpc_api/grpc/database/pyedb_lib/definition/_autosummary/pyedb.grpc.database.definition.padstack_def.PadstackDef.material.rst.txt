@@ -1,0 +1,6 @@
+material
+========
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadstackDef.material

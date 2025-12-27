@@ -1,0 +1,93 @@
+
+
+
+
+
+
+The ``component.py`` module
+===========================
+
+.. py:module:: pyedb.dotnet.database.cell.hierarchy.component
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: component
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.hierarchy.component.ICDieProperties`
+            - 
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`
+            - Manages EDB functionalities for components.
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_interface"></span> ICDieProperties</autoapi/pyedb/dotnet/database/cell/hierarchy/component/ICDieProperties>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> EDBComponent</autoapi/pyedb/dotnet/database/cell/hierarchy/component/EDBComponent>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

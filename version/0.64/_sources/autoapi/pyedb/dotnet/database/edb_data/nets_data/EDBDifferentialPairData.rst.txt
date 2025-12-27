@@ -1,0 +1,137 @@
+
+
+
+
+
+
+:class:`EDBDifferentialPairData`
+================================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData(core_app, api_object=None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.dotnet.database.DifferentialPairDotNet`
+
+
+   
+   Manages EDB functionalities for a primitive.
+   It inherits EDB object properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(myedb, edbversion="2021.2")
+   >>> diff_pair = edb.differential_pairs["DQ4"]
+   >>> diff_pair.positive_net
+   >>> diff_pair.negative_net
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EDBDifferentialPairData
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~positive_net`
+            - Positive Net.
+          * - :py:attr:`~negative_net`
+            - Negative Net.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.nets_data import EDBDifferentialPairData
+
+Property detail
+---------------
+
+.. py:property:: positive_net
+   :type: EDBNetsData
+
+
+   
+   Positive Net.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: negative_net
+   :type: EDBNetsData
+
+
+   
+   Negative Net.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

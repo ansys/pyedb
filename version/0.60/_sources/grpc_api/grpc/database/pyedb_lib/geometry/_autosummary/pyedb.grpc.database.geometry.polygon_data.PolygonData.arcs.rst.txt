@@ -1,0 +1,6 @@
+arcs
+====
+
+.. currentmodule:: pyedb.grpc.database.geometry.polygon_data
+
+.. autoproperty:: PolygonData.arcs

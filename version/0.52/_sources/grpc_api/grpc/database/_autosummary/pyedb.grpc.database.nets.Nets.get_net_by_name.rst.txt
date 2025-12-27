@@ -1,0 +1,6 @@
+get\_net\_by\_name
+==================
+
+.. currentmodule:: pyedb.grpc.database.nets
+
+.. automethod:: Nets.get_net_by_name

@@ -1,0 +1,6 @@
+is\_zone\_primitive
+===================
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. autoproperty:: Bondwire.is_zone_primitive

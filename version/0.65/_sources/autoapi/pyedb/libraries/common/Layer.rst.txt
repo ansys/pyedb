@@ -1,0 +1,173 @@
+
+
+
+
+
+
+:class:`Layer`
+==============
+
+
+.. py:class:: pyedb.libraries.common.Layer(pedb, name: str, material: Union[Conductor, Dielectric] = None, thickness: float = 1e-06)
+
+   
+   Physical layer inside a stackup.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`ansys.edb.core.database.Database`
+           Active EDB session.
+
+       **name** : :class:`python:str`
+           Layer name.
+
+       **material** : :obj:`Conductor` or :obj:`Dielectric`, :obj:`optional`
+           Material instance assigned to the layer.
+
+       **thickness** : :class:`python:float`, :obj:`optional`
+           Layer thickness in meters.  Default is 1 µm.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> diel = Dielectric(edb, "FR4")
+   >>> lyr = Layer(edb, "Core", material=diel, thickness=100e-6)
+   >>> lyr.thickness = 50e-6
+   >>> edb.stackup.layers["Core"].thickness
+   5e-05
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Layer
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Layer name.
+          * - :py:attr:`~thickness`
+            - Layer thickness (m).
+          * - :py:attr:`~material`
+            - Material assigned to this layer.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.common import Layer
+
+Property detail
+---------------
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Layer name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: thickness
+   :type: float
+
+
+   
+   Layer thickness (m).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: material
+   :type: Union[Conductor, Dielectric]
+
+
+   
+   Material assigned to this layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

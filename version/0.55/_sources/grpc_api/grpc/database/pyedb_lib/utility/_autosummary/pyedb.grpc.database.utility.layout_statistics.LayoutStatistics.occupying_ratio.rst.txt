@@ -1,0 +1,6 @@
+occupying\_ratio
+================
+
+.. currentmodule:: pyedb.grpc.database.utility.layout_statistics
+
+.. autoproperty:: LayoutStatistics.occupying_ratio

@@ -1,0 +1,45 @@
+﻿ExcitationSources
+=================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoclass:: ExcitationSources
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      ExcitationSources.delete
+      
+      
+      ExcitationSources.get_connected_object_id_set
+      
+      
+      ExcitationSources.get_connected_objects
+      
+      
+      ExcitationSources.get_edge_terminal_reference_primitive
+      
+      
+      ExcitationSources.get_pad_edge_terminal_reference_pin
+      
+      
+      ExcitationSources.get_padstack_terminal_reference_pin
+      
+      
+      ExcitationSources.get_pin_group_terminal_reference_pin
+      
+      
+      ExcitationSources.get_point_terminal_reference_primitive
+      
+   
+   
+
+   
+   
+   

@@ -1,0 +1,15 @@
+﻿MeshOperation
+=============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.mesh_operation
+
+.. autoclass:: MeshOperation
+
+   
+
+   
+   
+
+   
+   
+   

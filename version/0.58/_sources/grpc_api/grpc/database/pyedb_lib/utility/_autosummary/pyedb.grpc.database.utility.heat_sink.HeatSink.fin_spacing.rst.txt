@@ -1,0 +1,6 @@
+fin\_spacing
+============
+
+.. currentmodule:: pyedb.grpc.database.utility.heat_sink
+
+.. autoproperty:: HeatSink.fin_spacing

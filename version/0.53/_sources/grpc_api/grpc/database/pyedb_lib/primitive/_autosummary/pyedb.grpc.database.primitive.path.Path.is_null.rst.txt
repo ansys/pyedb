@@ -1,0 +1,6 @@
+is\_null
+========
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. autoproperty:: Path.is_null

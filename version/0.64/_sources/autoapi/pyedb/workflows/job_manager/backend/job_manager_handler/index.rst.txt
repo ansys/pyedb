@@ -1,0 +1,213 @@
+
+
+
+
+
+
+The ``job_manager_handler.py`` module
+=====================================
+
+.. py:module:: pyedb.workflows.job_manager.backend.job_manager_handler
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: job_manager_handler
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.job_manager_handler.JobManagerHandler`
+            - Synchronous façade that controls an **async** Job Manager service.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~get_session`
+            - Return an aiohttp.ClientSession with appropriate TLS configuration.
+
+
+          * - :py:obj:`~cors_middleware`
+            - CORS middleware for aiohttp server.
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~parser`
+            - 
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> JobManagerHandler</autoapi/pyedb/workflows/job_manager/backend/job_manager_handler/JobManagerHandler>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Thread-safe façade for the async ANSYS Job Manager.
+
+This module exposes a **synchronous, production-grade** entry point to the
+**asynchronous** job manager service. A background daemon thread hosts an
+``aiohttp`` web server that schedules and monitors HFSS/3D-Layout simulations
+on the local machine or external clusters (SLURM, LSF, PBS, Windows-HPC).
+
+The handler guarantees:
+
+* **Non-blocking** start/stop semantics for the caller thread.
+* **Graceful shutdown** via ``atexit`` or explicit ``close()``.
+* **Thread-safe** job submission and cancellation.
+* **Global timeout** support for batched workloads.
+* **Zero configuration** when used with PyEDB ``Edb`` objects.
+
+Examples
+--------
+>>> handler = JobManagerHandler()  # doctest: +SKIP
+>>> handler.start_service()  # doctest: +SKIP
+>>> config = handler.create_simulation_config("/path/to/project.aedt")  # doctest: +SKIP
+>>> job_id = asyncio.run(handler.submit_job(config))  # doctest: +SKIP
+>>> handler.close()  # doctest: +SKIP
+
+For command-line usage:
+
+.. code-block:: bash
+
+    python -m pyedb.workflows.job_manager.backend.job_manager_handler --host localhost --port 8080
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: get_session(url: str) -> aiohttp.ClientSession
+
+   
+   Return an aiohttp.ClientSession with appropriate TLS configuration.
+
+
+   :Parameters:
+
+       **url** : :class:`python:str`
+           Base URL; used only to decide whether TLS verification is required.
+
+   :Returns:
+
+       :obj:`aiohttp.ClientSession`
+           Configured client session with timeout and SSL context.
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   The session is configured with:
+   - 30-second total timeout
+   - TLS verification for HTTPS URLs
+   - Connection pooling (limit=20, limit_per_host=10)
+   - Appropriate User-Agent header
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: cors_middleware(request, handler)
+   :async:
+
+
+   
+   CORS middleware for aiohttp server.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           Incoming HTTP request
+
+       **handler** : :func:`python:callable`
+           Next handler in the middleware chain
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           Response with CORS headers added
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: parser
+
+
+

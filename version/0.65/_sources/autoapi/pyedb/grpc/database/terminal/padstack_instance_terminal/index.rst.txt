@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``padstack_instance_terminal.py`` module
+============================================
+
+.. py:module:: pyedb.grpc.database.terminal.padstack_instance_terminal
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: padstack_instance_terminal
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.terminal.padstack_instance_terminal.PadstackInstanceTerminal`
+            - Manages bundle terminal properties.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> PadstackInstanceTerminal</autoapi/pyedb/grpc/database/terminal/padstack_instance_terminal/PadstackInstanceTerminal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

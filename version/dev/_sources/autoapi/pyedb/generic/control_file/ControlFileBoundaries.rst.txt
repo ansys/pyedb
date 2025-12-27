@@ -1,0 +1,227 @@
+
+
+
+
+
+
+:class:`ControlFileBoundaries`
+==============================
+
+
+.. py:class:: pyedb.generic.control_file.ControlFileBoundaries(units: str = 'um')
+
+   
+   Manages boundaries for the control file.
+
+
+   :Parameters:
+
+       **units** : :class:`python:str`, :obj:`optional`
+           Length units. Default is "um".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileBoundaries
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_port`
+            - Add a port.
+          * - :py:attr:`~add_extent`
+            - Add an extent.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~ports`
+            - 
+          * - :py:attr:`~extents`
+            - 
+          * - :py:attr:`~circuit_models`
+            - 
+          * - :py:attr:`~circuit_elements`
+            - 
+          * - :py:attr:`~units`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.control_file import ControlFileBoundaries
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: ports
+   :type:  Dict[str, ControlCircuitPt]
+
+.. py:attribute:: extents
+   :type:  List[ControlExtent]
+   :value: []
+
+
+.. py:attribute:: circuit_models
+   :type:  Dict[str, Any]
+
+.. py:attribute:: circuit_elements
+   :type:  Dict[str, Any]
+
+.. py:attribute:: units
+   :type:  str
+   :value: 'um'
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_port(name: str, x1: float, y1: float, layer1: str, x2: float, y2: float, layer2: str, z0: float = 50) -> ControlCircuitPt
+
+   
+   Add a port.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Port name.
+
+       **x1** : :class:`python:float`
+           X-coordinate of first point.
+
+       **y1** : :class:`python:float`
+           Y-coordinate of first point.
+
+       **layer1** : :class:`python:str`
+           Layer of first point.
+
+       **x2** : :class:`python:float`
+           X-coordinate of second point.
+
+       **y2** : :class:`python:float`
+           Y-coordinate of second point.
+
+       **layer2** : :class:`python:str`
+           Layer of second point.
+
+       **z0** : :class:`python:float`, :obj:`optional`
+           Characteristic impedance. Default is 50.
+
+   :Returns:
+
+       :obj:`ControlCircuitPt`
+           Created port object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_extent(type: str = 'bbox', dieltype: str = 'bbox', diel_hactor: float = 0.25, airbox_hfactor: float = 0.25, airbox_vr_p: float = 0.25, airbox_vr_n: float = 0.25, useradiation: bool = True, honor_primitives: bool = True, truncate_at_gnd: bool = True) -> ControlExtent
+
+   
+   Add an extent.
+
+
+   :Parameters:
+
+       **type** : :class:`python:str`, :obj:`optional`
+           Extent type. Default is "bbox".
+
+       **dieltype** : :class:`python:str`, :obj:`optional`
+           Dielectric extent type. Default is "bbox".
+
+       **diel_hactor** : :class:`python:float`, :obj:`optional`
+           Dielectric horizontal factor. Default is 0.25.
+
+       **airbox_hfactor** : :class:`python:float`, :obj:`optional`
+           Airbox horizontal factor. Default is 0.25.
+
+       **airbox_vr_p** : :class:`python:float`, :obj:`optional`
+           Airbox vertical factor (positive). Default is 0.25.
+
+       **airbox_vr_n** : :class:`python:float`, :obj:`optional`
+           Airbox vertical factor (negative). Default is 0.25.
+
+       **useradiation** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Use radiation boundary. Default is ``True``.
+
+       **honor_primitives** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Honor primitives. Default is ``True``.
+
+       **truncate_at_gnd** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Truncate at ground. Default is ``True``.
+
+   :Returns:
+
+       :obj:`ControlExtent`
+           Created extent object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

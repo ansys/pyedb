@@ -1,0 +1,6 @@
+add\_pins
+=========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pingroup
+
+.. automethod:: PinGroup.add_pins

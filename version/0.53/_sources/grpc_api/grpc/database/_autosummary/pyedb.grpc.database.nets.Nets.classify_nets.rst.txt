@@ -1,0 +1,6 @@
+classify\_nets
+==============
+
+.. currentmodule:: pyedb.grpc.database.nets
+
+.. automethod:: Nets.classify_nets

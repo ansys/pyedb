@@ -1,0 +1,87 @@
+
+
+
+
+
+
+:class:`ProfileEntry`
+=====================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.ProfileEntry
+
+
+.. py:currentmodule:: ProfileEntry
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~timestamp`
+            - 
+          * - :py:attr:`~task`
+            - 
+          * - :py:attr:`~real_time`
+            - 
+          * - :py:attr:`~cpu_time`
+            - 
+          * - :py:attr:`~memory`
+            - 
+          * - :py:attr:`~extra`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import ProfileEntry
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: timestamp
+   :type:  datetime.datetime
+
+.. py:attribute:: task
+   :type:  str
+
+.. py:attribute:: real_time
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: cpu_time
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: memory
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: extra
+   :type:  Dict[str, str]
+
+
+
+
+

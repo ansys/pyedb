@@ -1,0 +1,6 @@
+air\_box\_horizontal\_extent\_enabled
+=====================================
+
+.. currentmodule:: pyedb.grpc.database.utility.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.air_box_horizontal_extent_enabled

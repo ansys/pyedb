@@ -1,0 +1,6 @@
+get\_product\_property\_ids
+===========================
+
+.. currentmodule:: pyedb.grpc.database.net.differential_pair
+
+.. automethod:: DifferentialPair.get_product_property_ids

@@ -1,0 +1,433 @@
+
+
+
+
+
+
+:class:`ArcData`
+================
+
+
+.. py:class:: pyedb.grpc.database.geometry.arc_data.ArcData(edb_object)
+
+   
+   Class managing ArcData.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ArcData
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~is_segment`
+            - Check if arc data is a segment.
+          * - :py:attr:`~is_point`
+            - Check if arc data is a point.
+          * - :py:attr:`~is_ccw`
+            - Check if arc data is counter-clockwise.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~height`
+            - Arc data height.
+          * - :py:attr:`~direction`
+            - Arc data direction.
+          * - :py:attr:`~center`
+            - Arc data center.
+          * - :py:attr:`~start`
+            - Arc data start point.
+          * - :py:attr:`~end`
+            - Arc data end point.
+          * - :py:attr:`~midpoint`
+            - Arc data mid point.
+          * - :py:attr:`~points`
+            - Arc data points.
+          * - :py:attr:`~length`
+            - Arc data length.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.geometry.arc_data import ArcData
+
+Property detail
+---------------
+
+.. py:property:: height
+   :type: float
+
+
+   
+   Arc data height.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Height value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: direction
+   :type: str
+
+
+   
+   Arc data direction.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Direction value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: center
+   :type: list[float]
+
+
+   
+   Arc data center.
+
+
+
+   :Returns:
+
+       [:class:`python:float`, :class:`python:float`]
+           [x value, y value]
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: start
+   :type: list[float]
+
+
+   
+   Arc data start point.
+
+
+
+   :Returns:
+
+       [:class:`python:float`, :class:`python:float`]
+           [x value, y value]
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: end
+   :type: list[float]
+
+
+   
+   Arc data end point.
+
+
+
+   :Returns:
+
+       [:class:`python:float`, :class:`python:float`]
+           [x value, y value]
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: midpoint
+   :type: list[float]
+
+
+   
+   Arc data mid point.
+
+
+
+   :Returns:
+
+       [:class:`python:float`, :class:`python:float`]
+           [x value, y value]
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: points
+   :type: list[list[float]]
+
+
+   
+   Arc data points.
+
+
+
+   :Returns:
+
+       [[:class:`python:float`, :class:`python:float`]]
+           [[x value, y value]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: length
+   :type: list[float]
+
+
+   
+   Arc data length.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Length value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: is_segment() -> bool
+
+   
+   Check if arc data is a segment.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if arc data is a segment, false otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_point()
+
+   
+   Check if arc data is a point.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if arc data is a point, false otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_ccw()
+
+   
+   Check if arc data is counter-clockwise.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if arc data is counter-clockwise, false otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

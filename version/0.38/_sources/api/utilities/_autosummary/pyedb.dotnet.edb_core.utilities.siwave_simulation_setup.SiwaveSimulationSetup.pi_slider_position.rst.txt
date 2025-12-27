@@ -1,0 +1,6 @@
+pi\_slider\_position
+====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.siwave_simulation_setup
+
+.. autoproperty:: SiwaveSimulationSetup.pi_slider_position

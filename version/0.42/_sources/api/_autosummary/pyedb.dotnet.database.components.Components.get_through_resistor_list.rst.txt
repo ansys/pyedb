@@ -1,0 +1,6 @@
+get\_through\_resistor\_list
+============================
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.get_through_resistor_list

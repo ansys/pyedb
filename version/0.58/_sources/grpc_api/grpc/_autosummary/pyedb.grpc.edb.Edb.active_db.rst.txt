@@ -1,0 +1,6 @@
+active\_db
+==========
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.active_db
