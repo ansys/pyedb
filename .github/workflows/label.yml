@@ -35,7 +35,7 @@ jobs:
     needs: [label-syncer]
     permissions:
       contents: read
-      pull-requests: write
+      pull-requests: write # Needed to add existing labels to PRs
     runs-on: ubuntu-latest
     steps:
 
@@ -49,8 +49,8 @@ jobs:
     name: "Create changelog fragment"
     needs: [labeler]
     permissions:
-      contents: write
-      pull-requests: write
+      contents: write # Needed to create changelog fragment on PR
+      pull-requests: write # Needed to create changelog fragment on PR
     runs-on: ubuntu-latest
     steps:
     - uses: ansys/actions/doc-changelog@41f86da4c9ead510db9135e428e33df9cc6f92e1 # v10.2.3
