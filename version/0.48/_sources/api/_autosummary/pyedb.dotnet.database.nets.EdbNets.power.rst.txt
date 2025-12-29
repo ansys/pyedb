@@ -1,0 +1,6 @@
+power
+=====
+
+.. currentmodule:: pyedb.dotnet.database.nets
+
+.. autoproperty:: EdbNets.power

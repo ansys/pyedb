@@ -1,0 +1,79 @@
+
+
+
+
+
+
+:class:`Via`
+============
+
+
+.. py:class:: pyedb.extensions.via_design_backend.Via(anti_pad_diameter, fanout_trace: list[Union[dict, Trace]], stitching_vias: Union[dict, None], **kwargs)
+
+   Bases: :py:obj:`GroundVia`
+
+
+
+.. py:currentmodule:: Via
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~populate_config`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~anti_pad_diameter`
+            - 
+          * - :py:attr:`~stitching_vias`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.extensions.via_design_backend import Via
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: anti_pad_diameter
+   :value: 'Uninferable_anti_pad_diameter'
+
+
+.. py:attribute:: stitching_vias
+
+
+
+Method detail
+-------------
+
+.. py:method:: populate_config(cfg)
+
+
+
+

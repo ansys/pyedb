@@ -1,0 +1,226 @@
+
+
+
+
+
+
+:class:`ViaSettings`
+====================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.settings.ViaSettings(parent)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods for via settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ViaSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~via_density`
+            - Via density.
+          * - :py:attr:`~via_mesh_plating`
+            - Via mesh plating.
+          * - :py:attr:`~via_material`
+            - Via material.
+          * - :py:attr:`~via_num_sides`
+            - Via number of sides.
+          * - :py:attr:`~via_style`
+            - Via style.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.settings import ViaSettings
+
+Property detail
+---------------
+
+.. py:property:: via_density
+
+   
+   Via density.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_mesh_plating
+
+   
+   Via mesh plating.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_material
+
+   
+   Via material.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_num_sides
+
+   
+   Via number of sides.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_style
+
+   
+   Via style.
+   Options:
+   1- ``k25DViaWirebond``.
+   2- ``k25DViaRibbon``.
+   3- ``k25DViaMesh``.
+   4- ``k25DViaField``.
+   5- ``kNum25DViaStyle``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

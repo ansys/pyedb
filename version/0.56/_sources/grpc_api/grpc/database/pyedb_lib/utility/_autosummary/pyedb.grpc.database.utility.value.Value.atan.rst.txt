@@ -1,0 +1,6 @@
+atan
+====
+
+.. currentmodule:: pyedb.grpc.database.utility.value
+
+.. automethod:: Value.atan

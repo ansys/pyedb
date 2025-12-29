@@ -1,0 +1,163 @@
+
+
+
+
+
+
+:class:`AdaptiveFrequencyData`
+==============================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.adaptive_frequency_data.AdaptiveFrequencyData(adaptive_frequency_data)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods for adaptive frequency data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AdaptiveFrequencyData
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~adaptive_frequency`
+            - Adaptive frequency for the setup.
+          * - :py:attr:`~max_delta`
+            - Maximum change of S-parameters between two consecutive passes, which serves as
+          * - :py:attr:`~max_passes`
+            - Maximum allowed number of mesh refinement cycles.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.adaptive_frequency_data import AdaptiveFrequencyData
+
+Property detail
+---------------
+
+.. py:property:: adaptive_frequency
+
+   
+   Adaptive frequency for the setup.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Frequency with units.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_delta
+
+   
+   Maximum change of S-parameters between two consecutive passes, which serves as
+   a stopping criterion.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_passes
+
+   
+   Maximum allowed number of mesh refinement cycles.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

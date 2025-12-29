@@ -1,0 +1,6 @@
+create\_3d\_comp
+================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. automethod:: WavePort.create_3d_comp

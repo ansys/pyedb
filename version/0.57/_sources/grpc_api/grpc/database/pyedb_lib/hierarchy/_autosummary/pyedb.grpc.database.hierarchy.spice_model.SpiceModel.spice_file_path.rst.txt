@@ -1,0 +1,6 @@
+spice\_file\_path
+=================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.spice_model
+
+.. autoproperty:: SpiceModel.spice_file_path

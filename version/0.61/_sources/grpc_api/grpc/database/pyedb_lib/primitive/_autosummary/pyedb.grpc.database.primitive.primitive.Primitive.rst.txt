@@ -1,0 +1,115 @@
+﻿Primitive
+=========
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. autoclass:: Primitive
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Primitive.add_void
+      
+      
+      Primitive.area
+      
+      
+      Primitive.cast
+      
+      
+      Primitive.convert_to_polygon
+      
+      
+      Primitive.create_3d_comp
+      
+      
+      Primitive.create_hfss
+      
+      
+      Primitive.create_stride
+      
+      
+      Primitive.delete
+      
+      
+      Primitive.expand
+      
+      
+      Primitive.find_by_id
+      
+      
+      Primitive.get_closest_arc_midpoint
+      
+      
+      Primitive.get_closest_point
+      
+      
+      Primitive.get_connected_object_id_set
+      
+      
+      Primitive.get_connected_objects
+      
+      
+      Primitive.get_hfss_prop
+      
+      
+      Primitive.get_product_property
+      
+      
+      Primitive.get_product_property_ids
+      
+      
+      Primitive.intersect
+      
+      
+      Primitive.intersection_type
+      
+      
+      Primitive.is_intersecting
+      
+      
+      Primitive.make_zone_primitive
+      
+      
+      Primitive.plot
+      
+      
+      Primitive.points
+      
+      
+      Primitive.remove_hfss_prop
+      
+      
+      Primitive.scale
+      
+      
+      Primitive.set_hfss_prop
+      
+      
+      Primitive.set_product_property
+      
+      
+      Primitive.subtract
+      
+      
+      Primitive.unite
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Primitive.layout_obj_type
+   
+   

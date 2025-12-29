@@ -1,0 +1,6 @@
+package
+=======
+
+.. currentmodule:: pyedb.grpc.database.definitions
+
+.. autoproperty:: Definitions.package

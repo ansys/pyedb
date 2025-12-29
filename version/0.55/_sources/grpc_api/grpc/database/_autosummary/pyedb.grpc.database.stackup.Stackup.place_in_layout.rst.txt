@@ -1,0 +1,6 @@
+place\_in\_layout
+=================
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: Stackup.place_in_layout

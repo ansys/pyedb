@@ -1,0 +1,25 @@
+
+
+
+
+
+
+:class:`Cutout`
+===============
+
+
+.. py:class:: pyedb.workflows.utilities.cutout.Cutout
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.cutout import Cutout
+
+
+
+
+

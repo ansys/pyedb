@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``utilities.py`` module
+===========================
+
+.. py:module:: pyedb.dotnet.database.edb_data.utilities
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: utilities
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.utilities.EDBStatistics`
+            - Statistics object
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> EDBStatistics</autoapi/pyedb/dotnet/database/edb_data/utilities/EDBStatistics>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

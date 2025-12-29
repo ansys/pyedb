@@ -1,0 +1,26 @@
+﻿HeatSink
+========
+
+.. currentmodule:: pyedb.grpc.database.utility.heat_sink
+
+.. autoclass:: HeatSink
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HeatSink.fin_base_height
+      HeatSink.fin_height
+      HeatSink.fin_orientation
+      HeatSink.fin_spacing
+      HeatSink.fin_thickness
+   
+   

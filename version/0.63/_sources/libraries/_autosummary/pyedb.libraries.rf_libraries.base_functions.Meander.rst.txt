@@ -1,0 +1,27 @@
+﻿Meander
+=======
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. autoclass:: Meander
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Meander.create
+      
+      
+      Meander.electrical_length_deg
+      
+   
+   
+
+   
+   
+   

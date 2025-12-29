@@ -1,0 +1,6 @@
+dc\_mesh\_vias
+==============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationDc.dc_mesh_vias

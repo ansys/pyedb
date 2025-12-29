@@ -1,0 +1,6 @@
+dc\_contact\_radius
+===================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationDc.dc_contact_radius

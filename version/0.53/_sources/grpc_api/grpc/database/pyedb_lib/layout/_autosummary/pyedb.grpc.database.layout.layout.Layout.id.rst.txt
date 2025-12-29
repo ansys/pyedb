@@ -1,0 +1,6 @@
+id
+==
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. autoproperty:: Layout.id

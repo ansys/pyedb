@@ -1,0 +1,197 @@
+
+
+
+
+
+
+:class:`MachineNode`
+====================
+
+
+.. py:class:: pyedb.workflows.job_manager.backend.job_submission.MachineNode(**data)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Compute-node descriptor for distributed HFSS runs.
+
+
+   :Parameters:
+
+       **hostname** : :class:`python:str`, :obj:`optional`
+           DNS name or IP. Defaults to ``"localhost"``.
+
+       **cores** : :class:`python:int`, :obj:`optional`
+           Logical cores to use.  ``-1`` means *all*.  Defaults to ``-1``.
+
+       **max_cores** : :class:`python:int`, :obj:`optional`
+           Physical cores available.  Defaults to ``20``.
+
+       **utilization** : :class:`python:int`, :obj:`optional`
+           CPU percentage to utilize (1–100).  Defaults to ``90``.
+
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If ``utilization`` or ``max_cores`` is out of range.
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: MachineNode
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~validate_fields`
+            - Validate machine node parameters for correctness.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~hostname`
+            - 
+          * - :py:attr:`~cores`
+            - 
+          * - :py:attr:`~max_cores`
+            - 
+          * - :py:attr:`~utilization`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__str__`
+            - Return string representation in HFSS machinelist format.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.job_manager.backend.job_submission import MachineNode
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: hostname
+   :type:  str
+   :value: 'localhost'
+
+
+.. py:attribute:: cores
+   :type:  int
+   :value: -1
+
+
+.. py:attribute:: max_cores
+   :type:  int
+   :value: 20
+
+
+.. py:attribute:: utilization
+   :type:  int
+   :value: 90
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: validate_fields() -> None
+
+   
+   Validate machine node parameters for correctness.
+
+   Ensures all node parameters are within valid ranges and formats.
+
+   Raises:
+       ValueError: If any parameter is invalid.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __str__() -> str
+
+   
+   Return string representation in HFSS machinelist format.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Node configuration in format ``hostname:cores:max_cores:util%``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

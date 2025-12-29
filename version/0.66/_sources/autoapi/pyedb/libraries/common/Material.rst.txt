@@ -1,0 +1,116 @@
+
+
+
+
+
+
+:class:`Material`
+=================
+
+
+.. py:class:: pyedb.libraries.common.Material(pedb, name)
+
+   
+   Generic material definition.
+
+   When the material name is set, the object automatically registers
+   itself in the provided PyEDB material database if the name is not
+   already present.
+
+   :Parameters:
+
+       **pedb** : :obj:`ansys.edb.core.database.Database`
+           Active EDB session.
+
+       **name** : :class:`python:str`
+           Material name (e.g. ``"Copper"``).
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> m = Material(edb, "MyMaterial")
+   >>> m.name
+   'MyMaterial'
+   >>> edb.materials["MyMaterial"]  # now exists in the database
+   <Material object at ...>
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Material
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Material name.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.common import Material
+
+Property detail
+---------------
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Material name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

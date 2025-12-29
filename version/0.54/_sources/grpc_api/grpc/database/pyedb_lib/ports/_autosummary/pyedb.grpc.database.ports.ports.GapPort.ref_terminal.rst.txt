@@ -1,0 +1,6 @@
+ref\_terminal
+=============
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: GapPort.ref_terminal

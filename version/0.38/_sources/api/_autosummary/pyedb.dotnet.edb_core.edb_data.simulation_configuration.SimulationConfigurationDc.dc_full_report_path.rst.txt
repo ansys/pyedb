@@ -1,0 +1,6 @@
+dc\_full\_report\_path
+======================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationDc.dc_full_report_path

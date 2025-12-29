@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`SweepData`
+==================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.sweep_data.SweepData(pedb, name, distribution, start_f, end_f, step, edb_object=None)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.simulation_setup.SweepData`
+
+
+   
+   Frequency sweep data class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
+
+
+
+
+

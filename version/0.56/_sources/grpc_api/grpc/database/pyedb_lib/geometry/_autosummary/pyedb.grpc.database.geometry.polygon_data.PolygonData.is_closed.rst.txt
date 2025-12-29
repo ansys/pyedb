@@ -1,0 +1,6 @@
+is\_closed
+==========
+
+.. currentmodule:: pyedb.grpc.database.geometry.polygon_data
+
+.. autoproperty:: PolygonData.is_closed

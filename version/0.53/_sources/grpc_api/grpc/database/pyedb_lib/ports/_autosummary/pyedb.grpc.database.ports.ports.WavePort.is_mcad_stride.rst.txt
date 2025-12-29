@@ -1,0 +1,6 @@
+is\_mcad\_stride
+================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: WavePort.is_mcad_stride

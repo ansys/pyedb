@@ -1,0 +1,118 @@
+
+
+
+
+
+
+The ``utilities`` package
+=============================
+
+.. py:module:: pyedb.dotnet.database.utilities
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: utilities
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.heatsink`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.hfss_simulation_setup`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.obj_base`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.simulation_setup`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.siwave_simulation_setup`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.value`
+            - 
+
+
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~workdir`
+            - 
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> heatsink</autoapi/pyedb/dotnet/database/utilities/heatsink/index>
+    <span class="nf nf-fa-file"></span> hfss_simulation_setup</autoapi/pyedb/dotnet/database/utilities/hfss_simulation_setup/index>
+    <span class="nf nf-fa-file"></span> obj_base</autoapi/pyedb/dotnet/database/utilities/obj_base/index>
+    <span class="nf nf-fa-file"></span> simulation_setup</autoapi/pyedb/dotnet/database/utilities/simulation_setup/index>
+    <span class="nf nf-fa-file"></span> siwave_cpa_simulation_setup</autoapi/pyedb/dotnet/database/utilities/siwave_cpa_simulation_setup/index>
+    <span class="nf nf-fa-file"></span> siwave_simulation_setup</autoapi/pyedb/dotnet/database/utilities/siwave_simulation_setup/index>
+    <span class="nf nf-fa-file"></span> value</autoapi/pyedb/dotnet/database/utilities/value/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: workdir
+
+
+

@@ -1,0 +1,770 @@
+
+
+
+
+
+
+:class:`Terminal`
+=================
+
+
+.. py:class:: pyedb.dotnet.database.cell.terminal.terminal.Terminal(pedb, edb_object=None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.connectable.Connectable`
+
+
+   
+   Manages EDB functionalities for a connectable object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Terminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_padstack_terminal_reference_pin`
+            - Get a list of pad stacks instances and serves Coax wave ports,
+          * - :py:attr:`~get_pin_group_terminal_reference_pin`
+            - Return a list of pins and serves terminals connected to pingroups.
+          * - :py:attr:`~get_edge_terminal_reference_primitive`
+            - Check and  return a primitive instance that serves Edge ports,
+          * - :py:attr:`~get_point_terminal_reference_primitive`
+            - Find and return the primitive reference for the point terminal or the padstack instance.
+          * - :py:attr:`~get_pad_edge_terminal_reference_pin`
+            - Get the closest pin padstack instances and serves any edge terminal connected to a pad.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~hfss_type`
+            - HFSS port type.
+          * - :py:attr:`~layer`
+            - Get layer of the terminal.
+          * - :py:attr:`~is_circuit_port`
+            - Whether it is a circuit port.
+          * - :py:attr:`~do_renormalize`
+            - Determine whether port renormalization is enabled.
+          * - :py:attr:`~terminal_type`
+            - Terminal Type.
+          * - :py:attr:`~boundary_type`
+            - Boundary type.
+          * - :py:attr:`~is_port`
+            - Whether it is a port.
+          * - :py:attr:`~is_current_source`
+            - Whether it is a current source.
+          * - :py:attr:`~is_voltage_source`
+            - Whether it is a voltage source.
+          * - :py:attr:`~impedance`
+            - Impedance of the port.
+          * - :py:attr:`~is_reference_terminal`
+            - Whether it is a reference terminal.
+          * - :py:attr:`~reference_terminal`
+            - Adding grpc compatibility.
+          * - :py:attr:`~ref_terminal`
+            - Get reference terminal.
+          * - :py:attr:`~reference_object`
+            - This returns the object assigned as reference. It can be a primitive or a padstack instance.
+          * - :py:attr:`~reference_net_name`
+            - Net name to which reference_object belongs.
+          * - :py:attr:`~magnitude`
+            - Get the magnitude of the source.
+          * - :py:attr:`~phase`
+            - Get the phase of the source.
+          * - :py:attr:`~amplitude`
+            - Property added for grpc compatibility
+          * - :py:attr:`~source_amplitude`
+            - Property added for grpc compatibility
+          * - :py:attr:`~source_phase`
+            - Property added for grpc compatibility
+          * - :py:attr:`~terminal_to_ground`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.terminal.terminal import Terminal
+
+Property detail
+---------------
+
+.. py:property:: hfss_type
+
+   
+   HFSS port type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer
+
+   
+   Get layer of the terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_circuit_port
+
+   
+   Whether it is a circuit port.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: do_renormalize
+
+   
+   Determine whether port renormalization is enabled.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminal_type
+
+   
+   Terminal Type.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: boundary_type
+
+   
+   Boundary type.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           InvalidBoundary, PortBoundary, PecBoundary, RlcBoundary, kCurrentSource, kVoltageSource, kNexximGround,
+           kNexximPort, kDcTerminal, kVoltageProbe
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_port
+
+   
+   Whether it is a port.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_current_source
+
+   
+   Whether it is a current source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_voltage_source
+
+   
+   Whether it is a voltage source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: impedance
+
+   
+   Impedance of the port.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_reference_terminal
+
+   
+   Whether it is a reference terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: reference_terminal
+
+   
+   Adding grpc compatibility.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ref_terminal
+
+   
+   Get reference terminal.
+
+   .deprecated:: pyedb 0.47.0
+   Use: attribute:`reference_terminal` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: reference_object
+
+   
+   This returns the object assigned as reference. It can be a primitive or a padstack instance.
+
+
+
+   :Returns:
+
+       :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance` :obj:`or`
+           ..
+
+       :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: reference_net_name
+
+   
+   Net name to which reference_object belongs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: magnitude
+
+   
+   Get the magnitude of the source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: phase
+
+   
+   Get the phase of the source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: amplitude
+
+   
+   Property added for grpc compatibility
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_amplitude
+
+   
+   Property added for grpc compatibility
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_phase
+
+   
+   Property added for grpc compatibility
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminal_to_ground
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_padstack_terminal_reference_pin(gnd_net_name_preference=None)
+
+   
+   Get a list of pad stacks instances and serves Coax wave ports,
+   pingroup terminals, PadEdge terminals.
+
+
+   :Parameters:
+
+       **gnd_net_name_preference** : :class:`python:str`, :obj:`optional`
+           Preferred reference net name.
+
+   :Returns:
+
+       :class:`dotnet.database.edb_data.padstack_data.EDBPadstackInstance`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_pin_group_terminal_reference_pin(gnd_net_name_preference=None)
+
+   
+   Return a list of pins and serves terminals connected to pingroups.
+
+
+   :Parameters:
+
+       **gnd_net_name_preference** : :class:`python:str`, :obj:`optional`
+           Preferred reference net name.
+
+   :Returns:
+
+       :class:`dotnet.database.edb_data.padstack_data.EDBPadstackInstance`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_edge_terminal_reference_primitive()
+
+   
+   Check and  return a primitive instance that serves Edge ports,
+   wave ports and coupled edge ports that are directly connedted to primitives.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_point_terminal_reference_primitive()
+
+   
+   Find and return the primitive reference for the point terminal or the padstack instance.
+
+
+
+   :Returns:
+
+       :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance` :obj:`or`
+           ..
+
+       :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_pad_edge_terminal_reference_pin(gnd_net_name_preference=None)
+
+   
+   Get the closest pin padstack instances and serves any edge terminal connected to a pad.
+
+
+   :Parameters:
+
+       **gnd_net_name_preference** : :class:`python:str`, :obj:`optional`
+           Preferred reference net name. Optianal, default is `None` which will auto compute the gnd name.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

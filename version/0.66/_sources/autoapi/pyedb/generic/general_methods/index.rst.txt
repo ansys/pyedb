@@ -1,0 +1,1281 @@
+
+
+
+
+
+
+The ``pyedb.generic.general_methods`` library
+=============================================
+
+.. py:module:: pyedb.generic.general_methods
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: general_methods
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.generic.general_methods.PropsManager`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.general_methods.Help`
+            - 
+
+
+
+
+    .. tab-item:: Exceptions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.generic.general_methods.GrpcApiError`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.general_methods.MethodNotSupportedError`
+            - 
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~installed_ansys_em_versions`
+            - Scan environment variables and return a dict
+
+
+          * - :py:obj:`~get_filename_without_extension`
+            - Get the filename without its extension.
+
+
+          * - :py:obj:`~env_path`
+            - Get the path of the version environment variable for an AEDT version.
+
+
+          * - :py:obj:`~get_version_and_release`
+            - 
+
+
+          * - :py:obj:`~env_value`
+            - Get the name of the version environment variable for an AEDT version.
+
+
+          * - :py:obj:`~generate_unique_name`
+            - Generate a new name given a root name and optional suffix.
+
+
+          * - :py:obj:`~normalize_path`
+            - Normalize path separators.
+
+
+          * - :py:obj:`~check_numeric_equivalence`
+            - Check if two numeric values are equivalent to within a relative tolerance.
+
+
+          * - :py:obj:`~check_and_download_file`
+            - Check if a file is remote and either download it or return the path.
+
+
+          * - :py:obj:`~check_if_path_exists`
+            - Check whether a path exists or not local or remote machine (for remote sessions only).
+
+
+          * - :py:obj:`~check_and_download_folder`
+            - Check if a folder is remote and either download it or return the path.
+
+
+          * - :py:obj:`~open_file`
+            - Open a file and return the object.
+
+
+          * - :py:obj:`~get_string_version`
+            - 
+
+
+          * - :py:obj:`~env_path_student`
+            - Get the path of the version environment variable for an AEDT student version.
+
+
+          * - :py:obj:`~env_value_student`
+            - Get the name of the version environment variable for an AEDT student version.
+
+
+          * - :py:obj:`~generate_unique_folder_name`
+            - Generate a new AEDT folder name given a rootname.
+
+
+          * - :py:obj:`~generate_unique_project_name`
+            - Generate a new AEDT project name given a rootname.
+
+
+          * - :py:obj:`~time_fn`
+            - 
+
+
+          * - :py:obj:`~isclose`
+            - 
+
+
+          * - :py:obj:`~is_number`
+            - 
+
+
+          * - :py:obj:`~is_array`
+            - 
+
+
+          * - :py:obj:`~is_project_locked`
+            - Check if an AEDT project lock file exists.
+
+
+          * - :py:obj:`~remove_project_lock`
+            - Check if an AEDT project exists and try to remove the lock file.
+
+
+          * - :py:obj:`~read_csv`
+            - Read information from a CSV file and return a list.
+
+
+          * - :py:obj:`~read_csv_pandas`
+            - Read information from a CSV file and return a list.
+
+
+          * - :py:obj:`~read_tab`
+            - Read information from a TAB file and return a list.
+
+
+          * - :py:obj:`~read_xlsx`
+            - Read information from an XLSX file and return a list.
+
+
+          * - :py:obj:`~write_csv`
+            - 
+
+
+          * - :py:obj:`~filter_tuple`
+            - Filter a tuple of two elements with two search keywords.
+
+
+          * - :py:obj:`~filter_string`
+            - Filter a string
+
+
+          * - :py:obj:`~recursive_glob`
+            - Get a list of files matching a pattern, searching recursively from a start path.
+
+
+          * - :py:obj:`~number_aware_string_key`
+            - Get a key for sorting strings that treats embedded digit sequences as integers.
+
+
+          * - :py:obj:`~compute_fft`
+            - Compute FFT of input transient data.
+
+
+          * - :py:obj:`~parse_excitation_file`
+            - Parse a csv file and convert data in list that can be applied to Hfss and Hfss3dLayout sources.
+
+
+          * - :py:obj:`~tech_to_control_file`
+            - Convert a TECH file to an XML file for use in a GDS or DXF import.
+
+
+          * - :py:obj:`~install_with_pip`
+            - Install a new package using pip.
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~is_linux`
+            - 
+
+
+          * - :py:obj:`~is_windows`
+            - 
+
+
+          * - :py:obj:`~clamp`
+            - 
+
+
+          * - :py:obj:`~rgb_color_codes`
+            - 
+
+
+          * - :py:obj:`~online_help`
+            - 
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> PropsManager</autoapi/pyedb/generic/general_methods/PropsManager>
+    <span class="nf nf-cod-symbol_class"></span> Help</autoapi/pyedb/generic/general_methods/Help>
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-lightning_bolt"></span> GrpcApiError</autoapi/pyedb/generic/general_methods/GrpcApiError>
+    <span class="nf nf-md-lightning_bolt"></span> MethodNotSupportedError</autoapi/pyedb/generic/general_methods/MethodNotSupportedError>
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: installed_ansys_em_versions() -> Dict[str, str]
+
+   
+   Scan environment variables and return a dict
+   {version: installation_path} for every ANSYS EM release found.
+   Versions are ordered from oldest → latest (latest appears last).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: get_filename_without_extension(path)
+
+   
+   Get the filename without its extension.
+
+
+   :Parameters:
+
+       **path** : :class:`python:str`
+           Path for the file.
+
+   :Returns:
+
+       :class:`python:str`
+           Name for the file, excluding its extension.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: env_path(input_version)
+
+   
+   Get the path of the version environment variable for an AEDT version.
+
+
+   :Parameters:
+
+       **input_version** : :class:`python:str`
+           AEDT version.
+
+   :Returns:
+
+       :class:`python:str`
+           Path for the version environment variable.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> env_path_student("2021.2")
+   "C:/Program Files/ANSYSEM/ANSYSEM2021.2/Win64"
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: get_version_and_release(input_version)
+
+.. py:function:: env_value(input_version)
+
+   
+   Get the name of the version environment variable for an AEDT version.
+
+
+   :Parameters:
+
+       **input_version** : :class:`python:str`
+           AEDT version.
+
+   :Returns:
+
+       :class:`python:str`
+           Name for the version environment variable.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> env_value("2021.2")
+   "ANSYSEM_ROOT211"
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: generate_unique_name(rootname, suffix='', n=6)
+
+   
+   Generate a new name given a root name and optional suffix.
+
+
+   :Parameters:
+
+       **rootname**
+           Root name to add random characters to.
+
+       **suffix** : :class:`python:str`
+           Suffix to add. The default is ``''``.
+
+       **n** : :class:`python:int`
+           Number of random characters to add to the name. The default value is ``6``.
+
+   :Returns:
+
+       :class:`python:str`
+           Newly generated name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: normalize_path(path_in, sep=None)
+
+   
+   Normalize path separators.
+
+
+   :Parameters:
+
+       **path_in** : :class:`python:str`
+           Path to normalize.
+
+       **sep** : :class:`python:str`, :obj:`optional`
+           Separator.
+
+   :Returns:
+
+       :class:`python:str`
+           Path normalized to new separator.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: check_numeric_equivalence(a, b, relative_tolerance=1e-07)
+
+   
+   Check if two numeric values are equivalent to within a relative tolerance.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the two passed values are equivalent.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: check_and_download_file(local_path, remote_path, overwrite=True)
+
+   
+   Check if a file is remote and either download it or return the path.
+
+
+   :Parameters:
+
+       **local_path** : :class:`python:str`
+           Local path to save the file to.
+
+       **remote_path** : :class:`python:str`
+           Path to the remote file.
+
+       **overwrite** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to overwrite the file if it already exits locally.
+           The default is ``True``.
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: check_if_path_exists(path)
+
+   
+   Check whether a path exists or not local or remote machine (for remote sessions only).
+
+
+   :Parameters:
+
+       **path** : :class:`python:str`
+           Local or remote path to check.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: check_and_download_folder(local_path, remote_path, overwrite=True)
+
+   
+   Check if a folder is remote and either download it or return the path.
+
+
+   :Parameters:
+
+       **local_path** : :class:`python:str`
+           Local path to save the folder to.
+
+       **remote_path** : :class:`python:str`
+           Path to the remote folder.
+
+       **overwrite** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to overwrite the folder if it already exits locally.
+           The default is ``True``.
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: open_file(file_path, file_options='r')
+
+   
+   Open a file and return the object.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str`
+           Full absolute path to the file (either local or remote).
+
+       **file_options** : :class:`python:str`, :obj:`optional`
+           Options for opening the file.
+
+   :Returns:
+
+       :obj:`object`
+           Opened file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: get_string_version(input_version)
+
+.. py:function:: env_path_student(input_version)
+
+   
+   Get the path of the version environment variable for an AEDT student version.
+
+
+   :Parameters:
+
+       **input_version** : :class:`python:str`
+           AEDT student version.
+
+   :Returns:
+
+       :class:`python:str`
+           Path for the student version environment variable.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> env_path_student("2021.2")
+   "C:/Program Files/ANSYSEM/ANSYSEM2021.2/Win64"
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: env_value_student(input_version)
+
+   
+   Get the name of the version environment variable for an AEDT student version.
+
+
+   :Parameters:
+
+       **input_version** : :class:`python:str`
+           AEDT student version.
+
+   :Returns:
+
+       :class:`python:str`
+           Name for the student version environment variable.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> env_value_student("2021.2")
+   "ANSYSEMSV_ROOT211"
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: generate_unique_folder_name(rootname=None, folder_name=None)
+
+   
+   Generate a new AEDT folder name given a rootname.
+
+
+   :Parameters:
+
+       **rootname** : :class:`python:str`, :obj:`optional`
+           Root name for the new folder. The default is ``None``.
+
+       **folder_name** : :class:`python:str`, :obj:`optional`
+           Name for the new AEDT folder if one must be created.
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: generate_unique_project_name(rootname=None, folder_name=None, project_name=None, project_format='aedt')
+
+   
+   Generate a new AEDT project name given a rootname.
+
+
+   :Parameters:
+
+       **rootname** : :class:`python:str`, :obj:`optional`
+           Root name where the new project is to be created.
+
+       **folder_name** : :class:`python:str`, :obj:`optional`
+           Name of the folder to create. The default is ``None``, in which case a random folder
+           is created. Use ``""`` if you do not want to create a subfolder.
+
+       **project_name** : :class:`python:str`, :obj:`optional`
+           Name for the project. The default is ``None``, in which case a random project is
+           created. If a project with this name already exists, a new suffix is added.
+
+       **project_format** : :class:`python:str`, :obj:`optional`
+           Project format. The default is ``"aedt"``. Options are ``"aedt"`` and ``"aedb"``.
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: time_fn(fn, *args, **kwargs)
+
+.. py:function:: isclose(a, b, rel_tol=1e-09, abs_tol=0.0)
+
+.. py:function:: is_number(a)
+
+.. py:function:: is_array(a)
+
+.. py:function:: is_project_locked(project_path)
+
+   
+   Check if an AEDT project lock file exists.
+
+
+   :Parameters:
+
+       **project_path** : :class:`python:str`
+           Path for the AEDT project.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: remove_project_lock(project_path)
+
+   
+   Check if an AEDT project exists and try to remove the lock file.
+
+   .. note::
+      This operation is risky because the file could be opened in another AEDT instance.
+
+   :Parameters:
+
+       **project_path** : :class:`python:str`
+           Path for the AEDT project.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: read_csv(filename, encoding='utf-8')
+
+   
+   Read information from a CSV file and return a list.
+
+
+   :Parameters:
+
+       **filename** : :class:`python:str`
+           Full path and name for the CSV file.
+
+       **encoding** : :class:`python:str`, :obj:`optional`
+           File encoding for the CSV file. The default is ``"utf-8"``.
+
+   :Returns:
+
+       :class:`python:list`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: read_csv_pandas(filename, encoding='utf-8')
+
+   
+   Read information from a CSV file and return a list.
+
+
+   :Parameters:
+
+       **filename** : :class:`python:str`
+           Full path and name for the CSV file.
+
+       **encoding** : :class:`python:str`, :obj:`optional`
+           File encoding for the CSV file. The default is ``"utf-8"``.
+
+   :Returns:
+
+       :class:`pandas.DataFrame`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: read_tab(filename)
+
+   
+   Read information from a TAB file and return a list.
+
+
+   :Parameters:
+
+       **filename** : :class:`python:str`
+           Full path and name for the TAB file.
+
+   :Returns:
+
+       :class:`python:list`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: read_xlsx(filename)
+
+   
+   Read information from an XLSX file and return a list.
+
+
+   :Parameters:
+
+       **filename** : :class:`python:str`
+           Full path and name for the XLSX file.
+
+   :Returns:
+
+       :class:`python:list`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: write_csv(output, list_data, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
+.. py:function:: filter_tuple(value, search_key1, search_key2)
+
+   
+   Filter a tuple of two elements with two search keywords.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: filter_string(value, search_key1)
+
+   
+   Filter a string
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: recursive_glob(startpath, filepattern)
+
+   
+   Get a list of files matching a pattern, searching recursively from a start path.
+
+   Keyword Arguments:
+   startpath -- starting path (directory)
+   filepattern -- fnmatch-style filename pattern
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: number_aware_string_key(s)
+
+   
+   Get a key for sorting strings that treats embedded digit sequences as integers.
+
+
+   :Parameters:
+
+       **s** : :class:`python:str`
+           String to calculate the key from.
+
+   :Returns:
+
+       :class:`python:tuple`
+           Tuple of key entries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: compute_fft(time_vals, value)
+
+   
+   Compute FFT of input transient data.
+
+
+   :Parameters:
+
+       **time_vals** : `pandas.Series`
+           ..
+
+       **value** : `pandas.Series`
+           ..
+
+   :Returns:
+
+       :class:`python:tuple`
+           Frequency and Values.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: parse_excitation_file(file_name, is_time_domain=True, x_scale=1, y_scale=1, impedance=50, data_format='Power', encoding='utf-8', out_mag='Voltage')
+
+   
+   Parse a csv file and convert data in list that can be applied to Hfss and Hfss3dLayout sources.
+
+
+   :Parameters:
+
+       **file_name** : :class:`python:str`
+           Full name of the input file.
+
+       **is_time_domain** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if the input data is Time based or Frequency Based. Frequency based data are Mag/Phase (deg).
+
+       **x_scale** : :class:`python:float`, :obj:`optional`
+           Scaling factor for x axis.
+
+       **y_scale** : :class:`python:float`, :obj:`optional`
+           Scaling factor for y axis.
+
+       **data_format** : :class:`python:str`, :obj:`optional`
+           Either `"Power"`, `"Current"` or `"Voltage"`.
+
+       **impedance** : :class:`python:float`, :obj:`optional`
+           Excitation impedance. Default is `50`.
+
+       **encoding** : :class:`python:str`, :obj:`optional`
+           Csv file encoding.
+
+       **out_mag** : :class:`python:str`, :obj:`optional`
+           Output magnitude format. It can be `"Voltage"` or `"Power"` depending on Hfss solution.
+
+   :Returns:
+
+       :class:`python:tuple`
+           Frequency, magnitude and phase.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: tech_to_control_file(tech_path, unit='nm', control_path=None)
+
+   
+   Convert a TECH file to an XML file for use in a GDS or DXF import.
+
+
+   :Parameters:
+
+       **tech_path** : :class:`python:str`
+           Full path to the TECH file.
+
+       **unit** : :class:`python:str`, :obj:`optional`
+           Tech units. If specified in tech file this parameter will not be used. Default is ``"nm"``.
+
+       **control_path** : :class:`python:str`, :obj:`optional`
+           Path for outputting the XML file.
+
+   :Returns:
+
+       :class:`python:str`
+           Out xml file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: install_with_pip(package_name, package_path=None, upgrade=False, uninstall=False)
+
+   
+   Install a new package using pip.
+   This method is useful for installing a package from the AEDT Console without launching the Python environment.
+
+   .. warning::
+       Do not execute this function with untrusted function argument, environment
+       variables or pyedb global settings.
+       See the :ref:`security guide<ref_security_consideration>` for details.
+
+   :Parameters:
+
+       **package_name** : :class:`python:str`
+           Name of the package to install.
+
+       **package_path** : :class:`python:str`, :obj:`optional`
+           Path for the GitHub package to download and install. For example, ``git+https://.....``.
+
+       **upgrade** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to upgrade the package. The default is ``False``.
+
+       **uninstall** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to install the package or uninstall the package.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: is_linux
+
+.. py:data:: is_windows
+
+.. py:data:: clamp
+
+.. py:data:: rgb_color_codes
+
+.. py:data:: online_help
+
+
+

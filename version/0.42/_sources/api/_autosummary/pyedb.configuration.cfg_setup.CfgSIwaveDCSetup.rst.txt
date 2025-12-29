@@ -1,0 +1,37 @@
+﻿CfgSIwaveDCSetup
+================
+
+.. currentmodule:: pyedb.configuration.cfg_setup
+
+.. autoclass:: CfgSIwaveDCSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgSIwaveDCSetup.apply
+      
+      
+      CfgSIwaveDCSetup.get_attributes
+      
+      
+      CfgSIwaveDCSetup.set_attributes
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CfgSIwaveDCSetup.protected_attributes
+   
+   

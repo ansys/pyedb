@@ -1,0 +1,6 @@
+min\_void\_area
+===============
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
+
+.. autoproperty:: AdvancedSettings.min_void_area

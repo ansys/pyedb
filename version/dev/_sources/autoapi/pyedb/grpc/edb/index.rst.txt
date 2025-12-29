@@ -1,0 +1,118 @@
+
+
+
+
+
+
+The ``pyedb.grpc.edb`` library
+==============================
+
+.. py:module:: pyedb.grpc.edb
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: edb
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.edb.Edb`
+            - Main class for interacting with Ansys Electronics Desktop Database (EDB).
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Edb</autoapi/pyedb/grpc/edb/Edb>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides the main interface for interacting with Ansys Electronics Desktop Database (EDB).
+
+This module contains the ``Edb`` class which serves as the primary interface for:
+- Creating and managing EDB projects
+- Importing/exporting layout files
+- Configuring stackups, materials, and components
+- Setting up simulations (HFSS, SIwave, RaptorX)
+- Performing cutout operations
+- Generating ports and excitations
+- Parametrizing designs
+- Exporting to various formats (IPC2581, HFSS, Q3D)
+
+Key Functionality:
+- Database initialization and management
+- Layout manipulation and cutout generation
+- Material and stackup configuration
+- Net and component management
+- Simulation setup and execution
+- Design parametrization and optimization
+
+
+Examples
+--------
+
+.. code-block:: python
+
+    # Basic EDB initialization
+    from pyedb.grpc.edb import Edb
+
+    edb = Edb(edbpath="myproject.aedb")
+
+    # Importing a board file
+    edb.import_layout_file("my_board.brd")
+
+    # Creating a cutout
+    edb.cutout(signal_list=["Net1", "Net2"], reference_list=["GND"])
+
+    # Exporting to HFSS
+    edb.export_hfss("output_dir")
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

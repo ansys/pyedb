@@ -1,0 +1,42 @@
+﻿LayoutValidation
+================
+
+.. currentmodule:: pyedb.dotnet.database.layout_validation
+
+.. autoclass:: LayoutValidation
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      LayoutValidation.dc_shorts
+      
+      
+      LayoutValidation.delete_empty_pin_groups
+      
+      
+      LayoutValidation.disjoint_nets
+      
+      
+      LayoutValidation.fix_self_intersections
+      
+      
+      LayoutValidation.illegal_net_names
+      
+      
+      LayoutValidation.illegal_rlc_values
+      
+      
+      LayoutValidation.padstacks_no_name
+      
+   
+   
+
+   
+   
+   

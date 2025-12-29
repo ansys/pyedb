@@ -1,0 +1,6 @@
+find
+====
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. automethod:: Terminal.find

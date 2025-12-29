@@ -1,0 +1,27 @@
+﻿ControlFileSetup
+================
+
+.. currentmodule:: pyedb.grpc.database.control_file
+
+.. autoclass:: ControlFileSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      ControlFileSetup.add_mesh_operation
+      
+      
+      ControlFileSetup.add_sweep
+      
+   
+   
+
+   
+   
+   

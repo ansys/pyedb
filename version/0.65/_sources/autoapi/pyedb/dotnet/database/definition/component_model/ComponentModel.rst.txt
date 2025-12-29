@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`ComponentModel`
+=======================
+
+
+.. py:class:: pyedb.dotnet.database.definition.component_model.ComponentModel(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.dotnet.database.utilities.obj_base.ObjBase`
+
+
+   
+   Manages component model class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.definition.component_model import ComponentModel
+
+
+
+
+

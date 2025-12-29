@@ -1,0 +1,6 @@
+is\_mcad\_stride
+================
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. autoproperty:: Terminal.is_mcad_stride

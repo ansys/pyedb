@@ -1,0 +1,6 @@
+active\_cell
+============
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.active_cell

@@ -1,0 +1,6 @@
+use\_mesh\_frequency
+====================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings
+
+.. autoproperty:: RaptorXAdvancedSettings.use_mesh_frequency

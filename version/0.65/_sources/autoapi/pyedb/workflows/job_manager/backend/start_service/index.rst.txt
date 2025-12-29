@@ -1,0 +1,91 @@
+
+
+
+
+
+
+The ``start_service.py`` module
+===============================
+
+.. py:module:: pyedb.workflows.job_manager.backend.start_service
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: start_service
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~parse_cli`
+            - 
+
+
+          * - :py:obj:`~main`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Start the PyEDB Job-Manager service via JobManagerHandler.
+
+Usage
+-----
+$ python start_service.py --host 0.0.0.0 --port 9090 --max-concurrent 4 --min-disk 2 --min-memory 1
+✅ Job-manager backend listening on http://0.0.0.0:9090
+   Max concurrent jobs: 4
+   Resource gates: 2.0 GB disk / 1.0 GB memory
+Press Ctrl-C to shut down gracefully.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: parse_cli() -> argparse.Namespace
+
+.. py:function:: main()
+
+
+

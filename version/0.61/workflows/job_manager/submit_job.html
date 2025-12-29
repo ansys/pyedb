@@ -1,0 +1,1084 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta property="og:site_name" content="PyAnsys" />
+    <title>Job submission—production notes &amp; quick-start &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/ansys-sphinx-theme.css?v=fbf3eb5d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/ansys-sphinx-theme.css?v=fbf3eb5d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../_static/documentation_options.js?v=8fe1db5c"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'workflows/job_manager/submit_job';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.61';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Workflows" href="../sipi/index.html" />
+    <link rel="prev" title="PyEDB job manager backend—production documentation" href="job_manager.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.61.0" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/workflows/job_manager/submit_job.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../why_pyedb.html">
+    Why PyEDB?
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../migration_guide.html">
+    Migration Guide: DotNet to gRPC
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
+    Workflows
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../glossary.html">
+    Glossary
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../troubleshooting.html">
+    Troubleshooting
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../contribution_guide.html">
+    Contribution Guide
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../archive.html">
+    Legacy DotNet API (Archived)
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.61/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../why_pyedb.html">
+    Why PyEDB?
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../migration_guide.html">
+    Migration Guide: DotNet to gRPC
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Workflows
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../glossary.html">
+    Glossary
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../troubleshooting.html">
+    Troubleshooting
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../contribution_guide.html">
+    Contribution Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../archive.html">
+    Legacy DotNet API (Archived)
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.61/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Job manager</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="job_manager.html">PyEDB job manager backend—production documentation</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Job submission—production notes &amp; quick-start</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../sipi/index.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Workflows</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../index.html" class="nav-link">Workflows</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">Job manager</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Job submission—production notes &amp; quick-start</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="job-submissionproduction-notes-quick-start">
+<span id="submit-job-production"></span><h1>Job submission—production notes &amp; quick-start<a class="headerlink" href="#job-submissionproduction-notes-quick-start" title="Link to this heading">#</a></h1>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title">Table of contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pre-requisites" id="id2">Pre-requisites</a></p></li>
+<li><p><a class="reference internal" href="#overviewhow-it-works" id="id3">Overview—how it works</a></p></li>
+<li><p><a class="reference internal" href="#synchronous-usage-scripts-notebooks" id="id4">Synchronous usage (scripts &amp; notebooks)</a></p>
+<ul>
+<li><p><a class="reference internal" href="#production-notes" id="id5">Production notes</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#asynchronous-usage-cli-programmatic" id="id6">Asynchronous usage (CLI &amp; programmatic)</a></p>
+<ul>
+<li><p><a class="reference internal" href="#clisubmit-local-job" id="id7">CLI—<code class="docutils literal notranslate"><span class="pre">submit_local_job</span></code></a></p>
+<ul>
+<li><p><a class="reference internal" href="#installation" id="id8">Installation</a></p></li>
+<li><p><a class="reference internal" href="#synopsis" id="id9">Synopsis</a></p></li>
+<li><p><a class="reference internal" href="#environment-variables" id="id10">Environment variables</a></p></li>
+<li><p><a class="reference internal" href="#exit-codes" id="id11">Exit codes</a></p></li>
+<li><p><a class="reference internal" href="#examplecli-cluster" id="id12">Example—CLI (cluster)</a></p></li>
+<li><p><a class="reference internal" href="#programmaticnative-asyncio" id="id13">Programmatic—native asyncio</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#choosing-between-sync-async" id="id14">Choosing between sync &amp; async</a></p></li>
+<li><p><a class="reference internal" href="#stand-alone-server-launcher-script" id="id15">Stand-alone server launcher script</a></p></li>
+<li><p><a class="reference internal" href="#see-also" id="id16">See also</a></p></li>
+</ul>
+</nav>
+<p class="rubric">Submit and monitor HFSS 3-D Layout simulations through the PyEDB job manager
+with <strong>zero</strong> additional infrastructure on your workstation or <strong>full</strong> cluster support
+(SLURM, LSF, PBS, Windows-HPC, …).</p>
+<section id="pre-requisites">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Pre-requisites</a><a class="headerlink" href="#pre-requisites" title="Link to this heading">#</a></h2>
+<ol class="arabic">
+<li><p><strong>ANSYS Electronics Desktop</strong> must be installed.</p></li>
+<li><p>The environment variable <code class="docutils literal notranslate"><span class="pre">ANSYSEM_ROOT&lt;rrr&gt;</span></code> must point to the
+installation directory, e.g.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">ANSYSEM_ROOT252</span><span class="o">=</span>/ansys_inc/v252/Linux64<span class="w">      </span><span class="c1"># 2025 R2</span>
+<span class="c1"># or on Windows</span>
+<span class="nb">set</span><span class="w"> </span><span class="nv">ANSYSEM_ROOT252</span><span class="o">=</span>C:<span class="se">\P</span>rogram<span class="w"> </span>Files<span class="se">\A</span>nsysEM<span class="se">\v</span><span class="m">252</span><span class="se">\W</span>in64
+</pre></div>
+</div>
+<p>The backend automatically discovers the newest release if several
+<code class="docutils literal notranslate"><span class="pre">ANSYSEM_ROOT&lt;rrr&gt;</span></code> variables are present.</p>
+</li>
+<li><p>(Cluster only) A <strong>scheduler template</strong> for your workload manager
+must exist in <code class="docutils literal notranslate"><span class="pre">pyedb/workflows/job_manager/scheduler_templates/</span></code>.
+Out-of-the-box templates are provided for <strong>SLURM</strong> and <strong>LSF</strong>;
+PBS, Torque, Windows-HPC, or cloud batch systems can be added
+by dropping a new YAML file—no code change required.</p></li>
+</ol>
+</section>
+<section id="overviewhow-it-works">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Overview—how it works</a><a class="headerlink" href="#overviewhow-it-works" title="Link to this heading">#</a></h2>
+<p>The job manager is an <em>asynchronous</em> micro-service that is <strong>automatically</strong>
+started in a background thread when you instantiate <code class="xref py py-class docutils literal notranslate"><span class="pre">JobManagerHandler</span></code>.
+It exposes:</p>
+<ul class="simple">
+<li><p>REST &amp; Web-Socket endpoints (<code class="docutils literal notranslate"><span class="pre">http://localhost:8080</span></code> by default)</p></li>
+<li><p>Thread-safe synchronous façade for scripts / Jupyter</p></li>
+<li><p>Native async API for advanced integrations</p></li>
+<li><p>CLI utilities <code class="docutils literal notranslate"><span class="pre">submit_local_job</span></code> and <code class="docutils literal notranslate"><span class="pre">submit_job_on_scheduler</span></code> for shell / CI pipelines</p></li>
+</ul>
+<p>The <strong>same backend code path</strong> is used regardless of front-end style; the difference is
+<strong>who owns the event loop</strong> and <strong>how control is returned to the caller</strong>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><strong>Quick-start server (any OS)</strong></p>
+<p>Save the launcher script as <code class="docutils literal notranslate"><span class="pre">start_service.py</span></code> (see <a class="reference internal" href="#start-service-script"><span class="std std-ref">Stand-alone server launcher script</span></a>) and run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>start_service.py<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--port<span class="w"> </span><span class="m">9090</span>
+</pre></div>
+</div>
+<p>The service is ready when the line
+“✅ Job-manager backend listening on <a class="reference external" href="http://0.0.0.0:9090">http://0.0.0.0:9090</a>.”
+appears; leave the terminal open or daemonize it with your favourite supervisor.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The backend <strong>auto-detects</strong> the scheduler:</p>
+<ul class="simple">
+<li><p><strong>Windows workstation</strong> → <code class="docutils literal notranslate"><span class="pre">SchedulerType.NONE</span></code> (local subprocess)</p></li>
+<li><p><strong>Linux workstation</strong> → <code class="docutils literal notranslate"><span class="pre">SchedulerType.NONE</span></code> (local subprocess)</p></li>
+<li><p><strong>Linux cluster with SLURM</strong> → <code class="docutils literal notranslate"><span class="pre">SchedulerType.SLURM</span></code></p></li>
+<li><p><strong>Linux cluster with LSF</strong> → <code class="docutils literal notranslate"><span class="pre">SchedulerType.LSF</span></code></p></li>
+</ul>
+<p>You can still override the choice explicitly if needed.</p>
+</div>
+</section>
+<section id="synchronous-usage-scripts-notebooks">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Synchronous usage (scripts &amp; notebooks)</a><a class="headerlink" href="#synchronous-usage-scripts-notebooks" title="Link to this heading">#</a></h2>
+<p>Perfect when you simply want to “submit and wait” without learning <code class="docutils literal notranslate"><span class="pre">asyncio</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">local_sync_demo.py</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.workflows.job_manager.backend.job_submission</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="linenos"> 2</span>    <span class="n">create_hfss_config</span><span class="p">,</span>
+<span class="linenos"> 3</span>    <span class="n">SchedulerType</span><span class="p">,</span>
+<span class="linenos"> 4</span><span class="p">)</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.workflows.job_manager.backend.job_manager_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">JobManagerHandler</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="n">project_path</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;D:\Jobs\my_design.aedb&quot;</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="n">handler</span> <span class="o">=</span> <span class="n">JobManagerHandler</span><span class="p">()</span>  <span class="c1"># discovers ANSYS install &amp; scheduler</span>
+<span class="linenos">10</span><span class="n">handler</span><span class="o">.</span><span class="n">start_service</span><span class="p">()</span>  <span class="c1"># starts background aiohttp server</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="n">config</span> <span class="o">=</span> <span class="n">create_hfss_config</span><span class="p">(</span>
+<span class="linenos">13</span>    <span class="n">project_path</span><span class="o">=</span><span class="n">project_path</span><span class="p">,</span>
+<span class="linenos">14</span><span class="p">)</span>
+<span class="linenos">15</span><span class="n">config</span><span class="o">.</span><span class="n">machine_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cores</span> <span class="o">=</span> <span class="mi">16</span>  <span class="c1"># use 16 local cores</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="n">job_id</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">submit_job</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>  <span class="c1"># blocks until job accepted</span>
+<span class="linenos">18</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;submitted job_id&quot;</span><span class="p">)</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="n">status</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">wait_until_done</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>  <span class="c1"># polls until terminal</span>
+<span class="linenos">21</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;job finished with status: </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span><span class="n">handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>  <span class="c1"># graceful shutdown</span>
+</pre></div>
+</div>
+</div>
+<section id="production-notes">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Production notes</a><a class="headerlink" href="#production-notes" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Thread-safe: multiple threads may submit or cancel concurrently.</p></li>
+<li><p>Resource limits (CPU, memory, disk, concurrency) are enforced; jobs stay queued
+until resources are free.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">atexit</span></code> ensures clean shutdown even if the user forgets <code class="docutils literal notranslate"><span class="pre">close()</span></code>.</p></li>
+<li><p>Cluster runs: change <code class="docutils literal notranslate"><span class="pre">SchedulerType.NONE</span></code> → <code class="docutils literal notranslate"><span class="pre">SLURM</span></code>/<code class="docutils literal notranslate"><span class="pre">LSF</span></code> and supply
+<code class="docutils literal notranslate"><span class="pre">scheduler_options</span></code>; the code path remains identical.</p></li>
+</ul>
+</section>
+</section>
+<section id="asynchronous-usage-cli-programmatic">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Asynchronous usage (CLI &amp; programmatic)</a><a class="headerlink" href="#asynchronous-usage-cli-programmatic" title="Link to this heading">#</a></h2>
+<p>Use when you need <strong>non-blocking</strong> behaviour inside an <code class="docutils literal notranslate"><span class="pre">async</span></code> function or from
+the shell / CI pipelines.</p>
+<section id="clisubmit-local-job">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">CLI—<code class="docutils literal notranslate"><span class="pre">submit_local_job</span></code></a><a class="headerlink" href="#clisubmit-local-job" title="Link to this heading">#</a></h3>
+<p>The package installs a console entry-point that talks to the <strong>same</strong> REST API.</p>
+<section id="installation">
+<h4><a class="toc-backref" href="#id8" role="doc-backlink">Installation</a><a class="headerlink" href="#installation" title="Link to this heading">#</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w">                      </span><span class="c1"># or production wheel</span>
+$<span class="w"> </span>which<span class="w"> </span>submit_local_job
+/usr/local/bin/submit_local_job
+</pre></div>
+</div>
+</section>
+<section id="synopsis">
+<h4><a class="toc-backref" href="#id9" role="doc-backlink">Synopsis</a><a class="headerlink" href="#synopsis" title="Link to this heading">#</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>submit_local_job<span class="w"> </span>--project-path<span class="w"> </span>&lt;PATH&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</pre></div>
+</div>
+</section>
+<section id="environment-variables">
+<h4><a class="toc-backref" href="#id10" role="doc-backlink">Environment variables</a><a class="headerlink" href="#environment-variables" title="Link to this heading">#</a></h4>
+<dl class="std envvar">
+<dt class="sig sig-object std" id="envvar-PYEDB_JOB_MANAGER_HOST">
+<span class="sig-name descname"><span class="pre">PYEDB_JOB_MANAGER_HOST</span></span><a class="headerlink" href="#envvar-PYEDB_JOB_MANAGER_HOST" title="Link to this definition">#</a></dt>
+<dd><p>Fallback for <code class="docutils literal notranslate"><span class="pre">--host</span></code>.</p>
+</dd></dl>
+
+<dl class="std envvar">
+<dt class="sig sig-object std" id="envvar-PYEDB_JOB_MANAGER_PORT">
+<span class="sig-name descname"><span class="pre">PYEDB_JOB_MANAGER_PORT</span></span><a class="headerlink" href="#envvar-PYEDB_JOB_MANAGER_PORT" title="Link to this definition">#</a></dt>
+<dd><p>Fallback for <code class="docutils literal notranslate"><span class="pre">--port</span></code>.</p>
+</dd></dl>
+
+</section>
+<section id="exit-codes">
+<h4><a class="toc-backref" href="#id11" role="doc-backlink">Exit codes</a><a class="headerlink" href="#exit-codes" title="Link to this heading">#</a></h4>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Code</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>Job accepted by manager.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p>CLI validation or connection error.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">2</span></code></p></td>
+<td><p>Unexpected runtime exception.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="examplecli-cluster">
+<h4><a class="toc-backref" href="#id12" role="doc-backlink">Example—CLI (cluster)</a><a class="headerlink" href="#examplecli-cluster" title="Link to this heading">#</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>submit_job_on_scheduler<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>--project-path<span class="w"> </span><span class="s2">&quot;/shared/antenna.AEDB&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>--partition<span class="w"> </span>hpclarge<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>--nodes<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>--cores-per-node<span class="w"> </span><span class="m">32</span>
+</pre></div>
+</div>
+<p>The command returns immediately after the job is <strong>queued</strong>; use the printed ID
+with <code class="docutils literal notranslate"><span class="pre">wait_until_done</span></code> or monitor via the web UI.</p>
+</section>
+<section id="programmaticnative-asyncio">
+<h4><a class="toc-backref" href="#id13" role="doc-backlink">Programmatic—native asyncio</a><a class="headerlink" href="#programmaticnative-asyncio" title="Link to this heading">#</a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.workflows.job_manager.backend.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">JobManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.workflows.job_manager.backend.job_submission</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_hfss_config</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">JobManager</span><span class="p">()</span>  <span class="c1"># same back-end</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">create_hfss_config</span><span class="p">(</span>
+        <span class="n">project_path</span><span class="o">=</span><span class="s2">&quot;antenna.AEDB&quot;</span><span class="p">,</span>
+        <span class="n">scheduler_type</span><span class="o">=</span><span class="s2">&quot;SLURM&quot;</span><span class="p">,</span>  <span class="c1"># or &quot;LSF&quot;, &quot;NONE&quot;, …</span>
+        <span class="n">scheduler_options</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="s2">&quot;hpclarge&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;cores_per_node&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+            <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="s2">&quot;04:00:00&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">job_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">submit_job</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">wait_until_all_done</span><span class="p">()</span>  <span class="c1"># non-blocking wait</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;all done&quot;</span><span class="p">)</span>
+
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="choosing-between-sync-async">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Choosing between sync &amp; async</a><a class="headerlink" href="#choosing-between-sync-async" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Synchronous (scripts / notebooks)</p></th>
+<th class="head"><p>Asynchronous (services / CLI)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>No <code class="docutils literal notranslate"><span class="pre">asyncio</span></code> knowledge required.</p></td>
+<td><p>Caller runs inside <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code>; operations are <code class="docutils literal notranslate"><span class="pre">await</span></code>-ed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Blocking calls—caller waits for result.</p></td>
+<td><p>Non-blocking—event loop stays responsive.</p></td>
+</tr>
+<tr class="row-even"><td><p>Ideal for <strong>interactive</strong> work, <strong>CI pipelines</strong>, <strong>quick scripts</strong>.</p></td>
+<td><p>Ideal for <strong>web servers</strong>, <strong>micro-services</strong>, <strong>GUI applications</strong>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="stand-alone-server-launcher-script">
+<span id="start-service-script"></span><h2><a class="toc-backref" href="#id15" role="doc-backlink">Stand-alone server launcher script</a><a class="headerlink" href="#stand-alone-server-launcher-script" title="Link to this heading">#</a></h2>
+<p>The file <code class="docutils literal notranslate"><span class="pre">start_service.py</span></code> is a minimal wrapper around
+<code class="xref py py-class docutils literal notranslate"><span class="pre">JobManagerHandler</span></code> that exposes only <code class="docutils literal notranslate"><span class="pre">--host</span></code> and <code class="docutils literal notranslate"><span class="pre">--port</span></code>.
+It is <strong>not</strong> installed by pip; copy it from the doc folder or the
+previous code block and place it anywhere in your <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
+</section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">See also</a><a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><span class="xref std std-ref">job_manager_rest_api</span>–Complete endpoint reference</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">JobManagerHandler</span></code>–API reference (sync façade)</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">JobManager</span></code>–API reference (async core)</p></li>
+<li><p><span class="xref std std-doc">configuration_syntax</span>–All scheduler &amp; solver options</p></li>
+<li><p><span class="xref std std-doc">../tutorials/submit_batch</span>–Bulk submissions on SLURM/LSF</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pre-requisites">Pre-requisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overviewhow-it-works">Overview—how it works</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronous-usage-scripts-notebooks">Synchronous usage (scripts &amp; notebooks)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#production-notes">Production notes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#asynchronous-usage-cli-programmatic">Asynchronous usage (CLI &amp; programmatic)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#clisubmit-local-job">CLI—<code class="docutils literal notranslate"><span class="pre">submit_local_job</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#synopsis">Synopsis</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#environment-variables">Environment variables</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#exit-codes">Exit codes</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#examplecli-cluster">Example—CLI (cluster)</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#programmaticnative-asyncio">Programmatic—native asyncio</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-between-sync-async">Choosing between sync &amp; async</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stand-alone-server-launcher-script">Stand-alone server launcher script</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="https://github.com/ansys/pyedb/edit/main/doc/source/workflows/job_manager/submit_job.rst">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/workflows/job_manager/submit_job.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../_static/search.json";
+</script>
+
+
+<script src="../../_static/js/search.js"></script>
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2025 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.4.5. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

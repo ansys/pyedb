@@ -1,0 +1,264 @@
+
+
+
+
+
+
+:class:`HFSSSimulationSettings`
+===============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_simulation_settings.HFSSSimulationSettings(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.hfss_simulation_settings.HFSSSimulationSettings`
+
+
+   
+   PyEDB-core HFSS simulation settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSSimulationSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~advanced`
+            - HFSS Advanced settings class.
+          * - :py:attr:`~advanced_meshing`
+            - Advanced meshing class.
+          * - :py:attr:`~dcr`
+            - Dcr.
+          * - :py:attr:`~general`
+            - General settings class.
+          * - :py:attr:`~options`
+            - HFSS option class.
+          * - :py:attr:`~solver`
+            - HFSS solver settings class.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_simulation_settings import HFSSSimulationSettings
+
+Property detail
+---------------
+
+.. py:property:: advanced
+   :type: pyedb.grpc.database.simulation_setup.hfss_advanced_settings.HFSSAdvancedSettings
+
+
+   
+   HFSS Advanced settings class.
+
+
+
+   :Returns:
+
+       :class:`HFSSAdvancedSettings <pyedb.grpc.database.simulation_setup.hfss_advanced_settings.HFSSAdvancedSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: advanced_meshing
+   :type: pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings.HFSSAdvancedMeshingSettings
+
+
+   
+   Advanced meshing class.
+
+
+
+   :Returns:
+
+       :class:`HFSSAdvancedMeshingSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       hfss_advanced_meshing_settings.HFSSAdvancedMeshingSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dcr
+   :type: pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings
+
+
+   
+   Dcr.
+
+
+
+   :Returns:
+
+       :class:`HFSSDCRSettings <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: general
+   :type: pyedb.grpc.database.simulation_setup.hfss_general_settings.HFSSGeneralSettings
+
+
+   
+   General settings class.
+
+
+
+   :Returns:
+
+       :class:`HFSSGeneralSettings <pyedb.grpc.database.simulation_setup.hfss_general_settings.HFSSGeneralSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: options
+   :type: pyedb.grpc.database.simulation_setup.hfss_settings_options.HFSSSettingsOptions
+
+
+   
+   HFSS option class.
+
+
+
+   :Returns:
+
+       :class:`HFSSSettingsOptions <pyedb.grpc.database.simulation_setup.hfss_settings_options.HFSSSettingsOptions>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solver
+   :type: pyedb.grpc.database.simulation_setup.hfss_solver_settings.HFSSSolverSettings
+
+
+   
+   HFSS solver settings class.
+
+
+
+   :Returns:
+
+       :class:`HFSSSolverSettings <pyedb.grpc.database.simulation_setup.hfss_solver_settings.HFSSSolverSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

@@ -1,0 +1,447 @@
+
+
+
+
+
+
+:class:`PadstackInstanceTerminal`
+=================================
+
+
+.. py:class:: pyedb.grpc.database.terminal.padstack_instance_terminal.PadstackInstanceTerminal(pedb, edb_object=None)
+
+   Bases: :py:obj:`ansys.edb.core.terminal.padstack_instance_terminal.PadstackInstanceTerminal`
+
+
+   
+   Manages bundle terminal properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PadstackInstanceTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~position`
+            - Terminal position.
+          * - :py:attr:`~padstack_instance`
+            - :class:`.PadstackInstance`: Padstack instance of the terminal.
+          * - :py:attr:`~component`
+            - :class:`.ComponentGroup`:         Component of the :term:`Connectable` object.
+          * - :py:attr:`~location`
+            - Terminal position.
+          * - :py:attr:`~net_name`
+            - Net name.
+          * - :py:attr:`~magnitude`
+            - Source amplitude.
+          * - :py:attr:`~phase`
+            - Source phase.
+          * - :py:attr:`~source_amplitude`
+            - Source amplitude.
+          * - :py:attr:`~source_phase`
+            - Source phase.
+          * - :py:attr:`~impedance`
+            - Impdeance value.
+          * - :py:attr:`~boundary_type`
+            - Boundary type.
+          * - :py:attr:`~is_port`
+            - 
+          * - :py:attr:`~ref_terminal`
+            - Return reference terminal.
+          * - :py:attr:`~terminal_type`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.terminal.padstack_instance_terminal import PadstackInstanceTerminal
+
+Property detail
+---------------
+
+.. py:property:: position
+   :type: list[float]
+
+
+   
+   Terminal position.
+
+
+
+   :Returns:
+
+       **Position [x,y]** : [:class:`python:float`, :class:`python:float`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: padstack_instance
+   :type: any
+
+
+   
+   :class:`.PadstackInstance`: Padstack instance of the terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: component
+   :type: any
+
+
+   
+   :class:`.ComponentGroup`:         Component of the :term:`Connectable` object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: location
+   :type: list[float]
+
+
+   
+   Terminal position.
+
+
+
+   :Returns:
+
+       **Position [x,y]** : [:class:`python:float`, :class:`python:float`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net_name
+   :type: str
+
+
+   
+   Net name.
+
+
+
+   :Returns:
+
+       **str** : :obj:`name` :obj:`of` :obj:`the` net.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: magnitude
+   :type: float
+
+
+   
+   Source amplitude.
+
+
+
+   :Returns:
+
+       **float** : :obj:`amplitude` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: phase
+   :type: float
+
+
+   
+   Source phase.
+
+
+
+   :Returns:
+
+       **float** : :obj:`phase` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_amplitude
+   :type: float
+
+
+   
+   Source amplitude.
+
+
+
+   :Returns:
+
+       **float** : :obj:`amplitude` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_phase
+   :type: float
+
+
+   
+   Source phase.
+
+
+
+   :Returns:
+
+       **float** : :obj:`phase` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: impedance
+   :type: float
+
+
+   
+   Impdeance value.
+
+
+
+   :Returns:
+
+       **float** : :obj:`impedance` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: boundary_type
+   :type: str
+
+
+   
+   Boundary type.
+
+
+
+   :Returns:
+
+       **str** : :obj:`Boundary` type.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_port
+   :type: bool
+
+
+.. py:property:: ref_terminal
+
+   
+   Return reference terminal.
+
+   ..deprecated:: 0.43.0
+      Use: func:`reference_terminal` property instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminal_type
+   :type: str
+
+
+
+
+
+
+

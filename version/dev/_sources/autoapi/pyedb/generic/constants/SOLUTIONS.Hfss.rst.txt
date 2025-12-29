@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`Hfss`
+=============
+
+
+.. py:class:: pyedb.generic.constants.SOLUTIONS.Hfss
+
+   Bases: :py:obj:`object`
+
+
+   
+   Provides HFSS solution types.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants.SOLUTIONS import Hfss
+
+
+
+
+

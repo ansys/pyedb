@@ -1,0 +1,6 @@
+c\_value
+========
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoproperty:: CurrentSource.c_value

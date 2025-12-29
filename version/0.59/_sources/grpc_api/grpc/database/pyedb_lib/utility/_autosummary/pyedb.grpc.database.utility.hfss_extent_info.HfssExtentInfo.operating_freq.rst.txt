@@ -1,0 +1,6 @@
+operating\_freq
+===============
+
+.. currentmodule:: pyedb.grpc.database.utility.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.operating_freq

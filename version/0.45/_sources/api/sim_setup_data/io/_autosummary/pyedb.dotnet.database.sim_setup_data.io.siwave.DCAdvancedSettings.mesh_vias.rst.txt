@@ -1,0 +1,6 @@
+mesh\_vias
+==========
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoproperty:: DCAdvancedSettings.mesh_vias

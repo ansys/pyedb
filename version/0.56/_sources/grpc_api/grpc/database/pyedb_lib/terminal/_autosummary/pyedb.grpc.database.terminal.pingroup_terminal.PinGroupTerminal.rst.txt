@@ -1,0 +1,112 @@
+﻿PinGroupTerminal
+================
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoclass:: PinGroupTerminal
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      PinGroupTerminal.cast
+      
+      
+      PinGroupTerminal.create
+      
+      
+      PinGroupTerminal.create_3d_comp
+      
+      
+      PinGroupTerminal.create_hfss
+      
+      
+      PinGroupTerminal.create_stride
+      
+      
+      PinGroupTerminal.delete
+      
+      
+      PinGroupTerminal.find
+      
+      
+      PinGroupTerminal.find_by_id
+      
+      
+      PinGroupTerminal.get_product_property
+      
+      
+      PinGroupTerminal.get_product_property_ids
+      
+      
+      PinGroupTerminal.product_solver_names
+      
+      
+      PinGroupTerminal.product_solver_option
+      
+      
+      PinGroupTerminal.set_product_property
+      
+      
+      PinGroupTerminal.set_product_solver_option
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PinGroupTerminal.boundary_type
+      PinGroupTerminal.bundle_terminal
+      PinGroupTerminal.component
+      PinGroupTerminal.edb_uid
+      PinGroupTerminal.group
+      PinGroupTerminal.hfss_pi_type
+      PinGroupTerminal.hfss_type
+      PinGroupTerminal.id
+      PinGroupTerminal.impedance
+      PinGroupTerminal.is_auto_port
+      PinGroupTerminal.is_circuit_port
+      PinGroupTerminal.is_current_source
+      PinGroupTerminal.is_interface_terminal
+      PinGroupTerminal.is_mcad
+      PinGroupTerminal.is_mcad_3d_comp
+      PinGroupTerminal.is_mcad_hfss
+      PinGroupTerminal.is_mcad_stride
+      PinGroupTerminal.is_null
+      PinGroupTerminal.is_port
+      PinGroupTerminal.is_reference_terminal
+      PinGroupTerminal.is_voltage_source
+      PinGroupTerminal.layer
+      PinGroupTerminal.layout
+      PinGroupTerminal.layout_obj_type
+      PinGroupTerminal.magnitude
+      PinGroupTerminal.model
+      PinGroupTerminal.msg
+      PinGroupTerminal.name
+      PinGroupTerminal.net
+      PinGroupTerminal.obj_type
+      PinGroupTerminal.phase
+      PinGroupTerminal.pin_group
+      PinGroupTerminal.port_post_processing_prop
+      PinGroupTerminal.ref_terminal
+      PinGroupTerminal.reference_layer
+      PinGroupTerminal.reference_terminal
+      PinGroupTerminal.rlc_boundary_parameters
+      PinGroupTerminal.source_amplitude
+      PinGroupTerminal.source_phase
+      PinGroupTerminal.term_to_ground
+      PinGroupTerminal.terminal_type
+      PinGroupTerminal.type
+      PinGroupTerminal.use_reference_from_hierarchy
+   
+   

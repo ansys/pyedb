@@ -1,0 +1,6 @@
+num\_power\_modules
+===================
+
+.. currentmodule:: pyedb.grpc.database.layout.voltage_regulator
+
+.. autoproperty:: VoltageRegulator.num_power_modules

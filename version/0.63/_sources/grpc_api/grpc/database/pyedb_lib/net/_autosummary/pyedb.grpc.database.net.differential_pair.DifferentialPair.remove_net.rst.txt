@@ -1,0 +1,6 @@
+remove\_net
+===========
+
+.. currentmodule:: pyedb.grpc.database.net.differential_pair
+
+.. automethod:: DifferentialPair.remove_net

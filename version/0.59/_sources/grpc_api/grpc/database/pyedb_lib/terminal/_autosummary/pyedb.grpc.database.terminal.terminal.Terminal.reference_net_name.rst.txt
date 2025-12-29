@@ -1,0 +1,6 @@
+reference\_net\_name
+====================
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. autoproperty:: Terminal.reference_net_name

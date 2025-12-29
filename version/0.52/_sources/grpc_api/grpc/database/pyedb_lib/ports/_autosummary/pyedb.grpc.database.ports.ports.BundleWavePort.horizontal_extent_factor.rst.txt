@@ -1,0 +1,6 @@
+horizontal\_extent\_factor
+==========================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: BundleWavePort.horizontal_extent_factor

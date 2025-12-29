@@ -1,0 +1,266 @@
+
+
+
+
+
+
+:class:`ControlFile`
+====================
+
+
+.. py:class:: pyedb.generic.control_file.ControlFile(xml_input: Optional[str] = None, technology: Optional[str] = None, layer_map: Optional[str] = None)
+
+   
+   Main class for EDB control file creation and management.
+
+
+   :Parameters:
+
+       **xml_input** : :class:`python:str`, :obj:`optional`
+           Path to existing XML file to parse.
+
+       **tecnhology** : :class:`python:str`, :obj:`optional`
+           Path to technology file to convert.
+
+       **layer_map** : :class:`python:str`, :obj:`optional`
+           Path to layer map file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFile
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse_technology`
+            - Parse a technology file and convert to XML control file.
+          * - :py:attr:`~parse_layer_map`
+            - Parse a layer map file and update stackup.
+          * - :py:attr:`~parse_xml`
+            - Parse an XML control file and populate the object.
+          * - :py:attr:`~write_xml`
+            - Write control file to XML.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~stackup`
+            - 
+          * - :py:attr:`~boundaries`
+            - 
+          * - :py:attr:`~remove_holes`
+            - 
+          * - :py:attr:`~remove_holes_area_minimum`
+            - 
+          * - :py:attr:`~remove_holes_units`
+            - 
+          * - :py:attr:`~setups`
+            - 
+          * - :py:attr:`~components`
+            - 
+          * - :py:attr:`~import_options`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.control_file import ControlFile
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: stackup
+
+.. py:attribute:: boundaries
+
+.. py:attribute:: remove_holes
+   :value: False
+
+
+.. py:attribute:: remove_holes_area_minimum
+   :value: 30
+
+
+.. py:attribute:: remove_holes_units
+   :value: 'um'
+
+
+.. py:attribute:: setups
+
+.. py:attribute:: components
+
+.. py:attribute:: import_options
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse_technology(tecnhology: str, edbversion: Optional[str] = None) -> bool
+
+   
+   Parse a technology file and convert to XML control file.
+
+
+   :Parameters:
+
+       **tecnhology** : :class:`python:str`
+           Path to technology file.
+
+       **edbversion** : :class:`python:str`, :obj:`optional`
+           EDB version to use for conversion.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if successful, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: parse_layer_map(layer_map: str) -> bool
+
+   
+   Parse a layer map file and update stackup.
+
+
+   :Parameters:
+
+       **layer_map** : :class:`python:str`
+           Path to layer map file.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if successful, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: parse_xml(xml_input: str) -> bool
+
+   
+   Parse an XML control file and populate the object.
+
+
+   :Parameters:
+
+       **xml_input** : :class:`python:str`
+           Path to XML control file.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if successful, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: write_xml(xml_output)
+
+   
+   Write control file to XML.
+
+
+   :Parameters:
+
+       **xml_output** : :class:`python:str`
+           Output XML file path.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if file created successfully, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

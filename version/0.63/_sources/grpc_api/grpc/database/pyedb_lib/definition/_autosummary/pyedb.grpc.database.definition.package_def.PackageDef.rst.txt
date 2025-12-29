@@ -1,0 +1,45 @@
+﻿PackageDef
+==========
+
+.. currentmodule:: pyedb.grpc.database.definition.package_def
+
+.. autoclass:: PackageDef
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      PackageDef.create
+      
+      
+      PackageDef.delete
+      
+      
+      PackageDef.find_by_id
+      
+      
+      PackageDef.find_by_name
+      
+      
+      PackageDef.get_product_property
+      
+      
+      PackageDef.get_product_property_ids
+      
+      
+      PackageDef.set_heatsink
+      
+      
+      PackageDef.set_product_property
+      
+   
+   
+
+   
+   
+   

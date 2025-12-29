@@ -1,0 +1,6 @@
+set\_product\_solver\_option
+============================
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. automethod:: EdgeTerminal.set_product_solver_option

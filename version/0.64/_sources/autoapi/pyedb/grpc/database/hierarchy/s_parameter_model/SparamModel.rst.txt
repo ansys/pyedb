@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`SparamModel`
+====================
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.s_parameter_model.SparamModel(edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.hierarchy.sparameter_model.SParameterModel`
+
+
+   
+   Manage :class:`SParameterModel <ansys.edb.core.hierarchy.sparameter_model.SParameterModel>`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.s_parameter_model import SparamModel
+
+
+
+
+

@@ -1,0 +1,6 @@
+hfss\_extent\_info
+==================
+
+.. currentmodule:: pyedb.grpc.database.hfss
+
+.. autoproperty:: Hfss.hfss_extent_info

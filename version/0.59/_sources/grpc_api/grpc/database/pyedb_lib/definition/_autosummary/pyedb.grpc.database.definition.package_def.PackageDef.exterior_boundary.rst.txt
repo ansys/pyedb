@@ -1,0 +1,6 @@
+exterior\_boundary
+==================
+
+.. currentmodule:: pyedb.grpc.database.definition.package_def
+
+.. autoproperty:: PackageDef.exterior_boundary

@@ -1,0 +1,6 @@
+source\_amplitude
+=================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: WavePort.source_amplitude

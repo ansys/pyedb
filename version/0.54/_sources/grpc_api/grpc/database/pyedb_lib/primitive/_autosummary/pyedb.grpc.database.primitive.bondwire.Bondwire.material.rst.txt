@@ -1,0 +1,6 @@
+material
+========
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. autoproperty:: Bondwire.material

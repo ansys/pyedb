@@ -1,0 +1,126 @@
+
+
+
+
+
+
+:class:`ControlExtent`
+======================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.control_file.ControlExtent(type='bbox', dieltype='bbox', diel_hactor=0.25, airbox_hfactor=0.25, airbox_vr_p=0.25, airbox_vr_n=0.25, useradiation=True, honor_primitives=True, truncate_at_gnd=True)
+
+   
+   Extent options.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlExtent
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~dieltype`
+            - 
+          * - :py:attr:`~diel_hactor`
+            - 
+          * - :py:attr:`~airbox_hfactor`
+            - 
+          * - :py:attr:`~airbox_vr_p`
+            - 
+          * - :py:attr:`~airbox_vr_n`
+            - 
+          * - :py:attr:`~useradiation`
+            - 
+          * - :py:attr:`~honor_primitives`
+            - 
+          * - :py:attr:`~truncate_at_gnd`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.control_file import ControlExtent
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: type
+   :value: 'bbox'
+
+
+.. py:attribute:: dieltype
+   :value: 'bbox'
+
+
+.. py:attribute:: diel_hactor
+   :value: 0.25
+
+
+.. py:attribute:: airbox_hfactor
+   :value: 0.25
+
+
+.. py:attribute:: airbox_vr_p
+   :value: 0.25
+
+
+.. py:attribute:: airbox_vr_n
+   :value: 0.25
+
+
+.. py:attribute:: useradiation
+   :value: True
+
+
+.. py:attribute:: honor_primitives
+   :value: True
+
+
+.. py:attribute:: truncate_at_gnd
+   :value: True
+
+
+
+
+
+

@@ -1,0 +1,154 @@
+
+
+
+
+
+
+The ``configuration`` package
+=================================
+
+.. py:module:: pyedb.configuration
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: configuration
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_boundaries`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_common`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_components`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_data`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_general`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_modeler`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_nets`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_operations`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_package_definition`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_padstacks`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_pin_groups`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_ports_sources`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_s_parameter_models`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_spice_models`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.configuration`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> cfg_boundaries</autoapi/pyedb/configuration/cfg_boundaries/index>
+    <span class="nf nf-fa-file"></span> cfg_common</autoapi/pyedb/configuration/cfg_common/index>
+    <span class="nf nf-fa-file"></span> cfg_components</autoapi/pyedb/configuration/cfg_components/index>
+    <span class="nf nf-fa-file"></span> cfg_data</autoapi/pyedb/configuration/cfg_data/index>
+    <span class="nf nf-fa-file"></span> cfg_general</autoapi/pyedb/configuration/cfg_general/index>
+    <span class="nf nf-fa-file"></span> cfg_modeler</autoapi/pyedb/configuration/cfg_modeler/index>
+    <span class="nf nf-fa-file"></span> cfg_nets</autoapi/pyedb/configuration/cfg_nets/index>
+    <span class="nf nf-fa-file"></span> cfg_operations</autoapi/pyedb/configuration/cfg_operations/index>
+    <span class="nf nf-fa-file"></span> cfg_package_definition</autoapi/pyedb/configuration/cfg_package_definition/index>
+    <span class="nf nf-fa-file"></span> cfg_padstacks</autoapi/pyedb/configuration/cfg_padstacks/index>
+    <span class="nf nf-fa-file"></span> cfg_pin_groups</autoapi/pyedb/configuration/cfg_pin_groups/index>
+    <span class="nf nf-fa-file"></span> cfg_ports_sources</autoapi/pyedb/configuration/cfg_ports_sources/index>
+    <span class="nf nf-fa-file"></span> cfg_s_parameter_models</autoapi/pyedb/configuration/cfg_s_parameter_models/index>
+    <span class="nf nf-fa-file"></span> cfg_setup</autoapi/pyedb/configuration/cfg_setup/index>
+    <span class="nf nf-fa-file"></span> cfg_spice_models</autoapi/pyedb/configuration/cfg_spice_models/index>
+    <span class="nf nf-fa-file"></span> cfg_stackup</autoapi/pyedb/configuration/cfg_stackup/index>
+    <span class="nf nf-fa-file"></span> cfg_terminals</autoapi/pyedb/configuration/cfg_terminals/index>
+    <span class="nf nf-fa-file"></span> configuration</autoapi/pyedb/configuration/configuration/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

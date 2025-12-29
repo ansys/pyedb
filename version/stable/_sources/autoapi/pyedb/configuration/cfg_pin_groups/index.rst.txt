@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_pin_groups`` library
+==================================================
+
+.. py:module:: pyedb.configuration.cfg_pin_groups
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_pin_groups
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_pin_groups.CfgPinGroups`
+            - Manage configuration pin group class.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_pin_groups.CfgPinGroup`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgPinGroups</autoapi/pyedb/configuration/cfg_pin_groups/CfgPinGroups>
+    <span class="nf nf-cod-symbol_class"></span> CfgPinGroup</autoapi/pyedb/configuration/cfg_pin_groups/CfgPinGroup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

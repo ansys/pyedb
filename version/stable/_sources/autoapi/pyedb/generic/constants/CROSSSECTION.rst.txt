@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`CROSSSECTION`
+=====================
+
+
+.. py:class:: pyedb.generic.constants.CROSSSECTION
+
+   Bases: :py:obj:`object`
+
+
+   
+   CROSSSECTION Enumerator class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import CROSSSECTION
+
+
+
+
+
