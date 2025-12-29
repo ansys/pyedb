@@ -1,5 +1,5 @@
-Contribution Guide
-==================
+Contribution
+============
 
 All contributions to PyEDB are welcome. This guide helps you get started.
 

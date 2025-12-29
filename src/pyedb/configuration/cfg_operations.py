@@ -48,6 +48,7 @@ class CfgCutout(BaseModel):
 
 class CfgOperations(BaseModel):
     cutout: Optional[CfgCutout] = None
+    generate_auto_hfss_regions: bool = False
 
     def add_cutout(self, **kwargs):
         self.cutout = CfgCutout(**kwargs)

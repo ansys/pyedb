@@ -1661,3 +1661,11 @@ class EdbHfss(object):
             positive_pin_term.SetReferenceTerminal(negative_pin_term)
             return True
         return False  # pragma no cover
+
+    def generate_auto_hfss_regions(self):
+        """Generate auto HFSS regions.
+
+        This method automatically identifies areas for use as HFSS regions in SIwave simulations.
+        """
+        if not self._pedb.active_cell.GenerateAutoHFSSRegions():
+            raise RuntimeError("Failed to generate hfss regions.")

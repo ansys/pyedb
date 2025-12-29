@@ -1,6 +1,7 @@
 RF Basic Libraries
 ==================
-These class is the containers of RF basic libraries.
+
+These classes are the containers of RF basic libraries.
 
 
 .. currentmodule:: pyedb.libraries.rf_libraries.base_functions
