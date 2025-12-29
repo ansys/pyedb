@@ -1,5 +1,5 @@
-Workflows
-=========
+Utilities workflows
+===================
 
 This section describes PyEDB utilities workflows features.
 

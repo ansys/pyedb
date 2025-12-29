@@ -36,7 +36,7 @@ dependencies = [
     "toml == 0.10.2",
     "shapely",
     "scikit-rf",
-    "ansys-edb-core>=0.2.0",
+    "ansys-edb-core>=0.2.0,<0.2.5",
     "psutil",
     "defusedxml>=0.7,<8.0",
     "matplotlib>=3.5.0,<3.11",
@@ -57,10 +57,8 @@ tests = [
 doc = [
     "ansys-sphinx-theme[autoapi]>=1.0.0,<1.7",
     "imageio>=2.30.0,<2.38",
-    "ipython>=8.13.0,<8.32",
     "jupyterlab>=4.0.0,<4.6",
     "jupytext>=1.16.0,<1.19",
-    "matplotlib>=3.5.0,<3.11",
     "nbsphinx>=0.9.0,<0.10",
     "nbconvert < 7.17",
     "numpydoc==1.5.0",
@@ -72,7 +70,6 @@ doc = [
     "sphinx-copybutton>=0.5.0,<0.6",
     "sphinx-gallery>=0.14.0,<0.20",
     "sphinx_design>=0.4.0,<0.7",
-    "shapely",
 ]
 
 

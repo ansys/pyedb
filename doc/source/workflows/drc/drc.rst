@@ -1,8 +1,8 @@
 .. _ref_drc:
 
-==================================================================
-Design-rule checking (DRC)—self-contained, multi-threaded engine
-==================================================================
+==========================
+Design rule checking (DRC)
+==========================
 
 .. currentmodule:: pyedb.workflows.drc.drc
 
@@ -85,7 +85,7 @@ Rule models
    BackDrillStubLength
    CopperBalance
 
-DRC Engine
+DRC engine
 ~~~~~~~~~~
 
 .. autosummary::
