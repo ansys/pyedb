@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -59,7 +59,7 @@ deprecation_warning()
 #
 
 pyedb_path = os.path.dirname(__file__)
-__version__ = "0.66.0"
+__version__ = "0.66.1"
 version = __version__
 
 #

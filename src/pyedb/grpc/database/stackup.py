@@ -1559,9 +1559,9 @@ class Stackup:
         if edb_cell.name not in self._pedb.cell_names:
             list_cells = self._pedb.copy_cells([edb_cell])
             edb_cell = list_cells[0]
-        self._pedb.layout.cell.is_blackbox = True
+        self._pedb.active_cell.is_blackbox = True
         cell_inst2 = GrpcCellInstance.create(
-            layout=edb_cell.layout, name=self._pedb.layout.cell.name, ref=self._pedb.active_layout
+            layout=edb_cell.layout, name=self._pedb.active_cell.name, ref=self._pedb.active_layout
         )
         cell_trans = cell_inst2.transform
         cell_trans.rotation = _angle
@@ -1666,9 +1666,9 @@ class Stackup:
         if edb_cell.name not in self._pedb.cell_names:
             list_cells = self._pedb.copy_cells(edb_cell)
             edb_cell = list_cells[0]
-        self._pedb.layout.cell.is_blackbox = True
+        self._pedb.active_cell.is_blackbox = True
         cell_inst2 = GrpcCellInstance.create(
-            layout=edb_cell.layout, name=self._pedb.layout.cell.name, ref=self._pedb.active_layout.core
+            layout=edb_cell.layout, name=self._pedb.active_cell.name, ref=self._pedb.active_layout.core
         )
 
         stackup_target = edb_cell.layout.layer_collection

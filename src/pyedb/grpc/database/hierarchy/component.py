@@ -228,9 +228,9 @@ class Component:
                 pins = list(self.pins.keys())
                 pin_pair = (pins[0], pins[1])
                 rlc_model = PinPairModel(self._pedb, GrpcPinPairModel.create())
-                rlc_model.set_rlc(pin_pair, rlc)
+                rlc_model.core.set_rlc(pin_pair, rlc)
                 component_property = self.component_property
-                component_property.model = rlc_model
+                component_property.model = rlc_model.core
                 self.component_property = component_property
         return [self._edb_model.rlc(pin_pair) for pin_pair in self._edb_model.pin_pairs()]
 
@@ -788,9 +788,9 @@ class Component:
                 rlc.l = Value(value)
                 _rlc.append(rlc)
             for ind in range(len(self._pin_pairs)):
-                model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+                model.core.set_rlc(self._pin_pairs[ind], _rlc[ind])
             comp_prop = self.core.component_property
-            comp_prop.model = model
+            comp_prop.model = model.core
             self.core.component_property = comp_prop
 
     @property
@@ -1136,6 +1136,8 @@ class Component:
 
         """
         comp_prop = self.component_property
+        if hasattr(model, "core"):
+            model = model.core
         comp_prop.model = model
         self.component_property = comp_prop
         return model
@@ -1195,12 +1197,12 @@ class Component:
                 pname, pnumber = pair
                 if pname not in pin_names_sp:  # pragma: no cover
                     raise ValueError(f"Pin name {pname} doesn't exist in {file_path}.")
-                model.add_terminal(str(pnumber), pname)
+                model.core.add_terminal(str(pnumber), pname)
         else:
             for idx, pname in enumerate(pin_names_sp):
-                model.add_terminal(pname, str(idx + 1))
+                model.core.add_terminal(pname, str(idx + 1))
         self._set_model(model)
-        if not model.is_null:
+        if not model.core.is_null:
             return model
         else:
             return False
@@ -1321,7 +1323,7 @@ class Component:
                 c_enabled=c_enabled,
                 is_parallel=is_parallel,
             )
-            model.set_rlc(("1", "2"), rlc)
+            model.core.set_rlc(("1", "2"), rlc)
         return self._set_model(model)
 
     def create_clearance_on_component(self, extra_soldermask_clearance=1e-4) -> bool:

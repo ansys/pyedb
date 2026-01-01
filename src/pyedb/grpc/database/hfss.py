@@ -1300,3 +1300,10 @@ class Hfss(object):
         # TODO check bug #441 status
         # setup.sweep_data = sweep_data
         return HfssSimulationSetup(self._pedb, setup)
+
+    def generate_auto_hfss_regions(self):
+        """Generate auto HFSS regions.
+
+        This method automatically identifies areas for use as HFSS regions in SIwave simulations.
+        """
+        self._pedb.active_cell.generate_auto_hfss_regions()

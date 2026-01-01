@@ -1,3 +1,5 @@
+.. _pyedb_workflows:
+
 Workflows
 =========
 

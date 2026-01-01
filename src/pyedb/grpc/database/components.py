@@ -1136,9 +1136,9 @@ class Components(object):
                 new_cmp.component_type = GrpcComponentType.RESISTOR
             pin_pair = (pins[0].name, pins[1].name)
             rlc_model = PinPairModel(self._pedb, new_cmp.component_property.model)
-            rlc_model.set_rlc(pin_pair, rlc)
+            rlc_model.core.set_rlc(pin_pair, rlc)
             component_property = new_cmp.component_property
-            component_property.model = rlc_model
+            component_property.model = rlc_model.core
             new_cmp.component_property = component_property
         if hosting_component_location:
             new_cmp.transform = hosting_component_location
