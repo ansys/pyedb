@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -25,9 +25,8 @@ This module contains the `EdbPadstacks` class.
 """
 
 from collections import defaultdict
-from functools import lru_cache
 import math
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 import warnings
 
 from ansys.edb.core.definition.padstack_def_data import (
@@ -98,15 +97,11 @@ class Padstacks(object):
         Requested padstack definition or instance. Returns ``None`` if not found.
         """
         if isinstance(name, int) and name in self.instances:
-            return self.instances(name)
+            return self.instances.get(name, None)
         elif name in self.definitions:
-            return self.definitions[name]
+            return self.definitions.get(name, None)
         else:
-            for i in list(self.instances.values()):
-                if i.name == name or i.aedt_name == name:
-                    return i
-        self._pedb.logger.error("Component or definition not found.")
-        return
+            return next((i for i in list(self.instances.values()) if i.name == name or i.aedt_name == name), None)
 
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
@@ -342,7 +337,7 @@ class Padstacks(object):
         return self._layout.pin_groups
 
     @property
-    def pad_type(self) -> GrpcPadType:
+    def pad_type(self) -> Type[GrpcPadType]:
         """Return a PadType Enumerator."""
         return GrpcPadType
 
@@ -637,6 +632,8 @@ class Padstacks(object):
 
         padstack_def.data = padstack_data
 
+        return padstackname
+
     def delete_batch_instances(self, instances_to_delete):
         for inst in instances_to_delete:
             inst.core.delete()
@@ -749,7 +746,7 @@ class Padstacks(object):
 
     def get_pin_from_component_and_net(
         self, refdes: Optional[str] = None, netname: Optional[str] = None
-    ) -> (List)[PadstackInstance]:
+    ) -> List[PadstackInstance]:
         """Retrieve pins by component reference designator and net name.
 
         Parameters
@@ -820,7 +817,7 @@ class Padstacks(object):
 
     def get_pad_parameters(
         self, pin: PadstackInstance, layername: str, pad_type: str = "regular_pad"
-    ) -> Tuple[GrpcPadGeometryType, List[float], List[float], float]:
+    ) -> Tuple[str, Union[List[float], List[List[float]]], float, float, float]:
         """Get pad parameters for a pin on a specific layer.
 
         Parameters
@@ -875,7 +872,7 @@ class Padstacks(object):
                 rotation = Value(padparams[3])
                 geometry_type = GrpcPadGeometryType.PADGEOMTYPE_POLYGON
                 return geometry_type.name, points, offset_x, offset_y, rotation
-            return 0, [0], 0, 0, 0
+            return "unknown", [0.0], 0.0, 0.0, 0.0
 
     def set_all_antipad_value(self, value: Union[float, str]) -> bool:
         """Set anti-pad value for all padstack definitions.
@@ -931,6 +928,8 @@ class Padstacks(object):
                         )
                 padstack.core.data = cloned_padstack_data
             return all_succeed
+        else:
+            return True
 
     def check_and_fix_via_plating(
         self, minimum_value_to_replace: float = 0.0, default_plating_ratio: float = 0.2
@@ -1157,6 +1156,7 @@ class Padstacks(object):
             pad_array = [paddiam]
         else:
             pad_array = paddiam
+        antipad_array = [antipaddiam] if not isinstance(antipaddiam, list) else antipaddiam
         if pad_shape == "Circle":  # pragma no cover
             pad_shape = GrpcPadGeometryType.PADGEOMTYPE_CIRCLE
         elif pad_shape == "Rectangle":  # pragma no cover
@@ -1175,10 +1175,7 @@ class Padstacks(object):
             if isinstance(antipad_polygon, list):
                 antipad_polygon = PolygonData(edb_object=GrpcPolygonData(points=antipad_polygon))
         else:
-            if not isinstance(antipaddiam, list):
-                antipad_array = [antipaddiam]
-            else:
-                antipad_array = antipaddiam
+            antipad_array = [antipaddiam] if not isinstance(antipaddiam, list) else antipaddiam
             antipad_shape = GrpcPadGeometryType.PADGEOMTYPE_CIRCLE
         if add_default_layer:  # pragma no cover
             layers = layers + ["Default"]
@@ -1300,10 +1297,10 @@ class Padstacks(object):
         :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance` or bool
             Created padstack instance or ``False`` if failed.
         """
-        padstack_def = None
-        for pad in list(self.definitions.keys()):
-            if pad == definition_name:
-                padstack_def = self.definitions[pad]
+        padstack_def = self.definitions.get(definition_name)
+        if not padstack_def:
+            raise RuntimeError("Padstack definition not found")
+        pad = definition_name
         position = GrpcPointData(
             [Value(position[0], self._pedb.active_cell), Value(position[1], self._pedb.active_cell)]
         )
@@ -1540,11 +1537,13 @@ class Padstacks(object):
         """
         instances_by_id = self.instances
         if pid:
-            return instances_by_id[pid]
+            return [instances_by_id[pid]]
         elif name:
             instances = [inst for inst in list(self.instances.values()) if inst.aedt_name == name]
             if instances:
                 return instances
+            else:
+                return []
         else:
             instances = list(instances_by_id.values())
             if definition_name:
@@ -1684,14 +1683,14 @@ class Padstacks(object):
         bounding_box: List[float],
         nets: Optional[Union[str, List[str]]] = None,
         padstack_instances_index: Optional[rtree.index.Index] = None,
-    ) -> List[PadstackInstance]:
+    ) -> List[int]:
         """Returns the list of padstack instances ID intersecting a given bounding box and nets.
         Parameters
         ----------
         bounding_box : tuple or list.
             bounding box, [x1, y1, x2, y2]
         nets : str or list, optional
-            net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+            net name of list of nets name applying filtering on pad-stack instances selection. If ``None`` is provided
             all instances are included in the index. Default value is ``None``.
         padstack_instances_index : optional, Rtree object.
             Can be provided optionally to prevent computing padstack instances Rtree index again.
@@ -1754,7 +1753,7 @@ class Padstacks(object):
         _def = list(set([inst.padstack_def for inst in list(self.instances.values()) if inst.net_name == net_name]))
         if not _def:
             self._logger.error(f"No padstack definition found for net {net_name}")
-            return False
+            return []
         instances_created = []
         _instances_to_delete = []
         padstack_instances = []
@@ -1797,7 +1796,7 @@ class Padstacks(object):
                     antipad_polygon=polygon_data,
                     polygon_hole=polygon_data,
                 ):
-                    self._logger.error(f"Failed to create padstack definition {new_padstack_def.name}")
+                    self._logger.error(f"Failed to create padstack definition {new_padstack_def}")
                 new_instance = self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net_name)
                 if not new_instance:
                     self._logger.error(f"Failed to place padstack instance {new_padstack_def}")
@@ -1843,7 +1842,7 @@ class Padstacks(object):
             instances_index[id] = inst.position
         for contour_box in contour_boxes:
             instances = self.get_padstack_instances_id_intersecting_polygon(
-                points=contour_box, padstack_instances_index=instances_index
+                points=[tuple(pt) for pt in contour_box], padstack_instances_index=instances_index
             )
             if net_filter:
                 instances = [id for id in instances if not self.instances[id].net.name in net_filter]
@@ -1938,7 +1937,7 @@ class Padstacks(object):
     @staticmethod
     def dbscan(
         padstack: Dict[int, List[float]], max_distance: float = 1e-3, min_samples: int = 5
-    ) -> Dict[int, List[str]]:
+    ) -> Dict[int, List[int]]:
         """
         density based spatial clustering for padstack instances
 
@@ -1998,7 +1997,7 @@ class Padstacks(object):
                 cluster_id += 1
 
         # group point IDs by label
-        clusters = defaultdict(list)
+        clusters: Dict[int, List[int]] = defaultdict(list)
         for i, label in enumerate(labels):
             clusters[int(label)].append(padstack_ids[i])
 
