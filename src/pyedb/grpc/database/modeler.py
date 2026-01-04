@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -30,9 +30,6 @@ from typing import Any, Dict, Iterable, List, Optional, Union
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import (
     PolygonData as GrpcPolygonData,
-)
-from ansys.edb.core.primitive.rectangle import (
-    RectangleRepresentationType as GrpcRectangleRepresentationType,
 )
 
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
@@ -102,7 +99,7 @@ class Modeler(object):
         """Initialize Modeler instance."""
         self._pedb = p_edb
         # Core cache
-        self._primitives: dict[str, Primitive] = {}
+        self._primitives: dict[int, Primitive] = {}
 
         # Lazy indexes
         self.primitives  # type: ignore  # Force initial load
@@ -472,9 +469,9 @@ class Modeler(object):
 
         if isinstance(layer, str) and layer not in list(self._pedb.stackup.signal_layers.keys()):
             layer = None
-        if not isinstance(point, list) and len(point) == 2:
+        if point is not None and not isinstance(point, list) and len(point) == 2:
             self._logger.error("Provided point must be a list of two values")
-            return False
+            return []
         pt = GrpcPointData(point)
         if isinstance(nets, str):
             nets = [nets]
@@ -763,7 +760,7 @@ class Modeler(object):
         self,
         points: Union[List[List[float]], GrpcPolygonData],
         layer_name: str,
-        voids: Optional[List[Any]] = [],
+        voids: Optional[List[Any]] = None,
         net_name: str = "",
     ) -> Optional[Primitive]:
         """Create polygon primitive.
@@ -799,7 +796,9 @@ class Modeler(object):
             polygon_data = points
         if not polygon_data.points:
             self._logger.error("Failed to create main shape polygon data")
-            return False
+            return None
+        if voids is None:
+            voids = []
         for void in voids:
             if isinstance(void, list):
                 void_polygon_data = GrpcPolygonData(points=void)
@@ -809,7 +808,7 @@ class Modeler(object):
                 void_polygon_data = void.polygon_data
             if not void_polygon_data.points:
                 self._logger.error("Failed to create void polygon data")
-                return False
+                return None
             polygon_data.holes.append(void_polygon_data)
         polygon = Polygon.create(layout=self._active_layout, layer=layer_name, net=net, polygon_data=polygon_data)
         if polygon.is_null or polygon_data is False:  # pragma: no cover
@@ -906,7 +905,7 @@ class Modeler(object):
         if not rect.is_null:
             self._add_primitive(rect)
             return rect
-        return False
+        return None
 
     def create_circle(
         self, layer_name: str, x: Union[float, str], y: Union[float, str], radius: Union[float, str], net_name: str = ""
@@ -944,7 +943,7 @@ class Modeler(object):
         if not circle.is_null:
             self._add_primitive(circle)
             return circle
-        return False
+        return None
 
     def delete_primitives(self, net_names: Union[str, List[str]]) -> bool:
         """Delete primitives by net name(s).
@@ -964,7 +963,7 @@ class Modeler(object):
 
         for p in self.primitives[:]:
             if p.net_name in net_names:
-                p.delete()
+                p.core.delete()
         return True
 
     def get_primitives(
@@ -1033,7 +1032,8 @@ class Modeler(object):
             )
             if not cloned_circle.is_null:
                 cloned_circle.is_negative = True
-                void_circle.delete()
+                void_circle.core.delete()
+
         return True
 
     def _validatePoint(self, point, allowArcs=True):
@@ -1179,8 +1179,7 @@ class Modeler(object):
             for item in united:
                 for void in all_voids:
                     if item.intersection_type(void.polygon_data) == 2:
-                        item.add_hole(void.polygon_data)
-                self.create_polygon(item, layer_name=lay, voids=[], net_name=net)
+                        item.core.add_hole(void.polygon_data)
             for void in all_voids:
                 for poly in poly_by_nets[net]:  # pragma no cover
                     if void.polygon_data.intersection_type(poly.polygon_data) >= 2:
@@ -1191,7 +1190,7 @@ class Modeler(object):
                         if id >= 0:
                             delete_list.pop(id)
             for poly in list(set(delete_list)):
-                poly.delete()
+                poly.core.delete()
 
         if delete_padstack_gemometries:
             self._logger.info("Deleting Padstack Definitions")
@@ -1495,12 +1494,8 @@ class Modeler(object):
             Name of the layout to insert.
         placement_layer: str
             Placement Layer.
-        scaling : float
-            Scale parameter.
         rotation : float or str
             Rotation angle, specified counter-clockwise in radians.
-        mirror : bool
-            Mirror about Y-axis.
         x : float or str
             X offset.
         y : float or str
@@ -1667,6 +1662,7 @@ class Modeler(object):
         local_origin_z: float or str
             Local origin Z coordinate.
         """
+
         from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
         from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
 
