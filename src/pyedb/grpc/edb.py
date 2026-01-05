@@ -83,7 +83,6 @@ from ansys.edb.core.layout.cell import DesignMode as GrpcDesignMode
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
 )
-from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
 from pyedb.configuration.configuration import Configuration
@@ -198,6 +197,9 @@ class Edb(EdbInit):
     >>> edb = Edb("my_board.brd")
     """
 
+    # Declare _init_objects for static analysis tools
+    _init_objects: Any
+
     def __init__(
         self,
         edbpath: Union[str, Path] = None,
@@ -220,6 +222,22 @@ class Edb(EdbInit):
         self.oproject = oproject
         self._main = sys.modules["__main__"]
         self.version = edbversion
+        # Internal cached objects (explicitly initialized to placate static analyzers and IDEs)
+        self._components = None
+        self._stackup = None
+        self._padstack = None
+        self._siwave = None
+        self._hfss = None
+        self._nets = None
+        self._modeler = None
+        self._materials = None
+        self._source_excitation = None
+        self._differential_pairs = None
+        self._extended_nets = None
+        self._layout = None
+        self._layout_instance = None
+        self._configuration = None
+        self._active_cell = None
         if not float(self.version) >= 2025.2:
             raise "EDB gRPC is only supported with ANSYS release 2025R2 and higher."
         self.logger.info("Using PyEDB with gRPC as Beta until ANSYS 2025R2 official release.")
@@ -399,44 +417,37 @@ class Edb(EdbInit):
         else:
             return "{0}{1}".format(value, units)
 
-    def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
-        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
-        files = [aedt_file, aedt_file + ".lock"]
-        for file in files:
-            if os.path.isfile(file):
-                if not remove_existing_aedt:
-                    self.logger.warning(
-                        f"AEDT project-related file {file} exists and may need to be deleted before opening the EDB in "
-                        f"HFSS 3D Layout."
-                        # noqa: E501
-                    )
-                else:
-                    try:
-                        os.unlink(file)
-                        self.logger.info(f"Deleted AEDT project-related file {file}.")
-                    except:
-                        self.logger.info(f"Failed to delete AEDT project-related file {file}.")
+    def _get_terminal_net_name(self, terminal) -> Optional[str]:
+        """Normalize various terminal objects to a net name string.
 
-    def _init_objects(self):
-        self._components = Components(self)
-        self._stackup = Stackup(self, self.layout.core.layer_collection)
-        self._padstack = Padstacks(self)
-        self._siwave = Siwave(self)
-        self._hfss = Hfss(self)
-        self._nets = Nets(self)
-        self._modeler = Modeler(self)
-        self._materials = Materials(self)
-        self._source_excitation = SourceExcitation(self)
-        self._differential_pairs = DifferentialPairs(self)
-        self._extended_nets = ExtendedNets(self)
+        This helper centralizes the common nested getattr pattern used across the
+        file. It tries the following, in order:
+        - terminal.net_name
+        - terminal.net.name (if terminal.net exists)
+        - None if neither exist or cannot be accessed
 
-    def value(self, val) -> float:
-        """Convert a value into a pyedb value."""
-        if isinstance(val, GrpcValue):
-            return Value(val)
-        else:
-            context = self.active_cell if not str(val).startswith("$") else self.active_db
-            return Value(GrpcValue(val, context), context)
+        Parameters
+        ----------
+        terminal : object
+            Terminal-like object that may expose net information.
+
+        Returns
+        -------
+        Optional[str]
+            Net name or None if not available.
+        """
+        try:
+            # Some wrappers expose .net_name directly
+            if hasattr(terminal, "net_name"):
+                return getattr(terminal, "net_name")
+            # Other wrappers expose a .net object with a .name attribute
+            net = getattr(terminal, "net", None)
+            if net is not None:
+                return getattr(net, "name", None)
+        except Exception:
+            # Be defensive — do not raise for missing attributes
+            return None
+        return None
 
     @property
     def cell_names(self) -> List[str]:
@@ -572,7 +583,7 @@ class Edb(EdbInit):
         # Use getattr to be robust for different terminal wrappers
         return list(
             {
-                getattr(i, "net_name", getattr(getattr(i, "net", None), "name", None))
+                self._get_terminal_net_name(i)
                 for i in self.layout.terminals
                 if not getattr(i, "is_reference_terminal", False)
             }
@@ -2172,25 +2183,18 @@ class Edb(EdbInit):
         self.logger.reset_timer()
         if not common_reference:
             ref_terminals = [term for term in all_sources if getattr(term, "is_reference_terminal", False)]
-            common_reference = list(
-                {getattr(i, "net_name", getattr(getattr(i, "net", None), "name", None)) for i in ref_terminals}
-            )
+            common_reference = list({self._get_terminal_net_name(i) for i in ref_terminals})
             if len(common_reference) > 1:
                 raise ValueError("Multiple reference nets found. Please specify one.")
             if not common_reference:
                 raise ValueError("No reference net found. Please specify one.")
             common_reference = common_reference[0]
-        all_sources = [
-            i
-            for i in all_sources
-            if getattr(i, "net_name", getattr(getattr(i, "net", None), "name", None)) != common_reference
-        ]
+        all_sources = [i for i in all_sources if self._get_terminal_net_name(i) != common_reference]
         layout_inst = self.layout.layout_instance
         layout_obj_inst = layout_inst.get_layout_obj_instance_in_context(all_sources[0], None)  # 2nd arg was []
         connected_objects = [loi.layout_obj.id for loi in layout_inst.get_connected_objects(layout_obj_inst, True)]
         connected_primitives = [self.modeler.get_primitive(obj, edb_uid=False) for obj in connected_objects]
         connected_primitives = [item for item in connected_primitives if item is not None]
-        set_list = list(set([obj.net_name for obj in connected_primitives]))
         # Build set_list as sets of connected object ids from terminals' reference objects
         set_list = [
             set(i.reference_object.get_connected_object_id_set())
@@ -2471,9 +2475,9 @@ class Edb(EdbInit):
         """
         nets = []
         for port in self.excitations.values():
-            nets.append(getattr(port, "net_name", getattr(getattr(port, "net", None), "name", None)))
+            nets.append(self._get_terminal_net_name(port))
         for port in self.sources.values():
-            nets.append(getattr(port, "net_name", getattr(getattr(port, "net", None), "name", None)))
+            nets.append(self._get_terminal_net_name(port))
         nets = list(set(nets))
         max_width = 0
         for net in nets:
