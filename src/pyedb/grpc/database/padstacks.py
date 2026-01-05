@@ -26,7 +26,7 @@ This module contains the `EdbPadstacks` class.
 
 from collections import defaultdict
 import math
-from typing import Any, Dict, List, Optional, Tuple, Type, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 import warnings
 
 from ansys.edb.core.definition.padstack_def_data import (
