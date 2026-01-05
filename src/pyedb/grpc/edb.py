@@ -430,8 +430,7 @@ class Edb(EdbInit):
         self._differential_pairs = DifferentialPairs(self)
         self._extended_nets = ExtendedNets(self)
 
-    @staticmethod
-    def _get_terminal_net_name(terminal):
+    def _get_terminal_net_name(self, terminal):
         """Get the net name from a terminal object.
 
         This method handles different terminal wrapper types by attempting to access
@@ -447,7 +446,8 @@ class Edb(EdbInit):
         str or None
             The net name if found, None otherwise.
         """
-        return getattr(terminal, "net_name", getattr(getattr(terminal, "net", None), "name", None))
+        net = getattr(terminal, "net", None)
+        return getattr(terminal, "net_name", None if net is None else getattr(net, "name", None))
 
     def value(self, val) -> float:
         """Convert a value into a pyedb value."""
