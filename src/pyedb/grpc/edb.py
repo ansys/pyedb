@@ -430,6 +430,25 @@ class Edb(EdbInit):
         self._differential_pairs = DifferentialPairs(self)
         self._extended_nets = ExtendedNets(self)
 
+    @staticmethod
+    def _get_terminal_net_name(terminal):
+        """Get the net name from a terminal object.
+
+        This method handles different terminal wrapper types by attempting to access
+        the net name through various attribute paths.
+
+        Parameters
+        ----------
+        terminal : Terminal
+            The terminal object to get the net name from.
+
+        Returns
+        -------
+        str or None
+            The net name if found, None otherwise.
+        """
+        return getattr(terminal, "net_name", getattr(getattr(terminal, "net", None), "name", None))
+
     def value(self, val) -> float:
         """Convert a value into a pyedb value."""
         if isinstance(val, GrpcValue):
@@ -572,7 +591,7 @@ class Edb(EdbInit):
         # Use getattr to be robust for different terminal wrappers
         return list(
             {
-                getattr(i, "net_name", getattr(getattr(i, "net", None), "name", None))
+                self._get_terminal_net_name(i)
                 for i in self.layout.terminals
                 if not getattr(i, "is_reference_terminal", False)
             }
@@ -2173,7 +2192,7 @@ class Edb(EdbInit):
         if not common_reference:
             ref_terminals = [term for term in all_sources if getattr(term, "is_reference_terminal", False)]
             common_reference = list(
-                {getattr(i, "net_name", getattr(getattr(i, "net", None), "name", None)) for i in ref_terminals}
+                {self._get_terminal_net_name(i) for i in ref_terminals}
             )
             if len(common_reference) > 1:
                 raise ValueError("Multiple reference nets found. Please specify one.")
@@ -2183,7 +2202,7 @@ class Edb(EdbInit):
         all_sources = [
             i
             for i in all_sources
-            if getattr(i, "net_name", getattr(getattr(i, "net", None), "name", None)) != common_reference
+            if self._get_terminal_net_name(i) != common_reference
         ]
         layout_inst = self.layout.layout_instance
         layout_obj_inst = layout_inst.get_layout_obj_instance_in_context(all_sources[0], None)  # 2nd arg was []
@@ -2471,9 +2490,9 @@ class Edb(EdbInit):
         """
         nets = []
         for port in self.excitations.values():
-            nets.append(getattr(port, "net_name", getattr(getattr(port, "net", None), "name", None)))
+            nets.append(self._get_terminal_net_name(port))
         for port in self.sources.values():
-            nets.append(getattr(port, "net_name", getattr(getattr(port, "net", None), "name", None)))
+            nets.append(self._get_terminal_net_name(port))
         nets = list(set(nets))
         max_width = 0
         for net in nets:
