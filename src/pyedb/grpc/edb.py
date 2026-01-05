@@ -72,7 +72,7 @@ import time
 import traceback
 from typing import Any, Dict, List, Optional, Union
 import warnings
-from zipfile import ZipFile as zpf
+from zipfile import ZipFile as Zpf
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.layout_component import (
@@ -197,8 +197,9 @@ class Edb(EdbInit):
     >>> edb = Edb("my_board.brd")
     """
 
-    # Declare _init_objects for static analysis tools
+    # Declare _init_objects and commonly-used property names for static analysis tools
     _init_objects: Any
+    design_mode: property
 
     def __init__(
         self,
@@ -224,6 +225,7 @@ class Edb(EdbInit):
         self.version = edbversion
         # Internal cached objects (explicitly initialized to placate static analyzers and IDEs)
         self._components = None
+        self._core_primitives = None
         self._stackup = None
         self._padstack = None
         self._siwave = None
@@ -269,7 +271,7 @@ class Edb(EdbInit):
         if edbpath[-3:] == "zip":
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
-            zipped_file = zpf(edbpath, "r")
+            zipped_file = Zpf(edbpath, "r")
             top_level_folders = {item.split("/")[0] for item in zipped_file.namelist()}
             if len(top_level_folders) == 1:
                 self.logger.info("Unzipping ODB++...")
@@ -345,7 +347,7 @@ class Edb(EdbInit):
         """
         if self.variable_exists(variable_name):
             return self.variables[variable_name]
-        return
+        return None
 
     def __setitem__(self, variable_name, variable_value):
         """Set project or design variable.
@@ -417,14 +419,15 @@ class Edb(EdbInit):
         else:
             return "{0}{1}".format(value, units)
 
-    def _get_terminal_net_name(self, terminal) -> Optional[str]:
+    @staticmethod
+    def _get_terminal_net_name(terminal) -> Optional[str]:
         """Normalize various terminal objects to a net name string.
 
         This helper centralizes the common nested getattr pattern used across the
         file. It tries the following, in order:
         - terminal.net_name
         - terminal.net.name (if terminal.net exists)
-        - None if neither exist or cannot be accessed
+        - None if neither exist nor cannot be accessed
 
         Parameters
         ----------
@@ -444,8 +447,8 @@ class Edb(EdbInit):
             net = getattr(terminal, "net", None)
             if net is not None:
                 return getattr(net, "name", None)
-        except Exception:
-            # Be defensive — do not raise for missing attributes
+        except (AttributeError, TypeError):
+            # Defensive: guard against missing attributes or wrong types
             return None
         return None
 
@@ -622,7 +625,8 @@ class Edb(EdbInit):
             try:
                 comp = vrm.component
                 vrm_key = comp.refdes if comp else getattr(vrm, "name", None)
-            except Exception:
+            except (AttributeError, TypeError):
+                # Some VRM wrappers may not expose .component; fallback to .name
                 vrm_key = getattr(vrm, "name", None)
             if not vrm_key:
                 vrm_key = str(id(vrm))
@@ -1291,15 +1295,23 @@ class Edb(EdbInit):
                         temp.append(Polygon(self, i.layout_obj))
                     else:
                         continue
-        except:
+        except (AttributeError, RuntimeError, TypeError) as exc:
+            # Be explicit about expected failure modes and include the exception in the log for easier debugging
+            obj_id = getattr(getattr(layout_object_instance, "layout_obj", None), "id", "<unknown>")
             self.logger.warning(
-                f"Failed to find connected objects on layout_obj {layout_object_instance.layout_obj.id}, skipping."
+                "Failed to find connected objects on layout_obj %s, skipping. Exception: %s",
+                obj_id,
+                str(exc),
             )
-            pass
+            # continue gracefully by returning whatever we collected so far
+            return temp
         return temp
 
-    def point_3d(self, x, y, z=0.0):
+    @staticmethod
+    def point_3d(x, y, z=0.0):
         """Create 3D point.
+
+        This method does not use instance state and is therefore a staticmethod.
 
         Parameters
         ----------
@@ -1319,8 +1331,11 @@ class Edb(EdbInit):
 
         return Point3DData(x, y, z)
 
-    def point_data(self, x, y=None):
+    @staticmethod
+    def point_data(x, y=None):
         """Create 2D point.
+
+        This method does not use instance state and is therefore a staticmethod.
 
         Parameters
         ----------
@@ -1438,15 +1453,15 @@ class Edb(EdbInit):
         # return self.core.utility.utility.Command.Execute(func)
         pass
 
-    def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False) -> bool:
+    def import_cadence_file(self, input_brd, work_dir=None, anstranslator_full_path="", use_ppe=False) -> bool:
         """Import Cadence board file.
 
         .. deprecated:: 0.50
         Use :func:`import_layout_file` instead.
         """
         if self.import_layout_pcb(
-            inputBrd,
-            working_dir=WorkDir,
+            input_brd,
+            working_dir=work_dir,
             anstranslator_full_path=anstranslator_full_path,
             use_ppe=use_ppe,
         ):
@@ -1456,7 +1471,7 @@ class Edb(EdbInit):
 
     def import_gds_file(
         self,
-        inputGDS,
+        input_gds,
         anstranslator_full_path="",
         use_ppe=False,
         control_file=None,
@@ -1473,7 +1488,7 @@ class Edb(EdbInit):
 
         Parameters
         ----------
-        inputGDS : str
+        input_gds : str
             GDS file path.
         anstranslator_full_path : str, optional
             Ansys translator path.
@@ -1488,7 +1503,7 @@ class Edb(EdbInit):
         layer_filter : str, optional
             Layer filter file.
         """
-        control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(inputGDS)[-1][:-3] + "xml")
+        control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(input_gds)[-1][:-3] + "xml")
         if float(self.version) < 2024.1:
             if not is_linux and tech_file:
                 self.logger.error("Technology files are supported only in Linux. Use control file instead.")
@@ -1496,7 +1511,7 @@ class Edb(EdbInit):
 
             ControlFile(xml_input=control_file, technology=tech_file, layer_map=map_file).write_xml(control_file_temp)
             if self.import_layout_pcb(
-                inputGDS,
+                input_gds,
                 anstranslator_full_path=anstranslator_full_path,
                 use_ppe=use_ppe,
                 control_file=control_file_temp,
@@ -1505,8 +1520,8 @@ class Edb(EdbInit):
             else:
                 return False
         else:
-            temp_map_file = os.path.splitext(inputGDS)[0] + ".map"
-            temp_layermap_file = os.path.splitext(inputGDS)[0] + ".layermap"
+            temp_map_file = os.path.splitext(input_gds)[0] + ".map"
+            temp_layermap_file = os.path.splitext(input_gds)[0] + ".layermap"
 
             if map_file is None:
                 if os.path.isfile(temp_map_file):
@@ -1518,17 +1533,17 @@ class Edb(EdbInit):
 
             if tech_file is None:
                 if control_file is None:
-                    temp_control_file = os.path.splitext(inputGDS)[0] + ".xml"
+                    temp_control_file = os.path.splitext(input_gds)[0] + ".xml"
                     if os.path.isfile(temp_control_file):
                         control_file = temp_control_file
                     else:
                         self.logger.error("Unable to define control file.")
 
-                command = [anstranslator_full_path, inputGDS, f'-g="{map_file}"', f'-c="{control_file}"']
+                command = [anstranslator_full_path, input_gds, f'-g="{map_file}"', f'-c="{control_file}"']
             else:
                 command = [
                     anstranslator_full_path,
-                    inputGDS,
+                    input_gds,
                     f'-o="{control_file_temp}"-t="{tech_file}"',
                     f'-g="{map_file}"',
                     f'-f="{layer_filter}"',
@@ -1540,8 +1555,8 @@ class Edb(EdbInit):
                 print(command)
             except subprocess.CalledProcessError as e:  # nosec
                 raise RuntimeError("An error occurred while converting file") from e
-            temp_inputGDS = inputGDS.split(".gds")[0]
-            self.edbpath = temp_inputGDS + ".aedb"
+            temp_input_gds = input_gds.split(".gds")[0]
+            self.edbpath = temp_input_gds + ".aedb"
             return self.open()
 
     @deprecate_argument_name({"signal_list": "signal_nets", "reference_list": "reference_nets"})
@@ -2063,7 +2078,7 @@ class Edb(EdbInit):
             self.logger.error(f"Variable {variable_name} already exists.")
             return False
 
-    def add_design_variable(self, variable_name, variable_value, is_parameter=False, description=None) -> bool:
+    def add_design_variable(self, variable_name, variable_value, description=None) -> bool:
         """Add design variable.
 
         Parameters
@@ -2072,8 +2087,6 @@ class Edb(EdbInit):
             Variable name.
         variable_value : str, float
             Variable value with units.
-        is_parameter : bool, optional
-            Add as local variable. Default False.
         description : str, optional
             Variable description.
 
@@ -2110,27 +2123,29 @@ class Edb(EdbInit):
                 self.active_cell.set_variable_value(variable_name, Value(variable_value))
 
     @property
-    def design_mode(self):
-        """Get mode of the  edb design.
+    def design_mode(self) -> str:
+        """Get mode of the edb design.
+
         Returns
-        ----------
+        -------
         str
-            Value is either "General" or "IC".
+            Value is either "general" or "ic" (lowercase).
         """
         return ("general", "ic")[self.active_cell.design_mode.value]
 
     @design_mode.setter
-    def design_mode(self, value):
+    def design_mode(self, value: str) -> None:
         """Update the design mode of the edb.
+
         Parameters
         ----------
         value : str
-            It can be either "General" or "IC".
+            It can be either "general" or "ic" (case-insensitive).
         """
         try:
             self.active_cell.design_mode = GrpcDesignMode(("general", "ic").index(value.lower()))
-        except (AttributeError, ValueError):
-            raise ValueError("Value must be 'general' or 'ic' (case-insensitive)")
+        except (AttributeError, ValueError) as exc:
+            raise ValueError("Value must be 'general' or 'ic' (case-insensitive)") from exc
 
     def get_bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         """Get layout bounding box.
@@ -2142,7 +2157,7 @@ class Edb(EdbInit):
         """
         lay_inst_polygon_data = [obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()]
         layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
-        return ((Value(layout_bbox[0].x), Value(layout_bbox[0].y)), (Value(layout_bbox[1].x), Value(layout_bbox[1].y)))
+        return (Value(layout_bbox[0].x), Value(layout_bbox[0].y)), (Value(layout_bbox[1].x), Value(layout_bbox[1].y))
 
     def get_statistics(self, compute_area=False):
         """Get layout statistics.
@@ -2188,11 +2203,6 @@ class Edb(EdbInit):
                 raise ValueError("No reference net found. Please specify one.")
             common_reference = common_reference[0]
         all_sources = [i for i in all_sources if self._get_terminal_net_name(i) != common_reference]
-        layout_inst = self.layout.layout_instance
-        layout_obj_inst = layout_inst.get_layout_obj_instance_in_context(all_sources[0], None)  # 2nd arg was []
-        connected_objects = [loi.layout_obj.id for loi in layout_inst.get_connected_objects(layout_obj_inst, True)]
-        connected_primitives = [self.modeler.get_primitive(obj, edb_uid=False) for obj in connected_objects]
-        connected_primitives = [item for item in connected_primitives if item is not None]
         # Build set_list as sets of connected object ids from terminals' reference objects
         set_list = [
             set(i.reference_object.get_connected_object_id_set())
@@ -2238,11 +2248,11 @@ class Edb(EdbInit):
 
         # Get the set intersections for all the ID sets.
         set_list = set(set_list)
-        iDintersection = set.intersection(set_list)
-        self.logger.info_timer(f"Terminal reference primitive IDs total intersections = {len(iDintersection)}\n\n")
+        id_intersection = set.intersection(set_list)
+        self.logger.info_timer(f"Terminal reference primitive IDs total intersections = {len(id_intersection)}\n\n")
 
         # If the intersections are non-zero, the terminal references are connected.
-        return True if len(iDintersection) > 0 else False
+        return True if len(id_intersection) > 0 else False
 
     @property
     def setups(
@@ -2285,10 +2295,12 @@ class Edb(EdbInit):
             elif setup_type == "RAPTOR_X":
                 setups[setup.name] = RaptorXSimulationSetup(self, setup)
         try:
-            cpa_setup_name = self.active_cell.get_product_property(
-                GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME
+            cpa_setup_name = (
+                self.active_cell.get_product_property(GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME)
             ).value
-        except:
+        except (AttributeError, TypeError, KeyError, RuntimeError) as exc:
+            # Product property may be missing on some designs/edb versions; log at debug level and continue.
+            self.logger.debug("Could not read CPA setup product property: %s", str(exc))
             cpa_setup_name = ""
         if cpa_setup_name:
             setups[cpa_setup_name] = SIWaveCPASimulationSetup(self, cpa_setup_name)
@@ -2540,18 +2552,14 @@ class Edb(EdbInit):
                     edb_zones[edb_zone_path] = (-1, poly_data)
         return edb_zones
 
-    def cutout_multizone_layout(self, zone_dict, common_reference_net=None):
+    def cutout_multizone_layout(self, zones, common_reference_net=None):
         """Create a multizone project cutout.
 
         Parameters
         ----------
-        zone_dict : dict[str](EDB PolygonData)
+        zones : dict[str](EDB PolygonData)
             Dictionary with EDB path as key and EDB PolygonData as value defining the zone region.
             This dictionary is returned from the command copy_zones():
-            >>> # Self-contained example showing usage
-            >>> edb_file = "path_to_zone_aedb.aedb"
-            >>> edb = Edb(edb_file)
-            >>> zone_dict = edb.copy_zones(r"C:\Temp\test")
 
         common_reference_net : str
             the common reference net name. This net name must be provided to provide a valid project.
@@ -2566,7 +2574,7 @@ class Edb(EdbInit):
         terminals = {}
         defined_ports = {}
         project_connexions = None
-        for edb_path, zone_info in zone_dict.items():
+        for edb_path, zone_info in zones.items():
             edb = Edb(edbversion=self.version, edbpath=edb_path)
             edb.cutout(
                 use_pyaedt_cutout=True,
@@ -2575,9 +2583,7 @@ class Edb(EdbInit):
             )
             if not zone_info[0] == -1:
                 layers_to_remove = [
-                    lay.name
-                    for lay in list(edb.stackup.layers.values())
-                    if not getattr(lay, "is_in_zone", lambda _zone: False)(zone_info[0])
+                    lay.name for lay in list(edb.stackup.layers.values()) if not lay.core.is_in_zone(zone_info[0])
                 ]
                 for layer in layers_to_remove:
                     edb.stackup.remove_layer(layer)
@@ -2599,7 +2605,6 @@ class Edb(EdbInit):
                 if edb_terminals_info:
                     terminals[os.path.splitext(os.path.basename(edb_path))[0]] = edb_terminals_info
                 project_connexions = self._get_connected_ports_from_multizone_cutout(terminals)
-            # use non-deprecated save/close to avoid deprecation warnings
             edb.save()
             edb.close()
         return defined_ports, project_connexions
@@ -2680,6 +2685,8 @@ class Edb(EdbInit):
                                             ):
                                                 connected_ports_list.append((port1_connexion, port2_connexion))
             return connected_ports_list
+        # If no terminal info provided, return empty list to keep return type consistent.
+        return []
 
     def create_port(self, terminal, ref_terminal=None, is_circuit_port=False, name=None):
         """Create a port.
@@ -2822,25 +2829,25 @@ class Edb(EdbInit):
 
         def _apply_variable(orig_name, orig_value):
             if use_relative_variables:
-                var = f"{orig_name}_delta"
+                var_name = f"{orig_name}_delta"
             else:
-                var = f"{orig_name}_value"
-            var = self._clean_string_for_variable_name(var)
-            if var not in self.variables:
+                var_name = f"{orig_name}_value"
+            var_name = self._clean_string_for_variable_name(var_name)
+            if var_name not in self.variables:
                 if use_relative_variables:
-                    if var.startswith("$"):
-                        self.add_project_variable(var, 0.0)
+                    if var_name.startswith("$"):
+                        self.add_project_variable(var_name, 0.0)
                     else:
-                        self.add_design_variable(var, 0.0)
+                        self.add_design_variable(var_name, 0.0)
                 else:
-                    if var.startswith("$"):
-                        self.add_project_variable(var, orig_value)
+                    if var_name.startswith("$"):
+                        self.add_project_variable(var_name, orig_value)
                     else:
-                        self.add_design_variable(var, orig_value)
+                        self.add_design_variable(var_name, orig_value)
             if use_relative_variables:
-                return f"{orig_value}+{var}", var
+                return f"{orig_value}+{var_name}", var_name
             else:
-                return var, var
+                return var_name, var_name
 
         if layers:
             if not layer_filter:
