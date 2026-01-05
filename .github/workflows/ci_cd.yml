@@ -745,7 +745,7 @@ jobs:
           . .venv\Scripts\Activate.ps1
           python -m pip install .
 
-      - name: Run PyAEDT tests
+      - name: Run PyAEDT general and layout tests
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         env:
           PYTHONMALLOC: malloc
@@ -756,9 +756,9 @@ jobs:
           timeout_minutes: 40
           command: |
             .venv\Scripts\Activate.ps1
-            pytest -v external/pyaedt/tests/system/general/test_01_3dlayout_edb.py
-            pytest -v external/pyaedt/tests/system/general/test_01_configuration_files.py
-            pytest -v external/pyaedt/tests/system/general/test_21_Circuit.py
+            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
+            pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
+            pytest -v external/pyaedt/tests/system/general/test_circuit.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -770,8 +770,7 @@ jobs:
           timeout_minutes: 40
           command: |
             .venv\Scripts\Activate.ps1
-            pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
-            pytest -v external/pyaedt/tests/system/solvers/test_00_analyze.py
+            pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
 
       - name: Run PyAEDT extensions tests
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -786,6 +785,8 @@ jobs:
             pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
             pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
             pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
+            pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
+            pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -848,7 +849,7 @@ jobs:
         run: |
           python -m pip install .
 
-      - name: Run PyAEDT tests
+      - name: Run PyAEDT general and layout tests
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         env:
           PYTHONMALLOC: malloc
@@ -858,9 +859,9 @@ jobs:
           timeout_minutes: 50
           command: |
             . .venv/bin/activate
-            pytest -v external/pyaedt/tests/system/general/test_01_3dlayout_edb.py
-            pytest -v external/pyaedt/tests/system/general/test_01_configuration_files.py
-            pytest -v external/pyaedt/tests/system/general/test_21_Circuit.py
+            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
+            pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
+            pytest -v external/pyaedt/tests/system/general/test_circuit.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -872,8 +873,7 @@ jobs:
           timeout_minutes: 50
           command: |
             . .venv/bin/activate
-            pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
-            pytest -v external/pyaedt/tests/system/solvers/test_00_analyze.py
+            pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
 
       - name: Run PyAEDT extensions tests
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -888,6 +888,8 @@ jobs:
             pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
             pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
             pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
+            pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
+            pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
 
   docs-build:
     name: Build documentation
