@@ -3336,3 +3336,32 @@ class Edb(EdbInit):
         cells = self.copy_cells([edb2.active_cell])
         cell = cells[0]
         cell.is_blackbox = True
+
+    def _init_objects(self):
+        """Initialize commonly used cached objects for the gRPC EDB implementation.
+
+        This method mirrors the behavior of the dotnet implementation: it creates
+        high-level helper objects and stores them on the Edb instance so that
+        subsequent property accesses return ready-to-use interfaces.
+        """
+        # Core manager objects
+        self._components = Components(self)
+        # Stackup requires layer collection from the active cell's layout
+        try:
+            layer_collection = self.active_cell.layout.layer_collection
+        except Exception:
+            layer_collection = None
+        if layer_collection is not None:
+            self._stackup = Stackup(self, layer_collection)
+        else:
+            # Fallback: create Stackup without layer collection; property will
+            # re-create it when accessed if possible
+            self._stackup = None
+        self._padstack = Padstacks(self)
+        self._siwave = Siwave(self)
+        self._hfss = Hfss(self)
+        self._nets = Nets(self)
+        self._core_primitives = Modeler(self)
+        # Materials and source excitation
+        self._materials = Materials(self)
+        self._source_excitation = SourceExcitation(self)
