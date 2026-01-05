@@ -1537,7 +1537,8 @@ class Padstacks(object):
         """
         instances_by_id = self.instances
         if pid:
-            return [instances_by_id[pid]]
+            instance = instances_by_id.get(pid)
+            return [instance] if instance is not None else []
         elif name:
             instances = [inst for inst in list(self.instances.values()) if inst.aedt_name == name]
             if instances:
