@@ -337,7 +337,7 @@ class Padstacks(object):
         return self._layout.pin_groups
 
     @property
-    def pad_type(self) -> Type[GrpcPadType]:
+    def pad_type(self) -> GrpcPadType:
         """Return a PadType Enumerator."""
         return GrpcPadType
 
