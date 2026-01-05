@@ -696,8 +696,6 @@ class Edb(EdbInit):
             except Exception as e:
                 self.logger.error(e.args[0])
         if not self.db:
-            # Ensure active cell is cleared before raising
-            self._active_cell = None
             raise ValueError("Failed creating EDB.")
         else:
             if not self.cellname:
