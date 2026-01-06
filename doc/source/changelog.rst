@@ -9,6 +9,32 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.66.1 <https://github.com/ansys/pyedb/releases/tag/v0.66.1>`_ - January 06, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update test path and extend with other tests
+          - `#1731 <https://github.com/ansys/pyedb/pull/1731>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Fix type hints and code warnings in padstacks.py
+          - `#1726 <https://github.com/ansys/pyedb/pull/1726>`_
+
+
 `0.66.1 <https://github.com/ansys/pyedb/releases/tag/v0.66.1>`_ - January 01, 2026
 ==================================================================================
 
