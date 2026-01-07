@@ -27,7 +27,7 @@ import json
 import math
 import os
 import re
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 import warnings
 
 from ansys.edb.core.definition.die_property import DieOrientation as GrpDieOrientation, DieType as GrpcDieType
@@ -41,7 +41,6 @@ from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from pyedb.component_libraries.ansys_components import (
     ComponentLib,
     ComponentPart,
-    Series,
 )
 from pyedb.generic.general_methods import (
     generate_unique_name,
@@ -57,6 +56,12 @@ from pyedb.grpc.database.utility.sources import SourceType
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.modeler.geometry_operators import GeometryOperators
+
+if TYPE_CHECKING:
+    # Provide symbolic names used in docstring examples for static analysis only.
+    from pyedb.grpc.edb import Edb as _Edb  # pragma: no cover
+
+    edbapp: "_Edb" = None  # type: ignore
 
 
 def resistor_value_parser(r_value) -> float:
@@ -95,8 +100,8 @@ class Components(object):
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edbapp = Edb("myaedbfolder")
-    >>> edbapp.components
+    >>> edb = Edb("myaedbfolder")
+    >>> edb.components
     """
 
     def __getitem__(self, name: str) -> Optional[Union[Component, ComponentDef]]:
@@ -122,14 +127,23 @@ class Components(object):
         elif name in self.definitions:
             return self.definitions[name]
         self._pedb.logger.error("Component or definition not found.")
-        return
+        return None
 
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
-        self.refresh_components()
+        # Initialize internal maps before calling refresh to avoid "attribute defined outside __init__" warnings.
+        self._cmp: Dict[str, Component] = {}
+        self._res: Dict[str, Component] = {}
+        self._ind: Dict[str, Component] = {}
+        self._cap: Dict[str, Component] = {}
+        self._ics: Dict[str, Component] = {}
+        self._ios: Dict[str, Component] = {}
+        self._others: Dict[str, Component] = {}
         self._pins = {}
         self._comps_by_part = {}
         self._padstack = Padstacks(self._pedb)
+        # Populate maps based on current layout
+        self.refresh_components()
 
     @property
     def _logger(self) -> Any:
@@ -217,7 +231,7 @@ class Components(object):
         return {l.name: ComponentDef(self._pedb, l) for l in self._pedb.component_defs}
 
     @property
-    def nport_comp_definition(self) -> Dict[str, Component]:
+    def nport_comp_definition(self) -> Dict[str, ComponentDef]:
         """Dictionary of N-port component definitions.
 
         Returns
@@ -354,18 +368,22 @@ class Components(object):
             "other": self._others,
         }
         for i in self._pedb.layout.groups:
-            self._cmp[i.name] = i
+            # be defensive: access attributes via getattr to avoid AttributeError affecting loop
+            name = getattr(i, "name", "<unknown>")
+            self._cmp[name] = i
             try:
-                target = type_map.get(i.component_type)
+                target = type_map.get(getattr(i, "component_type", None))
                 if target is None:
                     self._logger.warning(
-                        f"Unknown component type {i.name} found while refreshing components, will ignore"
+                        f"Unknown component type {name} found while refreshing components, will ignore"
                     )
                 else:
-                    target[i.name] = i
-            except Exception:
-                self._logger.warning(f"Assigning component {i.name} as default type other.")
-                self._others[i.name] = i
+                    target[name] = i
+            except (AttributeError, TypeError) as e:
+                # Only catch expected attribute/type-related errors; preserve original behavior by
+                # assigning the component to the 'other' bucket and logging the reason.
+                self._logger.warning(f"Assigning component {name} as default type other. Reason: {e}")
+                self._others[name] = i
         return True
 
     @property
@@ -523,7 +541,9 @@ class Components(object):
 
         Examples
         --------
-        >>> pins = edbapp.components.get_pin_from_component("R1", net_name="GND")
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_aedb")
+        >>> edb.components.get_pin_from_component("R1", net_name="GND")
         """
         if isinstance(component, Component):
             component = component.name
@@ -563,7 +583,8 @@ class Components(object):
                 cmp_list.append(refdes)
         return cmp_list
 
-    def _get_edb_pin_from_pin_name(self, cmp: Component, pin: str) -> Union[ComponentPin, bool]:
+    @staticmethod
+    def _get_edb_pin_from_pin_name(cmp: Component, pin: str) -> Any:
         """Get EDB pin from pin name.
 
         Parameters
@@ -622,12 +643,13 @@ class Components(object):
 
         Examples
         --------
-        >>> vec, rot, height = edbapp.components.get_component_placement_vector(...)
+        >>> success, vec, rot, height = edbapp.components.get_component_placement_vector(...)
         """
         if not isinstance(mounted_component, Component):
-            return False
+            # Return full failure tuple to match annotated return type
+            return False, [0, 0], 0.0, 0.0
         if not isinstance(hosting_component, Component):
-            return False
+            return False, [0, 0], 0.0, 0.0
 
         m_pin1_pos = [0.0, 0.0]
         m_pin2_pos = [0.0, 0.0]
@@ -713,11 +735,15 @@ class Components(object):
         comp_lib.path = comp_lib_path
         for cmp_type in comp_types:
             folder = os.path.join(comp_lib_path, cmp_type)
-            vendors = {f.name: "" for f in os.scandir(folder) if f.is_dir()}
+            vendors: Dict[str, Any] = {f.name: "" for f in os.scandir(folder) if f.is_dir()}
             for vendor in list(vendors.keys()):
-                series = {f.name: Series() for f in os.scandir(os.path.join(folder, vendor)) if f.is_dir()}
-                for serie_name, _ in series.items():
-                    _serie = {}
+                # series may be a mapping of serie_name -> dict of ComponentPart entries.
+                series: Dict[str, Any] = {}
+                for serie_entry in os.scandir(os.path.join(folder, vendor)):
+                    if not serie_entry.is_dir():
+                        continue
+                    serie_name = serie_entry.name
+                    _serie: Dict[str, ComponentPart] = {}
                     index_file = os.path.join(folder, vendor, serie_name, "index.txt")
                     sbin_file = os.path.join(folder, vendor, serie_name, "sdata.bin")
                     if os.path.isfile(index_file):
@@ -726,8 +752,7 @@ class Components(object):
                                 part_name, index = line.split()
                                 _serie[part_name] = ComponentPart(part_name, int(index), sbin_file)
                                 _serie[part_name].type = cmp_type[:-1]
-                            f.close()
-                        series[serie_name] = _serie
+                    series[serie_name] = _serie
                 vendors[vendor] = series
             if cmp_type == "Capacitors":
                 comp_lib.capacitors = vendors
@@ -756,7 +781,7 @@ class Components(object):
             "`pyedb.grpc.core.excitations.create_source_on_component` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.create_source_on_component(self, sources=sources)
+        return self._pedb.excitations.create_source_on_component(self, sources=sources)
 
     def create_port_on_pins(
         self,
@@ -918,7 +943,7 @@ class Components(object):
         pin_position = pin.position
         closest_pin = ref_pinlist[0]
         for ref_pin in ref_pinlist:
-            temp_distance = pin_position.distance(ref_pin.position)
+            temp_distance = GeometryOperators.points_distance(pin_position, ref_pin.position)
             if temp_distance < distance:
                 distance = temp_distance
                 closest_pin = ref_pin
@@ -1219,7 +1244,8 @@ class Components(object):
             with open(modelpath, "r") as f:
                 for line in f:
                     if "subckt" in line.lower():
-                        pin_names = [i.strip() for i in re.split(" |\t", line) if i]
+                        # split on 1+ whitespace (space or tab) to avoid regex alternation warning
+                        pin_names = [i.strip() for i in re.split(r"[ \t]+", line) if i]
                         pin_names.remove(pin_names[0])
                         pin_names.remove(pin_names[0])
                         break
@@ -1243,11 +1269,14 @@ class Components(object):
                 SParameterModel as GrpcSParameterModel,
             )
 
-            n_port_model = GrpcNPortComponentModel.find_by_name(component.component_def, n_port_model_name)
+            # prefer component_definition attribute; fall back to component_def for older EDB versions
+            comp_def = getattr(component, "component_definition", getattr(component, "component_def", None))
+            n_port_model = GrpcNPortComponentModel.find_by_name(comp_def, n_port_model_name)
             if n_port_model.is_null:
                 n_port_model = GrpcNPortComponentModel.create(n_port_model_name)
                 n_port_model.reference_file = modelpath
-                component.component_def.add_component_model(n_port_model)
+                if comp_def is not None:
+                    comp_def.add_component_model(n_port_model)
             gndnets = list(filter(lambda x: "gnd" in x.lower(), component.nets))
             if len(gndnets) > 0:  # pragma: no cover
                 net = gndnets[0]
@@ -1328,10 +1357,19 @@ class Components(object):
         deleted_comps = []
         for comp, val in self.instances.items():
             if hasattr(val, "pins") and val.pins:
-                if val.num_pins == 1 and val.component_type in ["resistor", "capacitor", "inductor"]:
+                if getattr(val, "num_pins", getattr(val, "numpins", None)) == 1 and val.component_type in [
+                    "resistor",
+                    "capacitor",
+                    "inductor",
+                ]:
                     if deactivate_only:
                         val.is_enabled = False
-                        val.model_type = "rlc"
+                        # model_type may be read-only on some objects; attempt to set and ignore failures
+                        try:
+                            setattr(val, "model_type", "rlc")
+                        except (AttributeError, TypeError) as e:
+                            # expected failures when attribute is not writable; log at debug level
+                            self._logger.debug(f"Could not set model_type on component {comp}: {e}")
                     else:
                         val.delete()
                         deleted_comps.append(comp)
@@ -1359,9 +1397,10 @@ class Components(object):
         """
         edb_cmp = self.get_component_by_name(component_name)
         if edb_cmp is not None:
+            component_name = edb_cmp.name
             edb_cmp.delete()
-            if edb_cmp in list(self.instances.keys()):
-                del self.instances[edb_cmp]
+            if component_name in self.instances:
+                del self.instances[component_name]
             return True
         return False
 
@@ -1445,10 +1484,14 @@ class Components(object):
         >>> edbapp.components.set_solder_ball("U1", sball_diam=0.5e-3)
         """
         if isinstance(component, str):
-            if component in self.instances:
-                cmp = self.instances[component]
+            cmp = self.instances.get(component)
+            if cmp is None:
+                raise ValueError(f"Component {component} not found")
         else:
-            cmp = self.instances[component.name]
+            cmp = component if isinstance(component, Component) else self.instances.get(component.name)
+            if cmp is None:
+                raise ValueError(f"Component {component} not found")
+
         if not sball_diam:
             pin1 = list(cmp.pins.values())[0]
             pin_layers = pin1.padstack_def.data.layer_names
@@ -1622,13 +1665,25 @@ class Components(object):
                     new_value = content_line[valuecolumn].split(" ")[0]
                     new_type = content_line[comptypecolumn]
                     if "resistor" in new_type.lower():
-                        self.set_component_rlc(new_refdes, res_value=new_value)
+                        try:
+                            parsed = resistor_value_parser(new_value)
+                        except Exception:
+                            parsed = float(new_value)
+                        self.set_component_rlc(new_refdes, res_value=parsed)
                         unmount_comp_list.remove(new_refdes)
                     elif "capacitor" in new_type.lower():
-                        self.set_component_rlc(new_refdes, cap_value=new_value)
+                        try:
+                            parsed = GeometryOperators.parse_dim_arg(new_value)
+                        except Exception:
+                            parsed = float(new_value)
+                        self.set_component_rlc(new_refdes, cap_value=parsed)
                         unmount_comp_list.remove(new_refdes)
                     elif "inductor" in new_type.lower():
-                        self.set_component_rlc(new_refdes, ind_value=new_value)
+                        try:
+                            parsed = GeometryOperators.parse_dim_arg(new_value)
+                        except Exception:
+                            parsed = float(new_value)
+                        self.set_component_rlc(new_refdes, ind_value=parsed)
                         unmount_comp_list.remove(new_refdes)
             for comp in unmount_comp_list:
                 self.instances[comp].enabled = False
@@ -1680,7 +1735,7 @@ class Components(object):
 
                 refdes = l[refdes_col]
                 comp = self.instances[refdes]
-                if not part_name_col == None:
+                if part_name_col is not None:
                     part_name = l[part_name_col]
                     if comp.partname == part_name:
                         pass
@@ -1708,18 +1763,18 @@ class Components(object):
 
                 if comp_type.capitalize() in ["Resistor", "Capacitor", "Inductor"] and refdes in unmount_comp_list:
                     unmount_comp_list.remove(refdes)
-                if not value_col == None:
+                if value_col is not None:
                     try:
                         value = l[value_col]
-                    except:
+                    except Exception:
                         value = None
                     if value:
                         if comp_type == "Resistor":
-                            self.set_component_rlc(refdes, res_value=value)
+                            self.set_component_rlc(refdes, res_value=resistor_value_parser(value))
                         elif comp_type == "Capacitor":
-                            self.set_component_rlc(refdes, cap_value=value)
+                            self.set_component_rlc(refdes, cap_value=GeometryOperators.parse_dim_arg(value))
                         elif comp_type == "Inductor":
-                            self.set_component_rlc(refdes, ind_value=value)
+                            self.set_component_rlc(refdes, ind_value=GeometryOperators.parse_dim_arg(value))
             for comp in unmount_comp_list:
                 self.instances[comp].enabled = False
         return True
@@ -1882,7 +1937,7 @@ class Components(object):
         pin_names = []
         if not pin_list:
             pin_list = []
-            for i in [*self.components.values()]:
+            for i in [*self.instances.values()]:
                 for j in [*i.pins.values()]:
                     pin_list.append(j)
         for pin in pin_list:
@@ -1975,7 +2030,7 @@ class Components(object):
         """
         through_comp_list = []
         for refdes, comp_obj in self.resistors.items():
-            numpins = comp_obj.numpins
+            numpins = comp_obj.num_pins
 
             if numpins == 2:
                 value = comp_obj.res_value
@@ -2050,6 +2105,8 @@ class Components(object):
                 delta_pins.append(1.5 * width)
         i = 0
 
+        # ensure placement_layer exists (use first pin's placement_layer if available)
+        placement_layer = pins_list[0].placement_layer if pins_list else None
         while i < len(positions_to_short) - 1:
             p0 = []
             p0.append([positions_to_short[i][0] - delta_pins[i], positions_to_short[i][1], 0])
@@ -2173,7 +2230,7 @@ class Components(object):
 
     def create_pin_group_on_net(
         self, reference_designator: str, net_name: str, group_name: Optional[str] = None
-    ) -> PinGroup:
+    ) -> Union[PinGroup, Tuple[str, PinGroup], bool]:
         """Create pin group by net name.
 
         Parameters
@@ -2230,8 +2287,8 @@ class Components(object):
         >>> edb = Edb(edb_file)
         >>> for cmp in list(edb.components.instances.keys()):
         >>>     edb.components.deactivate_rlc_component(component=cmp, create_circuit_port=False)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
+        >>> edb.save()
+        >>> edb.close()
         """
         if not component:
             return False
@@ -2301,11 +2358,11 @@ class Components(object):
         Examples
         --------
         >>> from pyedb import Edb
-        >>> edb = Edb(edb_file)
+        >>> edb = Edb("edb_file")
         >>>  for refdes, cmp in edb.components.capacitors.items():
         >>>     edb.components.replace_rlc_by_gap_boundaries(refdes)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
+        >>> edb.save()
+        >>> edb.close()
         """
         if not component:
             return False
