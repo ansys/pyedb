@@ -1228,6 +1228,7 @@ class Edb(EdbInit):
         """
         if not self._modeler and self.active_db:
             self._modeler = Modeler(self)
+            self._modeler._reload_all()  # Reload primitives cache for the new active cell
         return self._modeler
 
     @property
@@ -2088,7 +2089,7 @@ class Edb(EdbInit):
             self.logger.error(f"Variable {variable_name} already exists.")
             return False
 
-    def add_design_variable(self, variable_name, variable_value, description=None) -> bool:
+    def add_design_variable(self, variable_name, variable_value, description: str = "") -> bool:
         """Add design variable.
 
         Parameters
@@ -3367,7 +3368,8 @@ class Edb(EdbInit):
         self._siwave = Siwave(self)
         self._hfss = Hfss(self)
         self._nets = Nets(self)
-        self._core_primitives = Modeler(self)
+        self._modeler = Modeler(self)
+        self._modeler._reload_all()  # Reload primitives cache for the new active cell
         # Materials and source excitation
         self._materials = Materials(self)
         self._source_excitation = SourceExcitation(self)
