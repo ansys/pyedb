@@ -69,9 +69,6 @@ class RpcSession:
             connection will be lost.
             This option must be used at the beginning of an application only to ensure the
             server is properly started.
-        kill_all_instances : bool, optional.
-            Force killing all RPC sever instances, including a zombie process.
-            To be used with caution, default value is `False`.
         """
         if not port:
             RpcSession.port = RpcSession.__get_random_free_port()
@@ -139,14 +136,16 @@ class RpcSession:
 
     @staticmethod
     def kill():
-        p = psutil.Process(RpcSession.pid)
-        time.sleep(latency_delay)
         try:
+            p = psutil.Process(RpcSession.pid)
+            time.sleep(latency_delay)
             p.terminate()
-            print(f"RPC session pid: {RpcSession.pid} killed due to execution failure.")
+            settings.logger.info(f"RPC session pid: {RpcSession.pid} killed due to execution failure.")
             RpcSession.pid = 0
-        except:
-            print("RPC session closed.")
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as exc:
+            # Process already gone or not accessible; ensure pid reset and log at info level
+            settings.logger.info("RPC session closed or inaccessible: %s", str(exc))
+            RpcSession.pid = 0
 
     @staticmethod
     def kill_all_instances():
