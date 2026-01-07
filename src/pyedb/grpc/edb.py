@@ -83,6 +83,7 @@ from ansys.edb.core.layout.cell import DesignMode as GrpcDesignMode
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
 )
+from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
 from pyedb.configuration.configuration import Configuration
@@ -451,6 +452,14 @@ class Edb(EdbInit):
             # Defensive: guard against missing attributes or wrong types
             return None
         return None
+
+    def value(self, val) -> float:
+        """Convert a value into a pyedb value."""
+        if isinstance(val, GrpcValue):
+            return Value(val)
+        else:
+            context = self.active_cell if not str(val).startswith("$") else self.active_db
+            return Value(GrpcValue(val, context), context)
 
     @property
     def cell_names(self) -> List[str]:
@@ -1469,6 +1478,7 @@ class Edb(EdbInit):
         else:
             return False
 
+    @deprecate_argument_name({"inputGDS": "input_gds"})
     def import_gds_file(
         self,
         input_gds,
@@ -3346,11 +3356,7 @@ class Edb(EdbInit):
         """
         # Core manager objects
         self._components = Components(self)
-        # Stackup requires layer collection from the active cell's layout
-        try:
-            layer_collection = self.active_cell.layout.layer_collection
-        except Exception:
-            layer_collection = None
+        layer_collection = self.active_cell.layout.layer_collection
         if layer_collection is not None:
             self._stackup = Stackup(self, layer_collection)
         else:
