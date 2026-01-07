@@ -611,7 +611,7 @@ class Modeler(object):
 
         if not origin:
             origin = [center[0] + float(x1) * 10000, center[1] + float(y1) * 10000]
-        self._pedb.add_design_variable(offset_name, 0.0, is_parameter=True)
+        self._pedb.add_design_variable(offset_name, 0.0)
         i = 0
         continue_iterate = True
         prev_point = None
