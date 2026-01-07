@@ -9,6 +9,115 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.66.1 <https://github.com/ansys/pyedb/releases/tag/v0.66.1>`_ - January 06, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update test path and extend with other tests
+          - `#1731 <https://github.com/ansys/pyedb/pull/1731>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Fix type hints and code warnings in padstacks.py
+          - `#1726 <https://github.com/ansys/pyedb/pull/1726>`_
+
+
+`0.66.1 <https://github.com/ansys/pyedb/releases/tag/v0.66.1>`_ - January 01, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Generate auto hfss regions
+          - `#1714 <https://github.com/ansys/pyedb/pull/1714>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/checkout from 6.0.0 to 6.0.1
+          - `#1696 <https://github.com/ansys/pyedb/pull/1696>`_
+
+        * - Bump ansys/actions from 10.1.5 to 10.2.2
+          - `#1697 <https://github.com/ansys/pyedb/pull/1697>`_
+
+        * - Update ansys-edb-core requirement from <0.2.3,>=0.2.0 to >=0.2.0,<0.2.4
+          - `#1700 <https://github.com/ansys/pyedb/pull/1700>`_
+
+        * - Bump codecov/codecov-action from 5.5.1 to 5.5.2
+          - `#1705 <https://github.com/ansys/pyedb/pull/1705>`_
+
+        * - Bump actions/download-artifact from 6.0.0 to 7.0.0
+          - `#1708 <https://github.com/ansys/pyedb/pull/1708>`_
+
+        * - Bump ansys/actions from 10.2.2 to 10.2.3
+          - `#1720 <https://github.com/ansys/pyedb/pull/1720>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Change PyEDB documentation style
+          - `#1721 <https://github.com/ansys/pyedb/pull/1721>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.66.0
+          - `#1712 <https://github.com/ansys/pyedb/pull/1712>`_
+
+        * - Bump release 0.67.dev0
+          - `#1715 <https://github.com/ansys/pyedb/pull/1715>`_
+
+        * - Fix \`\`zizmor\`\` warnings in relation with \`\`ansys/actions/check-actions-security\`\` action
+          - `#1723 <https://github.com/ansys/pyedb/pull/1723>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Remove cell from layout.py
+          - `#1713 <https://github.com/ansys/pyedb/pull/1713>`_
+
+        * - Dependencies updated
+          - `#1716 <https://github.com/ansys/pyedb/pull/1716>`_
+
+        * - Edb core refactoring
+          - `#1717 <https://github.com/ansys/pyedb/pull/1717>`_
+
+
 `0.66.0 <https://github.com/ansys/pyedb/releases/tag/v0.66.0>`_ - December 19, 2025
 ===================================================================================
 
