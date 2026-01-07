@@ -368,6 +368,11 @@ class PadstackInstance:
             PadstackInstanceTerminal object.
 
         """
+        existing_terminal = self.terminal
+        if existing_terminal is not None:
+            self._pedb.logger.warning(f"Terminal already exists on padstack {self.name}.")
+            return existing_terminal
+
         if not name:
             name = self.name
         term = PadstackInstanceTerminal.create(

@@ -1284,6 +1284,9 @@ class TestClassTerminals(BaseTestClass):
             "pin_group": "U7_GND",
         }
 
+        # Test if terminal is reused when terminal already exists
+        edbapp.configuration.run()
+
         edbapp.close(terminate_rpc_session=False)
 
     def test_point_terminal(self, edb_examples):
