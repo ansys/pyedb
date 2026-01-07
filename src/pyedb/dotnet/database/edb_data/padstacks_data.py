@@ -1488,6 +1488,12 @@ class EDBPadstackInstance(Connectable):
 
     def create_terminal(self, name=None):
         """Create a padstack instance terminal"""
+
+        existing_terminal = self.terminal
+        if existing_terminal is not None:
+            self._pedb.logger.warning(f"Terminal already exists on padstack {self.name}.")
+            return existing_terminal
+
         from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import (
             PadstackInstanceTerminal,
         )

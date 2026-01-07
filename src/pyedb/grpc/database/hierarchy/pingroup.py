@@ -217,6 +217,11 @@ class PinGroup:
             Pin group terminal.
 
         """
+        existing_terminal = self.terminal
+        if existing_terminal is not None:
+            self._pedb.logger.warning(f"Terminal already exists on pin group {self.name}.")
+            return existing_terminal
+
         if not name:
             name = generate_unique_name(self.name)
         term = PinGroupTerminal.create(
