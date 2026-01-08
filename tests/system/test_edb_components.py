@@ -641,7 +641,7 @@ class TestClass(BaseTestClass):
 
     def test_ic_die_properties(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        component: Component = edbapp.components["U8"]
+        component = edbapp.components["U8"]
         if edbapp.grpc:
             assert component.ic_die_properties.die_orientation == "chip_up"
             component.ic_die_properties.die_orientation = "chip_down"

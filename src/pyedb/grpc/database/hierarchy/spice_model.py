@@ -50,3 +50,27 @@ class SpiceModel:  # pragma: no cover
     @property
     def spice_file_path(self):
         return self.core.model_path
+
+    @property
+    def file_path(self):
+        """SPICE file path.
+
+        Returns
+        -------
+        str
+            SPICE file path.
+
+        """
+        return self.core.model_path
+
+    @file_path.setter
+    def file_path(self, value):
+        """Set SPICE file path.
+
+        Parameters
+        ----------
+        value : str
+            New SPICE file path.
+
+        """
+        self.core.model_path = value

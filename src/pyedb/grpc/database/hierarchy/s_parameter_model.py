@@ -43,3 +43,75 @@ class SparamModel:  # pragma: no cover
 
         """
         return self.core.is_null
+
+    @property
+    def name(self):
+        """Get the name of the S-parameter model.
+
+        Returns
+        -------
+        str
+            The name of the S-parameter model.
+
+        """
+        return self.core.name
+
+    @name.setter
+    def name(self, value):
+        """Set the name of the S-parameter model.
+
+        Parameters
+        ----------
+        value : str
+            The new name for the S-parameter model.
+
+        """
+        self.core.name = value
+
+    @property
+    def reference_net(self):
+        """Get the reference net of the S-parameter model.
+
+        Returns
+        -------
+        str
+            The reference net of the S-parameter model.
+
+        """
+        return self.core.reference_net
+
+    @reference_net.setter
+    def reference_net(self, value):
+        """Set the reference net of the S-parameter model.
+
+        Parameters
+        ----------
+        value : str
+            The new reference net for the S-parameter model.
+
+        """
+        self.core.reference_net = value
+
+    @property
+    def file_path(self):
+        """Get the file path of the S-parameter model.
+
+        Returns
+        -------
+        str
+            The file path of the S-parameter model.
+
+        """
+        return self.core.file_path
+
+    @file_path.setter
+    def file_path(self, value):
+        """Set the file path of the S-parameter model.
+
+        Parameters
+        ----------
+        value : str
+            The new file path for the S-parameter model.
+
+        """
+        self.core.file_path = value
