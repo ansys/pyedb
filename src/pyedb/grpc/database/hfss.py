@@ -25,6 +25,7 @@ This module contains the ``EdbHfss`` class.
 """
 
 import math
+from typing import Optional
 import warnings
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
@@ -204,6 +205,8 @@ class Hfss(object):
 
         Examples
         --------
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_aedb")
         >>> widths = edb.hfss.get_trace_width_for_traces_with_ports()
         >>> for net_name, width in widths.items():
         ...     print(f"Net '{net_name}': Smallest width = {width}")
@@ -935,11 +938,11 @@ class Hfss(object):
 
         Examples
         --------
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_aedb")
         >>> bbox = edb.hfss.get_layout_bounding_box()
         >>> print(f"Layout Bounding Box: {bbox}")
-        >>>
-        >>> # With custom parameters
-        >>> custom_layout = edb.layouts["MyLayout"]
+        >>> custom_layout = edb.active_layout
         >>> bbox = edb.hfss.get_layout_bounding_box(custom_layout, 5)
         """
         if not layout:
@@ -1063,6 +1066,14 @@ class Hfss(object):
             "trim_component_reference_size` instead.",
             DeprecationWarning,
         )
+        # The `trim_to_terminals` parameter is kept for backward compatibility but is ignored.
+        # Warn the user if they pass a non-default value to make the deprecation explicit.
+        if trim_to_terminals is not False:
+            warnings.warn(
+                "The 'trim_to_terminals' argument is deprecated and is now ignored."
+                " Use the 'simulation_setup' configuration instead.",
+                DeprecationWarning,
+            )
         self._pedb.utility.simulation_configuration.ProcessSimulationConfiguration.trim_component_reference_size(
             simulation_setup
         )
@@ -1222,7 +1233,7 @@ class Hfss(object):
         stop_freq=20e9,
         step_freq=1e6,
         discrete_sweep=False,
-    ) -> HfssSimulationSetup:
+    ) -> Optional[HfssSimulationSetup]:
         """Add HFSS analysis setup.
 
         Parameters
@@ -1247,6 +1258,8 @@ class Hfss(object):
 
         Examples
         --------
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_aedb")
         >>> hfss_setup = edb.hfss.add_setup(
         ...     name="MySetup",
         ...     distribution="linear_count",
@@ -1268,7 +1281,7 @@ class Hfss(object):
             name = generate_unique_name("HFSS_pyedb")
         if name in self._pedb.setups:
             self._pedb.logger.error(f"HFSS setup {name} already defined.")
-            return False
+            return None
         setup = GrpcHfssSimulationSetup.create(self._pedb.active_cell, name)
         start_freq = self._pedb.number_with_units(start_freq, "Hz")
         stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
