@@ -33,9 +33,9 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecated_property
-from pyedb.grpc.database.terminal.terminal import Terminal
 
 
 class PadstackInstanceTerminal(Terminal):
@@ -312,7 +312,6 @@ class PadstackInstanceTerminal(Terminal):
             "current_source": GrpcBoundaryType.CURRENT_SOURCE,
             "rlc": GrpcBoundaryType.RLC,
             "pec": GrpcBoundaryType.PEC,
-
             "portboundary": GrpcBoundaryType.PORT,
             "kdcterminal": GrpcBoundaryType.DC_TERMINAL,
             "kvoltageprobe": GrpcBoundaryType.VOLTAGE_PROBE,
@@ -357,7 +356,7 @@ class PadstackInstanceTerminal(Terminal):
         return "PadstackInstanceTerminal"
 
     @property
-    def reference_terminal(self) -> PadstackInstanceTerminal|None:
+    def reference_terminal(self) -> PadstackInstanceTerminal | None:
         """Return reference terminal.
 
         Returns
