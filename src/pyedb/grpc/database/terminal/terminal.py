@@ -23,6 +23,8 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from pyedb.grpc.database.inner.conn_obj import ConnObj
+
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
@@ -31,7 +33,6 @@ import re
 from ansys.edb.core.terminal.edge_terminal import EdgeType as GrpcEdgeType
 from ansys.edb.core.terminal.terminal import (
     BoundaryType as GrpcBoundaryType,
-    Terminal as GrpcTerminal,
     TerminalType as GrpcTerminalType,
 )
 
@@ -49,10 +50,10 @@ mapping_boundary_type = {
 }
 
 
-class Terminal:
+class Terminal(ConnObj):
     def __init__(self, pedb, edb_object):
-        self.core = edb_object
-        self._pedb = pedb
+        super().__init__(pedb, edb_object)
+
         self._reference_object = None
 
         self._boundary_type_mapping = {
@@ -328,20 +329,6 @@ class Terminal:
 
         return ""
 
-    @property
-    def is_null(self):
-        """Check if the terminal is a null terminal.
-
-        Returns
-        -------
-        bool
-            ``True`` if the terminal is a null terminal, ``False`` otherwise.
-        """
-        try:
-            return self.core.is_null
-        except:
-            return True
-
     def get_padstack_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance:
         """Get a list of pad stacks instances and serves Coax wave ports,
         pingroup terminals, PadEdge terminals.
@@ -525,3 +512,17 @@ class Terminal:
     @phase.setter
     def phase(self, value):
         self.core.source_phase = Value(value)
+
+    @property
+    def terminal_to_ground(self):
+        return self.core.term_to_ground.name
+
+    @terminal_to_ground.setter
+    def terminal_to_ground(self, value):
+        mapping = {
+            "kNoGround": "NO_GROUND",
+            "kNegative": "NEGATIVE",
+            "kPositive": "POSITIVE",
+        }
+        key = mapping.get(value, value)
+        self.core.term_to_ground = getattr(self.core.term_to_ground, key)

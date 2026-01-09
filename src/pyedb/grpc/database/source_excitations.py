@@ -3102,7 +3102,7 @@ class SourceExcitation(SourceExcitationInternal):
         return terminal
 
     def create_point_terminal(self, x, y, layer, net, name=""):
-        from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
+        from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 
         _name = name if name else f"point_{layer}_{x}_{y}"
         location = [x, y]

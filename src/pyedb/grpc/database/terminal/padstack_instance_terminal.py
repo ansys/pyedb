@@ -35,14 +35,11 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecated_property
+from pyedb.grpc.database.terminal.terminal import Terminal
 
 
-class PadstackInstanceTerminal:
+class PadstackInstanceTerminal(Terminal):
     """Manages bundle terminal properties."""
-
-    def __init__(self, pedb, edb_object):
-        self.core = edb_object
-        self._pedb = pedb
 
     @classmethod
     def create(cls, layout, name, padstack_instance, layer, is_ref=False, net=None) -> "PadstackInstanceTerminal":
@@ -315,6 +312,14 @@ class PadstackInstanceTerminal:
             "current_source": GrpcBoundaryType.CURRENT_SOURCE,
             "rlc": GrpcBoundaryType.RLC,
             "pec": GrpcBoundaryType.PEC,
+
+            "portboundary": GrpcBoundaryType.PORT,
+            "kdcterminal": GrpcBoundaryType.DC_TERMINAL,
+            "kvoltageprobe": GrpcBoundaryType.VOLTAGE_PROBE,
+            "kvoltagesource": GrpcBoundaryType.VOLTAGE_SOURCE,
+            "kcurrentsource": GrpcBoundaryType.CURRENT_SOURCE,
+            "rlcboundary": GrpcBoundaryType.RLC,
+            "pecboundary": GrpcBoundaryType.PEC,
         }
         if isinstance(value, str):
             key = value.lower()
@@ -352,7 +357,7 @@ class PadstackInstanceTerminal:
         return "PadstackInstanceTerminal"
 
     @property
-    def reference_terminal(self) -> PadstackInstanceTerminal:
+    def reference_terminal(self) -> PadstackInstanceTerminal|None:
         """Return reference terminal.
 
         Returns
@@ -360,8 +365,10 @@ class PadstackInstanceTerminal:
         PadstackInstanceTerminal
             Reference terminal object.
         """
-
-        return PadstackInstanceTerminal(self._pedb, self.core.reference_terminal)
+        if self.core.reference_terminal:
+            return PadstackInstanceTerminal(self._pedb, self.core.reference_terminal)
+        else:
+            return
 
     @reference_terminal.setter
     def reference_terminal(self, value):

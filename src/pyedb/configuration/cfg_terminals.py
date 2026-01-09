@@ -51,6 +51,13 @@ class CfgTerminal(CfgBase):
         "kDcTerminal",
         "kVoltageProbe",
         "InvalidBoundary",
+        "port",
+        "dc_terminal",
+        "voltage_probe",
+        "voltage_source",
+        "current_source",
+        "rlc",
+        "pec"
     ]
     hfss_type: Literal["Wave", "Gap", None]
 

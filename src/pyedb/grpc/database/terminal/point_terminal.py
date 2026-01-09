@@ -215,3 +215,7 @@ class PointTerminal:
     def is_port(self) -> bool:
         """Adding DotNet compatibility."""
         return True
+
+    @property
+    def is_null(self):
+        return self.core.is_null
