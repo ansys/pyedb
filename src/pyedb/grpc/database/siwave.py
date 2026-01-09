@@ -727,7 +727,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_pin_group_terminal` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_pin_group_terminal(source)
+        return self._pedb.source_excitation._create_pin_group_terminal2(source)
 
     def create_rlc_component(
         self,

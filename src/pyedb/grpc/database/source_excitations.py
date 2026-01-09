@@ -25,6 +25,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Union
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal, PrimitiveEdge as GrpcPrimitiveEdge
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 
@@ -196,8 +197,6 @@ class SourceExcitationInternal:
         -------
         Edb.Cell.Terminal.EdgeTerminal
         """
-        from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal, \
-            PrimitiveEdge as GrpcPrimitiveEdge
 
         if not terminal_name:
             terminal_name = generate_unique_name("Terminal_")
@@ -1447,7 +1446,7 @@ class SourceExcitation(SourceExcitationInternal):
             )
             return False
 
-        return self.create_pin_group_terminal(
+        return self._create_pin_group_terminal2(
             positive_pins=positive_pins,
             negatives_pins=negative_pins,
             name=port_name,
@@ -1455,7 +1454,7 @@ class SourceExcitation(SourceExcitationInternal):
             source_type="circuit_port",
         )
 
-    def create_pin_group_terminal(
+    def _create_pin_group_terminal2(
         self,
         positive_pins: Union[PadstackInstance, List[PadstackInstance]],
         negatives_pins: Optional[Union[PadstackInstance, List[PadstackInstance]]] = None,
@@ -1641,7 +1640,7 @@ class SourceExcitation(SourceExcitationInternal):
             source_name = (
                 f"Vsource_{positive_component_name}_{positive_net_name}_{negative_component_name}_{negative_net_name}"
             )
-        return self.create_pin_group_terminal(
+        return self._create_pin_group_terminal2(
             positive_pins=pos_node_pins,
             negatives_pins=neg_node_pins,
             name=source_name,
@@ -1704,7 +1703,7 @@ class SourceExcitation(SourceExcitationInternal):
             source_name = (
                 f"Vsource_{positive_component_name}_{positive_net_name}_{negative_component_name}_{negative_net_name}"
             )
-        return self.create_pin_group_terminal(
+        return self._create_pin_group_terminal2(
             positive_pins=pos_node_pins,
             negatives_pins=neg_node_pins,
             name=source_name,
@@ -2977,7 +2976,7 @@ class SourceExcitation(SourceExcitationInternal):
             node_pin = node_pin[0]
         if not source_name:
             source_name = f"DC_{component_name}_{net_name}"
-        return self.create_pin_group_terminal(
+        return self._create_pin_group_terminal2(
             positive_pins=node_pin, name=source_name, source_type="dc_terminal", negatives_pins=None
         )
 
@@ -3116,22 +3115,11 @@ class SourceExcitation(SourceExcitationInternal):
         return terminal
 
     def create_edge_terminal(self, primitive_name, x, y, name=""):
-        from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
-
         _name = name if name else f"{primitive_name}_{x}_{y}"
-
-        pt = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(self._pedb, x=x, y=y)
-        primitive = self._pedb.layout.primitives_by_aedt_name[primitive_name]
-        edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, pt._edb_object)
-        edge = convert_py_list_to_net_list(edge, self._pedb.core.Cell.Terminal.Edge)
-        _terminal = self._pedb.core.Cell.Terminal.EdgeTerminal.Create(
-            primitive._edb_object.GetLayout(),
-            primitive._edb_object.GetNet(),
-            _name,
-            edge,
-            isRef=False,
-        )
-        terminal = EdgeTerminal(self._pedb, _terminal)
+        primitive = self._pedb.layout.find_primitive[primitive_name][0]
+        point_on_edge = GrpcPointData([x, y])
+        pos_edge = [GrpcPrimitiveEdge.create(primitive.core, point_on_edge)]
+        terminal = EdgeTerminal.create(layout=primitive.layout, name=name, edge=pos_edge, net=primitive.net)
 
         if terminal.is_null:
             raise RuntimeError(
@@ -3149,3 +3137,11 @@ class SourceExcitation(SourceExcitationInternal):
         bundle_term = terminal.terminals
         bundle_term[0].name = _name + ":T1"
         bundle_term[1].mame = _name + ":T2"
+
+    def create_pin_group_terminal(self, pin_group, name=""):
+        _name = name if name else generate_unique_name(pin_group)
+        pg = self._pedb.siwave.pin_groups[pin_group]
+        terminal = pg.create_terminal(name=_name)
+        if terminal.is_null:
+            raise RuntimeError(f"Failed to create terminal. Input arguments: pin_group={pin_group}, name={name}.")
+        return terminal
