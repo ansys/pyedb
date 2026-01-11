@@ -92,3 +92,12 @@ class TestClass(BaseTestClass):
         edbapp.components["J5"].package_def = "package_2"
         assert edbapp.components["J5"].package_def.name == "package_2"
         edbapp.close(terminate_rpc_session=False)
+
+    def test_wirebond_definitions(self, edb_examples):
+        edbapp = edb_examples.get_wirebond_jedec4_project()
+        assert list(edbapp.definitions.jedec4_bondwire_defs.keys())[0] == "Default"
+        assert list(edbapp.definitions.jedec5_bondwire_defs.keys())[0] == "Default"
+        jedec4_bw = list(edbapp.definitions.jedec4_bondwire_defs.values())[0]
+        jedec4_bw.height = 20e-6
+        assert jedec4_bw.height == 20e-6
+        edbapp.close(terminate_rpc_session=False)

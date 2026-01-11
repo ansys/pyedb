@@ -60,6 +60,51 @@ class Definitions:
         """
         return {l.name: PackageDef(self._pedb, l) for l in self._pedb.active_db.package_defs}
 
+    @property
+    def apd_bondwire_defs(self):
+        """Get all APD bondwire definitions in this Database.
+
+        Returns
+        -------
+        list[:class:`ApdBondwireDef <ansys.edb.definition.ApdBondwireDef>`]
+        """
+        from pyedb.grpc.database.definition.wirebond_def import ApdBondwireDef
+
+        return {
+            apd_def.name.value: ApdBondwireDef(self._pedb, apd_def)
+            for apd_def in self._pedb.active_db.apd_bondwire_defs
+        }
+
+    @property
+    def jedec4_bondwire_defs(self):
+        """Get all JEDEC4 bondwire definitions in this Database.
+
+        Returns
+        -------
+        list[:class:`Jedec4BondwireDef <ansys.edb.definition.Jedec4BondwireDef>`]
+        """
+        from pyedb.grpc.database.definition.wirebond_def import Jedec4BondwireDef
+
+        return {
+            apd_def.name.value: Jedec4BondwireDef(self._pedb, apd_def)
+            for apd_def in self._pedb.active_db.jedec4_bondwire_defs
+        }
+
+    @property
+    def jedec5_bondwire_defs(self):
+        """Get all JEDEC5 bondwire definitions in this Database.
+
+        Returns
+        -------
+        list[:class:`Jedec5BondwireDef <ansys.edb.definition.Jedec5BondwireDef>`]
+        """
+        from pyedb.grpc.database.definition.wirebond_def import Jedec5BondwireDef
+
+        return {
+            jedec5_def.name.value: Jedec5BondwireDef(self._pedb, jedec5_def)
+            for jedec5_def in self._pedb.active_db.jedec5_bondwire_defs
+        }
+
     def add_package_def(
         self, name: str, component_part_name: Optional[str] = None, boundary_points: Optional[List[List[float]]] = None
     ) -> Union[PackageDef, bool]:
