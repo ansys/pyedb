@@ -46,6 +46,7 @@ from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 GEOMETRY_MAP = {
@@ -156,8 +157,10 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> pad_type = edb_padstacks.int_to_pad_type(0)  # Returns REGULAR_PAD
-        >>> pad_type = edb_padstacks.int_to_pad_type(1)  # Returns ANTI_PAD
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> pad_type = edb.padstacks.int_to_pad_type(0)  # Returns REGULAR_PAD
+        >>> pad_type2 = edb.padstacks.int_to_pad_type(1)  # Returns ANTI_PAD
         """
 
         return PAD_TYPE_MAP.get(val, val)
@@ -177,8 +180,10 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> geom_type = edb_padstacks.int_to_geometry_type(1)  # Returns CIRCLE
-        >>> geom_type = edb_padstacks.int_to_geometry_type(2)  # Returns SQUARE
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> geom_type = edb.padstacks.int_to_geometry_type(1)  # Returns CIRCLE
+        >>> geom_type2 = edb.padstacks.int_to_geometry_type(2)  # Returns SQUARE
         """
         return GEOMETRY_MAP.get(val, val)
 
@@ -193,7 +198,9 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> all_definitions = edb_padstacks.definitions
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> all_definitions = edb.padstacks.definitions
         >>> for name, definition in all_definitions.items():
         ...     print(f"Padstack: {name}")
         """
@@ -215,9 +222,11 @@ class Padstacks(object):
 
         Examples
         --------
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
         >>> all_instances = edb.padstacks.instances
-        >>> for id, instance in all_instances.items():
-        ...     print(f"Instance {id}: {instance.name}")
+        >>> for inst_id, instance in all_instances.items():
+        ...     print(f"Instance {inst_id}: {instance.name}")
         """
         if self._instances is None:
             self._instances = self._pedb.layout.padstack_instances
@@ -242,7 +251,9 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> named_instances = edb_padstacks.instances_by_name
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> named_instances = edb.padstacks.instances_by_name
         >>> for name, instance in named_instances.items():
         ...     print(f"Instance named {name}")
         """
@@ -267,7 +278,9 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> via = edb_padstacks.find_instance_by_id(123)
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> via = edb.padstacks.find_instance_by_id(123)
         >>> if via:
         ...     print(f"Found via: {via.name}")
         """
@@ -284,7 +297,9 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> all_pins = edb_padstacks.pins
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> all_pins = edb.padstacks.pins
         >>> for pin_id, pin in all_pins.items():
         ...     print(f"Pin {pin_id} belongs to {pin.component.refdes}")
         """
@@ -305,7 +320,9 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> all_vias = edb_padstacks.vias
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> all_vias = edb.padstacks.vias
         >>> for via_id, via in all_vias.items():
         ...     print(f"Via {via_id} on net {via.net_name}")
         """
@@ -327,19 +344,15 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> groups = edb_padstacks.pingroups  # Deprecated
-        >>> groups = edb_padstacks._layout.pin_groups  # New way
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> groups = edb.padstacks._layout.pin_groups  # New way
         """
         warnings.warn(
             "`pingroups` is deprecated and is now located here `pyedb.grpc.core.layout.pin_groups` instead.",
             DeprecationWarning,
         )
         return self._layout.pin_groups
-
-    @property
-    def pad_type(self) -> GrpcPadType:
-        """Return a PadType Enumerator."""
-        return GrpcPadType
 
     def create_dielectric_filled_backdrills(
         self,
@@ -447,6 +460,8 @@ class Padstacks(object):
         Create back-drills on all vias belonging to two specific pad-stack
         definitions and two DDR4 nets:
 
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
         >>> edb.padstacks.create_dielectric_filled_backdrills(
         ...     layer="L3",
         ...     diameter="0.25mm",
@@ -558,7 +573,9 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> via_name = edb_padstacks.create_circular_padstack(
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> via_name = edb.padstacks.create_circular_padstack(
         ...     padstackname="VIA1", holediam="200um", paddiam="400um", antipaddiam="600um"
         ... )
         """
@@ -654,31 +671,40 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> success = edb_padstacks.delete_padstack_instances("GND")
-        >>> success = edb_padstacks.delete_padstack_instances(["GND", "PWR"])
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> success = edb.padstacks.delete_padstack_instances("GND")
         """
         if not isinstance(net_names, list):  # pragma: no cover
             net_names = [net_names]
 
         for p_id, p in self.instances.items():
             if p.net_name in net_names:
-                if not p._edb_object.delete():  # pragma: no cover
+                if not p.core.delete():  # pragma: no cover
                     return False
         self.clear_instances_cache()
         return True
 
-    def set_solderball(self, padstackInst, sballLayer_name, isTopPlaced=True, ballDiam=100e-6):
+    @deprecate_argument_name(
+        {
+            "padstackInst": "padstack_instance",
+            "isTopPlaced": "top_placed",
+            "sballLayer_name": "solder_ball_layer",
+            "ballDIam": "solder_ball_diameter",
+        }
+    )
+    def set_solderball(self, padstack_instance, solder_ball_layer, top_placed=True, solder_ball_diameter=100e-6):
         """Set solderball for the given PadstackInstance.
 
         Parameters
         ----------
-        padstackInst : Edb.Cell.Primitive.PadstackInstance or int
+        padstack_instance : Edb.Cell.Primitive.PadstackInstance or int
             Padstack instance id or object.
-        sballLayer_name : str,
+        solder_ball_layer : str,
             Name of the layer where the solder ball is placed. No default values.
-        isTopPlaced : bool, optional.
-            Bollean triggering is the solder ball is placed on Top or Bottom of the layer stackup.
-        ballDiam : double, optional,
+        top_placed : bool, optional.
+            Boolean triggering is the solder ball is placed on Top or Bottom of the layer stackup.
+        solder_ball_diameter : double, optional,
             Solder ball diameter value.
 
         Returns
@@ -686,23 +712,23 @@ class Padstacks(object):
         bool
 
         """
-        if isinstance(padstackInst, int):
-            psdef = self.definitions[self.instances[padstackInst].padstack_definition].edb_padstack
-            padstackInst = self.instances[padstackInst]
+        if isinstance(padstack_instance, int):
+            psdef = self.definitions[self.instances[padstack_instance].padstack_definition].core
+            padstack_inst = self.instances[padstack_instance]
 
         else:
-            psdef = padstackInst.padstack_def
+            psdef = padstack_instance.padstack_def
         newdefdata = GrpcPadstackDefData.create(psdef.data)
         newdefdata.solder_ball_shape = GrpcSolderballShape.SOLDERBALL_CYLINDER
-        newdefdata.solder_ball_param(Value(ballDiam), Value(ballDiam))
+        newdefdata.solder_ball_param(Value(solder_ball_diameter), Value(solder_ball_diameter))
         sball_placement = (
-            GrpcSolderballPlacement.ABOVE_PADSTACK if isTopPlaced else GrpcSolderballPlacement.BELOW_PADSTACK
+            GrpcSolderballPlacement.ABOVE_PADSTACK if top_placed else GrpcSolderballPlacement.BELOW_PADSTACK
         )
         newdefdata.solder_ball_placement = sball_placement
         psdef.data = newdefdata
-        sball_layer = [lay._edb_layer for lay in list(self._layers.values()) if lay.name == sballLayer_name][0]
+        sball_layer = [lay.core for lay in list(self._layers.values()) if lay.name == solder_ball_layer][0]
         if sball_layer is not None:
-            padstackInst.solder_ball_layer = sball_layer
+            padstack_instance.solder_ball_layer = sball_layer
             return True
 
         return False
@@ -763,8 +789,10 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> pins = edb_padstacks.get_pin_from_component_and_net(refdes="U1", netname="VCC")
-        >>> pins = edb_padstacks.get_pin_from_component_and_net(netname="GND")  # All GND pins
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> pins = edb.padstacks.get_pin_from_component_and_net(refdes="U1", netname="VCC")
+        >>> pins2 = edb.padstacks.get_pin_from_component_and_net(netname="GND")  # All GND pins
         """
         pinlist = []
         if refdes:
@@ -806,8 +834,9 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> pins = edb_padstacks.get_pinlist_from_component_and_net(refdes="U1", netname="CLK")  # Deprecated
-        >>> pins = edb_padstacks.get_pin_from_component_and_net(refdes="U1", netname="CLK")  # New way
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> pins = edb.padstacks.get_pin_from_component_and_net(refdes="U1", netname="CLK")  # New way
         """
         warnings.warn(
             "`get_pinlist_from_component_and_net` is deprecated use `get_pin_from_component_and_net` instead.",
@@ -841,8 +870,10 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> via = edb_padstacks.instances[123]
-        >>> geom_type, params, x, y, rot = edb_padstacks.get_pad_parameters(via, "TOP", "regular_pad")
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> via = edb.padstacks.instances[123]
+        >>> geom_type, params, x, y, rot = edb.padstacks.get_pad_parameters(via, "TOP", "regular_pad")
         """
         if pad_type == "regular_pad":
             pad_type = GrpcPadType.REGULAR_PAD
@@ -873,6 +904,8 @@ class Padstacks(object):
                 geometry_type = GrpcPadGeometryType.PADGEOMTYPE_POLYGON
                 return geometry_type.name, points, offset_x, offset_y, rotation
             return "unknown", [0.0], 0.0, 0.0, 0.0
+        # Fallback: ensure a consistent return type for all code paths
+        return "unknown", [0.0], 0.0, 0.0, 0.0
 
     def set_all_antipad_value(self, value: Union[float, str]) -> bool:
         """Set anti-pad value for all padstack definitions.
@@ -889,12 +922,14 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> success = edb_padstacks.set_all_antipad_value("0.3mm")
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> success = edb.padstacks.set_all_antipad_value("0.3mm")
         """
         if self.definitions:
             all_succeed = True
             for padstack in list(self.definitions.values()):
-                cloned_padstack_data = GrpcPadstackDefData(padstack.data.msg)
+                cloned_padstack_data = GrpcPadstackDefData(padstack.data.core)
                 layers_name = cloned_padstack_data.layer_names
                 for layer in layers_name:
                     try:
@@ -912,10 +947,10 @@ class Padstacks(object):
                                 sizes=[Value(value)],
                             )
                             self._logger.info(
-                                "Pad-stack definition {}, anti-pad on layer {}, has been set to {}".format(
-                                    padstack.edb_padstack.GetName(), layer, str(value)
-                                )
+                                f"Pad-stack definition {padstack.name}, anti-pad on layer {layer}, has been set "
+                                f"to {str(value)}"
                             )
+
                         else:  # pragma no cover
                             self._logger.error(
                                 f"Failed to reassign anti-pad value {value} on Pads-stack definition {padstack.name},"
@@ -950,7 +985,9 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> success = edb_padstacks.check_and_fix_via_plating(minimum_value_to_replace=0.1)
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> success = edb.padstacks.check_and_fix_via_plating(minimum_value_to_replace=0.1)
         """
         for padstack_def in list(self.definitions.values()):
             if padstack_def.hole_plating_ratio <= minimum_value_to_replace:
@@ -975,8 +1012,9 @@ class Padstacks(object):
 
         Examples
         --------
-        >>> vias = edb_padstacks.get_via_instance_from_net("GND")
-        >>> vias = edb_padstacks.get_via_instance_from_net(["GND", "PWR"])
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_design.edb")
+        >>> vias = edb.padstacks.get_via_instance_from_net(["GND", "PWR"])
         """
         if net_list and not isinstance(net_list, list):
             net_list = [net_list]
@@ -1246,7 +1284,7 @@ class Padstacks(object):
         str
             Name of the new padstack definition.
         """
-        new_padstack_definition_data = GrpcPadstackDefData(self.definitions[target_padstack_name].data.msg)
+        new_padstack_definition_data = GrpcPadstackDefData(self.definitions[target_padstack_name].data.core)
         if not new_padstack_name:
             new_padstack_name = generate_unique_name(target_padstack_name)
         padstack_definition = PadstackDef.create(self, new_padstack_name)
@@ -1366,7 +1404,7 @@ class Padstacks(object):
         pad_geo = GrpcPadGeometryType.PADGEOMTYPE_CIRCLE
         vals = Value(0)
         params = [Value(0)]
-        new_padstack_definition_data = GrpcPadstackDefData(self.definitions[padstack_name].data)
+        new_padstack_definition_data = GrpcPadstackDefData(self.definitions[padstack_name].data.core)
         if not layer_name:
             layer_name = list(self._pedb.stackup.signal_layers.keys())
         elif isinstance(layer_name, str):
@@ -1455,7 +1493,7 @@ class Padstacks(object):
         antipad_x_offset = Value(antipad_x_offset)
         antipad_y_offset = Value(antipad_y_offset)
         antipad_rotation = Value(antipad_rotation)
-        new_padstack_def = GrpcPadstackDefData(self.definitions[padstack_name].data.msg)
+        new_padstack_def = GrpcPadstackDefData(self.definitions[padstack_name].data.core)
         if not layer_name:
             layer_name = list(self._pedb.stackup.signal_layers.keys())
         elif isinstance(layer_name, str):
@@ -1670,8 +1708,8 @@ class Padstacks(object):
             raise Exception("No points defining polygon was provided")
         if not padstack_instances_index:
             padstack_instances_index = {}
-            for inst in self.instances:
-                padstack_instances_index[inst.id] = inst.position
+            for inst_id, inst in self.instances.items():
+                padstack_instances_index[inst_id] = inst.position
         _x = [pt[0] for pt in points]
         _y = [pt[1] for pt in points]
         points = [_x, _y]
