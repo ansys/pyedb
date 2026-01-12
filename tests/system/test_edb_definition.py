@@ -85,7 +85,7 @@ class TestClass(BaseTestClass):
         assert package.heat_sink.fin_spacing == 0.003
         assert package.heat_sink.fin_thickness == 0.004
         package.name = "package_1b"
-        assert edbapp.definitions.package["package_1b"]
+        assert edbapp.definitions.packages["package_1b"]
 
         assert edbapp.definitions.add_package("package_2", boundary_points=[["-1mm", "-1mm"], ["1mm", "1mm"]])
         edbapp.components["J5"].package_def = "package_2"
