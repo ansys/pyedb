@@ -24,7 +24,7 @@ import warnings
 
 from pyedb.dotnet.database.definition.component_def import EDBComponentDef
 from pyedb.dotnet.database.definition.package_def import PackageDef
-from pyedb.dotnet.database.definition.wirebond_def import ApdBondwireDef, Jedec4BondwireDef, Jedec5BondwireDefs
+from pyedb.dotnet.database.definition.wirebond_def import ApdBondwireDef, Jedec4BondwireDef, Jedec5BondwireDef
 
 
 class Definitions:
@@ -77,7 +77,7 @@ class Definitions:
         objs = getattr(self._pedb.active_db, "Jedec5BondwireDefs", None)
         if not objs:
             return {}
-        return {l.GetName(): Jedec5BondwireDefs(self._pedb, l) for l in list(objs)}
+        return {l.GetName(): Jedec5BondwireDef(self._pedb, l) for l in list(objs)}
 
     @property
     def apd_bondwires(self):
@@ -150,7 +150,7 @@ class Definitions:
         Jedec5BondwireDef
             The created JEDEC 5 bondwire definition.
         """
-        return Jedec5BondwireDefs.create(self._pedb, name, top_to_die_distance)
+        return Jedec5BondwireDef.create(self._pedb, name, top_to_die_distance)
 
     def create_apd_bondwire_def(self, name: str, top_to_die_distance: float = 30e-6):
         """Create an APD bondwire definition.
