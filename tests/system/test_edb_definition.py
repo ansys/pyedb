@@ -61,9 +61,6 @@ class TestClass(BaseTestClass):
         else:
             assert not list(edbapp.definitions.component["CAPC3216X180X55ML20T25"].component_models.values())[0].is_null
         assert edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
-        # pp = {"pin_order": ["1", "2"]}
-        # edbapp.definitions.component["CAPC3216X180X55ML20T25"].set_properties(**pp)
-        # assert edbapp.definitions.component["CAPC3216X180X55ML20T25"].get_properties()["pin_order"] == ["1", "2"]
         edbapp.close(terminate_rpc_session=False)
 
     def test_add_package_def(self, edb_examples):
