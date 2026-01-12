@@ -69,10 +69,10 @@ class Jedec5BondwireDef(WirebondDef):
 
     @classmethod
     def find_by_name(cls, edb, name: str):
-        jedec4_def = next((wb_def for wb_def in list(edb._db.Jedec4BondwireDefs) if wb_def.GetName() == name), None)
-        if jedec4_def is None:
+        jedec5_def = next((wb_def for wb_def in list(edb._db.Jedec5BondwireDefs) if wb_def.GetName() == name), None)
+        if jedec5_def is None:
             return None
-        return cls(edb, jedec4_def)
+        return cls(edb, jedec5_def)
 
     @classmethod
     def create(cls, edb, name: str, top_to_die_distance: float = 30e-6):
