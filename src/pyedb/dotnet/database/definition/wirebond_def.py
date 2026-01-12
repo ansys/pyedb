@@ -88,12 +88,12 @@ class ApdBondwireDef(WirebondDef):
 
     @classmethod
     def find_by_name(cls, edb, name: str):
-        Apd_def = next((wb_def for wb_def in list(edb._db.ApdBondwireDefs) if wb_def.GetName() == name), None)
-        if Apd_def is None:
+        apd_def = next((wb_def for wb_def in list(edb._db.ApdBondwireDefs) if wb_def.GetName() == name), None)
+        if apd_def is None:
             return None
-        return cls(edb, Apd_def)
+        return cls(edb, apd_def)
 
     @classmethod
     def create(cls, edb, name: str, top_to_die_distance: float = 30e-6):
-        Apd_def = edb._db.ApdBondwireDefs.Create(edb._db, name, edb.edb_value(top_to_die_distance))
-        return cls(edb, Apd_def)
+        apd_def = edb._db.ApdBondwireDefs.Create(edb._db, name, edb.edb_value(top_to_die_distance))
+        return cls(edb, apd_def)
