@@ -256,7 +256,6 @@ class TestClass(BaseTestClass):
             [0.025, 0.02],
         ]
         trace = edbapp.modeler.create_trace(points, "1_Top")
-        trace.aedt_name
         assert trace
         assert isinstance(trace.get_center_line(), list)
         assert isinstance(trace.get_center_line(), list)

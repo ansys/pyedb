@@ -31,9 +31,6 @@ from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import (
     PolygonData as GrpcPolygonData,
 )
-from ansys.edb.core.primitive.rectangle import (
-    RectangleRepresentationType as GrpcRectangleRepresentationType,
-)
 
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.primitive.bondwire import Bondwire
@@ -59,7 +56,6 @@ def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
         # already nested – just ensure every item is a *list* (not tuple)
         return [list(pair) for pair in pts]
     else:
-        # flat list – chunk into pairs
         if len(pts) % 2:
             raise ValueError("Odd number of coordinates supplied")
         return [[pts[i], pts[i + 1]] for i in range(0, len(pts), 2)]
@@ -474,7 +470,7 @@ class Modeler(object):
             layer = None
         if not isinstance(point, list) and len(point) == 2:
             self._logger.error("Provided point must be a list of two values")
-            return False
+            return []
         pt = GrpcPointData(point)
         if isinstance(nets, str):
             nets = [nets]
