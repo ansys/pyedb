@@ -66,7 +66,7 @@ class TestClass(BaseTestClass):
     def test_add_package_def(self, edb_examples):
         # Done
         edbapp = edb_examples.get_si_verse()
-        package = edbapp.definitions.add_package_def("package_1", "SMTC-MECT-110-01-M-D-RA1_V")
+        package = edbapp.definitions.add_package("package_1", "SMTC-MECT-110-01-M-D-RA1_V")
         assert package
         package.maximum_power = 1
         assert edbapp.definitions.packages["package_1"].maximum_power == 1
@@ -87,16 +87,16 @@ class TestClass(BaseTestClass):
         package.name = "package_1b"
         assert edbapp.definitions.package["package_1b"]
 
-        assert edbapp.definitions.add_package_def("package_2", boundary_points=[["-1mm", "-1mm"], ["1mm", "1mm"]])
+        assert edbapp.definitions.add_package("package_2", boundary_points=[["-1mm", "-1mm"], ["1mm", "1mm"]])
         edbapp.components["J5"].package_def = "package_2"
         assert edbapp.components["J5"].package_def.name == "package_2"
         edbapp.close(terminate_rpc_session=False)
 
     def test_wirebond_definitions(self, edb_examples):
         edbapp = edb_examples.get_wirebond_jedec4_project()
-        assert list(edbapp.definitions.jedec4_bondwire_defs.keys())[0] == "Default"
-        assert list(edbapp.definitions.jedec5_bondwire_defs.keys())[0] == "Default"
-        jedec4_bw = list(edbapp.definitions.jedec4_bondwire_defs.values())[0]
+        assert list(edbapp.definitions.jedec4_bondwires.keys())[0] == "Default"
+        assert list(edbapp.definitions.jedec5_bondwires.keys())[0] == "Default"
+        jedec4_bw = list(edbapp.definitions.jedec4_bondwires.values())[0]
         jedec4_bw.height = 20e-6
         assert jedec4_bw.height == 20e-6
         edbapp.close(terminate_rpc_session=False)

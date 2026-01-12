@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import warnings
+
 from pyedb.dotnet.database.definition.component_def import EDBComponentDef
 from pyedb.dotnet.database.definition.package_def import PackageDef
 from pyedb.dotnet.database.definition.wirebond_def import ApdBondwireDef, Jedec4BondwireDef, Jedec5BondwireDefs
@@ -31,16 +33,39 @@ class Definitions:
 
     @property
     def component(self):
-        """Component definitions"""
+        """Component definitions.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`components` instead.
+
+        """
+        warnings.warn("component is deprecated, use components instead", DeprecationWarning, stacklevel=2)
+        return self.components
+
+    @property
+    def components(self):
         return {l.GetName(): EDBComponentDef(self._pedb, l) for l in list(self._pedb.active_db.ComponentDefs)}
 
     @property
     def package(self):
+        """Package definitions.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`packages` instead.
+
+        """
+        warnings.warn("package is deprecated, use packages instead", DeprecationWarning, stacklevel=2)
+        return self.packages
+
+    @property
+    def packages(self):
         """Package definitions."""
         return {l.GetName(): PackageDef(self._pedb, l) for l in list(self._pedb.active_db.PackageDefs)}
 
     @property
-    def jedec4_bondwire_defs(self):
+    def jedec4_bondwires(self):
         """Wirebond definitions."""
         objs = getattr(self._pedb.active_db, "Jedec4BondwireDefs", None)
         if not objs:
@@ -48,20 +73,31 @@ class Definitions:
         return {l.GetName(): Jedec4BondwireDef(self._pedb, l) for l in list(objs)}
 
     @property
-    def jedec5_bondwire_defs(self):
+    def jedec5_bondwires(self):
         objs = getattr(self._pedb.active_db, "Jedec5BondwireDefs", None)
         if not objs:
             return {}
         return {l.GetName(): Jedec5BondwireDefs(self._pedb, l) for l in list(objs)}
 
     @property
-    def apd_bondwire_defs(self):
+    def apd_bondwires(self):
         objs = getattr(self._pedb.active_db, "ApdBondwireDefs", None)
         if not objs:
             return {}
         return {l.GetName(): ApdBondwireDef(self._pedb, l) for l in list(objs)}
 
-    def add_package_def(self, name, component_part_name=None, boundary_points=None):
+    def add_packages(self, name, component_part_name=None, boundary_points=None):
+        """Add a package definition.
+
+        .. deprecated:: 0.66.0
+
+           Use :meth:`add_package` instead.
+
+        """
+        warnings.warn("add_packages is deprecated, use add_package instead", DeprecationWarning)
+        return self.add_package(name, component_part_name=component_part_name, boundary_points=boundary_points)
+
+    def add_package(self, name, component_part_name=None, boundary_points=None):
         """Add a package definition.
 
         Parameters

@@ -195,6 +195,19 @@ class Definitions:
     ) -> Union[PackageDef, bool]:
         """Add a package definition.
 
+        .. deprecated:: 0.66.0
+
+           Use :meth:`add_package` instead.
+
+        """
+        warnings.warn("add_package_def is deprecated, use add_package instead", DeprecationWarning, stacklevel=2)
+        return self.add_package(name, component_part_name=component_part_name, boundary_points=boundary_points)
+
+    def add_package(
+        self, name: str, component_part_name: Optional[str] = None, boundary_points: Optional[List[List[float]]] = None
+    ) -> Union[PackageDef, bool]:
+        """Add a package definition.
+
         Parameters
         ----------
         name: str
