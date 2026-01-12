@@ -61,7 +61,7 @@ class Jedec4BondwireDef(WirebondDef):
         return cls(edb, jedec4_def)
 
 
-class Jedec5BondwireDefs(WirebondDef):
+class Jedec5BondwireDef(WirebondDef):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
         self._pedb = pedb
@@ -69,10 +69,10 @@ class Jedec5BondwireDefs(WirebondDef):
 
     @classmethod
     def find_by_name(cls, edb, name: str):
-        jedec4_def = next((wb_def for wb_def in list(edb._db.Jedec4BondwireDefs) if wb_def.GetName() == name), None)
-        if jedec4_def is None:
+        jedec5_def = next((wb_def for wb_def in list(edb._db.Jedec5BondwireDefs) if wb_def.GetName() == name), None)
+        if jedec5_def is None:
             return None
-        return cls(edb, jedec4_def)
+        return cls(edb, jedec5_def)
 
     @classmethod
     def create(cls, edb, name: str, top_to_die_distance: float = 30e-6):
@@ -88,12 +88,12 @@ class ApdBondwireDef(WirebondDef):
 
     @classmethod
     def find_by_name(cls, edb, name: str):
-        Apd_def = next((wb_def for wb_def in list(edb._db.ApdBondwireDefs) if wb_def.GetName() == name), None)
-        if Apd_def is None:
+        apd_def = next((wb_def for wb_def in list(edb._db.ApdBondwireDefs) if wb_def.GetName() == name), None)
+        if apd_def is None:
             return None
-        return cls(edb, Apd_def)
+        return cls(edb, apd_def)
 
     @classmethod
     def create(cls, edb, name: str, top_to_die_distance: float = 30e-6):
-        Apd_def = edb._db.ApdBondwireDefs.Create(edb._db, name, edb.edb_value(top_to_die_distance))
-        return cls(edb, Apd_def)
+        apd_def = edb._db.ApdBondwireDefs.Create(edb._db, name, edb.edb_value(top_to_die_distance))
+        return cls(edb, apd_def)

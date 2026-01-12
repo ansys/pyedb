@@ -127,7 +127,7 @@ class Jedec4BondwireDef(BondwireDef):
 
 
 class Jedec5BondwireDef(BondwireDef):
-    """Class representing a JEDEC 4 bondwire definition."""
+    """Class representing a JEDEC 5 bondwire definition."""
 
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
