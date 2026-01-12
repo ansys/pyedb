@@ -33,7 +33,7 @@ class Definitions:
         self._pedb = pedb
 
     @property
-    def component(self) -> Dict[str, ComponentDef]:
+    def component_defs(self) -> Dict[str, ComponentDef]:
         """Component definitions
 
         Examples
@@ -47,7 +47,7 @@ class Definitions:
         return {l.name: ComponentDef(self._pedb, l) for l in self._pedb.active_db.component_defs}
 
     @property
-    def package(self) -> Dict[str, PackageDef]:
+    def package_defs(self) -> Dict[str, PackageDef]:
         """Package definitions.
 
         Examples
@@ -139,10 +139,10 @@ class Definitions:
         >>> if custom_pkg:
         ...     print(f"Custom package boundary: {custom_pkg.exterior_boundary}")
         """
-        if not name in self.package:
+        if not name in self.package_defs:
             package_def = PackageDef.create(self._pedb, name)
-            if component_part_name in self.component:
-                definition = self.component[component_part_name]
+            if component_part_name in self.component_defs:
+                definition = self.component_defs[component_part_name]
                 if not boundary_points and not definition.is_null:
                     package_def.exterior_boundary = GrpcPolygonData(
                         points=list(definition.components.values())[0].bounding_box
