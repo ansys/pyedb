@@ -57,9 +57,11 @@ class TestClass(BaseTestClass):
         assert edbapp.definitions.components["CAPC3216X180X55ML20T25"].component_models
         # TODO return in grpc component_models as dict{name: model}.
         if edbapp.grpc:
-            assert not edbapp.definitions.component["CAPC3216X180X55ML20T25"].component_models[0].is_null
+            assert not edbapp.definitions.components["CAPC3216X180X55ML20T25"].component_models[0].is_null
         else:
-            assert not list(edbapp.definitions.component["CAPC3216X180X55ML20T25"].component_models.values())[0].is_null
+            assert not list(edbapp.definitions.components["CAPC3216X180X55ML20T25"].component_models.values())[
+                0
+            ].is_null
         assert edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
         edbapp.close(terminate_rpc_session=False)
 
@@ -85,7 +87,7 @@ class TestClass(BaseTestClass):
         assert package.heat_sink.fin_spacing == 0.003
         assert package.heat_sink.fin_thickness == 0.004
         package.name = "package_1b"
-        assert edbapp.definitions.package["package_1b"]
+        assert edbapp.definitions.packages["package_1b"]
 
         assert edbapp.definitions.add_package("package_2", boundary_points=[["-1mm", "-1mm"], ["1mm", "1mm"]])
         edbapp.components["J5"].package_def = "package_2"
