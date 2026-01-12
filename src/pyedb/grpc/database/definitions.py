@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from typing import Dict, List, Optional, Union
+import warnings
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 
@@ -31,6 +32,78 @@ from pyedb.grpc.database.definition.package_def import PackageDef
 class Definitions:
     def __init__(self, pedb) -> None:
         self._pedb = pedb
+
+    @property
+    def component_defs(self) -> Dict[str, ComponentDef]:
+        """Component definitions.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`components` instead.
+
+        """
+        warnings.warn("component_defs is deprecated, use components instead", DeprecationWarning)
+        return self.components
+
+    @property
+    def component(self):
+        """Component definitions.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`components` instead.
+
+        """
+        warnings.warn("component is deprecated, use components instead", DeprecationWarning)
+        return self.components
+
+    @property
+    def apd_bondwire_defs(self):
+        """Get all APD bondwire definitions in this Database.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`apd_bondwires` instead.
+
+        """
+        warnings.warn("apd_bondwire_defs is deprecated, use apd_bondwires instead", DeprecationWarning)
+        return self.apd_bondwires
+
+    @property
+    def jedec4_bondwire_defs(self):
+        """Get all JEDEC4 bondwire definitions in this Database.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`jedec4_bondwires` instead.
+
+        """
+        warnings.warn("jedec4_bondwire_defs is deprecated, use jedec4_bondwires instead", DeprecationWarning)
+        return self.jedec4_bondwires
+
+    @property
+    def jedec5_bondwire_defs(self):
+        """Get all JEDEC5 bondwire definitions in this Database.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`jedec5_bondwires` instead.
+
+        """
+        warnings.warn("jedec5_bondwire_defs is deprecated, use jedec5_bondwires instead", DeprecationWarning)
+        return self.jedec5_bondwires
+
+    @property
+    def package_defs(self) -> Dict[str, PackageDef]:
+        """Package definitions.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`packages` instead.
+
+        """
+        warnings.warn("package_defs is deprecated, use packages instead", DeprecationWarning)
+        return self.packages
 
     @property
     def components(self) -> Dict[str, ComponentDef]:
