@@ -33,7 +33,7 @@ class Definitions:
         self._pedb = pedb
 
     @property
-    def component_defs(self) -> Dict[str, ComponentDef]:
+    def components(self) -> Dict[str, ComponentDef]:
         """Component definitions
 
         Examples
@@ -47,7 +47,7 @@ class Definitions:
         return {l.name: ComponentDef(self._pedb, l) for l in self._pedb.active_db.component_defs}
 
     @property
-    def package_defs(self) -> Dict[str, PackageDef]:
+    def packages(self) -> Dict[str, PackageDef]:
         """Package definitions.
 
         Examples
@@ -61,7 +61,7 @@ class Definitions:
         return {l.name: PackageDef(self._pedb, l) for l in self._pedb.active_db.package_defs}
 
     @property
-    def apd_bondwire_defs(self):
+    def apd_bondwires(self):
         """Get all APD bondwire definitions in this Database.
 
         Returns
@@ -76,7 +76,7 @@ class Definitions:
         }
 
     @property
-    def jedec4_bondwire_defs(self):
+    def jedec4_bondwires(self):
         """Get all JEDEC4 bondwire definitions in this Database.
 
         Returns
@@ -91,7 +91,7 @@ class Definitions:
         }
 
     @property
-    def jedec5_bondwire_defs(self):
+    def jedec5_bondwires(self):
         """Get all JEDEC5 bondwire definitions in this Database.
 
         Returns
@@ -139,10 +139,10 @@ class Definitions:
         >>> if custom_pkg:
         ...     print(f"Custom package boundary: {custom_pkg.exterior_boundary}")
         """
-        if not name in self.package_defs:
+        if not name in self.packages:
             package_def = PackageDef.create(self._pedb, name)
-            if component_part_name in self.component_defs:
-                definition = self.component_defs[component_part_name]
+            if component_part_name in self.components:
+                definition = self.components[component_part_name]
                 if not boundary_points and not definition.is_null:
                     package_def.exterior_boundary = GrpcPolygonData(
                         points=list(definition.components.values())[0].bounding_box
