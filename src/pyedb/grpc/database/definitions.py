@@ -120,6 +120,18 @@ class Definitions:
         return {l.name: ComponentDef(self._pedb, l) for l in self._pedb.active_db.component_defs}
 
     @property
+    def package(self):
+        """Package definitions.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`packages` instead.
+
+        """
+        warnings.warn("package is deprecated, use packages instead", DeprecationWarning)
+        return self.packages
+
+    @property
     def packages(self) -> Dict[str, PackageDef]:
         """Package definitions.
 
