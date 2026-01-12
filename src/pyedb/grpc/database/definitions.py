@@ -100,9 +100,9 @@ class Definitions:
                 definition = self.component[component_part_name]
                 if not boundary_points and not definition.is_null:
                     package_def.exterior_boundary = GrpcPolygonData(
-                        points=list(definition.components.values())[0].bounding_box
+                        points=list(definition.components.values())[0].bounding_box  # type: ignore[arg-type]
                     )
             if boundary_points:
-                package_def.exterior_boundary = GrpcPolygonData(points=boundary_points)
+                package_def.exterior_boundary = GrpcPolygonData(points=boundary_points)  # type: ignore[arg-type]
             return package_def
         return False
