@@ -714,7 +714,6 @@ class Padstacks(object):
         """
         if isinstance(padstack_instance, int):
             psdef = self.definitions[self.instances[padstack_instance].padstack_definition].core
-            padstack_inst = self.instances[padstack_instance]
 
         else:
             psdef = padstack_instance.padstack_def
