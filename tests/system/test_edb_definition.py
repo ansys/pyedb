@@ -59,7 +59,9 @@ class TestClass(BaseTestClass):
         if edbapp.grpc:
             assert not edbapp.definitions.components["CAPC3216X180X55ML20T25"].component_models[0].is_null
         else:
-            assert not list(edbapp.definitions.components["CAPC3216X180X55ML20T25"].component_models.values())[0].is_null
+            assert not list(edbapp.definitions.components["CAPC3216X180X55ML20T25"].component_models.values())[
+                0
+            ].is_null
         assert edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
         edbapp.close(terminate_rpc_session=False)
 
