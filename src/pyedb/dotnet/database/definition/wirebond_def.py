@@ -61,7 +61,7 @@ class Jedec4BondwireDef(WirebondDef):
         return cls(edb, jedec4_def)
 
 
-class Jedec5BondwireDefs(WirebondDef):
+class Jedec5BondwireDef(WirebondDef):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
         self._pedb = pedb
