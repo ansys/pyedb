@@ -24,7 +24,7 @@ import warnings
 
 from pyedb.dotnet.database.definition.component_def import EDBComponentDef
 from pyedb.dotnet.database.definition.package_def import PackageDef
-from pyedb.dotnet.database.definition.wirebond_def import ApdBondwireDef, Jedec4BondwireDef, Jedec5BondwireDefs
+from pyedb.dotnet.database.definition.wirebond_def import ApdBondwireDef, Jedec4BondwireDef, Jedec5BondwireDef
 
 
 class Definitions:
