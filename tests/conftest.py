@@ -152,6 +152,11 @@ class EdbExamples:
             edbapp, additional_files_folders, version, source_file_path="si_verse/ANSYS-HSD_V1.aedb"
         )
 
+    def get_wirebond_jedec4_project(self, edbapp=True, additional_files_folders="", version=None):
+        return self._get_test_board(
+            edbapp, additional_files_folders, version, source_file_path="wirebond_projects/test_wb_jedec4.aedb"
+        )
+
     def get_si_verse_sfp(self, edbapp=True, additional_files_folders="", version=None):
         return self._get_test_board(
             edbapp, additional_files_folders, version, source_file_path="si_verse/ANSYS_SVP_V1_1_SFP.aedb"

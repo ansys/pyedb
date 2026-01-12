@@ -228,7 +228,7 @@ class Components(object):
         --------
         >>> edbapp.components.definitions
         """
-        return {l.name: ComponentDef(self._pedb, l) for l in self._pedb.component_defs}
+        return self._pedb.definitions.components
 
     @property
     def nport_comp_definition(self) -> Dict[str, ComponentDef]:
