@@ -60,12 +60,12 @@ class PadProperties:
     >>> edb_pad_properties = edb.padstacks.definitions["MyPad"].pad_by_layer["TOP"]
     """
 
-    def __init__(self, edb_padstack, layer_name, pad_type, p_edb_padstack):
-        self._edb_object = edb_padstack
+    def __init__(self, core, layer_name, pad_type, p_edb_padstack):
+        self._edb_object = core
         self._pedbpadstack = p_edb_padstack
         self.layer_name = layer_name
         self.pad_type = pad_type
-        self._edb_padstack = self._edb_object
+        self._edb_padstack = core
 
     @property
     def _stackup_layers(self):
