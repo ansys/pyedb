@@ -36,10 +36,10 @@ Script runs slowly when creating many geometries
 *   **Cause:** Using many individual ``create_rectangle`` or ``create_path`` calls is inefficient.
 *   **Solution:** Use batch operations where possible, or create complex polygons instead of many simple shapes.
 
-Error with uv-created virtual environments
--------------------------------------------
-When using `uv <https://github.com/astral-sh/uv>`_ to create virtual environments, you may encounter
-SSL-related errors when using PyEDB:
+Error with uv-created virtual environments on Windows
+-----------------------------------------------------
+When using `uv <https://github.com/astral-sh/uv>`_ to create virtual environments on Windows, you may
+encounter SSL-related errors when using PyEDB:
 
 .. code:: text
 
@@ -56,17 +56,14 @@ without conflict because they have different names.
 However, when using ``uv`` created virtual environments with Python from
 `python-build-standalone <https://github.com/astral-sh/python-build-standalone>`_, the Python distribution
 uses the same DLL name ``libssl-3-x64.dll`` as the extension modules. This creates a conflict in Windows:
-only one version of ``libssl-3-x64.dll`` can be loaded into the process at a time.
-
-For more details, see `python-build-standalone #596 <https://github.com/astral-sh/python-build-standalone/issues/596>`_
+only one version of ``libssl-3-x64.dll`` can be loaded into the process at a time. For more details, see
+`python-build-standalone #596 <https://github.com/astral-sh/python-build-standalone/issues/596>`_
 
 **Workaround**
 
 To avoid this issue, create the virtual environment manually using the standard Python ``venv`` module
 instead of ``uv venv``. You can then install ``uv`` inside the environment and continue using it for
-package management.
-
-**Windows:**
+package management:
 
 .. code:: bash
 
