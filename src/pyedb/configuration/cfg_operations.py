@@ -53,6 +53,7 @@ class CfgCutout(BaseModel):
 
     model_config = dict(populate_by_name=True)
 
+
 class CfgOperations(BaseModel):
     cutout: Optional[CfgCutout] = None
     generate_auto_hfss_regions: bool = False
