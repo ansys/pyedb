@@ -51,6 +51,7 @@ class Connectable(LayoutObj):
     def net_name(self):
         """Get the primitive layer name.
 
+
         Returns
         -------
         str

@@ -64,6 +64,7 @@ class PinGroupTerminal(Terminal):
         else:
             return term
 
+    @property
     def pin_group(self):
         """Gets the pin group the terminal refers to."""
         name = self._edb_object.GetPinGroup().GetName()

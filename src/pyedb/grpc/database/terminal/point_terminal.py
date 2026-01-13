@@ -39,14 +39,14 @@ mapping_boundary_type = {
     "rlc": GrpcBoundaryType.RLC,
     "pec": GrpcBoundaryType.PEC,
 }
+from pyedb.grpc.database.terminal.terminal import Terminal
 
 
-class PointTerminal:
+class PointTerminal(Terminal):
     """Manages point terminal properties."""
 
     def __init__(self, pedb, edb_object):
-        self.core = edb_object
-        self._pedb = pedb
+        super().__init__(pedb, edb_object)
 
     @classmethod
     def create(cls, layout, net, layer, name, point):
@@ -85,21 +85,6 @@ class PointTerminal:
         return cls(layout._pedb, core_terminal)
 
     @property
-    def name(self) -> str:
-        """Terminal name.
-
-        Returns
-        -------
-        str : terminal name.
-
-        """
-        return self.core.name
-
-    @name.setter
-    def name(self, value):
-        self.core.name = value
-
-    @property
     def is_reference_terminal(self) -> bool:
         """Whether the terminal is a reference terminal.
 
@@ -123,25 +108,6 @@ class PointTerminal:
         return self.core.point.x.value, self.core.point.y.value
 
     @property
-    def boundary_type(self):
-        """Boundary type.
-
-        Returns
-        -------
-        str : boundary type.
-
-        """
-        return self.core.boundary_type.name.lower()
-
-    @boundary_type.setter
-    def boundary_type(self, value):
-        if isinstance(value, str):
-            value = mapping_boundary_type.get(value.lower(), None)
-        if not isinstance(value, GrpcBoundaryType):
-            raise ValueError("Value must be a string or BoundaryType enum.")
-        self.core.boundary_type = value
-
-    @property
     def location(self) -> tuple[float, float]:
         """Terminal position.
 
@@ -150,7 +116,7 @@ class PointTerminal:
         tuple[float, float] : (x,y])
 
         """
-        return self.core.point
+        return Value(self.core.point.x), Value(self.core.point.y)
 
     @location.setter
     def location(self, value):
@@ -160,58 +126,33 @@ class PointTerminal:
         self.core.point = GrpcPointData(value)
 
     @property
-    def layer(self) -> "StackupLayer":
-        """Terminal layer.
+    def reference_layer(self):
+        """Reference layer of the terminal.
 
         Returns
         -------
-        :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`
-
+        :class:`Layer <pyedb.grpc.database.layer.layer.Layer>`
         """
-        from pyedb.grpc.database.layers.stackup_layer import StackupLayer
+        try:
+            return self.core.reference_layer.name
+        except AttributeError:
+            self._pedb.logger.error("Cannot determine terminal layer")
+            return None
 
-        return StackupLayer(self._pedb, self.core.layer)
+    @reference_layer.setter
+    def reference_layer(self, value):
+        from ansys.edb.core.layer.layer import Layer as GrpcLayer
+
+        if isinstance(value, GrpcLayer):
+            self.core.reference_layer = value
+        if isinstance(value, str):
+            self.core.reference_layer = self._pedb.stackup.layers[value]
+
+    @property
+    def layer(self):
+        """Layer that the point terminal is placed on."""
+        return self.core.layer
 
     @layer.setter
     def layer(self, value):
-        if value in self._pedb.stackup.layers:
-            self.core.layer = value
-
-    @property
-    def ref_terminal(self) -> "PointTerminal":
-        """Reference terminal.
-
-        Returns
-        -------
-        :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
-
-        """
-        return PointTerminal(self._pedb, self.reference_terminal)
-
-    @ref_terminal.setter
-    def ref_terminal(self, value):
-        self.core.reference_terminal = value.core
-
-    @property
-    def reference_terminal(self) -> "PointTerminal":
-        """Reference terminal.
-
-        Returns
-        -------
-        :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
-
-        """
-        return PointTerminal(self._pedb, self.core.reference_terminal)
-
-    @reference_terminal.setter
-    def reference_terminal(self, value):
-        self.core.reference_terminal = value.core
-
-    @property
-    def terminal_type(self) -> str:
-        return "PointTerminal"
-
-    @property
-    def is_port(self) -> bool:
-        """Adding DotNet compatibility."""
-        return True
+        self.core.layer = value

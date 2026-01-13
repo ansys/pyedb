@@ -570,7 +570,7 @@ class Edb(EdbInit):
 
         for t in terminals:
             if isinstance(t, BundleTerminal):
-                bundle_ter = WavePort(self, t.core)
+                bundle_ter = BundleTerminal(self, t.core)
                 ports[bundle_ter.name] = bundle_ter
             elif isinstance(t, PadstackInstanceTerminal):
                 ports[t.name] = CoaxPort(self, t.core)

@@ -227,7 +227,7 @@ class PinGroup:
         term = PinGroupTerminal.create(
             layout=self._active_layout, name=name, pin_group=self, net=self.net, is_ref=False
         )
-        return PinGroupTerminal(self._pedb, term)
+        return term
 
     def _json_format(self) -> dict[str, any]:
         """Format json.

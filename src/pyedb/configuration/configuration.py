@@ -745,7 +745,7 @@ class Configuration:
         manager = self.cfg_data.terminals
         manager.terminals = []
         for i in self._pedb.terminals.values():
-            if i.terminal_type == "PadstackInstanceTerminal":
+            if i.terminal_type in ["PadstackInstanceTerminal", "padstack_inst"]:
                 manager.add_padstack_instance_terminal(
                     padstack_instance=i.padstack_instance.aedt_name,
                     padstack_instance_id=i.padstack_instance.id,
@@ -759,9 +759,9 @@ class Configuration:
                     reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
                     hfss_type=i.hfss_type if i.hfss_type else "Wave",
                 )
-            elif i.terminal_type == "PinGroupTerminal":
+            elif i.terminal_type in ["PinGroupTerminal", "pin_group"]:
                 manager.add_pin_group_terminal(
-                    pin_group=i.pin_group().name,
+                    pin_group=i.pin_group.name,
                     name=i.name,
                     impedance=i.impedance,
                     boundary_type=i.boundary_type,
@@ -770,7 +770,7 @@ class Configuration:
                     phase=i.source_phase,
                     terminal_to_ground=i.terminal_to_ground,
                 )
-            elif i.terminal_type == "PointTerminal":
+            elif i.terminal_type in ["PointTerminal", "point"]:
                 manager.add_point_terminal(
                     x=i.location[0],
                     y=i.location[1],
