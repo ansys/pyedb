@@ -582,7 +582,10 @@ class TestClass(BaseTestClass):
             t = edb.modeler.create_trace(path_list=p, **kwargs)
             traces.append(t)
 
-        assert edb.source_excitation.create_wave_port(traces[0].id, trace_paths[0][1], "wave_port")
+        if config["use_grpc"]:
+            assert edb.source_excitation.create_wave_port(traces[0].id, trace_paths[0][1], "wave_port")
+        else:
+            assert edb.hfss.create_wave_port(traces[0], trace_paths[0][0], "wave_port")
 
         assert edb.hfss.create_differential_wave_port(
             traces[0],
@@ -593,7 +596,10 @@ class TestClass(BaseTestClass):
         )
 
         paths = [i[1] for i in trace_paths]
-        _, p = edb.source_excitation.create_bundle_wave_port(traces, paths, port_name="port2")
+        if config["use_grpc"]:
+            _, p = edb.source_excitation.create_bundle_wave_port(traces, paths, port_name="port2")
+        else:
+            _, p = edb.hfss.create_bundle_wave_port(traces, paths)
         p.horizontal_extent_factor = 6
         p.vertical_extent_factor = 5
         p.pec_launch_width = "0.02mm"
