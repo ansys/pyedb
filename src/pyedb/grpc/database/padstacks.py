@@ -354,6 +354,11 @@ class Padstacks(object):
         )
         return self._layout.pin_groups
 
+    @property
+    def pad_type(self) -> GrpcPadType:
+        """Return a PadType Enumerator."""
+        return GrpcPadType
+
     def create_dielectric_filled_backdrills(
         self,
         layer: str,
@@ -1283,11 +1288,10 @@ class Padstacks(object):
         str
             Name of the new padstack definition.
         """
-        new_padstack_definition_data = GrpcPadstackDefData(self.definitions[target_padstack_name].data.core)
         if not new_padstack_name:
             new_padstack_name = generate_unique_name(target_padstack_name)
         padstack_definition = PadstackDef.create(self, new_padstack_name)
-        padstack_definition.data = new_padstack_definition_data
+        padstack_definition.data = self.definitions[target_padstack_name].core.data
         return new_padstack_name
 
     def place(
@@ -1492,13 +1496,13 @@ class Padstacks(object):
         antipad_x_offset = Value(antipad_x_offset)
         antipad_y_offset = Value(antipad_y_offset)
         antipad_rotation = Value(antipad_rotation)
-        new_padstack_def = GrpcPadstackDefData(self.definitions[padstack_name].data.core)
+        cloned_padstack_def_data = self.definitions[padstack_name].core.data
         if not layer_name:
             layer_name = list(self._pedb.stackup.signal_layers.keys())
         elif isinstance(layer_name, str):
             layer_name = [layer_name]
         for layer in layer_name:
-            new_padstack_def.set_pad_parameters(
+            cloned_padstack_def_data.set_pad_parameters(
                 layer=layer,
                 pad_type=GrpcPadType.REGULAR_PAD,
                 offset_x=pad_x_offset,
@@ -1507,7 +1511,7 @@ class Padstacks(object):
                 type_geom=pad_shape,
                 sizes=pad_params,
             )
-            new_padstack_def.set_pad_parameters(
+            cloned_padstack_def_data.set_pad_parameters(
                 layer=layer,
                 pad_type=GrpcPadType.ANTI_PAD,
                 offset_x=antipad_x_offset,
@@ -1516,7 +1520,7 @@ class Padstacks(object):
                 type_geom=antipad_shape,
                 sizes=antipad_params,
             )
-        self.definitions[padstack_name].data = new_padstack_def
+        self.definitions[padstack_name].data = cloned_padstack_def_data
         return True
 
     def get_padstack_instance_by_net_name(self, net: str):
