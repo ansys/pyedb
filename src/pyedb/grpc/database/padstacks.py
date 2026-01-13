@@ -933,7 +933,7 @@ class Padstacks(object):
         if self.definitions:
             all_succeed = True
             for padstack in list(self.definitions.values()):
-                cloned_padstack_data = GrpcPadstackDefData(padstack.data.core)
+                cloned_padstack_data = padstack.core.data
                 layers_name = cloned_padstack_data.layer_names
                 for layer in layers_name:
                     try:

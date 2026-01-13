@@ -607,7 +607,6 @@ class TestClass(BaseTestClass):
 
     def test_set_all_antipad_values(self, edb_examples):
         """Set all anti-pads from all pad-stack definition to the given value."""
-        #  Done
         edb = edb_examples.get_si_verse()
         assert edb.padstacks.set_all_antipad_value(0.0)
         edb.close(terminate_rpc_session=False)
