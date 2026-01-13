@@ -40,7 +40,10 @@ class CfgCutout(BaseModel):
         default=None,
         alias="signal_list",
     )
-    reference_list: Optional[List[str]] = None
+    reference_nets: Optional[List[str]] = Field(
+        default=None,
+        alias="reference_list",
+    )
     extent_type: Optional[str] = "ConvexHull"
     expansion_size: Optional[Union[float, str]] = 0.002
     number_of_threads: Optional[int] = 1

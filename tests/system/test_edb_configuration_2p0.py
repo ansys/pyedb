@@ -526,7 +526,7 @@ class TestClass(BaseTestClass):
                         "inductor_below": 1,
                         "capacitor_above": "10nF",
                     },
-                    "reference_list": ["GND"],
+                    "reference_nets": ["GND"],
                     "extent_type": "ConvexHull",
                 },
                 "generate_auto_hfss_regions": True,
@@ -908,7 +908,7 @@ class TestClass(BaseTestClass):
             "operations": {
                 "cutout": {
                     "signal_nets": ["SFPA_RX_P", "SFPA_RX_N"],
-                    "reference_list": ["GND"],
+                    "reference_nets": ["GND"],
                 }
             }
         }
@@ -920,7 +920,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
         data_from_db["operations"]["cutout"]["signal_nets"].remove("GND")
-        data_from_db["operations"]["cutout"]["reference_list"].append("GND")
+        data_from_db["operations"]["cutout"]["reference_nets"].append("GND")
         edbapp = edb_examples.get_si_verse()
         edbapp.configuration.load(data_from_db, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
@@ -1127,7 +1127,7 @@ class TestClass(BaseTestClass):
             "operations": {
                 "cutout": {
                     "signal_nets": ["SFPA_RX_P", "SFPA_RX_N"],
-                    "reference_list": ["GND"],
+                    "reference_nets": ["GND"],
                     "extent_type": "ConvexHull",
                     "expansion_size": 0.002,
                     "use_round_corner": False,
