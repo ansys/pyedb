@@ -907,7 +907,7 @@ class TestClass(BaseTestClass):
         data = {
             "operations": {
                 "cutout": {
-                    "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
+                    "signal_nets": ["SFPA_RX_P", "SFPA_RX_N"],
                     "reference_list": ["GND"],
                 }
             }
@@ -915,11 +915,11 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(operations=True)
-        assert len(data_from_db["operations"]["cutout"]["signal_list"]) == 3
+        assert len(data_from_db["operations"]["cutout"]["signal_nets"]) == 3
         assert len(data_from_db["operations"]["cutout"]["custom_extent"]) > 0
         edbapp.close(terminate_rpc_session=False)
 
-        data_from_db["operations"]["cutout"]["signal_list"].remove("GND")
+        data_from_db["operations"]["cutout"]["signal_nets"].remove("GND")
         data_from_db["operations"]["cutout"]["reference_list"].append("GND")
         edbapp = edb_examples.get_si_verse()
         edbapp.configuration.load(data_from_db, apply_file=True)
@@ -1126,7 +1126,7 @@ class TestClass(BaseTestClass):
         data = {
             "operations": {
                 "cutout": {
-                    "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
+                    "signal_nets": ["SFPA_RX_P", "SFPA_RX_N"],
                     "reference_list": ["GND"],
                     "extent_type": "ConvexHull",
                     "expansion_size": 0.002,

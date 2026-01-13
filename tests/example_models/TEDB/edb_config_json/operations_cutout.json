@@ -1,7 +1,7 @@
 {
     "operations": {
         "cutout": {
-            "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
+            "signal_nets": ["SFPA_RX_P", "SFPA_RX_N"],
             "reference_list": ["GND"],
             "extent_type": "ConvexHull",
             "expansion_size": 0.002,

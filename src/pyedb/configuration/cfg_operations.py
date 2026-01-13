@@ -36,7 +36,10 @@ class CfgAutoIdentifyNets(BaseModel):
 
 class CfgCutout(BaseModel):
     auto_identify_nets: CfgAutoIdentifyNets | None = CfgAutoIdentifyNets()
-    signal_list: Optional[List[str]] = None
+    signal_nets: Optional[List[str]] = Field(
+        default=None,
+        alias="signal_list",
+    )
     reference_list: Optional[List[str]] = None
     extent_type: Optional[str] = "ConvexHull"
     expansion_size: Optional[Union[float, str]] = 0.002
@@ -45,6 +48,7 @@ class CfgCutout(BaseModel):
     custom_extent_units: str = Field(default="meter")
     expansion_factor: Optional[float] = 0
 
+    model_config = dict(populate_by_name=True)
 
 class CfgOperations(BaseModel):
     cutout: Optional[CfgCutout] = None

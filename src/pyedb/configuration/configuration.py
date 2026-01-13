@@ -644,7 +644,7 @@ class Configuration:
                         else:
                             signal_nets.append(i.net_name)
 
-                    cutout_params["signal_list"] = signal_nets
+                    cutout_params["signal_nets"] = signal_nets
             polygon_points = self._pedb.cutout(**cutout_params)
             if "pyedb_cutout" not in self._pedb.stackup.all_layers:
                 self._pedb.stackup.add_document_layer(name="pyedb_cutout")
@@ -669,12 +669,11 @@ class Configuration:
                     else:
                         net_names.append(name)
             reference_list = []
-            signal_list = net_names
 
             self.cfg_data.operations.add_cutout(
                 custom_extent=custom_extent,
                 reference_list=reference_list,
-                signal_list=signal_list,
+                signal_nets=net_names,
             )
 
     @execution_timer("Placing terminals")
