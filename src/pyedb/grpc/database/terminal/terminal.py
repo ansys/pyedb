@@ -23,8 +23,8 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from pyedb.grpc.database.inner.conn_obj import ConnObj
 
+from pyedb.grpc.database.inner.conn_obj import ConnObj
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance

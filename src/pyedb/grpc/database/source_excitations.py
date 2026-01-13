@@ -50,7 +50,6 @@ from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 class SourceExcitationInternal:
-
     @staticmethod
     def _normalize_net_list(net_list: Union[str, List[str]]) -> Set[str]:
         if not isinstance(net_list, list):
@@ -2549,8 +2548,10 @@ class SourceExcitation(SourceExcitationInternal):
         >>> ref_poly = edb.modeler.primitives[1]
         >>> edb.source_excitation.create_edge_port_on_polygon(poly, ref_poly, [0, 0], [0.1, 0])
         """
-        from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal, \
-            PrimitiveEdge as GrpcPrimitiveEdge
+        from ansys.edb.core.terminal.edge_terminal import (
+            EdgeTerminal as GrpcEdgeTerminal,
+            PrimitiveEdge as GrpcPrimitiveEdge,
+        )
 
         if not polygon:
             self._logger.error("No polygon provided for port {} creation".format(port_name))

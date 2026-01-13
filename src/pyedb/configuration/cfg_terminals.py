@@ -57,7 +57,7 @@ class CfgTerminal(CfgBase):
         "voltage_source",
         "current_source",
         "rlc",
-        "pec"
+        "pec",
     ]
     hfss_type: Literal["Wave", "Gap", None]
 
