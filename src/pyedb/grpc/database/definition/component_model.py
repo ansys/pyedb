@@ -28,12 +28,48 @@ from ansys.edb.core.definition.component_model import (
 class ComponentModel:
     """Class managing :class:`ComponentModel <ansys.edb.core.definition.component_model.ComponentModel>`."""
 
-    def __init__(self):
-        self.core = GrpcComponentModel.__init__(self.msg)
+    def __init__(self, edb_object):
+        self.core = GrpcComponentModel(edb_object.msg)
+
+    @property
+    def is_null(self):
+        """Check if the component model is null.
+
+        Returns
+        -------
+        bool
+            True if the component model is null, False otherwise.
+
+        """
+        return self.core.is_null
+
+    @property
+    def name(self):
+        """Get the name of the component model.
+
+        Returns
+        -------
+        str
+            The name of the component model.
+
+        """
+        return self.core.name
+
+    @property
+    def reference_file(self):
+        """Get the reference file of the component model.
+
+        Returns
+        -------
+        str
+            The reference file of the component model.
+
+        """
+        return self.core.reference_file
 
 
-class NPortComponentModel(GrpcComponentModel):
+class NPortComponentModel:
     """Class managing :class:`NPortComponentModel <ansys.edb.core.definition.component_model.ComponentModel>`"""
 
-    def __init__(self):
-        self.core = GrpcComponentModel.__init__(self.msg)
+    def __init__(self, edb_object):
+        self.core = GrpcComponentModel(edb_object.msg)

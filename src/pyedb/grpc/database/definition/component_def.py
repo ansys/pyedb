@@ -257,7 +257,9 @@ class ComponentDef:
         list[:class:`ComponentModel <ansys.edb.core.definition.component_model.ComponentModel>`]
 
         """
-        return self.core.component_models
+        from pyedb.grpc.database.definition.component_model import ComponentModel
+
+        return {model.name: ComponentModel(model) for model in self.core.component_models}
 
     @property
     def name(self):
