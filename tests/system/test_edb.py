@@ -30,7 +30,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from pyedb.generic.general_methods import is_linux
-from tests.conftest import config, local_path, test_subfolder
+from tests.conftest import config, edb_examples, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
@@ -518,7 +518,6 @@ class TestClass(BaseTestClass):
         # TODO implement wave port with grPC
         # wave_port = edb.source_excitation.create_bundle_wave_port["wave_port"]
         # wave_port.horizontal_extent_factor = 10
-        # wave_port.vertical_extent_factor = 10
         # assert wave_port.horizontal_extent_factor == 10
         # assert wave_port.vertical_extent_factor == 10
         # wave_port.radial_extent_factor = 1
@@ -1781,7 +1780,7 @@ class TestClass(BaseTestClass):
             )
         assert len(edbapp.excitations) == 2
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
+    @pytest.mark.skipif(not config["use_grpc"], reason="Supported only in grpc")
     def test_active_cell_setter(self, edb_examples):
         """Use multiple cells."""
 
@@ -1819,17 +1818,14 @@ class TestClass(BaseTestClass):
 
         edb.close(terminate_rpc_session=False)
 
-    def test_import_layout_file(self):
+    @pytest.mark.skipif(config["use_grpc"], reason="Modifies example files")
+    def test_import_layout_file(self, edb_examples):
         from pyedb import Edb
 
-        input_file = os.path.join(local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example.gds")
-        control_file = os.path.join(
-            local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
-        )
-        map_file = os.path.join(local_path, "example_models", "cad", "GDS", "dummy_layermap.map")
+        input_file, control_file, map_file = edb_examples.copy_gds_file()
         edb = Edb()
         assert edb.import_layout_file(input_file=input_file, control_file=control_file, map_file=map_file)
-        assert edb.close()
+        assert edb.close(terminate_rpc_session=False)
 
     @pytest.mark.parametrize("positive_pin_names", (["R20", "R21", "T20"], ["R20"]))
     @pytest.mark.parametrize("pec_boundary", (False, True))
@@ -2052,7 +2048,7 @@ class TestClass(BaseTestClass):
                 str(Path(edbapp.edbpath).with_name(Path(edbapp.edbpath).stem + "_compare_results")),
             ]
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Requires grpc")
+    @pytest.mark.skipif(not config["use_grpc"], reason="Supported only in grpc")
     def test_create_layout_component(self, edb_examples):
         from pyedb import Edb
 
