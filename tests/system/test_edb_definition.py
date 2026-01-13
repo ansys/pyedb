@@ -54,8 +54,9 @@ class TestClass(BaseTestClass):
             sparam_path, "GRM32_DC0V_25degC_series"
         )
         assert edbapp.definitions.components["CAPC3216X180X55ML20T25"].component_models
-        assert not list(edbapp.definitions.components["CAPC3216X180X55ML20T25"].component_models.values())[0].is_null
-        assert list(edbapp.definitions.components["CAPC3216X180X55ML20T25"].component_models.values())[0].reference_file
+        cap_model = list(edbapp.definitions.components["CAPC3216X180X55ML20T25"].component_models.values())[0]
+        assert not cap_model.is_null
+        assert cap_model.reference_file
         assert edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
         edbapp.close(terminate_rpc_session=False)
 
