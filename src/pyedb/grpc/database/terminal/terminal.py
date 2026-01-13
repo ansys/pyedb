@@ -47,6 +47,13 @@ mapping_boundary_type = {
     "current_source": GrpcBoundaryType.CURRENT_SOURCE,
     "rlc": GrpcBoundaryType.RLC,
     "pec": GrpcBoundaryType.PEC,
+    "portboundary": GrpcBoundaryType.PORT,
+    "kdcterminal": GrpcBoundaryType.DC_TERMINAL,
+    "kvoltageprobe": GrpcBoundaryType.VOLTAGE_PROBE,
+    "kvoltagesource": GrpcBoundaryType.VOLTAGE_SOURCE,
+    "kcurrentsource": GrpcBoundaryType.CURRENT_SOURCE,
+    "rlcboundary": GrpcBoundaryType.RLC,
+    "pecboundary": GrpcBoundaryType.PEC,
 }
 
 
@@ -55,18 +62,6 @@ class Terminal(ConnObj):
         super().__init__(pedb, edb_object)
 
         self._reference_object = None
-
-        self._boundary_type_mapping = {
-            "port": GrpcBoundaryType.PORT,
-            "pec": GrpcBoundaryType.PEC,
-            "rlc": GrpcBoundaryType.RLC,
-            "current_source": GrpcBoundaryType.CURRENT_SOURCE,
-            "voltage_source": GrpcBoundaryType.VOLTAGE_SOURCE,
-            "nexxim_ground": GrpcBoundaryType.NEXXIM_GROUND,
-            "nxxim_port": GrpcBoundaryType.NEXXIM_PORT,
-            "dc_terminal": GrpcBoundaryType.DC_TERMINAL,
-            "voltage_probe": GrpcBoundaryType.VOLTAGE_PROBE,
-        }
 
         self._terminal_type_mapping = {
             "edge": GrpcTerminalType.EDGE,
@@ -106,38 +101,11 @@ class Terminal(ConnObj):
         return p
 
     @property
-    def ref_terminal(self) -> any:
-        """Reference terminal.
-
-        Returns
-        -------
-        :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
-
-        """
-        return self.core.reference_terminal
-
-    @ref_terminal.setter
-    def ref_terminal(self, value):
-        self.core.reference_terminal = value
-
-    @property
     def reference_layer(self):
-        """Reference layer of the terminal.
+        """Get layer of the terminal."""
+        self._pedb.logger.error("Cannot determine terminal layer")
+        return None
 
-        Returns
-        -------
-        :class:`Layer <pyedb.grpc.database.layer.layer.Layer>`
-        """
-        return self.core.reference_layer.name
-
-    @reference_layer.setter
-    def reference_layer(self, value):
-        from ansys.edb.core.layer.layer import Layer as GrpcLayer
-
-        if isinstance(value, GrpcLayer):
-            self.core.reference_layer = value
-        if isinstance(value, str):
-            self.core.reference_layer = self._pedb.stackup.layers[value]
 
     @_hfss_port_property.setter
     def _hfss_port_property(self, value):
@@ -157,25 +125,6 @@ class Terminal(ConnObj):
         p = self._hfss_port_property
         p["HFSS Type"] = value
         self._hfss_port_property = p
-
-    @property
-    def layer(self) -> str:
-        """Get layer of the terminal.
-
-        Returns
-        -------
-        str : layer name.
-        """
-        return self.reference_layer.name
-
-    @layer.setter
-    def layer(self, value):
-        from ansys.edb.core.layer.layer import Layer
-
-        if isinstance(value, Layer):
-            self.reference_layer = value
-        if isinstance(value, str):
-            self.reference_layer = self._pedb.stackup.layers[value]
 
     @property
     def do_renormalize(self) -> bool:
@@ -198,10 +147,19 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        str
-            Net name.
+        str : name of the net.
         """
-        return self.core.net.name
+        if self.core.is_null:
+            return ""
+        elif self.core.net.is_null:
+            return ""
+        else:
+            return self.core.net.name
+
+    @net_name.setter
+    def net_name(self, val):
+        if not self.core.is_null and self.core.net.is_null:
+            self.core.net.name = val
 
     @property
     def terminal_type(self) -> str:
@@ -236,6 +194,34 @@ class Terminal(ConnObj):
         if not isinstance(value, GrpcBoundaryType):
             raise ValueError("Value must be a string or BoundaryType enum.")
         self.core.boundary_type = value
+
+    @property
+    def source_amplitude(self) -> float:
+        """Source amplitude.
+
+        Returns
+        -------
+        float : amplitude value.
+        """
+        return Value(self.core.source_amplitude)
+
+    @source_amplitude.setter
+    def source_amplitude(self, value):
+        self.core.source_amplitude = value
+
+    @property
+    def source_phase(self) -> float:
+        """Source phase.
+
+        Returns
+        -------
+        float : phase value.
+        """
+        return Value(self.core.source_phase)
+
+    @source_phase.setter
+    def source_phase(self, value):
+        self.core.source_phase = value
 
     @property
     def is_port(self) -> bool:
@@ -279,7 +265,7 @@ class Terminal(ConnObj):
         float : impedance value.
 
         """
-        return Value(self.impedance)
+        return Value(self.core.impedance)
 
     @impedance.setter
     def impedance(self, value):
@@ -515,14 +501,44 @@ class Terminal(ConnObj):
 
     @property
     def terminal_to_ground(self):
-        return self.core.term_to_ground.name
+        return self.core.term_to_ground.name.lower()
 
     @terminal_to_ground.setter
     def terminal_to_ground(self, value):
         mapping = {
-            "kNoGround": "NO_GROUND",
-            "kNegative": "NEGATIVE",
-            "kPositive": "POSITIVE",
+            "kNoGround": "no_ground",
+            "kNegative": "negative",
+            "kPositive": "positive",
         }
         key = mapping.get(value, value)
-        self.core.term_to_ground = getattr(self.core.term_to_ground, key)
+        self.core.term_to_ground = getattr(self.core.term_to_ground, key.upper())
+
+    @property
+    def reference_terminal(self):
+        """Return reference terminal.
+
+        Returns
+        -------
+        PadstackInstanceTerminal
+            Reference terminal object.
+        """
+        if self.core.reference_terminal:
+            return self._pedb.terminals[self.core.reference_terminal.name]
+        else:
+            return None
+
+    @reference_terminal.setter
+    def reference_terminal(self, value):
+        try:
+            self.core.reference_terminal = value.core
+        except AttributeError:
+            raise ValueError("Failed to set reference terminal.")
+
+    @property
+    def name(self):
+        """Terminal name."""
+        return self.core.name
+
+    @name.setter
+    def name(self, value):
+        self.core.name = value

@@ -8,9 +8,9 @@ class LayoutObj(ObjBase):
 
     @property
     def _edb_properties(self):
-        p = self.core.get_product_property(GrpcProductIdType.DESIGNER, "HFSS")
+        p = self.core.get_product_property(GrpcProductIdType.DESIGNER, 18)
         return p
 
     @_edb_properties.setter
     def _edb_properties(self, value):
-        self.core.set_product_property(GrpcProductIdType.DESIGNER, "HFSS", value)
+        self.core.set_product_property(GrpcProductIdType.DESIGNER, 18, value)

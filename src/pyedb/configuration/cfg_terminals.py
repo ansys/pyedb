@@ -39,7 +39,7 @@ class CfgTerminal(CfgBase):
     reference_terminal: Optional[str] = None
     amplitude: Optional[Union[float, int, str]] = 1
     phase: Optional[Union[float, int, str]] = 0
-    terminal_to_ground: Optional[Literal["kNoGround", "kNegative", "kPositive"]] = "kNoGround"
+    terminal_to_ground: Literal["kNoGround", "kNegative", "kPositive", "no_ground", "negative", "positive"]|None = "kNoGround"
     boundary_type: Literal[
         "PortBoundary",
         "PecBoundary",

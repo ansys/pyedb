@@ -1552,7 +1552,7 @@ class SourceExcitation(SourceExcitationInternal):
             neg_pingroup_terminal.core.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
             pos_pingroup_terminal.core.source_amplitude = Value(magnitude)
             pos_pingroup_terminal.core.source_phase = Value(phase)
-            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal.core
+            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
             pos_pingroup_terminal.core.name = name
 
         elif source_type == "rlc":
@@ -1872,11 +1872,7 @@ class SourceExcitation(SourceExcitationInternal):
         )
         edb_list = [pos_term, neg_term]
 
-        boundle_terminal = BundleTerminal.create(edb_list)
-        boundle_terminal.name = port_name
-        bundle_term = boundle_terminal.terminals
-        bundle_term[0].name = port_name + ":T1"
-        bundle_term[1].mame = port_name + ":T2"
+        boundle_terminal = BundleTerminal.create(self._pedb, port_name, edb_list)
         return port_name, boundle_terminal
 
     def create_wave_port(
@@ -2352,8 +2348,8 @@ class SourceExcitation(SourceExcitationInternal):
             _port_name = None
             terminals.append(term)
 
-        _edb_bundle_terminal = BundleTerminal.create(terminals)
-        return port_name, BundleWavePort(self._pedb, _edb_bundle_terminal)
+        _edb_bundle_terminal = BundleTerminal.create(self._pedb, port_name, terminals)
+        return port_name, _edb_bundle_terminal
 
     def create_hfss_ports_on_padstack(self, pinpos: PadstackInstance, portname: Optional[str] = None) -> bool:
         """Create an HFSS port on a padstack.
@@ -3106,8 +3102,7 @@ class SourceExcitation(SourceExcitationInternal):
 
         _name = name if name else f"point_{layer}_{x}_{y}"
         location = [x, y]
-        point_terminal = PointTerminal(self._pedb)
-        terminal = point_terminal.create(_name, net, location, layer)
+        terminal = PointTerminal.create(self._pedb.layout, net, layer, _name, location)
         if terminal.is_null:
             raise RuntimeError(
                 f"Failed to create terminal. Input arguments: x={x}, y={y}, layer={layer}, net={net}, name={name}."
@@ -3116,7 +3111,7 @@ class SourceExcitation(SourceExcitationInternal):
 
     def create_edge_terminal(self, primitive_name, x, y, name=""):
         _name = name if name else f"{primitive_name}_{x}_{y}"
-        primitive = self._pedb.layout.find_primitive[primitive_name][0]
+        primitive = self._pedb.layout.find_primitive(name=primitive_name)[0]
         point_on_edge = GrpcPointData([x, y])
         pos_edge = [GrpcPrimitiveEdge.create(primitive.core, point_on_edge)]
         terminal = EdgeTerminal.create(layout=primitive.layout, name=name, edge=pos_edge, net=primitive.net)
@@ -3129,14 +3124,10 @@ class SourceExcitation(SourceExcitationInternal):
         return terminal
 
     def create_bundle_terminal(self, terminals, name=""):
-        from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
+        from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 
         _name = name if name else f"{generate_unique_name('bundle')}"
-
-        terminal = BundleTerminal.create(self._pedb, _name, terminals)
-        bundle_term = terminal.terminals
-        bundle_term[0].name = _name + ":T1"
-        bundle_term[1].mame = _name + ":T2"
+        BundleTerminal.create(self._pedb, _name, terminals)
 
     def create_pin_group_terminal(self, pin_group, name=""):
         _name = name if name else generate_unique_name(pin_group)
