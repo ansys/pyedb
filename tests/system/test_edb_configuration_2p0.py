@@ -1252,7 +1252,7 @@ class TestClassTerminals(BaseTestClass):
             "is_circuit_port": False,
             "amplitude": 1.0,
             "phase": 0.0,
-            "terminal_to_ground":  "no_ground" if edbapp.grpc else "kNoGround",
+            "terminal_to_ground": "no_ground" if edbapp.grpc else "kNoGround",
             "boundary_type": "port" if edbapp.grpc else "PortBoundary",
             "hfss_type": "Wave",
             "terminal_type": "padstack_instance",

@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING
 
 from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundleTerminal
 from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal
+
 from pyedb.grpc.database.terminal.terminal import Terminal
 
 if TYPE_CHECKING:

@@ -45,6 +45,7 @@ from pyedb.grpc.database.terminal.terminal import Terminal
 
 class PinGroupTerminal(Terminal):
     """Manages pin group terminal properties."""
+
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
 

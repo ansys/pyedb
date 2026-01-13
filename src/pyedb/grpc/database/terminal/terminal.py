@@ -106,7 +106,6 @@ class Terminal(ConnObj):
         self._pedb.logger.error("Cannot determine terminal layer")
         return None
 
-
     @_hfss_port_property.setter
     def _hfss_port_property(self, value):
         txt = []

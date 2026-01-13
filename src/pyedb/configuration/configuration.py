@@ -774,7 +774,7 @@ class Configuration:
                 manager.add_point_terminal(
                     x=i.location[0],
                     y=i.location[1],
-                    layer= i.layer.name,
+                    layer=i.layer.name,
                     name=i.name,
                     impedance=i.impedance,
                     boundary_type=i.boundary_type,

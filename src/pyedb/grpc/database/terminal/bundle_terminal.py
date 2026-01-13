@@ -49,6 +49,7 @@ class BundleTerminal(Terminal):
     edb_object : :class:`BundleTerminal <ansys.edb.core.terminal.terminals.BundleTerminal>`
         BundleTerminal instance from EDB.
     """
+
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
 
@@ -77,7 +78,7 @@ class BundleTerminal(Terminal):
         terminal = cls(pedb, grpc_term)
         terminal.name = name
         for idx, i in enumerate(terminal.core.terminals):
-            i.name = f"{name}:T{idx+1}"
+            i.name = f"{name}:T{idx + 1}"
         return terminal
 
     @property
@@ -177,6 +178,7 @@ class BundleTerminal(Terminal):
     @property
     def terminals(self) -> list[Terminal]:
         from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
+
         """Returns terminals list.
 
         Returns
