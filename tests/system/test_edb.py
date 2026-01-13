@@ -519,7 +519,7 @@ class TestClass(BaseTestClass):
         # wave_port = edb.source_excitation.create_bundle_wave_port["wave_port"]
         # wave_port.horizontal_extent_factor = 10
         # assert wave_port.horizontal_extent_factor == 10
-        # assert wave_port.vertical_extent_factor == 10
+        # wave_port.vertical_extent_factor = 10
         # wave_port.radial_extent_factor = 1
         # assert wave_port.radial_extent_factor == 1
         # assert wave_port.pec_launch_width
