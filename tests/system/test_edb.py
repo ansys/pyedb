@@ -1819,10 +1819,26 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(config["use_grpc"], reason="Modifies example files")
-    def test_import_layout_file(self, edb_examples):
+    def test_import_layout_file(self):
         from pyedb import Edb
 
-        input_file, control_file, map_file = edb_examples.copy_gds_file()
+        def copy_gds_file():
+            input_file_src = os.path.join(
+                local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example.gds"
+            )
+            control_file_src = os.path.join(
+                local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
+            )
+            map_file_src = os.path.join(local_path, "example_models", "cad", "GDS", "dummy_layermap.map")
+            input_file = os.path.join(self.local_scratch.path, "sky130_fictitious_dtc_example.gds")
+            control_file = os.path.join(self.local_scratch.path, "sky130_fictitious_dtc_example_control_no_map.xml")
+            map_file = os.path.join(self.local_scratch.path, "dummy_layermap.map")
+            self.local_scratch.copyfile(input_file_src, input_file)
+            self.local_scratch.copyfile(control_file_src, control_file)
+            self.local_scratch.copyfile(map_file_src, map_file)
+            return input_file, control_file, map_file
+
+        input_file, control_file, map_file = copy_gds_file()
         edb = Edb()
         assert edb.import_layout_file(input_file=input_file, control_file=control_file, map_file=map_file)
         assert edb.close(terminate_rpc_session=False)

@@ -216,20 +216,6 @@ class EdbExamples:
     def get_siwave_log_file_example(self):
         return os.path.join(self.example_models_path, "siwave.log")
 
-    def copy_gds_file(self):
-        input_file_src = os.path.join(local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example.gds")
-        control_file_src = os.path.join(
-            local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
-        )
-        map_file_src = os.path.join(local_path, "example_models", "cad", "GDS", "dummy_layermap.map")
-        input_file = os.path.join(self.local_scratch.path, "sky130_fictitious_dtc_example.gds")
-        control_file = os.path.join(self.local_scratch.path, "sky130_fictitious_dtc_example_control_no_map.xml")
-        map_file = os.path.join(self.local_scratch.path, "dummy_layermap.map")
-        self.local_scratch.copyfile(input_file_src, input_file)
-        self.local_scratch.copyfile(control_file_src, control_file)
-        self.local_scratch.copyfile(map_file_src, map_file)
-        return input_file, control_file, map_file
-
 
 @pytest.fixture(scope="class", autouse=True)
 def target_path(local_scratch):
