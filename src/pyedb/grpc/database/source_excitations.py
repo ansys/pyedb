@@ -25,7 +25,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Union
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal, PrimitiveEdge as GrpcPrimitiveEdge
+from ansys.edb.core.terminal.edge_terminal import PrimitiveEdge as GrpcPrimitiveEdge
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 
@@ -2550,7 +2550,6 @@ class SourceExcitation(SourceExcitationInternal):
         """
         from ansys.edb.core.terminal.edge_terminal import (
             EdgeTerminal as GrpcEdgeTerminal,
-            PrimitiveEdge as GrpcPrimitiveEdge,
         )
 
         if not polygon:
@@ -3111,7 +3110,6 @@ class SourceExcitation(SourceExcitationInternal):
         return terminal
 
     def create_edge_terminal(self, primitive_name, x, y, name=""):
-        _name = name if name else f"{primitive_name}_{x}_{y}"
         primitive = self._pedb.layout.find_primitive(name=primitive_name)[0]
         point_on_edge = GrpcPointData([x, y])
         pos_edge = [GrpcPrimitiveEdge.create(primitive.core, point_on_edge)]
@@ -3125,8 +3123,6 @@ class SourceExcitation(SourceExcitationInternal):
         return terminal
 
     def create_bundle_terminal(self, terminals, name=""):
-        from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
-
         _name = name if name else f"{generate_unique_name('bundle')}"
         BundleTerminal.create(self._pedb, _name, terminals)
 

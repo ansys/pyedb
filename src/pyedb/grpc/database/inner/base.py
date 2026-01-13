@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.inner.base import ObjBase as GRPCObjBase
-
 
 class ObjBase:
     def __init__(self, pedb, edb_object):
