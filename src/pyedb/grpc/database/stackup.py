@@ -75,8 +75,8 @@ class LayerCollection:
         EDB layer collection object.
     """
 
-    def __init__(self, pedb=None, edb_object=None):
-        self.core = edb_object
+    def __init__(self, pedb=None, core=None):
+        self.core = core
         self._pedb = pedb
 
     @classmethod
@@ -349,7 +349,8 @@ class LayerCollection:
         >>> non_stackup = edb.stackup.non_stackup_layers
         """
         return {
-            layer.name: Layer(self._pedb, layer) for layer in self.get_layers(GrpcLayerTypeSet.NON_STACKUP_LAYER_SET)
+            layer.name: Layer(core=layer)
+            for layer in self._pedb.stackup.core.get_layers(GrpcLayerTypeSet.NON_STACKUP_LAYER_SET)
         }
 
     @property
@@ -488,16 +489,16 @@ class Stackup:
         EDB layer collection object. The default is ``None``.
     """
 
-    def __init__(self, pedb, edb_object=None):
-        self.core = edb_object
+    def __init__(self, pedb, core=None):
+        self.core = core
         self._pedb = pedb
-        self.layer_collection = LayerCollection(pedb, edb_object)
+        self.layer_collection = LayerCollection(pedb, core)
 
     def __getitem__(self, item):
         if item in self.non_stackup_layers:
-            return Layer(edb_object=self.core.find_by_name(item))
+            return Layer(core=self.core.find_by_name(item))
         elif item in self.layers:
-            return StackupLayer(self._pedb, edb_object=self.core.find_by_name(item))
+            return StackupLayer(self._pedb, core=self.core.find_by_name(item))
         else:
             return None
 
@@ -573,7 +574,7 @@ class Stackup:
         >>> non_stackup = edb.stackup.non_stackup_layers
         """
         return {
-            layer.name: Layer(layer)
+            layer.name: Layer(core=layer)
             for layer in self._pedb.stackup.core.get_layers(GrpcLayerTypeSet.NON_STACKUP_LAYER_SET)
         }
 
@@ -1389,10 +1390,10 @@ class Stackup:
                     chip_orientation = die_prop.die_orientation
                     if chip_orientation == GrpcDieOrientation.CHIP_DOWN:
                         die_prop.die_orientation = GrpcDieOrientation.CHIP_UP
-                        cmp_prop.die_property = die_prop
+                        cmp_prop.solder_ball_property = sball_prop
                     else:
                         die_prop.die_orientation = GrpcDieOrientation.CHIP_DOWN
-                        cmp_prop.die_property = die_prop
+                        cmp_prop.solder_ball_property = sball_prop
                 cmp.component_property = cmp_prop
 
             lay_list = new_lc.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
@@ -2226,7 +2227,7 @@ class Stackup:
                         lyr.dielectric_fill = val["FillMaterial"] if val["Type"] == "signal" else ""
                         lyr.thickness = val["Thickness"]
                         if prev_layer:
-                            self._set_layout_stackup(lyr._edb_layer, "change_position", prev_layer)
+                            self._set_layout_stackup(lyr.core, "change_position", prev_layer)
                     else:
                         if prev_layer and prev_layer in self.layers:
                             layer_name = prev_layer

@@ -25,7 +25,7 @@ from pyedb.generic.constants import NodeType, SourceType
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 
 
-class Node(object):
+class Node:
     """Provides for handling nodes for Siwave sources."""
 
     def __init__(self):

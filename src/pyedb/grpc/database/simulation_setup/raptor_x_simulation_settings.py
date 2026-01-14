@@ -35,8 +35,8 @@ from pyedb.grpc.database.simulation_setup.raptor_x_general_settings import (
 class RaptorXSimulationSettings(GrpcRaptorXSimulationSettings):
     """Raptor X simulation settings class."""
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+    def __init__(self, pedb, core):
+        super().__init__(core)
         self._pedb = pedb
 
     @property

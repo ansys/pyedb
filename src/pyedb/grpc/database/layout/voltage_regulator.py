@@ -36,8 +36,8 @@ from pyedb.grpc.database.utility.value import Value
 class VoltageRegulator:
     """Class managing voltage regulator."""
 
-    def __init__(self, pedb, edb_object):
-        self.core = edb_object
+    def __init__(self, pedb, core):
+        self.core = core
         self._pedb = pedb
 
     @property

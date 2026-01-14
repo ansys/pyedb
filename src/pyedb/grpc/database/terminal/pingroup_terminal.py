@@ -31,9 +31,6 @@ from ansys.edb.core.terminal.pin_group_terminal import (
 )
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
-from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecated_property
-
 boundary_type_mapping = {
     "voltage_source": GrpcBoundaryType.VOLTAGE_SOURCE,
     "current_source": GrpcBoundaryType.CURRENT_SOURCE,
@@ -46,8 +43,8 @@ from pyedb.grpc.database.terminal.terminal import Terminal
 class PinGroupTerminal(Terminal):
     """Manages pin group terminal properties."""
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
+    def __init__(self, pedb, core):
+        super().__init__(pedb, core)
 
     @property
     def net(self) -> Net:

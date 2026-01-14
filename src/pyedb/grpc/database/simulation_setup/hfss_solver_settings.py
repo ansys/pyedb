@@ -29,6 +29,6 @@ from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
 class HFSSSolverSettings(GrpcHFSSSolverSettings):
     """HFSS solver settings class."""
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+    def __init__(self, pedb, core):
+        super().__init__(core)
         self._pedb = pedb

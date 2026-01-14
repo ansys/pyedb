@@ -67,8 +67,8 @@ class PadstackInstance:
     >>> edb_padstack_instance = edb.padstacks.instances[0]
     """
 
-    def __init__(self, pedb, edb_instance):
-        self.core = edb_instance
+    def __init__(self, pedb, core):
+        self.core = core
         self._pedb = pedb
         self._bounding_box = []
         self._position = []

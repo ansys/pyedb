@@ -35,9 +35,9 @@ class HeatSink:
         Inherited object.
     """
 
-    def __init__(self, pedb, edb_object):
+    def __init__(self, pedb, core):
         self._pedb = pedb
-        self._edb_object = edb_object
+        self._edb_object = core
         self._fin_orientation_type = {
             "x_oriented": GrpcHeatSinkFinOrientation.X_ORIENTED,
             "y_oriented": GrpcHeatSinkFinOrientation.Y_ORIENTED,

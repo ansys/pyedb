@@ -54,12 +54,12 @@ layer_type_mapping = {
 class Layer:
     """Manages Layer."""
 
-    def __init__(self, edb_object=None, name="", layer_type="undefined", **kwargs):
-        self.core = edb_object
+    def __init__(self, core=None, name="", layer_type="undefined", **kwargs):
+        self.core = core
         self._name = name
         self._color = ()
         self._type = ""
-        if edb_object:
+        if core:
             self._cloned_layer = self.core.clone()
         else:
             if layer_type in layer_type_mapping:
@@ -81,7 +81,7 @@ class Layer:
         :class: `Layer <pyedb.`
         """
         layer = GrpcLayer.create(name=name, lyr_type=layer_type_mapping[layer_type])
-        return cls(edb_object=layer)
+        return cls(core=layer)
 
     @property
     def id(self):

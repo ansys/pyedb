@@ -30,12 +30,12 @@ from ansys.edb.core.simulation_setup.simulation_setup import (
 class SweepData(GrpcSweepData):
     """Frequency sweep data class."""
 
-    def __init__(self, pedb, name, distribution, start_f, end_f, step, edb_object=None):
+    def __init__(self, pedb, name, distribution, start_f, end_f, step, core=None):
         super().__init__(
             name=name,
             frequency_data=GrpcFrequencyData(
                 distribution=GrpcDistribution[distribution], start_f=start_f, end_f=end_f, step=step
             ),
         )
-        self._edb_object = edb_object
+        self._edb_object = core
         self._pedb = pedb

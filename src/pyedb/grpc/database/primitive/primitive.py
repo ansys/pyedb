@@ -65,8 +65,8 @@ class Primitive:
     >>> edb_prim = edb.modeler.primitives[0]
     """
 
-    def __init__(self, pedb, edb_object):
-        self.core = edb_object
+    def __init__(self, pedb, core):
+        self.core = core
         self._pedb = pedb
         self._core_stackup = pedb.stackup
         self._core_net = pedb.nets

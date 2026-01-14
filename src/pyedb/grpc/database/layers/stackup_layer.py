@@ -39,8 +39,8 @@ _mapping_layer_type = {
 
 
 class StackupLayer:
-    def __init__(self, pedb, edb_object=None):
-        self.core = edb_object
+    def __init__(self, pedb, core=None):
+        self.core = core
         self._pedb = pedb
 
     @property
