@@ -64,7 +64,6 @@ class TestClass(BaseTestClass):
 
     def test_siwave_create_circuit_port_on_net(self, edb_examples):
         """Create a circuit port on a net."""
-        #  Done
         edbapp = edb_examples.get_si_verse()
         initial_len = len(edbapp.padstacks.pingroups)
         assert edbapp.siwave.create_circuit_port_on_net("U1", "1V0", "U1", "GND", 50, "test") == "test"
@@ -76,8 +75,6 @@ class TestClass(BaseTestClass):
         p4 = edbapp.hfss.create_circuit_port_on_net("U1", "USB3_D_P")
         assert len(edbapp.padstacks.pingroups) == initial_len + 6
         assert "GND" in p4 and "USB3_D_P" in p4
-
-        # TODO: Moves this piece of code in another place
         assert "test" in edbapp.terminals
         assert edbapp.siwave.create_pin_group_on_net("U1", "1V0", "PG_V1P0_S0")
         assert edbapp.siwave.create_pin_group_on_net("U1", "GND", "U1_GND")
@@ -88,7 +85,6 @@ class TestClass(BaseTestClass):
 
     def test_siwave_create_voltage_source(self, edb_examples):
         """Create a voltage source."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert "Vsource_" in edbapp.siwave.create_voltage_source_on_net("U1", "USB3_D_P", "U1", "GND", 3.3, 0)
         assert len(edbapp.terminals) == 2
@@ -111,7 +107,7 @@ class TestClass(BaseTestClass):
 
     def test_siwave_create_current_source(self, edb_examples):
         """Create a current source."""
-        # Done
+
         edbapp = edb_examples.get_si_verse()
         assert edbapp.siwave.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0)
         pins = edbapp.components.get_pin_from_component("U1")
@@ -126,7 +122,7 @@ class TestClass(BaseTestClass):
         edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["R23", "P23"], group_name="sink_pos")
         edbapp.siwave.create_pin_group_on_net(reference_designator="U1", net_name="GND", group_name="gnd2")
 
-        # TODO: Moves this piece of code in another place
+        # move to source_excitations when dotnet is removed
         assert edbapp.siwave.create_voltage_source_on_pin_group("sink_pos", "gnd2", name="vrm_voltage_source")
         edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["A27", "A28"], group_name="vp_pos")
         assert edbapp.siwave.create_pin_group_on_net(reference_designator="U1", net_name="GND", group_name="vp_neg")
@@ -153,14 +149,12 @@ class TestClass(BaseTestClass):
 
     def test_siwave_create_dc_terminal(self, edb_examples):
         """Create a DC terminal."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.siwave.create_dc_terminal("U1", "DDR4_DQ40", "dc_terminal1") == "dc_terminal1"
         edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_create_resistors_on_pin(self, edb_examples):
         """Create a resistor on pin."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         pins = edbapp.components.get_pin_from_component("U1")
         assert "RST4000" == edbapp.siwave.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")
@@ -168,7 +162,6 @@ class TestClass(BaseTestClass):
 
     def test_siwave_add_syz_analsyis(self, edb_examples):
         """Add a sywave AC analysis."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         syz_setup = edbapp.siwave.add_siwave_syz_analysis(start_freq="=1GHz", stop_freq="10GHz", step_freq="10MHz")
         syz_setup.use_custom_settings = False
@@ -188,14 +181,12 @@ class TestClass(BaseTestClass):
 
     def test_siwave_add_dc_analysis(self, edb_examples):
         """Add a sywave DC analysis."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.siwave.add_siwave_dc_analysis(name="Test_dc")
         edbapp.close(terminate_rpc_session=False)
 
     def test_hfss_mesh_operations(self, edb_examples):
         """Retrieve the trace width for traces with ports."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         edbapp.components.create_port_on_component(
             "U1",
@@ -241,25 +232,14 @@ class TestClass(BaseTestClass):
 
     def test_save_edb_as(self, edb_examples):
         """Save edb as some file."""
-        # Done
         edbapp = edb_examples.create_empty_edb()
         assert edbapp.save_as(os.path.join(self.local_scratch.path, "si_verse_new.aedb"))
         assert os.path.exists(os.path.join(self.local_scratch.path, "si_verse_new.aedb", "edb.def"))
         edbapp.close(terminate_rpc_session=False)
 
-    # def test_create_EdbLegacy(self):
-    #     """Create EDB."""
-    #     edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
-    #     assert edb
-    #     assert edb.active_layout
-    #     edb.close(terminate_rpc_session=False)
-
     def test_export_3d(self, edb_examples):
         """Export EDB to HFSS."""
-        # Done
-
         mock_process = MagicMock()
-
         edb = edb_examples.create_empty_edb()
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
         out = edb.write_export3d_option_config_file(edb_examples.test_folder, options_config)
@@ -358,7 +338,6 @@ class TestClass(BaseTestClass):
                 polygon=port_poly, terminal_point=port_location, reference_layer="gnd"
             )
         sig = edb.modeler.create_trace([[0, 0], ["9mm", 0]], "sig2", "1mm", "SIG", "Flat", "Flat")
-        # TODO grpc create trace must return PyEDB path not internal one.
         assert sig.create_edge_port("pcb_port_1", "end", "Wave", None, 8, 8)
         assert sig.create_edge_port("pcb_port_2", "start", "gap")
         gap_port = edb.ports["pcb_port_2"]
@@ -372,11 +351,7 @@ class TestClass(BaseTestClass):
         assert not gap_port.deembed
         gap_port.name = "gap_port"
         assert gap_port.name == "gap_port"
-        # TODO return impedance value as float in grpc.
-        if edb.grpc:
-            assert gap_port.port_post_processing_prop.renormalization_impedance == 50
-        else:
-            assert gap_port.renormalization_impedance == 50
+        assert gap_port.renormalization_impedance == 50
         gap_port.is_circuit_port = True
         assert gap_port.is_circuit_port
         edb.close(terminate_rpc_session=False)

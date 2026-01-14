@@ -37,6 +37,7 @@ from ansys.edb.core.terminal.terminal import (
 )
 
 from pyedb.grpc.database.primitive.primitive import Primitive
+from pyedb.grpc.database.utility.port_post_processing_prop import PortPostProcessingProp
 from pyedb.grpc.database.utility.value import Value
 
 mapping_boundary_type = {
@@ -71,6 +72,10 @@ class Terminal(ConnObj):
             "bundle": GrpcTerminalType.BUNDLE,
             "pin_group": GrpcTerminalType.PIN_GROUP,
         }
+
+    @property
+    def port_post_processing_prop(self):
+        return PortPostProcessingProp(self.core.port_post_processing_prop)
 
     @property
     def _hfss_port_property(self):
@@ -134,11 +139,26 @@ class Terminal(ConnObj):
         bool
 
         """
-        return self.core.port_post_processing_prop.do_renormalize
+        return self.port_post_processing_prop.do_renormalize
 
     @do_renormalize.setter
     def do_renormalize(self, value):
-        self.core.port_post_processing_prop.do_renormalize = value
+        self.port_post_processing_prop.do_renormalize = value
+
+    @property
+    def renormalization_impedance(self) -> float:
+        """Get the renormalization impedance value.
+
+        Returns
+        -------
+        float
+
+        """
+        return self.port_post_processing_prop.renormalization_impedance
+
+    @renormalization_impedance.setter
+    def renormalization_impedance(self, value):
+        self.port_post_processing_prop.renormalization_impedance = value
 
     @property
     def net_name(self) -> str:
@@ -349,22 +369,22 @@ class Terminal(ConnObj):
         :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
         """
 
-        refTerm = self.core.reference_terminal
+        ref_term = self.core.reference_terminal
         if self.core.type == GrpcTerminalType.PIN_GROUP:
-            padStackInstance = self.core.pin_group.pins[0]
-            pingroup = refTerm.pin_group
-            refPinList = pingroup.pins
-            return self._get_closest_pin(padStackInstance, refPinList, gnd_net_name_preference)
+            padstack_instance = self.core.pin_group.pins[0]
+            pingroup = ref_term.pin_group
+            ref_pins = pingroup.pins
+            return self._get_closest_pin(padstack_instance, ref_pins, gnd_net_name_preference)
         elif self.core.type == GrpcTerminalType.PADSTACK_INST:
-            _, padStackInstance, _ = self.core.get_parameters()
-            if refTerm.type == GrpcTerminalType.PIN_GROUP:
-                pingroup = refTerm.pin_group
-                refPinList = pingroup.pins
-                return self._get_closest_pin(padStackInstance, refPinList, gnd_net_name_preference)
+            _, padstack_instance, _ = self.core.get_parameters()
+            if ref_term.type == GrpcTerminalType.PIN_GROUP:
+                pingroup = ref_term.pin_group
+                ref_pins = pingroup.pins
+                return self._get_closest_pin(padstack_instance, ref_pins, gnd_net_name_preference)
             else:
                 try:
-                    _, refTermPSI, _ = refTerm.get_parameters()
-                    return PadstackInstance(self._pedb, refTermPSI)
+                    _, ref_term_psi, _ = ref_term.get_parameters()
+                    return PadstackInstance(self._pedb, ref_term_psi)
                 except AttributeError:
                     return False
         return False
@@ -381,7 +401,6 @@ class Terminal(ConnObj):
         ref_layer = self.reference_layer
         edges = self.core.edges
         _, _, point_data = edges[0].get_parameters()
-        # shape_pd = self._pedb.core.geometry.point_data(X, Y)
         layer_name = ref_layer.name
         for primitive in self._pedb.layout.primitives:
             if primitive.layer.name == layer_name:
@@ -404,11 +423,9 @@ class Terminal(ConnObj):
 
         ref_term = self.core.reference_terminal  # return value is type terminal
         _, point_data, layer = ref_term.get_parameters()
-        # shape_pd = self._pedb.core.geometry.point_data(X, Y)
         layer_name = layer.name
         for primitive in self._pedb.layout.primitives:
             if primitive.layer.name == layer_name:
-                prim_shape_data = primitive.GetPolygonData()
                 if primitive.polygon_data.point_in_polygon(point_data):
                     return Primitive(self._pedb, primitive)
         for vias in self._pedb.padstacks.instances.values():
