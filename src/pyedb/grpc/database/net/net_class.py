@@ -45,6 +45,28 @@ class NetClass:
         self._pedb = pedb
 
     @property
+    def name(self):
+        """Net class name.
+
+        Returns
+        -------
+        str
+            Name of the net class.
+        """
+        return self.core.name
+
+    @name.setter
+    def name(self, value: str):
+        """Set net class name.
+
+        Parameters
+        ----------
+        value : str
+            Name of the net class.
+        """
+        self.core.name = value
+
+    @property
     def nets(self):
         """Net list.
 

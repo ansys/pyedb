@@ -63,7 +63,7 @@ class ExtendedNets:
             Created ExtendedNet object.
         """
         if name in self.items:
-            self._pedb.logger.error("{} already exists.".format(name))
+            self._pedb.logger.error(f"{name} already exists.")
             return False
         extended_net = ExtendedNet.create(self._pedb.layout, name)
         if isinstance(net, str):

@@ -916,7 +916,7 @@ class NetClasses:
 
     def __init__(self, pedb):
         self._pedb = pedb
-        self._net_classes = pedb.active_layout.net_classes
+        self.core = [net.core for net in pedb.active_layout.net_classes]
 
     def __getitem__(self, name: str) -> NetClass:
         """Get a net by name.
@@ -938,7 +938,18 @@ class NetClasses:
         Dict[str, :class:`pyedb.grpc.database.nets.nets_class.NetClass`]
             Dictionary of extended nets.
         """
-        return {i.name: i for i in self._pedb.layout.net_classes}
+        return {i.core.name: i for i in self._pedb.layout.net_classes}
+
+    @property
+    def name(self):
+        """Get the names of all net classes.
+
+        Returns
+        -------
+        list[str]
+            List of net class names.
+        """
+        return self.core.name
 
     def create(self, name, net) -> Union[bool, NetClass]:
         """Create a new net class.
