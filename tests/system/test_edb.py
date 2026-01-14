@@ -1818,7 +1818,6 @@ class TestClass(BaseTestClass):
 
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Modifies example files")
     def test_import_layout_file(self, edb_examples):
         from pyedb import Edb
 
@@ -1839,7 +1838,7 @@ class TestClass(BaseTestClass):
             return input_file, control_file, map_file
 
         input_file, control_file, map_file = copy_gds_file()
-        edb = edb_examples.create_edb()
+        edb = edb_examples.create_empty_edb()
         assert edb.import_layout_file(input_file=input_file, control_file=control_file, map_file=map_file)
         assert edb.close(terminate_rpc_session=False)
 
