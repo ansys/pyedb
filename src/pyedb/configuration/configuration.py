@@ -623,7 +623,7 @@ class Configuration:
             cutout_params = op_cutout.model_dump()
             auto_identify_nets = cutout_params.pop("auto_identify_nets")
             if auto_identify_nets["enabled"]:
-                reference_list = cutout_params.get("reference_list", [])
+                reference_nets = cutout_params.get("reference_nets", [])
                 if auto_identify_nets:
                     self._pedb.nets.generate_extended_nets(
                         auto_identify_nets["resistor_below"],
@@ -633,18 +633,18 @@ class Configuration:
                     )
                     signal_nets = []
                     for i in self._pedb.terminals.values():
-                        if i.net_name in reference_list:
+                        if i.net_name in reference_nets:
                             continue
 
                         extended_net = i.net.extended_net
                         if extended_net:
-                            temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_list]
+                            temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_nets]
                             temp = [i2 for i2 in temp if i2 not in signal_nets]
                             signal_nets.extend(temp)
                         else:
                             signal_nets.append(i.net_name)
 
-                    cutout_params["signal_list"] = signal_nets
+                    cutout_params["signal_nets"] = signal_nets
             polygon_points = self._pedb.cutout(**cutout_params)
             if "pyedb_cutout" not in self._pedb.stackup.all_layers:
                 self._pedb.stackup.add_document_layer(name="pyedb_cutout")
@@ -668,13 +668,11 @@ class Configuration:
                         continue
                     else:
                         net_names.append(name)
-            reference_list = []
-            signal_list = net_names
 
             self.cfg_data.operations.add_cutout(
                 custom_extent=custom_extent,
-                reference_list=reference_list,
-                signal_list=signal_list,
+                reference_nets=[],
+                signal_nets=net_names,
             )
 
     @execution_timer("Placing terminals")

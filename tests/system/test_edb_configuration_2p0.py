@@ -526,7 +526,7 @@ class TestClass(BaseTestClass):
                         "inductor_below": 1,
                         "capacitor_above": "10nF",
                     },
-                    "reference_list": ["GND"],
+                    "reference_nets": ["GND"],
                     "extent_type": "ConvexHull",
                 },
                 "generate_auto_hfss_regions": True,
@@ -907,20 +907,20 @@ class TestClass(BaseTestClass):
         data = {
             "operations": {
                 "cutout": {
-                    "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
-                    "reference_list": ["GND"],
+                    "signal_nets": ["SFPA_RX_P", "SFPA_RX_N"],
+                    "reference_nets": ["GND"],
                 }
             }
         }
         edbapp = edb_examples.get_si_verse()
         edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(operations=True)
-        assert len(data_from_db["operations"]["cutout"]["signal_list"]) == 3
+        assert len(data_from_db["operations"]["cutout"]["signal_nets"]) == 3
         assert len(data_from_db["operations"]["cutout"]["custom_extent"]) > 0
         edbapp.close(terminate_rpc_session=False)
 
-        data_from_db["operations"]["cutout"]["signal_list"].remove("GND")
-        data_from_db["operations"]["cutout"]["reference_list"].append("GND")
+        data_from_db["operations"]["cutout"]["signal_nets"].remove("GND")
+        data_from_db["operations"]["cutout"]["reference_nets"].append("GND")
         edbapp = edb_examples.get_si_verse()
         edbapp.configuration.load(data_from_db, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
@@ -1126,8 +1126,8 @@ class TestClass(BaseTestClass):
         data = {
             "operations": {
                 "cutout": {
-                    "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
-                    "reference_list": ["GND"],
+                    "signal_nets": ["SFPA_RX_P", "SFPA_RX_N"],
+                    "reference_nets": ["GND"],
                     "extent_type": "ConvexHull",
                     "expansion_size": 0.002,
                     "use_round_corner": False,
