@@ -40,6 +40,7 @@ SimulationConfiguration
 S[Ii]wave
 [Ss][Yy][Zz]
 (?i)stackup(?:\s3D|s)?
+uv
 vias
 [Xx][Mm][Ll]
 [Gg][Rr][Pp][Cc]
