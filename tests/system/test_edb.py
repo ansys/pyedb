@@ -138,7 +138,7 @@ class TestClass(BaseTestClass):
             "vprobe_2", "1V0", ["112mm", "24mm"], "1_Top", "GND", ["112mm", "27mm"], "Inner1(GND1)"
         )
         vprobe_2 = edbapp.terminals["vprobe_2"]
-        ref_term = vprobe_2.ref_terminal
+        ref_term = vprobe_2.reference_terminal
         assert isinstance(ref_term.location, list) or isinstance(ref_term.location, tuple)
         # ref_term.location = [0, 0] # position setter is crashing check pyedb-core bug #431
         assert ref_term.layer
@@ -581,7 +581,10 @@ class TestClass(BaseTestClass):
             t = edb.modeler.create_trace(path_list=p, **kwargs)
             traces.append(t)
 
-        assert edb.hfss.create_wave_port(traces[0], trace_paths[0][0], "wave_port")
+        if config["use_grpc"]:
+            assert edb.source_excitation.create_wave_port(traces[0].id, trace_paths[0][1], "wave_port")
+        else:
+            assert edb.hfss.create_wave_port(traces[0], trace_paths[0][0], "wave_port")
 
         assert edb.hfss.create_differential_wave_port(
             traces[0],
@@ -592,8 +595,10 @@ class TestClass(BaseTestClass):
         )
 
         paths = [i[1] for i in trace_paths]
-        assert edb.hfss.create_bundle_wave_port(traces, paths)
-        p = edb.ports["wave_port"]
+        if config["use_grpc"]:
+            _, p = edb.source_excitation.create_bundle_wave_port(traces, paths, port_name="port2")
+        else:
+            _, p = edb.hfss.create_bundle_wave_port(traces, paths)
         p.horizontal_extent_factor = 6
         p.vertical_extent_factor = 5
         p.pec_launch_width = "0.02mm"
@@ -606,7 +611,6 @@ class TestClass(BaseTestClass):
 
     def test_set_all_antipad_values(self, edb_examples):
         """Set all anti-pads from all pad-stack definition to the given value."""
-        #  Done
         edb = edb_examples.get_si_verse()
         assert edb.padstacks.set_all_antipad_value(0.0)
         edb.close(terminate_rpc_session=False)
@@ -1870,7 +1874,11 @@ class TestClass(BaseTestClass):
     def test_create_circuit_port_on_component_pins_pingroup_on_multiple_pins(
         self, edb_examples, pec_boundary: bool, positive_pin_names: Sequence[str]
     ):
-        EXPECTED_TERMINAL_TYPE = "PinGroupTerminal" if len(positive_pin_names) > 1 else "PadstackInstanceTerminal"
+        if config["use_grpc"]:
+            EXPECTED_TERMINAL_TYPE = "pin_group" if len(positive_pin_names) > 1 else "padstack_inst"
+        else:
+            EXPECTED_TERMINAL_TYPE = "PinGroupTerminal" if len(positive_pin_names) > 1 else "PadstackInstanceTerminal"
+
         edbapp = edb_examples.get_si_verse()
         component_name = "U1"
         edbcomp = edbapp.components[component_name]
@@ -1882,9 +1890,9 @@ class TestClass(BaseTestClass):
             pec_boundary=pec_boundary,
         )
         assert len(edbapp.excitations) == 2
-        for excitation in edbapp.excitations.values():
+        for excitation in edbapp.ports.values():
             if excitation.is_reference_terminal:
-                assert excitation.terminal_type == "PinGroupTerminal"
+                assert excitation.terminal_type == "pin_group" if config["use_grpc"] else "PinGroupTerminal"
             else:
                 assert excitation.terminal_type == EXPECTED_TERMINAL_TYPE
 

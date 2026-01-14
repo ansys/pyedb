@@ -29,8 +29,8 @@ from ansys.edb.core.definition.component_model import (
 class NPortComponentModel:
     """Class managing :class:`NPortComponentModel <ansys.edb.core.definition.component_model.NPortComponentModel>`"""
 
-    def __init__(self, edb_object):
-        self.core = edb_object
+    def __init__(self, core):
+        self.core = core
 
     @classmethod
     def create(cls, name: str = None) -> "NPortComponentModel":

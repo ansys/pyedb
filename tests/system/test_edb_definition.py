@@ -48,20 +48,15 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_component_s_parameter(self, edb_examples):
-        # Done
         edbapp = edb_examples.get_si_verse()
         sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
         edbapp.definitions.components["CAPC3216X180X55ML20T25"].add_n_port_model(
             sparam_path, "GRM32_DC0V_25degC_series"
         )
         assert edbapp.definitions.components["CAPC3216X180X55ML20T25"].component_models
-        # TODO return in grpc component_models as dict{name: model}.
-        if edbapp.grpc:
-            assert not edbapp.definitions.components["CAPC3216X180X55ML20T25"].component_models[0].is_null
-        else:
-            assert not list(edbapp.definitions.components["CAPC3216X180X55ML20T25"].component_models.values())[
-                0
-            ].is_null
+        cap_model = list(edbapp.definitions.components["CAPC3216X180X55ML20T25"].component_models.values())[0]
+        assert not cap_model.is_null
+        assert cap_model.reference_file
         assert edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
         edbapp.close(terminate_rpc_session=False)
 

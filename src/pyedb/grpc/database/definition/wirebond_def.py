@@ -28,9 +28,9 @@ from ansys.edb.core.definition.bondwire_def import (
 
 
 class BondwireDef:
-    def __init__(self, pedb, edb_object=None):
+    def __init__(self, pedb, core=None):
         self._pedb = pedb
-        self.core = edb_object
+        self.core = core
 
     @property
     def name(self):
@@ -80,10 +80,10 @@ class BondwireDef:
 class Jedec4BondwireDef(BondwireDef):
     """Class representing a JEDEC 4 bondwire definition."""
 
-    def __init__(self, pedb, edb_object=None):
-        super().__init__(pedb, edb_object)
+    def __init__(self, pedb, core=None):
+        super().__init__(pedb, core)
         self._pedb = pedb
-        self.core = edb_object
+        self.core = core
 
     @classmethod
     def create(cls, edb, name):
@@ -129,10 +129,10 @@ class Jedec4BondwireDef(BondwireDef):
 class Jedec5BondwireDef(BondwireDef):
     """Class representing a JEDEC 5 bondwire definition."""
 
-    def __init__(self, pedb, edb_object=None):
-        super().__init__(pedb, edb_object)
+    def __init__(self, pedb, core=None):
+        super().__init__(pedb, core)
         self._pedb = pedb
-        self.core = edb_object
+        self.core = core
 
     @classmethod
     def create(cls, edb, name):
@@ -178,10 +178,10 @@ class Jedec5BondwireDef(BondwireDef):
 class ApdBondwireDef(BondwireDef):
     """Class representing an Apd bondwire definition."""
 
-    def __init__(self, pedb, edb_object=None):
-        super().__init__(pedb, edb_object)
+    def __init__(self, pedb, core=None):
+        super().__init__(pedb, core)
         self._pedb = pedb
-        self.core = edb_object
+        self.core = core
 
     @classmethod
     def create(cls, edb, name):

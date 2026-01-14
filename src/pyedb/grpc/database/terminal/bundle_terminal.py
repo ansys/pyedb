@@ -39,7 +39,7 @@ from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.rlc import Rlc
 
 
-class BundleTerminal:
+class BundleTerminal(Terminal):
     """Manages bundle terminal properties.
 
     Parameters
@@ -51,15 +51,16 @@ class BundleTerminal:
     """
 
     def __init__(self, pedb, edb_object):
-        self.core = edb_object
-        self._pedb = pedb
+        super().__init__(pedb, edb_object)
 
     @classmethod
-    def create(cls, terminals: list[Union[Terminal, WavePort]]) -> BundleTerminal:
+    def create(cls, pedb, name: str, terminals: list[Union[Terminal, WavePort]]) -> BundleTerminal:
         """Create a bundle terminal.
 
         Parameters
         ----------
+        name : str
+            Bundle terminal name.
         terminals : list[Union[Terminal, WavePort]]
             List of terminals to bundle.
 
@@ -72,23 +73,13 @@ class BundleTerminal:
             raise TypeError("Terminals must be a list of Terminal objects.")
         if not terminals:
             raise ValueError("Terminals list cannot be empty.")
-        pedb = terminals[0]._pedb
-        for term in terminals[1:]:
-            if term._pedb is not pedb:
-                raise ValueError("All terminals must belong to the same EDB.")
-        terminals = [term.core for term in terminals]
-        term = GrpcBundleTerminal.create(terminals=terminals)
-        return cls(pedb, term)
-
-    @property
-    def boundary_type(self) -> str:
-        """Boundary type.
-
-        Returns
-        -------
-        str : boundary type.
-        """
-        return self.core.boundary_type.name.lower()
+        terminals = [term.core for term in pedb.layout.terminals]
+        grpc_term = GrpcBundleTerminal.create(terminals=terminals)
+        terminal = cls(pedb, grpc_term)
+        terminal.name = name
+        for idx, i in enumerate(terminal.core.terminals):
+            i.name = f"{name}:T{idx + 1}"
+        return terminal
 
     @property
     def is_reference_terminal(self) -> bool:
@@ -119,21 +110,6 @@ class BundleTerminal:
         """
 
         return Component(self._pedb, self.core.component)
-
-    @property
-    def impedance(self) -> float:
-        """Impedance value.
-
-        Returns
-        -------
-        float
-            Impedance value.
-        """
-        return self.core.impedance.value
-
-    @impedance.setter
-    def impedance(self, value):
-        self.core.impedance = self._pedb.value(value)
 
     @property
     def net(self) -> Net:
@@ -170,38 +146,6 @@ class BundleTerminal:
             self.core.hfss_pi_type = GrpcHfssPIType.LUMPED
 
     @property
-    def reference_layer(self) -> Layer:
-        """Returns reference layer.
-
-        Returns
-        -------
-        :class:`Layer <pyedb.grpc.database.layers.layer.Layer>`
-        """
-        return Layer(self._pedb, self.core.reference_layer)
-
-    @reference_layer.setter
-    def reference_layer(self, value):
-        if isinstance(value, Layer):
-            self.core.reference_layer = value.core
-        elif isinstance(value, str):
-            self.core.reference_layer = self._pedb.stackup.signal_layer[value].core
-
-    @property
-    def reference_terminal(self) -> Terminal:
-        """Returns reference terminal.
-
-        Returns
-        -------
-        :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`
-        """
-        return Terminal(self._pedb, self.core.reference_terminal)
-
-    @reference_terminal.setter
-    def reference_terminal(self, value):
-        if isinstance(value, Terminal):
-            self.core.reference_terminal = value.core
-
-    @property
     def rlc_boundary_parameters(self) -> Rlc:
         """Returns Rlc parameters
 
@@ -210,34 +154,6 @@ class BundleTerminal:
         :class:`Rlc <pyedb.grpc.database.utility.rlc.Rlc>`
         """
         return Rlc(self._pedb, self.core.rlc)
-
-    @property
-    def source_amplitude(self) -> float:
-        """Returns source amplitude.
-
-        Returns
-        -------
-        float
-        """
-        return self.core.source_amplitude.value
-
-    @source_amplitude.setter
-    def source_amplitude(self, value):
-        self.core.source_amplitude = self._pedb.value(value)
-
-    @property
-    def source_phase(self) -> float:
-        """Returns source phase.
-
-        Returns
-        -------
-        float
-        """
-        return self.core.source_phase.value
-
-    @source_phase.setter
-    def source_phase(self, value):
-        self.core.source_phase = self._pedb.value(value)
 
     @property
     def term_to_ground(self) -> str:
@@ -261,10 +177,12 @@ class BundleTerminal:
 
     @property
     def terminals(self) -> list[Terminal]:
+        from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
+
         """Returns terminals list.
 
         Returns
         -------
         List[:class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
         """
-        return [Terminal(self._pedb, terminal) for terminal in self.core.terminals]
+        return [EdgeTerminal(self._pedb, terminal) for terminal in self.core.terminals]

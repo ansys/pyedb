@@ -51,28 +51,6 @@ class GapPort(EdgeTerminal):
         super().__init__(pedb, edb_object)
 
     @property
-    def magnitude(self) -> float:
-        """Magnitude.
-
-        Returns
-        -------
-        float
-            Magnitude value.
-        """
-        return Value(self.core.source_amplitude, self._pedb.active_cell)
-
-    @property
-    def phase(self) -> float:
-        """Phase.
-
-        Returns
-        -------
-        float
-            Phase value.
-        """
-        return Value(self.core.source_phase, self._pedb.active_cell)
-
-    @property
     def renormalize(self) -> bool:
         """Whether renormalize is active.
 
@@ -106,16 +84,6 @@ class GapPort(EdgeTerminal):
             self.core.port_post_processing_prop.renormalizion_z0[0],
             self.core.port_post_processing_prop.renormalizion_z0[1],
         )
-
-    @property
-    def terminal_type(self) -> str:
-        """Returns terminal type.
-
-        Returns
-        -------
-        str
-        """
-        return self.core.terminal_type
 
 
 class CircuitPort(GapPort):

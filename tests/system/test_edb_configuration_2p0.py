@@ -526,7 +526,7 @@ class TestClass(BaseTestClass):
                         "inductor_below": 1,
                         "capacitor_above": "10nF",
                     },
-                    "reference_list": ["GND"],
+                    "reference_nets": ["GND"],
                     "extent_type": "ConvexHull",
                 },
                 "generate_auto_hfss_regions": True,
@@ -907,20 +907,20 @@ class TestClass(BaseTestClass):
         data = {
             "operations": {
                 "cutout": {
-                    "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
-                    "reference_list": ["GND"],
+                    "signal_nets": ["SFPA_RX_P", "SFPA_RX_N"],
+                    "reference_nets": ["GND"],
                 }
             }
         }
         edbapp = edb_examples.get_si_verse()
         edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(operations=True)
-        assert len(data_from_db["operations"]["cutout"]["signal_list"]) == 3
+        assert len(data_from_db["operations"]["cutout"]["signal_nets"]) == 3
         assert len(data_from_db["operations"]["cutout"]["custom_extent"]) > 0
         edbapp.close(terminate_rpc_session=False)
 
-        data_from_db["operations"]["cutout"]["signal_list"].remove("GND")
-        data_from_db["operations"]["cutout"]["reference_list"].append("GND")
+        data_from_db["operations"]["cutout"]["signal_nets"].remove("GND")
+        data_from_db["operations"]["cutout"]["reference_nets"].append("GND")
         edbapp = edb_examples.get_si_verse()
         edbapp.configuration.load(data_from_db, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
@@ -1126,8 +1126,8 @@ class TestClass(BaseTestClass):
         data = {
             "operations": {
                 "cutout": {
-                    "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
-                    "reference_list": ["GND"],
+                    "signal_nets": ["SFPA_RX_P", "SFPA_RX_N"],
+                    "reference_nets": ["GND"],
                     "extent_type": "ConvexHull",
                     "expansion_size": 0.002,
                     "use_round_corner": False,
@@ -1159,7 +1159,7 @@ class TestClass(BaseTestClass):
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassTerminals(BaseTestClass):
     @pytest.fixture(autouse=True)
     def init(self, edb_examples):
@@ -1189,7 +1189,7 @@ class TestClassTerminals(BaseTestClass):
             "layer": "1_Top",
             "name": "terminal3",
             "impedance": 50,
-            "boundary_type": "PortBoundary",
+            "boundary_type": "port" if config["use_grpc"] else "PortBoundary",
             "reference_terminal": "terminal3_ref",
             "terminal_type": "point",
             "net": "AVCC_1V3",
@@ -1201,7 +1201,7 @@ class TestClassTerminals(BaseTestClass):
             "net": "GND",
             "name": "terminal3_ref",
             "impedance": 50,
-            "boundary_type": "PortBoundary",
+            "boundary_type": "port" if config["use_grpc"] else "PortBoundary",
             "terminal_type": "point",
         }
 
@@ -1209,7 +1209,7 @@ class TestClassTerminals(BaseTestClass):
             "name": "edge_terminal_1",
             "impedance": 50,
             "is_circuit_port": False,
-            "boundary_type": "PortBoundary",
+            "boundary_type": "port" if config["use_grpc"] else "PortBoundary",
             "primitive": "path_1",
             "point_on_edge_x": 0,
             "point_on_edge_y": "1mm",
@@ -1223,7 +1223,7 @@ class TestClassTerminals(BaseTestClass):
             "name": "edge_terminal_2",
             "impedance": 50,
             "is_circuit_port": False,
-            "boundary_type": "PortBoundary",
+            "boundary_type": "port" if config["use_grpc"] else "PortBoundary",
             "primitive": "path_2",
             "point_on_edge_x": "1mm",
             "point_on_edge_y": "1mm",
@@ -1252,8 +1252,8 @@ class TestClassTerminals(BaseTestClass):
             "is_circuit_port": False,
             "amplitude": 1.0,
             "phase": 0.0,
-            "terminal_to_ground": "kNoGround",
-            "boundary_type": "PortBoundary",
+            "terminal_to_ground": "no_ground" if edbapp.grpc else "kNoGround",
+            "boundary_type": "port" if edbapp.grpc else "PortBoundary",
             "hfss_type": "Wave",
             "terminal_type": "padstack_instance",
             "padstack_instance": "U7-M7",
@@ -1278,8 +1278,8 @@ class TestClassTerminals(BaseTestClass):
             "reference_terminal": "terminal1",
             "amplitude": 1.0,
             "phase": 0.0,
-            "terminal_to_ground": "kNoGround",
-            "boundary_type": "PortBoundary",
+            "terminal_to_ground": "no_ground" if edbapp.grpc else "kNoGround",
+            "boundary_type": "port" if edbapp.grpc else "PortBoundary",
             "terminal_type": "pin_group",
             "pin_group": "U7_GND",
         }
@@ -1302,8 +1302,8 @@ class TestClassTerminals(BaseTestClass):
                 "reference_terminal": "terminal3_ref",
                 "amplitude": 1.0,
                 "phase": 0.0,
-                "terminal_to_ground": "kNoGround",
-                "boundary_type": "PortBoundary",
+                "terminal_to_ground": "no_ground" if edbapp.grpc else "kNoGround",
+                "boundary_type": "port" if edbapp.grpc else "PortBoundary",
                 "terminal_type": "point",
                 "x": 0.10400000000000001,
                 "y": 0.037,
@@ -1316,8 +1316,8 @@ class TestClassTerminals(BaseTestClass):
                 "is_circuit_port": True,
                 "amplitude": 1.0,
                 "phase": 0.0,
-                "terminal_to_ground": "kNoGround",
-                "boundary_type": "PortBoundary",
+                "terminal_to_ground": "no_ground" if edbapp.grpc else "kNoGround",
+                "boundary_type": "port" if edbapp.grpc else "PortBoundary",
                 "terminal_type": "point",
                 "x": 0.10400000000000001,
                 "y": 0.037,
@@ -1371,7 +1371,7 @@ class TestClassSetups(BaseTestClass):
             "name": "terminal1",
             "impedance": 1,
             "is_circuit_port": False,
-            "boundary_type": "PortBoundary",
+            "boundary_type": "port" if config["use_grpc"] else "PortBoundary",
             "hfss_type": "Wave",
             "terminal_type": "padstack_instance",
             "padstack_instance": "U7-M7",

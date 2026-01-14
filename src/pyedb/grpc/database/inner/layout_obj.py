@@ -20,42 +20,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.definition.component_pin import ComponentPin as GrpcComponentPin
+from ansys.edb.core.database import ProductIdType as GrpcProductIdType
+
+from pyedb.grpc.database.inner.base import ObjBase
 
 
-class ComponentPin:
-    """Class managing :class:`ComponentPin <ansys.edb.core.definition.component_pin.ComponentPin>`."""
+class LayoutObj(ObjBase):
+    """Represents a layout object."""
 
-    def __init__(self, core):
-        self.core = core
-
-    @classmethod
-    def create(cls, component_def, name):
-        """Create a component pin.
-
-        Parameters
-        ----------
-        component_def : :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>`
-            Component definition object.
-        name : str
-            Name of the component pin.
-
-        Returns
-        -------
-        :class:`ComponentPin <pyedb.grpc.database.definition.component_pin.ComponentPin>`
-            The created component pin object.
-        """
-        edb_obj = GrpcComponentPin.create(component_def.core, name)
-        return cls(edb_obj)
+    def __init__(self, pedb, edb_object):
+        super().__init__(pedb, edb_object)
 
     @property
-    def is_null(self):
-        return self.core.is_null
+    def _edb_properties(self):
+        p = self.core.get_product_property(GrpcProductIdType.DESIGNER, 18)
+        return p
 
-    @property
-    def name(self):
-        return self.core.name
-
-    @name.setter
-    def name(self, value):
-        self.core.name = value
+    @_edb_properties.setter
+    def _edb_properties(self, value):
+        self.core.set_product_property(GrpcProductIdType.DESIGNER, 18, value)
