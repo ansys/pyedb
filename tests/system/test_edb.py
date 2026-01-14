@@ -30,7 +30,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from pyedb.generic.general_methods import is_linux
-from tests.conftest import config, edb_examples, local_path, test_subfolder
+from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
