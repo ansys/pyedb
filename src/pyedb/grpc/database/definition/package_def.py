@@ -45,13 +45,13 @@ class PackageDef:
 
     """
 
-    def __init__(self, pedb, edb_object=None, name=None, component_part_name=None, extent_bounding_box=None):
-        if not edb_object:
+    def __init__(self, pedb, core=None, name=None, component_part_name=None, extent_bounding_box=None):
+        if not core:
             if name:
                 edb_object = GrpcPackageDef.create(db=pedb.active_db, name=name)
             else:
                 raise AttributeError("Name must be provided to create and instantiate a PackageDef object.")
-        self.core = edb_object
+        self.core = core
         self._pedb = pedb
         self._heat_sink = None
         if not self.core and name:

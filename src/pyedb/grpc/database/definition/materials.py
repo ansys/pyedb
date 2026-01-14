@@ -120,11 +120,11 @@ class MaterialProperties(BaseModel):
 class Material:
     """Manage EDB methods for material property management."""
 
-    def __init__(self, edb: Edb, edb_material_def):
-        self.core = edb_material_def
+    def __init__(self, edb: Edb, core):
+        self.core = core
         self.__edb: Edb = edb
-        self.__name: str = edb_material_def.name
-        self.__material_def = edb_material_def
+        self.__name: str = core.name
+        self.__material_def = core
         self.__dielectric_model = None
 
     @property
