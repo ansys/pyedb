@@ -1353,9 +1353,7 @@ class TestClassTerminals(BaseTestClass):
         )
         prim_2.aedt_name = "path_2"
 
-        edbapp.configuration.load(
-            {"terminals": [self.edge_terminal_1, self.edge_terminal_2]}, apply_file=True
-        )
+        edbapp.configuration.load({"terminals": [self.edge_terminal_1, self.edge_terminal_2]}, apply_file=True)
         assert edbapp.terminals["edge_terminal_1"].hfss_type == "Gap"
         assert edbapp.terminals["edge_terminal_2"].hfss_type == "Wave"
         edbapp.close(terminate_rpc_session=False)
