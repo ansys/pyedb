@@ -47,8 +47,8 @@ class GapPort(EdgeTerminal):
     >>> gap_port = edb.ports["gap_port"]
     """
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
+    def __init__(self, pedb, core):
+        super().__init__(pedb, core)
 
     @property
     def renormalize(self) -> bool:

@@ -29,8 +29,8 @@ from pyedb.grpc.database.utility.value import Value
 class ArcData:
     """Class managing ArcData."""
 
-    def __init__(self, edb_object):
-        self.core = edb_object
+    def __init__(self, core):
+        self.core = core
 
     @property
     def height(self) -> float:

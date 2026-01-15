@@ -33,8 +33,8 @@ if TYPE_CHECKING:
 
 
 class EdgeTerminal(Terminal):
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
+    def __init__(self, pedb, core):
+        super().__init__(pedb, core)
         self._hfss_type = "Gap"
 
     @classmethod

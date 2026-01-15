@@ -26,6 +26,6 @@ from ansys.edb.core.layout.cell import Cell as GrpcCell
 class Cell:
     """Manage :class:`Cell <ansys.edb.core.layout.cell.Cell>`"""
 
-    def __init__(self, pedb, edb_object):
-        self.core = edb_object
+    def __init__(self, pedb, core):
+        self.core = core
         self._pedb = pedb

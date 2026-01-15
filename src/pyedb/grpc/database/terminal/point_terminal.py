@@ -45,8 +45,8 @@ from pyedb.grpc.database.terminal.terminal import Terminal
 class PointTerminal(Terminal):
     """Manages point terminal properties."""
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
+    def __init__(self, pedb, core):
+        super().__init__(pedb, core)
 
     @classmethod
     def create(cls, layout, net, layer, name, point):

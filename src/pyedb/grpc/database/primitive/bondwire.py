@@ -32,8 +32,8 @@ from pyedb.grpc.database.utility.value import Value
 class Bondwire:
     """Class representing a bond-wire object."""
 
-    def __init__(self, _pedb, edb_object):
-        self.core = edb_object
+    def __init__(self, _pedb, core):
+        self.core = core
         self._pedb = _pedb
 
     @classmethod

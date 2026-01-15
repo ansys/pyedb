@@ -58,8 +58,8 @@ class Net:
     'GND'
     """
 
-    def __init__(self, pedb, raw_net):
-        self.core = raw_net
+    def __init__(self, pedb, core):
+        self.core = core
         self._pedb = pedb
         self._core_components = pedb.components
         self._core_primitive = pedb.modeler

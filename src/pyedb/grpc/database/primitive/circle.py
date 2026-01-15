@@ -32,10 +32,10 @@ from pyedb.grpc.database.utility.value import Value
 
 
 class Circle(Primitive):
-    def __init__(self, pedb, edb_object=None):
-        if edb_object:
-            self.core = edb_object
-            Primitive.__init__(self, pedb, edb_object)
+    def __init__(self, pedb, core=None):
+        if core:
+            self.core = core
+            Primitive.__init__(self, pedb, core)
         self._pedb = pedb
 
     @classmethod

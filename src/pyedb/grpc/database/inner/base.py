@@ -22,8 +22,8 @@
 
 
 class ObjBase:
-    def __init__(self, pedb, edb_object):
-        self.core = edb_object
+    def __init__(self, pedb, core):
+        self.core = core
         self._pedb = pedb
 
     @property

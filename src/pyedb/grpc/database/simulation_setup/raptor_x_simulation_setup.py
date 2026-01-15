@@ -32,8 +32,8 @@ from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 class RaptorXSimulationSetup(GrpcRaptorXSimulationSetup):
     """RaptorX simulation setup."""
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+    def __init__(self, pedb, core):
+        super().__init__(core.msg)
         self._pedb = pedb
 
     @property

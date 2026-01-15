@@ -41,8 +41,8 @@ from pyedb.misc.decorators import deprecated_property
 class PadstackInstanceTerminal(Terminal):
     """Manages bundle terminal properties."""
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
+    def __init__(self, pedb, core):
+        super().__init__(pedb, core)
 
     @classmethod
     def create(cls, layout, name, padstack_instance, layer, is_ref=False, net=None) -> "PadstackInstanceTerminal":

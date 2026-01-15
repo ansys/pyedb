@@ -24,26 +24,47 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ansys.edb.core.net.net_class import NetClass as GrpcNetClass
-
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 
 
-class NetClass(GrpcNetClass):
+class NetClass:
     """Manages EDB functionalities for a primitives.
     It inherits EDB Object properties.
 
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2025.1")
+    >>> myedb = "path_to_your_edb_file.edb"
+    >>> edb = Edb(myedb, version="2025.1")
     >>> edb.net_classes
     """
 
-    def __init__(self, pedb, net_class):
-        super().__init__(net_class.msg)
+    def __init__(self, pedb, core):
+        self.core = core
         self._pedb = pedb
+
+    @property
+    def name(self):
+        """Net class name.
+
+        Returns
+        -------
+        str
+            Name of the net class.
+        """
+        return self.core.name
+
+    @name.setter
+    def name(self, value: str):
+        """Set net class name.
+
+        Parameters
+        ----------
+        value : str
+            Name of the net class.
+        """
+        self.core.name = value
 
     @property
     def nets(self):
@@ -56,7 +77,7 @@ class NetClass(GrpcNetClass):
         """
         from pyedb.grpc.database.net.net import Net
 
-        return [Net(self._pedb, i) for i in super().nets]
+        return [Net(self._pedb, i) for i in self.core.nets]
 
     def add_net(self, net):
         """Add a net to the net class.
@@ -70,9 +91,20 @@ class NetClass(GrpcNetClass):
 
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         if isinstance(net, Net) and not net.is_null:
-            self.add_net(net)
+            self.core.add_net(net)
             return True
         return False
+
+    @property
+    def is_null(self):
+        """Check if the net class is a null net class.
+
+        Returns
+        -------
+        bool
+            ``True`` if the net class is a null net class, ``False`` otherwise.
+        """
+        return self.core.is_null
 
     def contains_net(self, net) -> bool:
         """
@@ -92,7 +124,7 @@ class NetClass(GrpcNetClass):
 
         if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
-        return super().contains_net(net)
+        return self.core.contains_net(net)
 
     def remove_net(self, net):
         """Remove net.
@@ -105,6 +137,6 @@ class NetClass(GrpcNetClass):
         if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         if isinstance(net, Net) and not net.is_null:
-            self.remove_net(net)
+            self.core.remove_net(net)
             return True
         return False

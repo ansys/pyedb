@@ -38,7 +38,7 @@ from pyedb.grpc.database.utility.hfss_extent_info import HfssExtentInfo
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
-class Hfss(object):
+class Hfss:
     """Manages EDB methods for HFSS setup configuration.
 
     Provides access to HFSS-specific operations including:

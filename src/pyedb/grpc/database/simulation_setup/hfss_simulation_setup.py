@@ -39,8 +39,8 @@ from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 class HfssSimulationSetup(GrpcHfssSimulationSetup):
     """HFSS simulation setup class."""
 
-    def __init__(self, pedb, edb_object, name: str = None):
-        super().__init__(edb_object.msg)
+    def __init__(self, pedb, core, name: str = None):
+        super().__init__(core.msg)
         self._pedb = pedb
         self._name = name
 

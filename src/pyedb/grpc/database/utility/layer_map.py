@@ -35,8 +35,8 @@ from ansys.edb.core.utility.layer_map import (
 
 
 class LayerMap:
-    def __init__(self, edb_object):
-        self.core = edb_object
+    def __init__(self, core):
+        self.core = core
 
     @classmethod
     def create(cls, direction: str = "two_way") -> "LayerMap":

@@ -50,8 +50,8 @@ class BundleTerminal(Terminal):
         BundleTerminal instance from EDB.
     """
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
+    def __init__(self, pedb, core):
+        super().__init__(pedb, core)
 
     @classmethod
     def create(cls, pedb, name: str, terminals: list[Union[Terminal, WavePort]]) -> BundleTerminal:
