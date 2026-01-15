@@ -231,6 +231,7 @@ class CfgTerminals(CfgBase):
         amplitude=1,
         phase=0,
         terminal_to_ground="kNoGround",
+        hfss_type="Wave",
     ):
         terminal = CfgEdgeTerminal(
             name=name,
@@ -247,7 +248,7 @@ class CfgTerminals(CfgBase):
             horizontal_extent_factor=horizontal_extent_factor,
             vertical_extent_factor=vertical_extent_factor,
             pec_launch_width=pec_launch_width,
-            hfss_type="Wave",
+            hfss_type=hfss_type,
         )
         self.terminals.append(terminal)
 

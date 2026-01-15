@@ -1217,6 +1217,7 @@ class TestClassTerminals(BaseTestClass):
             "vertical_extent_factor": 8,
             "pec_launch_width": "0.02mm",
             "terminal_type": "edge",
+            "hfss_type": "Gap",
         }
         self.edge_terminal_2 = {
             "terminal_type": "edge",
@@ -1325,6 +1326,38 @@ class TestClassTerminals(BaseTestClass):
                 "net": "GND",
             },
         ]
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_edge_terminal(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp.modeler.create_rectangle(
+            layer_name="BOT", net_name="GND", lower_left_point=["-2mm", "-2mm"], upper_right_point=["2mm", "2mm"]
+        )
+        prim_1 = edbapp.modeler.create_trace(
+            path_list=([0, 0], [0, "1mm"]),
+            layer_name="TOP",
+            net_name="SIG",
+            width="0.1mm",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        prim_1.aedt_name = "path_1"
+        prim_2 = edbapp.modeler.create_trace(
+            path_list=(["1mm", 0], ["1mm", "1mm"]),
+            layer_name="TOP",
+            net_name="SIG",
+            width="0.1mm",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        prim_2.aedt_name = "path_2"
+
+        edbapp.configuration.load(
+            {"terminals": [self.edge_terminal_1, self.edge_terminal_2]}, apply_file=True
+        )
+        assert edbapp.terminals["edge_terminal_1"].hfss_type == "Gap"
+        assert edbapp.terminals["edge_terminal_2"].hfss_type == "Wave"
         edbapp.close(terminate_rpc_session=False)
 
     def test_edge_bundle_terminal(self, edb_examples):

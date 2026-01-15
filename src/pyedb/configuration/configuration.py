@@ -715,6 +715,7 @@ class Configuration:
                 terminal.vertical_extent_factor = cfg_terminal.vertical_extent_factor
                 terminal.pec_launch_width = cfg_terminal.pec_launch_width
                 terminal.do_renormalize = True
+                terminal.hfss_type = cfg_terminal.hfss_type
                 edge_terminals[cfg_terminal.name] = terminal
             elif cfg_terminal.terminal_type == "bundle":
                 bungle_terminals.append(cfg_terminal)
