@@ -37,7 +37,8 @@ class TestClass(BaseTestClass):
         assert edbapp.net_classes.items
         assert edbapp.net_classes.create("DDR4_ADD", ["DDR4_A0", "DDR4_A1"])
         assert edbapp.net_classes["DDR4_ADD"].name == "DDR4_ADD"
-        assert edbapp.net_classes["DDR4_ADD"].nets
-        edbapp.net_classes["DDR4_ADD"].name = "DDR4_ADD_RENAMED"
-        assert not edbapp.net_classes["DDR4_ADD_RENAMED"].is_null
+        edbapp.net_classes["DDR4_ADD"].name = "DDR4_ADD_test"
+        assert edbapp.net_classes["DDR4_ADD_test"].name == "DDR4_ADD_test"
+        assert edbapp.net_classes["DDR4_ADD_test"].nets
+        assert not edbapp.net_classes["DDR4_ADD_test"].is_null
         edbapp.close(terminate_rpc_session=False)

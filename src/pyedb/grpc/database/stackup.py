@@ -1390,10 +1390,10 @@ class Stackup:
                     chip_orientation = die_prop.die_orientation
                     if chip_orientation == GrpcDieOrientation.CHIP_DOWN:
                         die_prop.die_orientation = GrpcDieOrientation.CHIP_UP
-                        cmp_prop.solder_ball_property = sball_prop
+                        cmp_prop.solder_ball_property = die_prop
                     else:
                         die_prop.die_orientation = GrpcDieOrientation.CHIP_DOWN
-                        cmp_prop.solder_ball_property = sball_prop
+                        cmp_prop.solder_ball_property = die_prop
                 cmp.component_property = cmp_prop
 
             lay_list = new_lc.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
