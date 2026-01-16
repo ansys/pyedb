@@ -51,7 +51,9 @@ class BundleTerminal(Terminal):
     """
 
     def __init__(self, pedb, core):
-        super().__init__(pedb, core)
+        if isinstance(core, GrpcBundleTerminal):
+            super().__init__(pedb, core.terminals[0])
+        self.core = core
 
     @classmethod
     def create(cls, pedb, name: str, terminals: list[Union[Terminal, WavePort]]) -> BundleTerminal:
@@ -73,13 +75,15 @@ class BundleTerminal(Terminal):
             raise TypeError("Terminals must be a list of Terminal objects.")
         if not terminals:
             raise ValueError("Terminals list cannot be empty.")
-        terminals = [term.core for term in pedb.layout.terminals]
+        terminals = [term.core for term in terminals]
         grpc_term = GrpcBundleTerminal.create(terminals=terminals)
-        terminal = cls(pedb, grpc_term)
-        terminal.name = name
-        for idx, i in enumerate(terminal.core.terminals):
-            i.name = f"{name}:T{idx + 1}"
-        return terminal
+        bundle_terminal = cls(pedb, grpc_term)
+        bundle_terminal.name = name
+        index = 1
+        for terminal in bundle_terminal.terminals:
+            terminal.name = f"{name}:T{index}"
+            index += 1
+        return bundle_terminal
 
     @property
     def is_reference_terminal(self) -> bool:
