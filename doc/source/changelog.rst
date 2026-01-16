@@ -9,6 +9,9 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.67.1 <https://github.com/ansys/pyedb/releases/tag/v0.67.1>`_ - January 16, 2026
+==================================================================================
+No significant changes.
 `0.67.0 <https://github.com/ansys/pyedb/releases/tag/v0.67.0>`_ - January 12, 2026
 ==================================================================================
 
