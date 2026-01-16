@@ -9,6 +9,80 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.67.1 <https://github.com/ansys/pyedb/releases/tag/v0.67.1>`_ - January 16, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Wirebond def management added
+          - `#1746 <https://github.com/ansys/pyedb/pull/1746>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Extend troubleshooting with uv venv on Windows
+          - `#1754 <https://github.com/ansys/pyedb/pull/1754>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Test modifying edb test file fixed
+          - `#1750 <https://github.com/ansys/pyedb/pull/1750>`_
+
+        * - Terminal hfss type
+          - `#1757 <https://github.com/ansys/pyedb/pull/1757>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.67.0
+          - `#1747 <https://github.com/ansys/pyedb/pull/1747>`_
+
+        * - Codecov component model
+          - `#1751 <https://github.com/ansys/pyedb/pull/1751>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Source excitation
+          - `#1744 <https://github.com/ansys/pyedb/pull/1744>`_
+
+        * - Ide error fix
+          - `#1748 <https://github.com/ansys/pyedb/pull/1748>`_
+
+        * - Add dependency xmltodict
+          - `#1752 <https://github.com/ansys/pyedb/pull/1752>`_
+
+        * - Edb cfg cutout arguments
+          - `#1753 <https://github.com/ansys/pyedb/pull/1753>`_
+
+        * - Edb_object replaced by core
+          - `#1755 <https://github.com/ansys/pyedb/pull/1755>`_
+
+
 `0.67.0 <https://github.com/ansys/pyedb/releases/tag/v0.67.0>`_ - January 12, 2026
 ==================================================================================
 
