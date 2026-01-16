@@ -615,9 +615,9 @@ class TestClass(BaseTestClass):
 
         paths = [i[1] for i in trace_paths]
         if config["use_grpc"]:
-            _, p = edb.source_excitation.create_bundle_wave_port(traces, paths, port_name="port2")
+            p = edb.source_excitation.create_bundle_wave_port(traces, paths, port_name="port2")
         else:
-            _, p = edb.hfss.create_bundle_wave_port(traces, paths)
+            p = edb.hfss.create_bundle_wave_port(traces, paths)
         p.horizontal_extent_factor = 6
         p.vertical_extent_factor = 5
         p.pec_launch_width = "0.02mm"
