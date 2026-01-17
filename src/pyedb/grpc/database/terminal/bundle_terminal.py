@@ -56,7 +56,7 @@ class BundleTerminal(Terminal):
         self.core = core
 
     @classmethod
-    def create(cls, pedb, name: str, terminals: list[Union[Terminal, WavePort]]) -> BundleTerminal:
+    def create(cls, pedb, name: str, terminals: list[Union[Terminal, WavePort, str]]) -> BundleTerminal:
         """Create a bundle terminal.
 
         Parameters
@@ -75,6 +75,15 @@ class BundleTerminal(Terminal):
             raise TypeError("Terminals must be a list of Terminal objects.")
         if not terminals:
             raise ValueError("Terminals list cannot be empty.")
+        _terminals = []
+        for terminal in terminals:
+            if isinstance(terminal, str):
+                term = pedb.terminals.get(terminal, None)
+                if term is None:
+                    raise ValueError(f"Terminal '{terminal}' not found in the design.")
+                _terminals.append(term)
+        if _terminals and len(_terminals) == len(terminals):
+            terminals = _terminals
         terminals = [term.core for term in terminals]
         grpc_term = GrpcBundleTerminal.create(terminals=terminals)
         bundle_terminal = cls(pedb, grpc_term)
