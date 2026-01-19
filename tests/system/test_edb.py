@@ -2134,3 +2134,63 @@ class TestClass(BaseTestClass):
         edbapp.design_mode = "IC"
         assert edbapp.design_mode == "ic"
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    def test_create_sources_consolidated(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        u1_pins = list(edbapp.components["U1"].pins.values())
+        power_net = "AVCC_1V3"
+        reference_net = "GND"
+        power_pins = [pin for pin in u1_pins if pin.net_name == power_net]
+        if not power_pins:
+            raise ValueError("No power pin available")
+
+        for power_pin in power_pins[:3]:
+            nearest_power_pins = power_pin.get_reference_pins(
+                reference_net=reference_net, search_radius=5e-3, max_limit=5, component_only=True
+            )
+            if nearest_power_pins:
+                edbapp.source_excitation.create_voltage_source_on_pin(
+                    power_pin, nearest_power_pins[0], voltage_value=1.3, phase_value=0.0
+                )
+        for power_pin in power_pins[4:7]:
+            nearest_power_pins = power_pin.get_reference_pins(
+                reference_net=reference_net, search_radius=5e-3, max_limit=5, component_only=True
+            )
+            if nearest_power_pins:
+                edbapp.source_excitation.create_voltage_source(
+                    power_pin, nearest_power_pins[0], magnitude=1.3, phase=0.0
+                )
+
+        for power_pin in list(edbapp.components["U1"].pins.values())[10:12]:
+            nearest_power_pins = power_pin.get_reference_pins(
+                reference_net=reference_net, search_radius=5e-3, max_limit=5, component_only=True
+            )
+            name = f"VPROBE_{power_pin.name}_{power_pin.id}"
+            positive_layer = power_pin.start_layer
+            negative_layer = nearest_power_pins[0].start_layer
+            edbapp.source_excitation.place_voltage_probe(
+                name=name,
+                positive_net_name="AVCC_1V3",
+                positive_layer=positive_layer,
+                negative_net_name="GND",
+                negative_layer=negative_layer,
+                positive_location=power_pin.position,
+                negative_location=nearest_power_pins[0].position,
+            )
+        assert len(edbapp.probes) == 2
+        v_probe = edbapp.probes["VPROBE_A12_4294969504"]
+        assert v_probe.location == (0.09850000112, 0.04199999728)
+        assert v_probe.net_name == "AVCC_1V3"
+        assert len(edbapp.sources) == 6
+        source1 = edbapp.sources["VSource_U1_AVCC_1V3_U1_GND"]
+        assert source1.is_voltage_source
+        assert source1.impedance == 50
+        assert source1.magnitude == 1.3
+        assert source1.net.name == "AVCC_1V3"
+        assert source1.phase == 0.0
+        assert source1.reference_terminal.net.name == "GND"
+        assert source1.reference_terminal.name == "C28"
+        assert source1.reference_terminal.magnitude == 0.0
+        assert source1.reference_terminal.is_reference_terminal
+        edbapp.close(terminate_rpc_session=False)

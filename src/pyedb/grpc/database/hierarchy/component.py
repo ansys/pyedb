@@ -922,9 +922,11 @@ class Component:
         _pins = {}
         for connectable in self.core.members:
             if isinstance(connectable, GrpcPadstackInstanceTerminal):
-                _pins[connectable.name] = PadstackInstanceTerminal(self._pedb, connectable)
+                if connectable.padstack_instance.is_layout_pin:
+                    _pins[connectable.name] = PadstackInstanceTerminal(self._pedb, connectable)
             if isinstance(connectable, GrpcPadstackInstance):
-                _pins[connectable.name] = PadstackInstance(self._pedb, connectable)
+                if connectable.is_layout_pin:
+                    _pins[connectable.name] = PadstackInstance(self._pedb, connectable)
         return _pins
 
     @property
