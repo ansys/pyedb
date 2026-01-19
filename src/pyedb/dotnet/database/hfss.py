@@ -619,7 +619,7 @@ class EdbHfss(object):
 
         edb_list = convert_py_list_to_net_list([i._edb_object for i in terminals], self._edb.Cell.Terminal.Terminal)
         _edb_bundle_terminal = self._edb.Cell.Terminal.BundleTerminal.Create(edb_list)
-        return port_name, BundleWavePort(self._pedb, _edb_bundle_terminal)
+        return BundleWavePort(self._pedb, _edb_bundle_terminal)
 
     def create_hfss_ports_on_padstack(self, pinpos, portname=None):
         """Create an HFSS port on a padstack.

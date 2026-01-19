@@ -515,51 +515,70 @@ class TestClass(BaseTestClass):
             t = edb.modeler.create_trace(path_list=p, **kwargs)
             traces.append(t)
 
-        # TODO implement wave port with grPC
-        # wave_port = edb.source_excitation.create_bundle_wave_port["wave_port"]
-        # wave_port.horizontal_extent_factor = 10
-        # assert wave_port.horizontal_extent_factor == 10
-        # wave_port.vertical_extent_factor = 10
-        # wave_port.radial_extent_factor = 1
-        # assert wave_port.radial_extent_factor == 1
-        # assert wave_port.pec_launch_width
-        # assert not wave_port.deembed
-        # assert wave_port.deembed_length == 0.0
+        paths_ids = [i.id for i in traces]
+        pts = [i.center_line[0] for i in traces]
+        if edb.grpc:
+            wave_port = edb.source_excitation.create_bundle_wave_port(paths_ids, pts)
+        else:
+            wave_port = edb.hfss.create_bundle_wave_port(paths_ids, pts)
+        wave_port.horizontal_extent_factor = 10
+        assert wave_port.horizontal_extent_factor == 10
+        wave_port.vertical_extent_factor = 10
+        wave_port.radial_extent_factor = 1
+        assert wave_port.radial_extent_factor == 1
+        wave_port.pec_launch_width = "0.02mm"
+        assert wave_port.pec_launch_width
+        assert not wave_port.deembed
+        assert wave_port.deembed_length == 0.0
+        # TODO check bug pyedb-core #675
+        # wave_port.do_renormalize = True
         # assert wave_port.do_renormalize
         # wave_port.do_renormalize = False
-        # assert not wave_port.do_renormalize
-        # assert edb.source_excitation.create_differential_wave_port(
-        #     traces[1].id,
-        #     trace_paths[0][0],
-        #     traces[2].id,
-        #     trace_paths[1][0],
-        #     horizontal_extent_factor=8,
-        #     port_name="df_port",
-        # )
-        # assert edb.ports["df_port"]
-        # p, n = edb.ports["df_port"].terminals
-        # assert p.name == "df_port:T1"
-        # assert n.name == "df_port:T2"
-        # assert edb.ports["df_port"].decouple()
-        # p.couple_ports(n)
-        #
-        # traces_id = [i.id for i in traces]
-        # paths = [i[1] for i in trace_paths]
-        # df_port = edb.source_excitation.create_bundle_wave_port(traces_id, paths)
-        # assert df_port.name
-        # assert df_port.terminals
-        # df_port.horizontal_extent_factor = 10
-        # df_port.vertical_extent_factor = 10
-        # df_port.deembed = True
-        # df_port.deembed_length = "1mm"
-        # assert df_port.horizontal_extent_factor == 10
-        # assert df_port.vertical_extent_factor == 10
-        # assert df_port.deembed
-        # assert df_port.deembed_length == 1e-3
+        assert not wave_port.do_renormalize
+        if edb.grpc:
+            assert edb.source_excitation.create_differential_wave_port(
+                traces[1].id,
+                trace_paths[0][0],
+                traces[2].id,
+                trace_paths[1][0],
+                horizontal_extent_factor=8,
+                port_name="df_port",
+            )
+        else:
+            assert edb.hfss.create_differential_wave_port(
+                traces[1].id,
+                trace_paths[0][0],
+                traces[2].id,
+                trace_paths[1][0],
+                horizontal_extent_factor=8,
+                port_name="df_port",
+            )
+        assert not edb.ports["df_port"].is_null
+        p, n = edb.ports["df_port"].terminals
+        assert p.name == "df_port:T1"
+        assert n.name == "df_port:T2"
+        edb.ports["df_port"].decouple()
+        p.couple_ports(n)
+
+        traces_id = [i.id for i in traces]
+        paths = [i[1] for i in trace_paths]
+        if edb.grpc:
+            df_port = edb.source_excitation.create_bundle_wave_port(traces_id, paths)
+        else:
+            df_port = edb.hfss.create_bundle_wave_port(traces_id, paths)
+        assert df_port.name
+        assert df_port.terminals
+        df_port.horizontal_extent_factor = 10
+        df_port.vertical_extent_factor = 10
+        df_port.deembed = True
+        df_port.deembed_length = "1mm"
+        assert df_port.horizontal_extent_factor == 10
+        assert df_port.vertical_extent_factor == 10
+        assert df_port.deembed
+        assert df_port.deembed_length == 1e-3
         edb.close(terminate_rpc_session=False)
 
     def test_create_various_ports_1(self, edb_examples):
-        """Create various ports."""
         """Create various ports."""
         edb = edb_examples.load_edb(
             edb_path=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
@@ -596,9 +615,9 @@ class TestClass(BaseTestClass):
 
         paths = [i[1] for i in trace_paths]
         if config["use_grpc"]:
-            _, p = edb.source_excitation.create_bundle_wave_port(traces, paths, port_name="port2")
+            p = edb.source_excitation.create_bundle_wave_port(traces, paths, port_name="port2")
         else:
-            _, p = edb.hfss.create_bundle_wave_port(traces, paths)
+            p = edb.hfss.create_bundle_wave_port(traces, paths)
         p.horizontal_extent_factor = 6
         p.vertical_extent_factor = 5
         p.pec_launch_width = "0.02mm"
