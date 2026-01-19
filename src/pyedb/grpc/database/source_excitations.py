@@ -1832,7 +1832,7 @@ class SourceExcitation(SourceExcitationInternal):
         horizontal_extent_factor: Union[int, float] = 5,
         vertical_extent_factor: Union[int, float] = 3,
         pec_launch_width: str = "0.01mm",
-    ) -> Tuple[str, BundleTerminal]:
+    ) -> BundleTerminal:
         """Create a differential wave port.
 
         Parameters
@@ -1895,7 +1895,7 @@ class SourceExcitation(SourceExcitationInternal):
         edb_list = [pos_term, neg_term]
 
         boundle_terminal = BundleTerminal.create(self._pedb, port_name, edb_list)
-        return port_name, boundle_terminal
+        return boundle_terminal
 
     def create_wave_port(
         self,
@@ -2319,7 +2319,7 @@ class SourceExcitation(SourceExcitationInternal):
         horizontal_extent_factor: Union[int, float] = 5,
         vertical_extent_factor: Union[int, float] = 3,
         pec_launch_width: str = "0.01mm",
-    ) -> Tuple[str, BundleWavePort]:
+    ) -> BundleWavePort:
         """Create a bundle wave port.
 
         Parameters
@@ -2371,7 +2371,8 @@ class SourceExcitation(SourceExcitationInternal):
             terminals.append(term)
 
         _edb_bundle_terminal = BundleTerminal.create(self._pedb, port_name, terminals)
-        return port_name, _edb_bundle_terminal
+        bundle_waveport = BundleWavePort(self._pedb, _edb_bundle_terminal.core)
+        return bundle_waveport
 
     def create_hfss_ports_on_padstack(self, pinpos: PadstackInstance, portname: Optional[str] = None) -> bool:
         """Create an HFSS port on a padstack.
