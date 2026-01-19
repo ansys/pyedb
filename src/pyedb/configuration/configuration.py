@@ -182,9 +182,86 @@ class Configuration:
         self.apply_terminals()
         self.__apply_with_logging("Placing probes", self.cfg_data.probes.apply)
         self.apply_operations()
-        self.cfg_data.setups.apply()
+        self.apply_setups()
 
         return True
+
+    @execution_timer("Applying setups")
+    def apply_setups(self):
+        cfg_setups = self.cfg_data.setups
+        for setup in cfg_setups:
+            if setup.type == "hfss":
+                edb_setup = self._pedb.create_hfss_setup(setup.name)
+                edb_setup.set_solution_single_frequency(setup.f_adapt, setup.max_num_passes, setup.max_mag_delta_s)
+
+                if setup.auto_mesh_operation:
+                    edb_setup.auto_mesh_operation(**dict(setup.auto_mesh_operation))
+
+                for mp in setup.mesh_operations:
+                    edb_setup.add_length_mesh_operation(
+                        name=mp.name,
+                        max_elements=mp.max_elements,
+                        max_length=mp.max_length,
+                        restrict_length=mp.restrict_length,
+                        refine_inside=mp.refine_inside,
+                        # mesh_region=mp.get(mesh_region),
+                        net_layer_list=mp.nets_layers_list,
+                    )
+
+                for sw in setup.freq_sweep:
+                    f_set = []
+                    freq_string = []
+                    for f in sw.frequencies:
+                        if isinstance(f, str):
+                            freq_string.append(f)
+                        else:
+                            f_set.append([f.distribution, f.start, f.stop, f.increment])
+
+                    sweep = edb_setup.add_sweep(sw.name, frequency_set=f_set, sweep_type=sw.type)
+                    if len(freq_string) > 0:
+                        sweep.frequency_string = freq_string
+
+    def get_setups(self):
+        self.cfg_data.setups = []
+        for _, setup in self._pedb.setups.items():
+            if setup.type == "hfss":
+                adaptive_frequency_data_list = list(setup.adaptive_settings.adaptive_frequency_data_list)[0]
+
+                cfg_hfss_setup = self.cfg_data.add_hfss_setup(
+                    name=setup.name,
+                    f_adapt=adaptive_frequency_data_list.adaptive_frequency,
+                    max_num_passes=adaptive_frequency_data_list.max_passes,
+                    max_mag_delta_s=adaptive_frequency_data_list.max_delta,
+                )
+
+                for name, mop in setup.mesh_operations.items():
+                    cfg_hfss_setup.add_mesh_operation(
+                        **{
+                            "name": name,
+                            "type": mop.type,
+                            "max_elements": mop.max_elements,
+                            "max_length": mop.max_length,
+                            "restrict_length": mop.restrict_length,
+                            "refine_inside": mop.refine_inside,
+                            "nets_layers_list": mop.nets_layers_list,
+                        }
+                    )
+
+                for name, sw in setup.sweeps.items():
+                    cfg_hfss_setup.add_frequency_sweep(
+                        name=name,
+                        type=sw.type,
+                        frequencies= sw.frequency_string,
+                    )
+
+            elif setup.type == "siwave_dc":
+                siwave_dc = CfgSIwaveDCSetup(self._pedb, setup, name=setup.name)
+                siwave_dc.retrieve_parameters_from_edb()
+                self.setups.append(siwave_dc)
+            elif setup.type == "siwave_ac":
+                siwave_ac = CfgSIwaveACSetup(self._pedb, setup, name=setup.name)
+                siwave_ac.retrieve_parameters_from_edb()
+                self.setups.append(siwave_ac)
 
     def apply_boundaries(self):
         boundaries = self.cfg_data.boundaries
@@ -576,9 +653,8 @@ class Configuration:
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):
-            setups = self.cfg_data.setups
-            setups.retrieve_parameters_from_edb()
-            data["setups"] = setups.to_dict()
+            self.get_setups()
+            data["setups"] = [i.model_dump(exclude_none=True) for i in self.cfg_data.setups]
         if kwargs.get("terminals", False):
             self.get_terminals()
             data.update(self.cfg_data.terminals.model_dump(exclude_none=True))
@@ -791,23 +867,23 @@ class Configuration:
                 raise RuntimeError(f"Terminal type {i.terminal_type} not supported.")
 
     def export(
-        self,
-        file_path,
-        stackup=True,
-        package_definitions=False,
-        setups=True,
-        sources=True,
-        ports=True,
-        nets=True,
-        pin_groups=True,
-        operations=True,
-        components=True,
-        boundaries=True,
-        s_parameters=True,
-        padstacks=True,
-        general=True,
-        variables=True,
-        terminals=False,
+            self,
+            file_path,
+            stackup=True,
+            package_definitions=False,
+            setups=True,
+            sources=True,
+            ports=True,
+            nets=True,
+            pin_groups=True,
+            operations=True,
+            components=True,
+            boundaries=True,
+            s_parameters=True,
+            padstacks=True,
+            general=True,
+            variables=True,
+            terminals=False,
     ):
         """Export the configuration data from layout to a file.
 

@@ -1,4 +1,12 @@
-# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
+"""
+        Add a new frequency definition to the frequencies list.
+
+        Keyword arguments are passed to the CfgFrequencies constructor.
+        """"""
+                Add a new frequency definition to the frequencies list.
+        
+                Keyword arguments are passed to the CfgFrequencies constructor.
+                """# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -19,45 +27,36 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from typing import List, Literal, Optional, Union
+
+from pydantic import BaseModel, Field, AliasChoices
 
 
-class CfgSetup:
-    """
-    Parameters
-    ----------
-    name : str, optional
-    type : str
-        Type of the setup. Optionals are ``"hfss"``, ``"siwave_ac"``, ``"siwave_dc"``.
+class CfgFrequencies(BaseModel):
+    start: float|str = Field(..., description="Start frequency in Hz")
+    stop: float|str = Field(..., description="Stop frequency in Hz")
+    increment: int|str = Field("50Hz", validation_alias=AliasChoices("points", "samples", "step"))
+    distribution: Literal["linear_step", "log_step", "single", "linear_count", "log_count"] = "linear_step"
 
-    """
 
-    @staticmethod
-    def set_frequency_string(sweep, freq_string):
-        sweep.frequency_string = freq_string
+class CfgFrequencySweep(BaseModel):
+    name: str
+    type: Literal["discrete", "interpolation"]
+    frequencies : list[CfgFrequencies|str] = Field(list(), description="List of frequency definitions or strings")
 
-    def apply_freq_sweep(self, edb_setup):
-        for i in self.freq_sweep:
-            f_set = []
-            freq_string = []
-            for f in i.get("frequencies", []):
-                if isinstance(f, dict):
-                    increment = f.get("increment", f.get("points", f.get("samples", f.get("step"))))
-                    f_set.append([f["distribution"], f["start"], f["stop"], increment])
-                else:
-                    freq_string.append(f)
-            sweep = edb_setup.add_sweep(i["name"], frequency_set=f_set, sweep_type=i["type"])
-            if len(freq_string) > 0:
-                self.set_frequency_string(sweep, freq_string)
+    def add_frequencies(self, freq: CfgFrequencies):
+        self.frequencies.append(freq)
 
-    def __init__(self, pedb, pedb_obj, **kwargs):
-        self.pedb = pedb
-        self.pyedb_obj = pedb_obj
-        self.name = kwargs["name"]
-        self.type = ""
 
-        self.freq_sweep = []
+class CfgSetup(BaseModel):
 
-        self.freq_sweep = kwargs.get("freq_sweep", [])
+    name: str
+    type: str
+
+    freq_sweep : list[CfgFrequencySweep]|None = list()
+
+    def add_frequency_sweep(self, sweep: CfgFrequencySweep):
+        self.freq_sweep.append(sweep)
 
     def _to_dict_setup(self):
         return {
@@ -128,61 +127,36 @@ class CfgSIwaveDCSetup(CfgSetup):
 
 
 class CfgHFSSSetup(CfgSetup):
-    def set_parameters_to_edb(self):
-        if self.name in self.pedb.setups:
-            raise "Setup {} already existing. Editing it.".format(self.name)
+    class CfgAutoMeshOperation(BaseModel):
+        trace_ratio_seeding: float
+        signal_via_side_number: int
+        power_ground_via_side_number: int
 
-        edb_setup = self.pedb.create_hfss_setup(self.name)
-        edb_setup.set_solution_single_frequency(self.f_adapt, self.max_num_passes, self.max_mag_delta_s)
+    class CfgMeshOperation(BaseModel):
+        """Mesh operation export/import payload."""
 
-        self.apply_freq_sweep(edb_setup)
+        name: str = Field(..., description="Mesh operation name.")
+        type: str | None = Field(None, description="Mesh operation type identifier.")
+        max_elements: int | str | None = Field(1000, description="Maximum number of elements.")
+        max_length: float | str | None = Field("1mm", description="Maximum element length (supports units).")
+        restrict_length: bool | None = Field(True, description="Whether to restrict the maximum length.")
+        refine_inside: bool | None = Field(False, description="Whether to refine inside the region.")
+        nets_layers_list: dict[str, list] = Field(
+            ...,
+            description="Mapping of nets to layers (or backend-specific structure).",
+        )
 
-        if self.auto_mesh_operation:
-            edb_setup.auto_mesh_operation(**self.auto_mesh_operation)
+    type: str = "hfss"
+    f_adapt: float|str
+    max_num_passes: int
+    max_mag_delta_s: float|str
 
-        for i in self.mesh_operations:
-            edb_setup.add_length_mesh_operation(
-                name=i["name"],
-                max_elements=i.get("max_elements", 1000),
-                max_length=i.get("max_length", "1mm"),
-                restrict_length=i.get("restrict_length", True),
-                refine_inside=i.get("refine_inside", False),
-                # mesh_region=i.get(mesh_region),
-                net_layer_list=i.get("nets_layers_list", {}),
-            )
+    auto_mesh_operation: CfgAutoMeshOperation|None = None
+    mesh_operations: list[CfgMeshOperation]|None = list()
 
-    def retrieve_parameters_from_edb(self):
-        adaptive_frequency_data_list = list(self.pyedb_obj.adaptive_settings.adaptive_frequency_data_list)[0]
-        self.f_adapt = adaptive_frequency_data_list.adaptive_frequency
-        self.max_num_passes = adaptive_frequency_data_list.max_passes
-        self.max_mag_delta_s = adaptive_frequency_data_list.max_delta
-        self.freq_sweep = []
-        for name, sw in self.pyedb_obj.sweeps.items():
-            self.freq_sweep.append({"name": name, "type": sw.type, "frequencies": sw.frequency_string})
-
-        self.mesh_operations = []
-        for name, mop in self.pyedb_obj.mesh_operations.items():
-            self.mesh_operations.append(
-                {
-                    "name": name,
-                    "type": mop.type,
-                    "max_elements": mop.max_elements,
-                    "max_length": mop.max_length,
-                    "restrict_length": mop.restrict_length,
-                    "refine_inside": mop.refine_inside,
-                    "nets_layers_list": mop.nets_layers_list,
-                }
-            )
-
-    def __init__(self, pedb, pyedb_obj, **kwargs):
-        super().__init__(pedb, pyedb_obj, **kwargs)
-        self.type = "hfss"
-        self.f_adapt = kwargs.get("f_adapt")
-        self.max_num_passes = kwargs.get("max_num_passes")
-        self.max_mag_delta_s = kwargs.get("max_mag_delta_s")
-
-        self.auto_mesh_operation = kwargs.get("auto_mesh_operation", None)
-        self.mesh_operations = kwargs.get("mesh_operations", [])
+    def add_mesh_operation(self, **kwargs):
+        mesh_op = CfgHFSSSetup.CfgMeshOperation(**kwargs)
+        self.mesh_operations.append(mesh_op)
 
     def to_dict(self):
         temp = self._to_dict_setup()
@@ -198,7 +172,10 @@ class CfgHFSSSetup(CfgSetup):
         return temp
 
 
-class CfgSetups:
+class CfgSetups(BaseModel):
+
+    setups : list[CfgHFSSSetup| CfgSIwaveACSetup| CfgSIwaveDCSetup]|None = list()
+
     def retrieve_parameters_from_edb(self):
         self.setups = []
         for _, setup in self._pedb.setups.items():
@@ -215,16 +192,7 @@ class CfgSetups:
                 siwave_ac.retrieve_parameters_from_edb()
                 self.setups.append(siwave_ac)
 
-    def __init__(self, pedb, setups_data):
-        self._pedb = pedb
-        self.setups = []
-        for stp in setups_data:
-            if stp["type"].lower() == "hfss":
-                self.setups.append(CfgHFSSSetup(self._pedb, None, **stp))
-            elif stp["type"].lower() in ["siwave_ac", "siwave_syz"]:
-                self.setups.append(CfgSIwaveACSetup(self._pedb, None, **stp))
-            elif stp["type"].lower() == "siwave_dc":
-                self.setups.append(CfgSIwaveDCSetup(self._pedb, None, **stp))
+
 
     def apply(self):
         for s in self.setups:
