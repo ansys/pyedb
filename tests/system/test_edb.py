@@ -1647,8 +1647,6 @@ class TestClass(BaseTestClass):
         positive_net_names = "2V5"
         reference_net_names = "GND"
         component_name = "U10"
-        for pin in edbapp.components[component_name].pins.values():
-            pin.is_pin = False
         if edbapp.grpc:
             assert edbapp.source_excitation.create_port_on_component(
                 component=component_name,
@@ -1674,7 +1672,7 @@ class TestClass(BaseTestClass):
         reference_net_names = ["GND"]
         component_name = "U10"
         for pin in edbapp.components[component_name].pins.values():
-            pin.is_pin = False
+            pin.is_pin = True
         if edbapp.grpc:
             assert edbapp.source_excitation.create_port_on_component(
                 component=component_name,
