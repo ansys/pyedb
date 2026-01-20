@@ -404,8 +404,6 @@ class StackupLayer:
 
     @top_hallhuray_nodule_radius.setter
     def top_hallhuray_nodule_radius(self, value):
-        if not self.roughness_enabled:
-            self.roughness_enabled = True
         self.assign_roughness_model(model_type="huray", huray_radius=value, apply_on_surface="top")
 
     @property
@@ -427,8 +425,6 @@ class StackupLayer:
 
     @top_hallhuray_surface_ratio.setter
     def top_hallhuray_surface_ratio(self, value):
-        if not self.roughness_enabled:
-            self.roughness_enabled = True
         self.assign_roughness_model(model_type="huray", huray_surface_ratio=value, apply_on_surface="top")
 
     @property
@@ -450,8 +446,6 @@ class StackupLayer:
 
     @bottom_hallhuray_nodule_radius.setter
     def bottom_hallhuray_nodule_radius(self, value):
-        if not self.roughness_enabled:
-            self.roughness_enabled = True
         self.assign_roughness_model(model_type="huray", huray_radius=value, apply_on_surface="bottom")
 
     @property
@@ -473,8 +467,6 @@ class StackupLayer:
 
     @bottom_hallhuray_surface_ratio.setter
     def bottom_hallhuray_surface_ratio(self, value):
-        if not self.roughness_enabled:
-            self.roughness_enabled = True
         self.assign_roughness_model(model_type="huray", huray_surface_ratio=value, apply_on_surface="bottom")
 
     @property
@@ -496,8 +488,6 @@ class StackupLayer:
 
     @side_hallhuray_nodule_radius.setter
     def side_hallhuray_nodule_radius(self, value):
-        if not self.roughness_enabled:
-            self.roughness_enabled = True
         self.assign_roughness_model(model_type="huray", huray_radius=value, apply_on_surface="side")
 
     @property
@@ -518,8 +508,6 @@ class StackupLayer:
 
     @side_hallhuray_surface_ratio.setter
     def side_hallhuray_surface_ratio(self, value):
-        if not self.roughness_enabled:
-            self.roughness_enabled = True
         self.assign_roughness_model(model_type="huray", huray_surface_ratio=value, apply_on_surface="side")
 
     @property
@@ -540,8 +528,6 @@ class StackupLayer:
 
     @top_groisse_roughness.setter
     def top_groisse_roughness(self, value):
-        if not self.roughness_enabled:
-            self.roughness_enabled = True
         self.assign_roughness_model(model_type="groisse", groisse_roughness=value, apply_on_surface="top")
 
     @property
@@ -562,8 +548,6 @@ class StackupLayer:
 
     @bottom_groisse_roughness.setter
     def bottom_groisse_roughness(self, value):
-        if not self.roughness_enabled:
-            self.roughness_enabled = True
         self.assign_roughness_model(model_type="groisse", groisse_roughness=value, apply_on_surface="bottom")
 
     @property
@@ -584,8 +568,6 @@ class StackupLayer:
 
     @side_groisse_roughness.setter
     def side_groisse_roughness(self, value):
-        if not self.roughness_enabled:
-            self.roughness_enabled = True
         self.assign_roughness_model(model_type="groisse", groisse_roughness=value, apply_on_surface="side")
 
     @property
@@ -662,27 +644,30 @@ class StackupLayer:
         bool
         """
         regions = []
-        if apply_on_surface == "all":
-            regions = [GrpcRoughnessRegion.TOP, GrpcRoughnessRegion.BOTTOM, GrpcRoughnessRegion.SIDE]
-        elif apply_on_surface == "top":
-            regions = [GrpcRoughnessRegion.TOP]
-        elif apply_on_surface == "bottom":
-            regions = [GrpcRoughnessRegion.BOTTOM]
-        elif apply_on_surface == "side":
-            regions = [GrpcRoughnessRegion.SIDE]
-        self.core.roughness_enabled = True
-        for r in regions:
-            if model_type == "huray":
-                model = (Value(huray_radius), Value(huray_surface_ratio))
-            else:
-                model = Value(groisse_roughness)
-            self.core.set_roughness_model(model, r)
-        if [
-            self.core.get_roughness_model(GrpcRoughnessRegion.TOP),
-            self.core.get_roughness_model(GrpcRoughnessRegion.BOTTOM),
-            self.core.get_roughness_model(GrpcRoughnessRegion.SIDE),
-        ]:
-            return True
+        if self.type == "signal":
+            self.roughness_enabled = True
+            if apply_on_surface == "all":
+                regions = [GrpcRoughnessRegion.TOP, GrpcRoughnessRegion.BOTTOM, GrpcRoughnessRegion.SIDE]
+            elif apply_on_surface == "top":
+                regions = [GrpcRoughnessRegion.TOP]
+            elif apply_on_surface == "bottom":
+                regions = [GrpcRoughnessRegion.BOTTOM]
+            elif apply_on_surface == "side":
+                regions = [GrpcRoughnessRegion.SIDE]
+            self.core.roughness_enabled = True
+            for r in regions:
+                if model_type == "huray":
+                    model = (Value(huray_radius), Value(huray_surface_ratio))
+                else:
+                    model = Value(groisse_roughness)
+                self.core.set_roughness_model(model, r)
+            if [
+                self.core.get_roughness_model(GrpcRoughnessRegion.TOP),
+                self.core.get_roughness_model(GrpcRoughnessRegion.BOTTOM),
+                self.core.get_roughness_model(GrpcRoughnessRegion.SIDE),
+            ]:
+                return True
+        self._pedb.logger.warning(f"Layer {self.name} roughness model can be assigned only on signal layers.")
         return False
 
     @property
