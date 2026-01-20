@@ -41,9 +41,11 @@ from pyedb.configuration.cfg_terminals import CfgTerminals
 
 class CfgData(object):
     """Manages configure data."""
-    setups = []
+
 
     def __init__(self, pedb, **kwargs):
+        self.setups = []
+
         self._pedb = pedb
         self.general = CfgGeneral(self._pedb, kwargs.get("general", {}))
 

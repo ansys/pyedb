@@ -190,24 +190,37 @@ class Configuration:
     def apply_setups(self):
         cfg_setups = self.cfg_data.setups
         for setup in cfg_setups:
-            if setup.type == "hfss":
-                edb_setup = self._pedb.create_hfss_setup(setup.name)
-                edb_setup.set_solution_single_frequency(setup.f_adapt, setup.max_num_passes, setup.max_mag_delta_s)
+            if setup.type == "siwave_dc":
+                edb_setup = self._pedb.create_siwave_dc_setup(name=setup.name, dc_slider_position=setup.dc_slider_position)
+                edb_setup.dc_settings.dc_slider_position = setup.dc_slider_position
+                dc_ir_settings = setup.dc_ir_settings
+                edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
+            else:
+                if setup.type == "hfss":
+                    edb_setup = self._pedb.create_hfss_setup(setup.name)
+                    edb_setup.set_solution_single_frequency(setup.f_adapt, setup.max_num_passes, setup.max_mag_delta_s)
 
-                if setup.auto_mesh_operation:
-                    edb_setup.auto_mesh_operation(**dict(setup.auto_mesh_operation))
+                    if setup.auto_mesh_operation:
+                        edb_setup.auto_mesh_operation(**dict(setup.auto_mesh_operation))
 
-                for mp in setup.mesh_operations:
-                    edb_setup.add_length_mesh_operation(
-                        name=mp.name,
-                        max_elements=mp.max_elements,
-                        max_length=mp.max_length,
-                        restrict_length=mp.restrict_length,
-                        refine_inside=mp.refine_inside,
-                        # mesh_region=mp.get(mesh_region),
-                        net_layer_list=mp.nets_layers_list,
-                    )
+                    for mp in setup.mesh_operations:
+                        edb_setup.add_length_mesh_operation(
+                            name=mp.name,
+                            max_elements=mp.max_elements,
+                            max_length=mp.max_length,
+                            restrict_length=mp.restrict_length,
+                            refine_inside=mp.refine_inside,
+                            # mesh_region=mp.get(mesh_region),
+                            net_layer_list=mp.nets_layers_list,
+                        )
+                else:
+                    edb_setup = self._pedb.create_siwave_syz_setup(name=setup.name)
+                    if setup.si_slider_position is not None:
+                        edb_setup.si_slider_position = setup.si_slider_position
+                    else:
+                        edb_setup.pi_slider_position = setup.pi_slider_position
 
+                # Apply frequency sweeps
                 for sw in setup.freq_sweep:
                     f_set = []
                     freq_string = []
@@ -221,47 +234,55 @@ class Configuration:
                     if len(freq_string) > 0:
                         sweep.frequency_string = freq_string
 
+
     def get_setups(self):
         self.cfg_data.setups = []
         for _, setup in self._pedb.setups.items():
-            if setup.type == "hfss":
-                adaptive_frequency_data_list = list(setup.adaptive_settings.adaptive_frequency_data_list)[0]
-
-                cfg_hfss_setup = self.cfg_data.add_hfss_setup(
+            if setup.type == "siwave_dc":
+                self.cfg_data.add_siwave_dc_setup(
                     name=setup.name,
-                    f_adapt=adaptive_frequency_data_list.adaptive_frequency,
-                    max_num_passes=adaptive_frequency_data_list.max_passes,
-                    max_mag_delta_s=adaptive_frequency_data_list.max_delta,
+                    dc_slider_position=setup.dc_settings.dc_slider_position,
+                    dc_ir_settings={
+                        "export_dc_thermal_data": setup.dc_ir_settings.export_dc_thermal_data
+                    },
                 )
+            else:
+                if setup.type == "hfss":
+                    adaptive_frequency_data_list = list(setup.adaptive_settings.adaptive_frequency_data_list)[0]
 
-                for name, mop in setup.mesh_operations.items():
-                    cfg_hfss_setup.add_mesh_operation(
-                        **{
-                            "name": name,
-                            "type": mop.type,
-                            "max_elements": mop.max_elements,
-                            "max_length": mop.max_length,
-                            "restrict_length": mop.restrict_length,
-                            "refine_inside": mop.refine_inside,
-                            "nets_layers_list": mop.nets_layers_list,
-                        }
+                    cfg_ac_setup = self.cfg_data.add_hfss_setup(
+                        name=setup.name,
+                        f_adapt=adaptive_frequency_data_list.adaptive_frequency,
+                        max_num_passes=adaptive_frequency_data_list.max_passes,
+                        max_mag_delta_s=adaptive_frequency_data_list.max_delta,
+                    )
+
+                    for name, mop in setup.mesh_operations.items():
+                        cfg_ac_setup.add_mesh_operation(
+                            **{
+                                "name": name,
+                                "type": mop.type,
+                                "max_elements": mop.max_elements,
+                                "max_length": mop.max_length,
+                                "restrict_length": mop.restrict_length,
+                                "refine_inside": mop.refine_inside,
+                                "nets_layers_list": mop.nets_layers_list,
+                            }
+                        )
+                else:  # siwave ac
+                    cfg_ac_setup = self.cfg_data.add_siwave_ac_setup(
+                        name=setup.name,
+                        use_si_settings=setup.use_si_settings,
+                        si_slider_position=setup.si_slider_position,
+                        pi_slider_position=setup.pi_slider_position,
                     )
 
                 for name, sw in setup.sweeps.items():
-                    cfg_hfss_setup.add_frequency_sweep(
-                        name=name,
-                        type=sw.type,
-                        frequencies= sw.frequency_string,
+                    cfg_ac_setup.add_frequency_sweep(
+                        {"name" : name,
+                    "type" : sw.type,
+                    "frequencies": sw.frequency_string,}
                     )
-
-            elif setup.type == "siwave_dc":
-                siwave_dc = CfgSIwaveDCSetup(self._pedb, setup, name=setup.name)
-                siwave_dc.retrieve_parameters_from_edb()
-                self.setups.append(siwave_dc)
-            elif setup.type == "siwave_ac":
-                siwave_ac = CfgSIwaveACSetup(self._pedb, setup, name=setup.name)
-                siwave_ac.retrieve_parameters_from_edb()
-                self.setups.append(siwave_ac)
 
     def apply_boundaries(self):
         boundaries = self.cfg_data.boundaries
