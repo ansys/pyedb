@@ -444,11 +444,7 @@ class PadstackInstance:
             Port terminal.
         """
         if not name:
-            try:
-                name = f"Port_{self.component.name}_{self.net.name}_{self.name}"
-            except AttributeError:
-                # if pin deos not have net or component assigned internal EDB API is breaking
-                name = f"Port_{self.name}_{self.id}"
+            name = f"Port_{self.component.name}_{self.net.name}_{self.name}"
         if not reference:
             return self.create_terminal(name)
         else:
