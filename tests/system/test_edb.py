@@ -2211,3 +2211,16 @@ class TestClass(BaseTestClass):
         assert source1.reference_terminal.magnitude == 0.0
         assert source1.reference_terminal.is_reference_terminal
         edbapp.close(terminate_rpc_session=False)
+
+    def test_import_cvg_ipc2581_file(self, edb_examples):
+        ipc_file = os.path.join(
+            local_path,
+            "example_models",
+            "ipc_project",
+            "small_project.cvg",
+        )
+        ipc_out = os.path.join(self.local_scratch.path, "test_ipc_import.cvg")
+        self.local_scratch.copyfile(ipc_file, ipc_out)
+        edbapp = edb_examples.load_edb(edb_path=ipc_out, copy_to_temp=False)
+        assert edbapp.modeler.primitives
+        edbapp.close(terminate_rpc_session=False)
