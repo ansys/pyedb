@@ -21,7 +21,7 @@
 # SOFTWARE.
 from typing import List, Literal, Optional, Union
 
-from pydantic import BaseModel, Field, AliasChoices
+from pydantic import AliasChoices, BaseModel, Field
 
 
 class CfgFrequencies(BaseModel):
@@ -29,8 +29,10 @@ class CfgFrequencies(BaseModel):
     stop: float | str = Field(..., description="Stop frequency in Hz")
     increment: int | str = Field("50Hz", validation_alias=AliasChoices("points", "samples", "step"))
     distribution: Literal[
-        "linear_step", "log_step", "single", "linear_count", "log_count", "linear scale", "log scale", "linear count"] = Field(
-        ..., description="Frequency distribution type, e.g., linear_step, log_step, single, linear_count, log_count")
+        "linear_step", "log_step", "single", "linear_count", "log_count", "linear scale", "log scale", "linear count"
+    ] = Field(
+        ..., description="Frequency distribution type, e.g., linear_step, log_step, single, linear_count, log_count"
+    )
 
 
 class CfgFrequencySweep(BaseModel):
@@ -54,21 +56,19 @@ class CfgSetupAC(CfgSetupDC):
 
 
 class CfgSIwaveACSetup(CfgSetupAC):
-    type:str = "siwave_ac"
+    type: str = "siwave_ac"
     use_si_settings: bool = Field(True, description="Use SI-Wave AC settings")
-    si_slider_position:int = Field(1, description="SI slider position. Options are 0-speed, 1-balanced, 2-accuracy.")
-    pi_slider_position:int = Field(1, description="PI Slider position. Options are 0-speed, 1-balanced, 2-accuracy.")
+    si_slider_position: int = Field(1, description="SI slider position. Options are 0-speed, 1-balanced, 2-accuracy.")
+    pi_slider_position: int = Field(1, description="PI Slider position. Options are 0-speed, 1-balanced, 2-accuracy.")
 
 
 class CfgSIwaveDCSetup(CfgSetupDC):
     class CfgDCIRSettings(BaseModel):
-        export_dc_thermal_data: bool = Field(
-            False, description="Whether to export DC thermal data."
-        )
+        export_dc_thermal_data: bool = Field(False, description="Whether to export DC thermal data.")
 
     type: str = "siwave_dc"
-    dc_slider_position: int|str
-    dc_ir_settings: CfgDCIRSettings|None = None
+    dc_slider_position: int | str
+    dc_ir_settings: CfgDCIRSettings | None = None
 
 
 class CfgHFSSSetup(CfgSetupAC):

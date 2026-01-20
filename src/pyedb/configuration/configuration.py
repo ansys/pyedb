@@ -191,7 +191,9 @@ class Configuration:
         cfg_setups = self.cfg_data.setups
         for setup in cfg_setups:
             if setup.type == "siwave_dc":
-                edb_setup = self._pedb.create_siwave_dc_setup(name=setup.name, dc_slider_position=setup.dc_slider_position)
+                edb_setup = self._pedb.create_siwave_dc_setup(
+                    name=setup.name, dc_slider_position=setup.dc_slider_position
+                )
                 edb_setup.dc_settings.dc_slider_position = setup.dc_slider_position
                 dc_ir_settings = setup.dc_ir_settings
                 edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
@@ -234,7 +236,6 @@ class Configuration:
                     if len(freq_string) > 0:
                         sweep.frequency_string = freq_string
 
-
     def get_setups(self):
         self.cfg_data.setups = []
         for _, setup in self._pedb.setups.items():
@@ -242,9 +243,7 @@ class Configuration:
                 self.cfg_data.add_siwave_dc_setup(
                     name=setup.name,
                     dc_slider_position=setup.dc_settings.dc_slider_position,
-                    dc_ir_settings={
-                        "export_dc_thermal_data": setup.dc_ir_settings.export_dc_thermal_data
-                    },
+                    dc_ir_settings={"export_dc_thermal_data": setup.dc_ir_settings.export_dc_thermal_data},
                 )
             else:
                 if setup.type == "hfss":
@@ -279,9 +278,11 @@ class Configuration:
 
                 for name, sw in setup.sweeps.items():
                     cfg_ac_setup.add_frequency_sweep(
-                        {"name" : name,
-                    "type" : sw.type,
-                    "frequencies": sw.frequency_string,}
+                        {
+                            "name": name,
+                            "type": sw.type,
+                            "frequencies": sw.frequency_string,
+                        }
                     )
 
     def apply_boundaries(self):
@@ -888,23 +889,23 @@ class Configuration:
                 raise RuntimeError(f"Terminal type {i.terminal_type} not supported.")
 
     def export(
-            self,
-            file_path,
-            stackup=True,
-            package_definitions=False,
-            setups=True,
-            sources=True,
-            ports=True,
-            nets=True,
-            pin_groups=True,
-            operations=True,
-            components=True,
-            boundaries=True,
-            s_parameters=True,
-            padstacks=True,
-            general=True,
-            variables=True,
-            terminals=False,
+        self,
+        file_path,
+        stackup=True,
+        package_definitions=False,
+        setups=True,
+        sources=True,
+        ports=True,
+        nets=True,
+        pin_groups=True,
+        operations=True,
+        components=True,
+        boundaries=True,
+        s_parameters=True,
+        padstacks=True,
+        general=True,
+        variables=True,
+        terminals=False,
     ):
         """Export the configuration data from layout to a file.
 
