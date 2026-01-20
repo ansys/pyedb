@@ -374,7 +374,7 @@ class PadstackInstance:
             return existing_terminal
 
         if not name:
-            name = self.name
+            name = f"{self.name}_{self.id}"
         term = PadstackInstanceTerminal.create(
             layout=self.layout,
             name=name,
@@ -443,6 +443,12 @@ class PadstackInstance:
         :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`
             Port terminal.
         """
+        if not name:
+            try:
+                name = f"Port_{self.component.name}_{self.net.name}_{self.name}"
+            except AttributeError:
+                # if pin deos not have net or component assigned internal EDB API is breaking
+                name = f"Port_{self.name}_{self.id}"
         if not reference:
             return self.create_terminal(name)
         else:
