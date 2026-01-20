@@ -348,10 +348,7 @@ class LayerCollection:
         >>> edb = Edb()
         >>> non_stackup = edb.stackup.non_stackup_layers
         """
-        return {
-            layer.name: Layer(core=layer)
-            for layer in self._pedb.stackup.core.get_layers(GrpcLayerTypeSet.NON_STACKUP_LAYER_SET)
-        }
+        return {layer.name: Layer(core=layer) for layer in self.core.get_layers(GrpcLayerTypeSet.NON_STACKUP_LAYER_SET)}
 
     @property
     def all_layers(self) -> Dict[str, Layer]:
@@ -368,7 +365,7 @@ class LayerCollection:
         >>> edb = Edb()
         >>> all_layers = edb.stackup.all_layers
         """
-        return {layer.name: Layer(self._pedb, layer) for layer in self.get_layers(GrpcLayerTypeSet.ALL_LAYER_SET)}
+        return {layer.name: Layer(core=layer) for layer in self.core.get_layers(GrpcLayerTypeSet.ALL_LAYER_SET)}
 
     @property
     def signal_layers(self) -> Dict[str, StackupLayer]:
