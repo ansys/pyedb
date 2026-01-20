@@ -64,6 +64,15 @@ class SourceExcitationInternal:
                 nets.add(net)
         return nets
 
+    def _get_unique_terminal_name(self, base_name: str) -> str:
+        existing_names = list(self._pedb.terminals.keys())
+        unique_name = base_name
+        counter = 1
+        while unique_name in existing_names:
+            unique_name = f"{base_name}_{counter}"
+            counter += 1
+        return unique_name
+
     def _create_terminal(
         self, pin: PadstackInstance, term_name: Optional[str] = None
     ) -> Optional[PadstackInstanceTerminal]:
@@ -83,10 +92,18 @@ class SourceExcitationInternal:
 
         from_layer, _ = pin.get_layer_range()
         if term_name is None:
-            term_name = "{}.{}.{}".format(pin.component.name, pin.name, pin.net.name)
-        for term in list(self._pedb.active_layout.terminals):
+            try:
+                term_name = f"{pin.component.name}.{pin.name}.{pin.net.name}"
+            except AttributeError:
+                # internal API crashes if pin does not have net assigned
+                self._pedb.logger.warning(f"{pin.name} skipped, no component or net assigned")
+                return None
+            if term_name in self._pedb.terminals:
+                term_name = self._get_unique_terminal_name(term_name)
+        for term in list(self._pedb.terminals.values()):
             if term.name == term_name:
                 return term
+        self._pedb.padstacks.clear_instances_cache()
         return PadstackInstanceTerminal.create(
             layout=self._pedb.layout, name=term_name, padstack_instance=pin, layer=from_layer, net=pin.net, is_ref=False
         )
@@ -1168,6 +1185,8 @@ class SourceExcitation(SourceExcitationInternal):
             neg_term_layer = top_layer_neg
         if not name:
             name = positive_pin.name
+        if name in self._pedb.terminals:
+            name = self._get_unique_terminal_name(name)
         pos_terminal = PadstackInstanceTerminal.create(
             layout=self._pedb.active_layout,
             padstack_instance=positive_pin,
@@ -1233,6 +1252,8 @@ class SourceExcitation(SourceExcitationInternal):
         else:
             self._pedb.logger.error("No valid source type specified.")
             return False
+        # clear cache to reflect new terminal in the padstack instances
+        self._pedb.padstacks.clear_instances_cache()
         return pos_terminal.name
 
     def create_voltage_source_on_pin(
@@ -1276,6 +1297,8 @@ class SourceExcitation(SourceExcitationInternal):
             source_name = (
                 f"VSource_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
             )
+            if source_name in self._pedb.terminals:
+                source_name = self._get_unique_terminal_name(source_name)
         return self._create_terminal_on_pins(
             positive_pin=pos_pin,
             negative_pin=neg_pin,
@@ -2693,7 +2716,9 @@ class SourceExcitation(SourceExcitationInternal):
         self,
         terminal: Union[PadstackInstanceTerminal, EdgeTerminal],
         ref_terminal: Union[PadstackInstanceTerminal, EdgeTerminal],
-    ) -> bool:
+        magnitude: Union[int, float] = 1,
+        phase: Union[int, float] = 0,
+    ) -> Union[Terminal, bool]:
         """Create a current source.
 
         Parameters
@@ -2708,6 +2733,10 @@ class SourceExcitation(SourceExcitationInternal):
             :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>` or
             :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`.
                 Negative terminal of the source.
+        magnitude : int, float, optional
+            Magnitude of the source.
+        phase : int, float, optional
+            Phase of the source
 
         Returns
         -------
@@ -2721,13 +2750,24 @@ class SourceExcitation(SourceExcitationInternal):
         """
         from pyedb.grpc.database.terminal.terminal import Terminal
 
-        term = Terminal(self._pedb, terminal)
+        if isinstance(terminal, PadstackInstance):
+            terminal = self._create_terminal(terminal)
+            if not terminal:
+                return False
+        if isinstance(ref_terminal, PadstackInstance):
+            ref_terminal = self._create_terminal(ref_terminal)
+            if not ref_terminal:
+                terminal.core.delete()
+                self._pedb.core.error("Failed to create reference terminal for current source")
+                return False
+        term = Terminal(self._pedb, terminal.core)
         term.boundary_type = "current_source"
 
-        ref_term = Terminal(self._pedb, ref_terminal)
+        ref_term = Terminal(self._pedb, ref_terminal.core)
         ref_term.boundary_type = "current_source"
-
-        term.ref_terminal = ref_terminal
+        term.magnitude = self._pedb.value(magnitude)
+        term.phase = self._pedb.value(phase)
+        term.reference_terminal = ref_terminal
         return term
 
     def create_current_source_on_pin_group(
@@ -2777,11 +2817,11 @@ class SourceExcitation(SourceExcitationInternal):
 
     def create_voltage_source(
         self,
-        terminal: Union[PadstackInstanceTerminal, EdgeTerminal],
-        ref_terminal: Union[PadstackInstanceTerminal, EdgeTerminal],
+        terminal: Union[PadstackInstanceTerminal, EdgeTerminal, PadstackInstance],
+        ref_terminal: Union[PadstackInstanceTerminal, EdgeTerminal, PadstackInstance],
         magnitude: Union[int, float] = 1,
         phase: Union[int, float] = 0,
-    ) -> bool:
+    ) -> Union[Terminal, bool]:
         """Create a voltage source.
 
         Parameters
@@ -2792,11 +2832,13 @@ class SourceExcitation(SourceExcitationInternal):
             :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
             :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
             :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            :class:`PadstackInstance <pyedb.grpc.database.padstacks.PadstackInstance>`,
             Positive terminal of the source.
         ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
             :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
             :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
             :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            :class:`PadstackInstance <pyedb.grpc.database.padstacks.PadstackInstance>`,
             Negative terminal of the source.
         magnitude : int, float, optional
             Magnitude of the source.
@@ -2811,18 +2853,27 @@ class SourceExcitation(SourceExcitationInternal):
         --------
         >>> from pyedb import Edb
         >>> edb = Edb()
-        >>> edb.source_excitation.create_voltage_source_on_pin_group("PG1", "PG2", 3.3, name="VSource1")
+        >>> edb.source_excitation.create_voltage_source("pin1", "pin2", 3.3, name="VSource1")
         """
         from pyedb.grpc.database.terminal.terminal import Terminal
 
-        term = Terminal(self._pedb, terminal)
+        if isinstance(terminal, PadstackInstance):
+            terminal = self._create_terminal(terminal)
+            if not terminal:
+                return False
+        if isinstance(ref_terminal, PadstackInstance):
+            ref_terminal = self._create_terminal(ref_terminal)
+            if not ref_terminal:
+                terminal.core.delete()
+                return False
+        term = Terminal(self._pedb, terminal.core)
         term.boundary_type = "voltage_source"
 
-        ref_term = Terminal(self._pedb, ref_terminal)
+        ref_term = Terminal(self._pedb, ref_terminal.core)
         ref_term.boundary_type = "voltage_source"
         term.magnitude = self._pedb.value(magnitude)
         term.phase = self._pedb.value(phase)
-        term.ref_terminal = ref_terminal
+        term.reference_terminal = ref_terminal
         return term
 
     def create_voltage_source_on_pin_group(
@@ -2876,7 +2927,7 @@ class SourceExcitation(SourceExcitationInternal):
         pos_terminal.reference_terminal = neg_terminal
         return True
 
-    def create_voltage_probe(self, terminal: Terminal, ref_terminal: Terminal) -> Terminal:
+    def create_voltage_probe(self, terminal: Terminal, ref_terminal: Terminal) -> Union[Terminal, bool]:
         """Create a voltage probe.
 
         Parameters
@@ -2885,11 +2936,13 @@ class SourceExcitation(SourceExcitationInternal):
             :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
             :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
             :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            :class:`PadstackInstance <pyedb.grpc.database.padstacks.PadstackInstance>`,
             Positive terminal of the port.
         ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
             :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
             :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
             :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            :class:`PadstackInstance <pyedb.grpc.database.padstacks.PadstackInstance>`,
             Negative terminal of the probe.
 
         Returns
@@ -2897,9 +2950,22 @@ class SourceExcitation(SourceExcitationInternal):
         :class:`Terminal <pyedb.dotnet.database.edb_data.terminals.Terminal>`
         """
 
+        if isinstance(terminal, PadstackInstance):
+            terminal = self._create_terminal(terminal)
+            if not terminal:
+                return False
+        if isinstance(ref_terminal, PadstackInstance):
+            ref_terminal = self._create_terminal(ref_terminal)
+            if not ref_terminal:
+                terminal.core.delete()
+                return False
+        if not isinstance(terminal, Terminal):
+            terminal = Terminal(self._pedb, terminal.core)
         terminal.boundary_type = "voltage_probe"
+        if not isinstance(ref_terminal, Terminal):
+            ref_terminal = Terminal(self._pedb, ref_terminal.core)
         ref_terminal.boundary_type = "voltage_probe"
-        terminal.ref_terminal = ref_terminal
+        terminal.reference_terminal = ref_terminal
         return terminal
 
     def create_voltage_probe_on_pin_group(

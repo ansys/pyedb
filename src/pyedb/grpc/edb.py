@@ -613,9 +613,8 @@ class Edb(EdbInit):
         return {
             k: i
             for k, i in self.terminals.items()
-            if "source" in i.boundary_type
-            or "terminal" in i.boundary_type
-            or getattr(i, "is_reference_terminal", False)
+            if ("source" in i.boundary_type or "terminal" in i.boundary_type)
+            and not getattr(i, "is_reference_terminal", False)
         }
 
     @property
@@ -651,7 +650,11 @@ class Edb(EdbInit):
         dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Probe names and objects.
         """
-        terms = [term for term in self.layout.terminals if term.boundary_type == "voltage_probe"]
+        terms = [
+            term
+            for term in self.layout.terminals
+            if term.boundary_type == "voltage_probe" and not term.is_reference_terminal
+        ]
         return {ter.name: ter for ter in terms}
 
     def open(self, restart_rpc_server=False) -> bool:
