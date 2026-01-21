@@ -236,6 +236,12 @@ class Configuration:
                     if len(freq_string) > 0:
                         sweep.frequency_string = freq_string
 
+                    sweep.compute_dc_point = sw.compute_dc_point
+                    sweep.enforce_causality = sw.enforce_causality
+                    sweep.enforce_passivity = sw.enforce_passivity
+                    sweep.adv_dc_extrapolation = sw.adv_dc_extrapolation
+
+
     def get_setups(self):
         self.cfg_data.setups = []
         for _, setup in self._pedb.setups.items():
@@ -282,6 +288,10 @@ class Configuration:
                             "name": name,
                             "type": sw.type,
                             "frequencies": sw.frequency_string,
+                            "compute_dc_point": sw.compute_dc_point,
+                            "enforce_causality": sw.enforce_causality,
+                            "enforce_passivity": sw.enforce_passivity,
+                            "adv_dc_extrapolation": sw.adv_dc_extrapolation,
                         }
                     )
 
