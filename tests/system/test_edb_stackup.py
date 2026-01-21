@@ -1375,8 +1375,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_test_layers_consolidated(self, edb_examples):
-        from pyedb.grpc.database.stackup import StackupLayer
-
         edbapp = edb_examples.get_si_verse()
         layers = edbapp.stackup.layers
         assert len(layers) == 15
