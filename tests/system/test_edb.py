@@ -2211,3 +2211,15 @@ class TestClass(BaseTestClass):
         assert source1.reference_terminal.magnitude == 0.0
         assert source1.reference_terminal.is_reference_terminal
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated only")
+    def test_create_padstack_instance_port(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        pins = list(edbapp.components["U1"].pins.values())
+        pins[0].create_port()
+        pins[1].create_port(name="test_port")
+        edbapp.terminals["test_port"].name = "renamed_port"
+        assert "test_port" not in edbapp.terminals
+        assert "Port_U1_<NO-NET>_A2" in edbapp.terminals
+        assert edbapp.terminals["renamed_port"]
+        edbapp.close(terminate_rpc_session=False)
