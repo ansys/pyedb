@@ -27,7 +27,7 @@ import os
 
 import pytest
 
-from tests.conftest import GRPC, config, desktop_version, local_path, test_subfolder
+from tests.conftest import GRPC, desktop_version, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
