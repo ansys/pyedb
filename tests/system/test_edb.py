@@ -30,10 +30,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from pyedb.generic.general_methods import is_linux
-from tests.conftest import config, local_path, test_subfolder
+from tests.conftest import config, desktop_version, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
-from tests.conftest import desktop_version
-
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
@@ -2137,7 +2135,7 @@ class TestClass(BaseTestClass):
         assert os.path.exists(edbapp.edbpath[:-5] + ".xml")
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(float(desktop_version)<2026.1, reason="25.2 RaptorH license is not compatible with 2026.1")
+    @pytest.mark.skipif(float(desktop_version) < 2026.1, reason="25.2 RaptorH license is not compatible with 2026.1")
     def test_import_vlctech(self, edb_examples):
         from pyedb import Edb
 
