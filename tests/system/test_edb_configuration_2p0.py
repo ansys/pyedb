@@ -1495,6 +1495,7 @@ class TestClassSetups(BaseTestClass):
                         {
                             "name": "Sweep1",
                             "type": "discrete",
+                            "adv_dc_extrapolation": False,
                             "frequencies": [
                                 "LIN 0.05GHz 0.2GHz 0.01GHz",
                                 "DEC 1e-06GHz 0.0001GHz 10",

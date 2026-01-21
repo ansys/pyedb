@@ -41,7 +41,7 @@ class CfgFrequencySweep(BaseModel):
     frequencies: list[CfgFrequencies | str] = Field(list(), description="List of frequency definitions or strings")
 
     use_q3d_for_dc: bool = Field(False, description="Use Q3D for DC analysis. Only applicable for HFSS setup.")
-    compute_dc_point : bool = False
+    compute_dc_point : bool = Field(False, description="AC/DC Merge checkbox in GUI.")
     enforce_causality: bool = False
     enforce_passivity: bool = True
     adv_dc_extrapolation: bool = False
