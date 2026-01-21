@@ -241,7 +241,6 @@ class Configuration:
                     sweep.enforce_passivity = sw.enforce_passivity
                     sweep.adv_dc_extrapolation = sw.adv_dc_extrapolation
 
-
     def get_setups(self):
         self.cfg_data.setups = []
         for _, setup in self._pedb.setups.items():
