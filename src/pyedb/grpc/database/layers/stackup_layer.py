@@ -331,7 +331,7 @@ class StackupLayer:
         return 0.0
 
     @property
-    def dielectric_fill(self) -> str:
+    def dielectric_fill(self) -> Union[str, None]:
         """Material name of the layer dielectric fill.
 
         Returns
@@ -342,7 +342,7 @@ class StackupLayer:
         if self.type == "signal":
             return self.core.get_fill_material()
         else:
-            return ""
+            return None
 
     @dielectric_fill.setter
     def dielectric_fill(self, name):
