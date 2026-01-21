@@ -60,7 +60,7 @@ mapping_boundary_type = {
 class Terminal(ConnObj):
     def __init__(self, pedb, core):
         super().__init__(pedb, core)
-
+        self.core = core
         self._reference_object = None
 
         self._terminal_type_mapping = {

@@ -1641,8 +1641,11 @@ class Padstacks(object):
             component_only = True
         if component_only:
             references_pins = [
-                pin for pin in list(positive_pin.component.pins.values()) if pin.net_name == reference_net
+                pin
+                for pin in list(positive_pin.component.pins.values())
+                if pin.net_name == reference_net and isinstance(pin, PadstackInstance)
             ]
+            references_pins = [pin for pin in references_pins if not pin.terminal]
             if not references_pins:
                 return pinlist
         else:

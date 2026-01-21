@@ -23,9 +23,9 @@
 import re
 from typing import TYPE_CHECKING
 
-from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundleTerminal
 from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal
 
+from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.database.terminal.terminal import Terminal
 
 if TYPE_CHECKING:
@@ -143,5 +143,6 @@ class EdgeTerminal(Terminal):
             port = [port]
         temp = [self]
         temp.extend([i for i in port])
-        bundle_terminal = GrpcBundleTerminal.create(temp)
+        name = temp[0].name
+        bundle_terminal = BundleTerminal.create(self._pedb, name=name, terminals=temp)
         return self._pedb.ports[bundle_terminal.name]

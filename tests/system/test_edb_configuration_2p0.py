@@ -613,34 +613,6 @@ class TestClass(BaseTestClass):
                     assert value == target_pdef[p]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Temporary fix to make CI workflows available")
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
-    def test_12_setup_siwave_dc(self, edb_examples):
-        data = {
-            "setups": [
-                {
-                    "name": "siwave_1",
-                    "type": "siwave_dc",
-                    "dc_slider_position": 2,
-                    "dc_ir_settings": {"export_dc_thermal_data": True},
-                }
-            ]
-        }
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-
-        siwave_dc = edbapp.setups["siwave_1"]
-        if not is_linux:
-            # test
-            assert siwave_dc.dc_settings.dc_slider_position == 2
-        assert siwave_dc.dc_ir_settings.export_dc_thermal_data is True
-
-        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        src_siwave_dc = data_from_db["setups"][0]
-        target_siwave_dc = data["setups"][0]
-        assert src_siwave_dc == target_siwave_dc
-        edbapp.close(terminate_rpc_session=False)
-
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_13c_stackup_create_stackup(self, edb_examples):
         data = {
@@ -686,41 +658,6 @@ class TestClass(BaseTestClass):
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
                 assert value == target_mat[p]
-        edbapp.close(terminate_rpc_session=False)
-
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
-    def test_14_setup_siwave_syz(self, edb_examples):
-        data = {
-            "setups": [
-                {
-                    "name": "siwave_1",
-                    "type": "siwave_ac",
-                    "use_si_settings": True,
-                    "si_slider_position": 1,
-                    "freq_sweep": [
-                        {
-                            "name": "Sweep1",
-                            "type": "discrete",
-                            "frequencies": [
-                                "LIN 0.05GHz 0.2GHz 0.01GHz",
-                                "DEC 1e-06GHz 0.0001GHz 10",
-                                "LINC 0.01GHz 0.02GHz 11",
-                            ],
-                        }
-                    ],
-                }
-            ]
-        }
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        siwave_ac = edbapp.setups["siwave_1"]
-        assert siwave_ac.use_si_settings is True
-        assert siwave_ac.si_slider_position == 1
-
-        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        src_siwave_dc = data_from_db["setups"][0]
-        assert src_siwave_dc["si_slider_position"] == 1
-        assert src_siwave_dc["use_si_settings"] is True
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
@@ -1409,7 +1346,7 @@ class TestClassSetups(BaseTestClass):
             "layer": None,
         }
 
-    def test_01_setups(self, edb_examples):
+    def test_hfss(self, edb_examples):
         data = {
             "setups": [
                 {
@@ -1418,6 +1355,7 @@ class TestClassSetups(BaseTestClass):
                     "f_adapt": "5GHz",
                     "max_num_passes": 10,
                     "max_mag_delta_s": 0.02,
+                    "freq_sweep": [],
                     "mesh_operations": [
                         {
                             "name": "mop_1",
@@ -1436,25 +1374,10 @@ class TestClassSetups(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        for setup in data["setups"]:
-            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
-            for p, value in setup.items():
-                if p == "max_num_passes":
-                    assert value == int(target[p])
-                elif p == "max_mag_delta_s":
-                    assert value == float(target[p])
-                elif p == "freq_sweep":
-                    pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
-                elif p == "mesh_operations":
-                    for mop in value:
-                        target_mop = [i for i in target["mesh_operations"] if i["name"] == mop["name"]][0]
-                        for mop_p_name, mop_value in mop.items():
-                            assert mop_value == target_mop[mop_p_name]
-                else:
-                    assert value == target[p]
+        assert data == data_from_db
         edbapp.close(terminate_rpc_session=False)
 
-    def test_auto_mesh_operation(self, edb_examples):
+    def test_hfss_auto_mesh_operation(self, edb_examples):
         data = {
             "terminals": [self.terminal1],
             "setups": [
@@ -1479,7 +1402,7 @@ class TestClassSetups(BaseTestClass):
         assert data_from_db["setups"][0]["mesh_operations"][0]["name"] == "hfss_setup_1_AutoMeshOp"
         edbapp.close(terminate_rpc_session=False)
 
-    def test_01a_setups_frequency_sweeps(self, edb_examples):
+    def test_hfss_setup_w_frequency_sweeps(self, edb_examples):
         data = {
             "setups": [
                 {
@@ -1492,6 +1415,10 @@ class TestClassSetups(BaseTestClass):
                         {
                             "name": "sweep1",
                             "type": "interpolation",
+                            "compute_dc_point": True,
+                            "enforce_causality": True,
+                            "enforce_passivity": False,
+                            "adv_dc_extrapolation": True,
                             "frequencies": [
                                 {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"},
                                 {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
@@ -1518,6 +1445,10 @@ class TestClassSetups(BaseTestClass):
         assert setup["name"] == "hfss_setup_1"
         sweep1 = setup["freq_sweep"][0]
         assert sweep1["name"] == "sweep1"
+        assert sweep1["compute_dc_point"]
+        assert sweep1["enforce_causality"]
+        assert not sweep1["enforce_passivity"]
+        assert sweep1["adv_dc_extrapolation"]
         assert sweep1["frequencies"] == [
             "LIN 0.05GHz 0.2GHz 0.01GHz",
             "DEC 1e-06GHz 0.0001GHz 10",
@@ -1525,6 +1456,66 @@ class TestClassSetups(BaseTestClass):
         ]
         sweep2 = setup["freq_sweep"][1]
         assert sweep2["type"] == "discrete"
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_siwave_dc(self, edb_examples):
+        data = {
+            "setups": [
+                {
+                    "name": "siwave_1",
+                    "type": "siwave_dc",
+                    "dc_slider_position": 2,
+                    "dc_ir_settings": {"export_dc_thermal_data": True},
+                }
+            ]
+        }
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+
+        siwave_dc = edbapp.setups["siwave_1"]
+
+        assert siwave_dc.dc_settings.dc_slider_position == 2
+        assert siwave_dc.dc_ir_settings.export_dc_thermal_data is True
+
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        src_siwave_dc = data_from_db["setups"][0]
+        target_siwave_dc = data["setups"][0]
+        assert src_siwave_dc == target_siwave_dc
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_siwave_ac_w_frequency_sweep(self, edb_examples):
+        data = {
+            "setups": [
+                {
+                    "name": "siwave_1",
+                    "type": "siwave_ac",
+                    "use_si_settings": True,
+                    "si_slider_position": 1,
+                    "freq_sweep": [
+                        {
+                            "name": "Sweep1",
+                            "type": "discrete",
+                            "adv_dc_extrapolation": False,
+                            "frequencies": [
+                                "LIN 0.05GHz 0.2GHz 0.01GHz",
+                                "DEC 1e-06GHz 0.0001GHz 10",
+                                "LINC 0.01GHz 0.02GHz 11",
+                            ],
+                        }
+                    ],
+                }
+            ]
+        }
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        siwave_ac = edbapp.setups["siwave_1"]
+        assert siwave_ac.use_si_settings is True
+        assert siwave_ac.si_slider_position == 1
+
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        src_siwave_dc = data_from_db["setups"][0]
+        assert src_siwave_dc["si_slider_position"] == 1
+        assert src_siwave_dc["use_si_settings"] is True
         edbapp.close(terminate_rpc_session=False)
 
 

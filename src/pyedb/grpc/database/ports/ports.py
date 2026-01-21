@@ -250,8 +250,8 @@ class BundleWavePort(BundleTerminal):
 
     """
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
+    def __init__(self, pedb, core):
+        super().__init__(pedb, core)
 
     @property
     def _wave_port(self) -> WavePort:

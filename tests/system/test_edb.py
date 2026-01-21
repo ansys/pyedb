@@ -515,51 +515,70 @@ class TestClass(BaseTestClass):
             t = edb.modeler.create_trace(path_list=p, **kwargs)
             traces.append(t)
 
-        # TODO implement wave port with grPC
-        # wave_port = edb.source_excitation.create_bundle_wave_port["wave_port"]
-        # wave_port.horizontal_extent_factor = 10
-        # assert wave_port.horizontal_extent_factor == 10
-        # wave_port.vertical_extent_factor = 10
-        # wave_port.radial_extent_factor = 1
-        # assert wave_port.radial_extent_factor == 1
-        # assert wave_port.pec_launch_width
-        # assert not wave_port.deembed
-        # assert wave_port.deembed_length == 0.0
+        paths_ids = [i.id for i in traces]
+        pts = [i.center_line[0] for i in traces]
+        if edb.grpc:
+            wave_port = edb.source_excitation.create_bundle_wave_port(paths_ids, pts)
+        else:
+            wave_port = edb.hfss.create_bundle_wave_port(paths_ids, pts)
+        wave_port.horizontal_extent_factor = 10
+        assert wave_port.horizontal_extent_factor == 10
+        wave_port.vertical_extent_factor = 10
+        wave_port.radial_extent_factor = 1
+        assert wave_port.radial_extent_factor == 1
+        wave_port.pec_launch_width = "0.02mm"
+        assert wave_port.pec_launch_width
+        assert not wave_port.deembed
+        assert wave_port.deembed_length == 0.0
+        # TODO check bug pyedb-core #675
+        # wave_port.do_renormalize = True
         # assert wave_port.do_renormalize
         # wave_port.do_renormalize = False
-        # assert not wave_port.do_renormalize
-        # assert edb.source_excitation.create_differential_wave_port(
-        #     traces[1].id,
-        #     trace_paths[0][0],
-        #     traces[2].id,
-        #     trace_paths[1][0],
-        #     horizontal_extent_factor=8,
-        #     port_name="df_port",
-        # )
-        # assert edb.ports["df_port"]
-        # p, n = edb.ports["df_port"].terminals
-        # assert p.name == "df_port:T1"
-        # assert n.name == "df_port:T2"
-        # assert edb.ports["df_port"].decouple()
-        # p.couple_ports(n)
-        #
-        # traces_id = [i.id for i in traces]
-        # paths = [i[1] for i in trace_paths]
-        # df_port = edb.source_excitation.create_bundle_wave_port(traces_id, paths)
-        # assert df_port.name
-        # assert df_port.terminals
-        # df_port.horizontal_extent_factor = 10
-        # df_port.vertical_extent_factor = 10
-        # df_port.deembed = True
-        # df_port.deembed_length = "1mm"
-        # assert df_port.horizontal_extent_factor == 10
-        # assert df_port.vertical_extent_factor == 10
-        # assert df_port.deembed
-        # assert df_port.deembed_length == 1e-3
+        assert not wave_port.do_renormalize
+        if edb.grpc:
+            assert edb.source_excitation.create_differential_wave_port(
+                traces[1].id,
+                trace_paths[0][0],
+                traces[2].id,
+                trace_paths[1][0],
+                horizontal_extent_factor=8,
+                port_name="df_port",
+            )
+        else:
+            assert edb.hfss.create_differential_wave_port(
+                traces[1].id,
+                trace_paths[0][0],
+                traces[2].id,
+                trace_paths[1][0],
+                horizontal_extent_factor=8,
+                port_name="df_port",
+            )
+        assert not edb.ports["df_port"].is_null
+        p, n = edb.ports["df_port"].terminals
+        assert p.name == "df_port:T1"
+        assert n.name == "df_port:T2"
+        edb.ports["df_port"].decouple()
+        p.couple_ports(n)
+
+        traces_id = [i.id for i in traces]
+        paths = [i[1] for i in trace_paths]
+        if edb.grpc:
+            df_port = edb.source_excitation.create_bundle_wave_port(traces_id, paths)
+        else:
+            df_port = edb.hfss.create_bundle_wave_port(traces_id, paths)
+        assert df_port.name
+        assert df_port.terminals
+        df_port.horizontal_extent_factor = 10
+        df_port.vertical_extent_factor = 10
+        df_port.deembed = True
+        df_port.deembed_length = "1mm"
+        assert df_port.horizontal_extent_factor == 10
+        assert df_port.vertical_extent_factor == 10
+        assert df_port.deembed
+        assert df_port.deembed_length == 1e-3
         edb.close(terminate_rpc_session=False)
 
     def test_create_various_ports_1(self, edb_examples):
-        """Create various ports."""
         """Create various ports."""
         edb = edb_examples.load_edb(
             edb_path=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
@@ -596,9 +615,9 @@ class TestClass(BaseTestClass):
 
         paths = [i[1] for i in trace_paths]
         if config["use_grpc"]:
-            _, p = edb.source_excitation.create_bundle_wave_port(traces, paths, port_name="port2")
+            p = edb.source_excitation.create_bundle_wave_port(traces, paths, port_name="port2")
         else:
-            _, p = edb.hfss.create_bundle_wave_port(traces, paths)
+            p = edb.hfss.create_bundle_wave_port(traces, paths)
         p.horizontal_extent_factor = 6
         p.vertical_extent_factor = 5
         p.pec_launch_width = "0.02mm"
@@ -1628,8 +1647,6 @@ class TestClass(BaseTestClass):
         positive_net_names = "2V5"
         reference_net_names = "GND"
         component_name = "U10"
-        for pin in edbapp.components[component_name].pins.values():
-            pin.is_pin = False
         if edbapp.grpc:
             assert edbapp.source_excitation.create_port_on_component(
                 component=component_name,
@@ -1655,7 +1672,7 @@ class TestClass(BaseTestClass):
         reference_net_names = ["GND"]
         component_name = "U10"
         for pin in edbapp.components[component_name].pins.values():
-            pin.is_pin = False
+            pin.is_pin = True
         if edbapp.grpc:
             assert edbapp.source_excitation.create_port_on_component(
                 component=component_name,
@@ -2133,4 +2150,76 @@ class TestClass(BaseTestClass):
         assert edbapp.design_mode == "general"
         edbapp.design_mode = "IC"
         assert edbapp.design_mode == "ic"
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    def test_create_sources_consolidated(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        u1_pins = list(edbapp.components["U1"].pins.values())
+        power_net = "AVCC_1V3"
+        reference_net = "GND"
+        power_pins = [pin for pin in u1_pins if pin.net_name == power_net]
+        if not power_pins:
+            raise ValueError("No power pin available")
+
+        for power_pin in power_pins[:3]:
+            nearest_power_pins = power_pin.get_reference_pins(
+                reference_net=reference_net, search_radius=5e-3, max_limit=5, component_only=True
+            )
+            if nearest_power_pins:
+                edbapp.source_excitation.create_voltage_source_on_pin(
+                    power_pin, nearest_power_pins[0], voltage_value=1.3, phase_value=0.0
+                )
+        for power_pin in power_pins[4:7]:
+            nearest_power_pins = power_pin.get_reference_pins(
+                reference_net=reference_net, search_radius=5e-3, max_limit=5, component_only=True
+            )
+            if nearest_power_pins:
+                edbapp.source_excitation.create_voltage_source(
+                    power_pin, nearest_power_pins[0], magnitude=1.3, phase=0.0
+                )
+
+        for power_pin in list(edbapp.components["U1"].pins.values())[10:12]:
+            nearest_power_pins = power_pin.get_reference_pins(
+                reference_net=reference_net, search_radius=5e-3, max_limit=5, component_only=True
+            )
+            name = f"VPROBE_{power_pin.name}_{power_pin.id}"
+            positive_layer = power_pin.start_layer
+            negative_layer = nearest_power_pins[0].start_layer
+            edbapp.source_excitation.place_voltage_probe(
+                name=name,
+                positive_net_name="AVCC_1V3",
+                positive_layer=positive_layer,
+                negative_net_name="GND",
+                negative_layer=negative_layer,
+                positive_location=power_pin.position,
+                negative_location=nearest_power_pins[0].position,
+            )
+        assert len(edbapp.probes) == 2
+        v_probe = edbapp.probes["VPROBE_A12_4294969504"]
+        assert v_probe.location == (0.09850000112, 0.04199999728)
+        assert v_probe.net_name == "AVCC_1V3"
+        assert len(edbapp.sources) == 6
+        source1 = edbapp.sources["VSource_U1_AVCC_1V3_U1_GND"]
+        assert source1.is_voltage_source
+        assert source1.impedance == 50
+        assert source1.magnitude == 1.3
+        assert source1.net.name == "AVCC_1V3"
+        assert source1.phase == 0.0
+        assert source1.reference_terminal.net.name == "GND"
+        assert source1.reference_terminal.name == "C28"
+        assert source1.reference_terminal.magnitude == 0.0
+        assert source1.reference_terminal.is_reference_terminal
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated only")
+    def test_create_padstack_instance_port(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        pins = list(edbapp.components["U1"].pins.values())
+        pins[0].create_port()
+        pins[1].create_port(name="test_port")
+        edbapp.terminals["test_port"].name = "renamed_port"
+        assert "test_port" not in edbapp.terminals
+        assert "Port_U1_<NO-NET>_A2" in edbapp.terminals
+        assert edbapp.terminals["renamed_port"]
         edbapp.close(terminate_rpc_session=False)
