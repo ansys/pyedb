@@ -9,6 +9,57 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.67.3 <https://github.com/ansys/pyedb/releases/tag/v0.67.3>`_ - January 21, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Grpc wave port tests resurrected
+          - `#1761 <https://github.com/ansys/pyedb/pull/1761>`_
+
+        * - Grpc source bug fix + consolidation
+          - `#1763 <https://github.com/ansys/pyedb/pull/1763>`_
+
+        * - Grpc layers consolidation
+          - `#1764 <https://github.com/ansys/pyedb/pull/1764>`_
+
+        * - Create port from padstack instance name bug fix
+          - `#1765 <https://github.com/ansys/pyedb/pull/1765>`_
+
+        * - Sweep property
+          - `#1769 <https://github.com/ansys/pyedb/pull/1769>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.67.1
+          - `#1759 <https://github.com/ansys/pyedb/pull/1759>`_
+
+        * - Bump_release_0.68.dev0
+          - `#1760 <https://github.com/ansys/pyedb/pull/1760>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Edb cfg setup dotnet only
+          - `#1766 <https://github.com/ansys/pyedb/pull/1766>`_
+
+
 `0.67.1 <https://github.com/ansys/pyedb/releases/tag/v0.67.1>`_ - January 16, 2026
 ==================================================================================
 
