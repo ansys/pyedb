@@ -28,219 +28,220 @@ if TYPE_CHECKING:
         SIWaveDCAdvancedSettings as GrpcSIWaveDCAdvancedSettings,
     )
 
-    class SIWaveDCAdvancedSettings:
-        """Siwave DC Advanced simulation settings class."""
 
-        def __init__(self, pedb, core: "GrpcSIWaveDCAdvancedSettings"):
-            self._pedb = pedb
-            self.core = core
+class SIWaveDCAdvancedSettings:
+    """Siwave DC Advanced simulation settings class."""
 
-        @property
-        def dc_min_plane_area_to_mesh(self) -> float:
-            """Minimum plane area to mesh.
+    def __init__(self, pedb, core: "GrpcSIWaveDCAdvancedSettings"):
+        self._pedb = pedb
+        self.core = core
 
-            Returns
-            -------
-            float
-                Minimum plane area to mesh value.
-            """
-            return self._pedb.value(self.core.dc_min_plane_area_to_mesh)
+    @property
+    def dc_min_plane_area_to_mesh(self) -> float:
+        """Minimum plane area to mesh.
 
-        @dc_min_plane_area_to_mesh.setter
-        def dc_min_plane_area_to_mesh(self, value: float):
-            self.core.dc_min_plane_area_to_mesh = str(self._pedb.create_value(value))
+        Returns
+        -------
+        float
+            Minimum plane area to mesh value.
+        """
+        return self._pedb.value(self.core.dc_min_plane_area_to_mesh)
 
-        @property
-        def dc_min_void_area_to_mesh(self) -> float:
-            """Minimum void area to mesh.
+    @dc_min_plane_area_to_mesh.setter
+    def dc_min_plane_area_to_mesh(self, value: float):
+        self.core.dc_min_plane_area_to_mesh = str(self._pedb.create_value(value))
 
-            Returns
-            -------
-            float
-                Minimum void area to mesh value.
-            """
-            return self._pedb.value(self.core.dc_min_void_area_to_mesh)
+    @property
+    def dc_min_void_area_to_mesh(self) -> float:
+        """Minimum void area to mesh.
 
-        @dc_min_void_area_to_mesh.setter
-        def dc_min_void_area_to_mesh(self, value: float):
-            self.core.dc_min_void_area_to_mesh = str(self._pedb.create_value(value))
+        Returns
+        -------
+        float
+            Minimum void area to mesh value.
+        """
+        return self._pedb.value(self.core.dc_min_void_area_to_mesh)
 
-        @property
-        def energy_error(self) -> float:
-            """Energy error.
+    @dc_min_void_area_to_mesh.setter
+    def dc_min_void_area_to_mesh(self, value: float):
+        self.core.dc_min_void_area_to_mesh = str(self._pedb.create_value(value))
 
-            Returns
-            -------
-            float
-                Energy error value.
-            """
-            return self.core.energy_error
+    @property
+    def energy_error(self) -> float:
+        """Energy error.
 
-        @energy_error.setter
-        def energy_error(self, value: float):
-            self.core.energy_error = value
+        Returns
+        -------
+        float
+            Energy error value.
+        """
+        return self.core.energy_error
 
-        @property
-        def max_init_mesh_edge_length(self) -> float:
-            """Maximum initial mesh edge length.
+    @energy_error.setter
+    def energy_error(self, value: float):
+        self.core.energy_error = value
 
-            Returns
-            -------
-            float
-                Maximum initial mesh edge length value.
-            """
-            return self._pedb.value(self.core.max_init_mesh_edge_length)
+    @property
+    def max_init_mesh_edge_length(self) -> float:
+        """Maximum initial mesh edge length.
 
-        @max_init_mesh_edge_length.setter
-        def max_init_mesh_edge_length(self, value: float):
-            self.core.max_init_mesh_edge_length = str(self._pedb.create_value(value))
+        Returns
+        -------
+        float
+            Maximum initial mesh edge length value.
+        """
+        return self._pedb.value(self.core.max_init_mesh_edge_length)
 
-        @property
-        def max_num_passes(self) -> int:
-            """Maximum number of passes.
+    @max_init_mesh_edge_length.setter
+    def max_init_mesh_edge_length(self, value: float):
+        self.core.max_init_mesh_edge_length = str(self._pedb.create_value(value))
 
-            Returns
-            -------
-            int
-                Maximum number of passes value.
-            """
-            return self.core.max_num_passes
+    @property
+    def max_num_passes(self) -> int:
+        """Maximum number of passes.
 
-        @max_num_passes.setter
-        def max_num_passes(self, value: int):
-            self.core.max_num_passes = value
+        Returns
+        -------
+        int
+            Maximum number of passes value.
+        """
+        return self.core.max_num_passes
 
-        @property
-        def mesh_bws(self) -> bool:
-            """Mesh BWS.
+    @max_num_passes.setter
+    def max_num_passes(self, value: int):
+        self.core.max_num_passes = value
 
-            Returns
-            -------
-            bool
-                Mesh BWS value.
-            """
-            return self.core.mesh_bws
+    @property
+    def mesh_bws(self) -> bool:
+        """Mesh BWS.
 
-        @mesh_bws.setter
-        def mesh_bws(self, value: bool):
-            self.core.mesh_bws = value
+        Returns
+        -------
+        bool
+            Mesh BWS value.
+        """
+        return self.core.mesh_bws
 
-        @property
-        def mesh_vias(self) -> bool:
-            """Mesh vias.
+    @mesh_bws.setter
+    def mesh_bws(self, value: bool):
+        self.core.mesh_bws = value
 
-            Returns
-            -------
-            bool
-                Mesh vias value.
-            """
-            return self.core.mesh_vias
+    @property
+    def mesh_vias(self) -> bool:
+        """Mesh vias.
 
-        @mesh_vias.setter
-        def mesh_vias(self, value: bool):
-            self.core.mesh_vias = value
+        Returns
+        -------
+        bool
+            Mesh vias value.
+        """
+        return self.core.mesh_vias
 
-        @property
-        def min_num_passes(self) -> int:
-            """Minimum number of passes.
+    @mesh_vias.setter
+    def mesh_vias(self, value: bool):
+        self.core.mesh_vias = value
 
-            Returns
-            -------
-            int
-                Minimum number of passes value.
-            """
-            return self.core.min_num_passes
+    @property
+    def min_num_passes(self) -> int:
+        """Minimum number of passes.
 
-        @min_num_passes.setter
-        def min_num_passes(self, value: int):
-            self.core.min_num_passes = value
+        Returns
+        -------
+        int
+            Minimum number of passes value.
+        """
+        return self.core.min_num_passes
 
-        @property
-        def num_bw_sides(self) -> int:
-            """Number of BWS sides.
+    @min_num_passes.setter
+    def min_num_passes(self, value: int):
+        self.core.min_num_passes = value
 
-            Returns
-            -------
-            int
-                Number of BWS sides value.
-            """
-            return self.core.num_bw_sides
+    @property
+    def num_bw_sides(self) -> int:
+        """Number of BWS sides.
 
-        @num_bw_sides.setter
-        def num_bw_sides(self, value: int):
-            self.core.num_bw_sides = value
+        Returns
+        -------
+        int
+            Number of BWS sides value.
+        """
+        return self.core.num_bw_sides
 
-        @property
-        def num_via_sides(self) -> int:
-            """Number of via sides.
+    @num_bw_sides.setter
+    def num_bw_sides(self, value: int):
+        self.core.num_bw_sides = value
 
-            Returns
-            -------
-            int
-                Number of via sides value.
-            """
-            return self.core.num_via_sides
+    @property
+    def num_via_sides(self) -> int:
+        """Number of via sides.
 
-        @num_via_sides.setter
-        def num_via_sides(self, value: int):
-            self.core.num_via_sides = value
+        Returns
+        -------
+        int
+            Number of via sides value.
+        """
+        return self.core.num_via_sides
 
-        @property
-        def percent_local_refinement(self) -> float:
-            """Percentage of local refinement.
+    @num_via_sides.setter
+    def num_via_sides(self, value: int):
+        self.core.num_via_sides = value
 
-            Returns
-            -------
-            float
-                Percentage of local refinement value.
-            """
-            return self.core.percent_local_refinement
+    @property
+    def percent_local_refinement(self) -> float:
+        """Percentage of local refinement.
 
-        @percent_local_refinement.setter
-        def percent_local_refinement(self, value: float):
-            self.core.percent_local_refinement = value
+        Returns
+        -------
+        float
+            Percentage of local refinement value.
+        """
+        return self.core.percent_local_refinement
 
-        @property
-        def perform_adaptive_refinement(self) -> bool:
-            """Perform adaptive refinement.
+    @percent_local_refinement.setter
+    def percent_local_refinement(self, value: float):
+        self.core.percent_local_refinement = value
 
-            Returns
-            -------
-            bool
-                Perform adaptive refinement value.
-            """
-            return self.core.perform_adaptive_refinement
+    @property
+    def perform_adaptive_refinement(self) -> bool:
+        """Perform adaptive refinement.
 
-        @perform_adaptive_refinement.setter
-        def perform_adaptive_refinement(self, value: bool):
-            self.core.perform_adaptive_refinement = value
+        Returns
+        -------
+        bool
+            Perform adaptive refinement value.
+        """
+        return self.core.perform_adaptive_refinement
 
-        @property
-        def refine_bws(self) -> bool:
-            """Refine BWS.
+    @perform_adaptive_refinement.setter
+    def perform_adaptive_refinement(self, value: bool):
+        self.core.perform_adaptive_refinement = value
 
-            Returns
-            -------
-            bool
-                Refine BWS value.
-            """
-            return self.core.refine_bws
+    @property
+    def refine_bws(self) -> bool:
+        """Refine BWS.
 
-        @refine_bws.setter
-        def refine_bws(self, value: bool):
-            self.core.refine_bws = value
+        Returns
+        -------
+        bool
+            Refine BWS value.
+        """
+        return self.core.refine_bws
 
-        @property
-        def refine_vias(self) -> bool:
-            """Refine vias.
+    @refine_bws.setter
+    def refine_bws(self, value: bool):
+        self.core.refine_bws = value
 
-            Returns
-            -------
-            bool
-                Refine vias value.
-            """
-            return self.core.refine_vias
+    @property
+    def refine_vias(self) -> bool:
+        """Refine vias.
 
-        @refine_vias.setter
-        def refine_vias(self, value: bool):
-            self.core.refine_vias = value
+        Returns
+        -------
+        bool
+            Refine vias value.
+        """
+        return self.core.refine_vias
+
+    @refine_vias.setter
+    def refine_vias(self, value: bool):
+        self.core.refine_vias = value

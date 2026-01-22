@@ -23,12 +23,12 @@
 
 from typing import TYPE_CHECKING
 
-from pyedb.grpc.edb import Edb
-
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.adaptive_solutions import (
         AdaptiveFrequency as GrpcAdaptiveFrequency,
     )
+
+    from pyedb.grpc.edb import Edb
 import warnings
 
 from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
@@ -57,13 +57,13 @@ class HfssSimulationSetup(SimulationSetup):
         self._name = name
 
     @classmethod
-    def create(cls, edb: Edb, name: str = None):
+    def create(cls, edb: "Edb", name: str = None):
         """Create a new HFSS simulation setup.
 
         Parameters
         ----------
-        Edb : pyedb.Edb object
-            The cell to which the simulation setup will be added.
+        edb : pyedb.Edb
+            The EDB instance to which the simulation setup will be added.
         name : str, optional
             Name of the simulation setup.
 
@@ -311,7 +311,8 @@ class HfssSimulationSetup(SimulationSetup):
             max_elements=str(max_elements),
         )
         mesh_ops = self.mesh_operations
-        mesh_ops.append(mop)
+        # Wrap the core mesh operation with the MeshOperation wrapper before appending
+        mesh_ops.append(MeshOperation(core=mop))
         self.mesh_operations = mesh_ops
         return mop
 

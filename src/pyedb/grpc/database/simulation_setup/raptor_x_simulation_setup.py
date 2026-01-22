@@ -21,15 +21,16 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
-import warnings
 
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
-import pyedb.grpc.edb
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.raptor_x_simulation_setup import (
         RaptorXSimulationSetup as GrpcRaptorXSimulationSetup,
     )
+
+    from pyedb.grpc.edb import Edb
+
 
 from pyedb.grpc.database.simulation_setup.raptor_x_simulation_settings import RaptorXSimulationSettings
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
@@ -44,7 +45,7 @@ class RaptorXSimulationSetup(SimulationSetup):
         self._pedb = pedb
 
     @classmethod
-    def create(cls, edb: pyedb.grpc.edb.Edb, name: str = "RaptorX_Simulation_Setup"):
+    def create(cls, edb: "Edb", name: str = "RaptorX_Simulation_Setup"):
         """Create RaptorX simulation setup.
 
         Parameters
