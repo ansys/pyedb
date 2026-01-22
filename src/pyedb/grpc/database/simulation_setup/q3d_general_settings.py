@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
 
 class Q3DGeneralSettings:
-    def __init__(self, pedb, core: GrpcQ3DGeneralSettings):
+    def __init__(self, pedb, core: "GrpcQ3DGeneralSettings"):
         """Q3D general settings class."""
         self.core = core
         self._pedb = pedb

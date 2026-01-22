@@ -513,7 +513,7 @@ class SingleFrequencyAdaptiveSolution:
 class HFSSGeneralSettings:
     """PyEDB-core HFSS general settings class."""
 
-    def __init__(self, pedb, core: GrpcHFSSGeneralSettings):
+    def __init__(self, pedb, core: "GrpcHFSSGeneralSettings"):
         self.core = core
         self._pedb = pedb
 

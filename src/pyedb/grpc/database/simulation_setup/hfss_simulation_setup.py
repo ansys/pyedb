@@ -23,8 +23,9 @@
 
 from typing import TYPE_CHECKING
 
+from pyedb.grpc.edb import Edb
+
 if TYPE_CHECKING:
-    from ansys.edb.core.database import Cell
     from ansys.edb.core.simulation_setup.adaptive_solutions import (
         AdaptiveFrequency as GrpcAdaptiveFrequency,
     )
@@ -49,19 +50,19 @@ from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 class HfssSimulationSetup(SimulationSetup):
     """HFSS simulation setup class."""
 
-    def __init__(self, pedb, core: GrpcHfssSimulationSetup, name: str = None):
+    def __init__(self, pedb, core: "GrpcHfssSimulationSetup", name: str = None):
         super().__init__(pedb, core)
         self.core = core
         self._pedb = pedb
         self._name = name
 
     @classmethod
-    def create(cls, cell: Cell, name: str = None):
+    def create(cls, edb: Edb, name: str = None):
         """Create a new HFSS simulation setup.
 
         Parameters
         ----------
-        cell : Cell
+        Edb : pyedb.Edb object
             The cell to which the simulation setup will be added.
         name : str, optional
             Name of the simulation setup.
@@ -72,7 +73,7 @@ class HfssSimulationSetup(SimulationSetup):
         """
         if not name:
             name = generate_unique_name("HFSS_Setup")
-        core = GrpcHfssSimulationSetup.create(cell, name)
+        core = GrpcHfssSimulationSetup.create(edb.active_cell, name)
         return cls(pedb=None, core=core, name=name)
 
     @property

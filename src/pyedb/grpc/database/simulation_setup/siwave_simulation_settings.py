@@ -35,7 +35,7 @@ from pyedb.grpc.database.simulation_setup.siwave_s_parameter_settings import SIW
 
 
 class SIWaveSimulationSettings:
-    def __init__(self, pedb, core: GrpcSIWaveSimulationSettings):
+    def __init__(self, pedb, core: "GrpcSIWaveSimulationSettings"):
         """PyEDB SIWave simulation settings class."""
         self.core = core
         self._pedb = pedb

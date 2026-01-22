@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 class RaptorXAdvancedSettings:
     """Raptor X advanced settings class."""
 
-    def __init__(self, pedb, core: GrpcRaptorXAdvancedSettings):
+    def __init__(self, pedb, core: "GrpcRaptorXAdvancedSettings"):
         self.core = core
         self._pedb = pedb
 

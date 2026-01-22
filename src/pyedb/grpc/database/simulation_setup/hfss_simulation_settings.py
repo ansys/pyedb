@@ -46,7 +46,7 @@ from pyedb.grpc.database.simulation_setup.hfss_solver_settings import HFSSSolver
 class HFSSSimulationSettings:
     """PyEDB-core HFSS simulation settings class."""
 
-    def __init__(self, pedb, core: GrpcHFSSSimulationSettings):
+    def __init__(self, pedb, core: "GrpcHFSSSimulationSettings"):
         self.core = core
         self._pedb = pedb
 

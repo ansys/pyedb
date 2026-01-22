@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     class SIWaveDCAdvancedSettings:
         """Siwave DC Advanced simulation settings class."""
 
-        def __init__(self, pedb, core: GrpcSIWaveDCAdvancedSettings):
+        def __init__(self, pedb, core: "GrpcSIWaveDCAdvancedSettings"):
             self._pedb = pedb
             self.core = core
 

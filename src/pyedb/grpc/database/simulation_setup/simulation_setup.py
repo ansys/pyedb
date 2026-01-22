@@ -21,7 +21,10 @@
 # SOFTWARE.
 
 
-from typing import Union
+from typing import TYPE_CHECKING, Union
+
+if TYPE_CHECKING:
+    from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetup as GrpcSimulationSetup
 
 from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetupType as GrpcSimulationSetupType
 
@@ -38,7 +41,7 @@ _mapping_simulation_types = {
 
 
 class SimulationSetup:
-    def __init__(self, pedb, core):
+    def __init__(self, pedb, core: "GrpcSimulationSetup"):
         """PyEDB Simulation Setup base class."""
         self.core = core
         self._pedb = pedb

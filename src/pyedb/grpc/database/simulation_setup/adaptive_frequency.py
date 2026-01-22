@@ -32,7 +32,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 class AdaptiveFrequency:
     """PyEDB Adaptive Frequency class."""
 
-    def __init__(self, core: GrpcAdaptiveFrequency):
+    def __init__(self, core: "GrpcAdaptiveFrequency"):
         self.core = core
 
     @property

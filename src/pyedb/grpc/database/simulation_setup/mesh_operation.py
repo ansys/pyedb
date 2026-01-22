@@ -53,7 +53,7 @@ class MeshOperation:
 
     def __init__(
         self,
-        core: GrpcMeshOperation = None,
+        core: "GrpcMeshOperation" = None,
         name="",
         net_layer_info=None,
         enabled=True,

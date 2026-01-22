@@ -48,7 +48,7 @@ _mapping_solver_type = {
 class Q3DCGSettings:
     """Q3D CG settings class."""
 
-    def __init__(self, pedb, core: GrpcQ3DCGSettings):
+    def __init__(self, pedb, core: "GrpcQ3DCGSettings"):
         self.core = core
         self._pedb = pedb
 

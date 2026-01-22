@@ -36,7 +36,7 @@ class Q3DAdvancedSettings:
         Inherited object.
     """
 
-    def __init__(self, pedb, core: GrpcQ3DAdvancedSettings):
+    def __init__(self, pedb, core: "GrpcQ3DAdvancedSettings"):
         self._pedb = pedb
         self.core = core
 

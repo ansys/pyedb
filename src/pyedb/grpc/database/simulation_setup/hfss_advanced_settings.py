@@ -30,7 +30,7 @@ from ansys.edb.core.simulation_setup.simulation_settings import ViaStyle as Grpc
 
 
 class HFSSAdvancedSettings:
-    def __init__(self, pedb, core: GrpcHFSSAdvancedSettings):
+    def __init__(self, pedb, core: "GrpcHFSSAdvancedSettings"):
         """PyEDB HFSS advanced settings class."""
         self.core = core
         self._pedb = pedb

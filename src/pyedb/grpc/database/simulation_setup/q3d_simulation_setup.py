@@ -37,7 +37,7 @@ class Q3DSimulationSetup(SimulationSetup):
         Inherited object.
     """
 
-    def __init__(self, pedb, core: GrpcQ3DSimulationSetup):
+    def __init__(self, pedb, core: "GrpcQ3DSimulationSetup"):
         super().__init__(pedb, core)
         self.core: GrpcQ3DSimulationSetup
         self._pedb = pedb

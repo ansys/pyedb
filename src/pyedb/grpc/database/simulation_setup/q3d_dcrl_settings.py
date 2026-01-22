@@ -37,7 +37,7 @@ _mapping_solution_order = {
 
 
 class Q3DDCRLSettings:
-    def __init__(self, pedb, core: GrpcQ3DDCRLSettings):
+    def __init__(self, pedb, core: "GrpcQ3DDCRLSettings"):
         self.core = core
         self._pedb = pedb
 

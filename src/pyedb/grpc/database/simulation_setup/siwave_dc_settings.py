@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
 
 class SIWaveDCSettings:
-    def __init__(self, pedb, core: GrpcSIWaveDCSettings):
+    def __init__(self, pedb, core: "GrpcSIWaveDCSettings"):
         """PyEDB SIWave simulation settings class."""
         self.core = core
         self._pedb = pedb

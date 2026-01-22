@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 class Q3DACRLSettings:
     """Q3D ACRL settings class."""
 
-    def __init__(self, pedb, core: GrpcQ3DACRLSettings):
+    def __init__(self, pedb, core: "GrpcQ3DACRLSettings"):
         self.core = core
         self._pedb = pedb
 

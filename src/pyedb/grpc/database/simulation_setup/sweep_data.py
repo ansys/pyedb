@@ -72,7 +72,7 @@ class SweepData:
         start_f=0.0,
         end_f=10e9,
         step=10e6,
-        core: GrpcSweepData = None,
+        core: "GrpcSweepData" = None,
     ):
         self._pedb = pedb
         if core:

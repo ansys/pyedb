@@ -34,7 +34,7 @@ from pyedb.grpc.database.simulation_setup.siwave_simulation_settings import SIWa
 class SiwaveSimulationSetup(SimulationSetup):
     """SIwave simulation setup class."""
 
-    def __init__(self, pedb, core: GrpcSIWaveSimulationSetup):
+    def __init__(self, pedb, core: "GrpcSIWaveSimulationSetup"):
         super().__init__(pedb, core)
         self.core = core
         self._pedb = pedb

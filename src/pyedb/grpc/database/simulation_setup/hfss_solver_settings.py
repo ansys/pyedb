@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 class HFSSSolverSettings:
     """HFSS solver settings class."""
 
-    def __init__(self, pedb, core: GrpcHFSSSolverSettings):
+    def __init__(self, pedb, core: "GrpcHFSSSolverSettings"):
         self.core = core
         self._pedb = pedb
 

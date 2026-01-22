@@ -58,7 +58,7 @@ _mapping_s_parameter_interpolation = {
 class SIWaveSParameterSettings:
     """SIWave S-Parameter simulation settings class."""
 
-    def __init__(self, pedb, core: GrpcSIWaveSParameterSettings):
+    def __init__(self, pedb, core: "GrpcSIWaveSParameterSettings"):
         self.core = core
         self._pedb = pedb
 

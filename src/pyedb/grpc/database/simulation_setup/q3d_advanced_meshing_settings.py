@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 class Q3DAdvancedMeshingSettings:
     """Q3D advanced meshing settings class."""
 
-    def __init__(self, pedb, core: GrpcQ3DAdvancedMeshingSettings):
+    def __init__(self, pedb, core: "GrpcQ3DAdvancedMeshingSettings"):
         self.core = core
         self._pedb = pedb
 

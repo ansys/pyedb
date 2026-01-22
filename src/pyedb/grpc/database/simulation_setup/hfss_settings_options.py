@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 class HFSSSettingsOptions:
     """PyEDB-core HFSS settings options class."""
 
-    def __init__(self, _pedb, core: GrpcHFSSSettingsOptions):
+    def __init__(self, _pedb, core: "GrpcHFSSSettingsOptions"):
         self.core = core
         self._pedb = _pedb
 

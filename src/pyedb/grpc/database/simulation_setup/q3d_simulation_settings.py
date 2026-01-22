@@ -38,7 +38,7 @@ from pyedb.grpc.database.simulation_setup.q3d_general_settings import Q3DGeneral
 class Q3DSimulationSettings:
     """Q3D simulation settings class."""
 
-    def __init__(self, pedb, core: GrpcQ3DSimulationSettings):
+    def __init__(self, pedb, core: "GrpcQ3DSimulationSettings"):
         self.core = core
         self._pedb = pedb
 

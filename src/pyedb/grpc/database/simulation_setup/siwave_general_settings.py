@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
 
 class SIWaveGeneralSettings:
-    def __init__(self, pedb, core: GrpcSIWaveGeneralSettings):
+    def __init__(self, pedb, core: "GrpcSIWaveGeneralSettings"):
         self.core = core
         self._pedb = pedb
 
