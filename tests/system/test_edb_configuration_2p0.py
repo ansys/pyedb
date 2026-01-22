@@ -1416,6 +1416,10 @@ class TestClassSetups(BaseTestClass):
                         {
                             "name": "sweep1",
                             "type": "interpolation",
+                            "compute_dc_point": True,
+                            "enforce_causality": True,
+                            "enforce_passivity": False,
+                            "adv_dc_extrapolation": True,
                             "frequencies": [
                                 {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"},
                                 {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
@@ -1442,6 +1446,10 @@ class TestClassSetups(BaseTestClass):
         assert setup["name"] == "hfss_setup_1"
         sweep1 = setup["freq_sweep"][0]
         assert sweep1["name"] == "sweep1"
+        assert sweep1["compute_dc_point"]
+        assert sweep1["enforce_causality"]
+        assert not sweep1["enforce_passivity"]
+        assert sweep1["adv_dc_extrapolation"]
         assert sweep1["frequencies"] == [
             "LIN 0.05GHz 0.2GHz 0.01GHz",
             "DEC 1e-06GHz 0.0001GHz 10",
@@ -1488,6 +1496,7 @@ class TestClassSetups(BaseTestClass):
                         {
                             "name": "Sweep1",
                             "type": "discrete",
+                            "adv_dc_extrapolation": False,
                             "frequencies": [
                                 "LIN 0.05GHz 0.2GHz 0.01GHz",
                                 "DEC 1e-06GHz 0.0001GHz 10",
