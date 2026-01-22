@@ -70,7 +70,12 @@ import sys
 import tempfile
 import time
 import traceback
-from typing import Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+
+from pyedb.grpc.database.simulation_setup.q3d_simulation_setup import Q3DSimulationSetup
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
 import warnings
 from zipfile import ZipFile as Zpf
 
@@ -128,6 +133,7 @@ from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import (
 from pyedb.grpc.database.simulation_setup.siwave_simulation_setup import (
     SiwaveSimulationSetup,
 )
+from pyedb.grpc.database.simulation_setups import SimulationSetups
 from pyedb.grpc.database.siwave import Siwave
 from pyedb.grpc.database.source_excitations import SourceExcitation
 from pyedb.grpc.database.stackup import Stackup
@@ -2279,6 +2285,7 @@ class Edb(EdbInit):
             SIWaveDCIRSimulationSetup,
             RaptorXSimulationSetup,
             SIWaveCPASimulationSetup,
+            Q3DSimulationSetup,
         ],
     ]:
         """Get the dictionary of all EDB HFSS and SIwave setups.
@@ -2289,200 +2296,100 @@ class Edb(EdbInit):
         Dict[str,:class:`SiwaveSimulationSetup`] or
         Dict[str,:class:`SIWaveDCIRSimulationSetup`] or
         Dict[str,:class:`RaptorXSimulationSetup`]
-        Dict[str,:class:`SIWaveCPASimulationSetup`]
+        Dict[str,:class:`SIWaveCPASimulationSetup`
+        Dict[str,:class:`Q3DSimulationSetup`]
 
         """
-        from ansys.edb.core.database import ProductIdType as GrpcProductIdType
+        return self.simulation_setups.setups
 
-        from pyedb.siwave_core.product_properties import SIwaveProperties
+    @property
+    def simulation_setups(self) -> dict[str, object]:
+        """Get all simulation setups in the active cell.
 
-        setups = {}
-        for setup in self.active_cell.simulation_setups:
-            setup = setup.cast()
-            setup_type = setup.type.name
-            if setup_type == "HFSS":
-                setups[setup.name] = HfssSimulationSetup(self, setup)
-            elif setup_type == "SI_WAVE":
-                setups[setup.name] = SiwaveSimulationSetup(self, setup)
-            elif setup_type == "SI_WAVE_DCIR":
-                setups[setup.name] = SIWaveDCIRSimulationSetup(self, setup)
-            elif setup_type == "RAPTOR_X":
-                setups[setup.name] = RaptorXSimulationSetup(self, setup)
-        try:
-            cpa_setup_name = (
-                self.active_cell.get_product_property(GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME)
-            ).value
-        except (AttributeError, TypeError, KeyError, RuntimeError) as exc:
-            # Product property may be missing on some designs/edb versions; log at debug level and continue.
-            self.logger.debug("Could not read CPA setup product property: %s", str(exc))
-            cpa_setup_name = ""
-        if cpa_setup_name:
-            setups[cpa_setup_name] = SIWaveCPASimulationSetup(self, cpa_setup_name)
-        return setups
+        .. deprecated:: pyedb 0.67.0
+            Use :attr:`self.simulation_setups.setups` instead.
+
+        """
+        return self.simulation_setups.setups
 
     @property
     def hfss_setups(self) -> dict[str, HfssSimulationSetup]:
         """Active HFSS setup in EDB.
 
-        Returns
-        -------
-        Dict[str,
-        :class:`HfssSimulationSetup <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup>`]
+        .. deprecated:: pyedb 0.67.0
+            Use :attr:`simulation_setups.hfss` instead.
 
         """
-        setups = {}
-        for setup in self.active_cell.simulation_setups:
-            if setup.type.name == "HFSS":
-                setups[setup.name] = HfssSimulationSetup(self, setup)
-        return setups
+        return self.simulation_setups.hfss
 
     @property
     def siwave_dc_setups(self) -> dict[str, SIWaveDCIRSimulationSetup]:
         """Active Siwave DC IR Setups.
 
-        Returns
-        -------
-        Dict[str,
-        :class:`SIWaveDCIRSimulationSetup
-        <pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup>`]
+        .. deprecated:: pyedb 0.67.0
+            Use :attr:`simulation_setups.siwave_dcir` instead.
+
         """
-        return {name: i for name, i in self.setups.items() if isinstance(i, SIWaveDCIRSimulationSetup)}
+        return self.simulation_setups.siwave_dcir
 
     @property
     def siwave_ac_setups(self) -> dict[str, SiwaveSimulationSetup]:
         """Active Siwave SYZ setups.
 
-        Returns
-        -------
-        Dict[str,:class:`SiwaveSimulationSetup`]
+        .. deprecated:: pyedb 0.67.0
+            Use :attr:`simulation_setups.siwave` instead.
         """
-        return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSimulationSetup)}
+        return self.simulation_setups.siwave
 
     def create_hfss_setup(
         self, name=None, start_frequency="0GHz", stop_frequency="20GHz", step_frequency="10MHz"
     ) -> HfssSimulationSetup:
         """Create an HFSS simulation setup from a template.
 
-        . deprecated:: pyedb 0.30.0
-        Use :func:`pyedb.grpc.core.hfss.add_setup` instead.
+        . deprecated:: pyedb 0.67.0
+        Use :func:`self.simulation_setups.create` instead.
         """
         warnings.warn(
-            "`create_hfss_setup` is deprecated and is now located here `pyedb.grpc.core.hfss.add_setup` instead.",
+            "`create_hfss_setup` is deprecated and is now located here `self.simulation_setups.create` instead.",
             DeprecationWarning,
         )
-        return self._hfss.add_setup(
+        return self.simulation_setups.create(
             name=name,
+            solver="hfss",
             distribution="linear",
             start_freq=start_frequency,
             stop_freq=stop_frequency,
             step_freq=step_frequency,
         )
 
-    def create_raptorx_setup(self, name=None) -> Union[RaptorXSimulationSetup, bool]:
+    def create_raptorx_setup(self, name=None) -> RaptorXSimulationSetup:
         """Create RaptorX analysis setup (2024R2+ only).
 
-        Parameters
-        ----------
-        name : str, optional
-            Setup name. Auto-generated if None.
-
-        Returns
-        -------
-        :class:`RaptorXSimulationSetup`
-            RaptorX setup or False if unsupported.
+        ..deprecated:: pyedb 0.67.0
+              Use :func:`self.simulation_setups.create` instead.
         """
-        from ansys.edb.core.simulation_setup.raptor_x_simulation_setup import (
-            RaptorXSimulationSetup as GrpcRaptorXSimulationSetup,
-        )
 
-        if name in self.setups:
-            self.logger.error("Setup name already used in the layout")
-            return False
-        version = self.version.split(".")
-        if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
-            setup = GrpcRaptorXSimulationSetup.create(cell=self.active_cell, name=name)
-            return RaptorXSimulationSetup(self, setup)
-        else:
-            self.logger.error("RaptorX simulation only supported with Ansys release 2024R2 and higher")
-            return False
+        return self.simulation_setups.create(name=name, solver="raptorx", start_freq=0.0, stop_freq=20e9)
 
-    def create_hfsspi_setup(self, name=None):
-        # """Create an HFSS PI simulation setup from a template.
-        #
-        # Parameters
-        # ----------
-        # name : str, optional
-        #     Setup name.
-        #
-        # Returns
-        # -------
-        # :class:`legacy.database.edb_data.hfss_pi_simulation_setup_data.HFSSPISimulationSetup when succeeded, ``False``
-        # when failed.
-        #
-        # """
-        # if name in self.setups:
-        #     self.logger.error("Setup name already used in the layout")
-        #     return False
-        # version = self.edbversion.split(".")
-        # if float(self.edbversion) < 2024.2:
-        #     self.logger.error("HFSSPI simulation only supported with Ansys release 2024R2 and higher")
-        #     return False
-        # return HFSSPISimulationSetup(self, name=name)
-
-        #  TODO check HFSS-PI with Grpc. seems to defined at terminal level not setup.
-        pass
-
-    def create_siwave_syz_setup(self, name=None, **kwargs) -> Union[SiwaveSimulationSetup, bool]:
+    def create_siwave_syz_setup(self, name=None, **kwargs) -> SiwaveSimulationSetup:
         """Create SIwave SYZ analysis setup.
 
-        Parameters
-        ----------
-        name : str, optional
-            Setup name. Auto-generated if None.
-        **kwargs
-            Setup properties to modify.
-
-        Returns
-        -------
-        :class:`SiwaveSimulationSetup`
-            SYZ analysis setup.
+        .. deprecated:: pyedb 0.67.0
+            Use :func:`self.simulation_setups.create` instead.
         """
-        if not name:
-            name = generate_unique_name("Siwave_SYZ")
-        if name in self.setups:
-            return False
-        from ansys.edb.core.simulation_setup.siwave_simulation_setup import (
-            SIWaveSimulationSetup as GrpcSIWaveSimulationSetup,
-        )
+        return self.simulation_setups.create(name=name, solver="siwave", kwargs=kwargs)
 
-        setup = SiwaveSimulationSetup(self, GrpcSIWaveSimulationSetup.create(cell=self.active_cell, name=name))
-        for k, v in kwargs.items():
-            setattr(setup, k, v)
-        return self.setups[name]
-
-    def create_siwave_dc_setup(self, name=None, **kwargs) -> Union[SIWaveDCIRSimulationSetup, bool]:
+    def create_siwave_dc_setup(self, name=None, **kwargs) -> SIWaveDCIRSimulationSetup:
         """Create SIwave DC analysis setup.
 
-        Parameters
-        ----------
-        name : str, optional
-            Setup name. Auto-generated if None.
-        **kwargs
-            Setup properties to modify.
-
-        Returns
-        -------
-        :class:`SIWaveDCIRSimulationSetup`
-            DC analysis setup.
+        ..deprecated:: pyedb 0.67.0
+            Use :func:`self.simulation_setups.create` instead.
         """
-        if not name:
-            name = generate_unique_name("Siwave_DC")
-        if name in self.setups:
-            return False
-        setup = SIWaveDCIRSimulationSetup(self, GrpcSIWaveDCIRSimulationSetup.create(cell=self.active_cell, name=name))
-        for k, v in kwargs.items():
-            setattr(setup, k, v)
-        return setup
+        return self.simulation_setups.create(
+            name=name,
+            solver="siwave",
+            kwargs=kwargs,
+        )
 
     def calculate_initial_extent(self, expansion_factor):
         """Compute a float representing the larger number between the dielectric thickness or trace width

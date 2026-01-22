@@ -1234,85 +1234,16 @@ class Hfss:
         step_freq=1e6,
         discrete_sweep=False,
     ) -> Optional[HfssSimulationSetup]:
-        """Add HFSS analysis setup.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name (auto-generated if None).
-        distribution : str, optional
-            Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
-        start_freq : float, str, optional
-            Starting frequency (Hz).
-        stop_freq : float, str, optional
-            Stopping frequency (Hz).
-        step_freq : float, str, int, optional
-            Frequency step (Hz) or count depending on distribution.
-        discrete_sweep : bool, optional
-            Use discrete sweep.
-
-        Returns
-        -------
-        HfssSimulationSetup
-            Created setup object.
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edb = Edb("my_aedb")
-        >>> hfss_setup = edb.hfss.add_setup(
-        ...     name="MySetup",
-        ...     distribution="linear_count",
-        ...     start_freq=1e9,
-        ...     stop_freq=10e9,
-        ...     step_freq=100,
-        ... )
         """
-        from ansys.edb.core.simulation_setup.hfss_simulation_setup import (
-            HfssSimulationSetup as GrpcHfssSimulationSetup,
-        )
-        from ansys.edb.core.simulation_setup.simulation_setup import (
-            Distribution as GrpcDistribution,
-            FrequencyData as GrpcFrequencyData,
-            SweepData as GrpcSweepData,
-        )
+        .. deprecated pyedb 0.67.0
 
-        if not name:
-            name = generate_unique_name("HFSS_pyedb")
-        if name in self._pedb.setups:
-            self._pedb.logger.error(f"HFSS setup {name} already defined.")
-            return None
-        setup = GrpcHfssSimulationSetup.create(self._pedb.active_cell, name)
-        start_freq = self._pedb.number_with_units(start_freq, "Hz")
-        stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
-        if distribution.lower() == "linear":
-            distribution = "LIN"
-        elif distribution.lower() == "linear_count":
-            distribution = "LINC"
-        elif distribution.lower() == "exponential":
-            distribution = "ESTP"
-        elif distribution.lower() == "decade_count":
-            distribution = "DEC"
-        elif distribution.lower() == "octave_count":
-            distribution = "OCT"
-        else:
-            distribution = "LIN"
-        sweep_name = f"sweep_{len(setup.sweep_data) + 1}"
-        sweep_data = [
-            GrpcSweepData(
-                name=sweep_name,
-                frequency_data=GrpcFrequencyData(
-                    distribution=GrpcDistribution[distribution], start_f=start_freq, end_f=stop_freq, step=step_freq
-                ),
-            )
-        ]
-        if discrete_sweep:
-            sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
-        for sweep in setup.sweep_data:
-            sweep_data.append(sweep)
-        # TODO check bug #441 status
-        # setup.sweep_data = sweep_data
-        return HfssSimulationSetup(self._pedb, setup)
+        Add HFSS analysis setup (deprecated).
+        use :func:`create_simulation_setup` instead.
+
+        """
+        warnings.warn("add_setup is deprecated use create_simulation_setup instead", DeprecationWarning)
+
+        return self.create_simulation_setup(name, distribution, start_freq, stop_freq, step_freq, discrete_sweep)
 
     def generate_auto_hfss_regions(self):
         """Generate auto HFSS regions.

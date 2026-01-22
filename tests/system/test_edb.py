@@ -2211,3 +2211,6 @@ class TestClass(BaseTestClass):
         assert source1.reference_terminal.magnitude == 0.0
         assert source1.reference_terminal.is_reference_terminal
         edbapp.close(terminate_rpc_session=False)
+
+    def test_hfss_simulation_setups_consolidation(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()

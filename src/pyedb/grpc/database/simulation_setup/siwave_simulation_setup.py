@@ -29,7 +29,6 @@ from pyedb.grpc.database.simulation_setup.siwave_advanced_settings import SIWave
 from pyedb.grpc.database.simulation_setup.siwave_dc_advanced import SIWaveDCAdvancedSettings
 from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
 from pyedb.grpc.database.simulation_setup.siwave_simulation_settings import SIWaveSimulationSettings
-from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
 
 class SiwaveSimulationSetup(SimulationSetup):
