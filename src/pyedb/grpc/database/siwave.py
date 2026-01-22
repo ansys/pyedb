@@ -26,15 +26,13 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 """
 
 import os
-from typing import Any, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.simulation_setup.siwave_simulation_setup import SiwaveSimulationSetup
 import warnings
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
-from ansys.edb.core.simulation_setup.simulation_setup import (
-    Distribution as GrpcDistribution,
-    FrequencyData as GrpcFrequencyData,
-    SweepData as GrpcSweepData,
-)
 
 from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
     SIWaveCPASimulationSetup,
@@ -532,7 +530,7 @@ class Siwave(object):
         add_syz: bool = False,
         export_touchstone: bool = False,
         touchstone_file_path: str = "",
-    ) -> bool:
+    ) -> str:
         """Create an executable file.
 
         Parameters
@@ -551,8 +549,8 @@ class Siwave(object):
 
         Returns
         -------
-        bool
-            ``True`` if file was created, ``False`` otherwise.
+        str
+            Path to the created exec file.
 
         Examples
         --------
@@ -566,7 +564,9 @@ class Siwave(object):
         ... )
         """
         workdir = os.path.dirname(self._pedb.edbpath)
-        file_name = os.path.join(workdir, os.path.splitext(os.path.basename(self._pedb.edbpath))[0] + ".exec")
+        file_name: str = cast(
+            str, os.path.join(workdir, os.path.splitext(os.path.basename(self._pedb.edbpath))[0] + ".exec")
+        )
         if os.path.isfile(file_name):
             os.remove(file_name)
         with open(file_name, "w") as f:
@@ -586,7 +586,7 @@ class Siwave(object):
                     f.write('ExportTouchstone "{}"\n'.format(touchstone_file_path))
             f.write("SaveSiw\n")
 
-        return file_name
+        return str(file_name)
 
     def add_cpa_analysis(self, name=None, siwave_cpa_setup_class=None):
         if not name:
@@ -607,7 +607,7 @@ class Siwave(object):
         stop_freq: Union[str, float] = 1e9,
         step_freq: Union[str, float, int] = 1e6,
         discrete_sweep: bool = False,
-    ) -> Any:
+    ) -> "SiwaveSimulationSetup":
         """Add a SIwave AC analysis to EDB.
 
         Parameters
@@ -650,37 +650,15 @@ class Siwave(object):
         ...     step_freq=10,  # 10 points per decade
         ... )
         """
-        setup = self._pedb.create_siwave_syz_setup()
-        start_freq = self._pedb.number_with_units(start_freq, "Hz")
-        stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
-        setup.settings.general.si_slider_pos = accuracy_level
-        if distribution.lower() == "linear":
-            distribution = "LIN"
-        elif distribution.lower() == "linear_count":
-            distribution = "LINC"
-        elif distribution.lower() == "exponential":
-            distribution = "ESTP"
-        elif distribution.lower() == "decade_count":
-            distribution = "DEC"
-        elif distribution.lower() == "octave_count":
-            distribution = "OCT"
-        else:
-            distribution = "LIN"
-        sweep_name = f"sweep_{len(setup.sweep_data) + 1}"
-        sweep_data = [
-            GrpcSweepData(
-                name=sweep_name,
-                frequency_data=GrpcFrequencyData(
-                    distribution=GrpcDistribution[distribution], start_f=start_freq, end_f=stop_freq, step=step_freq
-                ),
-            )
-        ]
-        if discrete_sweep:
-            sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
-        for sweep in setup.sweep_data:
-            sweep_data.append(sweep)
-        setup.sweep_data = sweep_data
+        setup = self._pedb.simulation_setups.create_siwave_setup(
+            distribution=distribution,
+            start_freq=start_freq,
+            stop_freq=stop_freq,
+            step_freq=step_freq,
+            discrete_sweep=discrete_sweep,
+        )
         self.create_exec_file(add_ac=True)
+        setup.settings.accuracy_level = accuracy_level
         return setup
 
     def add_siwave_dc_analysis(self, name: Optional[str] = None) -> Any:

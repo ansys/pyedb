@@ -274,7 +274,7 @@ class SIWaveAdvancedSettings:
         self.core.min_plane_area_to_mesh = str(self._pedb.value(value))
 
     @property
-    def min_void_area(self) -> float:
+    def min_void_area(self) -> str:
         """Minimum void area.
 
         Returns
@@ -282,10 +282,10 @@ class SIWaveAdvancedSettings:
         float
             Minimum void area.
         """
-        return self._pedb.value(self.core.min_void_area)
+        return self.core.min_void_area
 
     @min_void_area.setter
-    def min_void_area(self, value: float):
+    def min_void_area(self, value: str):
         self.core.min_void_area = str(self._pedb.value(value))
 
     @property

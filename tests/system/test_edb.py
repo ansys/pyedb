@@ -168,7 +168,6 @@ class TestClass(BaseTestClass):
 
     def test_siwave_add_syz_analsyis(self, edb_examples):
         """Add a sywave AC analysis."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         syz_setup = edbapp.siwave.add_siwave_syz_analysis(start_freq="=1GHz", stop_freq="10GHz", step_freq="10MHz")
         syz_setup.use_custom_settings = False

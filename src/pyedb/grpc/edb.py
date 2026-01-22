@@ -85,9 +85,6 @@ from ansys.edb.core.hierarchy.layout_component import (
 )
 import ansys.edb.core.layout.cell
 from ansys.edb.core.layout.cell import DesignMode as GrpcDesignMode
-from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
-    SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
-)
 from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
@@ -2277,40 +2274,20 @@ class Edb(EdbInit):
     @property
     def setups(
         self,
-    ) -> dict[
-        str,
-        Union[
-            HfssSimulationSetup,
-            SiwaveSimulationSetup,
-            SIWaveDCIRSimulationSetup,
-            RaptorXSimulationSetup,
-            SIWaveCPASimulationSetup,
-            Q3DSimulationSetup,
-        ],
-    ]:
-        """Get the dictionary of all EDB HFSS and SIwave setups.
+    ) -> dict[str, object]:
+        """Get the dictionary of all EDB simulation setups.
 
         Returns
         -------
-        Dict[str,:class:`HfssSimulationSetup`] or
-        Dict[str,:class:`SiwaveSimulationSetup`] or
-        Dict[str,:class:`SIWaveDCIRSimulationSetup`] or
-        Dict[str,:class:`RaptorXSimulationSetup`]
-        Dict[str,:class:`SIWaveCPASimulationSetup`
-        Dict[str,:class:`Q3DSimulationSetup`]
-
+        dict[str, object]
         """
+
         return self.simulation_setups.setups
 
     @property
-    def simulation_setups(self) -> dict[str, object]:
-        """Get all simulation setups in the active cell.
-
-        .. deprecated:: pyedb 0.67.0
-            Use :attr:`self.simulation_setups.setups` instead.
-
-        """
-        return self.simulation_setups.setups
+    def simulation_setups(self) -> SimulationSetups:
+        """Get all simulation setups object."""
+        return SimulationSetups(self)
 
     @property
     def hfss_setups(self) -> dict[str, HfssSimulationSetup]:

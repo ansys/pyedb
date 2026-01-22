@@ -37,7 +37,7 @@ class SIWaveDCAdvancedSettings:
         self.core = core
 
     @property
-    def dc_min_plane_area_to_mesh(self) -> float:
+    def dc_min_plane_area_to_mesh(self) -> str:
         """Minimum plane area to mesh.
 
         Returns
@@ -45,11 +45,11 @@ class SIWaveDCAdvancedSettings:
         float
             Minimum plane area to mesh value.
         """
-        return self._pedb.value(self.core.dc_min_plane_area_to_mesh)
+        return self.core.dc_min_plane_area_to_mesh
 
     @dc_min_plane_area_to_mesh.setter
-    def dc_min_plane_area_to_mesh(self, value: float):
-        self.core.dc_min_plane_area_to_mesh = str(self._pedb.create_value(value))
+    def dc_min_plane_area_to_mesh(self, value: str):
+        self.core.dc_min_plane_area_to_mesh = value
 
     @property
     def dc_min_void_area_to_mesh(self) -> float:

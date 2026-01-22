@@ -23,6 +23,7 @@
 
 from typing import Union, cast
 
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
 from pyedb.grpc.database.simulation_setup.q3d_simulation_setup import Q3DSimulationSetup
 from pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup import RaptorXSimulationSetup
@@ -196,9 +197,9 @@ class SimulationSetups:
             )
         """
         if not name:
-            name = self._pedb.generate_unique_name("HFSS_setup")
+            name = generate_unique_name(f"{solver}_setup")
         if name in self._pedb.setups:
-            self._pedb.logger.error(f"HFSS setup {name} already defined.")
+            self._pedb.logger.error(f"Simulation setup {name} already defined.")
             return None
         if solver.lower() == "hfss":
             setup = HfssSimulationSetup.create(self._pedb.active_cell, name)
