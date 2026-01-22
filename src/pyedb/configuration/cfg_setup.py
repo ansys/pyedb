@@ -73,9 +73,10 @@ class CfgSIwaveDCSetup(CfgSetupDC):
 
 class CfgHFSSSetup(CfgSetupAC):
     class CfgAutoMeshOperation(BaseModel):
-        trace_ratio_seeding: float
-        signal_via_side_number: int
-        power_ground_via_side_number: int
+        enabled: bool = False
+        trace_ratio_seeding: float = 3
+        signal_via_side_number: int = 12
+        power_ground_via_side_number: int = 6
 
     class CfgMeshOperation(BaseModel):
         """Mesh operation export/import payload."""
@@ -96,7 +97,7 @@ class CfgHFSSSetup(CfgSetupAC):
     max_num_passes: int
     max_mag_delta_s: float | str
 
-    auto_mesh_operation: CfgAutoMeshOperation | None = None
+    auto_mesh_operation: CfgAutoMeshOperation | None = CfgAutoMeshOperation()
     mesh_operations: list[CfgMeshOperation] | None = list()
 
     def add_mesh_operation(self, **kwargs):

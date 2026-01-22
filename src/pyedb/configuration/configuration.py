@@ -202,8 +202,10 @@ class Configuration:
                     edb_setup = self._pedb.create_hfss_setup(setup.name)
                     edb_setup.set_solution_single_frequency(setup.f_adapt, setup.max_num_passes, setup.max_mag_delta_s)
 
-                    if setup.auto_mesh_operation:
-                        edb_setup.auto_mesh_operation(**dict(setup.auto_mesh_operation))
+                    if setup.auto_mesh_operation.enabled:
+                        args = dict(setup.auto_mesh_operation)
+                        args.pop("enabled")
+                        edb_setup.auto_mesh_operation(**args)
 
                     for mp in setup.mesh_operations:
                         edb_setup.add_length_mesh_operation(
