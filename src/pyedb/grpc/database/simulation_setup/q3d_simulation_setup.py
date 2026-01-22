@@ -20,29 +20,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Union
 
-from ansys.edb.core.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup as GrpcSIWaveSimulationSetup
+from ansys.edb.core.simulation_setup.q3d_simulation_setup import Q3DSimulationSetup as GrpcQ3DSimulationSetup
 
+from pyedb.grpc.database.simulation_setup.q3d_simulation_settings import Q3DSimulationSettings
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
-from pyedb.grpc.database.simulation_setup.siwave_advanced_settings import SIWaveAdvancedSettings
-from pyedb.grpc.database.simulation_setup.siwave_dc_advanced import SIWaveDCAdvancedSettings
-from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
-from pyedb.grpc.database.simulation_setup.siwave_simulation_settings import SIWaveSimulationSettings
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
 
-class SiwaveSimulationSetup(SimulationSetup):
-    """SIwave simulation setup class."""
+class Q3DSimulationSetup(SimulationSetup):
+    """Q3D simulation setup management.
 
-    def __init__(self, pedb, core: GrpcSIWaveSimulationSetup):
+    Parameters
+    ----------
+    pedb : :class:`Edb < pyedb.grpc.edb.Edb>`
+        Inherited object.
+    """
+
+    def __init__(self, pedb, core: GrpcQ3DSimulationSetup):
         super().__init__(pedb, core)
-        self.core = core
+        self.core: GrpcQ3DSimulationSetup
         self._pedb = pedb
 
     @classmethod
-    def create(cls, edb: "Edb", name: str = "siwave_setup") -> "SiwaveSimulationSetup":
-        """Create a SIWave simulation setup object.
+    def create(cls, edb: "Edb", name: str = "Q3D_setup") -> "Q3DSimulationSetup":
+        """Create a Q3D simulation setup.
 
         Parameters
         ----------
@@ -50,32 +52,35 @@ class SiwaveSimulationSetup(SimulationSetup):
             Inherited object.
 
         name : str, optional
-            Name of the simulation setup. The default is "siwave_setup".
+            Name of the simulation setup, by default "Q3D_setup".
 
         Returns
         -------
-        SiwaveSimulationSetup
-            The SIWave simulation setup object.
+        :class:`Q3DSimulationSetup < pyedb.grpc.database.simulation_setup.q3d_simulation_setup.Q3DSimulationSetup>`
+            The Q3D simulation setup object.
         """
-        core = GrpcSIWaveSimulationSetup.create(edb.active_cell, name)
+        core = GrpcQ3DSimulationSetup.create(edb.active_cell, name)
         return cls(edb, core)
 
     @property
-    def settings(self) -> SIWaveSimulationSettings:
-        """Setup simulation settings."""
-        return SIWaveSimulationSettings(self._pedb, self.core.settings)
+    def settings(self) -> Q3DSimulationSettings:
+        """Q3D simulation settings.
+
+        Returns
+        -------
+        :class:`Q3DSimulationSettings
+        < pyedb.grpc.database.simulation_setup.q3d_simulation_settings.Q3DSimulationSettings>`
+            The Q3D simulation settings object.
+        """
+        return Q3DSimulationSettings(self._pedb, self.core.settings)
 
     @property
-    def advanced_settings(self) -> SIWaveAdvancedSettings:
-        """Setup advanced settings."""
-        return self.settings.advanced
+    def sweep_data(self) -> list[SweepData]:
+        """Get sweep data.
 
-    @property
-    def dc_settings(self) -> SIWaveDCSettings:
-        """Setup dc settings."""
-        return self.settings.dc
-
-    @property
-    def dc_advanced_settings(self) -> SIWaveDCAdvancedSettings:
-        """Setup dc settings."""
-        return self.settings.dc_advanced
+        Returns
+        -------
+        list[:class:`SweepData < pyedb.grpc.database.simulation_setup.sweep_data.SweepData>`]
+            List of sweep data objects.
+        """
+        return [SweepData(self._pedb, sd) for sd in self.core.sweep_data]

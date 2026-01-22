@@ -20,15 +20,80 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from typing import TYPE_CHECKING
 
-from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-    HFSSSolverSettings as GrpcHFSSSolverSettings,
-)
+if TYPE_CHECKING:
+    from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
+        HFSSSolverSettings as GrpcHFSSSolverSettings,
+    )
 
 
-class HFSSSolverSettings(GrpcHFSSSolverSettings):
+class HFSSSolverSettings:
     """HFSS solver settings class."""
 
-    def __init__(self, pedb, core):
-        super().__init__(core)
+    def __init__(self, pedb, core: GrpcHFSSSolverSettings):
+        self.core = core
         self._pedb = pedb
+
+    @property
+    def enable_intra_plane_coupling(self) -> bool:
+        """Flag indicating if intra-plane coupling of power/ground nets is enabled to enhance accuracy.."""
+        return self.core.enable_intra_plane_coupling
+
+    @enable_intra_plane_coupling.setter
+    def enable_intra_plane_coupling(self, value: bool):
+        self.core.enable_intra_plane_coupling = value
+
+    @property
+    def max_delta_z0(self) -> float:
+        """Maximum percent change in characteristic impedance of ports between adaptive passes."""
+        return self.core.max_delta_z0
+
+    @max_delta_z0.setter
+    def max_delta_z0(self, value: float):
+        self.core.max_delta_z0 = value
+
+    @property
+    def max_triangles_for_wave_port(self) -> int:
+        """Maximum number of triangles to use for meshing wave-ports."""
+        return self.core.max_triangles_for_wave_port
+
+    @max_triangles_for_wave_port.setter
+    def max_triangles_for_wave_port(self, value: int):
+        self.core.max_triangles_for_wave_port = value
+
+    @property
+    def min_triangles_for_wave_port(self) -> int:
+        """Minimum number of triangles to use for meshing wave-ports."""
+        return self.core.min_triangles_for_wave_port
+
+    @min_triangles_for_wave_port.setter
+    def min_triangles_for_wave_port(self, value: int):
+        self.core.min_triangles_for_wave_port = value
+
+    @property
+    def set_triangles_for_wave_port(self) -> bool:
+        """Flag indicating ifthe minimum and maximum triangle values for wave-ports are used."""
+        return self.core.set_triangles_for_wave_port
+
+    @set_triangles_for_wave_port.setter
+    def set_triangles_for_wave_port(self, value: bool):
+        self.core.set_triangles_for_wave_port = value
+
+    @property
+    def thin_dielectric_layer_threshold(self) -> float:
+        """Value below which dielectric layers are merged with adjacent dielectric layers."""
+        return self._pedb.value(self.core.thin_dielectric_layer_threshold)
+
+    @thin_dielectric_layer_threshold.setter
+    def thin_dielectric_layer_threshold(self, value: float):
+        self.core.thin_dielectric_layer_threshold = str(self._pedb.value(value))
+
+    @property
+    def thin_signal_layer_threshold(self) -> float:
+        """Value below which signal layers are merged with adjacent signal layers."""
+        return self._pedb.value(self.core.thin_signal_layer_threshold)
+
+    @thin_signal_layer_threshold.setter
+    def thin_signal_layer_threshold(self, value: float):
+        self.core.thin_signal_layer_threshold = str(self._pedb.value(value))

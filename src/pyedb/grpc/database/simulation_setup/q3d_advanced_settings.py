@@ -14,26 +14,31 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# FITNE SS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        HFSSAdvancedSettings as GrpcHFSSAdvancedSettings,
-    )
-from ansys.edb.core.simulation_setup.simulation_settings import ViaStyle as GrpcViaStyle
+    from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DAdvancedSettings as GrpcQ3DAdvancedSettings
 
 
-class HFSSAdvancedSettings:
-    def __init__(self, pedb, core: GrpcHFSSAdvancedSettings):
-        """PyEDB HFSS advanced settings class."""
-        self.core = core
+class Q3DAdvancedSettings:
+    """Q3D advanced simulation settings.
+
+    Parameters
+    ----------
+    pedb : :class:`Edb < pyedb.grpc.edb.Edb>`
+        Inherited object.
+    """
+
+    def __init__(self, pedb, core: GrpcQ3DAdvancedSettings):
         self._pedb = pedb
+        self.core = core
 
     @property
     def defeature_absolute_length(self) -> float:
@@ -42,14 +47,13 @@ class HFSSAdvancedSettings:
         Returns
         -------
         float
-            Length value.
-
+            Defeature absolute length value.
         """
         return self._pedb.value(self.core.defeature_absolute_length)
 
     @defeature_absolute_length.setter
-    def defeature_absolute_length(self, value):
-        self.core.defeature_absolute_length = str(self._pedb.value(value))
+    def defeature_absolute_length(self, value: float):
+        self.core.defeature_absolute_length = str(self._pedb.edb_value(value))
 
     @property
     def defeature_ratio(self) -> float:
@@ -58,8 +62,7 @@ class HFSSAdvancedSettings:
         Returns
         -------
         float
-            Ratio value.
-
+            Defeature ratio value.
         """
         return self.core.defeature_ratio
 
@@ -69,13 +72,12 @@ class HFSSAdvancedSettings:
 
     @property
     def healing_option(self) -> int:
-        """Enable/disable healing of mis-aligned points and edges.
+        """Healing option.
 
         Returns
         -------
         int
             Healing option value.
-
         """
         return self.core.healing_option
 
@@ -85,13 +87,12 @@ class HFSSAdvancedSettings:
 
     @property
     def ic_mode_auto_resolution(self) -> bool:
-        """Flag indicating if model resolution is automatically calculated for IC designs..
+        """Flag indicating if model resolution is automatically calculated for IC designs.
 
         Returns
         -------
         bool
-            True if IC mode auto resolution is enabled, False otherwise.
-
+            IC mode auto resolution value.
         """
         return self.core.ic_mode_auto_resolution
 
@@ -100,14 +101,58 @@ class HFSSAdvancedSettings:
         self.core.ic_mode_auto_resolution = value
 
     @property
+    def ic_mode_length(self) -> float:
+        """Model resolution to use when manually setting the model resolution of IC designs.
+
+        Returns
+        -------
+        float
+            IC mode length value.
+        """
+        return self._pedb.value(self.core.ic_mode_length)
+
+    @ic_mode_length.setter
+    def ic_mode_length(self, value: float):
+        self.core.ic_mode_length = str(self._pedb.edb_value(value))
+
+    @property
+    def max_passes(self) -> int:
+        """Maximum number of mesh refinement cycles to perform.
+
+        Returns
+        -------
+        int
+            Max passes value.
+        """
+        return self.core.max_passes
+
+    @max_passes.setter
+    def max_passes(self, value: int):
+        self.core.max_passes = value
+
+    @property
+    def max_refine_per_pass(self) -> float:
+        """How many tetrahedra are added at each iteration of the adaptive refinement process.
+
+        Returns
+        -------
+        float
+            Max refine per pass value.
+        """
+        return self.core.max_refine_per_pass
+
+    @max_refine_per_pass.setter
+    def max_refine_per_pass(self, value: float):
+        self.core.max_refine_per_pass = value
+
+    @property
     def mesh_for_via_plating(self) -> bool:
-        """Flag indicating if meshing for via plating is enabled.
+        """Flag indicating whether to mesh the via plating.
 
         Returns
         -------
         bool
-            True if meshing for via plating is enabled, False otherwise.
-
+            Mesh for via plating value.
         """
         return self.core.mesh_for_via_plating
 
@@ -116,19 +161,34 @@ class HFSSAdvancedSettings:
         self.core.mesh_for_via_plating = value
 
     @property
-    def model_type(self) -> str:
-        """HFSS model type.
+    def min_converged_passes(self) -> int:
+        """Minimum number of converged passes before stopping the adaptive refinement process.
 
         Returns
         -------
-        str
-            Model type name.
-
+        int
+            Min converged passes value.
         """
-        if self.core.model_type.value == 0:
-            return "general"
-        else:
-            return "ic"
+        return self.core.min_converged_passes
+
+    @min_converged_passes.setter
+    def min_converged_passes(self, value: int):
+        self.core.min_converged_passes = value
+
+    @property
+    def min_passes(self) -> int:
+        """Minimum number of mesh refinement cycles to perform.
+
+        Returns
+        -------
+        int
+            Min passes value.
+        """
+        return self.core.min_passes
+
+    @min_passes.setter
+    def min_passes(self, value: int):
+        self.core.min_passes = value
 
     @property
     def num_via_density(self) -> float:
@@ -136,9 +196,8 @@ class HFSSAdvancedSettings:
 
         Returns
         -------
-        int
-            Spacing value.
-
+        float
+            Num via density value.
         """
         return self.core.num_via_density
 
@@ -148,13 +207,12 @@ class HFSSAdvancedSettings:
 
     @property
     def num_via_sides(self) -> int:
-        """Number of sides a via is considered to have.
+        """Number of sides to use when meshing vias.
 
         Returns
         -------
         int
-            Number of via sides value.
-
+            Num via sides value.
         """
         return self.core.num_via_sides
 
@@ -163,14 +221,28 @@ class HFSSAdvancedSettings:
         self.core.num_via_sides = value
 
     @property
+    def percent_error(self) -> float:
+        """Target percent error for adaptive mesh refinement.
+
+        Returns
+        -------
+        float
+            Percent error value.
+        """
+        return self.core.percent_error
+
+    @percent_error.setter
+    def percent_error(self, value: float):
+        self.core.percent_error = value
+
+    @property
     def remove_floating_geometry(self) -> bool:
         """Flag indicating if a geometry not connected to any other geometry is removed.
 
         Returns
         -------
         bool
-            True if floating geometry is removed, False otherwise.
-
+            Remove floating geometry value.
         """
         return self.core.remove_floating_geometry
 
@@ -186,23 +258,21 @@ class HFSSAdvancedSettings:
         -------
         float
             Small void area value.
-
         """
         return self.core.small_void_area
 
     @small_void_area.setter
     def small_void_area(self, value: float):
-        self.core.small_void_area = value
+        self.core.small_void_area = self._pedb.edb_value(value)
 
     @property
     def union_polygons(self) -> bool:
-        """Flag indicating if polygons are unioned.
+        """Flag indicating if polygons are united before meshing.
 
         Returns
         -------
         bool
-            True if polygons are unioned, False otherwise.
-
+            Union polygons value.
         """
         return self.core.union_polygons
 
@@ -212,13 +282,12 @@ class HFSSAdvancedSettings:
 
     @property
     def use_defeature(self) -> bool:
-        """Flag indicating if defeaturing is used.
+        """Flag indicating if defeaturing is used when meshing.
 
         Returns
         -------
         bool
-            True if defeaturing is used, False otherwise.
-
+            Use defeature value.
         """
         return self.core.use_defeature
 
@@ -233,8 +302,7 @@ class HFSSAdvancedSettings:
         Returns
         -------
         bool
-            True if absolute length defeaturing is used, False otherwise.
-
+            Use defeature absolute length value.
         """
         return self.core.use_defeature_absolute_length
 
@@ -244,42 +312,15 @@ class HFSSAdvancedSettings:
 
     @property
     def via_material(self) -> str:
-        """Default via material.
+        """Material used for vias.
 
         Returns
         -------
         str
-            Via material name.
-
+            Via material value.
         """
         return self.core.via_material
 
     @via_material.setter
     def via_material(self, value: str):
         self.core.via_material = value
-
-    @property
-    def via_model_type(self) -> str:
-        """Via model type.
-
-        Returns
-        -------
-        str
-            Via model type name.
-
-        """
-        return self.core.via_model_type.name.lower()
-
-    @via_model_type.setter
-    def via_model_type(self, value):
-        if isinstance(value, str):
-            if value.upper() == "WIREBOND":
-                self.core.via_model_type = GrpcViaStyle.WIREBOND
-            elif value.lower() == "RIBBON":
-                self.core.via_model_type = GrpcViaStyle.RIBBON
-            elif value.lower() == "MESH":
-                self.core.via_model_type = GrpcViaStyle.MESH
-            elif value.lower() == "FIELD":
-                self.core.ia_model_type = GrpcViaStyle.FIELD
-            elif value.lower() == "NUM_VIA_STYLE":
-                self.core.via_model_type = GrpcViaStyle.NUM_VIA_STYLE

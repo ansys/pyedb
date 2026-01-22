@@ -21,9 +21,15 @@
 # SOFTWARE.
 
 
-from ansys.edb.core.simulation_setup.adaptive_solutions import (
-    AdaptiveFrequency as GrpcAdaptiveFrequency,
-)
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ansys.edb.core.database import Cell
+    from ansys.edb.core.simulation_setup.adaptive_solutions import (
+        AdaptiveFrequency as GrpcAdaptiveFrequency,
+    )
+import warnings
+
 from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
     AdaptType as GrpcAdaptType,
 )
@@ -33,26 +39,105 @@ from ansys.edb.core.simulation_setup.hfss_simulation_setup import (
 from ansys.edb.core.simulation_setup.mesh_operation import LengthMeshOperation as GrpcLengthMeshOperation
 
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.grpc.database.simulation_setup.hfss_general_settings import HFSSGeneralSettings
+from pyedb.grpc.database.simulation_setup.hfss_simulation_settings import HFSSSimulationSettings
+from pyedb.grpc.database.simulation_setup.mesh_operation import MeshOperation
+from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
 
-class HfssSimulationSetup(GrpcHfssSimulationSetup):
+class HfssSimulationSetup(SimulationSetup):
     """HFSS simulation setup class."""
 
-    def __init__(self, pedb, core, name: str = None):
-        super().__init__(core.msg)
+    def __init__(self, pedb, core: GrpcHfssSimulationSetup, name: str = None):
+        super().__init__(pedb, core)
+        self.core = core
         self._pedb = pedb
         self._name = name
 
+    @classmethod
+    def create(cls, cell: Cell, name: str = None):
+        """Create a new HFSS simulation setup.
+
+        Parameters
+        ----------
+        cell : Cell
+            The cell to which the simulation setup will be added.
+        name : str, optional
+            Name of the simulation setup.
+
+        Returns
+        -------
+        :class:`HfssSimulationSetup <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup>`
+        """
+        if not name:
+            name = generate_unique_name("HFSS_Setup")
+        core = GrpcHfssSimulationSetup.create(cell, name)
+        return cls(pedb=None, core=core, name=name)
+
+    @property
+    def mesh_operations(self) -> list[MeshOperation]:
+        """List of HFSS mesh operations."""
+        return [MeshOperation(mesh_operation) for mesh_operation in self.core.mesh_operations]
+
+    @mesh_operations.setter
+    def mesh_operations(self, mesh_operations: list[MeshOperation]):
+        self.core.mesh_operations = [mesh_operation.core for mesh_operation in mesh_operations]
+
     @property
     def hfss_solver_settings(self):
-        """Legacy compatibility to settings properties."""
-        return self.settings.options
+        """Legacy compatibility to settings properties.
+
+        .. deprecated:: 0.67.2
+        Use :attr:`settings <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings>`
+        instead.
+
+        #"""
+        warnings.warn(
+            "The 'hfss_solver_settings' property is deprecated. Use 'settings' property instead.", DeprecationWarning
+        )
+        return self.settings
+
+    @property
+    def settings(self) -> HFSSSimulationSettings:
+        """HFSS simulation settings class.
+
+        Returns
+        -------
+        :class:`HFSSSimulationSettings
+        <pyedb.grpc.database.simulation_setup.hfss_simulation_settings.HFSSSimulationSettings>`
+
+        """
+
+        return HFSSSimulationSettings(self._pedb, self.core.settings)
 
     @property
     def adaptive_settings(self):
-        """Legacy compatibility to general settings."""
-        return self.settings.general
+        """Legacy compatibility to general settings.
+
+        .. deprecated:: 0.67.2
+        use :attr:`general_settings
+        <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings.general>`
+        instead.
+
+        """
+        warnings.warn(
+            "The 'adaptive_settings' property is deprecated. Use 'settings.general' property instead.",
+            DeprecationWarning,
+        )
+        return HFSSGeneralSettings(self._pedb, self.core.settings)
+
+    @property
+    def sweep_data(self) -> list[SweepData]:
+        """List of HFSS sweep data.
+
+        Returns
+        -------
+        list[:class:`SweepData <pyedb.grpc.database.simulation_setup.sweep_data.SweepData>`]
+            List of sweep data.
+
+        """
+        return [SweepData(self._pedb, core=sweep) for sweep in self.core.sweep_data]
 
     def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02) -> bool:
         """Set HFSS single frequency solution.
@@ -70,16 +155,13 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
         bool.
 
         """
-        try:
-            self.settings.general.adaptive_solution_type = GrpcAdaptType.SINGLE
-            sfs = self.settings.general.single_frequency_adaptive_solution
-            sfs.adaptive_frequency = frequency
-            sfs.max_passes = max_num_passes
-            sfs.max_delta = str(max_delta_s)
-            self.settings.general.single_frequency_adaptive_solution = sfs
-            return True
-        except:
-            return False
+        self.core.settings.general.adaptive_solution_type = GrpcAdaptType.SINGLE
+        sfs = self.core.settings.general.single_frequency_adaptive_solution
+        sfs.adaptive_frequency = frequency
+        sfs.max_passes = max_num_passes
+        sfs.max_delta = str(max_delta_s)
+        self.core.settings.general.single_frequency_adaptive_solution = sfs
+        return True
 
     def set_solution_multi_frequencies(self, frequencies="5GHz", max_delta_s=0.02) -> bool:
         """Set HFSS setup multi frequencies adaptive.
@@ -96,22 +178,20 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
         bool.
 
         """
-        try:
-            self.settings.general.adaptive_solution_type = GrpcAdaptType.MULTI_FREQUENCIES
-            if not isinstance(frequencies, list):
-                frequencies = [frequencies]
-            if not isinstance(max_delta_s, list):
-                max_delta_s = [max_delta_s]
-                if len(max_delta_s) < len(frequencies):
-                    for _ in frequencies[len(max_delta_s) :]:
-                        max_delta_s.append(max_delta_s[-1])
-            adapt_frequencies = [
-                GrpcAdaptiveFrequency(frequencies[ind], str(max_delta_s[ind])) for ind in range(len(frequencies))
-            ]
-            self.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = adapt_frequencies
-            return True
-        except:
-            return False
+
+        self.core.settings.general.adaptive_solution_type = GrpcAdaptType.MULTI_FREQUENCIES
+        if not isinstance(frequencies, list):
+            frequencies = [frequencies]
+        if not isinstance(max_delta_s, list):
+            max_delta_s = [max_delta_s]
+            if len(max_delta_s) < len(frequencies):
+                for _ in frequencies[len(max_delta_s) :]:
+                    max_delta_s.append(max_delta_s[-1])
+        adapt_frequencies = [
+            GrpcAdaptiveFrequency(frequencies[ind], str(max_delta_s[ind])) for ind in range(len(frequencies))
+        ]
+        self.core.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = adapt_frequencies
+        return True
 
     def set_solution_broadband(self, low_frequency="1GHz", high_frequency="10GHz", max_delta_s=0.02, max_num_passes=10):
         """Set solution to broadband.
@@ -139,7 +219,7 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
             bfs.high_frequency = high_frequency
             bfs.max_delta = str(max_delta_s)
             bfs.max_num_passes = max_num_passes
-            self.settings.general.broadband_adaptive_solution = bfs
+            self.core.settings.general.broadband_adaptive_solution = bfs
             return True
         except:
             return False
@@ -163,7 +243,7 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
         try:
             adapt_frequencies = self.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies
             adapt_frequencies.append(GrpcAdaptiveFrequency(frequency, str(max_delta_s)))
-            self.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = adapt_frequencies
+            self.core.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = adapt_frequencies
             return True
         except:
             return False
@@ -298,120 +378,10 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
             max_elements=str(max_elements),
             num_layers=str(number_of_layers),
         )
-        mesh_ops = self.mesh_operations
+        mesh_ops = [mesh_operation.core for mesh_operation in self.mesh_operations]
         mesh_ops.append(mesh_operation)
         self.mesh_operations = mesh_ops
         return mesh_operation
-
-    def add_sweep(
-        self,
-        name=None,
-        distribution="linear",
-        start_freq="0GHz",
-        stop_freq="20GHz",
-        step="10MHz",
-        discrete=False,
-        frequency_set=None,
-    ):
-        """Add a HFSS frequency sweep.
-
-        Parameters
-        ----------
-        name : str, optional
-         Sweep name.
-        distribution : str, optional
-            Type of the sweep. The default is `"linear"`. Options are:
-            - `"linear"`
-            - `"linear_count"`
-            - `"decade_count"`
-            - `"octave_count"`
-            - `"exponential"`
-        start_freq : str, float, optional
-            Starting frequency. The default is ``1``.
-        stop_freq : str, float, optional
-            Stopping frequency. The default is ``1e9``.
-        step : str, float, int, optional
-            Frequency step. The default is ``1e6``. or used for `"decade_count"`, "linear_count"`, "octave_count"`
-            distribution. Must be integer in that case.
-        discrete : bool, optional
-            Whether the sweep is discrete. The default is ``False``.
-        frequency_set : List, optional
-            Frequency set is a list adding one or more frequency sweeps. If ``frequency_set`` is provided, the other
-            arguments are ignored except ``discrete``. Default value is ``None``.
-            example of frequency_set : [['linear_scale', '50MHz', '200MHz', '10MHz']].
-
-        Returns
-        -------
-        bool
-        """
-        init_sweep_count = len(self.sweep_data)
-        if frequency_set:
-            for sweep in frequency_set:
-                if "linear_scale" in sweep:
-                    distribution = "LIN"
-                elif "linear_count" in sweep:
-                    distribution = "LINC"
-                elif "exponential" in sweep:
-                    distribution = "ESTP"
-                elif "log_scale" in sweep:
-                    distribution = "DEC"
-                elif "octave_count" in sweep:
-                    distribution = "OCT"
-                else:
-                    distribution = "LIN"
-                start_freq = self._pedb.number_with_units(sweep[1], "Hz")
-                stop_freq = self._pedb.number_with_units(sweep[2], "Hz")
-                step = str(sweep[3])
-                if not name:
-                    name = f"sweep_{init_sweep_count + 1}"
-                sweep_data = [
-                    SweepData(
-                        self._pedb, name=name, distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step
-                    )
-                ]
-                if discrete:
-                    sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
-                for sweep in self.sweep_data:
-                    sweep_data.append(sweep)
-                self.sweep_data = sweep_data
-        else:
-            start_freq = self._pedb.number_with_units(start_freq, "Hz")
-            stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
-            step = str(step)
-            if not distribution in ["LIN", "LINC", "ESTP", "DEC", "OCT"]:
-                if distribution.lower() == "linear" or distribution.lower() == "linear scale":
-                    distribution = "LIN"
-                elif distribution.lower() == "linear_count" or distribution.lower() == "linear count":
-                    distribution = "LINC"
-                elif distribution.lower() == "exponential":
-                    distribution = "ESTP"
-                elif (
-                    distribution.lower() == "decade_count"
-                    or distribution.lower() == "decade count"
-                    or distribution.lower()
-                ) == "log scale":
-                    distribution = "DEC"
-                elif distribution.lower() == "octave_count" or distribution.lower() == "octave count":
-                    distribution = "OCT"
-                else:
-                    distribution = "LIN"
-            if not name:
-                name = f"sweep_{init_sweep_count + 1}"
-            sweep_data = [
-                SweepData(
-                    self._pedb, name=name, distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step
-                )
-            ]
-            if discrete:
-                sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
-            for sweep in self.sweep_data:
-                sweep_data.append(sweep)
-            self.sweep_data = sweep_data
-            if len(self.sweep_data) == init_sweep_count + 1:
-                return self.sweep_data[-1]
-            else:
-                self._pedb.logger.error("Failed to add frequency sweep data")
-                return False
 
     def auto_mesh_operation(
         self,

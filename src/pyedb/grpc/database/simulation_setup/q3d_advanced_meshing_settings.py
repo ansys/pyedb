@@ -14,36 +14,38 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# FITNE SS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        HFSSAdvancedMeshingSettings as GrpcHFSSAdvancedMeshingSettings,
+    from ansys.edb.core.simulation_setup.q3d_simulation_settings import (
+        Q3DAdvancedMeshingSettings as GrpcQ3DAdvancedMeshingSettings,
     )
 
 
-class HFSSAdvancedMeshingSettings:
-    def __init__(self, pedb, core: "GrpcHFSSAdvancedMeshingSettings"):
-        """PyEDB HFSS advanced meshing settings class."""
+class Q3DAdvancedMeshingSettings:
+    """Q3D advanced meshing settings class."""
+
+    def __init__(self, pedb, core: GrpcQ3DAdvancedMeshingSettings):
         self.core = core
         self._pedb = pedb
 
     @property
     def arc_step_size(self) -> float:
-        """Get or set the arc step size.
+        """Arc step size in micrometers.
 
         Returns
         -------
         float
-            Arc step size.
+            Arc step size in micrometers.
         """
-        return self._pedb.value(self.core.arc_step_size).value
+        return self._pedb.value(self.core.arc_step_size)
 
     @arc_step_size.setter
     def arc_step_size(self, value: float):
@@ -51,14 +53,14 @@ class HFSSAdvancedMeshingSettings:
 
     @property
     def arc_to_chord_error(self) -> float:
-        """Get or set the arc to chord error.
+        """Arc to chord error in micrometers.
 
         Returns
         -------
         float
-            Arc to chord error.
+            Arc to chord error in micrometers.
         """
-        return self._pedb.value(self.core.arc_to_chord_error).value
+        return self._pedb.value(self.core.arc_to_chord_error)
 
     @arc_to_chord_error.setter
     def arc_to_chord_error(self, value: float):
@@ -66,44 +68,44 @@ class HFSSAdvancedMeshingSettings:
 
     @property
     def circle_start_azimuth(self) -> float:
-        """Get or set the circle start azimuth.
+        """Circle start azimuth in degrees.
 
         Returns
         -------
         float
-            Circle start azimuth.
+            Circle start azimuth in degrees.
         """
-        return self._pedb.value(self.core.circle_start_azimuth).value
+        return self._pedb.value(self.core.circle_start_azimuth)
 
     @circle_start_azimuth.setter
     def circle_start_azimuth(self, value: float):
         self.core.circle_start_azimuth = str(self._pedb.value(value))
 
     @property
-    def layer_snap_tol(self) -> float:
-        """Get or set the layer snap tolerance.
+    def layer_alignment(self) -> float:
+        """Snapping tolerance for hierarchical layer alignment.
 
         Returns
         -------
         float
-            Layer snap tolerance.
+            Snapping tolerance for hierarchical layer alignment.
         """
-        return self._pedb.value(self.core.layer_snap_tol).value
+        return self._pedb.value(self.core.layer_alignment)
 
-    @layer_snap_tol.setter
-    def layer_snap_tol(self, value: float):
-        self.core.layer_snap_tol = str(self._pedb.value(value))
+    @layer_alignment.setter
+    def layer_alignment(self, value: float):
+        self.core.layer_alignment = str(self._pedb.value(value))
 
     @property
     def max_num_arc_points(self) -> int:
-        """Get or set the maximum number of arc points.
+        """Maximum number of points used to approximate arcs.
 
         Returns
         -------
         int
             Maximum number of arc points.
         """
-        return int(self.core.max_num_arc_points)
+        return self.core.max_num_arc_points
 
     @max_num_arc_points.setter
     def max_num_arc_points(self, value: int):
@@ -111,12 +113,12 @@ class HFSSAdvancedMeshingSettings:
 
     @property
     def use_arc_chord_error_approx(self) -> bool:
-        """Get or set whether to use arc chord error approximation.
+        """Flag indicating if arc to chord error approximation is used.
 
         Returns
         -------
         bool
-            True if using arc chord error approximation, False otherwise.
+            True if arc to chord error approximation is used, False otherwise.
         """
         return self.core.use_arc_chord_error_approx
 
