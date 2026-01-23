@@ -1373,3 +1373,69 @@ class TestClass(BaseTestClass):
         l_id = edbapp.stackup.layers_by_id.index([base_layer.id, base_layer.name])
         assert edbapp.stackup.layers_by_id[l_id - 1][1] == "add_layer_above"
         edbapp.close(terminate_rpc_session=False)
+
+    def test_test_layers_consolidated(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        layers = edbapp.stackup.layers
+        assert len(layers) == 15
+        assert list(edbapp.stackup.layers.keys()) == [
+            "1_Top",
+            "DE1",
+            "Inner1(GND1)",
+            "DE2",
+            "Inner2(PWR1)",
+            "DE3",
+            "Inner3(Sig1)",
+            "Megtron4-1mm",
+            "Inner4(Sig2)",
+            "DE5",
+            "Inner5(PWR2)",
+            "DE6",
+            "Inner6(GND2)",
+            "DE7",
+            "16_Bottom",
+        ]
+        signal_layer = edbapp.stackup.signal_layers["1_Top"]
+        assert not signal_layer.roughness_enabled
+        signal_layer.roughness_enabled = True
+        assert signal_layer.roughness_enabled
+        signal_layer.roughness_enabled = False
+        if edbapp.grpc:
+            # groisse roughness only implemented in grpc
+            assert signal_layer.bottom_groisse_roughness == 0.0
+            signal_layer.bottom_groisse_roughness = 1e-6
+            assert signal_layer.bottom_groisse_roughness == 1e-6
+            signal_layer.top_groisse_roughness = 2e-6
+            assert signal_layer.top_groisse_roughness == 2e-6
+            signal_layer.side_groisse_roughness = 3e-6
+            assert signal_layer.side_groisse_roughness == 3e-6
+        signal_layer.bottom_hallhuray_nodule_radius = 1e-9
+        assert signal_layer.bottom_hallhuray_nodule_radius == 1e-9
+        signal_layer.bottom_hallhuray_surface_ratio = 0.5
+        assert signal_layer.bottom_hallhuray_surface_ratio == 0.5
+        signal_layer.color = (128, 128, 128)
+        assert tuple(signal_layer.color) == (128, 128, 128)  # dotnet returns list so casting as tuple for compatibility
+        signal_layer.etch_factor = 0.6
+        assert signal_layer.etch_factor == 0.6
+        signal_layer.roughness_enabled = True
+        assert signal_layer.roughness_enabled is True
+        signal_layer.thickness = 1.5e-4
+        assert signal_layer.thickness == 1.5e-4
+        signal_layer.top_groisse_roughness = 2e-6
+        assert signal_layer.top_groisse_roughness == 2e-6
+        signal_layer.top_hallhuray_nodule_radius = 2e-9
+        assert signal_layer.top_hallhuray_nodule_radius == 2e-9
+        signal_layer.top_hallhuray_surface_ratio = 0.7
+        assert signal_layer.top_hallhuray_surface_ratio == 0.7
+        dielectric_layer = edbapp.stackup.dielectric_layers["DE1"]
+        assert dielectric_layer.dielectric_fill is None
+        dielectric_layer.color = (200, 200, 200)
+        assert tuple(dielectric_layer.color) == (200, 200, 200)
+        dielectric_layer.thickness = 2e-4
+        assert dielectric_layer.thickness == 2e-4
+        assert len(edbapp.stackup.dielectric_layers) == 7
+        non_stackup_layers = edbapp.stackup.non_stackup_layers
+        assert len(non_stackup_layers) == 11
+        outline_layer = non_stackup_layers["Outline"]
+        assert not outline_layer.is_stackup_layer
+        edbapp.close(terminate_rpc_session=False)
