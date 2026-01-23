@@ -22,6 +22,6 @@
 
 GRPC_GENERAL_WARNING = (
     "This version of the Ansys Electronics Database (EDB) is compatible with the gRPC"
-    "interface. You can enable gRPC by passing the ``grpc=True`` when instantiating the Edb object."
+    "interface. You can enable gRPC by passing ``grpc=True`` when instantiating the Edb object."
     "For more information please check this link: https://edb.docs.pyansys.com/version/dev/grpc_api/index.html"
 )
