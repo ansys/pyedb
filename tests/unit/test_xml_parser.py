@@ -23,9 +23,8 @@ from pathlib import Path
 
 import pytest
 
-from tests.conftest import example_models_path
-
 from pyedb.xml_parser.xml_parser import XmlParser
+from tests.conftest import example_models_path
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
@@ -73,7 +72,6 @@ class TestClass:
 
         assert Path(xml_parser.to_xml_file(Path(edb_examples.test_folder) / "test_xml_parser_create.xml")).exists()
 
-
     def test_load_from_xml(self):
         xml_parser = XmlParser.load_xml_file(self.xml_file)
 
@@ -94,4 +92,3 @@ class TestClass:
         xml_parser2.stackup.import_from_cfg_stackup(CfgStackup(**stackup_data))
         assert len(xml_parser2.stackup.materials.material) == 8
         assert len(xml_parser2.stackup.layers.layer) == 20
-
