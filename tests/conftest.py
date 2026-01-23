@@ -106,7 +106,7 @@ def local_scratch(init_scratch):
 
 
 class EdbExamples:
-    def __init__(self, local_scratch, grpc=False):
+    def __init__(self, local_scratch: Scratch, grpc=False):
         self.grpc = grpc
         self.local_scratch = local_scratch
         self.example_models_path = example_models_path
@@ -115,9 +115,14 @@ class EdbExamples:
     def get_local_file_folder(self, name):
         return os.path.join(self.local_scratch.path, name)
 
-    def _create_test_folder(self):
+    def _create_test_folder(self, name=None):
         """Create a local folder under `local_scratch`."""
-        self.test_folder = os.path.join(self.local_scratch.path, generate_random_string(6))
+        if name:
+            temp = Path(self.local_scratch.path) / name
+            temp.mkdir(parents=True, exist_ok=True)
+            self.test_folder = str(temp)
+        else:
+            self.test_folder = os.path.join(self.local_scratch.path, generate_random_string(6))
         return self.test_folder
 
     def _copy_file_folder_into_local_folder(self, file_folder_path):
