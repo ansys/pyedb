@@ -1243,7 +1243,9 @@ class Hfss:
         """
         warnings.warn("add_setup is deprecated use create_simulation_setup instead", DeprecationWarning)
 
-        return self.create_simulation_setup(name, distribution, start_freq, stop_freq, step_freq, discrete_sweep)
+        return self._pedb.simulation_setups.create_hfss_setup(
+            name, distribution, start_freq, stop_freq, step_freq, discrete_sweep
+        )
 
     def generate_auto_hfss_regions(self):
         """Generate auto HFSS regions.

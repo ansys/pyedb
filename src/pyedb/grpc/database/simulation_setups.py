@@ -52,12 +52,11 @@ class SimulationSetups:
         List[:class:`HFSSSimulationSetup <pyedb.grpc.database.simulation_setup.
         hfss_simulation_setup.HFSSSimulationSetup>`]
         """
-        if self._hfss_setups is None:
-            self._hfss_setups = {
-                setup.name: HfssSimulationSetup(self._pedb, setup)
-                for setup in self._pedb.core.simulation_setups
-                if setup.type == "hfss"
-            }
+        self._hfss_setups = {
+            setup.name: HfssSimulationSetup(self._pedb, setup)
+            for setup in self._pedb.active_cell.simulation_setups
+            if setup.type.name.lower() == "hfss"
+        }
         return self._hfss_setups
 
     @property
@@ -69,12 +68,11 @@ class SimulationSetups:
         List[:class:`SIWaveSimulationSetup <pyedb.grpc.database.simulation_setup.
         siwave_simulation_setup.SIWaveSimulationSetup>`]
         """
-        if self._siwave_setups is None:
-            self._siwave_setups = {
-                setup.name: SiwaveSimulationSetup(self._pedb, setup)
-                for setup in self._pedb.core.simulation_setups
-                if setup.type == "siwave"
-            }
+        self._siwave_setups = {
+            setup.name: SiwaveSimulationSetup(self._pedb, setup)
+            for setup in self._pedb.active_cell.simulation_setups
+            if setup.type.name.lower() == "si_wave"
+        }
         return self._siwave_setups
 
     @property
@@ -86,12 +84,11 @@ class SimulationSetups:
         List[:class:`SIWaveDCIRSimulationSetup <pyedb.grpc.database.simulation_setup.
         siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup>`]
         """
-        if self._siwave_dcir_setups is None:
-            self._siwave_dcir_setups = {
-                setup.name: SIWaveDCIRSimulationSetup(self._pedb, setup)
-                for setup in self._pedb.core.simulation_setups
-                if setup.type == "siwave_dcir"
-            }
+        self._siwave_dcir_setups = {
+            setup.name: SIWaveDCIRSimulationSetup(self._pedb, setup)
+            for setup in self._pedb.active_cell.simulation_setups
+            if setup.type.name.lower() == "si_wave_dcir"
+        }
         return self._siwave_dcir_setups
 
     @property
@@ -106,8 +103,8 @@ class SimulationSetups:
         if self._raptorx_setups is None:
             self._raptorx_setups = {
                 setup.name: RaptorXSimulationSetup(self._pedb, setup)
-                for setup in self._pedb.core.simulation_setups
-                if setup.type == "raptorx"
+                for setup in self._pedb.active_cell.simulation_setups
+                if setup.type.name.lower() == "raptor_x"
             }
         return self._raptorx_setups
 
@@ -123,8 +120,8 @@ class SimulationSetups:
         if self._q3d_setups is None:
             self._q3d_setups = {
                 setup.name: Q3DSimulationSetup(self._pedb, setup)
-                for setup in self._pedb.core.simulation_setups
-                if setup.type == "q3d"
+                for setup in self._pedb.active_cell.simulation_setups
+                if setup.type == "q3d_sim"
             }
         return self._q3d_setups
 

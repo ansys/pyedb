@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
+import warnings
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
@@ -36,20 +37,42 @@ class HFSSAdvancedSettings:
         self._pedb = pedb
 
     @property
-    def defeature_absolute_length(self) -> float:
+    def defeature_abs_length(self) -> float:
+        """Absolute length used as tolerance when defeaturing polygons.
+
+        .. deprecated:: 0.77.3
+            Use :attr:`defeature_absolute_length` instead.
+
+        """
+        warnings.warn(
+            "The 'defeature_abs_length' property is deprecated. Please use 'defeature_absolute_length' instead.",
+            DeprecationWarning,
+        )
+        return self.defeature_absolute_length
+
+    @defeature_abs_length.setter
+    def defeature_abs_length(self, value):
+        warnings.warn(
+            "The 'defeature_abs_length' property is deprecated. Please use 'defeature_absolute_length' instead.",
+            DeprecationWarning,
+        )
+        self.defeature_absolute_length = value
+
+    @property
+    def defeature_absolute_length(self) -> str:
         """Absolute length used as tolerance when defeaturing polygons.
 
         Returns
         -------
-        float
+        str
             Length value.
 
         """
-        return self._pedb.value(self.core.defeature_absolute_length)
+        return self.core.defeature_absolute_length
 
     @defeature_absolute_length.setter
     def defeature_absolute_length(self, value):
-        self.core.defeature_absolute_length = str(self._pedb.value(value))
+        self.core.defeature_absolute_length = str(value)
 
     @property
     def defeature_ratio(self) -> float:
@@ -131,6 +154,24 @@ class HFSSAdvancedSettings:
             return "ic"
 
     @property
+    def via_density(self) -> float:
+        """Density of vias.
+
+        .. deprecated:: 0.77.3
+            Use :attr:`num_via_density` instead.
+
+        """
+        return self.num_via_density
+
+    @via_density.setter
+    def via_density(self, value: float):
+        warnings.warn(
+            "The 'via_density' property is deprecated. Please use 'num_via_density' instead.",
+            DeprecationWarning,
+        )
+        self.num_via_density = value
+
+    @property
     def num_via_density(self) -> float:
         """Spacing between vias.
 
@@ -145,6 +186,24 @@ class HFSSAdvancedSettings:
     @num_via_density.setter
     def num_via_density(self, value: float):
         self.core.num_via_density = value
+
+    @property
+    def via_num_sides(self) -> int:
+        """Number of sides a via is considered to have.
+
+        .. deprecated:: 0.77.3
+            Use :attr:`num_via_sides` instead.
+
+        """
+        return self.num_via_sides
+
+    @via_num_sides.setter
+    def via_num_sides(self, value: int):
+        warnings.warn(
+            "The 'via_num_sides' property is deprecated. Please use 'num_via_sides' instead.",
+            DeprecationWarning,
+        )
+        self.num_via_sides = value
 
     @property
     def num_via_sides(self) -> int:
@@ -227,6 +286,30 @@ class HFSSAdvancedSettings:
         self.core.use_defeature = value
 
     @property
+    def use_defeature_abs_length(self) -> bool:
+        """Flag indicating if absolute length defeaturing is used.
+
+        .. deprecated:: 0.77.3
+            Use :attr:`use_defeature_absolute_length` instead.
+
+        """
+        warnings.warn(
+            "The 'use_defeature_abs_length' property is deprecated. "
+            "Please use 'use_defeature_absolute_length' instead.",
+            DeprecationWarning,
+        )
+        return self.use_defeature_absolute_length
+
+    @use_defeature_abs_length.setter
+    def use_defeature_abs_length(self, value: bool):
+        warnings.warn(
+            "The 'use_defeature_abs_length' property is deprecated. "
+            "Please use 'use_defeature_absolute_length' instead.",
+            DeprecationWarning,
+        )
+        self.use_defeature_absolute_length = value
+
+    @property
     def use_defeature_absolute_length(self) -> bool:
         """Flag indicating if absolute length or extent ratio is used when defeaturing polygons.
 
@@ -257,6 +340,24 @@ class HFSSAdvancedSettings:
     @via_material.setter
     def via_material(self, value: str):
         self.core.via_material = value
+
+    @property
+    def via_style(self) -> str:
+        """Via style.
+
+        .. deprecated:: 0.77.3
+            Use :attr:`via_model_type` instead.
+
+        """
+        return self.via_model_type
+
+    @via_style.setter
+    def via_style(self, value):
+        warnings.warn(
+            "The 'via_style' property is deprecated. Please use 'via_model_type' instead.",
+            DeprecationWarning,
+        )
+        self.via_model_type = value
 
     @property
     def via_model_type(self) -> str:

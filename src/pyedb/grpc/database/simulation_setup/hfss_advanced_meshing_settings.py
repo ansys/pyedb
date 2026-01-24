@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
+import warnings
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
@@ -43,11 +44,11 @@ class HFSSAdvancedMeshingSettings:
         float
             Arc step size.
         """
-        return self._pedb.value(self.core.arc_step_size).value
+        return self.core.arc_step_size
 
     @arc_step_size.setter
     def arc_step_size(self, value: float):
-        self.core.arc_step_size = str(self._pedb.value(value))
+        self.core.arc_step_size = self._pedb.value(value)
 
     @property
     def arc_to_chord_error(self) -> float:
@@ -58,11 +59,11 @@ class HFSSAdvancedMeshingSettings:
         float
             Arc to chord error.
         """
-        return self._pedb.value(self.core.arc_to_chord_error).value
+        return self.core.arc_to_chord_error
 
     @arc_to_chord_error.setter
     def arc_to_chord_error(self, value: float):
-        self.core.arc_to_chord_error = str(self._pedb.value(value))
+        self.core.arc_to_chord_error = value
 
     @property
     def circle_start_azimuth(self) -> float:
@@ -73,11 +74,11 @@ class HFSSAdvancedMeshingSettings:
         float
             Circle start azimuth.
         """
-        return self._pedb.value(self.core.circle_start_azimuth).value
+        return self.core.circle_start_azimuth
 
     @circle_start_azimuth.setter
     def circle_start_azimuth(self, value: float):
-        self.core.circle_start_azimuth = str(self._pedb.value(value))
+        self.core.circle_start_azimuth = self._pedb.value(value)
 
     @property
     def layer_snap_tol(self) -> float:
@@ -88,11 +89,30 @@ class HFSSAdvancedMeshingSettings:
         float
             Layer snap tolerance.
         """
-        return self._pedb.value(self.core.layer_snap_tol).value
+        return self.core.layer_snap_tol
 
     @layer_snap_tol.setter
     def layer_snap_tol(self, value: float):
-        self.core.layer_snap_tol = str(self._pedb.value(value))
+        self.core.layer_snap_tol = value
+
+    @property
+    def max_arc_points(self) -> int:
+        """Get or set the maximum number of arc points.
+
+        .. deprecated:: 0.77.3
+            Use :attr:`max_num_arc_points` instead.
+        """
+        warnings.warn(
+            "The 'max_arc_points' property is deprecated and will be removed in future releases.", DeprecationWarning
+        )
+        return self.max_num_arc_points
+
+    @max_arc_points.setter
+    def max_arc_points(self, value: int):
+        warnings.warn(
+            "The 'max_arc_points' property is deprecated and will be removed in future releases.", DeprecationWarning
+        )
+        self.max_num_arc_points = value
 
     @property
     def max_num_arc_points(self) -> int:
@@ -103,11 +123,11 @@ class HFSSAdvancedMeshingSettings:
         int
             Maximum number of arc points.
         """
-        return int(self.core.max_num_arc_points)
+        return self.core.max_num_arc_points
 
     @max_num_arc_points.setter
     def max_num_arc_points(self, value: int):
-        self.core.max_num_arc_points = str(value)
+        self.core.max_num_arc_points = value
 
     @property
     def use_arc_chord_error_approx(self) -> bool:

@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
+import warnings
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
@@ -83,7 +84,7 @@ class HFSSSimulationSettings:
         :class:`HFSSDCRSettings <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings>`
 
         """
-        return HFSSDCRSettings(self._pedb, self.dcr)
+        return HFSSDCRSettings(self._pedb, self.core.dcr)
 
     @property
     def general(self) -> HFSSGeneralSettings:
@@ -94,7 +95,7 @@ class HFSSSimulationSettings:
         :class:`HFSSGeneralSettings <pyedb.grpc.database.simulation_setup.hfss_general_settings.HFSSGeneralSettings>`
 
         """
-        return HFSSGeneralSettings(self._pedb, self.general)
+        return HFSSGeneralSettings(self._pedb, self.core.general)
 
     @property
     def options(self) -> HFSSSettingsOptions:
@@ -117,3 +118,60 @@ class HFSSSimulationSettings:
 
         """
         return HFSSSolverSettings(self._pedb, self.core.solver)
+
+    @property
+    def enhanced_low_frequency_accuracy(self) -> bool:
+        """Enhanced low frequency accuracy flag.
+
+        .. deprecated:: 0.67.0
+            This property is deprecated. Please use :attr:`options.enhanced_low_frequency_accuracy`
+            instead.
+            This attribute was added for dotnet compatibility and will be removed in future releases.
+        """
+        warnings.warn(
+            f"The 'enhanced_low_frequency_accuracy' property is deprecated and will be removed in future releases. ",
+            DeprecationWarning,
+        )
+        return self.options.enhanced_low_frequency_accuracy
+
+    @enhanced_low_frequency_accuracy.setter
+    def enhanced_low_frequency_accuracy(self, value: bool):
+        self.options.enhanced_low_frequency_accuracy = value
+
+    @property
+    def relative_residual(self) -> float:
+        """Relative residual value.
+
+        .. deprecated:: 0.67.0
+            This property is deprecated. Please use :attr:`options.relative_residual`
+            instead.
+            This attribute was added for dotnet compatibility and will be removed in future releases.
+        """
+        warnings.warn(
+            f"The 'relative_residual' property is deprecated and will be removed in future releases. ",
+            DeprecationWarning,
+        )
+        return self.options.relative_residual
+
+    @relative_residual.setter
+    def relative_residual(self, value: float):
+        self.options.relative_residual = value
+
+    @property
+    def use_shell_elements(self) -> bool:
+        """Use shell elements flag.
+
+        .. deprecated:: 0.67.0
+            This property is deprecated. Please use :attr:`options.use_shell_elements`
+            instead.
+            This attribute was added for dotnet compatibility and will be removed in future releases.
+        """
+        warnings.warn(
+            f"The 'use_shell_elements' property is deprecated and will be removed in future releases. ",
+            DeprecationWarning,
+        )
+        return self.options.use_shell_elements
+
+    @use_shell_elements.setter
+    def use_shell_elements(self, value: bool):
+        self.options.use_shell_elements = value

@@ -37,12 +37,20 @@ _mapping_distribution = {
     "estp": GrpcDistribution.ESTP,
     "linc": GrpcDistribution.LINC,
     "oct": GrpcDistribution.OCT,
+    "LIN": GrpcDistribution.LIN,
+    "DEC": GrpcDistribution.DEC,
+    "ESTP": GrpcDistribution.ESTP,
+    "LINC": GrpcDistribution.LINC,
+    "OCT": GrpcDistribution.OCT,
 }
 
 _mapping_sweep_type = {
     "interpolating": GrpcSweepType.INTERPOLATING_SWEEP,
     "discrete": GrpcSweepType.DISCRETE_SWEEP,
     "broadband": GrpcSweepType.BROADBAND_SWEEP,
+    "INTERPOLATING": GrpcSweepType.INTERPOLATING_SWEEP,
+    "DISCRETE": GrpcSweepType.DISCRETE_SWEEP,
+    "BROADBAND": GrpcSweepType.BROADBAND_SWEEP,
 }
 
 
@@ -238,3 +246,44 @@ class SweepData:
             Frequency sweep string.
         """
         return self.core.frequency_string
+
+    @property
+    def enforce_causality(self) -> bool:
+        """Get the flag indicating if causality is enforced.
+
+        Returns
+        -------
+        bool
+            True if causality is enforced, False otherwise.
+        """
+        return self.core.interpolation_data.enforce_causality
+
+    @enforce_causality.setter
+    def enforce_causality(self, value: bool):
+        self.core.interpolation_data.enforce_causality = value
+
+    @property
+    def enforce_passivity(self) -> bool:
+        """Get the flag indicating if passivity is enforced.
+
+        Returns
+        -------
+        bool
+            True if passivity is enforced, False otherwise.
+        """
+        return self.core.interpolation_data.enforce_passivity
+
+    @enforce_passivity.setter
+    def enforce_passivity(self, value: bool):
+        self.core.interpolation_data.enforce_passivity = value
+
+    @property
+    def interpolation_data(self):
+        """Get the interpolation data points.
+
+        Returns
+        -------
+        list[float]
+            List of interpolation data points in Hz.
+        """
+        return self.core.interpolation_data

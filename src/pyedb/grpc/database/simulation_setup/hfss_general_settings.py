@@ -21,6 +21,9 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
+import warnings
+
+from ansys.edb.core.simulation_setup.hfss_simulation_settings import AdaptType as GrpcAdaptType
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
@@ -35,7 +38,7 @@ class BroadbandAdaptiveSolution:
         self.core = core
 
     @property
-    def high_frequency(self) -> float:
+    def high_frequency(self) -> str:
         """High frequency for broadband adaptive solution.
 
         Returns
@@ -44,14 +47,14 @@ class BroadbandAdaptiveSolution:
             High frequency value in Hz.
 
         """
-        return self._pedb.value(self.core.high_frequency)
+        return self.core.high_frequency
 
     @high_frequency.setter
     def high_frequency(self, value):
-        self.core.high_frequency = str(self._pedb.value(value))
+        self.core.high_frequency = str(value)
 
     @property
-    def low_frequency(self) -> float:
+    def low_frequency(self) -> str:
         """Low frequency for broadband adaptive solution.
 
         Returns
@@ -60,14 +63,14 @@ class BroadbandAdaptiveSolution:
             Low frequency value in Hz.
 
         """
-        return self._pedb.value(self.core.low_frequency)
+        return self.core.low_frequency
 
     @low_frequency.setter
     def low_frequency(self, value):
-        self.core.low_frequency = str(self._pedb.value(value))
+        self.core.low_frequency = str(value)
 
     @property
-    def max_delta(self) -> float:
+    def max_delta(self) -> str:
         """Maximum delta for broadband adaptive solution.
 
         Returns
@@ -76,11 +79,11 @@ class BroadbandAdaptiveSolution:
             Maximum delta value.
 
         """
-        return self._pedb.value(self.core.max_delta)
+        return self.core.max_delta
 
     @max_delta.setter
     def max_delta(self, value):
-        self.core.max_delta = str(self._pedb.value(value))
+        self.core.max_delta = str(value)
 
     @property
     def max_num_passes(self) -> int:
@@ -106,7 +109,7 @@ class AdaptiveFrequency:
         self.core = core
 
     @property
-    def adaptive_frequency(self) -> float:
+    def adaptive_frequency(self) -> str:
         """Adaptive frequency value.
 
         Returns
@@ -115,14 +118,14 @@ class AdaptiveFrequency:
             Adaptive frequency in Hz.
 
         """
-        return self._pedb.value(self.core.adaptive_frequency)
+        return self.core.adaptive_frequency
 
     @adaptive_frequency.setter
     def adaptive_frequency(self, value):
-        self.core.adaptive_frequency = str(self._pedb.value(value))
+        self.core.adaptive_frequency = str(value)
 
     @property
-    def max_delta(self) -> float:
+    def max_delta(self) -> str:
         """Maximum delta for the adaptive frequency.
 
         Returns
@@ -131,11 +134,11 @@ class AdaptiveFrequency:
             Maximum delta value.
 
         """
-        return self._pedb.value(self.core.max_delta)
+        return self.core.max_delta
 
     @max_delta.setter
     def max_delta(self, value):
-        self.core.max_delta = str(self._pedb.value(value))
+        self.core.max_delta = str(value)
 
     @property
     def output_variables(self) -> dict[str, float]:
@@ -442,7 +445,7 @@ class SingleFrequencyAdaptiveSolution:
             Adaptive frequency in Hz.
 
         """
-        return self._pedb.value(self.core.adaptive_frequency)
+        return self.core.adaptive_frequency
 
     @adaptive_frequency.setter
     def adaptive_frequency(self, value):
@@ -458,11 +461,11 @@ class SingleFrequencyAdaptiveSolution:
             Maximum delta value.
 
         """
-        return self._pedb.value(self.core.max_delta)
+        return self.core.max_delta
 
     @max_delta.setter
     def max_delta(self, value):
-        self.core.max_delta = str(self._pedb.value(value))
+        self.core.max_delta = str(value)
 
     @property
     def max_passes(self) -> int:
@@ -518,6 +521,23 @@ class HFSSGeneralSettings:
         self._pedb = pedb
 
     @property
+    def adapt_type(self) -> str:
+        """Adaptation type.
+
+        ..deprecated:: 0.67.0
+            This property is deprecated and will be removed in future versions.
+            Attribute added for dotnet compatibility.
+            Use :attr:`adaptive_solution_type` instead.
+
+        """
+        warnings.warn(
+            "The 'adapt_type' property is deprecated and will be removed in future versions. "
+            "Use 'adaptive_solution_type' instead.",
+            DeprecationWarning,
+        )
+        return self.adaptive_solution_type.name.lower()
+
+    @property
     def adaptive_solution_type(self) -> str:
         """Adaptive solution type.
 
@@ -528,19 +548,19 @@ class HFSSGeneralSettings:
             or `num_adapt_type`.
 
         """
-        return self.core.adaptive_solution_type.name
+        return self.core.adaptive_solution_type
 
     @adaptive_solution_type.setter
     def adaptive_solution_type(self, value):
         if isinstance(value, str):
             if value.lower() == "single":
-                self.adaptive_solution_type = GrpcAdaptType.SINGLE
+                self.core.adaptive_solution_type = GrpcAdaptType.SINGLE
             elif value.lower() == "multi_frequencies":
-                self.adaptive_solution_type = GrpcAdaptType.MULTI_FREQUENCIES
+                self.core.adaptive_solution_type = GrpcAdaptType.MULTI_FREQUENCIES
             elif value.lower() == "broad_band":
-                self.adaptive_solution_type = GrpcAdaptType.BROADBAND
+                self.core.adaptive_solution_type = GrpcAdaptType.BROADBAND
             elif value.lower() == "num_adapt_type":
-                self.adaptive_solution_type = GrpcAdaptType.NUM_ADAPT_TYPE
+                self.core.adaptive_solution_type = GrpcAdaptType.NUM_ADAPT_TYPE
 
     @property
     def broadband_adaptive_solution(self) -> BroadbandAdaptiveSolution:
@@ -559,7 +579,7 @@ class HFSSGeneralSettings:
     def mesh_region_name(self) -> str:
         """Name of the mesh region to use.
 
-        Returns
+        Returnsself.core.broadband_adaptive_solution
         -------
         str
             Mesh region name.
@@ -590,6 +610,31 @@ class HFSSGeneralSettings:
     @save_fields.setter
     def save_fields(self, value: bool):
         self.core.save_fields = value
+
+    @property
+    def save_rad_field_only(self) -> bool:
+        """Indicates whether to save radiation field only.
+
+        .. deprecated:: 0.67.0
+            This property is deprecated and will be removed in future versions.
+            Use :attr:`save_rad_fields_only` instead.
+
+        """
+        warnings.warn(
+            "The 'save_rad_field_only' property is deprecated and will be removed in future versions. "
+            "Use 'save_rad_fields_only' instead.",
+            DeprecationWarning,
+        )
+        return self.save_rad_fields_only
+
+    @save_rad_field_only.setter
+    def save_rad_field_only(self, value: bool):
+        warnings.warn(
+            "The 'save_rad_field_only' property is deprecated and will be removed in future versions. "
+            "Use 'save_rad_fields_only' instead.",
+            DeprecationWarning,
+        )
+        self.save_rad_fields_only = value
 
     @property
     def save_rad_fields_only(self) -> bool:
@@ -642,3 +687,63 @@ class HFSSGeneralSettings:
     @use_parallel_refinement.setter
     def use_parallel_refinement(self, value: bool):
         self.core.use_parallel_refinement = value
+
+    @property
+    def max_refine_per_pass(self) -> float:
+        """Maximum refinement per pass.
+
+        .. deprecated:: 0.67.0
+        This property is deprecated and will be removed in future versions.
+        use settings.options.max_refinement_per_pass instead.
+
+        """
+        warnings.warn(
+            "Use of 'max_refine_per_pass' is deprecated and will be removed in future versions."
+            "Use 'settings.options.max_refinement_per_pass' instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.settings.options.max_refinement_per_pass
+
+    @max_refine_per_pass.setter
+    def max_refine_per_pass(self, value: float):
+        self._pedb.settings.options.max_refinement_per_pass = value
+
+    @property
+    def min_passes(self) -> int:
+        """Minimum number of passes.
+
+        .. deprecated:: 0.67.0
+        This property is deprecated and will be removed in future versions.
+        use settings.options.min_passes instead.
+
+        """
+        warnings.warn(
+            "Use of 'min_passes' is deprecated and will be removed in future versions."
+            "Use 'settings.options.min_passes' instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.settings.options.min_passes
+
+    @min_passes.setter
+    def min_passes(self, value: int):
+        self._pedb.settings.options.min_passes = value
+
+    @property
+    def use_max_refinement(self) -> bool:
+        """Indicates whether to use maximum refinement.
+
+        .. deprecated:: 0.67.0
+        This property is deprecated and will be removed in future versions.
+        use settings.options.use_max_refinement instead.
+
+        """
+        warnings.warn(
+            "Use of 'use_max_refinement' is deprecated and will be removed in future versions."
+            "Use 'settings.options.use_max_refinement' instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.settings.options.use_max_refinement
+
+    @use_max_refinement.setter
+    def use_max_refinement(self, value: bool):
+        self._pedb.settings.options.use_max_refinement = value

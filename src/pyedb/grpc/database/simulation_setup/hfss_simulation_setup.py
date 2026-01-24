@@ -31,6 +31,7 @@ if TYPE_CHECKING:
     from pyedb.grpc.edb import Edb
 import warnings
 
+from ansys.edb.core.simulation_setup.adaptive_solutions import AdaptiveFrequency as GrpcAdaptiveFrequency
 from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
     AdaptType as GrpcAdaptType,
 )
@@ -73,7 +74,7 @@ class HfssSimulationSetup(SimulationSetup):
         """
         if not name:
             name = generate_unique_name("HFSS_Setup")
-        core = GrpcHfssSimulationSetup.create(edb.active_cell, name)
+        core = GrpcHfssSimulationSetup.create(edb.layout.cell, name)
         return cls(pedb=None, core=core, name=name)
 
     @property
@@ -84,6 +85,53 @@ class HfssSimulationSetup(SimulationSetup):
     @mesh_operations.setter
     def mesh_operations(self, mesh_operations: list[MeshOperation]):
         self.core.mesh_operations = [mesh_operation.core for mesh_operation in mesh_operations]
+
+    @property
+    def defeature_settings(self):
+        """HFSS defeature settings class.
+
+        .. deprecated:: 0.67.2
+        Use :attr:`settings
+        <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings.advanced>"
+        instead.
+
+        """
+        warnings.warn(
+            "The 'defeature_settings' property is deprecated. Use 'settings.advanced' property instead.",
+            DeprecationWarning,
+        )
+        return self.settings.advanced
+
+    @property
+    def via_settings(self):
+        """HFSS via settings class.
+
+        .. deprecated:: 0.67.2
+        Use :attr:`settings
+        <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings.advanced>`
+        instead.
+
+        """
+        warnings.warn(
+            "The 'via_settings' property is deprecated. Use 'settings.advanced' property instead.", DeprecationWarning
+        )
+        return self.settings.advanced
+
+    @property
+    def advanced_mesh_settings(self):
+        """HFSS advanced meshing settings class.
+
+        .. deprecated:: 0.67.2
+        Use :attr:`settings
+        <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings.advanced_meshing>`
+        instead.
+
+        """
+        warnings.warn(
+            "The 'advanced_mesh_settings' property is deprecated. Use 'settings.advanced_meshing' property instead.",
+            DeprecationWarning,
+        )
+        return self.settings.advanced_meshing
 
     @property
     def hfss_solver_settings(self):
@@ -110,7 +158,7 @@ class HfssSimulationSetup(SimulationSetup):
 
         """
 
-        return HFSSSimulationSettings(self._pedb, self.core.settings)
+        return HFSSSimulationSettings(self, self.core.settings)
 
     @property
     def adaptive_settings(self):
@@ -126,7 +174,52 @@ class HfssSimulationSetup(SimulationSetup):
             "The 'adaptive_settings' property is deprecated. Use 'settings.general' property instead.",
             DeprecationWarning,
         )
-        return HFSSGeneralSettings(self._pedb, self.core.settings)
+        return HFSSGeneralSettings(self, self.core.settings.general)
+
+    @property
+    def curve_approx_settings(self):
+        """Legacy compatibility to advanced meshing settings.
+
+        .. deprecated:: 0.67.2
+        use :attr:`advanced_mesh_settings
+        <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings.advanced_meshing>`
+        instead.
+
+        """
+        warnings.warn(
+            "The 'curve_approx_settings' property is deprecated. Use 'settings.advanced_meshing' property instead.",
+            DeprecationWarning,
+        )
+        return self.settings.advanced_meshing
+
+    @property
+    def dcr_settings(self):
+        """HFSS DCR settings class.
+
+        .. deprecated:: 0.67.2
+        use :attr:`dcr
+        <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings.dcr>`
+        instead.
+        """
+        warnings.warn(
+            "The 'dcr_settings' property is deprecated. Use 'settings.dcr' property instead.", DeprecationWarning
+        )
+        return self.settings.dcr
+
+    @property
+    def hfss_port_settings(self):
+        """HFSS port settings class.
+
+        .. deprecated:: 0.67.2
+        use :attr:`settings
+        <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings>`
+        instead.
+
+        """
+        warnings.warn(
+            "The 'hfss_port_settings' property is deprecated. Use 'settings' property instead.", DeprecationWarning
+        )
+        return self.settings.solver
 
     @property
     def sweep_data(self) -> list[SweepData]:
@@ -138,7 +231,21 @@ class HfssSimulationSetup(SimulationSetup):
             List of sweep data.
 
         """
-        return [SweepData(self._pedb, core=sweep) for sweep in self.core.sweep_data]
+        return [SweepData(self, core=sweep) for sweep in self.core.sweep_data]
+
+    @sweep_data.setter
+    def sweep_data(self, value: list[SweepData]):
+        """Set the HFSS sweep data list.
+
+        Accepts a list of SweepData wrapper objects or raw core sweep objects. The underlying
+        core.sweep_data is updated with core objects extracted from the wrappers.
+        """
+        # Normalize incoming values to core objects
+        core_list = []
+        for item in value:
+            # If a wrapper with .core attribute is provided, use that; otherwise assume it's already a core object
+            core_list.append(item.core if hasattr(item, "core") else item)
+        self.core.sweep_data = core_list
 
     def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02) -> bool:
         """Set HFSS single frequency solution.
@@ -179,8 +286,7 @@ class HfssSimulationSetup(SimulationSetup):
         bool.
 
         """
-
-        self.core.settings.general.adaptive_solution_type = GrpcAdaptType.MULTI_FREQUENCIES
+        self.settings.general.adaptive_solution_type = "multi_frequencies"
         if not isinstance(frequencies, list):
             frequencies = [frequencies]
         if not isinstance(max_delta_s, list):
@@ -214,11 +320,11 @@ class HfssSimulationSetup(SimulationSetup):
 
         """
         try:
-            self.settings.general.adaptive_solution_type = GrpcAdaptType.BROADBAND
+            self.settings.general.adaptive_solution_type = "broad_band"
             bfs = self.settings.general.broadband_adaptive_solution
             bfs.low_frequency = low_frequency
             bfs.high_frequency = high_frequency
-            bfs.max_delta = str(max_delta_s)
+            bfs.max_delta = max_delta_s
             bfs.max_num_passes = max_num_passes
             self.core.settings.general.broadband_adaptive_solution = bfs
             return True
@@ -380,8 +486,8 @@ class HfssSimulationSetup(SimulationSetup):
             max_elements=str(max_elements),
             num_layers=str(number_of_layers),
         )
-        mesh_ops = [mesh_operation.core for mesh_operation in self.mesh_operations]
-        mesh_ops.append(mesh_operation)
+        mesh_ops = self.mesh_operations
+        mesh_ops.append(MeshOperation(mesh_operation))
         self.mesh_operations = mesh_ops
         return mesh_operation
 

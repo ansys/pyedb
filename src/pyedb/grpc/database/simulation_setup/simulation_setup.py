@@ -28,6 +28,7 @@ if TYPE_CHECKING:
 
 from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetupType as GrpcSimulationSetupType
 
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
 _mapping_simulation_types = {
@@ -221,7 +222,7 @@ class SimulationSetup:
                 sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
             for sweep in self.sweep_data:
                 sweep_data.append(sweep)
-            self.core.sweep_data = sweep_data
+            self.core.sweep_data = [sw.core for sw in sweep_data]
             if len(self.sweep_data) == init_sweep_count + 1:
                 return self.sweep_data[-1]
             else:
