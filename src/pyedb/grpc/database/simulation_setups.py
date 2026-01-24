@@ -23,13 +23,17 @@
 
 from typing import Union, cast
 
+from ansys.edb.core.database import ProductIdType as GrpcProductIdType
+
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
 from pyedb.grpc.database.simulation_setup.q3d_simulation_setup import Q3DSimulationSetup
 from pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup import RaptorXSimulationSetup
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup as BaseSimulationSetup
+from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import SIWaveCPASimulationSetup
 from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
 from pyedb.grpc.database.simulation_setup.siwave_simulation_setup import SiwaveSimulationSetup
+from pyedb.siwave_core.product_properties import SIwaveProperties
 
 
 class SimulationSetups:
@@ -42,6 +46,7 @@ class SimulationSetups:
         self._siwave_dcir_setups: dict[str, SIWaveDCIRSimulationSetup] = {}
         self._raptorx_setups: dict[str, RaptorXSimulationSetup] = {}
         self._q3d_setups: dict[str, Q3DSimulationSetup] = {}
+        self._siwave_cpa_setup: dict[str, SIWaveCPASimulationSetup] = {}
 
     @property
     def hfss(self) -> dict[str, HfssSimulationSetup]:
@@ -92,6 +97,31 @@ class SimulationSetups:
         return self._siwave_dcir_setups
 
     @property
+    def siwave_cpa(self) -> dict[str, SIWaveCPASimulationSetup]:
+        """SIWave CPA simulation setups.
+
+        Returns
+        -------
+        List[:class:`SIWaveCPASimulationSetup <pyedb.grpc.database.simulation_setup.
+        siwave_cpa_simulation_setup.SIWaveCPASimulationSetup>`]
+        """
+
+        # cpa setup is not a real simulation setup type in EDB.
+        # It is created through product interface (ProductProperty).
+        # THe setup is unique per design, and is created when imported inside SIwave,
+        # THe setup does not reside itself inside simulation setups collection.
+
+        # check if cpa name exists
+        cpa_setup_name = self._pedb.active_cell.get_product_property(
+            GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME
+        ).value
+        if cpa_setup_name:
+            if cpa_setup_name not in self._siwave_cpa_setup:
+                # instantiate the cpa setup
+                self._siwave_cpa_setup[cpa_setup_name] = SIWaveCPASimulationSetup(self._pedb, cpa_setup_name)
+        return self._siwave_cpa_setup
+
+    @property
     def raptorx(self) -> dict[str, RaptorXSimulationSetup]:
         """RaptorX simulation setups.
 
@@ -135,7 +165,7 @@ class SimulationSetups:
         simulation_setup.SimulationSetup>`]
         """
         # Merge all per-solver dicts into a single mapping
-        return {**self.hfss, **self.siwave, **self.siwave_dcir, **self.raptorx, **self.q3d}
+        return {**self.hfss, **self.siwave, **self.siwave_dcir, **self.siwave_cpa, **self.raptorx, **self.q3d}
 
     def create(
         self,
@@ -342,6 +372,34 @@ class SimulationSetups:
         """
         result = self.create(name=name, solver="siwave_dcir", **kwargs)
         return cast(SIWaveDCIRSimulationSetup, result)  # casting only for IDE type checking purposes
+
+    def create_siwave_cpa_setup(self, name=None, **kwargs) -> SIWaveCPASimulationSetup:
+        """Add SIWave CPA analysis setup.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name (auto-generated if None).
+
+        Returns
+        -------
+        SIWaveCPASimulationSetup
+            Created setup object.
+        """
+        if not name:
+            name = generate_unique_name("siwave_cpa_setup")
+        if name in self.siwave_cpa:
+            self._pedb.logger.error(f"SIWave CPA simulation setup {name} already defined.")
+            return self.siwave_cpa[name]
+
+        # Create the CPA setup through product property interface
+        cpa_setup = SIWaveCPASimulationSetup.create(self._pedb, name)
+        self._pedb.logger.info(f"SIWave CPA setup {name} created.")
+
+        # Store the created setup in the internal dictionary
+        self._siwave_cpa_setup[name] = cpa_setup
+
+        return cpa_setup
 
     def create_raptorx_setup(
         self,
