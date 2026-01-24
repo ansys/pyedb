@@ -21,11 +21,14 @@
 # SOFTWARE.
 
 
+import warnings
+
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
 )
 
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
+from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
 from pyedb.grpc.database.simulation_setup.siwave_simulation_settings import SIWaveSimulationSettings
 
 
@@ -57,6 +60,19 @@ class SIWaveDCIRSimulationSetup(SimulationSetup):
         """
         core_setup = GrpcSIWaveDCIRSimulationSetup.create(edb.active_cell, name=name)
         return cls(edb, core_setup)
+
+    @property
+    def dc_ir_settings(self):
+        """SIWave DCIR simulation settings.
+
+        ... deprecated:: 0.77.3
+        Use :attr:`settings.dc
+        <pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup.settings>`
+        instead.
+
+        """
+        warnings.warn("`dc_ir_settings` is deprecated. Use `settings.dc` instead.", DeprecationWarning)
+        return SIWaveDCSettings(self._pedb, self.core.settings)
 
     @property
     def settings(self) -> SIWaveSimulationSettings:

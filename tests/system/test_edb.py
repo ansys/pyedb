@@ -1331,50 +1331,26 @@ class TestClass(BaseTestClass):
     def test_dcir_properties(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         setup = edbapp.create_siwave_dc_setup()
-        if edbapp.grpc:
-            # grpc settings is replacing dc_ir_settings
-            # TODO check is grpc can be backward compatible
-            setup.settings.export_dc_thermal_data = True
-            assert setup.settings.export_dc_thermal_data
-            assert not setup.settings.import_thermal_data
-            setup.settings.dc_report_show_active_devices = True
-            assert setup.settings.dc_report_show_active_devices
-            assert not setup.settings.per_pin_use_pin_format
-            setup.settings.use_loop_res_for_per_pin = True
-            assert setup.settings.use_loop_res_for_per_pin
-            setup.settings.dc_report_config_file = edbapp.edbpath
-            assert setup.settings.dc_report_config_file
-            setup.settings.full_dc_report_path = edbapp.edbpath
-            assert setup.settings.full_dc_report_path
-            setup.settings.icepak_temp_file = edbapp.edbpath
-            assert setup.settings.icepak_temp_file
-            setup.settings.per_pin_res_path = edbapp.edbpath
-            assert setup.settings.per_pin_res_path
-            setup.settings.via_report_path = edbapp.edbpath
-            assert setup.settings.via_report_path
-            setup.settings.source_terms_to_ground = {"test": 1}
-            assert setup.settings.source_terms_to_ground
-        else:
-            setup.dc_ir_settings.export_dc_thermal_data = True
-            assert setup.dc_ir_settings.export_dc_thermal_data
-            assert not setup.dc_ir_settings.import_thermal_data
-            setup.dc_ir_settings.dc_report_show_active_devices = True
-            assert setup.dc_ir_settings.dc_report_show_active_devices
-            assert not setup.dc_ir_settings.per_pin_use_pin_format
-            setup.dc_ir_settings.use_loop_res_for_per_pin = True
-            assert setup.dc_ir_settings.use_loop_res_for_per_pin
-            setup.dc_ir_settings.dc_report_config_file = edbapp.edbpath
-            assert setup.dc_ir_settings.dc_report_config_file
-            setup.dc_ir_settings.full_dc_report_path = edbapp.edbpath
-            assert setup.dc_ir_settings.full_dc_report_path
-            setup.dc_ir_settings.icepak_temp_file = edbapp.edbpath
-            assert setup.dc_ir_settings.icepak_temp_file
-            setup.dc_ir_settings.per_pin_res_path = edbapp.edbpath
-            assert setup.dc_ir_settings.per_pin_res_path
-            setup.dc_ir_settings.via_report_path = edbapp.edbpath
-            assert setup.dc_ir_settings.via_report_path
-            setup.dc_ir_settings.source_terms_to_ground = {"test": 1}
-            assert setup.dc_ir_settings.source_terms_to_ground
+        setup.dc_ir_settings.export_dc_thermal_data = True
+        assert setup.dc_ir_settings.export_dc_thermal_data
+        assert not setup.dc_ir_settings.import_thermal_data
+        setup.dc_ir_settings.dc_report_show_active_devices = True
+        assert setup.dc_ir_settings.dc_report_show_active_devices
+        assert not setup.dc_ir_settings.per_pin_use_pin_format
+        setup.dc_ir_settings.use_loop_res_for_per_pin = True
+        assert setup.dc_ir_settings.use_loop_res_for_per_pin
+        setup.dc_ir_settings.dc_report_config_file = edbapp.edbpath
+        assert setup.dc_ir_settings.dc_report_config_file
+        setup.dc_ir_settings.full_dc_report_path = edbapp.edbpath
+        assert setup.dc_ir_settings.full_dc_report_path
+        setup.dc_ir_settings.icepak_temp_file = edbapp.edbpath
+        assert setup.dc_ir_settings.icepak_temp_file
+        setup.dc_ir_settings.per_pin_res_path = edbapp.edbpath
+        assert setup.dc_ir_settings.per_pin_res_path
+        setup.dc_ir_settings.via_report_path = edbapp.edbpath
+        assert setup.dc_ir_settings.via_report_path
+        setup.dc_ir_settings.source_terms_to_ground = {"test": 1}
+        assert setup.dc_ir_settings.source_terms_to_ground
         edbapp.close(terminate_rpc_session=False)
 
     def test_bondwire(self, edb_examples):

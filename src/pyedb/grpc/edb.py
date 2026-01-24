@@ -2345,7 +2345,7 @@ class Edb(EdbInit):
               Use :func:`self.simulation_setups.create` instead.
         """
 
-        return self.simulation_setups.create(name=name, solver="raptorx", start_freq=0.0, stop_freq=20e9)
+        return self.simulation_setups.create_raptorx_setup(name=name, start_freq=0.0, stop_freq=20e9)
 
     def create_siwave_syz_setup(self, name=None, **kwargs) -> SiwaveSimulationSetup:
         """Create SIwave SYZ analysis setup.
@@ -2353,7 +2353,7 @@ class Edb(EdbInit):
         .. deprecated:: pyedb 0.67.0
             Use :func:`self.simulation_setups.create` instead.
         """
-        return self.simulation_setups.create(name=name, solver="siwave", kwargs=kwargs)
+        return self.simulation_setups.create_siwave_setup(name=name, **kwargs)
 
     def create_siwave_dc_setup(self, name=None, **kwargs) -> SIWaveDCIRSimulationSetup:
         """Create SIwave DC analysis setup.
@@ -2361,11 +2361,7 @@ class Edb(EdbInit):
         ..deprecated:: pyedb 0.67.0
             Use :func:`self.simulation_setups.create` instead.
         """
-        return self.simulation_setups.create(
-            name=name,
-            solver="siwave",
-            kwargs=kwargs,
-        )
+        return self.simulation_setups.create_siwave_dcir_setup(name=name, **kwargs)
 
     def calculate_initial_extent(self, expansion_factor):
         """Compute a float representing the larger number between the dielectric thickness or trace width
