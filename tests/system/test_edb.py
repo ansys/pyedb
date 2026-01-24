@@ -759,9 +759,10 @@ class TestClass(BaseTestClass):
         setup1.add_sweep(name="sw1", distribution="linear_count", start_freq="1MHz", stop_freq="100MHz", step=10)
         assert edbapp.setups["setup1"].sweep_data[0].name == "sw1"
         if edbapp.grpc:
-            assert edbapp.setups["setup1"].sweep_data[0].frequency_data.start_f == "1MHz"
-            assert edbapp.setups["setup1"].sweep_data[0].frequency_data.end_f == "100MHz"
+            assert edbapp.setups["setup1"].sweep_data[0].frequency_data.start_frequency == "1MHz"
+            assert edbapp.setups["setup1"].sweep_data[0].frequency_data.end_frequency == "100MHz"
             assert edbapp.setups["setup1"].sweep_data[0].frequency_data.step == "10"
+            assert edbapp.setups["setup1"].sweep_data[0].frequency_string == "LINC 1MHz 100MHz 10"
         else:
             # grpc sweep data has completely changed.
             assert edbapp.setups["setup1"].sweep_data[0].frequency_string[0] == "LINC 0.001GHz 0.1GHz 10"

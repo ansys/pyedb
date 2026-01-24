@@ -54,6 +54,75 @@ _mapping_sweep_type = {
 }
 
 
+class FrequencyData:
+    def __init__(self, core: GrpcFrequencyData):
+        self._core = core
+
+    @property
+    def distribution(self) -> str:
+        """Get the distribution type of the frequency data.
+
+        Returns
+        -------
+        str
+            Distribution type. Values are: "lin", "dec", "estp", "linc", "oct".
+        """
+        return self._core.distribution.name.lower()
+
+    @distribution.setter
+    def distribution(self, value: str):
+        if not value in _mapping_distribution:
+            raise ValueError(
+                f"Unsupported distribution type: {value}. Supported types are: {list(_mapping_distribution.keys())}"
+            )
+        self._core.distribution = _mapping_distribution[value]
+
+    @property
+    def start_frequency(self) -> str:
+        """Get the start frequency in Hz.
+
+        Returns
+        -------
+        str
+            Start frequency in Hz.
+        """
+        return self._core.start_f
+
+    @start_frequency.setter
+    def start_frequency(self, value: float):
+        self._core.start_f = str(value)
+
+    @property
+    def end_frequency(self) -> str:
+        """Get the end frequency in Hz.
+
+        Returns
+        -------
+        str
+            End frequency in Hz.
+        """
+        return self._core.end_f
+
+    @end_frequency.setter
+    def end_frequency(self, value: float):
+        self._core.end_f = str(value)
+
+    @property
+    def step(self) -> str:
+        """Get the frequency step in Hz.
+
+        Returns
+        -------
+        str
+            Frequency step in Hz.
+        """
+        return self._core.step
+
+    @step.setter
+    def step(self, value: float):
+        self._core.step = str(value)
+
+
 class SweepData:
     """Frequency sweep data class.
     PARAMETERS
@@ -111,6 +180,17 @@ class SweepData:
     def name(self, value: str):
         """Set the name of the frequency sweep data."""
         self.core.name = value
+
+    @property
+    def frequency_data(self) -> GrpcFrequencyData:
+        """Get the frequency data of the sweep.
+
+        Returns
+        -------
+        GrpcFrequencyData
+            Frequency data object.
+        """
+        return FrequencyData(self.core.frequency_data)
 
     @property
     def enabled(self) -> bool:
@@ -245,7 +325,7 @@ class SweepData:
         str
             Frequency sweep string.
         """
-        return self.core.frequency_string
+        return self.core.frequency_string.strip()
 
     @property
     def enforce_causality(self) -> bool:

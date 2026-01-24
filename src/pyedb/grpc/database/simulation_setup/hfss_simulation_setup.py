@@ -74,8 +74,8 @@ class HfssSimulationSetup(SimulationSetup):
         """
         if not name:
             name = generate_unique_name("HFSS_Setup")
-        core = GrpcHfssSimulationSetup.create(edb.layout.cell, name)
-        return cls(pedb=None, core=core, name=name)
+        core = GrpcHfssSimulationSetup.create(edb.active_cell, name)
+        return cls(pedb=edb, core=core, name=name)
 
     @property
     def mesh_operations(self) -> list[MeshOperation]:

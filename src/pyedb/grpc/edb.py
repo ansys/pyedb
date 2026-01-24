@@ -2330,9 +2330,8 @@ class Edb(EdbInit):
             "`create_hfss_setup` is deprecated and is now located here `self.simulation_setups.create` instead.",
             DeprecationWarning,
         )
-        return self.simulation_setups.create(
+        return self.simulation_setups.create_hfss_setup(
             name=name,
-            solver="hfss",
             distribution="linear",
             start_freq=start_frequency,
             stop_freq=stop_frequency,

@@ -199,7 +199,7 @@ class SimulationSetups:
             self._pedb.logger.error(f"Simulation setup {name} already defined.")
             return None
         if solver.lower() == "hfss":
-            setup = HfssSimulationSetup.create(self._pedb.active_cell, name)
+            setup = HfssSimulationSetup.create(self._pedb, name)
             self._pedb.logger.info(f"HFSS setup {name} created.")
         elif solver.lower() == "siwave":
             setup = SiwaveSimulationSetup.create(self._pedb, name)
