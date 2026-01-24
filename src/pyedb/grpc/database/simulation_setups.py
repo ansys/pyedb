@@ -373,7 +373,7 @@ class SimulationSetups:
         result = self.create(name=name, solver="siwave_dcir", **kwargs)
         return cast(SIWaveDCIRSimulationSetup, result)  # casting only for IDE type checking purposes
 
-    def create_siwave_cpa_setup(self, name=None, **kwargs) -> SIWaveCPASimulationSetup:
+    def create_siwave_cpa_setup(self, name=None, siwave_cpa_config=None, **kwargs) -> SIWaveCPASimulationSetup:
         """Add SIWave CPA analysis setup.
 
         Parameters
@@ -393,7 +393,7 @@ class SimulationSetups:
             return self.siwave_cpa[name]
 
         # Create the CPA setup through product property interface
-        cpa_setup = SIWaveCPASimulationSetup.create(self._pedb, name)
+        cpa_setup = SIWaveCPASimulationSetup.create(self._pedb, name, siwave_cpa_config)
         self._pedb.logger.info(f"SIWave CPA setup {name} created.")
 
         # Store the created setup in the internal dictionary

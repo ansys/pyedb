@@ -588,7 +588,7 @@ class Siwave(object):
 
         return str(file_name)
 
-    def add_cpa_analysis(self, name=None):
+    def add_cpa_analysis(self, name=None, siwave_cpa_setup_class=None):
         """Add a SIwave CPA analysis to EDB.
 
         .. deprecated:: pyedb 0.77.3
@@ -599,7 +599,7 @@ class Siwave(object):
         warnings.warn(
             "`add_cpa_analysis` is deprecated. Use `SiwaveCPASimulationSetup.create` instead.", DeprecationWarning
         )
-        return self._pedb.simulation_setups.create_siwave_cpa_setup(name)
+        return self._pedb.simulation_setups.create_siwave_cpa_setup(name, siwave_cpa_config=siwave_cpa_setup_class)
 
     def add_siwave_syz_analysis(
         self,

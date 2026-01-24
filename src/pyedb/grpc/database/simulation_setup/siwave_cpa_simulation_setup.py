@@ -810,7 +810,7 @@ class SIWaveCPASimulationSetup:
         self.net_processing_mode = "all"
 
     @classmethod
-    def create(cls, edb: "Edb", name=None, siwave_cpa_setup_class=None):
+    def create(cls, edb: "Edb", name=None, siwave_cpa_setup_class=None) -> "SIWaveCPASimulationSetup":
         """Creates a new SIWaveCPASimulationSetup instance.
 
         Parameters:
@@ -828,7 +828,10 @@ class SIWaveCPASimulationSetup:
                 name = generate_unique_name("cpa_setup")
             else:
                 name = siwave_cpa_setup_class.name
-        return cls(edb, name=name, siwave_cpa_setup_class=siwave_cpa_setup_class)
+        cpa_setup = SIWaveCPASimulationSetup(edb, name=name, siwave_cpa_setup_class=siwave_cpa_setup_class)
+        if siwave_cpa_setup_class:
+            cpa_setup._apply_cfg_object(siwave_cpa_setup_class)
+        return cpa_setup
 
     def _apply_cfg_object(self, siwave_cpa_setup_class):
         """
