@@ -2087,5 +2087,126 @@ class TestClass(BaseTestClass):
         assert source1.reference_terminal.is_reference_terminal
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_hfss_simulation_setups_consolidation(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
+        setup = edbapp.simulation_setups.create_hfss_setup()
+        assert not setup.is_null
+        setup.name = "test_hfss_setup"
+        assert setup.name == "test_hfss_setup"
+        settings = setup.settings
+        assert not settings.use_shell_elements
+        settings.use_shell_elements = True
+        assert settings.use_shell_elements
+        settings.relative_residual = 1e-3
+        assert settings.relative_residual == 1e-3
+        settings.enhanced_low_frequency_accuracy = True
+        assert settings.enhanced_low_frequency_accuracy
+
+        # advanced settings
+        advanced_settings = settings.advanced
+        advanced_settings.defeature_absolute_length = "1um"
+        assert advanced_settings.defeature_absolute_length == "1um"
+        advanced_settings.defeature_ratio = 0.1
+        assert advanced_settings.defeature_ratio == 0.1
+        advanced_settings.healing_option = 0
+        assert advanced_settings.healing_option == 0
+        advanced_settings.ic_mode_auto_resolution = True
+        assert advanced_settings.ic_mode_auto_resolution
+        advanced_settings.mesh_for_via_plating = True
+        assert advanced_settings.mesh_for_via_plating
+        assert advanced_settings.model_type == "general"
+        advanced_settings.num_via_density = 1e-3
+        assert advanced_settings.num_via_density == 1e-3
+        advanced_settings.num_via_sides = 12
+        assert advanced_settings.num_via_sides == 12
+        advanced_settings.remove_floating_geometry = True
+        assert advanced_settings.remove_floating_geometry
+        advanced_settings.small_void_area = 1e-4
+        assert advanced_settings.small_void_area == 1e-4
+        advanced_settings.union_polygons = True
+        assert advanced_settings.union_polygons
+        advanced_settings.use_defeature = True
+        assert advanced_settings.use_defeature
+        advanced_settings.use_defeature_absolute_length = True
+        assert advanced_settings.use_defeature_absolute_length
+        advanced_settings.via_density = 0.1
+        assert advanced_settings.via_density == 0.1
+
+        # advanced meshing
+        mesh_advanced = settings.advanced_meshing
+        mesh_advanced.arc_step_size = "15deg"
+        assert mesh_advanced.arc_step_size == "15deg"
+        mesh_advanced.arc_to_chord_error = "1um"
+        assert mesh_advanced.arc_to_chord_error == "1um"
+        mesh_advanced.circle_start_azimuth = "10deg"
+        assert mesh_advanced.circle_start_azimuth == "10deg"
+        mesh_advanced.layer_snap_tol = 1e-4
+        assert mesh_advanced.layer_snap_tol == "0.0001"
+        mesh_advanced.max_num_arc_points = 6
+        assert mesh_advanced.max_num_arc_points == 6
+        mesh_advanced.use_arc_chord_error_approx = True
+        assert mesh_advanced.use_arc_chord_error_approx
+
+        # dc settings
+        dc = settings.dcr
+        dc.max_passes = 20
+        assert dc.max_passes == 20
+        dc.min_converged_passes = 2
+        assert dc.min_converged_passes == 2
+        dc.min_passes = 2
+        assert dc.min_passes == 2
+        dc.percent_error = 0.01
+        assert dc.percent_error == 0.01
+        dc.percent_refinement_per_pass = 0.5
+        assert dc.percent_refinement_per_pass == 0.5
+
+        # general settings
+        general = settings.general
+        assert general.adapt_type == "single"
+        general.max_refine_per_pass = 15
+        assert general.max_refine_per_pass == 15
+        general.min_passes = 2
+        assert general.min_passes == 2
+        general.save_fields = True
+        assert general.save_fields
+        general.save_rad_fields_only = True
+        assert general.save_rad_fields_only
+        general.use_max_refinement = True
+        assert general.use_max_refinement
+        general.use_mesh_region = True
+        assert general.use_mesh_region
+        general.use_parallel_refinement = True
+        assert general.use_parallel_refinement
+
+        # options
+        options = settings.options
+        options.do_lambda_refine = False
+        assert not options.do_lambda_refine
+        options.enhanced_low_frequency_accuracy = True
+        assert options.enhanced_low_frequency_accuracy
+        options.lamda_target = 0.33
+        assert options.lamda_target == 0.33
+        options.max_refinement_per_pass = 15
+        assert options.max_refinement_per_pass == 15
+        options.mesh_size_factor = 2.0
+        assert options.mesh_size_factor == 2.0
+        options.min_converged_passes = 2
+        assert options.min_converged_passes == 2
+        options.min_passes = 2
+        assert options.min_passes == 2
+        options.order_basis = "zero"
+        assert options.order_basis == "zero"
+        options.relative_residual = 1e-3
+        assert options.relative_residual == 1e-3
+        assert options.solver_type == "direct_solver"
+        options.solver_type = "iterative_solver"
+        assert options.solver_type == "iterative_solver"
+        # TODO bug #680 in pyedb core
+        # options.use_default_lambda_value = True # bug returning lambda target instead
+        # assert options.use_default_lambda_value
+        options.use_max_refinement = True
+        assert options.use_max_refinement
+        options.use_mesh_region = True
+        assert options.use_mesh_region
+        edbapp.close(terminate_rpc_session=False)

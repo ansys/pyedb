@@ -36,7 +36,7 @@ class HFSSAdvancedMeshingSettings:
         self._pedb = pedb
 
     @property
-    def arc_step_size(self) -> float:
+    def arc_step_size(self) -> str:
         """Get or set the arc step size.
 
         Returns
@@ -47,11 +47,11 @@ class HFSSAdvancedMeshingSettings:
         return self.core.arc_step_size
 
     @arc_step_size.setter
-    def arc_step_size(self, value: float):
-        self.core.arc_step_size = self._pedb.value(value)
+    def arc_step_size(self, value: str):
+        self.core.arc_step_size = value
 
     @property
-    def arc_to_chord_error(self) -> float:
+    def arc_to_chord_error(self) -> str:
         """Get or set the arc to chord error.
 
         Returns
@@ -62,11 +62,11 @@ class HFSSAdvancedMeshingSettings:
         return self.core.arc_to_chord_error
 
     @arc_to_chord_error.setter
-    def arc_to_chord_error(self, value: float):
+    def arc_to_chord_error(self, value: str):
         self.core.arc_to_chord_error = value
 
     @property
-    def circle_start_azimuth(self) -> float:
+    def circle_start_azimuth(self) -> str:
         """Get or set the circle start azimuth.
 
         Returns
@@ -77,23 +77,23 @@ class HFSSAdvancedMeshingSettings:
         return self.core.circle_start_azimuth
 
     @circle_start_azimuth.setter
-    def circle_start_azimuth(self, value: float):
-        self.core.circle_start_azimuth = self._pedb.value(value)
+    def circle_start_azimuth(self, value: str):
+        self.core.circle_start_azimuth = value
 
     @property
-    def layer_snap_tol(self) -> float:
+    def layer_snap_tol(self) -> str:
         """Get or set the layer snap tolerance.
 
         Returns
         -------
-        float
+        str
             Layer snap tolerance.
         """
         return self.core.layer_snap_tol
 
     @layer_snap_tol.setter
-    def layer_snap_tol(self, value: float):
-        self.core.layer_snap_tol = value
+    def layer_snap_tol(self, value: str):
+        self.core.layer_snap_tol = str(value)
 
     @property
     def max_arc_points(self) -> int:

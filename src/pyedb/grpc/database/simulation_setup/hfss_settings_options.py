@@ -28,6 +28,10 @@ if TYPE_CHECKING:
         HFSSSettingsOptions as GrpcHFSSSettingsOptions,
         SolverType as GrpcSolverType,
     )
+from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
+    BasisFunctionOrder as GrpcBasisFunctionOrder,
+    SolverType as GrpcSolverType,
+)
 
 
 class HFSSSettingsOptions:
@@ -159,18 +163,18 @@ class HFSSSettingsOptions:
             Order basis name.
 
         """
-        return self.core.order_basis.name
+        return self.core.order_basis.name.lower().split("_")[0]
 
     @order_basis.setter
     def order_basis(self, value):
-        if value == "ZERO_ORDER":
+        if value.upper() == "ZERO":
             self.core.order_basis = GrpcBasisFunctionOrder.ZERO_ORDER
-        elif value == "FIRST_ORDER":
+        elif value.upper() == "FIRST":
             self.core.order_basis = GrpcBasisFunctionOrder.FIRST_ORDER
-        elif value == "SECOND_ORDER":
-            self.core.order_basis = GrpcBasisFunctionOrder.SECOND_ORDER
-        elif value == "MIXED_ORDER":
+        elif value.upper() == "MIXED":
             self.core.order_basis = GrpcBasisFunctionOrder.MIXED_ORDER
+        elif value.upper() == "SECOND":
+            self.core.order_basis = GrpcBasisFunctionOrder.SECOND_ORDER
 
     @property
     def relative_residual(self) -> float:
@@ -190,17 +194,17 @@ class HFSSSettingsOptions:
 
     @property
     def solver_type(self):
-        return self.core.solver_type.name()
+        return self.core.solver_type.name.lower()
 
     @solver_type.setter
     def solver_type(self, value):
-        if value == "AUTO_SOLVER":
+        if value.upper() == "AUTO_SOLVER":
             self.core.solver_type = GrpcSolverType.AUTO_SOLVER
-        elif value == "DIRECT_SOLVER":
+        elif value.upper() == "DIRECT_SOLVER":
             self.core.solver_type = GrpcSolverType.DIRECT_SOLVER
-        elif value == "ITERATIVE_SOLVER":
+        elif value.upper() == "ITERATIVE_SOLVER":
             self.core.solver_type = GrpcSolverType.ITERATIVE_SOLVER
-        elif value == "NUM_SOLVER_TYPES":
+        elif value.upper() == "NUM_SOLVER_TYPES":
             self.core.solver_type = GrpcSolverType.NUM_SOLVER_TYPES
 
     @property
@@ -216,11 +220,11 @@ class HFSSSettingsOptions:
         return self.core.use_default_lambda_value
 
     @use_default_lambda_value.setter
-    def use_default_lambda_value(self, value: bool):
+    def use_default_lambda_value(self, value: float):
         self.core.use_default_lambda_value = value
 
     @property
-    def use_max_refinement(self) -> bool:
+    def use_max_refinement(self) -> float:
         """Flag to indicate whether to use maximum refinement.
 
         Returns
