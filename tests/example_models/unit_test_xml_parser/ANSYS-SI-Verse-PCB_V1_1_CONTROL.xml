@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<c:Control xmlns:c="http://www.ansys.com/control" schemaVersion="1.0">
+
+  <Stackup schemaVersion="1.0">
+    <Materials>
+      <Material Name="air">
+        <Permittivity>
+          <Double>1.0006</Double>
+        </Permittivity>
+        <Permeability>
+          <Double>1.0000004</Double>
+        </Permeability>
+        <Conductivity>
+          <Double>0</Double>
+        </Conductivity>
+        <DielectricLossTangent>
+          <Double>0</Double>
+        </DielectricLossTangent>
+        <MagneticLossTangent>
+          <Double>0</Double>
+        </MagneticLossTangent>
+      </Material>
+      <Material Name="copper">
+        <Permittivity>
+          <Double>1</Double>
+        </Permittivity>
+        <Permeability>
+          <Double>0.999991</Double>
+        </Permeability>
+        <Conductivity>
+          <Double>58000000</Double>
+        </Conductivity>
+        <DielectricLossTangent>
+          <Double>0</Double>
+        </DielectricLossTangent>
+        <MagneticLossTangent>
+          <Double>0</Double>
+        </MagneticLossTangent>
+      </Material>
+      <Material Name="FR4_epoxy">
+        <Permittivity>
+          <Double>4.4</Double>
+        </Permittivity>
+        <Permeability>
+          <Double>1</Double>
+        </Permeability>
+        <Conductivity>
+          <Double>0</Double>
+        </Conductivity>
+        <DielectricLossTangent>
+          <Double>0.02</Double>
+        </DielectricLossTangent>
+        <MagneticLossTangent>
+          <Double>0</Double>
+        </MagneticLossTangent>
+      </Material>
+      <Material Name="ODB_DIEL_de1">
+        <Permittivity>
+          <Double>3.77</Double>
+        </Permittivity>
+        <DielectricLossTangent>
+          <Double>0.005</Double>
+        </DielectricLossTangent>
+      </Material>
+      <Material Name="ODB_DIEL_de2">
+        <Permittivity>
+          <Double>3.47</Double>
+        </Permittivity>
+        <DielectricLossTangent>
+          <Double>0.006</Double>
+        </DielectricLossTangent>
+      </Material>
+      <Material Name="ODB_DIEL_de4">
+        <Permittivity>
+          <Double>4.2</Double>
+        </Permittivity>
+        <DielectricLossTangent>
+          <Double>0.005</Double>
+        </DielectricLossTangent>
+      </Material>
+      <Material Name="ODB_DIEL_top">
+        <Permittivity>
+          <Double>1</Double>
+        </Permittivity>
+      </Material>
+      <Material Name="ODB_DIEL_top_soldermask">
+        <Permittivity>
+          <Double>3</Double>
+        </Permittivity>
+        <DielectricLossTangent>
+          <Double>0</Double>
+        </DielectricLossTangent>
+      </Material>
+    </Materials>
+    <Layers LengthUnit="mil">
+      <Layer Color="#44614c" Material="ODB_DIEL_top_soldermask" Name="top_soldermask" Thickness="0.984251968503937" Type="soldermask"/>
+      <Layer Color="#5c4300" FillMaterial="ODB_DIEL_top" Material="copper" Name="top" Thickness="1.377992125984252" Type="conductor"/>
+      <Layer Color="#1a291f" Material="ODB_DIEL_de1" Name="de1" Thickness="3.937007874015748" Type="dielectric"/>
+      <Layer Color="#8db7ca" FillMaterial="ODB_DIEL_top" Material="copper" Name="inner1_gnd1" Thickness="0.6692913385826771" Type="conductor"/>
+      <Layer Color="#264a33" Material="ODB_DIEL_de2" Name="de2" Thickness="3.464566929133858" Type="dielectric"/>
+      <Layer Color="#fd777a" FillMaterial="ODB_DIEL_top" Material="copper" Name="inner2_pwr1" Thickness="0.6692913385826771" Type="conductor"/>
+      <Layer Color="#44614c" Material="ODB_DIEL_de1" Name="de3" Thickness="3.937007874015748" Type="dielectric"/>
+      <Layer Color="#f67fc1" FillMaterial="ODB_DIEL_top" Material="copper" Name="inner3_sig1" Thickness="0.6692913385826771" Type="conductor"/>
+      <Layer Color="#1a291f" Material="ODB_DIEL_de4" Name="de4" Thickness="39.37007874015748" Type="dielectric"/>
+      <Layer Color="#efa15d" FillMaterial="ODB_DIEL_top" Material="copper" Name="inner4_sig2" Thickness="0.6692913385826771" Type="conductor"/>
+      <Layer Color="#264a33" Material="ODB_DIEL_de1" Name="de5" Thickness="3.937007874015748" Type="dielectric"/>
+      <Layer Color="#868feb" FillMaterial="ODB_DIEL_top" Material="copper" Name="inner5_pwr2" Thickness="0.6692913385826771" Type="conductor"/>
+      <Layer Color="#44614c" Material="ODB_DIEL_de2" Name="de6" Thickness="3.464566929133858" Type="dielectric"/>
+      <Layer Color="#289889" FillMaterial="ODB_DIEL_top" Material="copper" Name="inner6_gnd2" Thickness="0.6692913385826771" Type="conductor"/>
+      <Layer Color="#1a291f" Material="ODB_DIEL_de1" Name="de7" Thickness="3.937007874015748" Type="dielectric"/>
+      <Layer Color="#553755" FillMaterial="ODB_DIEL_top" Material="copper" Name="bottom" Thickness="1.377992125984252" Type="conductor"/>
+      <Layer Color="#264a33" FillMaterial="air" Material="ODB_DIEL_top_soldermask" Name="bottom_soldermask" Thickness="0.984251968503937" Type="soldermask"/>
+      <Layer Color="#6db148" Name="top_silkscreen" Type="silkscreen"/>
+      <Layer Color="#d5503d" Name="bottom_silkscreen" Type="silkscreen"/>
+      <Layer Color="#5c4300" Name="Outline" Type="outline"/>
+    </Layers>
+  </Stackup>
+
+  <ImportOptions EnableDefaultComponentValues="true" Flatten="true"/>
+
+  <Nets>
+    <Net Name="+VREFDDR4" PinsBecomePorts="false"/>
+    <Net Name="1.2V_AVDDL" PinsBecomePorts="false"/>
+    <Net Name="1.2V_AVDLL_PLL" PinsBecomePorts="false"/>
+    <Net Name="1.2V_DVDDL" PinsBecomePorts="false"/>
+    <Net Name="1.8V_DVDDH" PinsBecomePorts="false"/>
+    <Net Name="12V-In" PinsBecomePorts="false"/>
+    <Net Name="1V0" PinsBecomePorts="false"/>
+    <Net Name="2V5" PinsBecomePorts="false"/>
+    <Net Name="3.3V_AVDDH" PinsBecomePorts="false"/>
+    <Net Name="5V" PinsBecomePorts="false"/>
+    <Net Name="A10_GNDSENSE" PinsBecomePorts="false"/>
+    <Net Name="AVCC_1V3" PinsBecomePorts="false"/>
+    <Net Name="CLOCK_I2C_SCL" PinsBecomePorts="false"/>
+    <Net Name="CLOCK_I2C_SDA" PinsBecomePorts="false"/>
+    <Net Name="DDR4_A0" PinsBecomePorts="false"/>
+    <Net Name="DDR4_A1" PinsBecomePorts="false"/>
+    <Net Name="DDR4_A10" PinsBecomePorts="false"/>
+    <Net Name="DDR4_A11" PinsBecomePorts="false"/>
+    <Net Name="DDR4_A12" PinsBecomePorts="false"/>
+    <Net Name="DDR4_A13" PinsBecomePorts="false"/>
+    <Net Name="DDR4_A2" PinsBecomePorts="false"/>
+    <Net Name="DDR4_A3" PinsBecomePorts="false"/>
+    <Net Name="DDR4_A4" PinsBecomePorts="false"/>
+    <Net Name="DDR4_A5" PinsBecomePorts="false"/>
+    <Net Name="DDR4_A6" PinsBecomePorts="false"/>
+    <Net Name="DDR4_A7" PinsBecomePorts="false"/>
+    <Net Name="DDR4_A8" PinsBecomePorts="false"/>
+    <Net Name="DDR4_A9" PinsBecomePorts="false"/>
+    <Net Name="DDR4_ACT" PinsBecomePorts="false"/>
+    <Net Name="DDR4_ALERT0" PinsBecomePorts="false"/>
+    <Net Name="DDR4_ALERT1" PinsBecomePorts="false"/>
+    <Net Name="DDR4_ALERT2" PinsBecomePorts="false"/>
+    <Net Name="DDR4_ALERT3" PinsBecomePorts="false"/>
+    <Net Name="DDR4_BA0" PinsBecomePorts="false"/>
+    <Net Name="DDR4_BA1" PinsBecomePorts="false"/>
+    <Net Name="DDR4_BG0" PinsBecomePorts="false"/>
+    <Net Name="DDR4_CAS" PinsBecomePorts="false"/>
+    <Net Name="DDR4_CKE" PinsBecomePorts="false"/>
+    <Net Name="DDR4_CLK_N" PinsBecomePorts="false"/>
+    <Net Name="DDR4_CLK_P" PinsBecomePorts="false"/>
+    <Net Name="DDR4_CSN" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DM0" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DM1" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DM2" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DM3" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DM4" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DM5" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DM6" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DM7" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ0" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ1" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ10" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ11" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ12" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ13" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ14" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ15" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ16" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ17" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ18" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ19" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ2" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ20" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ21" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ22" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ23" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ24" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ25" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ26" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ27" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ28" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ29" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ3" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ30" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ31" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ32" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ33" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ34" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ35" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ36" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ37" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ38" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ39" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ4" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ40" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ41" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ42" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ43" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ44" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ45" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ46" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ47" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ48" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ49" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ5" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ50" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ51" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ52" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ53" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ54" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ55" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ56" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ57" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ58" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ59" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ6" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ60" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ61" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ62" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ63" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ7" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ8" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQ9" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS0_N" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS0_P" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS1_N" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS1_P" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS2_N" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS2_P" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS3_N" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS3_P" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS4_N" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS4_P" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS5_N" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS5_P" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS6_N" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS6_P" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS7_N" PinsBecomePorts="false"/>
+    <Net Name="DDR4_DQS7_P" PinsBecomePorts="false"/>
+    <Net Name="DDR4_ODT" PinsBecomePorts="false"/>
+    <Net Name="DDR4_PAR" PinsBecomePorts="false"/>
+    <Net Name="DDR4_RAS" PinsBecomePorts="false"/>
+    <Net Name="DDR4_RESETN" PinsBecomePorts="false"/>
+    <Net Name="DDR4_WEN" PinsBecomePorts="false"/>
+    <Net Name="DP_3V3" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE0_C_N" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE0_C_P" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE0_N" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE0_P" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE1_C_N" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE1_C_P" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE1_N" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE1_P" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE2_C_N" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE2_C_P" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE2_N" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE2_P" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE3_C_N" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE3_C_P" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE3_N" PinsBecomePorts="false"/>
+    <Net Name="DP_ML_LANE3_P" PinsBecomePorts="false"/>
+    <Net Name="DUMMY" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_MDC" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_MDC_R" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_MDIO" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_MDIO_R" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_RXD0" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_RXD0_R" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_RXD1" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_RXD1_R" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_RXD2" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_RXD2_R" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_RXD3" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_RXD3_R" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_RX_CLK" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_RX_CLK_R" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_RX_DV" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_TXD0" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_TXD0_R" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_TXD1" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_TXD1_R" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_TXD2" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_TXD2_R" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_TXD3" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_TXD3_R" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_TX_CLK" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_TX_CLK_R" PinsBecomePorts="false"/>
+    <Net Name="ENET_HPS_TX_EN" PinsBecomePorts="false"/>
+    <Net Name="GND" PinsBecomePorts="false"/>
+    <Net Name="GND_DP" PinsBecomePorts="false"/>
+    <Net Name="JTAG_TCK" PinsBecomePorts="false"/>
+    <Net Name="JTAG_TDI" PinsBecomePorts="false"/>
+    <Net Name="JTAG_TDO" PinsBecomePorts="false"/>
+    <Net Name="JTAG_TMS" PinsBecomePorts="false"/>
+    <Net Name="JTAG_TRST" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH01_N" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH01_P" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH02_N" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH02_P" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH03_N" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH03_P" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH04_N" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH04_P" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH05_N" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH05_P" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH06_N" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH06_P" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH07_N" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH07_P" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH08_N" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH08_P" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH09_N" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH09_P" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH10_N" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH10_P" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH11_N" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH11_P" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH12_N" PinsBecomePorts="false"/>
+    <Net Name="LVDS_CH12_P" PinsBecomePorts="false"/>
+    <Net Name="NetC10_1" PinsBecomePorts="false"/>
+    <Net Name="NetC10_2" PinsBecomePorts="false"/>
+    <Net Name="NetC177_2" PinsBecomePorts="false"/>
+    <Net Name="NetC178_2" PinsBecomePorts="false"/>
+    <Net Name="NetC179_2" PinsBecomePorts="false"/>
+    <Net Name="NetC180_2" PinsBecomePorts="false"/>
+    <Net Name="NetC18_2" PinsBecomePorts="false"/>
+    <Net Name="NetC19_1" PinsBecomePorts="false"/>
+    <Net Name="NetC19_2" PinsBecomePorts="false"/>
+    <Net Name="NetC25_2" PinsBecomePorts="false"/>
+    <Net Name="NetC26_1" PinsBecomePorts="false"/>
+    <Net Name="NetC26_2" PinsBecomePorts="false"/>
+    <Net Name="NetC271_1" PinsBecomePorts="false"/>
+    <Net Name="NetC291_2" PinsBecomePorts="false"/>
+    <Net Name="NetC33_2" PinsBecomePorts="false"/>
+    <Net Name="NetC34_1" PinsBecomePorts="false"/>
+    <Net Name="NetC34_2" PinsBecomePorts="false"/>
+    <Net Name="NetC35_1" PinsBecomePorts="false"/>
+    <Net Name="NetC391_2" PinsBecomePorts="false"/>
+    <Net Name="NetC42_2" PinsBecomePorts="false"/>
+    <Net Name="NetC43_2" PinsBecomePorts="false"/>
+    <Net Name="NetC50_1" PinsBecomePorts="false"/>
+    <Net Name="NetC50_2" PinsBecomePorts="false"/>
+    <Net Name="NetC9_2" PinsBecomePorts="false"/>
+    <Net Name="NetD3_2" PinsBecomePorts="false"/>
+    <Net Name="NetIC1_7" PinsBecomePorts="false"/>
+    <Net Name="NetIC1_8" PinsBecomePorts="false"/>
+    <Net Name="NetIC1_9" PinsBecomePorts="false"/>
+    <Net Name="NetIC2_5" PinsBecomePorts="false"/>
+    <Net Name="NetJ1_13" PinsBecomePorts="false"/>
+    <Net Name="NetJ1_14" PinsBecomePorts="false"/>
+    <Net Name="NetJ1_18" PinsBecomePorts="false"/>
+    <Net Name="NetJ1_19" PinsBecomePorts="false"/>
+    <Net Name="NetJ2_13" PinsBecomePorts="false"/>
+    <Net Name="NetJ2_14" PinsBecomePorts="false"/>
+    <Net Name="NetJ2_16" PinsBecomePorts="false"/>
+    <Net Name="NetJ2_17" PinsBecomePorts="false"/>
+    <Net Name="NetJ3_2" PinsBecomePorts="false"/>
+    <Net Name="NetR100_2" PinsBecomePorts="false"/>
+    <Net Name="NetR102_1" PinsBecomePorts="false"/>
+    <Net Name="NetR104_1" PinsBecomePorts="false"/>
+    <Net Name="NetR105_2" PinsBecomePorts="false"/>
+    <Net Name="NetR106_1" PinsBecomePorts="false"/>
+    <Net Name="NetR108_2" PinsBecomePorts="false"/>
+    <Net Name="NetR113_2" PinsBecomePorts="false"/>
+    <Net Name="NetR114_2" PinsBecomePorts="false"/>
+    <Net Name="NetR115_2" PinsBecomePorts="false"/>
+    <Net Name="NetR116_1" PinsBecomePorts="false"/>
+    <Net Name="NetR116_2" PinsBecomePorts="false"/>
+    <Net Name="NetR117_2" PinsBecomePorts="false"/>
+    <Net Name="NetR119_2" PinsBecomePorts="false"/>
+    <Net Name="NetR11_2" PinsBecomePorts="false"/>
+    <Net Name="NetR120_2" PinsBecomePorts="false"/>
+    <Net Name="NetR121_2" PinsBecomePorts="false"/>
+    <Net Name="NetR122_2" PinsBecomePorts="false"/>
+    <Net Name="NetR123_1" PinsBecomePorts="false"/>
+    <Net Name="NetR124_1" PinsBecomePorts="false"/>
+    <Net Name="NetR12_1" PinsBecomePorts="false"/>
+    <Net Name="NetR13_1" PinsBecomePorts="false"/>
+    <Net Name="NetR1_2" PinsBecomePorts="false"/>
+    <Net Name="NetR22_1" PinsBecomePorts="false"/>
+    <Net Name="NetR24_2" PinsBecomePorts="false"/>
+    <Net Name="NetR25_1" PinsBecomePorts="false"/>
+    <Net Name="NetR26_1" PinsBecomePorts="false"/>
+    <Net Name="NetR34_2" PinsBecomePorts="false"/>
+    <Net Name="NetR65_1" PinsBecomePorts="false"/>
+    <Net Name="NetR66_1" PinsBecomePorts="false"/>
+    <Net Name="NetR82_1" PinsBecomePorts="false"/>
+    <Net Name="NetR83_1" PinsBecomePorts="false"/>
+    <Net Name="NetR8_1" PinsBecomePorts="false"/>
+    <Net Name="NetR99_1" PinsBecomePorts="false"/>
+    <Net Name="NetSW1_2" PinsBecomePorts="false"/>
+    <Net Name="NetSW1_3" PinsBecomePorts="false"/>
+    <Net Name="NetSW1_4" PinsBecomePorts="false"/>
+    <Net Name="NetU13_1" PinsBecomePorts="false"/>
+    <Net Name="NetU13_2" PinsBecomePorts="false"/>
+    <Net Name="NetU1_AP13" PinsBecomePorts="false"/>
+    <Net Name="NetU1_AV11" PinsBecomePorts="false"/>
+    <Net Name="NetU1_AW11" PinsBecomePorts="false"/>
+    <Net Name="NetU1_AW13" PinsBecomePorts="false"/>
+    <Net Name="NetU9_46" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_CLKREQ_L" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_REFCLK_N" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_REFCLK_P" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_RST_L" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_RX0_N" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_RX0_P" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_RX1_N" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_RX1_P" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_RX2_N" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_RX2_P" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_RX3_N" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_RX3_P" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_SMB_CLK" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_SMB_DATA" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX0_CAP_N" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX0_CAP_P" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX0_N" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX0_P" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX1_CAP_N" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX1_CAP_P" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX1_N" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX1_P" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX2_CAP_N" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX2_CAP_P" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX2_N" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX2_P" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX3_CAP_N" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX3_CAP_P" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX3_N" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_TX3_P" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_USB_D_N" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_USB_D_P" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_WAKE_L" PinsBecomePorts="false"/>
+    <Net Name="PCIe_Gen4_W_DISABLE_L" PinsBecomePorts="false"/>
+    <Net Name="PDEN" PinsBecomePorts="false"/>
+    <Net Name="PLL_1V8" PinsBecomePorts="false"/>
+    <Net Name="REFCLK0_FMCB_N" PinsBecomePorts="false"/>
+    <Net Name="REFCLK0_FMCB_P" PinsBecomePorts="false"/>
+    <Net Name="REFCLK_DP_N" PinsBecomePorts="false"/>
+    <Net Name="REFCLK_DP_P" PinsBecomePorts="false"/>
+    <Net Name="SFPA_RS0" PinsBecomePorts="false"/>
+    <Net Name="SFPA_RS1" PinsBecomePorts="false"/>
+    <Net Name="SFPA_RX_N" PinsBecomePorts="false"/>
+    <Net Name="SFPA_RX_P" PinsBecomePorts="false"/>
+    <Net Name="SFPA_Rx_LOS" PinsBecomePorts="false"/>
+    <Net Name="SFPA_SCL" PinsBecomePorts="false"/>
+    <Net Name="SFPA_SDA" PinsBecomePorts="false"/>
+    <Net Name="SFPA_TX_N" PinsBecomePorts="false"/>
+    <Net Name="SFPA_TX_P" PinsBecomePorts="false"/>
+    <Net Name="SFPA_Tx_Disable" PinsBecomePorts="false"/>
+    <Net Name="SFPA_Tx_Fault" PinsBecomePorts="false"/>
+    <Net Name="SFPA_VCCR" PinsBecomePorts="false"/>
+    <Net Name="SFPA_VCCT" PinsBecomePorts="false"/>
+    <Net Name="SFPA__Mod_ABS" PinsBecomePorts="false"/>
+    <Net Name="TRD1_N" PinsBecomePorts="false"/>
+    <Net Name="TRD1_P" PinsBecomePorts="false"/>
+    <Net Name="TRD2_N" PinsBecomePorts="false"/>
+    <Net Name="TRD2_P" PinsBecomePorts="false"/>
+    <Net Name="TRD3_N" PinsBecomePorts="false"/>
+    <Net Name="TRD3_P" PinsBecomePorts="false"/>
+    <Net Name="TRD4_N" PinsBecomePorts="false"/>
+    <Net Name="TRD4_P" PinsBecomePorts="false"/>
+    <Net Name="USB3_D_N" PinsBecomePorts="false"/>
+    <Net Name="USB3_D_P" PinsBecomePorts="false"/>
+    <Net Name="USB3_SSRX_N" PinsBecomePorts="false"/>
+    <Net Name="USB3_SSRX_P" PinsBecomePorts="false"/>
+    <Net Name="USB3_SSTX_C_N" PinsBecomePorts="false"/>
+    <Net Name="USB3_SSTX_C_P" PinsBecomePorts="false"/>
+    <Net Name="USB3_SSTX_N" PinsBecomePorts="false"/>
+    <Net Name="USB3_SSTX_P" PinsBecomePorts="false"/>
+    <Net Name="USB3_VBUS" PinsBecomePorts="false"/>
+    <Net Name="VDD_DDR" PinsBecomePorts="false"/>
+  </Nets>
+
+</c:Control>
