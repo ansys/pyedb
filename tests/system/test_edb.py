@@ -2342,3 +2342,84 @@ class TestClass(BaseTestClass):
         sp.use_state_space = False
         assert not sp.use_state_space
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    def test_siwaves_dcir_simulation_setups_consolidation(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        setup = edbapp.simulation_setups.create_siwave_dcir_setup()
+        assert not setup.is_null
+        setup.name = "test_siwave_dcir_setup"
+        assert setup.name == "test_siwave_dcir_setup"
+
+        # setting.advanced
+        dc = setup.settings.dc
+        dc.compute_inductance = True
+        assert dc.compute_inductance
+        dc.contact_radius = "1mm"
+        assert dc.contact_radius == "1mm"
+        dc.dc_report_config_file = "custom_dc_report.cfg"
+        assert dc.dc_report_config_file == "custom_dc_report.cfg"
+        dc.dc_report_config_file = "custom_dc_report.cfg"
+        assert dc.dc_report_config_file == "custom_dc_report.cfg"
+        dc.dc_slider_pos = 2
+        assert dc.dc_slider_pos == 2
+        dc.export_dc_thermal_data = True
+        assert dc.export_dc_thermal_data
+        dc.full_dc_report_path = "full_dc_report.txt"
+        assert dc.full_dc_report_path == "full_dc_report.txt"
+        dc.icepak_temp_file = "icepak_temp_file.txt"
+        assert dc.icepak_temp_file == "icepak_temp_file.txt"
+        dc.import_thermal_data = True
+        assert dc.import_thermal_data
+        dc.per_pin_res_path = "per_pin_res.txt"
+        assert dc.per_pin_res_path == "per_pin_res.txt"
+        dc.plot_jv = False
+        assert not dc.plot_jv
+        dc.source_terms_to_ground = {"gnd": 1}
+        dc.use_dc_custom_settings = True
+        assert dc.use_dc_custom_settings
+        dc.use_loop_res_for_per_pin = True
+        assert dc.use_loop_res_for_per_pin
+        dc.via_report_path = "via_report.txt"
+        assert dc.via_report_path == "via_report.txt"
+
+        # dc advanced
+        dc_adv = setup.settings.dc_advanced
+        dc_adv.dc_min_plane_area_to_mesh = "0.30mm2"
+        assert dc_adv.dc_min_plane_area_to_mesh == "0.30mm2"
+        dc_adv.dc_min_void_area_to_mesh = "0.02mm2"
+        assert dc_adv.dc_min_void_area_to_mesh == "0.02mm2"
+        dc_adv.energy_error = 1.5
+        assert dc_adv.energy_error == 1.5
+        dc_adv.max_init_mesh_edge_length = "2.0mm"
+        assert dc_adv.max_init_mesh_edge_length == "2.0mm"
+        dc_adv.max_num_passes = 10
+        assert dc_adv.max_num_passes == 10
+        dc_adv.mesh_bws = False
+        assert not dc_adv.mesh_bws
+        dc_adv.mesh_vias = False
+        assert not dc_adv.mesh_vias
+        dc_adv.min_num_passes = 5
+        assert dc_adv.min_num_passes == 5
+        dc_adv.num_bw_sides = 12
+        assert dc_adv.num_bw_sides == 12
+        dc_adv.num_via_sides = 12
+        assert dc_adv.num_via_sides == 12
+        dc_adv.percent_local_refinement = 30
+        assert dc_adv.percent_local_refinement == 30
+        dc_adv.refine_bws = True
+        assert dc_adv.refine_bws
+        dc_adv.refine_vias = True
+        assert dc_adv.refine_vias
+
+        # general
+        general = setup.settings.general
+        general.pi_slider_pos = 0
+        assert general.pi_slider_pos == 0
+        general.si_slider_pos = 2
+        assert general.si_slider_pos == 2
+        general.use_custom_settings = True
+        assert general.use_custom_settings
+        general.user_si_settings = False
+        assert not general.user_si_settings
+        edbapp.close(terminate_rpc_session=False)
