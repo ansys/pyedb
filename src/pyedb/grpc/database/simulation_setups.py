@@ -237,7 +237,7 @@ class SimulationSetups:
         elif solver.lower() == "siwave_dcir":
             setup = SIWaveDCIRSimulationSetup.create(self._pedb, name)
             self._pedb.logger.info(f"SIWave DCIR setup {name} created.")
-        elif solver.lower() == "raptorx":
+        elif solver.lower() == "raptor_x":
             setup = RaptorXSimulationSetup.create(self._pedb, name)
             self._pedb.logger.info(f"RaptorX setup {name} created.")
         elif solver.lower() == "q3d":
@@ -401,7 +401,7 @@ class SimulationSetups:
 
         return cpa_setup
 
-    def create_raptorx_setup(
+    def create_raptor_x_setup(
         self,
         name=None,
         distribution="linear",
@@ -437,7 +437,7 @@ class SimulationSetups:
 
         result = self.create(
             name=name,
-            solver="raptorx",
+            solver="raptor_x",
             distribution=distribution,
             start_freq=start_freq,
             stop_freq=stop_freq,
