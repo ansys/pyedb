@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     )
 
     from pyedb.grpc.edb import Edb
+from typing import Union
 import warnings
 
 from ansys.edb.core.simulation_setup.adaptive_solutions import AdaptiveFrequency as GrpcAdaptiveFrequency
@@ -38,13 +39,13 @@ from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
 from ansys.edb.core.simulation_setup.hfss_simulation_setup import (
     HfssSimulationSetup as GrpcHfssSimulationSetup,
 )
-from ansys.edb.core.simulation_setup.mesh_operation import LengthMeshOperation as GrpcLengthMeshOperation
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.simulation_setup.hfss_general_settings import HFSSGeneralSettings
 from pyedb.grpc.database.simulation_setup.hfss_simulation_settings import HFSSSimulationSettings
-from pyedb.grpc.database.simulation_setup.mesh_operation import MeshOperation
+from pyedb.grpc.database.simulation_setup.length_mesh_operation import LengthMeshOperation
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
+from pyedb.grpc.database.simulation_setup.skin_depth_mesh_operation import SkinDepthMeshOperation
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
 
@@ -78,12 +79,12 @@ class HfssSimulationSetup(SimulationSetup):
         return cls(pedb=edb, core=core, name=name)
 
     @property
-    def mesh_operations(self) -> list[MeshOperation]:
+    def mesh_operations(self) -> list[Union[LengthMeshOperation, SkinDepthMeshOperation]]:
         """List of HFSS mesh operations."""
-        return [MeshOperation(mesh_operation) for mesh_operation in self.core.mesh_operations]
+        return [mesh_operation for mesh_operation in self.core.mesh_operations]
 
     @mesh_operations.setter
-    def mesh_operations(self, mesh_operations: list[MeshOperation]):
+    def mesh_operations(self, mesh_operations: list[Union[LengthMeshOperation, SkinDepthMeshOperation]]):
         self.core.mesh_operations = [mesh_operation.core for mesh_operation in mesh_operations]
 
     @property
@@ -418,7 +419,7 @@ class HfssSimulationSetup(SimulationSetup):
         )
         mesh_ops = self.mesh_operations
         # Wrap the core mesh operation with the MeshOperation wrapper before appending
-        mesh_ops.append(MeshOperation(core=mop))
+        mesh_ops.append(LengthMeshOperation(core=mop))
         self.mesh_operations = mesh_ops
         return mop
 
@@ -487,7 +488,7 @@ class HfssSimulationSetup(SimulationSetup):
             num_layers=str(number_of_layers),
         )
         mesh_ops = self.mesh_operations
-        mesh_ops.append(MeshOperation(mesh_operation))
+        mesh_ops.append(SkinDepthMeshOperation(mesh_operation))
         self.mesh_operations = mesh_ops
         return mesh_operation
 
@@ -545,10 +546,12 @@ class HfssSimulationSetup(SimulationSetup):
         >>> setup.mesh_operations[0].max_length
         '2.5um'
         """
+        from pyedb.grpc.database.simulation_setup.length_mesh_operation import LengthMeshOperation
+
         net_for_mesh_seeding = list(set([term.net.name for term in list(self._pedb.terminals.values())]))
         if not net_for_mesh_seeding:
             raise ValueError("No terminals found to seed the mesh operation.")
-        meshop = GrpcLengthMeshOperation(name=f"{self.name}_AutoMeshOp")
+        meshop = LengthMeshOperation.create(name=f"{self.name}_AutoMeshOp")
         layer_info = []
         smallest_width = 1e3
         for net in net_for_mesh_seeding:
