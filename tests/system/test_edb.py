@@ -2202,11 +2202,143 @@ class TestClass(BaseTestClass):
         assert options.solver_type == "direct_solver"
         options.solver_type = "iterative_solver"
         assert options.solver_type == "iterative_solver"
-        # TODO bug #680 in pyedb core
-        # options.use_default_lambda_value = True # bug returning lambda target instead
+        # TODO bug #680 in pyedb core -> returning lambda target instead
+        # options.use_default_lambda_value = True
         # assert options.use_default_lambda_value
         options.use_max_refinement = True
         assert options.use_max_refinement
         options.use_mesh_region = True
         assert options.use_mesh_region
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    def test_siwaves_simulation_setups_consolidation(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        setup = edbapp.simulation_setups.create_siwave_setup()
+        assert not setup.is_null
+        setup.name = "test_siwave_setup"
+        assert setup.name == "test_siwave_setup"
+
+        # settings advanced
+        adv_settings = setup.settings.advanced
+        adv_settings.cross_talk_threshold = -60
+        assert adv_settings.cross_talk_threshold == -60
+        adv_settings.ignore_non_functional_pads = False
+        assert not adv_settings.ignore_non_functional_pads
+        adv_settings.include_co_plane_coupling = False
+        assert not adv_settings.include_co_plane_coupling
+        adv_settings.include_fringe_plane_coupling = False
+        assert not adv_settings.include_fringe_plane_coupling
+        adv_settings.include_inf_gnd = True
+        assert adv_settings.include_inf_gnd
+        adv_settings.include_inter_plane_coupling = True
+        assert adv_settings.include_inter_plane_coupling
+        adv_settings.include_split_plane_coupling = False
+        assert not adv_settings.include_split_plane_coupling
+        adv_settings.inf_gnd_location = 1e-3
+        assert adv_settings.inf_gnd_location == 1e-3
+        # TODO check pyedb-core bug #681 -> setter is not working
+        # adv_settings.max_coupled_lines = 30
+        # assert adv_settings.max_coupled_lines == 30
+        adv_settings.mesh_automatic = False
+        assert not adv_settings.mesh_automatic
+        adv_settings.mesh_frequency = 30e9
+        assert adv_settings.mesh_frequency == 30e9
+        adv_settings.min_pad_area_to_mesh = 1e-5
+        assert adv_settings.min_pad_area_to_mesh == 1e-5
+        adv_settings.min_plane_area_to_mesh = 1e-5
+        assert adv_settings.min_plane_area_to_mesh == 1e-5
+        adv_settings.min_void_area = "3mm2"
+        assert adv_settings.min_void_area == "3mm2"
+        adv_settings.perform_erc = True
+        assert adv_settings.perform_erc
+        adv_settings.return_current_distribution = True
+        assert adv_settings.return_current_distribution
+        adv_settings.snap_length_threshold = 30e-6
+        assert adv_settings.snap_length_threshold == 30e-6
+
+        # dc
+        dc = setup.settings.dc
+        dc.compute_inductance = True
+        assert dc.compute_inductance
+        dc.contact_radius = "1mm"
+        assert dc.contact_radius == "1mm"
+        dc.dc_report_config_file = "custom_dc_report.cfg"
+        assert dc.dc_report_config_file == "custom_dc_report.cfg"
+        dc.dc_slider_pos = 2
+        assert dc.dc_slider_pos == 2
+        dc.export_dc_thermal_data = True
+        assert dc.export_dc_thermal_data
+        dc.full_dc_report_path = "full_dc_report.txt"
+        assert dc.full_dc_report_path == "full_dc_report.txt"
+        dc.icepak_temp_file = "icepak_temp_file.txt"
+        assert dc.icepak_temp_file == "icepak_temp_file.txt"
+        dc.import_thermal_data = True
+        assert dc.import_thermal_data
+        dc.per_pin_res_path = "per_pin_res.txt"
+        assert dc.per_pin_res_path == "per_pin_res.txt"
+        dc.per_pin_res_path = "per_pin_res.txt"
+        assert dc.per_pin_res_path == "per_pin_res.txt"
+        dc.per_pin_res_path = "per_pin_res.txt"
+        assert dc.per_pin_res_path == "per_pin_res.txt"
+        dc.plot_jv = False
+        assert not dc.plot_jv
+        dc.source_terms_to_ground = {"gnd": 1}
+        dc.use_dc_custom_settings = True
+        assert dc.use_dc_custom_settings
+        dc.use_loop_res_for_per_pin = True
+        assert dc.use_loop_res_for_per_pin
+        dc.via_report_path = "via_report.txt"
+        assert dc.via_report_path == "via_report.txt"
+
+        # dc advanced
+        dc_adv = setup.settings.dc_advanced
+        dc_adv.dc_min_plane_area_to_mesh = "0.30mm2"
+        assert dc_adv.dc_min_plane_area_to_mesh == "0.30mm2"
+        dc_adv.dc_min_void_area_to_mesh = "0.02mm2"
+        assert dc_adv.dc_min_void_area_to_mesh == "0.02mm2"
+        dc_adv.energy_error = 1.5
+        assert dc_adv.energy_error == 1.5
+        dc_adv.max_init_mesh_edge_length = "2.0mm"
+        assert dc_adv.max_init_mesh_edge_length == "2.0mm"
+        dc_adv.max_num_passes = 10
+        assert dc_adv.max_num_passes == 10
+        dc_adv.mesh_bws = False
+        assert not dc_adv.mesh_bws
+        dc_adv.mesh_vias = False
+        assert not dc_adv.mesh_vias
+        dc_adv.min_num_passes = 5
+        assert dc_adv.min_num_passes == 5
+        dc_adv.num_bw_sides = 12
+        assert dc_adv.num_bw_sides == 12
+        dc_adv.num_via_sides = 12
+        assert dc_adv.num_via_sides == 12
+        dc_adv.percent_local_refinement = 30
+        assert dc_adv.percent_local_refinement == 30
+        dc_adv.refine_bws = True
+        assert dc_adv.refine_bws
+        dc_adv.refine_vias = True
+        assert dc_adv.refine_vias
+
+        # general
+        general = setup.settings.general
+        general.pi_slider_pos = 0
+        assert general.pi_slider_pos == 0
+        general.si_slider_pos = 2
+        assert general.si_slider_pos == 2
+        general.use_custom_settings = True
+        assert general.use_custom_settings
+        general.user_si_settings = False
+        assert not general.user_si_settings
+
+        # s-parameters
+        sp = setup.settings.s_parameter
+        sp.dc_behavior = "zero"
+        assert sp.dc_behavior == "zero"
+        sp.extrapolation = "same"
+        assert sp.extrapolation == "same"
+        sp.interpolation = "point"
+        assert sp.interpolation == "point"
+        sp.use_state_space = False
+        assert not sp.use_state_space
         edbapp.close(terminate_rpc_session=False)

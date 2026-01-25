@@ -58,28 +58,20 @@ class SIWaveDCSettings:
         self.core.compute_inductance = value
 
     @property
-    def contact_radius(self) -> float:
+    def contact_radius(self) -> str:
         """Contact radius value.
 
         Returns
         -------
-        float
+        str
             Contact radius.
 
         """
-        return self._pedb.value(self.core.contact_radius.value)
+        return self.core.contact_radius
 
     @contact_radius.setter
-    def contact_radius(self, value: float):
-        """Set contact radius value.
-
-        Parameters
-        ----------
-        value : float
-            Contact radius.
-
-        """
-        self.core.contact_radius = str(self._pedb.value(value))
+    def contact_radius(self, value: str):
+        self.core.contact_radius = value
 
     @property
     def dc_slider_pos(self) -> int:
