@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.utility.port_post_processing_prop import PortPostProcessingProp as GrpcPortPostProcessing
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 
