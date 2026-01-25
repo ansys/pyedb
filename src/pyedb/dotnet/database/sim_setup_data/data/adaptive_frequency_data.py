@@ -51,7 +51,7 @@ class AdaptiveFrequencyData(object):
         -------
         str
         """
-        return self._adaptive_frequency_data.MaxDelta
+        return float(self._adaptive_frequency_data.MaxDelta)
 
     @max_delta.setter
     def max_delta(self, value):
