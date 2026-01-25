@@ -28,7 +28,6 @@ if TYPE_CHECKING:
 
 from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetupType as GrpcSimulationSetupType
 
-from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
 _mapping_simulation_types = {
