@@ -27,6 +27,7 @@ from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
 )
 
+import pyedb
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
 from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
 from pyedb.grpc.database.simulation_setup.siwave_simulation_settings import SIWaveSimulationSettings
@@ -41,12 +42,12 @@ class SIWaveDCIRSimulationSetup(SimulationSetup):
         self._pedb = pedb
 
     @classmethod
-    def create(cls, edb: "ansys.edb.core.Edb", name: str = "Siwave_DCIR"):
+    def create(cls, edb: "pyedb.Edb", name: str = "Siwave_DCIR"):
         """Create a SIWave DCIR simulation setup.
 
         Parameters
         ----------
-        edb : ansys.edb.core.Edb
+        edb : Edb object
             An EDB instance.
 
         name : str

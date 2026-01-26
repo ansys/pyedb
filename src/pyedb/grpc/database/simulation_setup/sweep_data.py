@@ -155,7 +155,7 @@ class SweepData:
         if core:
             self.core = core
         else:
-            if not distribution in _mapping_distribution:
+            if distribution not in _mapping_distribution:
                 raise ValueError(
                     f"Unsupported distribution type: {distribution}. "
                     f"Supported types are: {list(_mapping_distribution.keys())}"

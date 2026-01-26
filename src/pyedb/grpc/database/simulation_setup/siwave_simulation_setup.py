@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Union
-
 from ansys.edb.core.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup as GrpcSIWaveSimulationSetup
 
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
@@ -40,7 +38,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         self._pedb = pedb
 
     @classmethod
-    def create(cls, edb: "Edb", name: str = "siwave_setup") -> "SiwaveSimulationSetup":
+    def create(cls, edb: "pyedb.grpc.edb.Edb", name: str = "siwave_setup") -> "SiwaveSimulationSetup":
         """Create a SIWave simulation setup object.
 
         Parameters

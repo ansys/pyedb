@@ -148,7 +148,7 @@ class HFSSSimulationSettings:
             This attribute was added for dotnet compatibility and will be removed in future releases.
         """
         warnings.warn(
-            f"The 'relative_residual' property is deprecated and will be removed in future releases. ",
+            "The 'relative_residual' property is deprecated and will be removed in future releases.",
             DeprecationWarning,
         )
         return self.options.relative_residual

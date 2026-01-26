@@ -72,8 +72,6 @@ import time
 import traceback
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
-from pyedb.grpc.database.simulation_setup.q3d_simulation_setup import Q3DSimulationSetup
-
 if TYPE_CHECKING:
     from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
 import warnings
