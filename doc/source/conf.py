@@ -409,7 +409,7 @@ html_theme_options = {
         "output": "autoapi",
         "directory": "src/pyedb",
         "add_toctree_entry": False,
-        "package_depth": 1,
+        "package_depth": 4,
     },
 }
 
