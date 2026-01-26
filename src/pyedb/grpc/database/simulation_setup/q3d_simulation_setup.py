@@ -14,12 +14,14 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNE SS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
+from typing import TYPE_CHECKING
 
 from ansys.edb.core.simulation_setup.q3d_simulation_setup import Q3DSimulationSetup as GrpcQ3DSimulationSetup
 
@@ -27,19 +29,23 @@ from pyedb.grpc.database.simulation_setup.q3d_simulation_settings import Q3DSimu
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
+if TYPE_CHECKING:
+    # Import only for type checking to avoid runtime circular imports
+    from pyedb.grpc.edb import Edb
+
 
 class Q3DSimulationSetup(SimulationSetup):
     """Q3D simulation setup management.
 
     Parameters
     ----------
-    pedb : :class:`Edb < pyedb.grpc.edb.Edb>`
+    pedb : :class:`Edb`
         Inherited object.
     """
 
     def __init__(self, pedb, core: "GrpcQ3DSimulationSetup"):
         super().__init__(pedb, core)
-        self.core: GrpcQ3DSimulationSetup
+        self.core: GrpcQ3DSimulationSetup = core
         self._pedb = pedb
 
     @classmethod
@@ -48,7 +54,7 @@ class Q3DSimulationSetup(SimulationSetup):
 
         Parameters
         ----------
-        edb : :class:`Edb < pyedb.grpc.edb.Edb>`
+        edb : Edb
             Inherited object.
 
         name : str, optional
@@ -56,7 +62,7 @@ class Q3DSimulationSetup(SimulationSetup):
 
         Returns
         -------
-        :class:`Q3DSimulationSetup < pyedb.grpc.database.simulation_setup.q3d_simulation_setup.Q3DSimulationSetup>`
+        Q3DSimulationSetup
             The Q3D simulation setup object.
         """
         core = GrpcQ3DSimulationSetup.create(edb.active_cell, name)
@@ -68,8 +74,7 @@ class Q3DSimulationSetup(SimulationSetup):
 
         Returns
         -------
-        :class:`Q3DSimulationSettings
-        < pyedb.grpc.database.simulation_setup.q3d_simulation_settings.Q3DSimulationSettings>`
+        Q3DSimulationSettings
             The Q3D simulation settings object.
         """
         return Q3DSimulationSettings(self._pedb, self.core.settings)
@@ -80,7 +85,7 @@ class Q3DSimulationSetup(SimulationSetup):
 
         Returns
         -------
-        list[:class:`SweepData < pyedb.grpc.database.simulation_setup.sweep_data.SweepData>`]
+        list[SweepData]
             List of sweep data objects.
         """
         return [SweepData(self._pedb, sd) for sd in self.core.sweep_data]

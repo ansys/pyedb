@@ -189,11 +189,12 @@ class SimulationSetup:
                 for sweep in self.core.sweep_data:
                     sweep_data.append(sweep)
                 self.core.sweep_data = sweep_data
+            return None
         else:
             start_freq = self._pedb.number_with_units(start_freq, "Hz")
             stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
             step = str(step)
-            if not distribution in ["LIN", "LINC", "ESTP", "DEC", "OCT"]:
+            if distribution not in ["LIN", "LINC", "ESTP", "DEC", "OCT"]:
                 if distribution.lower() == "linear" or distribution.lower() == "linear scale":
                     distribution = "LIN"
                 elif distribution.lower() == "linear_count" or distribution.lower() == "linear count":

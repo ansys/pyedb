@@ -2427,7 +2427,7 @@ class TestClass(BaseTestClass):
         adv_settings.use_accelerate_via_extraction = False
         assert not adv_settings.use_accelerate_via_extraction
         adv_settings.use_auto_removal_sliver_poly = True
-        assert adv_settings.use_auto_removal_sliver_poly == True
+        assert adv_settings.use_auto_removal_sliver_poly
         adv_settings.use_cells_per_wavelength = True
         assert adv_settings.use_cells_per_wavelength
         adv_settings.use_edge_mesh = True

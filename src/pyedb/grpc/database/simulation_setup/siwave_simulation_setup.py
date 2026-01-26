@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from typing import TYPE_CHECKING
+
 from ansys.edb.core.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup as GrpcSIWaveSimulationSetup
 
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
@@ -28,22 +30,26 @@ from pyedb.grpc.database.simulation_setup.siwave_dc_advanced import SIWaveDCAdva
 from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
 from pyedb.grpc.database.simulation_setup.siwave_simulation_settings import SIWaveSimulationSettings
 
+if TYPE_CHECKING:
+    from pyedb.grpc.edb import Edb
+
 
 class SiwaveSimulationSetup(SimulationSetup):
     """SIwave simulation setup class."""
 
     def __init__(self, pedb, core: "GrpcSIWaveSimulationSetup"):
         super().__init__(pedb, core)
-        self.core = core
+        # give static analyzers a concrete type for core
+        self.core: GrpcSIWaveSimulationSetup = core
         self._pedb = pedb
 
     @classmethod
-    def create(cls, edb: "pyedb.grpc.edb.Edb", name: str = "siwave_setup") -> "SiwaveSimulationSetup":
+    def create(cls, edb: "Edb", name: str = "siwave_setup") -> "SiwaveSimulationSetup":
         """Create a SIWave simulation setup object.
 
         Parameters
         ----------
-        edb : :class:`Edb < pyedb.grpc.edb.Edb>`
+        edb : :class:`Edb`
             Inherited object.
 
         name : str, optional

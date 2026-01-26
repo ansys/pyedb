@@ -23,8 +23,6 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from ansys.edb.core.simulation_setup.hfss_simulation_settings import AdaptType as GrpcAdaptType
-
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
         AdaptType as GrpcAdaptType,

@@ -32,7 +32,6 @@ if TYPE_CHECKING:
 from typing import Union
 import warnings
 
-from ansys.edb.core.simulation_setup.adaptive_solutions import AdaptiveFrequency as GrpcAdaptiveFrequency
 from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
     AdaptType as GrpcAdaptType,
 )
@@ -558,8 +557,6 @@ class HfssSimulationSetup(SimulationSetup):
         >>> setup.mesh_operations[0].max_length
         '2.5um'
         """
-        from pyedb.grpc.database.simulation_setup.length_mesh_operation import LengthMeshOperation
-
         net_for_mesh_seeding = list(set([term.net.name for term in list(self._pedb.terminals.values())]))
         if not net_for_mesh_seeding:
             raise ValueError("No terminals found to seed the mesh operation.")
