@@ -167,7 +167,7 @@ class Q3DCGSettings:
 
     @solution_order.setter
     def solution_order(self, value: str):
-        if not (self.core.solution_order in _mapping_solution_order.keys()):
+        if not (value in _mapping_solution_order.keys()):
             raise ValueError(
                 f"Invalid solution order: {value}. Valid options are: {list(_mapping_solution_order.keys())}"
             )

@@ -237,4 +237,4 @@ class SimulationSetup:
         str
             Simulation setup type.
         """
-        return _mapping_simulation_types[self.cast()]
+        return _mapping_simulation_types[self.core.type]

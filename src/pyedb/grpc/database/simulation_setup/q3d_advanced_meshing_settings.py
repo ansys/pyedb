@@ -82,7 +82,7 @@ class Q3DAdvancedMeshingSettings:
         self.core.circle_start_azimuth = str(self._pedb.value(value))
 
     @property
-    def layer_alignment(self) -> float:
+    def layer_alignment(self) -> str:
         """Snapping tolerance for hierarchical layer alignment.
 
         Returns
@@ -90,11 +90,11 @@ class Q3DAdvancedMeshingSettings:
         float
             Snapping tolerance for hierarchical layer alignment.
         """
-        return self._pedb.value(self.core.layer_alignment)
+        return self.core.layer_alignment
 
     @layer_alignment.setter
-    def layer_alignment(self, value: float):
-        self.core.layer_alignment = str(self._pedb.value(value))
+    def layer_alignment(self, value: str):
+        self.core.layer_alignment = str(value)
 
     @property
     def max_num_arc_points(self) -> int:
@@ -109,7 +109,7 @@ class Q3DAdvancedMeshingSettings:
 
     @max_num_arc_points.setter
     def max_num_arc_points(self, value: int):
-        self.core.max_num_arc_points = str(value)
+        self.core.max_num_arc_points = value
 
     @property
     def use_arc_chord_error_approx(self) -> bool:

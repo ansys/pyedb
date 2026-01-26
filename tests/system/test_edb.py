@@ -2047,6 +2047,18 @@ class TestClass(BaseTestClass):
         assert source1.reference_terminal.is_reference_terminal
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated only")
+    def test_create_padstack_instance_port(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        pins = list(edbapp.components["U1"].pins.values())
+        pins[0].create_port()
+        pins[1].create_port(name="test_port")
+        edbapp.terminals["test_port"].name = "renamed_port"
+        assert "test_port" not in edbapp.terminals
+        assert "Port_U1_<NO-NET>_A2" in edbapp.terminals
+        assert edbapp.terminals["renamed_port"]
+        edbapp.close(terminate_rpc_session=False)
+
     @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_hfss_simulation_setups_consolidation(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
@@ -2457,14 +2469,91 @@ class TestClass(BaseTestClass):
         assert general.use_gold_em_solver
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated only")
-    def test_create_padstack_instance_port(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        pins = list(edbapp.components["U1"].pins.values())
-        pins[0].create_port()
-        pins[1].create_port(name="test_port")
-        edbapp.terminals["test_port"].name = "renamed_port"
-        assert "test_port" not in edbapp.terminals
-        assert "Port_U1_<NO-NET>_A2" in edbapp.terminals
-        assert edbapp.terminals["renamed_port"]
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    def test_q3d_simulation_setups_consolidation(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        setup = edbapp.simulation_setups.create_q3d_setup()
+        assert not setup.is_null
+        setup.name = "test_q3d_setup"
+        assert setup.name == "test_q3d_setup"
+        assert setup.setup_type == "q3d"
+
+        # acrl settings
+        acrl = setup.settings.acrl
+        acrl.max_frequency = 20
+        assert acrl.max_frequency == 20
+        acrl.max_refine_per_pass = 25
+        assert acrl.max_refine_per_pass == 25
+        acrl.min_converged_passes = 2
+        assert acrl.min_converged_passes == 2
+        acrl.min_passes = 2
+        assert acrl.min_passes == 2
+        acrl.percent_error = 0.5
+        assert acrl.percent_error == 0.5
+
+        # advanced meshing settings
+        adv_mesh = setup.settings.advanced_meshing
+        adv_mesh.arc_step_size = 0.2
+        assert adv_mesh.arc_step_size == 0.2
+        adv_mesh.arc_to_chord_error = 1e-6
+        assert adv_mesh.arc_to_chord_error == 1e-6
+        adv_mesh.circle_start_azimuth = 15
+        assert adv_mesh.circle_start_azimuth == 15
+        # TODO check pyedb-core bug #682 -> setter is broken
+        # adv_mesh.layer_alignment = 1e-4
+        # assert adv_mesh.layer_alignment == 1e-4
+        adv_mesh.max_num_arc_points = 6
+        assert adv_mesh.max_num_arc_points == 6
+        adv_mesh.use_arc_chord_error_approx = True
+        assert adv_mesh.use_arc_chord_error_approx
+
+        # cg settings
+        cg = setup.settings.cg
+        # TODO check pyedb-core bug #683 -> setter is broken
+        # cg.auto_incr_sol_order = False
+        # assert not cg.auto_incr_sol_order
+        cg.compression_tol = 1e-6
+        assert cg.compression_tol == 1e-6
+        cg.max_passes = 20
+        assert cg.max_passes == 20
+        cg.max_refine_per_pass = 20
+        assert cg.max_refine_per_pass == 20
+        cg.min_converged_passes = 2
+        assert cg.min_converged_passes == 2
+        cg.min_passes = 2
+        assert cg.min_passes == 2
+        cg.percent_error = 0.5
+        assert cg.percent_error == 0.5
+        cg.solution_order = "higher"
+        assert cg.solution_order == "higher"
+
+        # dcrl settings
+        dcrl = setup.settings.dcrl
+        dcrl.max_passes = 20
+        assert dcrl.max_passes == 20
+        dcrl.max_refine_per_pass = 20
+        assert dcrl.max_refine_per_pass == 20
+        dcrl.min_converged_passes = 2
+        assert dcrl.min_converged_passes == 2
+        dcrl.min_passes = 2
+        assert dcrl.min_passes == 2
+        dcrl.percent_error = 0.5
+        assert dcrl.percent_error == 0.5
+        dcrl.solution_order = "higher"
+        assert dcrl.solution_order == "higher"
+
+        # general settings
+        general = setup.settings.general
+        general.do_ac = True
+        assert general.do_ac
+        general.do_cg = True
+        assert general.do_cg
+        general.do_dc = False
+        assert not general.do_dc
+        general.do_dc_res_only = True
+        assert general.do_dc_res_only
+        general.save_netlist = True
+        assert general.save_netlist
+        general.solution_frequency = 20e9
+        assert general.solution_frequency == 20e9
         edbapp.close(terminate_rpc_session=False)

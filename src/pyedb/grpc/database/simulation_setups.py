@@ -241,10 +241,10 @@ class SimulationSetups:
             setup = RaptorXSimulationSetup.create(self._pedb, name)
             self._pedb.logger.info(f"RaptorX setup {name} created.")
         elif solver.lower() == "q3d":
-            setup = Q3DSimulationSetup.create(self._pedb.active_cell, name)
+            setup = Q3DSimulationSetup.create(self._pedb, name)
             self._pedb.logger.info(f"Q3D setup {name} created.")
         else:
-            setup = HfssSimulationSetup.create(self._pedb.active_cell, name)
+            setup = HfssSimulationSetup.create(self._pedb, name)
             self._pedb.logger.info(f"HFSS setup {name} created.")
             setup.add_sweep(
                 name=sweep_name,
