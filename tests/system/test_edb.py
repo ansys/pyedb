@@ -2557,3 +2557,33 @@ class TestClass(BaseTestClass):
         general.solution_frequency = 20e9
         assert general.solution_frequency == 20e9
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    def test_sweep(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        setup = edbapp.simulation_setups.create_hfss_setup(
+            name="test_hfss_setup", distribution="decade_count", start_freq="0GHz", stop_freq="1GHz", freq_step="10"
+        )
+        sweep = setup.sweep_data[0]
+        sweep.compute_dc_point = True
+        assert sweep.compute_dc_point
+        sweep.enabled = False
+        assert not sweep.enabled
+        sweep.enabled = True
+        sweep.enforce_causality = True
+        sweep.enforce_passivity = False
+        assert not sweep.enforce_passivity
+        assert sweep.frequency_string == "DEC 0GHz 1GHz 1000000.0"
+        sweep.name = "renamed_sweep"
+        assert sweep.name == "renamed_sweep"
+        sweep.save_fields = True
+        assert sweep.save_fields
+        sweep.save_rad_fields_only = True
+        assert sweep.save_rad_fields_only
+        sweep.type = "discrete"
+        assert sweep.type == "discrete"
+        sweep.use_hfss_solver_regions = True
+        assert sweep.use_hfss_solver_regions
+        sweep.use_q3d_for_dc = True
+        assert sweep.use_q3d_for_dc
+        edbapp.close(terminate_rpc_session=False)
