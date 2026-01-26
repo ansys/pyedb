@@ -118,6 +118,107 @@ class SimulationSetup:
     def sweep_data(self, sweeps: list[SweepData]):
         self.core.sweep_data = [sweep.core for sweep in sweeps]
 
+    def _normalize_distribution(self, distribution: str) -> str:
+        """Normalize user-provided distribution string to internal code.
+
+        Parameters
+        ----------
+        distribution : str
+            User-specified distribution.
+
+        Returns
+        -------
+        str
+            One of: "LIN", "LINC", "ESTP", "DEC", "OCT".
+        """
+        if not distribution:
+            return "LIN"
+        d = distribution.lower().strip()
+        if d in ("linear", "linear scale"):
+            return "LIN"
+        if d in ("linear_count", "linear count"):
+            return "LINC"
+        if d == "exponential":
+            return "ESTP"
+        if d in ("decade_count", "decade count", "log scale", "log_scale"):
+            return "DEC"
+        if d in ("octave_count", "octave count"):
+            return "OCT"
+        # already an internal code?
+        if d.upper() in ("LIN", "LINC", "ESTP", "DEC", "OCT"):
+            return d.upper()
+        return "LIN"
+
+    def _build_sweep_from_params(
+        self, name: str, distribution: str, start_freq, stop_freq, step, discrete: bool
+    ) -> SweepData:
+        """Construct a SweepData object from normalized parameters."""
+        start_freq_val = self._pedb.number_with_units(start_freq, "Hz")
+        stop_freq_val = self._pedb.number_with_units(stop_freq, "Hz")
+        step_val = str(step)
+        sweep = SweepData(
+            self._pedb, name=name, distribution=distribution, start_f=start_freq_val, end_f=stop_freq_val, step=step_val
+        )
+        if discrete:
+            # Use the string-based setter to avoid direct enum access
+            sweep.type = "discrete"
+        return sweep
+
+    def _add_sweeps_from_frequency_set(self, frequency_set, name, init_sweep_count, discrete):
+        """Handle the legacy frequency_set format.
+
+        This function creates SweepData entries from the provided frequency_set and
+        appends them to the existing core.sweep_data.
+        """
+        new_sweeps = []
+        for sweep_item in frequency_set:
+            # detect distribution token and map to internal code
+            if "linear_scale" in sweep_item:
+                distribution = "LIN"
+            elif "linear_count" in sweep_item:
+                distribution = "LINC"
+            elif "exponential" in sweep_item:
+                distribution = "ESTP"
+            elif "log_scale" in sweep_item:
+                distribution = "DEC"
+            elif "octave_count" in sweep_item:
+                distribution = "OCT"
+            else:
+                distribution = "LIN"
+
+            start_freq = self._pedb.number_with_units(sweep_item[1], "Hz")
+            stop_freq = self._pedb.number_with_units(sweep_item[2], "Hz")
+            step = str(sweep_item[3])
+            if not name:
+                name = f"sweep_{init_sweep_count + 1}"
+            new_sweeps.append(
+                SweepData(
+                    self._pedb, name=name, distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step
+                )
+            )
+            if discrete:
+                # Use the string-based setter
+                new_sweeps[-1].type = "discrete"
+        # append existing core sweep data (preserve previous entries)
+        for s in self.core.sweep_data:
+            new_sweeps.append(s)
+        self.core.sweep_data = new_sweeps
+
+    def _add_single_sweep(self, sweep: SweepData) -> Union[SweepData, None]:
+        """Insert a single sweep into core.sweep_data preserving existing sweeps.
+
+        Returns the newly added SweepData on success, None otherwise.
+        """
+        init_count = len(self.sweep_data)
+        # Prepend the new sweep keeping previous ones
+        sweep_list = [sweep]
+        for s in self.sweep_data:
+            sweep_list.append(s)
+        self.core.sweep_data = [sw.core for sw in sweep_list]
+        if len(self.sweep_data) == init_count + 1:
+            return self.sweep_data[-1]
+        return None
+
     def add_sweep(
         self,
         name=None,
@@ -130,104 +231,32 @@ class SimulationSetup:
     ) -> Union[SweepData, None]:
         """Add a HFSS frequency sweep.
 
-        Parameters
-        ----------
-        name : str, optional
-         Sweep name.
-        distribution : str, optional
-            Type of the sweep. The default is `"linear"`. Options are:
-            - `"linear"`
-            - `"linear_count"`
-            - `"decade_count"`
-            - `"octave_count"`
-            - `"exponential"`
-        start_freq : str, float, optional
-            Starting frequency. The default is ``1``.
-        stop_freq : str, float, optional
-            Stopping frequency. The default is ``1e9``.
-        step : str, float, int, optional
-            Frequency step. The default is ``1e6``. or used for `"decade_count"`, "linear_count"`, "octave_count"`
-            distribution. Must be integer in that case.
-        discrete : bool, optional
-            Whether the sweep is discrete. The default is ``False``.
-        frequency_set : List, optional
-            Frequency set is a list adding one or more frequency sweeps. If ``frequency_set`` is provided, the other
-            arguments are ignored except ``discrete``. Default value is ``None``.
-            example of frequency_set : [['linear_scale', '50MHz', '200MHz', '10MHz']].
+        This method was refactored to reduce complexity. The behaviour is compatible
+        with the previous implementation: it accepts either a legacy `frequency_set`
+        or single-sweep parameters.
 
         Returns
         -------
-        bool
+        SweepData | None
+            The newly added sweep when single sweep parameters are used, or None when
+            `frequency_set` is provided (legacy multi-sweep behavior).
         """
-        init_sweep_count = len(self.sweep_data)
+        # Legacy batch mode
         if frequency_set:
-            for sweep in frequency_set:
-                if "linear_scale" in sweep:
-                    distribution = "LIN"
-                elif "linear_count" in sweep:
-                    distribution = "LINC"
-                elif "exponential" in sweep:
-                    distribution = "ESTP"
-                elif "log_scale" in sweep:
-                    distribution = "DEC"
-                elif "octave_count" in sweep:
-                    distribution = "OCT"
-                else:
-                    distribution = "LIN"
-                start_freq = self._pedb.number_with_units(sweep[1], "Hz")
-                stop_freq = self._pedb.number_with_units(sweep[2], "Hz")
-                step = str(sweep[3])
-                if not name:
-                    name = f"sweep_{init_sweep_count + 1}"
-                sweep_data = [
-                    SweepData(
-                        self._pedb, name=name, distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step
-                    )
-                ]
-                if discrete:
-                    sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
-                for sweep in self.core.sweep_data:
-                    sweep_data.append(sweep)
-                self.core.sweep_data = sweep_data
+            self._add_sweeps_from_frequency_set(frequency_set, name, len(self.sweep_data), discrete)
             return None
-        else:
-            start_freq = self._pedb.number_with_units(start_freq, "Hz")
-            stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
-            step = str(step)
-            if distribution not in ["LIN", "LINC", "ESTP", "DEC", "OCT"]:
-                if distribution.lower() == "linear" or distribution.lower() == "linear scale":
-                    distribution = "LIN"
-                elif distribution.lower() == "linear_count" or distribution.lower() == "linear count":
-                    distribution = "LINC"
-                elif distribution.lower() == "exponential":
-                    distribution = "ESTP"
-                elif (
-                    distribution.lower() == "decade_count"
-                    or distribution.lower() == "decade count"
-                    or distribution.lower()
-                ) == "log scale":
-                    distribution = "DEC"
-                elif distribution.lower() == "octave_count" or distribution.lower() == "octave count":
-                    distribution = "OCT"
-                else:
-                    distribution = "LIN"
-            if not name:
-                name = f"sweep_{init_sweep_count + 1}"
-            sweep_data = [
-                SweepData(
-                    self._pedb, name=name, distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step
-                )
-            ]
-            if discrete:
-                sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
-            for sweep in self.sweep_data:
-                sweep_data.append(sweep)
-            self.core.sweep_data = [sw.core for sw in sweep_data]
-            if len(self.sweep_data) == init_sweep_count + 1:
-                return self.sweep_data[-1]
-            else:
-                self._pedb.logger.error("Failed to add frequency sweep data")
-                return None
+
+        # Single-sweep mode delegated to helper to reduce complexity
+        distribution_code = self._normalize_distribution(distribution)
+        if not name:
+            name = f"sweep_{len(self.sweep_data) + 1}"
+
+        sweep = self._build_sweep_from_params(name, distribution_code, start_freq, stop_freq, step, discrete)
+        result = self._add_single_sweep(sweep)
+        if result:
+            return result
+        self._pedb.logger.error("Failed to add frequency sweep data")
+        return None
 
     @property
     def setup_type(self) -> str:

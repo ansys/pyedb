@@ -167,7 +167,7 @@ class HFSSSimulationSettings:
             This attribute was added for dotnet compatibility and will be removed in future releases.
         """
         warnings.warn(
-            f"The 'use_shell_elements' property is deprecated and will be removed in future releases. ",
+            "The 'use_shell_elements' property is deprecated and will be removed in future releases. ",
             DeprecationWarning,
         )
         return self.options.use_shell_elements

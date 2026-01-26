@@ -23,9 +23,10 @@
 from typing import TYPE_CHECKING
 import warnings
 
+from ansys.edb.core.simulation_setup.hfss_simulation_settings import AdaptType as GrpcAdaptType
+
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        AdaptType as GrpcAdaptType,
         HFSSGeneralSettings as GrpcHFSSGeneralSettings,
     )
 
@@ -533,7 +534,14 @@ class HFSSGeneralSettings:
             "Use 'adaptive_solution_type' instead.",
             DeprecationWarning,
         )
-        return self.adaptive_solution_type.name.lower()
+        # The underlying core.adaptive_solution_type may be an enum (with .name)
+        # or already a string. Handle both robustly.
+        val = self.core.adaptive_solution_type
+        # If core returns an enum-like object with .name, use it.
+        try:
+            return val.name.lower()
+        except Exception:
+            return str(val).lower()
 
     @property
     def adaptive_solution_type(self) -> str:
@@ -546,7 +554,7 @@ class HFSSGeneralSettings:
             or `num_adapt_type`.
 
         """
-        return self.core.adaptive_solution_type
+        return self.core.adaptive_solution_type.name.lower()
 
     @adaptive_solution_type.setter
     def adaptive_solution_type(self, value):
@@ -577,7 +585,7 @@ class HFSSGeneralSettings:
     def mesh_region_name(self) -> str:
         """Name of the mesh region to use.
 
-        Returnsself.core.broadband_adaptive_solution
+        Returns
         -------
         str
             Mesh region name.
