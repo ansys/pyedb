@@ -64,7 +64,7 @@ class RaptorXSimulationSettings:
         raptor_x_general_settings.RaptorXGeneralSettings>`
 
         """
-        return RaptorXGeneralSettings(self._pedb, self.general.core)
+        return RaptorXGeneralSettings(self._pedb, self.core.general)
 
     @property
     def enabled(self) -> bool:

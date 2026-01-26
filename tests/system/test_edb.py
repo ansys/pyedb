@@ -246,17 +246,8 @@ class TestClass(BaseTestClass):
         assert os.path.exists(os.path.join(self.local_scratch.path, "si_verse_new.aedb", "edb.def"))
         edbapp.close(terminate_rpc_session=False)
 
-    # def test_create_EdbLegacy(self):
-    #     """Create EDB."""
-    #     edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
-    #     assert edb
-    #     assert edb.active_layout
-    #     edb.close(terminate_rpc_session=False)
-
     def test_export_3d(self, edb_examples):
         """Export EDB to HFSS."""
-        # Done
-
         mock_process = MagicMock()
 
         edb = edb_examples.create_empty_edb()
@@ -408,12 +399,6 @@ class TestClass(BaseTestClass):
         # assert edb_stats.occupying_ratio["16_Bottom"] == 0.204925
         edb.close(terminate_rpc_session=False)
 
-    def test_hfss_set_bounding_box_extent(self, edb_examples):
-        """Configure HFSS with bounding box"""
-
-        # obsolete check with config file 2.0
-        pass
-
     def test_create_rlc_component(self, edb_examples):
         """Create rlc components from pin"""
         edb = edb_examples.get_si_verse()
@@ -426,7 +411,6 @@ class TestClass(BaseTestClass):
 
     def test_create_rlc_boundary_on_pins(self, edb_examples):
         """Create hfss rlc boundary on pins."""
-        # Done
         edb = edb_examples.get_si_verse()
         pins = edb.components.get_pin_from_component("U1", "1V0")
         ref_pins = edb.components.get_pin_from_component("U1", "GND")
@@ -435,7 +419,6 @@ class TestClass(BaseTestClass):
 
     def test_configure_hfss_analysis_setup_enforce_causality(self, edb_examples):
         """Configure HFSS analysis setup."""
-        # Done
         edb = edb_examples.get_si_verse()
         assert len(edb.setups) == 0
         edb.hfss.add_setup()
@@ -781,20 +764,8 @@ class TestClass(BaseTestClass):
             setup1.sweep_data[-1].use_q3d_for_dc = True
         edbapp.close(terminate_rpc_session=False)
 
-    def test_siwave_dc_simulation_setup(self, edb_examples):
-        """Create a dc simulation setup and evaluate its properties."""
-        # Obsolete addressed in config 2.0 section.
-        pass
-
-    def test_siwave_ac_simulation_setup(self, edb_examples):
-        """Create an ac simulation setup and evaluate its properties."""
-        # Obsolete addressed in config 2.0 section.
-        pass
-
     def test_siwave_create_port_between_pin_and_layer(self, edb_examples):
         """Create circuit port between pin and a reference layer."""
-        # Done
-
         edbapp = edb_examples.get_si_verse()
         assert edbapp.siwave.create_port_between_pin_and_layer(
             component_name="U1", pins_name="A27", layer_name="16_Bottom", reference_net="GND"
@@ -827,7 +798,6 @@ class TestClass(BaseTestClass):
 
     def test_siwave_source_setter(self, edb_examples):
         """Evaluate siwave sources property."""
-        # Done
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_sources.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_134_source_setter.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
@@ -909,7 +879,6 @@ class TestClass(BaseTestClass):
 
     def test_stackup_properties(self, edb_examples):
         """Evaluate stackup properties."""
-        # Done
         edb = edb_examples.create_empty_edb()
         edb.stackup.add_layer(layer_name="gnd", fillMaterial="air", thickness="10um")
         edb.stackup.add_layer(layer_name="diel1", fillMaterial="air", thickness="200um", base_layer="gnd")
@@ -1158,7 +1127,6 @@ class TestClass(BaseTestClass):
         """Add new layers with control file."""
         from pyedb.generic.control_file import ControlFile
 
-        # Done
         ctrl = ControlFile()
         # Material
         ctrl.stackup.add_material(material_name="Copper", conductivity=5.56e7)
@@ -1287,7 +1255,6 @@ class TestClass(BaseTestClass):
 
     def test_move_and_edit_polygons(self, edb_examples):
         """Move a polygon."""
-        # Done
         edbapp = edb_examples.create_empty_edb()
 
         edbapp.stackup.add_layer("GND")
@@ -1318,7 +1285,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_icepak(self, edb_examples):
-        # Done
         edbapp = edb_examples.get_si_verse(additional_files_folders=["siwave/icepak_component.pwrd"])
         edbapp.siwave.icepak_use_minimal_comp_defaults = True
         assert edbapp.siwave.icepak_use_minimal_comp_defaults
@@ -1430,7 +1396,6 @@ class TestClass(BaseTestClass):
         pass
 
     def test_create_port_on_component_no_ref_pins_in_component(self, edb_examples):
-        # Done
         edbapp = edb_examples.get_no_ref_pins_component()
         edbapp.components.create_port_on_component(
             component="J2E2",
@@ -1459,7 +1424,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_create_ping_group(self, edb_examples):
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.modeler.create_pin_group(
             name="test1", pins_by_id=[4294969495, 4294969494, 4294969496, 4294969497]
@@ -1478,7 +1442,6 @@ class TestClass(BaseTestClass):
 
     def test_create_edb_with_zip(self):
         """Create EDB from zip file."""
-        # Done
         from pyedb import Edb
 
         src = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1_0.zip")
@@ -1679,7 +1642,6 @@ class TestClass(BaseTestClass):
     @pytest.mark.skipif(not config["use_grpc"], reason="Supported only in grpc")
     def test_active_cell_setter(self, edb_examples):
         """Use multiple cells."""
-
         src = os.path.join(local_path, "example_models", "TEDB", "multi_cells.aedb")
         edb = edb_examples.load_edb(edb_path=src)
         edb.active_cell = edb.circuit_cells[0]
@@ -1715,8 +1677,6 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     def test_import_layout_file(self, edb_examples):
-        from pyedb import Edb
-
         def copy_gds_file():
             input_file_src = os.path.join(
                 local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example.gds"
@@ -2014,7 +1974,7 @@ class TestClass(BaseTestClass):
         from pyedb import Edb
 
         vlctech_path = os.path.join(local_path, "example_models", "cad", "vlctech", "test.vlc.tech.typ")
-        edbapp = Edb()
+        edbapp = edb_examples.create_empty_edb()
         assert edbapp.import_vlctech_stackup(vlctech_path)
         assert os.path.exists(edbapp.edbpath) and edbapp.edbpath[-12:] == "vlctech.aedb"
         assert edbapp.close(terminate_rpc_session=False)
@@ -2422,6 +2382,79 @@ class TestClass(BaseTestClass):
         assert general.use_custom_settings
         general.user_si_settings = False
         assert not general.user_si_settings
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    def test_raptor_x_simulation_setups_consolidation(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        setup = edbapp.simulation_setups.create_raptor_x_setup()
+        assert not setup.is_null
+        setup.name = "test_raptorx_setup"
+        assert setup.name == "test_raptorx_setup"
+
+        # advanced general settings
+        adv_settings = setup.settings.advanced
+        adv_settings.auto_removal_sliver_poly = 1e-2
+        assert adv_settings.auto_removal_sliver_poly == 1e-2
+        adv_settings.cells_per_wavelength = 60
+        assert adv_settings.cells_per_wavelength == 60
+        adv_settings.defuse_enable_hybrid_extraction = True
+        assert adv_settings.defuse_enable_hybrid_extraction
+        adv_settings.edge_mesh = 1e-6
+        assert adv_settings.edge_mesh == 1e-6
+        adv_settings.eliminate_slit_per_holes = 2.0
+        assert adv_settings.eliminate_slit_per_holes == 2.0
+        adv_settings.mesh_bws = 25e9
+        assert adv_settings.mesh_bws == 25e9
+        adv_settings.net_settings_options = {"VDD": ["mesh_vias", "via_diameter"]}
+        assert adv_settings.net_settings_options == {"VDD": ["mesh_vias", "via_diameter"]}
+        adv_settings.override_shrink_factor = 2.0
+        assert adv_settings.override_shrink_factor == 2.0
+        adv_settings.plane_projection_factor = 2.0
+        assert adv_settings.plane_projection_factor == 2.0
+        adv_settings.use_accelerate_via_extraction = False
+        assert not adv_settings.use_accelerate_via_extraction
+        adv_settings.use_auto_removal_sliver_poly = True
+        assert adv_settings.use_auto_removal_sliver_poly == True
+        adv_settings.use_cells_per_wavelength = True
+        assert adv_settings.use_cells_per_wavelength
+        adv_settings.use_edge_mesh = True
+        assert adv_settings.use_edge_mesh
+        adv_settings.use_eliminate_slit_per_holes = True
+        assert adv_settings.use_eliminate_slit_per_holes
+        adv_settings.use_enable_advanced_cap_effects = True
+        assert adv_settings.use_enable_advanced_cap_effects
+        adv_settings.use_enable_etch_transform = True
+        assert adv_settings.use_enable_etch_transform
+        adv_settings.use_enable_substrate_network_extraction = False
+        assert not adv_settings.use_enable_substrate_network_extraction
+        adv_settings.use_extract_floating_metals_floating = False
+        assert not adv_settings.use_extract_floating_metals_floating
+        adv_settings.use_extract_floating_metals_dummy = True
+        assert adv_settings.use_extract_floating_metals_dummy
+        adv_settings.use_lde = True
+        assert adv_settings.use_lde
+        adv_settings.use_mesh_frequency = True
+        assert adv_settings.use_mesh_frequency
+        adv_settings.use_overwrite_shrink_factor = True
+        assert adv_settings.use_overwrite_shrink_factor
+        adv_settings.use_relaxed_z_axis = True
+        assert adv_settings.use_relaxed_z_axis
+
+        # general settings
+        general = setup.settings.general
+        general.global_temperature = 30.0
+        assert general.global_temperature == 30.0
+        general.max_frequency = 35e9
+        assert general.max_frequency == 35e9
+        general.netlist_export_spectre = True
+        assert general.netlist_export_spectre
+        general.save_netlist = True
+        assert general.save_netlist
+        general.save_rfm = True
+        assert general.save_rfm
+        general.use_gold_em_solver = True
+        assert general.use_gold_em_solver
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated only")

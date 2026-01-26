@@ -22,13 +22,13 @@
 
 from typing import TYPE_CHECKING
 
+from ansys.edb.core.simulation_setup.raptor_x_simulation_setup import (
+    RaptorXSimulationSetup as GrpcRaptorXSimulationSetup,
+)
+
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
 
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.raptor_x_simulation_setup import (
-        RaptorXSimulationSetup as GrpcRaptorXSimulationSetup,
-    )
-
     from pyedb.grpc.edb import Edb
 
 
