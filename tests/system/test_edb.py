@@ -433,7 +433,7 @@ class TestClass(BaseTestClass):
         for sweep in sweeps:
             sweep.enforce_causality = True
         setup.sweep_data = sweeps
-        setup.sweep_data[0].enforce_causality
+        assert setup.sweep_data[0].enforce_causality
         edb.close()
 
     def test_create_various_ports_0(self, edb_examples):

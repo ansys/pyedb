@@ -71,7 +71,7 @@ class FrequencyData:
 
     @distribution.setter
     def distribution(self, value: str):
-        if not value in _mapping_distribution:
+        if value not in _mapping_distribution:
             raise ValueError(
                 f"Unsupported distribution type: {value}. Supported types are: {list(_mapping_distribution.keys())}"
             )
@@ -220,7 +220,7 @@ class SweepData:
 
     @type.setter
     def type(self, value: str):
-        if not value in _mapping_sweep_type:
+        if value not in _mapping_sweep_type:
             raise ValueError(
                 f"Unsupported sweep type: {value}. Supported types are: {list(_mapping_sweep_type.keys())}"
             )

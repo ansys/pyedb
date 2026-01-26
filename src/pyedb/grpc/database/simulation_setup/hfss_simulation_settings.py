@@ -129,7 +129,7 @@ class HFSSSimulationSettings:
             This attribute was added for dotnet compatibility and will be removed in future releases.
         """
         warnings.warn(
-            f"The 'enhanced_low_frequency_accuracy' property is deprecated and will be removed in future releases. ",
+            "The 'enhanced_low_frequency_accuracy' property is deprecated and will be removed in future releases. ",
             DeprecationWarning,
         )
         return self.options.enhanced_low_frequency_accuracy
