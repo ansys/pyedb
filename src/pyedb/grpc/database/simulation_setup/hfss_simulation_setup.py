@@ -57,6 +57,7 @@ class HfssSimulationSetup(SimulationSetup):
         self.core = core
         self._pedb = pedb
         self._name = name
+        self._mesh_operations: list[Union[LengthMeshOperation, SkinDepthMeshOperation]] = []
 
     @classmethod
     def create(cls, edb: "Edb", name: str = None):
@@ -81,7 +82,18 @@ class HfssSimulationSetup(SimulationSetup):
     @property
     def mesh_operations(self) -> list[Union[LengthMeshOperation, SkinDepthMeshOperation]]:
         """List of HFSS mesh operations."""
-        return [mesh_operation for mesh_operation in self.core.mesh_operations]
+        from ansys.edb.core.simulation_setup.mesh_operation import (
+            LengthMeshOperation as GrpcLengthMeshOperation,
+            SkinDepthMeshOperation as GrpcSkinDepthMeshOperation,
+        )
+
+        self._mesh_operations = []
+        for mesh_operation in self.core.mesh_operations:
+            if isinstance(mesh_operation, GrpcLengthMeshOperation):
+                self._mesh_operations.append(LengthMeshOperation(core=mesh_operation))
+            elif isinstance(mesh_operation, GrpcSkinDepthMeshOperation):
+                self._mesh_operations.append(SkinDepthMeshOperation(core=mesh_operation))
+        return self._mesh_operations
 
     @mesh_operations.setter
     def mesh_operations(self, mesh_operations: list[Union[LengthMeshOperation, SkinDepthMeshOperation]]):
