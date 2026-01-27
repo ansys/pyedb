@@ -30,8 +30,8 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from typing import Union
 
-from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
-from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
+from ansys.edb.core.hierarchy.pin_group import PinGroup as CorePinGroup
+from ansys.edb.core.terminal.terminal import BoundaryType as CoreBoundaryType
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.terminal.pingroup_terminal import PinGroupTerminal
@@ -68,7 +68,7 @@ class PinGroup:
         """
         if not isinstance(padstack_instances, list):
             raise TypeError("padstack_instances must be list of PadstackInstance")
-        pin_group = GrpcPinGroup.create(layout.core, name, [inst.core for inst in padstack_instances])
+        pin_group = CorePinGroup.create(layout.core, name, [inst.core for inst in padstack_instances])
         return cls(layout._pedb, pin_group)
 
     @property
@@ -201,7 +201,7 @@ class PinGroup:
             Unique name.
 
         """
-        return GrpcPinGroup.unique_name(layout.core, base_name)
+        return CorePinGroup.unique_name(layout.core, base_name)
 
     def create_terminal(self, name=None) -> PinGroupTerminal:
         """Create a terminal.
@@ -258,7 +258,7 @@ class PinGroup:
 
         """
         terminal = self.create_terminal()
-        terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
+        terminal.boundary_type = CoreBoundaryType.CURRENT_SOURCE
         terminal.source_amplitude = Value(magnitude)
         terminal.source_phase = Value(phase)
         terminal.impedance = Value(impedance)
@@ -283,7 +283,7 @@ class PinGroup:
 
         """
         terminal = self.create_terminal()
-        terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
+        terminal.boundary_type = CoreBoundaryType.VOLTAGE_SOURCE
         terminal.source_amplitude = Value(magnitude)
         terminal.source_phase = Value(phase)
         terminal.impedance = Value(impedance)
@@ -304,7 +304,7 @@ class PinGroup:
 
         """
         terminal = self.create_terminal()
-        terminal.boundary_type = GrpcBoundaryType.VOLTAGE_PROBE
+        terminal.boundary_type = CoreBoundaryType.VOLTAGE_PROBE
         terminal.impedance = Value(impedance)
         return terminal
 

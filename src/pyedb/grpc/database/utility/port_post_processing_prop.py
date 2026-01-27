@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.utility.value import Value as GrpcValue
+from ansys.edb.core.utility.value import Value as CoreValue
 
 
 class PortPostProcessingProp:
@@ -52,7 +52,7 @@ class PortPostProcessingProp:
 
     @deembed_length.setter
     def deembed_length(self, value):
-        self.core.deembed_length = GrpcValue(value)
+        self.core.deembed_length = CoreValue(value)
 
     @property
     def renormalization_impedance(self):
@@ -67,7 +67,7 @@ class PortPostProcessingProp:
 
     @renormalization_impedance.setter
     def renormalization_impedance(self, value):
-        self.core.renormalization_impedance = GrpcValue(value)
+        self.core.renormalization_impedance = CoreValue(value)
 
     @property
     def voltage_magnitude(self):
@@ -82,7 +82,7 @@ class PortPostProcessingProp:
 
     @voltage_magnitude.setter
     def voltage_magnitude(self, value):
-        self.core.voltage_magnitude = GrpcValue(value)
+        self.core.voltage_magnitude = CoreValue(value)
 
     @property
     def voltage_phase(self):
@@ -97,7 +97,7 @@ class PortPostProcessingProp:
 
     @voltage_phase.setter
     def voltage_phase(self, value):
-        self.core.voltage_phase = GrpcValue(value)
+        self.core.voltage_phase = CoreValue(value)
 
     @property
     def do_deembed(self):

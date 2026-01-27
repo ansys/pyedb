@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.siwave_simulation_settings import (
-        SIWaveSimulationSettings as GrpcSIWaveSimulationSettings,
+        SIWaveSimulationSettings as CoreSIWaveSimulationSettings,
     )
 from pyedb.grpc.database.simulation_setup.siwave_advanced_settings import SIWaveAdvancedSettings
 from pyedb.grpc.database.simulation_setup.siwave_dc_advanced import SIWaveDCAdvancedSettings
@@ -35,7 +35,7 @@ from pyedb.grpc.database.simulation_setup.siwave_s_parameter_settings import SIW
 
 
 class SIWaveSimulationSettings:
-    def __init__(self, pedb, core: "GrpcSIWaveSimulationSettings"):
+    def __init__(self, pedb, core: "CoreSIWaveSimulationSettings"):
         """PyEDB SIWave simulation settings class."""
         self.core = core
         self._pedb = pedb

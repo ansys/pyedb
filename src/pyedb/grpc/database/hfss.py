@@ -28,9 +28,8 @@ import math
 from typing import Optional
 import warnings
 
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
-from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import (
     HfssSimulationSetup,
 )
@@ -952,7 +951,7 @@ class Hfss:
         for lobj in layout_obj_instances:
             lobj_bbox = lobj.get_bbox()
             tuple_list.append(lobj_bbox)
-        _bbox = GrpcPolygonData.bbox_of_polygons(tuple_list)
+        _bbox = CorePolygonData.bbox_of_polygons(tuple_list)
         layout_bbox = [
             round(_bbox[0].x.value, digit_resolution),
             round(_bbox[0].y.value, digit_resolution),
@@ -1145,8 +1144,8 @@ class Hfss:
             ll = [bb[0].x.value, bb[0].y.value]
             ur = [bb[1].x.value, bb[1].y.value]
             dim = 0.30 * max(abs(ur[0] - ll[0]), abs(ur[1] - ll[1]))
-            terms_bbox.append(GrpcPolygonData([ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim]))
-        return GrpcPolygonData.bbox_of_polygons(terms_bbox)
+            terms_bbox.append(CorePolygonData([ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim]))
+        return CorePolygonData.bbox_of_polygons(terms_bbox)
 
     def get_ports_number(self):
         """Get number of excitation ports.

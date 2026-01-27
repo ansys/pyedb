@@ -27,9 +27,9 @@ This module contains these classes: `EdbLayout` and `Shape`.
 import math
 from typing import Any, Dict, Iterable, List, Optional, Union
 
-from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
+from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import (
-    PolygonData as GrpcPolygonData,
+    PolygonData as CorePolygonData,
 )
 
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
@@ -471,7 +471,7 @@ class Modeler(object):
         if not isinstance(point, list) and len(point) == 2:
             self._logger.error("Provided point must be a list of two values")
             return []
-        pt = GrpcPointData(point)
+        pt = CorePointData(point)
         if isinstance(nets, str):
             nets = [nets]
         elif nets and not isinstance(nets, list) and len(nets) == len([net for net in nets if isinstance(net, str)]):
@@ -619,7 +619,7 @@ class Modeler(object):
                     if check_inside:
                         xcoeff, ycoeff = calc_slope([Value(point.x), Value(point.x)], origin)
 
-                        new_points = GrpcPointData(
+                        new_points = CorePointData(
                             [
                                 Value(str(Value(point.x) + f"{xcoeff}*{offset_name}")),
                                 Value(str(Value(point.y)) + f"{ycoeff}*{offset_name}"),
@@ -687,8 +687,8 @@ class Modeler(object):
                 _points.append(_pt)
             points = _points
             width = Value(width, self._pedb.active_cell)
-            polygon_data = GrpcPolygonData(points)
-        elif isinstance(points, GrpcPolygonData):
+            polygon_data = CorePolygonData(points)
+        elif isinstance(points, CorePolygonData):
             polygon_data = points
         else:
             raise TypeError("Points must be a list of points or a PolygonData object.")
@@ -709,7 +709,7 @@ class Modeler(object):
 
     def create_trace(
         self,
-        path_list: Union[Iterable[float], GrpcPolygonData],
+        path_list: Union[Iterable[float], CorePolygonData],
         layer_name: str,
         width: float = 1,
         net_name: str = "",
@@ -757,7 +757,7 @@ class Modeler(object):
 
     def create_polygon(
         self,
-        points: Union[List[List[float]], GrpcPolygonData],
+        points: Union[List[List[float]], CorePolygonData],
         layer_name: str,
         voids: Optional[List[Any]] = [],
         net_name: str = "",
@@ -785,11 +785,11 @@ class Modeler(object):
             new_points = []
             for idx, i in enumerate(points):
                 new_points.append(
-                    GrpcPointData([Value(i[0], self._pedb.active_cell), Value(i[1], self._pedb.active_cell)])
+                    CorePointData([Value(i[0], self._pedb.active_cell), Value(i[1], self._pedb.active_cell)])
                 )
-            polygon_data = GrpcPolygonData(points=new_points)
+            polygon_data = CorePolygonData(points=new_points)
 
-        elif isinstance(points, GrpcPolygonData):
+        elif isinstance(points, CorePolygonData):
             polygon_data = points
         else:
             polygon_data = points
@@ -798,8 +798,8 @@ class Modeler(object):
             return False
         for void in voids:
             if isinstance(void, list):
-                void_polygon_data = GrpcPolygonData(points=void)
-            elif isinstance(void, GrpcPolygonData):
+                void_polygon_data = CorePolygonData(points=void)
+            elif isinstance(void, CorePolygonData):
                 void_polygon_data = void
             else:
                 void_polygon_data = void.polygon_data
@@ -1171,7 +1171,7 @@ class Modeler(object):
                         list_polygon_data.append(p.polygon_data)
                         delete_list.append(p)
                         all_voids.extend(p.voids)
-            united = GrpcPolygonData.unite(list_polygon_data)
+            united = CorePolygonData.unite(list_polygon_data)
             for item in united:
                 for void in all_voids:
                     if item.intersection_type(void.polygon_data) == 2:

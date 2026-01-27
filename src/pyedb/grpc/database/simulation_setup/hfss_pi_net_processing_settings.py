@@ -22,14 +22,14 @@
 
 
 from ansys.edb.core.simulation_setup.hfss_pi_simulation_settings import (
-    HFSSPINetProcessingSettings as GrpcHFSSPINetProcessingSettings,
+    HFSSPINetProcessingSettings as CoreHFSSPINetProcessingSettings,
 )
 
 
 class HFSSPINetProcessingSettings:
     """PyEDB HFSS PI net processing settings class."""
 
-    def __init__(self, pedb, core: "GrpcHFSSPINetProcessingSettings"):
+    def __init__(self, pedb, core: "CoreHFSSPINetProcessingSettings"):
         self.core = core
         self._pedb = pedb
 

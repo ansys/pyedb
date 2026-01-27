@@ -30,15 +30,15 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import warnings
 
 from ansys.edb.core.definition.padstack_def_data import (
-    PadGeometryType as GrpcPadGeometryType,
-    PadstackDefData as GrpcPadstackDefData,
-    PadstackHoleRange as GrpcPadstackHoleRange,
-    PadType as GrpcPadType,
-    SolderballPlacement as GrpcSolderballPlacement,
-    SolderballShape as GrpcSolderballShape,
+    PadGeometryType as CorePadGeometryType,
+    PadstackDefData as CorePadstackDefData,
+    PadstackHoleRange as CorePadstackHoleRange,
+    PadType as CorePadType,
+    SolderballPlacement as CoreSolderballPlacement,
+    SolderballShape as CoreSolderballShape,
 )
-from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.geometry.point_data import PointData as CorePointData
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 import numpy as np
 import rtree
 
@@ -50,26 +50,26 @@ from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 GEOMETRY_MAP = {
-    0: GrpcPadGeometryType.PADGEOMTYPE_NO_GEOMETRY,
-    1: GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
-    2: GrpcPadGeometryType.PADGEOMTYPE_SQUARE,
-    3: GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE,
-    4: GrpcPadGeometryType.PADGEOMTYPE_OVAL,
-    5: GrpcPadGeometryType.PADGEOMTYPE_BULLET,
-    6: GrpcPadGeometryType.PADGEOMTYPE_NSIDED_POLYGON,
-    7: GrpcPadGeometryType.PADGEOMTYPE_POLYGON,
-    8: GrpcPadGeometryType.PADGEOMTYPE_ROUND45,
-    9: GrpcPadGeometryType.PADGEOMTYPE_ROUND90,
-    10: GrpcPadGeometryType.PADGEOMTYPE_SQUARE45,
-    11: GrpcPadGeometryType.PADGEOMTYPE_SQUARE90,
+    0: CorePadGeometryType.PADGEOMTYPE_NO_GEOMETRY,
+    1: CorePadGeometryType.PADGEOMTYPE_CIRCLE,
+    2: CorePadGeometryType.PADGEOMTYPE_SQUARE,
+    3: CorePadGeometryType.PADGEOMTYPE_RECTANGLE,
+    4: CorePadGeometryType.PADGEOMTYPE_OVAL,
+    5: CorePadGeometryType.PADGEOMTYPE_BULLET,
+    6: CorePadGeometryType.PADGEOMTYPE_NSIDED_POLYGON,
+    7: CorePadGeometryType.PADGEOMTYPE_POLYGON,
+    8: CorePadGeometryType.PADGEOMTYPE_ROUND45,
+    9: CorePadGeometryType.PADGEOMTYPE_ROUND90,
+    10: CorePadGeometryType.PADGEOMTYPE_SQUARE45,
+    11: CorePadGeometryType.PADGEOMTYPE_SQUARE90,
 }
 
 PAD_TYPE_MAP = {
-    0: GrpcPadType.REGULAR_PAD,
-    1: GrpcPadType.ANTI_PAD,
-    2: GrpcPadType.THERMAL_PAD,
-    3: GrpcPadType.HOLE,
-    4: GrpcPadType.UNKNOWN_GEOM_TYPE,
+    0: CorePadType.REGULAR_PAD,
+    1: CorePadType.ANTI_PAD,
+    2: CorePadType.THERMAL_PAD,
+    3: CorePadType.HOLE,
+    4: CorePadType.UNKNOWN_GEOM_TYPE,
 }
 
 
@@ -143,7 +143,7 @@ class Padstacks(object):
         return self._pedb.stackup.layers
 
     @staticmethod
-    def int_to_pad_type(val=0) -> GrpcPadType:
+    def int_to_pad_type(val=0) -> CorePadType:
         """Convert an integer to an EDB.PadGeometryType.
 
         Parameters
@@ -166,7 +166,7 @@ class Padstacks(object):
         return PAD_TYPE_MAP.get(val, val)
 
     @staticmethod
-    def int_to_geometry_type(val: int = 0) -> GrpcPadGeometryType:
+    def int_to_geometry_type(val: int = 0) -> CorePadGeometryType:
         """Convert an integer to an EDB.PadGeometryType.
 
         Parameters
@@ -355,9 +355,9 @@ class Padstacks(object):
         return self._layout.pin_groups
 
     @property
-    def pad_type(self) -> GrpcPadType:
+    def pad_type(self) -> CorePadType:
         """Return a PadType Enumerator."""
-        return GrpcPadType
+        return CorePadType
 
     def create_dielectric_filled_backdrills(
         self,
@@ -587,29 +587,29 @@ class Padstacks(object):
 
         padstack_def = PadstackDef.create(self._pedb, padstackname)
 
-        padstack_data = GrpcPadstackDefData.create()
+        padstack_data = CorePadstackDefData.create()
         list_values = [Value(holediam), Value(paddiam), Value(antipaddiam)]
         padstack_data.set_hole_parameters(
             offset_x=Value(0),
             offset_y=Value(0),
             rotation=Value(0),
-            type_geom=GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
+            type_geom=CorePadGeometryType.PADGEOMTYPE_CIRCLE,
             sizes=list_values,
         )
 
-        padstack_data.hole_range = GrpcPadstackHoleRange.UPPER_PAD_TO_LOWER_PAD
+        padstack_data.hole_range = CorePadstackHoleRange.UPPER_PAD_TO_LOWER_PAD
         layers = list(self._pedb.stackup.signal_layers.keys())
         if not startlayer:
             startlayer = layers[0]
         if not endlayer:
             endlayer = layers[len(layers) - 1]
 
-        antipad_shape = GrpcPadGeometryType.PADGEOMTYPE_CIRCLE
+        antipad_shape = CorePadGeometryType.PADGEOMTYPE_CIRCLE
         started = False
         padstack_data.set_pad_parameters(
             layer="Default",
-            pad_type=GrpcPadType.REGULAR_PAD,
-            type_geom=GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
+            pad_type=CorePadType.REGULAR_PAD,
+            type_geom=CorePadGeometryType.PADGEOMTYPE_CIRCLE,
             offset_x=Value(0),
             offset_y=Value(0),
             rotation=Value(0),
@@ -618,8 +618,8 @@ class Padstacks(object):
 
         padstack_data.set_pad_parameters(
             layer="Default",
-            pad_type=GrpcPadType.ANTI_PAD,
-            type_geom=GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
+            pad_type=CorePadType.ANTI_PAD,
+            type_geom=CorePadGeometryType.PADGEOMTYPE_CIRCLE,
             offset_x=Value(0),
             offset_y=Value(0),
             rotation=Value(0),
@@ -634,8 +634,8 @@ class Padstacks(object):
             if started:
                 padstack_data.set_pad_parameters(
                     layer=layer,
-                    pad_type=GrpcPadType.ANTI_PAD,
-                    type_geom=GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
+                    pad_type=CorePadType.ANTI_PAD,
+                    type_geom=CorePadGeometryType.PADGEOMTYPE_CIRCLE,
                     offset_x=Value(0),
                     offset_y=Value(0),
                     rotation=Value(0),
@@ -644,8 +644,8 @@ class Padstacks(object):
 
                 padstack_data.set_pad_parameters(
                     layer=layer,
-                    pad_type=GrpcPadType.ANTI_PAD,
-                    type_geom=GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
+                    pad_type=CorePadType.ANTI_PAD,
+                    type_geom=CorePadGeometryType.PADGEOMTYPE_CIRCLE,
                     offset_x=Value(0),
                     offset_y=Value(0),
                     rotation=Value(0),
@@ -722,11 +722,11 @@ class Padstacks(object):
 
         else:
             psdef = padstack_instance.padstack_def
-        newdefdata = GrpcPadstackDefData.create(psdef.data)
-        newdefdata.solder_ball_shape = GrpcSolderballShape.SOLDERBALL_CYLINDER
+        newdefdata = CorePadstackDefData.create(psdef.data)
+        newdefdata.solder_ball_shape = CoreSolderballShape.SOLDERBALL_CYLINDER
         newdefdata.solder_ball_param(Value(solder_ball_diameter), Value(solder_ball_diameter))
         sball_placement = (
-            GrpcSolderballPlacement.ABOVE_PADSTACK if top_placed else GrpcSolderballPlacement.BELOW_PADSTACK
+            CoreSolderballPlacement.ABOVE_PADSTACK if top_placed else CoreSolderballPlacement.BELOW_PADSTACK
         )
         newdefdata.solder_ball_placement = sball_placement
         psdef.data = newdefdata
@@ -880,13 +880,13 @@ class Padstacks(object):
         >>> geom_type, params, x, y, rot = edb.padstacks.get_pad_parameters(via, "TOP", "regular_pad")
         """
         if pad_type == "regular_pad":
-            pad_type = GrpcPadType.REGULAR_PAD
+            pad_type = CorePadType.REGULAR_PAD
         elif pad_type == "anti_pad":
-            pad_type = GrpcPadType.ANTI_PAD
+            pad_type = CorePadType.ANTI_PAD
         elif pad_type == "thermal_pad":
-            pad_type = GrpcPadType.THERMAL_PAD
+            pad_type = CorePadType.THERMAL_PAD
         else:
-            pad_type = pad_type = GrpcPadType.REGULAR_PAD
+            pad_type = pad_type = CorePadType.REGULAR_PAD
         padparams = pin.padstack_def.data.get_pad_parameters(layername, pad_type)
         if len(padparams) == 5:  # non polygon via
             geometry_type = padparams[0]
@@ -905,7 +905,7 @@ class Padstacks(object):
                 offset_x = Value(padparams[1])
                 offset_y = Value(padparams[2])
                 rotation = Value(padparams[3])
-                geometry_type = GrpcPadGeometryType.PADGEOMTYPE_POLYGON
+                geometry_type = CorePadGeometryType.PADGEOMTYPE_POLYGON
                 return geometry_type.name, points, offset_x, offset_y, rotation
             return "unknown", [0.0], 0.0, 0.0, 0.0
         # Fallback: ensure a consistent return type for all code paths
@@ -938,16 +938,16 @@ class Padstacks(object):
                 for layer in layers_name:
                     try:
                         geom_type, points, offset_x, offset_y, rotation = cloned_padstack_data.get_pad_parameters(
-                            layer, GrpcPadType.ANTI_PAD
+                            layer, CorePadType.ANTI_PAD
                         )
-                        if geom_type == GrpcPadGeometryType.PADGEOMTYPE_CIRCLE.name:
+                        if geom_type == CorePadGeometryType.PADGEOMTYPE_CIRCLE.name:
                             cloned_padstack_data.set_pad_parameters(
                                 layer=layer,
-                                pad_type=GrpcPadType.ANTI_PAD,
+                                pad_type=CorePadType.ANTI_PAD,
                                 offset_x=Value(offset_x),
                                 offset_y=Value(offset_y),
                                 rotation=Value(rotation),
-                                type_geom=GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
+                                type_geom=CorePadGeometryType.PADGEOMTYPE_CIRCLE,
                                 sizes=[Value(value)],
                             )
                             self._logger.info(
@@ -1148,25 +1148,25 @@ class Padstacks(object):
         value0 = Value("0.0")
         if not padstackname:
             padstackname = generate_unique_name("VIA")
-        padstack_data = GrpcPadstackDefData.create()
+        padstack_data = CorePadstackDefData.create()
         if has_hole and not polygon_hole:
             hole_param = [holediam, holediam]
             padstack_data.set_hole_parameters(
                 offset_x=value0,
                 offset_y=value0,
                 rotation=value0,
-                type_geom=GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
+                type_geom=CorePadGeometryType.PADGEOMTYPE_CIRCLE,
                 sizes=hole_param,
             )
             padstack_data.plating_percentage = Value(20.0)
         elif polygon_hole:
             if isinstance(polygon_hole, list):
-                polygon_hole = GrpcPolygonData(points=polygon_hole)
+                polygon_hole = CorePolygonData(points=polygon_hole)
             padstack_data.set_hole_parameters(
                 offset_x=value0,
                 offset_y=value0,
                 rotation=value0,
-                type_geom=GrpcPadGeometryType.PADGEOMTYPE_POLYGON,
+                type_geom=CorePadGeometryType.PADGEOMTYPE_POLYGON,
                 fp=polygon_hole,
             )
             padstack_data.plating_percentage = Value(20.0)
@@ -1183,13 +1183,13 @@ class Padstacks(object):
         anti_pad_y_size = Value(anti_pad_y_size)
 
         if hole_range == "through":  # pragma no cover
-            padstack_data.hole_range = GrpcPadstackHoleRange.THROUGH
+            padstack_data.hole_range = CorePadstackHoleRange.THROUGH
         elif hole_range == "begin_on_upper_pad":  # pragma no cover
-            padstack_data.hole_range = GrpcPadstackHoleRange.BEGIN_ON_UPPER_PAD
+            padstack_data.hole_range = CorePadstackHoleRange.BEGIN_ON_UPPER_PAD
         elif hole_range == "end_on_lower_pad":  # pragma no cover
-            padstack_data.hole_range = GrpcPadstackHoleRange.END_ON_LOWER_PAD
+            padstack_data.hole_range = CorePadstackHoleRange.END_ON_LOWER_PAD
         elif hole_range == "upper_pad_to_lower_pad":  # pragma no cover
-            padstack_data.hole_range = GrpcPadstackHoleRange.UPPER_PAD_TO_LOWER_PAD
+            padstack_data.hole_range = CorePadstackHoleRange.UPPER_PAD_TO_LOWER_PAD
         else:  # pragma no cover
             self._logger.error("Unknown padstack hole range")
         padstack_data.material = "copper"
@@ -1200,32 +1200,32 @@ class Padstacks(object):
             pad_array = paddiam
         antipad_array = [antipaddiam] if not isinstance(antipaddiam, list) else antipaddiam
         if pad_shape == "Circle":  # pragma no cover
-            pad_shape = GrpcPadGeometryType.PADGEOMTYPE_CIRCLE
+            pad_shape = CorePadGeometryType.PADGEOMTYPE_CIRCLE
         elif pad_shape == "Rectangle":  # pragma no cover
             pad_array = [x_size, y_size]
-            pad_shape = GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE
+            pad_shape = CorePadGeometryType.PADGEOMTYPE_RECTANGLE
         elif pad_shape == "Polygon":
             if isinstance(pad_polygon, list):
-                pad_polygon = PolygonData(edb_object=GrpcPolygonData(points=pad_polygon))
+                pad_polygon = PolygonData(edb_object=CorePolygonData(points=pad_polygon))
         if antipad_shape == "Bullet":  # pragma no cover
             antipad_array = [x_size, y_size, corner_radius]
-            antipad_shape = GrpcPadGeometryType.PADGEOMTYPE_BULLET
+            antipad_shape = CorePadGeometryType.PADGEOMTYPE_BULLET
         elif antipad_shape == "Rectangle":  # pragma no cover
             antipad_array = [anti_pad_x_size, anti_pad_y_size]
-            antipad_shape = GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE
+            antipad_shape = CorePadGeometryType.PADGEOMTYPE_RECTANGLE
         elif antipad_shape == "Polygon":
             if isinstance(antipad_polygon, list):
-                antipad_polygon = PolygonData(edb_object=GrpcPolygonData(points=antipad_polygon))
+                antipad_polygon = PolygonData(edb_object=CorePolygonData(points=antipad_polygon))
         else:
             antipad_array = [antipaddiam] if not isinstance(antipaddiam, list) else antipaddiam
-            antipad_shape = GrpcPadGeometryType.PADGEOMTYPE_CIRCLE
+            antipad_shape = CorePadGeometryType.PADGEOMTYPE_CIRCLE
         if add_default_layer:  # pragma no cover
             layers = layers + ["Default"]
         if antipad_shape == "Polygon" and pad_shape == "Polygon":
             for layer in layers:
                 padstack_data.set_pad_parameters(
                     layer=layer,
-                    pad_type=GrpcPadType.REGULAR_PAD,
+                    pad_type=CorePadType.REGULAR_PAD,
                     offset_x=pad_offset_x,
                     offset_y=pad_offset_y,
                     rotation=pad_rotation,
@@ -1233,7 +1233,7 @@ class Padstacks(object):
                 )
                 padstack_data.set_pad_parameters(
                     layer=layer,
-                    pad_type=GrpcPadType.ANTI_PAD,
+                    pad_type=CorePadType.ANTI_PAD,
                     offset_x=pad_offset_x,
                     offset_y=pad_offset_y,
                     rotation=pad_rotation,
@@ -1243,7 +1243,7 @@ class Padstacks(object):
             for layer in layers:
                 padstack_data.set_pad_parameters(
                     layer=layer,
-                    pad_type=GrpcPadType.REGULAR_PAD,
+                    pad_type=CorePadType.REGULAR_PAD,
                     offset_x=pad_offset_x,
                     offset_y=pad_offset_y,
                     rotation=pad_rotation,
@@ -1253,7 +1253,7 @@ class Padstacks(object):
 
                 padstack_data.set_pad_parameters(
                     layer=layer,
-                    pad_type=GrpcPadType.ANTI_PAD,
+                    pad_type=CorePadType.ANTI_PAD,
                     offset_x=pad_offset_x,
                     offset_y=pad_offset_y,
                     rotation=pad_rotation,
@@ -1342,7 +1342,7 @@ class Padstacks(object):
         if not padstack_def:
             raise RuntimeError("Padstack definition not found")
         pad = definition_name
-        position = GrpcPointData(
+        position = CorePointData(
             [Value(position[0], self._pedb.active_cell), Value(position[1], self._pedb.active_cell)]
         )
         net = self._pedb.nets.find_or_create_net(net_name)
@@ -1403,11 +1403,11 @@ class Padstacks(object):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        pad_type = GrpcPadType.REGULAR_PAD
-        pad_geo = GrpcPadGeometryType.PADGEOMTYPE_CIRCLE
+        pad_type = CorePadType.REGULAR_PAD
+        pad_geo = CorePadGeometryType.PADGEOMTYPE_CIRCLE
         vals = Value(0)
         params = [Value(0)]
-        new_padstack_definition_data = GrpcPadstackDefData(self.definitions[padstack_name].data.core)
+        new_padstack_definition_data = CorePadstackDefData(self.definitions[padstack_name].data.core)
         if not layer_name:
             layer_name = list(self._pedb.stackup.signal_layers.keys())
         elif isinstance(layer_name, str):
@@ -1475,11 +1475,11 @@ class Padstacks(object):
             ``True`` when successful, ``False`` when failed.
         """
         shape_dict = {
-            "Circle": GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
-            "Square": GrpcPadGeometryType.PADGEOMTYPE_SQUARE,
-            "Rectangle": GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE,
-            "Oval": GrpcPadGeometryType.PADGEOMTYPE_OVAL,
-            "Bullet": GrpcPadGeometryType.PADGEOMTYPE_BULLET,
+            "Circle": CorePadGeometryType.PADGEOMTYPE_CIRCLE,
+            "Square": CorePadGeometryType.PADGEOMTYPE_SQUARE,
+            "Rectangle": CorePadGeometryType.PADGEOMTYPE_RECTANGLE,
+            "Oval": CorePadGeometryType.PADGEOMTYPE_OVAL,
+            "Bullet": CorePadGeometryType.PADGEOMTYPE_BULLET,
         }
         pad_shape = shape_dict[pad_shape]
         if not isinstance(pad_params, list):
@@ -1504,7 +1504,7 @@ class Padstacks(object):
         for layer in layer_name:
             cloned_padstack_def_data.set_pad_parameters(
                 layer=layer,
-                pad_type=GrpcPadType.REGULAR_PAD,
+                pad_type=CorePadType.REGULAR_PAD,
                 offset_x=pad_x_offset,
                 offset_y=pad_y_offset,
                 rotation=pad_rotation,
@@ -1513,7 +1513,7 @@ class Padstacks(object):
             )
             cloned_padstack_def_data.set_pad_parameters(
                 layer=layer,
-                pad_type=GrpcPadType.ANTI_PAD,
+                pad_type=CorePadType.ANTI_PAD,
                 offset_x=antipad_x_offset,
                 offset_y=antipad_y_offset,
                 rotation=antipad_rotation,

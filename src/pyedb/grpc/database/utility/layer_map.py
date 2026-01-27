@@ -29,8 +29,8 @@
 from __future__ import absolute_import
 
 from ansys.edb.core.utility.layer_map import (
-    LayerMap as GrpcLayerMap,
-    LayerMapUniqueDirection as GrpcLayerMapUniqueDirection,
+    LayerMap as CoreLayerMap,
+    LayerMapUniqueDirection as CoreLayerMapUniqueDirection,
 )
 
 
@@ -53,11 +53,11 @@ class LayerMap:
             Layer map object.
         """
         mapping = {
-            "two_way": GrpcLayerMapUniqueDirection.TWOWAY_UNIQUE,
-            "forward": GrpcLayerMapUniqueDirection.FORWARD_UNIQUE,
-            "backward": GrpcLayerMapUniqueDirection.BACKWARD_UNIQUE,
+            "two_way": CoreLayerMapUniqueDirection.TWOWAY_UNIQUE,
+            "forward": CoreLayerMapUniqueDirection.FORWARD_UNIQUE,
+            "backward": CoreLayerMapUniqueDirection.BACKWARD_UNIQUE,
         }
-        core_layer_map = GrpcLayerMap.create(mapping[direction])
+        core_layer_map = CoreLayerMap.create(mapping[direction])
         return cls(core_layer_map)
 
     @property

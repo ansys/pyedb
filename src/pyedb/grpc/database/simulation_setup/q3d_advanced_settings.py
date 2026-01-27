@@ -24,7 +24,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DAdvancedSettings as GrpcQ3DAdvancedSettings
+    from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DAdvancedSettings as CoreQ3DAdvancedSettings
 
 
 class Q3DAdvancedSettings:
@@ -36,7 +36,7 @@ class Q3DAdvancedSettings:
         Inherited object.
     """
 
-    def __init__(self, pedb, core: "GrpcQ3DAdvancedSettings"):
+    def __init__(self, pedb, core: "CoreQ3DAdvancedSettings"):
         self._pedb = pedb
         self.core = core
 

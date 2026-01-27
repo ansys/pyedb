@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.simulation_setup.mesh_operation import LengthMeshOperation as GrpcLengthMeshOperation
+from ansys.edb.core.simulation_setup.mesh_operation import LengthMeshOperation as CoreLengthMeshOperation
 
 
 class LengthMeshOperation:
@@ -99,7 +99,7 @@ class LengthMeshOperation:
         LengthMeshOperation : LengthMeshOperation
             The Length Mesh Operation object.
         """
-        core_op = GrpcLengthMeshOperation(
+        core_op = CoreLengthMeshOperation(
             name=name,
             net_layer_info=net_layer_info,
             enabled=enabled,

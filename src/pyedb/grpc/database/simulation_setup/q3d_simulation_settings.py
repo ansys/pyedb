@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.q3d_simulation_settings import (
-        Q3DSimulationSettings as GrpcQ3DSimulationSettings,
+        Q3DSimulationSettings as CoreQ3DSimulationSettings,
     )
 from pyedb.grpc.database.simulation_setup.q3d_acrl_settings import Q3DACRLSettings
 from pyedb.grpc.database.simulation_setup.q3d_advanced_meshing_settings import Q3DAdvancedMeshingSettings
@@ -38,7 +38,7 @@ from pyedb.grpc.database.simulation_setup.q3d_general_settings import Q3DGeneral
 class Q3DSimulationSettings:
     """Q3D simulation settings class."""
 
-    def __init__(self, pedb, core: "GrpcQ3DSimulationSettings"):
+    def __init__(self, pedb, core: "CoreQ3DSimulationSettings"):
         self.core = core
         self._pedb = pedb
 

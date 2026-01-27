@@ -24,7 +24,7 @@
 import warnings
 
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
-    SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
+    SIWaveDCIRSimulationSetup as CoreSIWaveDCIRSimulationSetup,
 )
 
 import pyedb
@@ -36,7 +36,7 @@ from pyedb.grpc.database.simulation_setup.siwave_simulation_settings import SIWa
 class SIWaveDCIRSimulationSetup(SimulationSetup):
     """Siwave Dcir simulation setup class."""
 
-    def __init__(self, pedb, core: "GrpcSIWaveDCIRSimulationSetup"):
+    def __init__(self, pedb, core: "CoreSIWaveDCIRSimulationSetup"):
         super().__init__(pedb, core)
         self.core = core
         self._pedb = pedb
@@ -59,7 +59,7 @@ class SIWaveDCIRSimulationSetup(SimulationSetup):
             The SIWave DCIR simulation setup object.
 
         """
-        core_setup = GrpcSIWaveDCIRSimulationSetup.create(edb.active_cell, name=name)
+        core_setup = CoreSIWaveDCIRSimulationSetup.create(edb.active_cell, name=name)
         return cls(edb, core_setup)
 
     @property

@@ -29,16 +29,16 @@ import re
 from typing import Optional, Union
 import warnings
 
-from ansys.edb.core.definition.debye_model import DebyeModel as GrpcDebyeModel
+from ansys.edb.core.definition.debye_model import DebyeModel as CoreDebyeModel
 from ansys.edb.core.definition.djordjecvic_sarkar_model import (
-    DjordjecvicSarkarModel as GrpcDjordjecvicSarkarModel,
+    DjordjecvicSarkarModel as CoreDjordjecvicSarkarModel,
 )
 from ansys.edb.core.definition.material_def import (
-    MaterialDef as GrpcMaterialDef,
-    MaterialProperty as GrpcMaterialProperty,
+    MaterialDef as CoreMaterialDef,
+    MaterialProperty as CoreMaterialProperty,
 )
 from ansys.edb.core.definition.multipole_debye_model import (
-    MultipoleDebyeModel as GrpcMultipoleDebyeModel,
+    MultipoleDebyeModel as CoreMultipoleDebyeModel,
 )
 from pydantic import BaseModel, confloat
 
@@ -162,11 +162,11 @@ class Material:
         """
         try:
             if self.core.dielectric_material_model.type.name.lower() == "debye":
-                self.__dielectric_model = GrpcDebyeModel(self.core.dielectric_material_model.msg)
+                self.__dielectric_model = CoreDebyeModel(self.core.dielectric_material_model.msg)
             elif self.core.dielectric_material_model.type.name.lower() == "multipole_debye":
-                self.__dielectric_model = GrpcMultipoleDebyeModel(self.core.dielectric_material_model.msg)
+                self.__dielectric_model = CoreMultipoleDebyeModel(self.core.dielectric_material_model.msg)
             elif self.core.dielectric_material_model.type.name.lower() == "djordjecvic_sarkar":
-                self.__dielectric_model = GrpcDjordjecvicSarkarModel(self.core.dielectric_material_model.msg)
+                self.__dielectric_model = CoreDjordjecvicSarkarModel(self.core.dielectric_material_model.msg)
             return self.__dielectric_model
         except:
             return 0.0
@@ -181,7 +181,7 @@ class Material:
          Conductivity value.
         """
         try:
-            return Value(self.core.get_property(GrpcMaterialProperty.CONDUCTIVITY))
+            return Value(self.core.get_property(CoreMaterialProperty.CONDUCTIVITY))
         except:
             return 0.0
 
@@ -194,7 +194,7 @@ class Material:
                 f"Changing conductivity is only allowed when no dielectric model is assigned."
             )
         else:
-            self.core.set_property(GrpcMaterialProperty.CONDUCTIVITY, Value(value))
+            self.core.set_property(CoreMaterialProperty.CONDUCTIVITY, Value(value))
 
     @property
     def dc_conductivity(self):
@@ -309,14 +309,14 @@ class Material:
 
         """
         try:
-            return Value(self.core.get_property(GrpcMaterialProperty.PERMITTIVITY))
+            return Value(self.core.get_property(CoreMaterialProperty.PERMITTIVITY))
         except:
             return 0.0
 
     @permittivity.setter
     def permittivity(self, value):
         """Set material permittivity."""
-        self.core.set_property(GrpcMaterialProperty.PERMITTIVITY, Value(value))
+        self.core.set_property(CoreMaterialProperty.PERMITTIVITY, Value(value))
 
     @property
     def permeability(self) -> float:
@@ -329,14 +329,14 @@ class Material:
 
         """
         try:
-            return Value(self.core.get_property(GrpcMaterialProperty.PERMEABILITY))
+            return Value(self.core.get_property(CoreMaterialProperty.PERMEABILITY))
         except:
             return 0.0
 
     @permeability.setter
     def permeability(self, value):
         """Set material permeability."""
-        self.core.set_property(GrpcMaterialProperty.PERMEABILITY, Value(value))
+        self.core.set_property(CoreMaterialProperty.PERMEABILITY, Value(value))
 
     @property
     def loss_tangent(self):
@@ -366,7 +366,7 @@ class Material:
 
         """
         try:
-            return Value(self.core.get_property(GrpcMaterialProperty.DIELECTRIC_LOSS_TANGENT))
+            return Value(self.core.get_property(CoreMaterialProperty.DIELECTRIC_LOSS_TANGENT))
         except:
             return 0.0
 
@@ -383,7 +383,7 @@ class Material:
     @dielectric_loss_tangent.setter
     def dielectric_loss_tangent(self, value):
         """Set material loss tangent."""
-        self.core.set_property(GrpcMaterialProperty.DIELECTRIC_LOSS_TANGENT, Value(value))
+        self.core.set_property(CoreMaterialProperty.DIELECTRIC_LOSS_TANGENT, Value(value))
 
     @property
     def magnetic_loss_tangent(self) -> float:
@@ -395,14 +395,14 @@ class Material:
             Magnetic loss tangent value.
         """
         try:
-            return Value(self.core.get_property(GrpcMaterialProperty.MAGNETIC_LOSS_TANGENT))
+            return Value(self.core.get_property(CoreMaterialProperty.MAGNETIC_LOSS_TANGENT))
         except:
             return 0.0
 
     @magnetic_loss_tangent.setter
     def magnetic_loss_tangent(self, value):
         """Set material magnetic loss tangent."""
-        self.core.set_property(GrpcMaterialProperty.MAGNETIC_LOSS_TANGENT, Value(value))
+        self.core.set_property(CoreMaterialProperty.MAGNETIC_LOSS_TANGENT, Value(value))
 
     @property
     def thermal_conductivity(self) -> float:
@@ -415,14 +415,14 @@ class Material:
 
         """
         try:
-            return Value(self.core.get_property(GrpcMaterialProperty.THERMAL_CONDUCTIVITY))
+            return Value(self.core.get_property(CoreMaterialProperty.THERMAL_CONDUCTIVITY))
         except:
             return 0.0
 
     @thermal_conductivity.setter
     def thermal_conductivity(self, value):
         """Set material thermal conductivity."""
-        self.core.set_property(GrpcMaterialProperty.THERMAL_CONDUCTIVITY, Value(value))
+        self.core.set_property(CoreMaterialProperty.THERMAL_CONDUCTIVITY, Value(value))
 
     @property
     def mass_density(self) -> float:
@@ -435,14 +435,14 @@ class Material:
 
         """
         try:
-            return Value(self.core.get_property(GrpcMaterialProperty.MASS_DENSITY))
+            return Value(self.core.get_property(CoreMaterialProperty.MASS_DENSITY))
         except:
             return 0.0
 
     @mass_density.setter
     def mass_density(self, value):
         """Set material mass density."""
-        self.core.set_property(GrpcMaterialProperty.MASS_DENSITY, Value(value))
+        self.core.set_property(CoreMaterialProperty.MASS_DENSITY, Value(value))
 
     @property
     def youngs_modulus(self) -> float:
@@ -455,14 +455,14 @@ class Material:
 
         """
         try:
-            return Value(self.core.get_property(GrpcMaterialProperty.YOUNGS_MODULUS))
+            return Value(self.core.get_property(CoreMaterialProperty.YOUNGS_MODULUS))
         except:
             return 0.0
 
     @youngs_modulus.setter
     def youngs_modulus(self, value):
         """Set material young modulus."""
-        self.core.set_property(GrpcMaterialProperty.YOUNGS_MODULUS, Value(value))
+        self.core.set_property(CoreMaterialProperty.YOUNGS_MODULUS, Value(value))
 
     @property
     def specific_heat(self) -> float:
@@ -474,14 +474,14 @@ class Material:
             Material specific heat value.
         """
         try:
-            return Value(self.core.get_property(GrpcMaterialProperty.SPECIFIC_HEAT))
+            return Value(self.core.get_property(CoreMaterialProperty.SPECIFIC_HEAT))
         except:
             return 0.0
 
     @specific_heat.setter
     def specific_heat(self, value):
         """Set material specific heat."""
-        self.core.set_property(GrpcMaterialProperty.SPECIFIC_HEAT, Value(value))
+        self.core.set_property(CoreMaterialProperty.SPECIFIC_HEAT, Value(value))
 
     @property
     def poisson_ratio(self) -> float:
@@ -493,14 +493,14 @@ class Material:
             Material poisson ratio value.
         """
         try:
-            return Value(self.core.get_property(GrpcMaterialProperty.POISSONS_RATIO))
+            return Value(self.core.get_property(CoreMaterialProperty.POISSONS_RATIO))
         except:
             return 0.0
 
     @poisson_ratio.setter
     def poisson_ratio(self, value):
         """Set material poisson ratio."""
-        self.core.set_property(GrpcMaterialProperty.POISSONS_RATIO, Value(value))
+        self.core.set_property(CoreMaterialProperty.POISSONS_RATIO, Value(value))
 
     @property
     def thermal_expansion_coefficient(self) -> float:
@@ -513,26 +513,26 @@ class Material:
 
         """
         try:
-            return Value(self.core.get_property(GrpcMaterialProperty.THERMAL_EXPANSION_COEFFICIENT))
+            return Value(self.core.get_property(CoreMaterialProperty.THERMAL_EXPANSION_COEFFICIENT))
         except:
             return 0.0
 
     @thermal_expansion_coefficient.setter
     def thermal_expansion_coefficient(self, value):
         """Set material thermal coefficient."""
-        self.core.set_property(GrpcMaterialProperty.THERMAL_EXPANSION_COEFFICIENT, Value(value))
+        self.core.set_property(CoreMaterialProperty.THERMAL_EXPANSION_COEFFICIENT, Value(value))
 
     def set_debye_model(self):
         """Set Debye model on current material."""
-        self.core.dielectric_material_model.__set__(self, GrpcDebyeModel.create())
+        self.core.dielectric_material_model.__set__(self, CoreDebyeModel.create())
 
     def set_multipole_debye_model(self):
         """Set multi-pole debeye model on current material."""
-        self.core.dielectric_material_model.__set__(self, GrpcMultipoleDebyeModel.create())
+        self.core.dielectric_material_model.__set__(self, CoreMultipoleDebyeModel.create())
 
     def set_djordjecvic_sarkar_model(self):
         """Set Djordjecvic-Sarkar model on current material."""
-        self.core.dielectric_material_model = GrpcDjordjecvicSarkarModel.create()
+        self.core.dielectric_material_model = CoreDjordjecvicSarkarModel.create()
 
     def to_dict(self):
         """Convert material into dictionary."""
@@ -555,7 +555,7 @@ class Material:
             # NOTE: Contrary to before we don't test 'dielectric_model_frequency' only
             if any(map(lambda attribute: input_dict.get(attribute, None) is not None, DC_ATTRIBUTES)):
                 if not self.__dielectric_model:
-                    self.__dielectric_model = GrpcDjordjecvicSarkarModel.create()
+                    self.__dielectric_model = CoreDjordjecvicSarkarModel.create()
                 for attribute in DC_ATTRIBUTES:
                     if attribute in input_dict:
                         if attribute == "use_dc_relative_conductivity" and input_dict[attribute] is not None:
@@ -665,7 +665,7 @@ class Materials(object):
             m = {material.lower(): material for material in curr_materials}[name.lower()]
             raise ValueError(f"Material names are case-insensitive and '{name}' already exists as '{m}'.")
 
-        material_def = GrpcMaterialDef.create(self.__edb.active_db, name)
+        material_def = CoreMaterialDef.create(self.__edb.active_db, name)
         material = Material(self.__edb, material_def)
         # Apply default values to the material
         if "permeability" not in kwargs:
@@ -763,7 +763,7 @@ class Materials(object):
         elif name.lower() in (material.lower() for material in curr_materials):
             raise ValueError(f"Material names are case-insensitive and {name.lower()} already exists.")
 
-        material_model = GrpcDjordjecvicSarkarModel.create()
+        material_model = CoreDjordjecvicSarkarModel.create()
         material_model.relative_permittivity_at_frequency = permittivity_at_frequency
         material_model.loss_tangent_at_frequency = loss_tangent_at_frequency
         material_model.frequency = dielectric_model_frequency
@@ -831,7 +831,7 @@ class Materials(object):
             raise ValueError(f"Material {name} already exists in material library.")
         elif name.lower() in (material.lower() for material in curr_materials):
             raise ValueError(f"Material names are case-insensitive and {name.lower()} already exists.")
-        material_model = GrpcDebyeModel.create()
+        material_model = CoreDebyeModel.create()
         material_model.frequency_range = (lower_freqency, higher_frequency)
         material_model.loss_tangent_at_high_low_frequency = (loss_tangent_low, loss_tangent_high)
         material_model.relative_permittivity_at_high_low_frequency = (permittivity_low, permittivity_high)
@@ -894,7 +894,7 @@ class Materials(object):
         frequencies = [float(i) for i in frequencies]
         permittivities = [float(i) for i in permittivities]
         loss_tangents = [float(i) for i in loss_tangents]
-        material_model = GrpcMultipoleDebyeModel.create()
+        material_model = CoreMultipoleDebyeModel.create()
         material_model.set_parameters(frequencies, permittivities, loss_tangents)
         try:
             material = self.__add_dielectric_material_model(name, material_model)
@@ -921,12 +921,12 @@ class Materials(object):
         material_model : Any
             Dielectric material model.
         """
-        if GrpcMaterialDef.find_by_name(self.__edb.active_db, name).is_null:
+        if CoreMaterialDef.find_by_name(self.__edb.active_db, name).is_null:
             if name.lower() in (material.lower() for material in self.materials):
                 raise ValueError(f"Material names are case-insensitive and {name.lower()} already exists.")
-            GrpcMaterialDef.create(self.__edb.active_db, name)
+            CoreMaterialDef.create(self.__edb.active_db, name)
 
-        material_def = GrpcMaterialDef.find_by_name(self.__edb.active_db, name)
+        material_def = CoreMaterialDef.find_by_name(self.__edb.active_db, name)
         material_def.dielectric_material_model = material_model
         material = Material(self.__edb, material_def)
         return material
@@ -953,7 +953,7 @@ class Materials(object):
             raise ValueError(f"Material names are case-insensitive and {new_material_name.lower()} already exists.")
 
         material = self.materials[material_name]
-        material_def = GrpcMaterialDef.create(self.__edb.active_db, new_material_name)
+        material_def = CoreMaterialDef.create(self.__edb.active_db, new_material_name)
         material_dict = material.to_dict()
         new_material = Material(self.__edb, material_def)
         new_material.update(material_dict)
@@ -984,7 +984,7 @@ class Materials(object):
         bool
 
         """
-        material_def = GrpcMaterialDef.find_by_name(self.__edb.active_db, material_name)
+        material_def = CoreMaterialDef.find_by_name(self.__edb.active_db, material_name)
         if material_def.is_null:
             raise ValueError(f"Cannot find material {material_name}.")
             return False
@@ -1044,18 +1044,18 @@ class Materials(object):
         """
         # material_property_id = GrpcMaterialProperty.CONDUCTIVITY self.__edb_definition.MaterialPropertyId
         property_name_to_id = {
-            "Permittivity": GrpcMaterialProperty.PERMITTIVITY,
-            "Permeability": GrpcMaterialProperty.PERMEABILITY,
-            "Conductivity": GrpcMaterialProperty.CONDUCTIVITY,
-            "DielectricLossTangent": GrpcMaterialProperty.DIELECTRIC_LOSS_TANGENT,
-            "MagneticLossTangent": GrpcMaterialProperty.MAGNETIC_LOSS_TANGENT,
-            "ThermalConductivity": GrpcMaterialProperty.THERMAL_CONDUCTIVITY,
-            "MassDensity": GrpcMaterialProperty.MASS_DENSITY,
-            "SpecificHeat": GrpcMaterialProperty.SPECIFIC_HEAT,
-            "YoungsModulus": GrpcMaterialProperty.YOUNGS_MODULUS,
-            "PoissonsRatio": GrpcMaterialProperty.POISSONS_RATIO,
-            "ThermalExpansionCoefficient": GrpcMaterialProperty.THERMAL_EXPANSION_COEFFICIENT,
-            "InvalidProperty": GrpcMaterialProperty.INVALID_PROPERTY,
+            "Permittivity": CoreMaterialProperty.PERMITTIVITY,
+            "Permeability": CoreMaterialProperty.PERMEABILITY,
+            "Conductivity": CoreMaterialProperty.CONDUCTIVITY,
+            "DielectricLossTangent": CoreMaterialProperty.DIELECTRIC_LOSS_TANGENT,
+            "MagneticLossTangent": CoreMaterialProperty.MAGNETIC_LOSS_TANGENT,
+            "ThermalConductivity": CoreMaterialProperty.THERMAL_CONDUCTIVITY,
+            "MassDensity": CoreMaterialProperty.MASS_DENSITY,
+            "SpecificHeat": CoreMaterialProperty.SPECIFIC_HEAT,
+            "YoungsModulus": CoreMaterialProperty.YOUNGS_MODULUS,
+            "PoissonsRatio": CoreMaterialProperty.POISSONS_RATIO,
+            "ThermalExpansionCoefficient": CoreMaterialProperty.THERMAL_EXPANSION_COEFFICIENT,
+            "InvalidProperty": CoreMaterialProperty.INVALID_PROPERTY,
         }
 
         if property_name == "loss_tangent":

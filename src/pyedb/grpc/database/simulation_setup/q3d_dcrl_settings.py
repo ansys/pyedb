@@ -14,7 +14,7 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNE SS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
@@ -24,20 +24,20 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DDCRLSettings as GrpcQ3DDCRLSettings
-from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DSolutionOrder as GrpcQ3DSolutionOrder
+    from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DDCRLSettings as CoreQ3DDCRLSettings
+from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DSolutionOrder as CoreQ3DSolutionOrder
 
 _mapping_solution_order = {
-    "normal": GrpcQ3DSolutionOrder.NORMAL,
-    "high": GrpcQ3DSolutionOrder.HIGH,
-    "higher": GrpcQ3DSolutionOrder.HIGHER,
-    "highest": GrpcQ3DSolutionOrder.HIGHEST,
-    "num_solution_order": GrpcQ3DSolutionOrder.NUM_SOLUTION_ORDER,
+    "normal": CoreQ3DSolutionOrder.NORMAL,
+    "high": CoreQ3DSolutionOrder.HIGH,
+    "higher": CoreQ3DSolutionOrder.HIGHER,
+    "highest": CoreQ3DSolutionOrder.HIGHEST,
+    "num_solution_order": CoreQ3DSolutionOrder.NUM_SOLUTION_ORDER,
 }
 
 
 class Q3DDCRLSettings:
-    def __init__(self, pedb, core: "GrpcQ3DDCRLSettings"):
+    def __init__(self, pedb, core: "CoreQ3DDCRLSettings"):
         self.core = core
         self._pedb = pedb
 
@@ -133,4 +133,4 @@ class Q3DDCRLSettings:
         if value.lower() in _mapping_solution_order:
             self.core.solution_order = _mapping_solution_order[value.lower()]
         else:
-            self.core.solution_order = GrpcQ3DSolutionOrder.NORMAL
+            self.core.solution_order = CoreQ3DSolutionOrder.NORMAL

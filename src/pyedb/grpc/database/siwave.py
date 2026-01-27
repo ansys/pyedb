@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.simulation_setup.siwave_simulation_setup import SiwaveSimulationSetup
 import warnings
 
-from ansys.edb.core.database import ProductIdType as GrpcProductIdType
+from ansys.edb.core.database import ProductIdType as CoreProductIdType
 
 from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
     SIWaveCPASimulationSetup,
@@ -1020,18 +1020,18 @@ class Siwave(object):
         If ``True``, only resistors are active in Icepak simulation and power dissipation
         is calculated from DC results.
         """
-        return self._pedb.active_cell.get_product_property(GrpcProductIdType.SIWAVE, 422).value
+        return self._pedb.active_cell.get_product_property(CoreProductIdType.SIWAVE, 422).value
 
     @icepak_use_minimal_comp_defaults.setter
     def icepak_use_minimal_comp_defaults(self, value):
         value = "True" if bool(value) else ""
-        self._pedb.active_cell.set_product_property(GrpcProductIdType.SIWAVE, 422, value)
+        self._pedb.active_cell.set_product_property(CoreProductIdType.SIWAVE, 422, value)
 
     @property
     def icepak_component_file(self) -> str:
         """Icepak component file path."""
-        return self._pedb.active_cell.get_product_property(GrpcProductIdType.SIWAVE, 420).value
+        return self._pedb.active_cell.get_product_property(CoreProductIdType.SIWAVE, 420).value
 
     @icepak_component_file.setter
     def icepak_component_file(self, value):
-        self._pedb.active_cell.set_product_property(GrpcProductIdType.SIWAVE, 420, value)
+        self._pedb.active_cell.set_product_property(CoreProductIdType.SIWAVE, 420, value)

@@ -22,14 +22,14 @@
 
 
 from ansys.edb.core.simulation_setup.siwave_simulation_settings import (
-    SIWaveAdvancedSettings as GrpcSIWaveAdvancedSettings,
+    SIWaveAdvancedSettings as CoreSIWaveAdvancedSettings,
 )
 
 
 class SIWaveAdvancedSettings:
     """SIWave advanced settings class."""
 
-    def __init__(self, pedb, core: "GrpcSIWaveAdvancedSettings"):
+    def __init__(self, pedb, core: "CoreSIWaveAdvancedSettings"):
         self.core = core
         self._pedb = pedb
 

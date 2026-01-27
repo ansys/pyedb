@@ -22,7 +22,7 @@
 
 import os
 
-from ansys.edb.core.definition.component_def import ComponentDef as GrpcComponentDef
+from ansys.edb.core.definition.component_def import ComponentDef as CoreComponentDef
 
 from pyedb.grpc.database.definition.component_pin import ComponentPin
 from pyedb.grpc.database.hierarchy.component import Component
@@ -102,10 +102,10 @@ class ComponentDef:
         -------
         dict[str, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`]
         """
-        from ansys.edb.core.hierarchy.component_group import ComponentGroup as GrpcComponent
+        from ansys.edb.core.hierarchy.component_group import ComponentGroup as CoreComponent
 
         comp_list = [
-            Component(self._pedb, l) for l in GrpcComponent.find_by_def(self._pedb.active_layout.core, self.part_name)
+            Component(self._pedb, l) for l in CoreComponent.find_by_def(self._pedb.active_layout.core, self.part_name)
         ]
         return {comp.refdes: comp for comp in comp_list}
 
@@ -147,7 +147,7 @@ class ComponentDef:
         -------
         :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>` or None
         """
-        core_comp_def = GrpcComponentDef.find(edb.db, name)
+        core_comp_def = CoreComponentDef.find(edb.db, name)
         if not core_comp_def.is_null:
             return ComponentDef(edb, core_comp_def)
         return None
@@ -169,7 +169,7 @@ class ComponentDef:
         -------
         :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>`
         """
-        component_def = GrpcComponentDef.create(edb.db, name, fp)
+        component_def = CoreComponentDef.create(edb.db, name, fp)
         return ComponentDef(edb, component_def)
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False) -> bool:
@@ -287,7 +287,7 @@ class ComponentDef:
         """
 
         from ansys.edb.core.definition.component_model import (
-            NPortComponentModel as GrpcNPortComponentModel,
+            NPortComponentModel as CoreNPortComponentModel,
         )
 
         if not name:
@@ -295,7 +295,7 @@ class ComponentDef:
         model = [model for model in self.component_models if model.name == name]
         if model:
             raise RuntimeError(f"Model {name} already defined for component definition {self.name}")
-        n_port_model = GrpcNPortComponentModel.create(name=name)
+        n_port_model = CoreNPortComponentModel.create(name=name)
         n_port_model.reference_file = fpath
         self.core.add_component_model(n_port_model)
         return n_port_model

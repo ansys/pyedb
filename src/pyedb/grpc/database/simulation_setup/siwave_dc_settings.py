@@ -24,11 +24,11 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.siwave_simulation_settings import SIWaveDCSettings as GrpcSIWaveDCSettings
+    from ansys.edb.core.simulation_setup.siwave_simulation_settings import SIWaveDCSettings as CoreSIWaveDCSettings
 
 
 class SIWaveDCSettings:
-    def __init__(self, pedb, core: "GrpcSIWaveDCSettings"):
+    def __init__(self, pedb, core: "CoreSIWaveDCSettings"):
         """PyEDB SIWave simulation settings class."""
         self.core = core
         self._pedb = pedb

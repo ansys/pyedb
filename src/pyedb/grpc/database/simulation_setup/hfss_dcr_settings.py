@@ -25,14 +25,14 @@ import warnings
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        HFSSDCRSettings as GrpcHFSSDCRSettings,
+        HFSSDCRSettings as CoreHFSSDCRSettings,
     )
 
 
 class HFSSDCRSettings:
     """PyEDB HFSS DC settings class."""
 
-    def __init__(self, pedb, core: "GrpcHFSSDCRSettings"):
+    def __init__(self, pedb, core: "CoreHFSSDCRSettings"):
         self.core = core
         self._pedb = pedb
 

@@ -25,14 +25,14 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.siwave_simulation_settings import (
-        SIWaveDCAdvancedSettings as GrpcSIWaveDCAdvancedSettings,
+        SIWaveDCAdvancedSettings as CoreSIWaveDCAdvancedSettings,
     )
 
 
 class SIWaveDCAdvancedSettings:
     """Siwave DC Advanced simulation settings class."""
 
-    def __init__(self, pedb, core: "GrpcSIWaveDCAdvancedSettings"):
+    def __init__(self, pedb, core: "CoreSIWaveDCAdvancedSettings"):
         self._pedb = pedb
         self.core = core
 

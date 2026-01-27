@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.hierarchy.model import Model as GrpcModel
+from ansys.edb.core.hierarchy.model import Model as CoreModel
 
 
-class Model(GrpcModel):
+class Model(CoreModel):
     """Manages model :class:`Model <ansys.edb.core.hierarchy.model.Model>`."""
 
     def __init__(self, pedb):

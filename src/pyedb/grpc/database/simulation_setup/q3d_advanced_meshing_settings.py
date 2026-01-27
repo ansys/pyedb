@@ -25,14 +25,14 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.q3d_simulation_settings import (
-        Q3DAdvancedMeshingSettings as GrpcQ3DAdvancedMeshingSettings,
+        Q3DAdvancedMeshingSettings as CoreQ3DAdvancedMeshingSettings,
     )
 
 
 class Q3DAdvancedMeshingSettings:
     """Q3D advanced meshing settings class."""
 
-    def __init__(self, pedb, core: "GrpcQ3DAdvancedMeshingSettings"):
+    def __init__(self, pedb, core: "CoreQ3DAdvancedMeshingSettings"):
         self.core = core
         self._pedb = pedb
 

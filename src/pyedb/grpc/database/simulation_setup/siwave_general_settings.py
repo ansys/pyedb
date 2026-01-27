@@ -25,12 +25,12 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.siwave_simulation_settings import (
-        SIWaveGeneralSettings as GrpcSIWaveGeneralSettings,
+        SIWaveGeneralSettings as CoreSIWaveGeneralSettings,
     )
 
 
 class SIWaveGeneralSettings:
-    def __init__(self, pedb, core: "GrpcSIWaveGeneralSettings"):
+    def __init__(self, pedb, core: "CoreSIWaveGeneralSettings"):
         self.core = core
         self._pedb = pedb
 

@@ -24,8 +24,8 @@
 from typing import Union
 
 from ansys.edb.core.primitive.rectangle import (
-    Rectangle as GrpcRectangle,
-    RectangleRepresentationType as GrpcRectangleRepresentationType,
+    Rectangle as CoreRectangle,
+    RectangleRepresentationType as CoreRectangleRepresentationType,
 )
 
 from pyedb.grpc.database.layers.layer import Layer
@@ -42,8 +42,8 @@ class Rectangle(Primitive):
             self.core = core
         self._pedb = pedb
         self._mapping_representation_type = {
-            "center_width_height": GrpcRectangleRepresentationType.CENTER_WIDTH_HEIGHT,
-            "lower_left_upper_right": GrpcRectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT,
+            "center_width_height": CoreRectangleRepresentationType.CENTER_WIDTH_HEIGHT,
+            "lower_left_upper_right": CoreRectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT,
         }
 
     @property
@@ -60,7 +60,7 @@ class Rectangle(Primitive):
     @representation_type.setter
     def representation_type(self, value):
         if not value in self._mapping_representation_type:
-            self.core.representation_type = GrpcRectangleRepresentationType.INVALID_RECT_TYPE
+            self.core.representation_type = CoreRectangleRepresentationType.INVALID_RECT_TYPE
         else:
             self.core.representation_type = self._mapping_representation_type[value]
 
@@ -135,11 +135,11 @@ class Rectangle(Primitive):
             raise ValueError("Net must be provided.")
 
         rep_type_mapping = {
-            "center_width_height": GrpcRectangleRepresentationType.CENTER_WIDTH_HEIGHT,
-            "lower_left_upper_right": GrpcRectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT,
+            "center_width_height": CoreRectangleRepresentationType.CENTER_WIDTH_HEIGHT,
+            "lower_left_upper_right": CoreRectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT,
         }
-        rep_type = rep_type_mapping.get(rep_type, GrpcRectangleRepresentationType.INVALID_RECT_TYPE)
-        edb_object = GrpcRectangle.create(
+        rep_type = rep_type_mapping.get(rep_type, CoreRectangleRepresentationType.INVALID_RECT_TYPE)
+        edb_object = CoreRectangle.create(
             layout=layout.core,
             layer=layer,
             net=net.core,

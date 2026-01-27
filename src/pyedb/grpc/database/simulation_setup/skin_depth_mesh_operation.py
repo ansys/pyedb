@@ -14,13 +14,13 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNE SS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.simulation_setup.mesh_operation import SkinDepthMeshOperation as GrpcSkinDepthMeshOperation
+from ansys.edb.core.simulation_setup.mesh_operation import SkinDepthMeshOperation as CoreSkinDepthMeshOperation
 
 
 class SkinDepthMeshOperation:
@@ -104,7 +104,7 @@ class SkinDepthMeshOperation:
         LengthMeshOperation : LengthMeshOperation
             The Length Mesh Operation object.
         """
-        core_op = GrpcSkinDepthMeshOperation(
+        core_op = CoreSkinDepthMeshOperation(
             name=name,
             net_layer_info=net_layer_info,
             enabled=enabled,

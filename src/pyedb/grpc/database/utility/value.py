@@ -21,14 +21,14 @@
 # SOFTWARE.
 
 import ansys.edb.core.utility.value
-from ansys.edb.core.utility.value import Value as GrpcValue
+from ansys.edb.core.utility.value import Value as CoreValue
 
 
-class Value(float, GrpcValue):
+class Value(float, CoreValue):
     """Class defining Edb Value properties."""
 
     def __new__(cls, val, owner=None) -> float:
-        core = GrpcValue(val, owner)
+        core = CoreValue(val, owner)
         inst = super().__new__(cls, core.value)
         inst._edb_object = core
         inst._context = owner

@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 from ansys.edb.core.simulation_setup.hfss_pi_simulation_settings import (
-    HFSSPISimulationSettings as GrpcHFSSPISimulationSettings,
+    HFSSPISimulationSettings as CoreHFSSPISimulationSettings,
 )
 
 from pyedb.grpc.database.simulation_setup.hfss_pi_general_settings import HFSSPIGeneralSettings
@@ -33,7 +33,7 @@ from pyedb.grpc.database.simulation_setup.hfss_pi_signal_nets_settings import HF
 class HFSSPISimulationSettings:
     """PyEDB HFSS PI simulation setup class."""
 
-    def __init__(self, pedb, core: "GrpcHFSSPISimulationSettings"):
+    def __init__(self, pedb, core: "CoreHFSSPISimulationSettings"):
         self.core = core
         self._pedb = pedb
 

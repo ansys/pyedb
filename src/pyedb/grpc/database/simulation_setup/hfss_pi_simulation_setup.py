@@ -19,9 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 from typing import TYPE_CHECKING
 
-from ansys.edb.core.simulation_setup.hfss_pi_simulation_setup import HFSSPISimulationSetup as GrpcHFSSPISimulationSetup
+from ansys.edb.core.simulation_setup.hfss_pi_simulation_setup import HFSSPISimulationSetup as CoreHFSSPISimulationSetup
 
 from pyedb.grpc.database.simulation_setup.hfss_pi_simulation_settings import HFSSPISimulationSettings
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
@@ -33,7 +34,7 @@ if TYPE_CHECKING:
 class HFSSPISimulationSetup(SimulationSetup):
     """HFSS PI simulation setup class."""
 
-    def __init__(self, pedb, core: "GrpcHFSSPISimulationSetup"):
+    def __init__(self, pedb, core: "CoreHFSSPISimulationSetup"):
         super().__init__(pedb, core)
         self.core = core
         self._pedb = pedb
@@ -56,7 +57,7 @@ class HFSSPISimulationSetup(SimulationSetup):
             The HFSS PI simulation setup object.
 
         """
-        core_setup = GrpcHFSSPISimulationSetup.create(edb.active_cell, name)
+        core_setup = CoreHFSSPISimulationSetup.create(edb.active_cell, name)
         return cls(edb, core_setup)
 
     @property

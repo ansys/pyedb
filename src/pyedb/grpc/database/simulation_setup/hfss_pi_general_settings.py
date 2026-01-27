@@ -21,33 +21,33 @@
 # SOFTWARE.
 
 from ansys.edb.core.simulation_setup.hfss_pi_simulation_settings import (
-    HFSSPIGeneralSettings as GrpcHFSSPIGeneralSettings,
-    HFSSPIModelType as GrpcHFSSPIModelType,
-    HFSSPISimulationPreference as GrpcHFSSPISimulationPreference,
-    SurfaceRoughnessModel as GrpcSurfaceRoughnessModel,
+    HFSSPIGeneralSettings as CoreHFSSPIGeneralSettings,
+    HFSSPIModelType as CoreHFSSPIModelType,
+    HFSSPISimulationPreference as CoreHFSSPISimulationPreference,
+    SurfaceRoughnessModel as CoreSurfaceRoughnessModel,
 )
 
 _mapping_model_type = {
-    "pcb": GrpcHFSSPIModelType.PCB,
-    "rdl": GrpcHFSSPIModelType.RDL,
-    "package": GrpcHFSSPIModelType,
+    "pcb": CoreHFSSPIModelType.PCB,
+    "rdl": CoreHFSSPIModelType.RDL,
+    "package": CoreHFSSPIModelType,
 }
 _mapping_simulation_preference = {
-    "balanced": GrpcHFSSPISimulationPreference.BALANCED,
-    "accuracy": GrpcHFSSPISimulationPreference.ACCURACY,
+    "balanced": CoreHFSSPISimulationPreference.BALANCED,
+    "accuracy": CoreHFSSPISimulationPreference.ACCURACY,
 }
 
 _mapping_surface_roughness = {
-    "exponential": GrpcSurfaceRoughnessModel.EXPONENTIAL,
-    "hammerstad": GrpcSurfaceRoughnessModel.HAMMERSTAD,
-    "": GrpcSurfaceRoughnessModel.NONE,
+    "exponential": CoreSurfaceRoughnessModel.EXPONENTIAL,
+    "hammerstad": CoreSurfaceRoughnessModel.HAMMERSTAD,
+    "": CoreSurfaceRoughnessModel.NONE,
 }
 
 
 class HFSSPIGeneralSettings:
     """PyEDB HFSS PI general settings class."""
 
-    def __init__(self, pedb, core: "GrpcHFSSPIGeneralSettings"):
+    def __init__(self, pedb, core: "CoreHFSSPIGeneralSettings"):
         self.core = core
         self._pedb = pedb
 

@@ -24,31 +24,31 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DCGSettings as GrpcQ3DCGSettings
+    from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DCGSettings as CoreQ3DCGSettings
 from ansys.edb.core.simulation_setup.q3d_simulation_settings import (
-    Q3DSolutionOrder as GrpcQ3DSolutionOrder,
-    SolverType as GrpcSolverType,
+    Q3DSolutionOrder as CoreQ3DSolutionOrder,
+    SolverType as CoreSolverType,
 )
 
 _mapping_solution_order = {
-    "normal": GrpcQ3DSolutionOrder.NORMAL,
-    "high": GrpcQ3DSolutionOrder.HIGH,
-    "higher": GrpcQ3DSolutionOrder.HIGHER,
-    "highest": GrpcQ3DSolutionOrder.HIGHEST,
-    "num_solution_order": GrpcQ3DSolutionOrder.NUM_SOLUTION_ORDER,
+    "normal": CoreQ3DSolutionOrder.NORMAL,
+    "high": CoreQ3DSolutionOrder.HIGH,
+    "higher": CoreQ3DSolutionOrder.HIGHER,
+    "highest": CoreQ3DSolutionOrder.HIGHEST,
+    "num_solution_order": CoreQ3DSolutionOrder.NUM_SOLUTION_ORDER,
 }
 
 _mapping_solver_type = {
-    "direct": GrpcSolverType.DIRECT_SOLVER,
-    "iterative": GrpcSolverType.ITERATIVE_SOLVER,
-    "auto": GrpcSolverType.AUTO_SOLVER,
+    "direct": CoreSolverType.DIRECT_SOLVER,
+    "iterative": CoreSolverType.ITERATIVE_SOLVER,
+    "auto": CoreSolverType.AUTO_SOLVER,
 }
 
 
 class Q3DCGSettings:
     """Q3D CG settings class."""
 
-    def __init__(self, pedb, core: "GrpcQ3DCGSettings"):
+    def __init__(self, pedb, core: "CoreQ3DCGSettings"):
         self.core = core
         self._pedb = pedb
 
