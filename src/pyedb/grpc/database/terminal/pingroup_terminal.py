@@ -27,15 +27,15 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 from ansys.edb.core.terminal.pin_group_terminal import (
-    PinGroupTerminal as GrpcPinGroupTerminal,
+    PinGroupTerminal as CorePinGroupTerminal,
 )
-from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
+from ansys.edb.core.terminal.terminal import BoundaryType as CoreBoundaryType
 
 boundary_type_mapping = {
-    "voltage_source": GrpcBoundaryType.VOLTAGE_SOURCE,
-    "current_source": GrpcBoundaryType.CURRENT_SOURCE,
-    "port": GrpcBoundaryType.PORT,
-    "voltage_probe": GrpcBoundaryType.VOLTAGE_PROBE,
+    "voltage_source": CoreBoundaryType.VOLTAGE_SOURCE,
+    "current_source": CoreBoundaryType.CURRENT_SOURCE,
+    "port": CoreBoundaryType.PORT,
+    "voltage_probe": CoreBoundaryType.VOLTAGE_PROBE,
 }
 from pyedb.grpc.database.terminal.terminal import Terminal
 
@@ -109,5 +109,5 @@ class PinGroupTerminal(Terminal):
         -------
         PinGroupTerminal
         """
-        term = GrpcPinGroupTerminal.create(layout.core, name, pin_group.core, net.core, is_ref)
+        term = CorePinGroupTerminal.create(layout.core, name, pin_group.core, net.core, is_ref)
         return cls(layout._pedb, term)

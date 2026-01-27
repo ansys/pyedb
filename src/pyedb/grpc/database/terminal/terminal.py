@@ -30,10 +30,10 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 import re
 
-from ansys.edb.core.terminal.edge_terminal import EdgeType as GrpcEdgeType
+from ansys.edb.core.terminal.edge_terminal import EdgeType as CoreEdgeType
 from ansys.edb.core.terminal.terminal import (
-    BoundaryType as GrpcBoundaryType,
-    TerminalType as GrpcTerminalType,
+    BoundaryType as CoreBoundaryType,
+    TerminalType as CoreTerminalType,
 )
 
 from pyedb.grpc.database.primitive.primitive import Primitive
@@ -41,20 +41,20 @@ from pyedb.grpc.database.utility.port_post_processing_prop import PortPostProces
 from pyedb.grpc.database.utility.value import Value
 
 mapping_boundary_type = {
-    "port": GrpcBoundaryType.PORT,
-    "dc_terminal": GrpcBoundaryType.DC_TERMINAL,
-    "voltage_probe": GrpcBoundaryType.VOLTAGE_PROBE,
-    "voltage_source": GrpcBoundaryType.VOLTAGE_SOURCE,
-    "current_source": GrpcBoundaryType.CURRENT_SOURCE,
-    "rlc": GrpcBoundaryType.RLC,
-    "pec": GrpcBoundaryType.PEC,
-    "portboundary": GrpcBoundaryType.PORT,
-    "kdcterminal": GrpcBoundaryType.DC_TERMINAL,
-    "kvoltageprobe": GrpcBoundaryType.VOLTAGE_PROBE,
-    "kvoltagesource": GrpcBoundaryType.VOLTAGE_SOURCE,
-    "kcurrentsource": GrpcBoundaryType.CURRENT_SOURCE,
-    "rlcboundary": GrpcBoundaryType.RLC,
-    "pecboundary": GrpcBoundaryType.PEC,
+    "port": CoreBoundaryType.PORT,
+    "dc_terminal": CoreBoundaryType.DC_TERMINAL,
+    "voltage_probe": CoreBoundaryType.VOLTAGE_PROBE,
+    "voltage_source": CoreBoundaryType.VOLTAGE_SOURCE,
+    "current_source": CoreBoundaryType.CURRENT_SOURCE,
+    "rlc": CoreBoundaryType.RLC,
+    "pec": CoreBoundaryType.PEC,
+    "portboundary": CoreBoundaryType.PORT,
+    "kdcterminal": CoreBoundaryType.DC_TERMINAL,
+    "kvoltageprobe": CoreBoundaryType.VOLTAGE_PROBE,
+    "kvoltagesource": CoreBoundaryType.VOLTAGE_SOURCE,
+    "kcurrentsource": CoreBoundaryType.CURRENT_SOURCE,
+    "rlcboundary": CoreBoundaryType.RLC,
+    "pecboundary": CoreBoundaryType.PEC,
 }
 
 
@@ -65,12 +65,12 @@ class Terminal(ConnObj):
         self._reference_object = None
 
         self._terminal_type_mapping = {
-            "edge": GrpcTerminalType.EDGE,
-            "point": GrpcTerminalType.POINT,
-            "terminal_instance": GrpcTerminalType.TERM_INST,
-            "padstack_instance": GrpcTerminalType.PADSTACK_INST,
-            "bundle": GrpcTerminalType.BUNDLE,
-            "pin_group": GrpcTerminalType.PIN_GROUP,
+            "edge": CoreTerminalType.EDGE,
+            "point": CoreTerminalType.POINT,
+            "terminal_instance": CoreTerminalType.TERM_INST,
+            "padstack_instance": CoreTerminalType.PADSTACK_INST,
+            "bundle": CoreTerminalType.BUNDLE,
+            "pin_group": CoreTerminalType.PIN_GROUP,
         }
 
     @property
@@ -210,7 +210,7 @@ class Terminal(ConnObj):
     def boundary_type(self, value):
         if isinstance(value, str):
             value = mapping_boundary_type.get(value.lower(), None)
-        if not isinstance(value, GrpcBoundaryType):
+        if not isinstance(value, CoreBoundaryType):
             raise ValueError("Value must be a string or BoundaryType enum.")
         self.core.boundary_type = value
 
@@ -304,7 +304,7 @@ class Terminal(ConnObj):
             if self.terminal_type == "edge":
                 edges = self.core.edges
                 edge_type = edges[0].type
-                if edge_type == GrpcEdgeType.PADSTACK:
+                if edge_type == CoreEdgeType.PADSTACK:
                     self._reference_object = self.get_pad_edge_terminal_reference_pin()
                 else:
                     self._reference_object = self.get_edge_terminal_reference_primitive()
@@ -370,14 +370,14 @@ class Terminal(ConnObj):
         """
 
         ref_term = self.core.reference_terminal
-        if self.core.type == GrpcTerminalType.PIN_GROUP:
+        if self.core.type == CoreTerminalType.PIN_GROUP:
             padstack_instance = self.core.pin_group.pins[0]
             pingroup = ref_term.pin_group
             ref_pins = pingroup.pins
             return self._get_closest_pin(padstack_instance, ref_pins, gnd_net_name_preference)
-        elif self.core.type == GrpcTerminalType.PADSTACK_INST:
+        elif self.core.type == CoreTerminalType.PADSTACK_INST:
             _, padstack_instance, _ = self.core.get_parameters()
-            if ref_term.type == GrpcTerminalType.PIN_GROUP:
+            if ref_term.type == CoreTerminalType.PIN_GROUP:
                 pingroup = ref_term.pin_group
                 ref_pins = pingroup.pins
                 return self._get_closest_pin(padstack_instance, ref_pins, gnd_net_name_preference)

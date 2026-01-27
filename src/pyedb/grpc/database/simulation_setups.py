@@ -23,7 +23,7 @@
 
 from typing import Union, cast
 
-from ansys.edb.core.database import ProductIdType as GrpcProductIdType
+from ansys.edb.core.database import ProductIdType as CoreProductIdType
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
@@ -114,7 +114,7 @@ class SimulationSetups:
 
         # check if cpa name exists
         cpa_setup_name = self._pedb.active_cell.get_product_property(
-            GrpcProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME
+            CoreProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME
         ).value
         if cpa_setup_name:
             if cpa_setup_name not in self._siwave_cpa_setup:

@@ -21,11 +21,10 @@
 # SOFTWARE.
 
 from ansys.edb.core.utility.hfss_extent_info import (
-    HfssExtentInfo as GrpcHfssExtentInfo,
-    HFSSExtentInfoType as GrpcHfssExtentInfoType,
-    OpenRegionType as GrpcOpenRegionType,
+    HFSSExtentInfoType as CoreHfssExtentInfoType,
+    OpenRegionType as CoreOpenRegionType,
 )
-from ansys.edb.core.utility.value import Value as GrpcValue
+from ansys.edb.core.utility.value import Value as CoreValue
 
 
 class HfssExtentInfo:
@@ -41,14 +40,14 @@ class HfssExtentInfo:
         self._pedb = pedb
         self.core = self._pedb.active_cell.hfss_extent_info
         self.extent_type_mapping = {
-            "bounding_box": GrpcHfssExtentInfoType.BOUNDING_BOX,
-            "conforming": GrpcHfssExtentInfoType.CONFORMING,
-            "convex_hull": GrpcHfssExtentInfoType.CONVEX_HUL,
-            "polygon": GrpcHfssExtentInfoType.POLYGON,
+            "bounding_box": CoreHfssExtentInfoType.BOUNDING_BOX,
+            "conforming": CoreHfssExtentInfoType.CONFORMING,
+            "convex_hull": CoreHfssExtentInfoType.CONVEX_HUL,
+            "polygon": CoreHfssExtentInfoType.POLYGON,
         }
         self._open_region_type = {
-            "radiation": GrpcOpenRegionType.RADIATION,
-            "pml": GrpcOpenRegionType.PML,
+            "radiation": CoreOpenRegionType.RADIATION,
+            "pml": CoreOpenRegionType.PML,
         }
         self.hfss_extent_type = self.core.extent_type
 
@@ -70,7 +69,7 @@ class HfssExtentInfo:
 
     def set_air_box_horizontal_extent(self, size: float, is_multiple: bool = True):
         hfss_extent = self.core
-        hfss_extent.airbox_horizontal = (GrpcValue(size).value, is_multiple)
+        hfss_extent.airbox_horizontal = (CoreValue(size).value, is_multiple)
         self._update_hfss_extent_info(hfss_extent)
 
     def get_air_box_positive_vertical_extent(self) -> (float, bool):
@@ -89,7 +88,7 @@ class HfssExtentInfo:
 
     def set_air_box_positive_vertical_extent(self, size: float, is_multiple: bool):
         hfss_exent = self.core
-        hfss_exent.airbox_vertical_positive = (GrpcValue(size).value, is_multiple)
+        hfss_exent.airbox_vertical_positive = (CoreValue(size).value, is_multiple)
         self._update_hfss_extent_info(hfss_exent)
 
     def get_air_box_negative_vertical_extent(self) -> (float, bool):
@@ -108,7 +107,7 @@ class HfssExtentInfo:
 
     def set_air_box_negative_vertical_extent(self, size: float, is_multiple: bool = True):
         hfss_extent = self.core
-        hfss_extent.airbox_vertical_negative = (GrpcValue(size).value, is_multiple)
+        hfss_extent.airbox_vertical_negative = (CoreValue(size).value, is_multiple)
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -272,7 +271,7 @@ class HfssExtentInfo:
     @operating_freq.setter
     def operating_freq(self, value):
         hfss_extent = self.core
-        hfss_extent.operating_frequency = GrpcValue(value)
+        hfss_extent.operating_frequency = CoreValue(value)
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -293,7 +292,7 @@ class HfssExtentInfo:
     @radiation_level.setter
     def radiation_level(self, value):
         hfss_extent = self.core
-        hfss_extent.radiation_level = GrpcValue(value)
+        hfss_extent.radiation_level = CoreValue(value)
         self._update_hfss_extent_info(hfss_extent)
 
     @property

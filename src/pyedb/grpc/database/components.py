@@ -30,13 +30,13 @@ import re
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 import warnings
 
-from ansys.edb.core.definition.die_property import DieOrientation as GrpDieOrientation, DieType as GrpcDieType
+from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
 from ansys.edb.core.definition.solder_ball_property import (
-    SolderballShape as GrpcSolderballShape,
+    SolderballShape as CoreSolderballShape,
 )
-from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
-from ansys.edb.core.hierarchy.spice_model import SPICEModel as GrpcSPICEModel
-from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
+from ansys.edb.core.hierarchy.component_group import ComponentType as CoreComponentType
+from ansys.edb.core.hierarchy.spice_model import SPICEModel as CoreSPICEModel
+from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 
 from pyedb.component_libraries.ansys_components import (
     ComponentLib,
@@ -58,7 +58,6 @@ from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 if TYPE_CHECKING:
-    # Provide symbolic names used in docstring examples for static analysis only.
     from pyedb.grpc.edb import Edb as _Edb  # pragma: no cover
 
     edbapp: "_Edb" = None  # type: ignore
@@ -1122,19 +1121,19 @@ class Components(object):
             new_cmp_placement_layer = self._pedb.stackup.signal_layers[new_cmp_layer_name]
             new_cmp.placement_layer = new_cmp_placement_layer.core
         if r_value:
-            new_cmp.component_type = GrpcComponentType.RESISTOR
+            new_cmp.component_type = CoreComponentType.RESISTOR
             is_rlc = True
         elif c_value:
-            new_cmp.component_type = GrpcComponentType.CAPACITOR
+            new_cmp.component_type = CoreComponentType.CAPACITOR
             is_rlc = True
         elif l_value:
-            new_cmp.component_type = GrpcComponentType.INDUCTOR
+            new_cmp.component_type = CoreComponentType.INDUCTOR
             is_rlc = True
         else:
-            new_cmp.component_type = GrpcComponentType.OTHER
+            new_cmp.component_type = CoreComponentType.OTHER
             is_rlc = False
         if is_rlc and len(pins) == 2:
-            rlc = GrpcRlc()
+            rlc = CoreRlc()
             rlc.is_parallel = is_parallel
             if not r_value:
                 rlc.r_enabled = False
@@ -1152,13 +1151,13 @@ class Components(object):
                 rlc.c_enabled = True
                 rlc.c = Value(c_value)
             if rlc.r_enabled and not rlc.c_enabled and not rlc.l_enabled:
-                new_cmp.component_type = GrpcComponentType.RESISTOR
+                new_cmp.component_type = CoreComponentType.RESISTOR
             elif rlc.c_enabled and not rlc.r_enabled and not rlc.l_enabled:
-                new_cmp.component_type = GrpcComponentType.CAPACITOR
+                new_cmp.component_type = CoreComponentType.CAPACITOR
             elif rlc.l_enabled and not rlc.r_enabled and not rlc.c_enabled:
-                new_cmp.component_type = GrpcComponentType.INDUCTOR
+                new_cmp.component_type = CoreComponentType.INDUCTOR
             else:
-                new_cmp.component_type = GrpcComponentType.RESISTOR
+                new_cmp.component_type = CoreComponentType.RESISTOR
             pin_pair = (pins[0].name, pins[1].name)
             rlc_model = PinPairModel(self._pedb, new_cmp.component_property.model)
             rlc_model.core.set_rlc(pin_pair, rlc)
@@ -1250,7 +1249,7 @@ class Components(object):
                         pin_names.remove(pin_names[0])
                         break
             if len(pin_names) == pin_number:
-                spice_mod = GrpcSPICEModel.create(name=modelname, path=modelpath, sub_circuit=f"{modelname}_sub")
+                spice_mod = CoreSPICEModel.create(name=modelname, path=modelpath, sub_circuit=f"{modelname}_sub")
                 terminal = 1
                 for pn in pin_names:
                     spice_mod.add_terminal(terminal=str(terminal), pin=pn)
@@ -1507,20 +1506,20 @@ class Components(object):
             sball_mid_diam = sball_diam
 
         if shape.lower() == "cylinder":
-            sball_shape = GrpcSolderballShape.SOLDERBALL_CYLINDER
+            sball_shape = CoreSolderballShape.SOLDERBALL_CYLINDER
         else:
-            sball_shape = GrpcSolderballShape.SOLDERBALL_SPHEROID
+            sball_shape = CoreSolderballShape.SOLDERBALL_SPHEROID
 
         cmp_property = cmp.component_property
-        if cmp.core.component_type == GrpcComponentType.IC:
+        if cmp.core.component_type == CoreComponentType.IC:
             ic_die_prop = cmp_property.die_property
-            ic_die_prop.die_type = GrpcDieType.FLIPCHIP
+            ic_die_prop.die_type = CoreDieType.FLIPCHIP
             if not cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
                 chip_orientation = "chip_up"
             if chip_orientation.lower() == "chip_up":
-                ic_die_prop.die_orientation = GrpDieOrientation.CHIP_UP
+                ic_die_prop.die_orientation = CoreDieOrientation.CHIP_UP
             else:
-                ic_die_prop.die_orientation = GrpDieOrientation.CHIP_DOWN
+                ic_die_prop.die_orientation = CoreDieOrientation.CHIP_DOWN
             cmp_property.die_property = ic_die_prop
 
         solder_ball_prop = cmp_property.solder_ball_property
@@ -1580,7 +1579,7 @@ class Components(object):
         if pin_number == 2:
             from_pin = list(component.pins.values())[0]
             to_pin = list(component.pins.values())[1]
-            rlc = GrpcRlc()
+            rlc = CoreRlc()
             rlc.is_parallel = isparallel
             if res_value is not None:
                 rlc.r_enabled = True

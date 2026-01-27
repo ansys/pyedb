@@ -28,13 +28,12 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
     from pyedb.grpc.database.ports.ports import WavePort
-from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundleTerminal
+from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as CoreBundleTerminal
 from ansys.edb.core.terminal.terminal import (
-    HfssPIType as GrpcHfssPIType,
-    SourceTermToGroundType as GrpcSourceTermToGroundType,
+    HfssPIType as CoreHfssPIType,
+    SourceTermToGroundType as CoreSourceTermToGroundType,
 )
 
-from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.rlc import Rlc
 
@@ -51,7 +50,7 @@ class BundleTerminal(Terminal):
     """
 
     def __init__(self, pedb, core):
-        if isinstance(core, GrpcBundleTerminal):
+        if isinstance(core, CoreBundleTerminal):
             super().__init__(pedb, core.terminals[0])
         self.core = core
 
@@ -85,7 +84,7 @@ class BundleTerminal(Terminal):
         if _terminals and len(_terminals) == len(terminals):
             terminals = _terminals
         terminals = [term.core for term in terminals]
-        grpc_term = GrpcBundleTerminal.create(terminals=terminals)
+        grpc_term = CoreBundleTerminal.create(terminals=terminals)
         bundle_terminal = cls(pedb, grpc_term)
         bundle_terminal.name = name
         index = 1
@@ -148,15 +147,15 @@ class BundleTerminal(Terminal):
     @hfss_pi_type.setter
     def hfss_pi_type(self, value):
         if value.upper() == "DEFAULT":
-            self.core.hfss_pi_type = GrpcHfssPIType.DEFAULT
+            self.core.hfss_pi_type = CoreHfssPIType.DEFAULT
         elif value.upper() == "COAXIAL_OPEN":
-            self.core.hfss_pi_type = GrpcHfssPIType.COAXIAL_OPEN
+            self.core.hfss_pi_type = CoreHfssPIType.COAXIAL_OPEN
         elif value.upper() == "COAXIAL_SHORTENED":
-            self.core.hfss_pi_type = GrpcHfssPIType.COAXIAL_SHORTENED
+            self.core.hfss_pi_type = CoreHfssPIType.COAXIAL_SHORTENED
         elif value.upper() == "GAP":
-            self.core.hfss_pi_type = GrpcHfssPIType.GAP
+            self.core.hfss_pi_type = CoreHfssPIType.GAP
         elif value.upper() == "LUMPED":
-            self.core.hfss_pi_type = GrpcHfssPIType.LUMPED
+            self.core.hfss_pi_type = CoreHfssPIType.LUMPED
 
     @property
     def rlc_boundary_parameters(self) -> Rlc:
@@ -182,11 +181,11 @@ class BundleTerminal(Terminal):
     @term_to_ground.setter
     def term_to_ground(self, value):
         if value.upper() == "NO_GROUND":
-            self.core.term_to_ground = GrpcSourceTermToGroundType.NO_GROUND
+            self.core.term_to_ground = CoreSourceTermToGroundType.NO_GROUND
         elif value.upper() == "NEGATIVE":
-            self.core.term_to_ground = GrpcSourceTermToGroundType.NEGATIVE
+            self.core.term_to_ground = CoreSourceTermToGroundType.NEGATIVE
         elif value.upper() == "POSITIVE":
-            self.core.term_to_ground = GrpcSourceTermToGroundType.POSITIVE
+            self.core.term_to_ground = CoreSourceTermToGroundType.POSITIVE
 
     @property
     def terminals(self) -> list[Terminal]:

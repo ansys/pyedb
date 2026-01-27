@@ -21,9 +21,9 @@
 # SOFTWARE.
 
 from ansys.edb.core.utility.heat_sink import (
-    HeatSinkFinOrientation as GrpcHeatSinkFinOrientation,
+    HeatSinkFinOrientation as CoreHeatSinkFinOrientation,
 )
-from ansys.edb.core.utility.value import Value as GrpcValue
+from ansys.edb.core.utility.value import Value as CoreValue
 
 
 class HeatSink:
@@ -39,9 +39,9 @@ class HeatSink:
         self._pedb = pedb
         self._edb_object = core
         self._fin_orientation_type = {
-            "x_oriented": GrpcHeatSinkFinOrientation.X_ORIENTED,
-            "y_oriented": GrpcHeatSinkFinOrientation.Y_ORIENTED,
-            "other_oriented": GrpcHeatSinkFinOrientation.OTHER_ORIENTED,
+            "x_oriented": CoreHeatSinkFinOrientation.X_ORIENTED,
+            "y_oriented": CoreHeatSinkFinOrientation.Y_ORIENTED,
+            "other_oriented": CoreHeatSinkFinOrientation.OTHER_ORIENTED,
         }
 
     @property
@@ -57,7 +57,7 @@ class HeatSink:
 
     @fin_base_height.setter
     def fin_base_height(self, value):
-        self._edb_object.fin_base_height = GrpcValue(value)
+        self._edb_object.fin_base_height = CoreValue(value)
 
     @property
     def fin_height(self) -> float:
@@ -73,7 +73,7 @@ class HeatSink:
 
     @fin_height.setter
     def fin_height(self, value):
-        self._edb_object.fin_height = GrpcValue(value)
+        self._edb_object.fin_height = CoreValue(value)
 
     @property
     def fin_orientation(self) -> str:
@@ -104,7 +104,7 @@ class HeatSink:
 
     @fin_spacing.setter
     def fin_spacing(self, value):
-        self._edb_object.fin_spacing = GrpcValue(value)
+        self._edb_object.fin_spacing = CoreValue(value)
 
     @property
     def fin_thickness(self) -> float:
@@ -120,4 +120,4 @@ class HeatSink:
 
     @fin_thickness.setter
     def fin_thickness(self, value):
-        self._edb_object.fin_thickness = GrpcValue(value)
+        self._edb_object.fin_thickness = CoreValue(value)
