@@ -23,16 +23,16 @@
 import math
 import warnings
 
-from ansys.edb.core.definition.padstack_def import PadstackDef as GrpcPadstackDef
+from ansys.edb.core.definition.padstack_def import PadstackDef as CorePadstackDef
 from ansys.edb.core.definition.padstack_def_data import (
-    PadGeometryType as GrpcPadGeometryType,
-    PadstackHoleRange as GrpcPadstackHoleRange,
-    PadType as GrpcPadType,
+    PadGeometryType as CorePadGeometryType,
+    PadstackHoleRange as CorePadstackHoleRange,
+    PadType as CorePadType,
 )
 import ansys.edb.core.geometry.polygon_data
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure, Structure3D as GrpcStructure3D
-from ansys.edb.core.primitive.circle import Circle as GrpcCircle
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as CoreMeshClosure, Structure3D as CoreStructure3D
+from ansys.edb.core.primitive.circle import Circle as CoreCircle
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.primitive.circle import Circle
@@ -77,9 +77,9 @@ class PadProperties:
 
     @property
     def _pad_parameter_value(self):
-        p_val = self._edb_padstack.get_pad_parameters(self.layer_name, GrpcPadType.REGULAR_PAD)
+        p_val = self._edb_padstack.get_pad_parameters(self.layer_name, CorePadType.REGULAR_PAD)
         if isinstance(p_val[0], ansys.edb.core.geometry.polygon_data.PolygonData):
-            p_val = [GrpcPadGeometryType.PADGEOMTYPE_POLYGON] + [i for i in p_val]
+            p_val = [CorePadGeometryType.PADGEOMTYPE_POLYGON] + [i for i in p_val]
         return p_val
 
     @property
@@ -118,11 +118,11 @@ class PadProperties:
             Pad shape.
         """
         if value.lower() == "circle":
-            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_CIRCLE)
+            self._update_pad_parameters_parameters(geom_type=CorePadGeometryType.PADGEOMTYPE_CIRCLE)
         elif value.lower() == "rectangle":
-            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE)
+            self._update_pad_parameters_parameters(geom_type=CorePadGeometryType.PADGEOMTYPE_RECTANGLE)
         elif value.lower() == "polygon":
-            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_POLYGON)
+            self._update_pad_parameters_parameters(geom_type=CorePadGeometryType.PADGEOMTYPE_POLYGON)
         else:
             raise ValueError(
                 f"Unsupported pad shape: {value}. Supported shapes are 'circle', 'rectangle', and 'polygon'."
@@ -157,7 +157,7 @@ class PadProperties:
             return []
 
     @property
-    def polygon_data(self) -> GrpcPolygonData:
+    def polygon_data(self) -> CorePolygonData:
         """Parameters.
 
         Returns
@@ -228,10 +228,10 @@ class PadProperties:
         if layer_name is None:
             layer_name = self.layer_name
         if pad_type is None:
-            pad_type = GrpcPadType.REGULAR_PAD
+            pad_type = CorePadType.REGULAR_PAD
         if geom_type is None:
             geom_type = self.geometry_type
-        for k in GrpcPadGeometryType:
+        for k in CorePadGeometryType:
             if k.value == geom_type:
                 geom_type = k
         if params is None:
@@ -289,7 +289,7 @@ class PadstackDef:
     @classmethod
     def create(cls, edb, name: str):
         """Create a new padstack definition."""
-        padstack_def = GrpcPadstackDef.create(edb.db, name)
+        padstack_def = CorePadstackDef.create(edb.db, name)
         return cls(edb, padstack_def)
 
     @property
@@ -440,7 +440,7 @@ class PadstackDef:
         geometry_type = hole_parameter[0]
         hole_offset_x = hole_parameter[2]
         hole_offset_y = hole_parameter[3]
-        if not isinstance(geometry_type, GrpcPolygonData):
+        if not isinstance(geometry_type, CorePolygonData):
             hole_rotation = hole_parameter[4]
             self.core.data.set_hole_parameters(
                 offset_x=hole_offset_x,
@@ -564,7 +564,7 @@ class PadstackDef:
         if not self._pad_by_layer:
             for layer in self.layers:
                 try:
-                    self._pad_by_layer[layer] = PadProperties(self.core.data, layer, GrpcPadType.REGULAR_PAD, self)
+                    self._pad_by_layer[layer] = PadProperties(self.core.data, layer, CorePadType.REGULAR_PAD, self)
                 except:
                     self._pad_by_layer[layer] = None
         return self._pad_by_layer
@@ -581,7 +581,7 @@ class PadstackDef:
         if not self._antipad_by_layer:
             for layer in self.layers:
                 try:
-                    self._pad_by_layer[layer] = PadProperties(self.core.data, layer, GrpcPadType.ANTI_PAD, self)
+                    self._pad_by_layer[layer] = PadProperties(self.core.data, layer, CorePadType.ANTI_PAD, self)
                 except:
                     self._antipad_by_layer[layer] = None
         return self._antipad_by_layer
@@ -598,7 +598,7 @@ class PadstackDef:
         if not self._thermalpad_by_layer:
             for layer in self.layers:
                 try:
-                    self._pad_by_layer[layer] = PadProperties(self.core.data, layer, GrpcPadType.THERMAL_PAD, self)
+                    self._pad_by_layer[layer] = PadProperties(self.core.data, layer, CorePadType.THERMAL_PAD, self)
                 except:
                     self._thermalpad_by_layer[layer] = None
         return self._thermalpad_by_layer
@@ -683,15 +683,15 @@ class PadstackDef:
     def hole_range(self, value):
         if isinstance(value, str):
             if value == "through":
-                self.core.data.hole_range = GrpcPadstackHoleRange.THROUGH
+                self.core.data.hole_range = CorePadstackHoleRange.THROUGH
             elif value == "begin_on_upper_pad":
-                self.core.data.hole_range = GrpcPadstackHoleRange.BEGIN_ON_UPPER_PAD
+                self.core.data.hole_range = CorePadstackHoleRange.BEGIN_ON_UPPER_PAD
             elif value == "end_on_lower_pad":
-                self.core.data.hole_range = GrpcPadstackHoleRange.END_ON_LOWER_PAD
+                self.core.data.hole_range = CorePadstackHoleRange.END_ON_LOWER_PAD
             elif value == "upper_pad_to_lower_pad":
-                self.core.data.hole_range = GrpcPadstackHoleRange.UPPER_PAD_TO_LOWER_PAD
+                self.core.data.hole_range = CorePadstackHoleRange.UPPER_PAD_TO_LOWER_PAD
             else:  # pragma no cover
-                self.core.data.hole_range = GrpcPadstackHoleRange.UNKNOWN_RANGE
+                self.core.data.hole_range = CorePadstackHoleRange.UNKNOWN_RANGE
 
     def convert_to_3d_microvias(
         self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True
@@ -716,7 +716,7 @@ class PadstackDef:
             ``True`` when successful, ``False`` when failed.
         """
 
-        if isinstance(self.core.data.get_hole_parameters()[0], GrpcPolygonData):
+        if isinstance(self.core.data.get_hole_parameters()[0], CorePolygonData):
             self._pedb.logger.error("Microvias cannot be applied on vias using hole shape polygon")
             return False
 
@@ -803,7 +803,7 @@ class PadstackDef:
                             Value(pos[1]),
                             Value(rad2),
                         )
-                        s3d = GrpcStructure3D.create(
+                        s3d = CoreStructure3D.create(
                             layout.core, generate_unique_name("via3d_" + via.aedt_name.replace("via_", ""), n=3)
                         )
                         s3d.add_member(cloned_circle.core)
@@ -814,7 +814,7 @@ class PadstackDef:
                             )
                             self.data.material = "copper"
                         s3d.set_material(self.core.data.material.value)
-                        s3d.mesh_closure = GrpcMeshClosure.ENDS_CLOSED
+                        s3d.mesh_closure = CoreMeshClosure.ENDS_CLOSED
                         started = True
                         i += 1
                     if stop == via.stop_layer:
@@ -856,13 +856,13 @@ class PadstackDef:
                 stop = layer_names[layer_names.index(layer_name) + 1]
                 new_padstack_name = f"MV_{self.name}_{start}_{stop}"
                 included = [start, stop]
-                new_padstack_definition = GrpcPadstackDef.create(self._pedb.db, new_padstack_name)
+                new_padstack_definition = CorePadstackDef.create(self._pedb.db, new_padstack_name)
                 new_padstack_definition.data.add_layers(included)
                 for layer in included:
                     pl = self.pad_by_layer[layer]
                     new_padstack_definition.data.set_pad_parameters(
                         layer=layer,
-                        pad_type=GrpcPadType.REGULAR_PAD,
+                        pad_type=CorePadType.REGULAR_PAD,
                         offset_x=Value(pl.offset_x, self._pedb.db),
                         offset_y=Value(pl.offset_y, self._pedb.db),
                         rotation=Value(pl.rotation, self._pedb.db),
@@ -874,7 +874,7 @@ class PadstackDef:
                         pl = antipads[layer]
                         new_padstack_definition.data.set_pad_parameters(
                             layer=layer,
-                            pad_type=GrpcPadType.ANTI_PAD,
+                            pad_type=CorePadType.ANTI_PAD,
                             offset_x=Value(pl.offset_x, self._pedb.db),
                             offset_y=Value(pl.offset_y, self._pedb.db),
                             rotation=Value(pl.rotation, self._pedb.db),
@@ -886,7 +886,7 @@ class PadstackDef:
                         pl = thermal_pads[layer]
                         new_padstack_definition.data.set_pad_parameters(
                             layer=layer,
-                            pad_type=GrpcPadType.THERMAL_PAD,
+                            pad_type=CorePadType.THERMAL_PAD,
                             offset_x=Value(pl.offset_x, self._pedb.db),
                             offset_y=Value(pl.offset_y, self._pedb.db),
                             rotation=Value(pl.rotation, self._pedb.db),

@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.definition.component_pin import ComponentPin as GrpcComponentPin
+from ansys.edb.core.definition.component_pin import ComponentPin as CoreComponentPin
 
 
 class ComponentPin:
@@ -45,7 +45,7 @@ class ComponentPin:
         :class:`ComponentPin <pyedb.grpc.database.definition.component_pin.ComponentPin>`
             The created component pin object.
         """
-        edb_obj = GrpcComponentPin.create(component_def.core, name)
+        edb_obj = CoreComponentPin.create(component_def.core, name)
         return cls(edb_obj)
 
     @property

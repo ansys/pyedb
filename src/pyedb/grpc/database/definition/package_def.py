@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.definition.package_def import PackageDef as GrpcPackageDef
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.definition.package_def import PackageDef as CorePackageDef
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.utility.heat_sink import HeatSink
@@ -48,10 +48,11 @@ class PackageDef:
     def __init__(self, pedb, core=None, name=None, component_part_name=None, extent_bounding_box=None):
         if not core:
             if name:
-                edb_object = GrpcPackageDef.create(db=pedb.active_db, name=name)
+                self.core = CorePackageDef.create(db=pedb.active_db, name=name)
             else:
                 raise AttributeError("Name must be provided to create and instantiate a PackageDef object.")
-        self.core = core
+        else:
+            self.core = core
         self._pedb = pedb
         self._heat_sink = None
         if not self.core and name:
@@ -70,7 +71,7 @@ class PackageDef:
         edb_object: object
             EDB PackageDef Object
         """
-        self.core = GrpcPackageDef.create(self._pedb.active_db, name)
+        self.core = CorePackageDef.create(self._pedb.active_db, name)
         if component_part_name:
             x_pt1, y_pt1, x_pt2, y_pt2 = list(
                 self._pedb.components.definitions[component_part_name].components.values()
@@ -85,7 +86,7 @@ class PackageDef:
                 "Package creation uses bounding box but it cannot be inferred. "
                 "Please set argument 'component_part_name' or 'extent_bounding_box'."
             )
-        polygon_data = GrpcPolygonData(points=bbox)
+        polygon_data = CorePolygonData(points=bbox)
         self.exterior_boundary = polygon_data
 
     @property
@@ -97,7 +98,7 @@ class PackageDef:
         self.core.name = value
 
     @property
-    def exterior_boundary(self) -> GrpcPolygonData:
+    def exterior_boundary(self) -> CorePolygonData:
         """Get the exterior boundary of a package definition.
 
         Returns
@@ -105,7 +106,7 @@ class PackageDef:
         :class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
 
         """
-        return GrpcPolygonData(self.core.exterior_boundary.points)
+        return CorePolygonData(self.core.exterior_boundary.points)
 
     @exterior_boundary.setter
     def exterior_boundary(self, value):
@@ -230,7 +231,7 @@ class PackageDef:
         :class:`PackageDef <pyedb.grpc.database.definition.package_def.PackageDef>`
             PackageDef object.
         """
-        grpc_package = GrpcPackageDef.create(edb.active_db, name)
+        grpc_package = CorePackageDef.create(edb.active_db, name)
         if grpc_package.is_null:
             raise RuntimeError(f"Failed to create package {name}")
         return PackageDef(edb, grpc_package)
