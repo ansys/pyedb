@@ -259,6 +259,10 @@ class SimulationSetup:
         self._pedb.logger.error("Failed to add frequency sweep data")
         return None
 
+    def clear_sweeps(self):
+        """Clear all frequency sweeps from the simulation setup."""
+        self.core.sweep_data = []
+
     @property
     def setup_type(self) -> str:
         """Get the type of the simulation setup.

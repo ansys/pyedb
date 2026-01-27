@@ -599,17 +599,17 @@ class TestClass(BaseTestClass):
         assert not edbapp.hfss.add_setup("setup1")
         assert setup1.set_solution_single_frequency()
         if "adaptive_solution_type" in dir(setup1.adaptive_settings):
-            assert setup1.adaptive_settings.adaptive_solution_type.value == 0
+            assert setup1.adaptive_settings.adaptive_solution_type == "single"
         else:
             assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 1
         assert setup1.set_solution_multi_frequencies(frequencies=("5GHz", "10GHz", "100GHz"))
         if "adaptive_solution_type" in dir(setup1.adaptive_settings):
-            assert setup1.adaptive_settings.adaptive_solution_type.value == 1
+            assert setup1.adaptive_settings.adaptive_solution_type == "multi_frequencies"
         else:
             assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 3
         assert setup1.set_solution_broadband()
         if "adaptive_solution_type" in dir(setup1.adaptive_settings):
-            assert setup1.adaptive_settings.adaptive_solution_type.value == 2
+            assert setup1.adaptive_settings.adaptive_solution_type == "broadband"
         else:
             assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 2
         setup1.hfss_solver_settings.enhanced_low_frequency_accuracy = True
@@ -1615,7 +1615,7 @@ class TestClass(BaseTestClass):
                 pingroup_on_single_pin=True,
             )
         else:
-            # Method from COmponents deprecated in grpc and moved to SourceExcitation-
+            # Method from Components deprecated in grpc and moved to SourceExcitation-
             assert edbapp.components.create_port_on_pins(
                 refdes=edbcomp,
                 pins=positive_pin_names,
@@ -2388,7 +2388,7 @@ class TestClass(BaseTestClass):
         assert not setup.is_null
         setup.name = "test_raptorx_setup"
         assert setup.name == "test_raptorx_setup"
-
+        assert not setup.sweep_data  # default we don't create sweep if not data provided while setup creation
         # advanced general settings
         adv_settings = setup.settings.advanced
         adv_settings.auto_removal_sliver_poly = 1e-2
