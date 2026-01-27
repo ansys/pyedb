@@ -20,10 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.hierarchy.sparameter_model import (
-    SParameterModel as GrpcSParameterModel,
-)
-
 
 class SparamModel:  # pragma: no cover
     """Manage :class:`SParameterModel <ansys.edb.core.hierarchy.sparameter_model.SParameterModel>`"""

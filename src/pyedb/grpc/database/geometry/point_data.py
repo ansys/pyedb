@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-
 
 class PointData:
     """Class managing :class:`Point Data <ansys.edb.core.geometry.point_data.PointData>`"""

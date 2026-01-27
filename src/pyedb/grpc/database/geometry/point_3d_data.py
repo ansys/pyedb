@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
+from ansys.edb.core.geometry.point3d_data import Point3DData as CorePoint3DData
 
 from pyedb.grpc.database.utility.value import Value
 
@@ -29,7 +29,7 @@ class Point3DData:
     """Point 3D Data."""
 
     def __init__(self, x, y, z):
-        self.core = GrpcPoint3DData.__init__(x, y, z)
+        self.core = CorePoint3DData.__init__(x, y, z)
 
     @property
     def x(self) -> float:
