@@ -112,7 +112,7 @@ class SimulationSetup:
             List of sweep data objects.
         """
 
-        return [SweepData(self._pedb, sweep) for sweep in self.core.sweep_data]
+        return [SweepData(self._pedb, core=sweep) for sweep in self.core.sweep_data]
 
     @sweep_data.setter
     def sweep_data(self, sweeps: list[SweepData]):
@@ -214,7 +214,8 @@ class SimulationSetup:
         sweep_list = [sweep]
         for s in self.sweep_data:
             sweep_list.append(s)
-        self.core.sweep_data = [sw.core for sw in sweep_list]
+        sweep_data = [sw.core for sw in sweep_list]
+        self.core.sweep_data = sweep_data
         if len(self.sweep_data) == init_count + 1:
             return self.sweep_data[-1]
         return None
