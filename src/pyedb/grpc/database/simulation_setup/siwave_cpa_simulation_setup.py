@@ -20,9 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyedb.grpc.edb import Edb
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.utility.value import Value as GrpcValue
 
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.siwave_core.cpa.simulation_setup_data_model import SIwaveCpaSetup, Vrm
 from pyedb.siwave_core.product_properties import SIwaveProperties
 
@@ -803,6 +808,30 @@ class SIWaveCPASimulationSetup:
         self.model_type = "rlcg"
         self.use_q3d_solver = False
         self.net_processing_mode = "all"
+
+    @classmethod
+    def create(cls, edb: "Edb", name=None, siwave_cpa_setup_class=None) -> "SIWaveCPASimulationSetup":
+        """Creates a new SIWaveCPASimulationSetup instance.
+
+        Parameters:
+        -----------
+        edb (pyedb.Edb): The EDB object representing the active design.
+        name (str, optional): The name of the simulation setup. If not provided, a unique name will be generated.
+        siwave_cpa_setup_class (SIwaveCpaSetup, optional): An optional configuration object to initialize the setup.
+
+        #Returns:
+        --------
+        SIWaveCPASimulationSetup: A new instance of SIWaveCPASimulationSetup.
+        """
+        if not name:
+            if not siwave_cpa_setup_class:
+                name = generate_unique_name("cpa_setup")
+            else:
+                name = siwave_cpa_setup_class.name
+        cpa_setup = SIWaveCPASimulationSetup(edb, name=name, siwave_cpa_setup_class=siwave_cpa_setup_class)
+        if siwave_cpa_setup_class:
+            cpa_setup._apply_cfg_object(siwave_cpa_setup_class)
+        return cpa_setup
 
     def _apply_cfg_object(self, siwave_cpa_setup_class):
         """
