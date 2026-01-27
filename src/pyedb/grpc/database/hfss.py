@@ -1229,9 +1229,9 @@ class Hfss:
         self,
         name=None,
         distribution="linear",
-        start_freq=0,
-        stop_freq=20e9,
-        step_freq=1e6,
+        start_freq=None,
+        stop_freq=None,
+        step_freq=None,
         discrete_sweep=False,
     ) -> Optional[HfssSimulationSetup]:
         """

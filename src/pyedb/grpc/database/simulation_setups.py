@@ -246,17 +246,18 @@ class SimulationSetups:
         else:
             setup = HfssSimulationSetup.create(self._pedb, name)
             self._pedb.logger.info(f"HFSS setup {name} created.")
-        setup.add_sweep(
-            name=sweep_name,
-            distribution=distribution,
-            start_freq=start_freq,
-            stop_freq=stop_freq,
-            step=step_freq,
-            discrete=discrete_sweep,
-            frequency_set=None,
-        )
-        self._pedb.logger.info(f"Frequency sweep {sweep_name} added to simulation setup {name}.")
-
+        if not setup.is_null:
+            if start_freq and stop_freq and step_freq:
+                setup.add_sweep(
+                    name=sweep_name,
+                    distribution=distribution,
+                    start_freq=start_freq,
+                    stop_freq=stop_freq,
+                    step=step_freq,
+                    discrete=discrete_sweep,
+                    frequency_set=None,
+                )
+            self._pedb.logger.info(f"Frequency sweep {sweep_name} added to simulation setup {name}.")
         for k, v in kwargs.items():
             setattr(setup, k, v)
         return setup
