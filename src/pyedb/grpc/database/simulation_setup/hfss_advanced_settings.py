@@ -25,13 +25,13 @@ import warnings
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        HFSSAdvancedSettings as GrpcHFSSAdvancedSettings,
+        HFSSAdvancedSettings as CoreHFSSAdvancedSettings,
     )
-from ansys.edb.core.simulation_setup.simulation_settings import ViaStyle as GrpcViaStyle
+from ansys.edb.core.simulation_setup.simulation_settings import ViaStyle as CoreViaStyle
 
 
 class HFSSAdvancedSettings:
-    def __init__(self, pedb, core: "GrpcHFSSAdvancedSettings"):
+    def __init__(self, pedb, core: "CoreHFSSAdvancedSettings"):
         """PyEDB HFSS advanced settings class."""
         self.core = core
         self._pedb = pedb
@@ -375,12 +375,12 @@ class HFSSAdvancedSettings:
     def via_model_type(self, value):
         if isinstance(value, str):
             if value.upper() == "WIREBOND":
-                self.core.via_model_type = GrpcViaStyle.WIREBOND
+                self.core.via_model_type = CoreViaStyle.WIREBOND
             elif value.lower() == "RIBBON":
-                self.core.via_model_type = GrpcViaStyle.RIBBON
+                self.core.via_model_type = CoreViaStyle.RIBBON
             elif value.lower() == "MESH":
-                self.core.via_model_type = GrpcViaStyle.MESH
+                self.core.via_model_type = CoreViaStyle.MESH
             elif value.lower() == "FIELD":
-                self.core.ia_model_type = GrpcViaStyle.FIELD
+                self.core.ia_model_type = CoreViaStyle.FIELD
             elif value.lower() == "NUM_VIA_STYLE":
-                self.core.via_model_type = GrpcViaStyle.NUM_VIA_STYLE
+                self.core.via_model_type = CoreViaStyle.NUM_VIA_STYLE

@@ -24,11 +24,11 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DGeneralSettings as GrpcQ3DGeneralSettings
+    from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DGeneralSettings as CoreQ3DGeneralSettings
 
 
 class Q3DGeneralSettings:
-    def __init__(self, pedb, core: "GrpcQ3DGeneralSettings"):
+    def __init__(self, pedb, core: "CoreQ3DGeneralSettings"):
         """Q3D general settings class."""
         self.core = core
         self._pedb = pedb

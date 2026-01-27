@@ -77,13 +77,13 @@ if TYPE_CHECKING:
 import warnings
 from zipfile import ZipFile as Zpf
 
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 from ansys.edb.core.hierarchy.layout_component import (
-    LayoutComponent as GrpcLayoutComponent,
+    LayoutComponent as CoreLayoutComponent,
 )
 import ansys.edb.core.layout.cell
-from ansys.edb.core.layout.cell import DesignMode as GrpcDesignMode
-from ansys.edb.core.utility.value import Value as GrpcValue
+from ansys.edb.core.layout.cell import DesignMode as CoreDesignMode
+from ansys.edb.core.utility.value import Value as CoreValue
 import rtree
 
 from pyedb.configuration.configuration import Configuration
@@ -456,11 +456,11 @@ class Edb(EdbInit):
 
     def value(self, val) -> float:
         """Convert a value into a pyedb value."""
-        if isinstance(val, GrpcValue):
+        if isinstance(val, CoreValue):
             return Value(val)
         else:
             context = self.active_cell if not str(val).startswith("$") else self.active_db
-            return Value(GrpcValue(val, context), context)
+            return Value(CoreValue(val, context), context)
 
     @property
     def cell_names(self) -> List[str]:
@@ -2158,7 +2158,7 @@ class Edb(EdbInit):
             It can be either "general" or "ic" (case-insensitive).
         """
         try:
-            self.active_cell.design_mode = GrpcDesignMode(("general", "ic").index(value.lower()))
+            self.active_cell.design_mode = CoreDesignMode(("general", "ic").index(value.lower()))
         except (AttributeError, ValueError) as exc:
             raise ValueError("Value must be 'general' or 'ic' (case-insensitive)") from exc
 
@@ -2171,7 +2171,7 @@ class Edb(EdbInit):
             list[list[min_x, min_y], list[max_x, max_y]] in meters.
         """
         lay_inst_polygon_data = [obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()]
-        layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
+        layout_bbox = CorePolygonData.bbox_of_polygons(lay_inst_polygon_data)
         return (Value(layout_bbox[0].x), Value(layout_bbox[0].y)), (Value(layout_bbox[1].x), Value(layout_bbox[1].y))
 
     def get_statistics(self, compute_area=False):
@@ -2393,7 +2393,7 @@ class Edb(EdbInit):
         self.logger.info(f"The W factor is {expansion_factor}, The initial extent = {max_width}")
         return max_width
 
-    def copy_zones(self, working_directory=None) -> dict[str, tuple[int, GrpcPolygonData]]:
+    def copy_zones(self, working_directory=None) -> dict[str, tuple[int, CorePolygonData]]:
         """Copy multi-zone EDB project to one new edb per zone.
 
         Parameters
@@ -3184,7 +3184,7 @@ class Edb(EdbInit):
             self.logger.info("Comparison correctly completed")
             return True
 
-    def import_layout_component(self, component_path) -> GrpcLayoutComponent:
+    def import_layout_component(self, component_path) -> CoreLayoutComponent:
         """Import a layout component inside the current layout and place it at the origin.
         This feature is only supported with PyEDB gRPC. Encryption is not yet supported.
 
@@ -3198,7 +3198,7 @@ class Edb(EdbInit):
             class:`LayoutComponent <ansys.edb.core.hierarchy.layout_component.LayoutComponent>`.
         """
 
-        return GrpcLayoutComponent.import_layout_component(
+        return CoreLayoutComponent.import_layout_component(
             layout=self.active_layout.core, aedb_comp_path=component_path
         )
 
@@ -3217,7 +3217,7 @@ class Edb(EdbInit):
             `True` if layout component is successfully exported, `False` otherwise.
         """
 
-        return GrpcLayoutComponent.export_layout_component(
+        return CoreLayoutComponent.export_layout_component(
             layout=self.active_layout.core, output_aedb_comp_path=component_path
         )
 

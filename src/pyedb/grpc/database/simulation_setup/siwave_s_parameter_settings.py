@@ -24,41 +24,41 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.siwave_simulation_settings import (
-        SIWaveSParameterSettings as GrpcSIWaveSParameterSettings,
+        SIWaveSParameterSettings as CoreSIWaveSParameterSettings,
     )
 from ansys.edb.core.simulation_setup.siwave_simulation_settings import (
-    SParamDCBehavior as GrpcSParamDCBehavior,
-    SParamExtrapolation as GrpcSParamExtrapolation,
-    SParamInterpolation as GrpcSParamInterpolation,
+    SParamDCBehavior as CoreSParamDCBehavior,
+    SParamExtrapolation as CoreSParamExtrapolation,
+    SParamInterpolation as CoreSParamInterpolation,
 )
 
 _mapping_dc_behavior = {
-    "zero": GrpcSParamDCBehavior.ZERO_DC,
-    "same": GrpcSParamDCBehavior.SAME_DC,
-    "linear": GrpcSParamDCBehavior.LINEAR_DC,
-    "constant": GrpcSParamDCBehavior.CONSTANT_DC,
-    "one_port_capacitor": GrpcSParamDCBehavior.ONE_PORT_CAPACITOR_DC,
-    "open": GrpcSParamDCBehavior.OPEN_DC,
+    "zero": CoreSParamDCBehavior.ZERO_DC,
+    "same": CoreSParamDCBehavior.SAME_DC,
+    "linear": CoreSParamDCBehavior.LINEAR_DC,
+    "constant": CoreSParamDCBehavior.CONSTANT_DC,
+    "one_port_capacitor": CoreSParamDCBehavior.ONE_PORT_CAPACITOR_DC,
+    "open": CoreSParamDCBehavior.OPEN_DC,
 }
 
 _mapping_s_parameter_extrapolation = {
-    "zero": GrpcSParamExtrapolation.ZERO_EX,
-    "same": GrpcSParamExtrapolation.SAME_EX,
-    "linear": GrpcSParamExtrapolation.LINEAR_EX,
-    "constant": GrpcSParamExtrapolation.CONSTANT_EX,
+    "zero": CoreSParamExtrapolation.ZERO_EX,
+    "same": CoreSParamExtrapolation.SAME_EX,
+    "linear": CoreSParamExtrapolation.LINEAR_EX,
+    "constant": CoreSParamExtrapolation.CONSTANT_EX,
 }
 
 _mapping_s_parameter_interpolation = {
-    "point": GrpcSParamInterpolation.POINT_IN,
-    "linear": GrpcSParamInterpolation.LINEAR_IN,
-    "step": GrpcSParamInterpolation.STEP_IN,
+    "point": CoreSParamInterpolation.POINT_IN,
+    "linear": CoreSParamInterpolation.LINEAR_IN,
+    "step": CoreSParamInterpolation.STEP_IN,
 }
 
 
 class SIWaveSParameterSettings:
     """SIWave S-Parameter simulation settings class."""
 
-    def __init__(self, pedb, core: "GrpcSIWaveSParameterSettings"):
+    def __init__(self, pedb, core: "CoreSIWaveSParameterSettings"):
         self.core = core
         self._pedb = pedb
 

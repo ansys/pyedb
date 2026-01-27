@@ -24,15 +24,15 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.adaptive_solutions import (
-        AdaptiveFrequency as GrpcAdaptiveFrequency,
+        AdaptiveFrequency as CoreAdaptiveFrequency,
     )
-from ansys.edb.core.utility.value import Value as GrpcValue
+from ansys.edb.core.utility.value import Value as CoreValue
 
 
 class AdaptiveFrequency:
     """PyEDB Adaptive Frequency class."""
 
-    def __init__(self, core: "GrpcAdaptiveFrequency"):
+    def __init__(self, core: "CoreAdaptiveFrequency"):
         self.core = core
 
     @property
@@ -44,7 +44,7 @@ class AdaptiveFrequency:
         float
             Adaptive frequency value.
         """
-        return GrpcValue(self.core.adaptive_frequency).value
+        return CoreValue(self.core.adaptive_frequency).value
 
     @adaptive_frequency.setter
     def adaptive_frequency(self, value: float):
@@ -55,7 +55,7 @@ class AdaptiveFrequency:
         value : float
             Adaptive frequency value.
         """
-        self.core.adaptive_frequency = str(GrpcValue(value))
+        self.core.adaptive_frequency = str(CoreValue(value))
 
     @property
     def max_delta(self):

@@ -22,14 +22,14 @@
 
 
 from ansys.edb.core.simulation_setup.hfss_pi_simulation_settings import (
-    HFSSPIPowerGroundNetsSettings as GrpcHFSSPIPowerGroundNetsSettings,
+    HFSSPIPowerGroundNetsSettings as CoreHFSSPIPowerGroundNetsSettings,
 )
 
 
 class HFSSPIPowerGroundNetsSettings:
     """PyEDB HFSS PI Power/Ground Nets settings class."""
 
-    def __init__(self, pedb, core: "GrpcHFSSPIPowerGroundNetsSettings"):
+    def __init__(self, pedb, core: "CoreHFSSPIPowerGroundNetsSettings"):
         self.core = core
         self._pedb = pedb
 

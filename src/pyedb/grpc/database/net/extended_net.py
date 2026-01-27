@@ -26,7 +26,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
-from ansys.edb.core.net.extended_net import ExtendedNet as GrpcExtendedNet
+from ansys.edb.core.net.extended_net import ExtendedNet as CoreExtendedNet
 
 
 class ExtendedNets:
@@ -291,7 +291,7 @@ class ExtendedNet:
         ExtendedNet
             Extended net object.
         """
-        core_extended_net = GrpcExtendedNet.create(layout.core, name)
+        core_extended_net = CoreExtendedNet.create(layout.core, name)
         return cls(layout._pedb, core_extended_net)
 
     @property

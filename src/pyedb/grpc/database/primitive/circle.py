@@ -23,7 +23,7 @@
 
 from typing import Union
 
-from ansys.edb.core.primitive.circle import Circle as GrpcCircle
+from ansys.edb.core.primitive.circle import Circle as CoreCircle
 
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.net.net import Net
@@ -54,7 +54,7 @@ class Circle(Primitive):
             raise ValueError("Layer must be provided to create a circle.")
         if center_x is None or center_y is None:
             raise ValueError("Center x and y values must be provided to create a circle.")
-        edb_object = GrpcCircle.create(
+        edb_object = CoreCircle.create(
             layout=layout.core,
             layer=layer,
             net=net.core,

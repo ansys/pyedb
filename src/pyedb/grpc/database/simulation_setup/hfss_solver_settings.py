@@ -25,14 +25,14 @@ import warnings
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        HFSSSolverSettings as GrpcHFSSSolverSettings,
+        HFSSSolverSettings as CoreHFSSSolverSettings,
     )
 
 
 class HFSSSolverSettings:
     """HFSS solver settings class."""
 
-    def __init__(self, pedb, core: "GrpcHFSSSolverSettings"):
+    def __init__(self, pedb, core: "CoreHFSSSolverSettings"):
         self.core = core
         self._pedb = pedb
 

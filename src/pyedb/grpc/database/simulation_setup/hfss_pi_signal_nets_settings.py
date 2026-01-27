@@ -22,14 +22,14 @@
 
 
 from ansys.edb.core.simulation_setup.hfss_pi_simulation_settings import (
-    HFSSPISignalNetsSettings as GrpcHFSSPISignalNetsSettings,
+    HFSSPISignalNetsSettings as CoreHFSSPISignalNetsSettings,
 )
 
 
 class HFSSPISignalNetsSettings:
     """PyEDB HFSS PI signal nets settings class."""
 
-    def __init__(self, pedb, core: "GrpcHFSSPISignalNetsSettings"):
+    def __init__(self, pedb, core: "CoreHFSSPISignalNetsSettings"):
         self.core = core
         self._pedb = pedb
 

@@ -24,20 +24,20 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        BasisFunctionOrder as GrpcBasisFunctionOrder,
-        HFSSSettingsOptions as GrpcHFSSSettingsOptions,
-        SolverType as GrpcSolverType,
+        BasisFunctionOrder as CoreBasisFunctionOrder,
+        HFSSSettingsOptions as CoreHFSSSettingsOptions,
+        SolverType as CoreSolverType,
     )
 from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-    BasisFunctionOrder as GrpcBasisFunctionOrder,
-    SolverType as GrpcSolverType,
+    BasisFunctionOrder as CoreBasisFunctionOrder,
+    SolverType as CoreSolverType,
 )
 
 
 class HFSSSettingsOptions:
     """PyEDB-core HFSS settings options class."""
 
-    def __init__(self, _pedb, core: "GrpcHFSSSettingsOptions"):
+    def __init__(self, _pedb, core: "CoreHFSSSettingsOptions"):
         self.core = core
         self._pedb = _pedb
 
@@ -168,13 +168,13 @@ class HFSSSettingsOptions:
     @order_basis.setter
     def order_basis(self, value):
         if value.upper() == "ZERO":
-            self.core.order_basis = GrpcBasisFunctionOrder.ZERO_ORDER
+            self.core.order_basis = CoreBasisFunctionOrder.ZERO_ORDER
         elif value.upper() == "FIRST":
-            self.core.order_basis = GrpcBasisFunctionOrder.FIRST_ORDER
+            self.core.order_basis = CoreBasisFunctionOrder.FIRST_ORDER
         elif value.upper() == "MIXED":
-            self.core.order_basis = GrpcBasisFunctionOrder.MIXED_ORDER
+            self.core.order_basis = CoreBasisFunctionOrder.MIXED_ORDER
         elif value.upper() == "SECOND":
-            self.core.order_basis = GrpcBasisFunctionOrder.SECOND_ORDER
+            self.core.order_basis = CoreBasisFunctionOrder.SECOND_ORDER
 
     @property
     def relative_residual(self) -> float:
@@ -199,13 +199,13 @@ class HFSSSettingsOptions:
     @solver_type.setter
     def solver_type(self, value):
         if value.upper() == "AUTO_SOLVER":
-            self.core.solver_type = GrpcSolverType.AUTO_SOLVER
+            self.core.solver_type = CoreSolverType.AUTO_SOLVER
         elif value.upper() == "DIRECT_SOLVER":
-            self.core.solver_type = GrpcSolverType.DIRECT_SOLVER
+            self.core.solver_type = CoreSolverType.DIRECT_SOLVER
         elif value.upper() == "ITERATIVE_SOLVER":
-            self.core.solver_type = GrpcSolverType.ITERATIVE_SOLVER
+            self.core.solver_type = CoreSolverType.ITERATIVE_SOLVER
         elif value.upper() == "NUM_SOLVER_TYPES":
-            self.core.solver_type = GrpcSolverType.NUM_SOLVER_TYPES
+            self.core.solver_type = CoreSolverType.NUM_SOLVER_TYPES
 
     @property
     def use_default_lambda_value(self) -> bool:

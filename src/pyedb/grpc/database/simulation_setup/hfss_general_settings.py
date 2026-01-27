@@ -23,11 +23,11 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from ansys.edb.core.simulation_setup.hfss_simulation_settings import AdaptType as GrpcAdaptType
+from ansys.edb.core.simulation_setup.hfss_simulation_settings import AdaptType as CoreAdaptType
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        HFSSGeneralSettings as GrpcHFSSGeneralSettings,
+        HFSSGeneralSettings as CoreHFSSGeneralSettings,
     )
 
 
@@ -515,7 +515,7 @@ class SingleFrequencyAdaptiveSolution:
 class HFSSGeneralSettings:
     """PyEDB-core HFSS general settings class."""
 
-    def __init__(self, pedb, core: "GrpcHFSSGeneralSettings"):
+    def __init__(self, pedb, core: "CoreHFSSGeneralSettings"):
         self.core = core
         self._pedb = pedb
 
@@ -560,13 +560,13 @@ class HFSSGeneralSettings:
     def adaptive_solution_type(self, value):
         if isinstance(value, str):
             if value.lower() == "single":
-                self.core.adaptive_solution_type = GrpcAdaptType.SINGLE
+                self.core.adaptive_solution_type = CoreAdaptType.SINGLE
             elif value.lower() == "multi_frequencies":
-                self.core.adaptive_solution_type = GrpcAdaptType.MULTI_FREQUENCIES
+                self.core.adaptive_solution_type = CoreAdaptType.MULTI_FREQUENCIES
             elif value.lower() == "broad_band":
-                self.core.adaptive_solution_type = GrpcAdaptType.BROADBAND
+                self.core.adaptive_solution_type = CoreAdaptType.BROADBAND
             elif value.lower() == "num_adapt_type":
-                self.core.adaptive_solution_type = GrpcAdaptType.NUM_ADAPT_TYPE
+                self.core.adaptive_solution_type = CoreAdaptType.NUM_ADAPT_TYPE
 
     @property
     def broadband_adaptive_solution(self) -> BroadbandAdaptiveSolution:

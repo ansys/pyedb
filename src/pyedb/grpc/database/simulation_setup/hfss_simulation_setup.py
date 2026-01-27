@@ -28,12 +28,12 @@ if TYPE_CHECKING:
 from typing import Union
 import warnings
 
-from ansys.edb.core.simulation_setup.adaptive_solutions import AdaptiveFrequency as GrpcAdaptiveFrequency
+from ansys.edb.core.simulation_setup.adaptive_solutions import AdaptiveFrequency as CoreAdaptiveFrequency
 from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-    AdaptType as GrpcAdaptType,
+    AdaptType as CoreAdaptType,
 )
 from ansys.edb.core.simulation_setup.hfss_simulation_setup import (
-    HfssSimulationSetup as GrpcHfssSimulationSetup,
+    HfssSimulationSetup as CoreHfssSimulationSetup,
 )
 
 from pyedb.generic.general_methods import generate_unique_name
@@ -48,7 +48,7 @@ from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 class HfssSimulationSetup(SimulationSetup):
     """HFSS simulation setup class."""
 
-    def __init__(self, pedb, core: "GrpcHfssSimulationSetup", name: str = None):
+    def __init__(self, pedb, core: "CoreHfssSimulationSetup", name: str = None):
         super().__init__(pedb, core)
         self.core = core
         self._pedb = pedb
@@ -72,7 +72,7 @@ class HfssSimulationSetup(SimulationSetup):
         """
         if not name:
             name = generate_unique_name("HFSS_Setup")
-        core = GrpcHfssSimulationSetup.create(edb.active_cell, name)
+        core = CoreHfssSimulationSetup.create(edb.active_cell, name)
         return cls(pedb=edb, core=core, name=name)
 
     @property
@@ -272,7 +272,7 @@ class HfssSimulationSetup(SimulationSetup):
         bool.
 
         """
-        self.core.settings.general.adaptive_solution_type = GrpcAdaptType.SINGLE
+        self.core.settings.general.adaptive_solution_type = CoreAdaptType.SINGLE
         sfs = self.core.settings.general.single_frequency_adaptive_solution
         sfs.adaptive_frequency = frequency
         sfs.max_passes = max_num_passes
@@ -304,7 +304,7 @@ class HfssSimulationSetup(SimulationSetup):
                 for _ in frequencies[len(max_delta_s) :]:
                     max_delta_s.append(max_delta_s[-1])
         adapt_frequencies = [
-            GrpcAdaptiveFrequency(frequencies[ind], str(max_delta_s[ind])) for ind in range(len(frequencies))
+            CoreAdaptiveFrequency(frequencies[ind], str(max_delta_s[ind])) for ind in range(len(frequencies))
         ]
         self.core.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = adapt_frequencies
         return True
@@ -358,7 +358,7 @@ class HfssSimulationSetup(SimulationSetup):
         """
         try:
             adapt_frequencies = self.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies
-            adapt_frequencies.append(GrpcAdaptiveFrequency(frequency, str(max_delta_s)))
+            adapt_frequencies.append(CoreAdaptiveFrequency(frequency, str(max_delta_s)))
             self.core.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = adapt_frequencies
             return True
         except:

@@ -25,12 +25,12 @@ import warnings
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        HFSSAdvancedMeshingSettings as GrpcHFSSAdvancedMeshingSettings,
+        HFSSAdvancedMeshingSettings as CoreHFSSAdvancedMeshingSettings,
     )
 
 
 class HFSSAdvancedMeshingSettings:
-    def __init__(self, pedb, core: "GrpcHFSSAdvancedMeshingSettings"):
+    def __init__(self, pedb, core: "CoreHFSSAdvancedMeshingSettings"):
         """PyEDB HFSS advanced meshing settings class."""
         self.core = core
         self._pedb = pedb

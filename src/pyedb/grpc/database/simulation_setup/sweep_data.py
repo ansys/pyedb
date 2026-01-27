@@ -23,39 +23,39 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSweepData
+    from ansys.edb.core.simulation_setup.simulation_setup import SweepData as CoreSweepData
 from ansys.edb.core.simulation_setup.simulation_setup import (
-    Distribution as GrpcDistribution,
-    FreqSweepType as GrpcSweepType,
-    FrequencyData as GrpcFrequencyData,
-    SweepData as GrpcSweepData,
+    Distribution as CoreDistribution,
+    FreqSweepType as CoreSweepType,
+    FrequencyData as CoreFrequencyData,
+    SweepData as CoreSweepData,
 )
 
 _mapping_distribution = {
-    "lin": GrpcDistribution.LIN,
-    "dec": GrpcDistribution.DEC,
-    "estp": GrpcDistribution.ESTP,
-    "linc": GrpcDistribution.LINC,
-    "oct": GrpcDistribution.OCT,
-    "LIN": GrpcDistribution.LIN,
-    "DEC": GrpcDistribution.DEC,
-    "ESTP": GrpcDistribution.ESTP,
-    "LINC": GrpcDistribution.LINC,
-    "OCT": GrpcDistribution.OCT,
+    "lin": CoreDistribution.LIN,
+    "dec": CoreDistribution.DEC,
+    "estp": CoreDistribution.ESTP,
+    "linc": CoreDistribution.LINC,
+    "oct": CoreDistribution.OCT,
+    "LIN": CoreDistribution.LIN,
+    "DEC": CoreDistribution.DEC,
+    "ESTP": CoreDistribution.ESTP,
+    "LINC": CoreDistribution.LINC,
+    "OCT": CoreDistribution.OCT,
 }
 
 _mapping_sweep_type = {
-    "interpolating": GrpcSweepType.INTERPOLATING_SWEEP,
-    "discrete": GrpcSweepType.DISCRETE_SWEEP,
-    "broadband": GrpcSweepType.BROADBAND_SWEEP,
-    "INTERPOLATING": GrpcSweepType.INTERPOLATING_SWEEP,
-    "DISCRETE": GrpcSweepType.DISCRETE_SWEEP,
-    "BROADBAND": GrpcSweepType.BROADBAND_SWEEP,
+    "interpolating": CoreSweepType.INTERPOLATING_SWEEP,
+    "discrete": CoreSweepType.DISCRETE_SWEEP,
+    "broadband": CoreSweepType.BROADBAND_SWEEP,
+    "INTERPOLATING": CoreSweepType.INTERPOLATING_SWEEP,
+    "DISCRETE": CoreSweepType.DISCRETE_SWEEP,
+    "BROADBAND": CoreSweepType.BROADBAND_SWEEP,
 }
 
 
 class FrequencyData:
-    def __init__(self, core: GrpcFrequencyData):
+    def __init__(self, core: "CoreFrequencyData"):
         self._core = core
 
     @property
@@ -161,9 +161,9 @@ class SweepData:
                     f"Supported types are: {list(_mapping_distribution.keys())}"
                 )
             distribution = _mapping_distribution[distribution]
-            self.core = GrpcSweepData(
+            self.core = CoreSweepData(
                 name=name,
-                frequency_data=GrpcFrequencyData(
+                frequency_data=CoreFrequencyData(
                     distribution=distribution,
                     start_f=str(self._pedb.value(start_f)),
                     end_f=str(self._pedb.value(end_f)),
@@ -182,7 +182,7 @@ class SweepData:
         self.core.name = value
 
     @property
-    def frequency_data(self) -> GrpcFrequencyData:
+    def frequency_data(self) -> CoreFrequencyData:
         """Get the frequency data of the sweep.
 
         Returns

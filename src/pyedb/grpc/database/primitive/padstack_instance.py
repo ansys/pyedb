@@ -28,16 +28,16 @@ import warnings
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.layers.stackup_layer import StackupLayer
-from ansys.edb.core.database import ProductIdType as GrpcProductIdType
-from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
-from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure, Structure3D as GrpcStructure3D
+from ansys.edb.core.database import ProductIdType as CoreProductIdType
+from ansys.edb.core.geometry.point_data import PointData as CorePointData
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
+from ansys.edb.core.hierarchy.pin_group import PinGroup as CorePinGroup
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as CoreMeshClosure, Structure3D as CoreStructure3D
 from ansys.edb.core.primitive.padstack_instance import (
-    PadstackInstance as GrpcPadstackInstance,
+    PadstackInstance as CorePadstackInstance,
 )
 from ansys.edb.core.terminal.pin_group_terminal import (
-    PinGroupTerminal as GrpcPinGroupTerminal,
+    PinGroupTerminal as CorePinGroupTerminal,
 )
 
 from pyedb.generic.general_methods import generate_unique_name
@@ -134,7 +134,7 @@ class PadstackInstance:
         if not padstack_definition in layout._pedb.padstacks.definitions:
             raise Exception(f"Padstack definition {padstack_definition} not found in layout.")
         padstack_def = layout._pedb.padstacks.definitions[padstack_definition].core
-        inst = GrpcPadstackInstance.create(
+        inst = CorePadstackInstance.create(
             layout=layout.core,
             net=net.core,
             padstack_def=padstack_def,
@@ -255,7 +255,7 @@ class PadstackInstance:
         int
             Number of sides meshed of the padstack instance.
         """
-        side_value = self.core.get_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21)
+        side_value = self.core.get_product_property(CoreProductIdType.HFSS_3D_LAYOUT, 21)
         if side_value:
             return int(re.search(r"(?m)^\s*sid=(\d+)", side_value).group(1))
         return 0
@@ -276,7 +276,7 @@ class PadstackInstance:
         """
         if isinstance(value, int) and 3 <= value <= 64:
             prop_string = f"$begin ''\n\tsid={value}\n\tmat='copper'\n\tvs='Wirebond'\n$end ''\n"
-            self.core.set_product_property(GrpcProductIdType.HFSS_3D_LAYOUT, 21, prop_string)
+            self.core.set_product_property(CoreProductIdType.HFSS_3D_LAYOUT, 21, prop_string)
         else:
             raise ValueError("Number of sides must be an integer between 3 and 64")
 
@@ -456,10 +456,10 @@ class PadstackInstance:
                 )
             negative_terminal = None
             if isinstance(reference, list):
-                pg = GrpcPinGroup.create(
+                pg = CorePinGroup.create(
                     self.core.layout, name=f"pingroup_{self.name}_ref", padstack_instances=reference
                 )
-                negative_terminal = GrpcPinGroupTerminal.create(
+                negative_terminal = CorePinGroupTerminal.create(
                     layout=self.core.layout,
                     name=f"pingroup_term{self.name}_ref)",
                     pin_group=pg,
@@ -604,7 +604,7 @@ class PadstackInstance:
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        int_val = 1 if polygon_data.is_inside(GrpcPointData(self.position)) else 0
+        int_val = 1 if polygon_data.is_inside(CorePointData(self.position)) else 0
         if int_val == 0:
             if include_partial:
                 # pad-stack instance bbox is slow we take an arbitrary value e.g. 300e-6
@@ -616,7 +616,7 @@ class PadstackInstance:
                     position[0] + arbitrary_value / 2,
                     position[1] + arbitrary_value / 2,
                 ]
-                int_val = polygon_data.intersection_type(GrpcPolygonData(inst_bbox)).value
+                int_val = polygon_data.intersection_type(CorePolygonData(inst_bbox)).value
                 if int_val == 0:  # fully outside
                     return False
                 elif int_val in [2, 3]:  # fully or partially inside
@@ -762,7 +762,7 @@ class PadstackInstance:
         """
         position = self.core.get_position_and_rotation()
         if self.component:
-            out2 = self.component.core.transform.transform_point(GrpcPointData(position[:2]))
+            out2 = self.component.core.transform.transform_point(CorePointData(position[:2]))
             self._position = [Value(out2[0]), Value(out2[1])]
         else:
             self._position = [Value(pt) for pt in position[:2]]
@@ -776,7 +776,7 @@ class PadstackInstance:
                 pos.append(Value(v, self._pedb.active_cell))
             else:
                 pos.append(v)
-        point_data = GrpcPointData(pos[0], pos[1])
+        point_data = CorePointData(pos[0], pos[1])
         self.core.set_position_and_rotation(
             x=point_data.x, y=point_data.y, rotation=Value(self.rotation, self._pedb.active_cell)
         )
@@ -811,7 +811,7 @@ class PadstackInstance:
     def name(self, value):
         self.core.name = value
         # changing aedt_name too
-        self.core.set_product_property(GrpcProductIdType.DESIGNER, 11, value)
+        self.core.set_product_property(CoreProductIdType.DESIGNER, 11, value)
 
     @property
     def backdrill_type(self) -> str:
@@ -1026,12 +1026,12 @@ class PadstackInstance:
 
         """
 
-        name = self.core.get_product_property(GrpcProductIdType.DESIGNER, 11)
+        name = self.core.get_product_property(CoreProductIdType.DESIGNER, 11)
         return str(name).strip("'")
 
     @aedt_name.setter
     def aedt_name(self, value):
-        self.core.set_product_property(GrpcProductIdType.DESIGNER, 11, value)
+        self.core.set_product_property(CoreProductIdType.DESIGNER, 11, value)
 
     def split(self) -> list:
         """Split padstack instance into multiple instances. The new instances only connect adjacent layers."""
@@ -1117,13 +1117,13 @@ class PadstackInstance:
             radius=Value(rad_l),
         )
 
-        s3d = GrpcStructure3D.create(
+        s3d = CoreStructure3D.create(
             layout.core, generate_unique_name("via3d_" + self.aedt_name.replace("via_", ""), n=3)
         )
         s3d.add_member(cloned_circle.core)
         s3d.add_member(cloned_circle2.core)
         s3d.set_material(self.definition.material)
-        s3d.mesh_closure = GrpcMeshClosure.ENDS_CLOSED
+        s3d.mesh_closure = CoreMeshClosure.ENDS_CLOSED
         hole_override_enabled = True
         hole_override_diam = 0
         self.core.set_hole_overrides(hole_override_enabled, Value(hole_override_diam))
@@ -1258,7 +1258,7 @@ class PadstackInstance:
         """
         x_pos = Value(self.position[0])
         y_pos = Value(self.position[1])
-        point_data = GrpcPointData([x_pos, y_pos])
+        point_data = CorePointData([x_pos, y_pos])
 
         voids = []
         for prim in self._pedb.modeler.get_primitives(net_name, layer_name, is_void=True):
@@ -1524,8 +1524,8 @@ class PadstackInstance:
 
         # if rect is None or len(rect) != 4:
         #     return False
-        rect = [GrpcPointData(pt) for pt in rect]
-        path = GrpcPolygonData(rect)
+        rect = [CorePointData(pt) for pt in rect]
+        path = CorePolygonData(rect)
         new_rect = []
         for point in path.points:
             if self.component:

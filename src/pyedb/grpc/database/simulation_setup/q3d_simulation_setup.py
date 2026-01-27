@@ -23,15 +23,13 @@
 
 from typing import TYPE_CHECKING
 
-from ansys.edb.core.simulation_setup.q3d_simulation_setup import Q3DSimulationSetup as GrpcQ3DSimulationSetup
+if TYPE_CHECKING:
+    from pyedb.grpc.edb import Edb
+from ansys.edb.core.simulation_setup.q3d_simulation_setup import Q3DSimulationSetup as CoreQ3DSimulationSetup
 
 from pyedb.grpc.database.simulation_setup.q3d_simulation_settings import Q3DSimulationSettings
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
-
-if TYPE_CHECKING:
-    # Import only for type checking to avoid runtime circular imports
-    from pyedb.grpc.edb import Edb
 
 
 class Q3DSimulationSetup(SimulationSetup):
@@ -45,7 +43,7 @@ class Q3DSimulationSetup(SimulationSetup):
 
     def __init__(self, pedb, core: "GrpcQ3DSimulationSetup"):
         super().__init__(pedb, core)
-        self.core: GrpcQ3DSimulationSetup = core
+        self.core: CoreQ3DSimulationSetup = core
         self._pedb = pedb
 
     @classmethod
@@ -65,7 +63,7 @@ class Q3DSimulationSetup(SimulationSetup):
         Q3DSimulationSetup
             The Q3D simulation setup object.
         """
-        core = GrpcQ3DSimulationSetup.create(edb.active_cell, name)
+        core = CoreQ3DSimulationSetup.create(edb.active_cell, name)
         return cls(edb, core)
 
     @property

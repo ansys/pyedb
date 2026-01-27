@@ -23,13 +23,13 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DACRLSettings as GrpcQ3DACRLSettings
+    from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DACRLSettings as CoreQ3DACRLSettings
 
 
 class Q3DACRLSettings:
     """Q3D ACRL settings class."""
 
-    def __init__(self, pedb, core: "GrpcQ3DACRLSettings"):
+    def __init__(self, pedb, core: "CoreQ3DACRLSettings"):
         self.core = core
         self._pedb = pedb
 

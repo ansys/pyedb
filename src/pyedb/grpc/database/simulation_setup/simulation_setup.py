@@ -24,24 +24,24 @@
 from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetup as GrpcSimulationSetup
+    from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetup as CoreSimulationSetup
 
-from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetupType as GrpcSimulationSetupType
+from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetupType as CoreSimulationSetupType
 
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
 _mapping_simulation_types = {
-    GrpcSimulationSetupType.HFSS: "hfss",
-    GrpcSimulationSetupType.SI_WAVE: "siwave",
-    GrpcSimulationSetupType.SI_WAVE_DCIR: "siwave_dcir",
-    GrpcSimulationSetupType.HFSS_PI: "hfss_pi",
-    GrpcSimulationSetupType.RAPTOR_X: "raptor_x",
-    GrpcSimulationSetupType.Q3D_SIM: "q3d",
+    CoreSimulationSetupType.HFSS: "hfss",
+    CoreSimulationSetupType.SI_WAVE: "siwave",
+    CoreSimulationSetupType.SI_WAVE_DCIR: "siwave_dcir",
+    CoreSimulationSetupType.HFSS_PI: "hfss_pi",
+    CoreSimulationSetupType.RAPTOR_X: "raptor_x",
+    CoreSimulationSetupType.Q3D_SIM: "q3d",
 }
 
 
 class SimulationSetup:
-    def __init__(self, pedb, core: "GrpcSimulationSetup"):
+    def __init__(self, pedb, core: "CoreSimulationSetup"):
         """PyEDB Simulation Setup base class."""
         self.core = core
         self._pedb = pedb

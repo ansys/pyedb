@@ -14,7 +14,7 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNE SS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
@@ -22,7 +22,7 @@
 
 from typing import TYPE_CHECKING
 
-from ansys.edb.core.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup as GrpcSIWaveSimulationSetup
+from ansys.edb.core.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup as CoreSIWaveSimulationSetup
 
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
 from pyedb.grpc.database.simulation_setup.siwave_advanced_settings import SIWaveAdvancedSettings
@@ -37,10 +37,10 @@ if TYPE_CHECKING:
 class SiwaveSimulationSetup(SimulationSetup):
     """SIwave simulation setup class."""
 
-    def __init__(self, pedb, core: "GrpcSIWaveSimulationSetup"):
+    def __init__(self, pedb, core: "CoreSIWaveSimulationSetup"):
         super().__init__(pedb, core)
         # give static analyzers a concrete type for core
-        self.core: GrpcSIWaveSimulationSetup = core
+        self.core: CoreSIWaveSimulationSetup = core
         self._pedb = pedb
 
     @classmethod
@@ -60,7 +60,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         SiwaveSimulationSetup
             The SIWave simulation setup object.
         """
-        core = GrpcSIWaveSimulationSetup.create(edb.active_cell, name)
+        core = CoreSIWaveSimulationSetup.create(edb.active_cell, name)
         return cls(edb, core)
 
     @property

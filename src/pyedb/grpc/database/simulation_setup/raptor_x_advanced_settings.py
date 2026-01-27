@@ -14,7 +14,7 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNE SS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
@@ -24,14 +24,14 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.raptor_x_simulation_settings import (
-        RaptorXAdvancedSettings as GrpcRaptorXAdvancedSettings,
+        RaptorXAdvancedSettings as CoreRaptorXAdvancedSettings,
     )
 
 
 class RaptorXAdvancedSettings:
     """Raptor X advanced settings class."""
 
-    def __init__(self, pedb, core: "GrpcRaptorXAdvancedSettings"):
+    def __init__(self, pedb, core: "CoreRaptorXAdvancedSettings"):
         self.core = core
         self._pedb = pedb
 

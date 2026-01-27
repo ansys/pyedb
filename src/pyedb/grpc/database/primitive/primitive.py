@@ -23,10 +23,10 @@
 import math
 from typing import Any
 
-from ansys.edb.core.database import ProductIdType as GrpcProductIdType
-from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-from ansys.edb.core.layer.layer import LayerType as GrpcLayerType
-from ansys.edb.core.primitive.circle import Circle as GrpcCircle
+from ansys.edb.core.database import ProductIdType as CoreProductIdType
+from ansys.edb.core.geometry.point_data import PointData as CorePointData
+from ansys.edb.core.layer.layer import LayerType as CoreLayerType
+from ansys.edb.core.primitive.circle import Circle as CoreCircle
 
 from pyedb.grpc.database.geometry.polygon_data import PolygonData
 from pyedb.grpc.database.utility.value import Value
@@ -34,23 +34,23 @@ from pyedb.misc.utilities import compute_arc_points
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 layer_type_mapping = {
-    "conducting": GrpcLayerType.CONDUCTING_LAYER,
-    "air_lines": GrpcLayerType.AIRLINES_LAYER,
-    "errors": GrpcLayerType.ERRORS_LAYER,
-    "symbol": GrpcLayerType.SYMBOL_LAYER,
-    "measure": GrpcLayerType.MEASURE_LAYER,
-    "assembly": GrpcLayerType.ASSEMBLY_LAYER,
-    "silkscreen": GrpcLayerType.SILKSCREEN_LAYER,
-    "solder_mask": GrpcLayerType.SOLDER_MASK_LAYER,
-    "solder_paste": GrpcLayerType.SOLDER_PASTE_LAYER,
-    "glue": GrpcLayerType.GLUE_LAYER,
-    "wirebond": GrpcLayerType.WIREBOND_LAYER,
-    "user": GrpcLayerType.USER_LAYER,
-    "siwave_hfss_solver_regions": GrpcLayerType.SIWAVE_HFSS_SOLVER_REGIONS,
-    "postprocessing": GrpcLayerType.POST_PROCESSING_LAYER,
-    "outline": GrpcLayerType.OUTLINE_LAYER,
-    "layer_types_count": GrpcLayerType.LAYER_TYPES_COUNT,
-    "undefined_layer_type": GrpcLayerType.UNDEFINED_LAYER_TYPE,
+    "conducting": CoreLayerType.CONDUCTING_LAYER,
+    "air_lines": CoreLayerType.AIRLINES_LAYER,
+    "errors": CoreLayerType.ERRORS_LAYER,
+    "symbol": CoreLayerType.SYMBOL_LAYER,
+    "measure": CoreLayerType.MEASURE_LAYER,
+    "assembly": CoreLayerType.ASSEMBLY_LAYER,
+    "silkscreen": CoreLayerType.SILKSCREEN_LAYER,
+    "solder_mask": CoreLayerType.SOLDER_MASK_LAYER,
+    "solder_paste": CoreLayerType.SOLDER_PASTE_LAYER,
+    "glue": CoreLayerType.GLUE_LAYER,
+    "wirebond": CoreLayerType.WIREBOND_LAYER,
+    "user": CoreLayerType.USER_LAYER,
+    "siwave_hfss_solver_regions": CoreLayerType.SIWAVE_HFSS_SOLVER_REGIONS,
+    "postprocessing": CoreLayerType.POST_PROCESSING_LAYER,
+    "outline": CoreLayerType.OUTLINE_LAYER,
+    "layer_types_count": CoreLayerType.LAYER_TYPES_COUNT,
+    "undefined_layer_type": CoreLayerType.UNDEFINED_LAYER_TYPE,
 }
 
 
@@ -256,7 +256,7 @@ class Primitive:
             Name.
         """
         try:
-            name = self.core.get_product_property(GrpcProductIdType.DESIGNER, 1)
+            name = self.core.get_product_property(CoreProductIdType.DESIGNER, 1)
             name = name.strip("'")
         except:
             name = ""
@@ -277,7 +277,7 @@ class Primitive:
 
     @aedt_name.setter
     def aedt_name(self, value):
-        self.core.set_product_property(GrpcProductIdType.DESIGNER, 1, value)
+        self.core.set_product_property(CoreProductIdType.DESIGNER, 1, value)
 
     def get_connected_objects(self):
         """Get connected objects.
@@ -437,7 +437,7 @@ class Primitive:
 
         """
         if isinstance(point, (list, tuple)):
-            point = GrpcPointData(point)
+            point = CorePointData(point)
 
         p0 = self.core.cast().polygon_data.closest_point(point)
         return [Value(p0.x), Value(p0.y)]
@@ -538,7 +538,7 @@ class Primitive:
             if not center:
                 center = self.core.cast().polygon_data.bounding_circle()[0]
             elif isinstance(center, list) and len(center) == 2:
-                center = GrpcPointData([Value(center[0]), Value(center[1])])
+                center = CorePointData([Value(center[0]), Value(center[1])])
             else:
                 self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
             self.cast().polygon_data = self.polygon_data.scale(factor, center)
@@ -618,7 +618,7 @@ class Primitive:
             if isinstance(prim, Primitive):
                 primi_polys.append(prim.polygon_data)
             else:
-                if isinstance(prim, GrpcCircle):
+                if isinstance(prim, CoreCircle):
                     primi_polys.append(prim.polygon_data)
                 else:
                     primi_polys.append(prim.polygon_data)
@@ -732,7 +732,7 @@ class Primitive:
             [x, y].
         """
 
-        if isinstance(point, GrpcPointData):
+        if isinstance(point, CorePointData):
             point = [Value(point.x), Value(point.y)]
         dist = 1e12
         out = None
@@ -935,7 +935,7 @@ class Primitive:
                 else:
                     self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
             elif isinstance(center, list) and len(center) == 2:
-                center = GrpcPointData(center)
+                center = CorePointData(center)
                 polygon_data.scale(factor, center)
                 self.core.cast().polygon_data = polygon_data
                 return True
