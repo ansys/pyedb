@@ -163,7 +163,7 @@ class TestClass(BaseTestClass):
     def test_siwave_add_syz_analsyis(self, edb_examples):
         """Add a sywave AC analysis."""
         edbapp = edb_examples.get_si_verse()
-        syz_setup = edbapp.siwave.add_siwave_syz_analysis(start_freq="=1GHz", stop_freq="10GHz", step_freq="10MHz")
+        syz_setup = edbapp.siwave.add_siwave_syz_analysis(start_freq="1GHz", stop_freq="10GHz", step_freq="10MHz")
         syz_setup.use_custom_settings = False
         assert not syz_setup.use_custom_settings
         syz_setup.advanced_settings.min_void_area = "4mm2"
@@ -384,12 +384,6 @@ class TestClass(BaseTestClass):
         # assert edb_stats.occupying_ratio["16_Bottom"] == 0.204925
         edb.close(terminate_rpc_session=False)
 
-    def test_hfss_set_bounding_box_extent(self, edb_examples):
-        """Configure HFSS with bounding box"""
-
-        # obsolete check with config file 2.0
-        pass
-
     def test_create_rlc_component(self, edb_examples):
         """Create rlc components from pin"""
         edb = edb_examples.get_si_verse()
@@ -402,7 +396,6 @@ class TestClass(BaseTestClass):
 
     def test_create_rlc_boundary_on_pins(self, edb_examples):
         """Create hfss rlc boundary on pins."""
-        # Done
         edb = edb_examples.get_si_verse()
         pins = edb.components.get_pin_from_component("U1", "1V0")
         ref_pins = edb.components.get_pin_from_component("U1", "GND")
@@ -411,7 +404,6 @@ class TestClass(BaseTestClass):
 
     def test_configure_hfss_analysis_setup_enforce_causality(self, edb_examples):
         """Configure HFSS analysis setup."""
-        # Done
         edb = edb_examples.get_si_verse()
         assert len(edb.setups) == 0
         edb.hfss.add_setup()
@@ -421,21 +413,12 @@ class TestClass(BaseTestClass):
         setup = list(edb.hfss_setups.values())[0]
         setup.add_sweep()
         assert len(setup.sweep_data) == 1
-        if edb.grpc:
-            assert not setup.sweep_data[0].interpolation_data.enforce_causality
-        else:
-            assert not setup.sweep_data[0].enforce_causality
+        assert not setup.sweep_data[0].enforce_causality
         sweeps = setup.sweep_data
         for sweep in sweeps:
-            if edb.grpc:
-                sweep.interpolation_data.enforce_causality = True
-            else:
-                sweep.enforce_causality = True
+            sweep.enforce_causality = True
         setup.sweep_data = sweeps
-        if edb.grpc:
-            assert setup.sweep_data[0].interpolation_data.enforce_causality
-        else:
-            assert setup.sweep_data[0].enforce_causality
+        assert setup.sweep_data[0].enforce_causality
         edb.close()
 
     def test_create_various_ports_0(self, edb_examples):
@@ -611,183 +594,91 @@ class TestClass(BaseTestClass):
 
     def test_hfss_simulation_setup(self, edb_examples):
         """Create a setup from a template and evaluate its properties."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         setup1 = edbapp.hfss.add_setup("setup1")
         assert not edbapp.hfss.add_setup("setup1")
         assert setup1.set_solution_single_frequency()
         if "adaptive_solution_type" in dir(setup1.adaptive_settings):
-            assert setup1.adaptive_settings.adaptive_solution_type.value == 0
+            assert setup1.adaptive_settings.adaptive_solution_type == "single"
         else:
             assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 1
         assert setup1.set_solution_multi_frequencies(frequencies=("5GHz", "10GHz", "100GHz"))
         if "adaptive_solution_type" in dir(setup1.adaptive_settings):
-            assert setup1.adaptive_settings.adaptive_solution_type.value == 1
+            assert setup1.adaptive_settings.adaptive_solution_type == "multi_frequencies"
         else:
             assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 3
         assert setup1.set_solution_broadband()
         if "adaptive_solution_type" in dir(setup1.adaptive_settings):
-            assert setup1.adaptive_settings.adaptive_solution_type.value == 2
+            assert setup1.adaptive_settings.adaptive_solution_type == "broadband"
         else:
             assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 2
-        # if edbapp.grpc:
-        #     setup1.settings.options.enhanced_low_frequency_accuracy = True
-        #     assert setup1.settings.options.enhanced_low_frequency_accuracy
-        #     setup1.settings.options.order_basis = setup1.settings.options.order_basis.FIRST_ORDER
-        #     assert setup1.settings.options.order_basis.name == "FIRST_ORDER"
-        #     setup1.settings.options.relative_residual = 0.0002
-        #     assert setup1.settings.options.relative_residual == 0.0002
-        #     setup1.settings.options.use_shell_elements = True
-        #     assert setup1.settings.options.use_shell_elements
-        # else:
-        # grpc simulation setup is too different.
         setup1.hfss_solver_settings.enhanced_low_frequency_accuracy = True
         assert setup1.hfss_solver_settings.enhanced_low_frequency_accuracy
-        # Currently EDB api has a bug for this feature.
-        # setup1.hfss_solver_settings.order_basis
         setup1.hfss_solver_settings.relative_residual = 0.0002
         assert setup1.hfss_solver_settings.relative_residual == 0.0002
         setup1.hfss_solver_settings.use_shell_elements = True
         assert setup1.hfss_solver_settings.use_shell_elements
 
-        setup1b = edbapp.setups["setup1"]
+        setup1 = edbapp.setups["setup1"]
         assert not setup1.is_null
-        if edbapp.grpc:
-            assert setup1b.add_adaptive_frequency_data("5GHz", "0.01")
-            setup1.settings.general.adaptive_solution_type = setup1.settings.general.adaptive_solution_type.BROADBAND
-            setup1.settings.options.max_refinement_per_pass = 20
-            assert setup1.settings.options.max_refinement_per_pass == 20
-            setup1.settings.options.min_passes = 2
-            assert setup1.settings.options.min_passes == 2
-            setup1.settings.general.save_fields = True
-            assert setup1.settings.general.save_fields
-            setup1.settings.general.save_rad_fields_only = True
-            assert setup1.settings.general.save_rad_fields_only
-            setup1.settings.general.use_parallel_refinement = True
-            assert setup1.settings.general.use_parallel_refinement
-
-            assert edbapp.setups["setup1"].settings.general.adaptive_solution_type.name == "BROADBAND"
-            edbapp.setups["setup1"].settings.options.use_max_refinement = True
-            assert edbapp.setups["setup1"].settings.options.use_max_refinement
-
-            edbapp.setups["setup1"].settings.advanced.defeature_absolute_length = "1um"
-            assert edbapp.setups["setup1"].settings.advanced.defeature_absolute_length == "1um"
-            edbapp.setups["setup1"].settings.advanced.defeature_ratio = 1e-5
-            assert edbapp.setups["setup1"].settings.advanced.defeature_ratio == 1e-5
-            edbapp.setups["setup1"].settings.advanced.healing_option = 0
-            assert edbapp.setups["setup1"].settings.advanced.healing_option == 0
-            edbapp.setups["setup1"].settings.advanced.remove_floating_geometry = True
-            assert edbapp.setups["setup1"].settings.advanced.remove_floating_geometry
-            edbapp.setups["setup1"].settings.advanced.small_void_area = 0.1
-            assert edbapp.setups["setup1"].settings.advanced.small_void_area == 0.1
-            edbapp.setups["setup1"].settings.advanced.union_polygons = False
-            assert not edbapp.setups["setup1"].settings.advanced.union_polygons
-            edbapp.setups["setup1"].settings.advanced.use_defeature = False
-            assert not edbapp.setups["setup1"].settings.advanced.use_defeature
-            edbapp.setups["setup1"].settings.advanced.use_defeature_absolute_length = True
-            assert edbapp.setups["setup1"].settings.advanced.use_defeature_absolute_length
-
-            edbapp.setups["setup1"].settings.advanced.num_via_density = 1.0
-            assert edbapp.setups["setup1"].settings.advanced.num_via_density == 1.0
-            edbapp.setups["setup1"].settings.advanced.via_material = "pec"
-            assert edbapp.setups["setup1"].settings.advanced.via_material == "pec"
-            edbapp.setups["setup1"].settings.advanced.num_via_sides = 8
-            assert edbapp.setups["setup1"].settings.advanced.num_via_sides == 8
-            assert edbapp.setups["setup1"].settings.advanced.via_model_type.name == "MESH"
-            edbapp.setups["setup1"].settings.advanced_meshing.layer_snap_tol = "1e-6"
-            assert edbapp.setups["setup1"].settings.advanced_meshing.layer_snap_tol == "1e-6"
-
-            edbapp.setups["setup1"].settings.advanced_meshing.arc_to_chord_error = "0.1"
-            assert edbapp.setups["setup1"].settings.advanced_meshing.arc_to_chord_error == "0.1"
-            edbapp.setups["setup1"].settings.advanced_meshing.max_num_arc_points = 12
-            assert edbapp.setups["setup1"].settings.advanced_meshing.max_num_arc_points == 12
-
-            edbapp.setups["setup1"].settings.dcr.max_passes = 11
-            assert edbapp.setups["setup1"].settings.dcr.max_passes == 11
-            edbapp.setups["setup1"].settings.dcr.min_converged_passes = 2
-            assert edbapp.setups["setup1"].settings.dcr.min_converged_passes == 2
-            edbapp.setups["setup1"].settings.dcr.min_passes = 5
-            assert edbapp.setups["setup1"].settings.dcr.min_passes == 5
-            edbapp.setups["setup1"].settings.dcr.percent_error = 2.0
-            assert edbapp.setups["setup1"].settings.dcr.percent_error == 2.0
-            edbapp.setups["setup1"].settings.dcr.percent_refinement_per_pass = 20.0
-            assert edbapp.setups["setup1"].settings.dcr.percent_refinement_per_pass == 20.0
-
-            edbapp.setups["setup1"].settings.solver.max_delta_z0 = 0.5
-            assert edbapp.setups["setup1"].settings.solver.max_delta_z0 == 0.5
-            edbapp.setups["setup1"].settings.solver.max_triangles_for_wave_port = 1000
-            assert edbapp.setups["setup1"].settings.solver.max_triangles_for_wave_port == 1000
-            edbapp.setups["setup1"].settings.solver.min_triangles_for_wave_port = 500
-            assert edbapp.setups["setup1"].settings.solver.min_triangles_for_wave_port == 500
-            edbapp.setups["setup1"].settings.solver.set_triangles_for_wave_port = True
-            assert edbapp.setups["setup1"].settings.solver.set_triangles_for_wave_port
-        else:
-            setup1.adaptive_settings.max_refine_per_pass = 20
-            assert setup1.adaptive_settings.max_refine_per_pass == 20
-            setup1.adaptive_settings.min_passes = 2
-            assert setup1.adaptive_settings.min_passes == 2
-            setup1.adaptive_settings.save_fields = True
-            assert setup1.adaptive_settings.save_fields
-            setup1.adaptive_settings.save_rad_field_only = True
-            assert setup1.adaptive_settings.save_rad_field_only
-            # setup1.adaptive_settings.use_parallel_refinement = True
-            # assert setup1.settings.general.use_parallel_refinement
-
-            assert edbapp.setups["setup1"].adaptive_settings.adapt_type == "kBroadband"
-            edbapp.setups["setup1"].adaptive_settings.use_max_refinement = True
-            assert edbapp.setups["setup1"].adaptive_settings.use_max_refinement
-
-            edbapp.setups["setup1"].defeature_settings.defeature_abs_length = "1um"
-            assert edbapp.setups["setup1"].defeature_settings.defeature_abs_length == "1um"
-            edbapp.setups["setup1"].defeature_settings.defeature_ratio = 1e-5
-            assert edbapp.setups["setup1"].defeature_settings.defeature_ratio == 1e-5
-            edbapp.setups["setup1"].defeature_settings.healing_option = 0
-            assert edbapp.setups["setup1"].defeature_settings.healing_option == 0
-            edbapp.setups["setup1"].defeature_settings.remove_floating_geometry = True
-            assert edbapp.setups["setup1"].defeature_settings.remove_floating_geometry
-            edbapp.setups["setup1"].defeature_settings.small_void_area = 0.1
-            assert edbapp.setups["setup1"].defeature_settings.small_void_area == 0.1
-            edbapp.setups["setup1"].defeature_settings.union_polygons = False
-            assert not edbapp.setups["setup1"].defeature_settings.union_polygons
-            edbapp.setups["setup1"].defeature_settings.use_defeature = False
-            assert not edbapp.setups["setup1"].defeature_settings.use_defeature
-            edbapp.setups["setup1"].defeature_settings.use_defeature_abs_length = True
-            assert edbapp.setups["setup1"].defeature_settings.use_defeature_abs_length
-
-            edbapp.setups["setup1"].via_settings.via_density = 1.0
-            assert edbapp.setups["setup1"].via_settings.via_density == 1.0
-            edbapp.setups["setup1"].via_settings.via_material = "pec"
-            assert edbapp.setups["setup1"].via_settings.via_material == "pec"
-            edbapp.setups["setup1"].via_settings.via_num_sides = 8
-            assert edbapp.setups["setup1"].via_settings.via_num_sides == 8
-            assert edbapp.setups["setup1"].via_settings.via_style == "k25DViaWirebond"
-            edbapp.setups["setup1"].advanced_mesh_settings.layer_snap_tol = "1e-6"
-            assert edbapp.setups["setup1"].advanced_mesh_settings.layer_snap_tol == "1e-6"
-
-            edbapp.setups["setup1"].curve_approx_settings.arc_to_chord_error = "0.1"
-            assert edbapp.setups["setup1"].curve_approx_settings.arc_to_chord_error == "0.1"
-            edbapp.setups["setup1"].curve_approx_settings.max_arc_points = 12
-            assert edbapp.setups["setup1"].curve_approx_settings.max_arc_points == 12
-
-            edbapp.setups["setup1"].dcr_settings.conduction_max_passes = 11
-            assert edbapp.setups["setup1"].dcr_settings.conduction_max_passes == 11
-            edbapp.setups["setup1"].dcr_settings.conduction_min_converged_passes = 2
-            assert edbapp.setups["setup1"].dcr_settings.conduction_min_converged_passes == 2
-            edbapp.setups["setup1"].dcr_settings.conduction_min_passes = 5
-            assert edbapp.setups["setup1"].dcr_settings.conduction_min_passes == 5
-            edbapp.setups["setup1"].dcr_settings.conduction_per_error = 2.0
-            assert edbapp.setups["setup1"].dcr_settings.conduction_per_error == 2.0
-            edbapp.setups["setup1"].dcr_settings.conduction_per_refine = 20.0
-            assert edbapp.setups["setup1"].dcr_settings.conduction_per_refine == 20.0
-
-            edbapp.setups["setup1"].hfss_port_settings.max_delta_z0 = 0.5
-            assert edbapp.setups["setup1"].hfss_port_settings.max_delta_z0 == 0.5
-            edbapp.setups["setup1"].hfss_port_settings.max_triangles_wave_port = 1000
-            assert edbapp.setups["setup1"].hfss_port_settings.max_triangles_wave_port == 1000
-            edbapp.setups["setup1"].hfss_port_settings.min_triangles_wave_port = 500
-            assert edbapp.setups["setup1"].hfss_port_settings.min_triangles_wave_port == 500
-            edbapp.setups["setup1"].hfss_port_settings.enable_set_triangles_wave_port = True
-            assert edbapp.setups["setup1"].hfss_port_settings.enable_set_triangles_wave_port
+        setup1.adaptive_settings.max_refine_per_pass = 20
+        assert setup1.adaptive_settings.max_refine_per_pass == 20
+        setup1.adaptive_settings.min_passes = 2
+        assert setup1.adaptive_settings.min_passes == 2
+        setup1.adaptive_settings.save_fields = True
+        assert setup1.adaptive_settings.save_fields
+        setup1.adaptive_settings.save_rad_field_only = True
+        assert setup1.adaptive_settings.save_rad_field_only
+        assert edbapp.setups["setup1"].adaptive_settings.adapt_type in ["kBroadband", "broadband"]
+        edbapp.setups["setup1"].adaptive_settings.use_max_refinement = True
+        assert edbapp.setups["setup1"].adaptive_settings.use_max_refinement
+        edbapp.setups["setup1"].defeature_settings.defeature_abs_length = "1um"
+        assert edbapp.setups["setup1"].defeature_settings.defeature_abs_length == "1um"
+        edbapp.setups["setup1"].defeature_settings.defeature_ratio = 1e-5
+        assert edbapp.setups["setup1"].defeature_settings.defeature_ratio == 1e-5
+        edbapp.setups["setup1"].defeature_settings.healing_option = 0
+        assert edbapp.setups["setup1"].defeature_settings.healing_option == 0
+        edbapp.setups["setup1"].defeature_settings.remove_floating_geometry = True
+        assert edbapp.setups["setup1"].defeature_settings.remove_floating_geometry
+        edbapp.setups["setup1"].defeature_settings.small_void_area = 0.1
+        assert edbapp.setups["setup1"].defeature_settings.small_void_area == 0.1
+        edbapp.setups["setup1"].defeature_settings.union_polygons = False
+        assert not edbapp.setups["setup1"].defeature_settings.union_polygons
+        edbapp.setups["setup1"].defeature_settings.use_defeature = False
+        assert not edbapp.setups["setup1"].defeature_settings.use_defeature
+        edbapp.setups["setup1"].defeature_settings.use_defeature_abs_length = True
+        assert edbapp.setups["setup1"].defeature_settings.use_defeature_abs_length
+        edbapp.setups["setup1"].via_settings.via_density = 1.0
+        assert edbapp.setups["setup1"].via_settings.via_density == 1.0
+        edbapp.setups["setup1"].via_settings.via_material = "pec"
+        assert edbapp.setups["setup1"].via_settings.via_material == "pec"
+        edbapp.setups["setup1"].via_settings.via_num_sides = 8
+        assert edbapp.setups["setup1"].via_settings.via_num_sides == 8
+        assert edbapp.setups["setup1"].via_settings.via_style in ["k25DViaWirebond", "mesh"]
+        edbapp.setups["setup1"].advanced_mesh_settings.layer_snap_tol = "1e-6"
+        assert edbapp.setups["setup1"].advanced_mesh_settings.layer_snap_tol == "1e-6"
+        edbapp.setups["setup1"].curve_approx_settings.arc_to_chord_error = "0.1"
+        assert edbapp.setups["setup1"].curve_approx_settings.arc_to_chord_error == "0.1"
+        edbapp.setups["setup1"].curve_approx_settings.max_arc_points = 12
+        assert edbapp.setups["setup1"].curve_approx_settings.max_arc_points == 12
+        edbapp.setups["setup1"].dcr_settings.conduction_max_passes = 11
+        assert edbapp.setups["setup1"].dcr_settings.conduction_max_passes == 11
+        edbapp.setups["setup1"].dcr_settings.conduction_min_converged_passes = 2
+        assert edbapp.setups["setup1"].dcr_settings.conduction_min_converged_passes == 2
+        edbapp.setups["setup1"].dcr_settings.conduction_min_passes = 5
+        assert edbapp.setups["setup1"].dcr_settings.conduction_min_passes == 5
+        edbapp.setups["setup1"].dcr_settings.conduction_per_error = 2.0
+        assert edbapp.setups["setup1"].dcr_settings.conduction_per_error == 2.0
+        edbapp.setups["setup1"].dcr_settings.conduction_per_refine = 20.0
+        assert edbapp.setups["setup1"].dcr_settings.conduction_per_refine == 20.0
+        edbapp.setups["setup1"].hfss_port_settings.max_delta_z0 = 0.5
+        assert edbapp.setups["setup1"].hfss_port_settings.max_delta_z0 == 0.5
+        edbapp.setups["setup1"].hfss_port_settings.max_triangles_wave_port = 1000
+        assert edbapp.setups["setup1"].hfss_port_settings.max_triangles_wave_port == 1000
+        edbapp.setups["setup1"].hfss_port_settings.min_triangles_wave_port = 500
+        assert edbapp.setups["setup1"].hfss_port_settings.min_triangles_wave_port == 500
+        edbapp.setups["setup1"].hfss_port_settings.enable_set_triangles_wave_port = True
+        assert edbapp.setups["setup1"].hfss_port_settings.enable_set_triangles_wave_port
         edbapp.close(terminate_rpc_session=False)
 
     def test_hfss_simulation_setup_mesh_operation(self, edb_examples):
@@ -836,9 +727,10 @@ class TestClass(BaseTestClass):
         setup1.add_sweep(name="sw1", distribution="linear_count", start_freq="1MHz", stop_freq="100MHz", step=10)
         assert edbapp.setups["setup1"].sweep_data[0].name == "sw1"
         if edbapp.grpc:
-            assert edbapp.setups["setup1"].sweep_data[0].frequency_data.start_f == "1MHz"
-            assert edbapp.setups["setup1"].sweep_data[0].frequency_data.end_f == "100MHz"
+            assert edbapp.setups["setup1"].sweep_data[0].frequency_data.start_frequency == "1MHz"
+            assert edbapp.setups["setup1"].sweep_data[0].frequency_data.end_frequency == "100MHz"
             assert edbapp.setups["setup1"].sweep_data[0].frequency_data.step == "10"
+            assert edbapp.setups["setup1"].sweep_data[0].frequency_string == "LINC 1MHz 100MHz 10"
         else:
             # grpc sweep data has completely changed.
             assert edbapp.setups["setup1"].sweep_data[0].frequency_string[0] == "LINC 0.001GHz 0.1GHz 10"
@@ -857,20 +749,8 @@ class TestClass(BaseTestClass):
             setup1.sweep_data[-1].use_q3d_for_dc = True
         edbapp.close(terminate_rpc_session=False)
 
-    def test_siwave_dc_simulation_setup(self, edb_examples):
-        """Create a dc simulation setup and evaluate its properties."""
-        # Obsolete addressed in config 2.0 section.
-        pass
-
-    def test_siwave_ac_simulation_setup(self, edb_examples):
-        """Create an ac simulation setup and evaluate its properties."""
-        # Obsolete addressed in config 2.0 section.
-        pass
-
     def test_siwave_create_port_between_pin_and_layer(self, edb_examples):
         """Create circuit port between pin and a reference layer."""
-        # Done
-
         edbapp = edb_examples.get_si_verse()
         assert edbapp.siwave.create_port_between_pin_and_layer(
             component_name="U1", pins_name="A27", layer_name="16_Bottom", reference_net="GND"
@@ -903,7 +783,6 @@ class TestClass(BaseTestClass):
 
     def test_siwave_source_setter(self, edb_examples):
         """Evaluate siwave sources property."""
-        # Done
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_sources.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_134_source_setter.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
@@ -985,7 +864,6 @@ class TestClass(BaseTestClass):
 
     def test_stackup_properties(self, edb_examples):
         """Evaluate stackup properties."""
-        # Done
         edb = edb_examples.create_empty_edb()
         edb.stackup.add_layer(layer_name="gnd", fillMaterial="air", thickness="10um")
         edb.stackup.add_layer(layer_name="diel1", fillMaterial="air", thickness="200um", base_layer="gnd")
@@ -1234,7 +1112,6 @@ class TestClass(BaseTestClass):
         """Add new layers with control file."""
         from pyedb.generic.control_file import ControlFile
 
-        # Done
         ctrl = ControlFile()
         # Material
         ctrl.stackup.add_material(material_name="Copper", conductivity=5.56e7)
@@ -1363,7 +1240,6 @@ class TestClass(BaseTestClass):
 
     def test_move_and_edit_polygons(self, edb_examples):
         """Move a polygon."""
-        # Done
         edbapp = edb_examples.create_empty_edb()
 
         edbapp.stackup.add_layer("GND")
@@ -1394,7 +1270,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_icepak(self, edb_examples):
-        # Done
         edbapp = edb_examples.get_si_verse(additional_files_folders=["siwave/icepak_component.pwrd"])
         edbapp.siwave.icepak_use_minimal_comp_defaults = True
         assert edbapp.siwave.icepak_use_minimal_comp_defaults
@@ -1407,50 +1282,26 @@ class TestClass(BaseTestClass):
     def test_dcir_properties(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         setup = edbapp.create_siwave_dc_setup()
-        if edbapp.grpc:
-            # grpc settings is replacing dc_ir_settings
-            # TODO check is grpc can be backward compatible
-            setup.settings.export_dc_thermal_data = True
-            assert setup.settings.export_dc_thermal_data
-            assert not setup.settings.import_thermal_data
-            setup.settings.dc_report_show_active_devices = True
-            assert setup.settings.dc_report_show_active_devices
-            assert not setup.settings.per_pin_use_pin_format
-            setup.settings.use_loop_res_for_per_pin = True
-            assert setup.settings.use_loop_res_for_per_pin
-            setup.settings.dc_report_config_file = edbapp.edbpath
-            assert setup.settings.dc_report_config_file
-            setup.settings.full_dc_report_path = edbapp.edbpath
-            assert setup.settings.full_dc_report_path
-            setup.settings.icepak_temp_file = edbapp.edbpath
-            assert setup.settings.icepak_temp_file
-            setup.settings.per_pin_res_path = edbapp.edbpath
-            assert setup.settings.per_pin_res_path
-            setup.settings.via_report_path = edbapp.edbpath
-            assert setup.settings.via_report_path
-            setup.settings.source_terms_to_ground = {"test": 1}
-            assert setup.settings.source_terms_to_ground
-        else:
-            setup.dc_ir_settings.export_dc_thermal_data = True
-            assert setup.dc_ir_settings.export_dc_thermal_data
-            assert not setup.dc_ir_settings.import_thermal_data
-            setup.dc_ir_settings.dc_report_show_active_devices = True
-            assert setup.dc_ir_settings.dc_report_show_active_devices
-            assert not setup.dc_ir_settings.per_pin_use_pin_format
-            setup.dc_ir_settings.use_loop_res_for_per_pin = True
-            assert setup.dc_ir_settings.use_loop_res_for_per_pin
-            setup.dc_ir_settings.dc_report_config_file = edbapp.edbpath
-            assert setup.dc_ir_settings.dc_report_config_file
-            setup.dc_ir_settings.full_dc_report_path = edbapp.edbpath
-            assert setup.dc_ir_settings.full_dc_report_path
-            setup.dc_ir_settings.icepak_temp_file = edbapp.edbpath
-            assert setup.dc_ir_settings.icepak_temp_file
-            setup.dc_ir_settings.per_pin_res_path = edbapp.edbpath
-            assert setup.dc_ir_settings.per_pin_res_path
-            setup.dc_ir_settings.via_report_path = edbapp.edbpath
-            assert setup.dc_ir_settings.via_report_path
-            setup.dc_ir_settings.source_terms_to_ground = {"test": 1}
-            assert setup.dc_ir_settings.source_terms_to_ground
+        setup.dc_ir_settings.export_dc_thermal_data = True
+        assert setup.dc_ir_settings.export_dc_thermal_data
+        assert not setup.dc_ir_settings.import_thermal_data
+        setup.dc_ir_settings.dc_report_show_active_devices = True
+        assert setup.dc_ir_settings.dc_report_show_active_devices
+        assert not setup.dc_ir_settings.per_pin_use_pin_format
+        setup.dc_ir_settings.use_loop_res_for_per_pin = True
+        assert setup.dc_ir_settings.use_loop_res_for_per_pin
+        setup.dc_ir_settings.dc_report_config_file = edbapp.edbpath
+        assert setup.dc_ir_settings.dc_report_config_file
+        setup.dc_ir_settings.full_dc_report_path = edbapp.edbpath
+        assert setup.dc_ir_settings.full_dc_report_path
+        setup.dc_ir_settings.icepak_temp_file = edbapp.edbpath
+        assert setup.dc_ir_settings.icepak_temp_file
+        setup.dc_ir_settings.per_pin_res_path = edbapp.edbpath
+        assert setup.dc_ir_settings.per_pin_res_path
+        setup.dc_ir_settings.via_report_path = edbapp.edbpath
+        assert setup.dc_ir_settings.via_report_path
+        setup.dc_ir_settings.source_terms_to_ground = {"test": 1}
+        assert setup.dc_ir_settings.source_terms_to_ground
         edbapp.close(terminate_rpc_session=False)
 
     def test_bondwire(self, edb_examples):
@@ -1530,7 +1381,6 @@ class TestClass(BaseTestClass):
         pass
 
     def test_create_port_on_component_no_ref_pins_in_component(self, edb_examples):
-        # Done
         edbapp = edb_examples.get_no_ref_pins_component()
         edbapp.components.create_port_on_component(
             component="J2E2",
@@ -1559,7 +1409,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_create_ping_group(self, edb_examples):
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.modeler.create_pin_group(
             name="test1", pins_by_id=[4294969495, 4294969494, 4294969496, 4294969497]
@@ -1578,7 +1427,6 @@ class TestClass(BaseTestClass):
 
     def test_create_edb_with_zip(self):
         """Create EDB from zip file."""
-        # Done
         from pyedb import Edb
 
         src = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1_0.zip")
@@ -1767,7 +1615,7 @@ class TestClass(BaseTestClass):
                 pingroup_on_single_pin=True,
             )
         else:
-            # Method from COmponents deprecated in grpc and moved to SourceExcitation-
+            # Method from Components deprecated in grpc and moved to SourceExcitation-
             assert edbapp.components.create_port_on_pins(
                 refdes=edbcomp,
                 pins=positive_pin_names,
@@ -1779,7 +1627,6 @@ class TestClass(BaseTestClass):
     @pytest.mark.skipif(not config["use_grpc"], reason="Supported only in grpc")
     def test_active_cell_setter(self, edb_examples):
         """Use multiple cells."""
-
         src = os.path.join(local_path, "example_models", "TEDB", "multi_cells.aedb")
         edb = edb_examples.load_edb(edb_path=src)
         edb.active_cell = edb.circuit_cells[0]
@@ -1815,8 +1662,6 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     def test_import_layout_file(self, edb_examples):
-        from pyedb import Edb
-
         def copy_gds_file():
             input_file_src = os.path.join(
                 local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example.gds"
@@ -2114,7 +1959,7 @@ class TestClass(BaseTestClass):
         from pyedb import Edb
 
         vlctech_path = os.path.join(local_path, "example_models", "cad", "vlctech", "test.vlc.tech.typ")
-        edbapp = Edb()
+        edbapp = edb_examples.create_empty_edb()
         assert edbapp.import_vlctech_stackup(vlctech_path)
         assert os.path.exists(edbapp.edbpath) and edbapp.edbpath[-12:] == "vlctech.aedb"
         assert edbapp.close(terminate_rpc_session=False)
@@ -2197,4 +2042,533 @@ class TestClass(BaseTestClass):
         assert "test_port" not in edbapp.terminals
         assert "Port_U1_<NO-NET>_A2" in edbapp.terminals
         assert edbapp.terminals["renamed_port"]
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    def test_hfss_simulation_setups_consolidation(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        setup = edbapp.simulation_setups.create_hfss_setup()
+        assert not setup.is_null
+        setup.name = "test_hfss_setup"
+        assert setup.name == "test_hfss_setup"
+        settings = setup.settings
+        assert not settings.use_shell_elements
+        settings.use_shell_elements = True
+        assert settings.use_shell_elements
+        settings.relative_residual = 1e-3
+        assert settings.relative_residual == 1e-3
+        settings.enhanced_low_frequency_accuracy = True
+        assert settings.enhanced_low_frequency_accuracy
+
+        # advanced settings
+        advanced_settings = settings.advanced
+        advanced_settings.defeature_absolute_length = "1um"
+        assert advanced_settings.defeature_absolute_length == "1um"
+        advanced_settings.defeature_ratio = 0.1
+        assert advanced_settings.defeature_ratio == 0.1
+        advanced_settings.healing_option = 0
+        assert advanced_settings.healing_option == 0
+        advanced_settings.ic_mode_auto_resolution = True
+        assert advanced_settings.ic_mode_auto_resolution
+        advanced_settings.mesh_for_via_plating = True
+        assert advanced_settings.mesh_for_via_plating
+        assert advanced_settings.model_type == "general"
+        advanced_settings.num_via_density = 1e-3
+        assert advanced_settings.num_via_density == 1e-3
+        advanced_settings.num_via_sides = 12
+        assert advanced_settings.num_via_sides == 12
+        advanced_settings.remove_floating_geometry = True
+        assert advanced_settings.remove_floating_geometry
+        advanced_settings.small_void_area = 1e-4
+        assert advanced_settings.small_void_area == 1e-4
+        advanced_settings.union_polygons = True
+        assert advanced_settings.union_polygons
+        advanced_settings.use_defeature = True
+        assert advanced_settings.use_defeature
+        advanced_settings.use_defeature_absolute_length = True
+        assert advanced_settings.use_defeature_absolute_length
+        advanced_settings.via_density = 0.1
+        assert advanced_settings.via_density == 0.1
+
+        # advanced meshing
+        mesh_advanced = settings.advanced_meshing
+        mesh_advanced.arc_step_size = "15deg"
+        assert mesh_advanced.arc_step_size == "15deg"
+        mesh_advanced.arc_to_chord_error = "1um"
+        assert mesh_advanced.arc_to_chord_error == "1um"
+        mesh_advanced.circle_start_azimuth = "10deg"
+        assert mesh_advanced.circle_start_azimuth == "10deg"
+        mesh_advanced.layer_snap_tol = 1e-4
+        assert mesh_advanced.layer_snap_tol == "0.0001"
+        mesh_advanced.max_num_arc_points = 6
+        assert mesh_advanced.max_num_arc_points == 6
+        mesh_advanced.use_arc_chord_error_approx = True
+        assert mesh_advanced.use_arc_chord_error_approx
+
+        # dc settings
+        dc = settings.dcr
+        dc.max_passes = 20
+        assert dc.max_passes == 20
+        dc.min_converged_passes = 2
+        assert dc.min_converged_passes == 2
+        dc.min_passes = 2
+        assert dc.min_passes == 2
+        dc.percent_error = 0.01
+        assert dc.percent_error == 0.01
+        dc.percent_refinement_per_pass = 0.5
+        assert dc.percent_refinement_per_pass == 0.5
+
+        # general settings
+        general = settings.general
+        assert general.adapt_type == "single"
+        general.max_refine_per_pass = 15
+        assert general.max_refine_per_pass == 15
+        general.min_passes = 2
+        assert general.min_passes == 2
+        general.save_fields = True
+        assert general.save_fields
+        general.save_rad_fields_only = True
+        assert general.save_rad_fields_only
+        general.use_max_refinement = True
+        assert general.use_max_refinement
+        general.use_mesh_region = True
+        assert general.use_mesh_region
+        general.use_parallel_refinement = True
+        assert general.use_parallel_refinement
+
+        # options
+        options = settings.options
+        options.do_lambda_refine = False
+        assert not options.do_lambda_refine
+        options.enhanced_low_frequency_accuracy = True
+        assert options.enhanced_low_frequency_accuracy
+        options.lamda_target = 0.33
+        assert options.lamda_target == 0.33
+        options.max_refinement_per_pass = 15
+        assert options.max_refinement_per_pass == 15
+        options.mesh_size_factor = 2.0
+        assert options.mesh_size_factor == 2.0
+        options.min_converged_passes = 2
+        assert options.min_converged_passes == 2
+        options.min_passes = 2
+        assert options.min_passes == 2
+        options.order_basis = "zero"
+        assert options.order_basis == "zero"
+        options.relative_residual = 1e-3
+        assert options.relative_residual == 1e-3
+        assert options.solver_type == "direct_solver"
+        options.solver_type = "iterative_solver"
+        assert options.solver_type == "iterative_solver"
+        # TODO bug #680 in pyedb core -> returning lambda target instead
+        # options.use_default_lambda_value = True
+        # assert options.use_default_lambda_value
+        options.use_max_refinement = True
+        assert options.use_max_refinement
+        options.use_mesh_region = True
+        assert options.use_mesh_region
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    def test_siwaves_simulation_setups_consolidation(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        setup = edbapp.simulation_setups.create_siwave_setup()
+        assert not setup.is_null
+        setup.name = "test_siwave_setup"
+        assert setup.name == "test_siwave_setup"
+
+        # settings advanced
+        adv_settings = setup.settings.advanced
+        adv_settings.cross_talk_threshold = -60
+        assert adv_settings.cross_talk_threshold == -60
+        adv_settings.ignore_non_functional_pads = False
+        assert not adv_settings.ignore_non_functional_pads
+        adv_settings.include_co_plane_coupling = False
+        assert not adv_settings.include_co_plane_coupling
+        adv_settings.include_fringe_plane_coupling = False
+        assert not adv_settings.include_fringe_plane_coupling
+        adv_settings.include_inf_gnd = True
+        assert adv_settings.include_inf_gnd
+        adv_settings.include_inter_plane_coupling = True
+        assert adv_settings.include_inter_plane_coupling
+        adv_settings.include_split_plane_coupling = False
+        assert not adv_settings.include_split_plane_coupling
+        adv_settings.inf_gnd_location = 1e-3
+        assert adv_settings.inf_gnd_location == 1e-3
+        # TODO check pyedb-core bug #681 -> setter is not working
+        # adv_settings.max_coupled_lines = 30
+        # assert adv_settings.max_coupled_lines == 30
+        adv_settings.mesh_automatic = False
+        assert not adv_settings.mesh_automatic
+        adv_settings.mesh_frequency = 30e9
+        assert adv_settings.mesh_frequency == 30e9
+        adv_settings.min_pad_area_to_mesh = 1e-5
+        assert adv_settings.min_pad_area_to_mesh == 1e-5
+        adv_settings.min_plane_area_to_mesh = 1e-5
+        assert adv_settings.min_plane_area_to_mesh == 1e-5
+        adv_settings.min_void_area = "3mm2"
+        assert adv_settings.min_void_area == "3mm2"
+        adv_settings.perform_erc = True
+        assert adv_settings.perform_erc
+        adv_settings.return_current_distribution = True
+        assert adv_settings.return_current_distribution
+        adv_settings.snap_length_threshold = 30e-6
+        assert adv_settings.snap_length_threshold == 30e-6
+
+        # dc
+        dc = setup.settings.dc
+        dc.compute_inductance = True
+        assert dc.compute_inductance
+        dc.contact_radius = "1mm"
+        assert dc.contact_radius == "1mm"
+        dc.dc_report_config_file = "custom_dc_report.cfg"
+        assert dc.dc_report_config_file == "custom_dc_report.cfg"
+        dc.dc_slider_pos = 2
+        assert dc.dc_slider_pos == 2
+        dc.export_dc_thermal_data = True
+        assert dc.export_dc_thermal_data
+        dc.full_dc_report_path = "full_dc_report.txt"
+        assert dc.full_dc_report_path == "full_dc_report.txt"
+        dc.icepak_temp_file = "icepak_temp_file.txt"
+        assert dc.icepak_temp_file == "icepak_temp_file.txt"
+        dc.import_thermal_data = True
+        assert dc.import_thermal_data
+        dc.per_pin_res_path = "per_pin_res.txt"
+        assert dc.per_pin_res_path == "per_pin_res.txt"
+        dc.per_pin_res_path = "per_pin_res.txt"
+        assert dc.per_pin_res_path == "per_pin_res.txt"
+        dc.per_pin_res_path = "per_pin_res.txt"
+        assert dc.per_pin_res_path == "per_pin_res.txt"
+        dc.plot_jv = False
+        assert not dc.plot_jv
+        dc.source_terms_to_ground = {"gnd": 1}
+        dc.use_dc_custom_settings = True
+        assert dc.use_dc_custom_settings
+        dc.use_loop_res_for_per_pin = True
+        assert dc.use_loop_res_for_per_pin
+        dc.via_report_path = "via_report.txt"
+        assert dc.via_report_path == "via_report.txt"
+
+        # dc advanced
+        dc_adv = setup.settings.dc_advanced
+        dc_adv.dc_min_plane_area_to_mesh = "0.30mm2"
+        assert dc_adv.dc_min_plane_area_to_mesh == "0.30mm2"
+        dc_adv.dc_min_void_area_to_mesh = "0.02mm2"
+        assert dc_adv.dc_min_void_area_to_mesh == "0.02mm2"
+        dc_adv.energy_error = 1.5
+        assert dc_adv.energy_error == 1.5
+        dc_adv.max_init_mesh_edge_length = "2.0mm"
+        assert dc_adv.max_init_mesh_edge_length == "2.0mm"
+        dc_adv.max_num_passes = 10
+        assert dc_adv.max_num_passes == 10
+        dc_adv.mesh_bws = False
+        assert not dc_adv.mesh_bws
+        dc_adv.mesh_vias = False
+        assert not dc_adv.mesh_vias
+        dc_adv.min_num_passes = 5
+        assert dc_adv.min_num_passes == 5
+        dc_adv.num_bw_sides = 12
+        assert dc_adv.num_bw_sides == 12
+        dc_adv.num_via_sides = 12
+        assert dc_adv.num_via_sides == 12
+        dc_adv.percent_local_refinement = 30
+        assert dc_adv.percent_local_refinement == 30
+        dc_adv.refine_bws = True
+        assert dc_adv.refine_bws
+        dc_adv.refine_vias = True
+        assert dc_adv.refine_vias
+
+        # general
+        general = setup.settings.general
+        general.pi_slider_pos = 0
+        assert general.pi_slider_pos == 0
+        general.si_slider_pos = 2
+        assert general.si_slider_pos == 2
+        general.use_custom_settings = True
+        assert general.use_custom_settings
+        general.user_si_settings = False
+        assert not general.user_si_settings
+
+        # s-parameters
+        sp = setup.settings.s_parameter
+        sp.dc_behavior = "zero"
+        assert sp.dc_behavior == "zero"
+        sp.extrapolation = "same"
+        assert sp.extrapolation == "same"
+        sp.interpolation = "point"
+        assert sp.interpolation == "point"
+        sp.use_state_space = False
+        assert not sp.use_state_space
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    def test_siwaves_dcir_simulation_setups_consolidation(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        setup = edbapp.simulation_setups.create_siwave_dcir_setup()
+        assert not setup.is_null
+        setup.name = "test_siwave_dcir_setup"
+        assert setup.name == "test_siwave_dcir_setup"
+
+        # setting.advanced
+        dc = setup.settings.dc
+        dc.compute_inductance = True
+        assert dc.compute_inductance
+        dc.contact_radius = "1mm"
+        assert dc.contact_radius == "1mm"
+        dc.dc_report_config_file = "custom_dc_report.cfg"
+        assert dc.dc_report_config_file == "custom_dc_report.cfg"
+        dc.dc_report_config_file = "custom_dc_report.cfg"
+        assert dc.dc_report_config_file == "custom_dc_report.cfg"
+        dc.dc_slider_pos = 2
+        assert dc.dc_slider_pos == 2
+        dc.export_dc_thermal_data = True
+        assert dc.export_dc_thermal_data
+        dc.full_dc_report_path = "full_dc_report.txt"
+        assert dc.full_dc_report_path == "full_dc_report.txt"
+        dc.icepak_temp_file = "icepak_temp_file.txt"
+        assert dc.icepak_temp_file == "icepak_temp_file.txt"
+        dc.import_thermal_data = True
+        assert dc.import_thermal_data
+        dc.per_pin_res_path = "per_pin_res.txt"
+        assert dc.per_pin_res_path == "per_pin_res.txt"
+        dc.plot_jv = False
+        assert not dc.plot_jv
+        dc.source_terms_to_ground = {"gnd": 1}
+        dc.use_dc_custom_settings = True
+        assert dc.use_dc_custom_settings
+        dc.use_loop_res_for_per_pin = True
+        assert dc.use_loop_res_for_per_pin
+        dc.via_report_path = "via_report.txt"
+        assert dc.via_report_path == "via_report.txt"
+
+        # dc advanced
+        dc_adv = setup.settings.dc_advanced
+        dc_adv.dc_min_plane_area_to_mesh = "0.30mm2"
+        assert dc_adv.dc_min_plane_area_to_mesh == "0.30mm2"
+        dc_adv.dc_min_void_area_to_mesh = "0.02mm2"
+        assert dc_adv.dc_min_void_area_to_mesh == "0.02mm2"
+        dc_adv.energy_error = 1.5
+        assert dc_adv.energy_error == 1.5
+        dc_adv.max_init_mesh_edge_length = "2.0mm"
+        assert dc_adv.max_init_mesh_edge_length == "2.0mm"
+        dc_adv.max_num_passes = 10
+        assert dc_adv.max_num_passes == 10
+        dc_adv.mesh_bws = False
+        assert not dc_adv.mesh_bws
+        dc_adv.mesh_vias = False
+        assert not dc_adv.mesh_vias
+        dc_adv.min_num_passes = 5
+        assert dc_adv.min_num_passes == 5
+        dc_adv.num_bw_sides = 12
+        assert dc_adv.num_bw_sides == 12
+        dc_adv.num_via_sides = 12
+        assert dc_adv.num_via_sides == 12
+        dc_adv.percent_local_refinement = 30
+        assert dc_adv.percent_local_refinement == 30
+        dc_adv.refine_bws = True
+        assert dc_adv.refine_bws
+        dc_adv.refine_vias = True
+        assert dc_adv.refine_vias
+
+        # general
+        general = setup.settings.general
+        general.pi_slider_pos = 0
+        assert general.pi_slider_pos == 0
+        general.si_slider_pos = 2
+        assert general.si_slider_pos == 2
+        general.use_custom_settings = True
+        assert general.use_custom_settings
+        general.user_si_settings = False
+        assert not general.user_si_settings
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    def test_raptor_x_simulation_setups_consolidation(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        setup = edbapp.simulation_setups.create_raptor_x_setup()
+        assert not setup.is_null
+        setup.name = "test_raptorx_setup"
+        assert setup.name == "test_raptorx_setup"
+        assert not setup.sweep_data  # default we don't create sweep if not data provided while setup creation
+        # advanced general settings
+        adv_settings = setup.settings.advanced
+        adv_settings.auto_removal_sliver_poly = 1e-2
+        assert adv_settings.auto_removal_sliver_poly == 1e-2
+        adv_settings.cells_per_wavelength = 60
+        assert adv_settings.cells_per_wavelength == 60
+        adv_settings.defuse_enable_hybrid_extraction = True
+        assert adv_settings.defuse_enable_hybrid_extraction
+        adv_settings.edge_mesh = 1e-6
+        assert adv_settings.edge_mesh == 1e-6
+        adv_settings.eliminate_slit_per_holes = 2.0
+        assert adv_settings.eliminate_slit_per_holes == 2.0
+        adv_settings.mesh_bws = 25e9
+        assert adv_settings.mesh_bws == 25e9
+        adv_settings.net_settings_options = {"VDD": ["mesh_vias", "via_diameter"]}
+        assert adv_settings.net_settings_options == {"VDD": ["mesh_vias", "via_diameter"]}
+        adv_settings.override_shrink_factor = 2.0
+        assert adv_settings.override_shrink_factor == 2.0
+        adv_settings.plane_projection_factor = 2.0
+        assert adv_settings.plane_projection_factor == 2.0
+        adv_settings.use_accelerate_via_extraction = False
+        assert not adv_settings.use_accelerate_via_extraction
+        adv_settings.use_auto_removal_sliver_poly = True
+        assert adv_settings.use_auto_removal_sliver_poly
+        adv_settings.use_cells_per_wavelength = True
+        assert adv_settings.use_cells_per_wavelength
+        adv_settings.use_edge_mesh = True
+        assert adv_settings.use_edge_mesh
+        adv_settings.use_eliminate_slit_per_holes = True
+        assert adv_settings.use_eliminate_slit_per_holes
+        adv_settings.use_enable_advanced_cap_effects = True
+        assert adv_settings.use_enable_advanced_cap_effects
+        adv_settings.use_enable_etch_transform = True
+        assert adv_settings.use_enable_etch_transform
+        adv_settings.use_enable_substrate_network_extraction = False
+        assert not adv_settings.use_enable_substrate_network_extraction
+        adv_settings.use_extract_floating_metals_floating = False
+        assert not adv_settings.use_extract_floating_metals_floating
+        adv_settings.use_extract_floating_metals_dummy = True
+        assert adv_settings.use_extract_floating_metals_dummy
+        adv_settings.use_lde = True
+        assert adv_settings.use_lde
+        adv_settings.use_mesh_frequency = True
+        assert adv_settings.use_mesh_frequency
+        adv_settings.use_overwrite_shrink_factor = True
+        assert adv_settings.use_overwrite_shrink_factor
+        adv_settings.use_relaxed_z_axis = True
+        assert adv_settings.use_relaxed_z_axis
+
+        # general settings
+        general = setup.settings.general
+        general.global_temperature = 30.0
+        assert general.global_temperature == 30.0
+        general.max_frequency = 35e9
+        assert general.max_frequency == 35e9
+        general.netlist_export_spectre = True
+        assert general.netlist_export_spectre
+        general.save_netlist = True
+        assert general.save_netlist
+        general.save_rfm = True
+        assert general.save_rfm
+        general.use_gold_em_solver = True
+        assert general.use_gold_em_solver
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    def test_q3d_simulation_setups_consolidation(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        setup = edbapp.simulation_setups.create_q3d_setup()
+        assert not setup.is_null
+        setup.name = "test_q3d_setup"
+        assert setup.name == "test_q3d_setup"
+        assert setup.setup_type == "q3d"
+
+        # acrl settings
+        acrl = setup.settings.acrl
+        acrl.max_frequency = 20
+        assert acrl.max_frequency == 20
+        acrl.max_refine_per_pass = 25
+        assert acrl.max_refine_per_pass == 25
+        acrl.min_converged_passes = 2
+        assert acrl.min_converged_passes == 2
+        acrl.min_passes = 2
+        assert acrl.min_passes == 2
+        acrl.percent_error = 0.5
+        assert acrl.percent_error == 0.5
+
+        # advanced meshing settings
+        adv_mesh = setup.settings.advanced_meshing
+        adv_mesh.arc_step_size = 0.2
+        assert adv_mesh.arc_step_size == 0.2
+        adv_mesh.arc_to_chord_error = 1e-6
+        assert adv_mesh.arc_to_chord_error == 1e-6
+        adv_mesh.circle_start_azimuth = 15
+        assert adv_mesh.circle_start_azimuth == 15
+        # TODO check pyedb-core bug #682 -> setter is broken
+        # adv_mesh.layer_alignment = 1e-4
+        # assert adv_mesh.layer_alignment == 1e-4
+        adv_mesh.max_num_arc_points = 6
+        assert adv_mesh.max_num_arc_points == 6
+        adv_mesh.use_arc_chord_error_approx = True
+        assert adv_mesh.use_arc_chord_error_approx
+
+        # cg settings
+        cg = setup.settings.cg
+        # TODO check pyedb-core bug #683 -> setter is broken
+        # cg.auto_incr_sol_order = False
+        # assert not cg.auto_incr_sol_order
+        cg.compression_tol = 1e-6
+        assert cg.compression_tol == 1e-6
+        cg.max_passes = 20
+        assert cg.max_passes == 20
+        cg.max_refine_per_pass = 20
+        assert cg.max_refine_per_pass == 20
+        cg.min_converged_passes = 2
+        assert cg.min_converged_passes == 2
+        cg.min_passes = 2
+        assert cg.min_passes == 2
+        cg.percent_error = 0.5
+        assert cg.percent_error == 0.5
+        cg.solution_order = "higher"
+        assert cg.solution_order == "higher"
+
+        # dcrl settings
+        dcrl = setup.settings.dcrl
+        dcrl.max_passes = 20
+        assert dcrl.max_passes == 20
+        dcrl.max_refine_per_pass = 20
+        assert dcrl.max_refine_per_pass == 20
+        dcrl.min_converged_passes = 2
+        assert dcrl.min_converged_passes == 2
+        dcrl.min_passes = 2
+        assert dcrl.min_passes == 2
+        dcrl.percent_error = 0.5
+        assert dcrl.percent_error == 0.5
+        dcrl.solution_order = "higher"
+        assert dcrl.solution_order == "higher"
+
+        # general settings
+        general = setup.settings.general
+        general.do_ac = True
+        assert general.do_ac
+        general.do_cg = True
+        assert general.do_cg
+        general.do_dc = False
+        assert not general.do_dc
+        general.do_dc_res_only = True
+        assert general.do_dc_res_only
+        general.save_netlist = True
+        assert general.save_netlist
+        general.solution_frequency = 20e9
+        assert general.solution_frequency == 20e9
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    def test_sweep(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        setup = edbapp.simulation_setups.create_hfss_setup(
+            name="test_hfss_setup", distribution="decade_count", start_freq="0GHz", stop_freq="1GHz", freq_step="10"
+        )
+        sweep = setup.sweep_data[0]
+        sweep.compute_dc_point = True
+        assert sweep.compute_dc_point
+        sweep.enabled = False
+        assert not sweep.enabled
+        sweep.enabled = True
+        sweep.enforce_causality = True
+        sweep.enforce_passivity = False
+        assert not sweep.enforce_passivity
+        assert sweep.frequency_string == "DEC 0GHz 1GHz 10"
+        sweep.name = "renamed_sweep"
+        assert sweep.name == "renamed_sweep"
+        sweep.save_fields = True
+        assert sweep.save_fields
+        sweep.save_rad_fields_only = True
+        assert sweep.save_rad_fields_only
+        sweep.type = "discrete"
+        assert sweep.type == "discrete"
+        sweep.use_hfss_solver_regions = True
+        assert sweep.use_hfss_solver_regions
+        sweep.use_q3d_for_dc = True
+        assert sweep.use_q3d_for_dc
         edbapp.close(terminate_rpc_session=False)

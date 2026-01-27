@@ -19,35 +19,32 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from typing import TYPE_CHECKING
 
+from ansys.edb.core.simulation_setup.hfss_pi_simulation_setup import HFSSPISimulationSetup as GrpcHFSSPISimulationSetup
 
-import warnings
-
-from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
-    SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
-)
-
-import pyedb
+from pyedb.grpc.database.simulation_setup.hfss_pi_simulation_settings import HFSSPISimulationSettings
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
-from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
-from pyedb.grpc.database.simulation_setup.siwave_simulation_settings import SIWaveSimulationSettings
+
+if TYPE_CHECKING:
+    from pyedb.grpc.edb import Edb
 
 
-class SIWaveDCIRSimulationSetup(SimulationSetup):
-    """Siwave Dcir simulation setup class."""
+class HFSSPISimulationSetup(SimulationSetup):
+    """HFSS PI simulation setup class."""
 
-    def __init__(self, pedb, core: "GrpcSIWaveDCIRSimulationSetup"):
+    def __init__(self, pedb, core: "GrpcHFSSPISimulationSetup"):
         super().__init__(pedb, core)
         self.core = core
         self._pedb = pedb
 
     @classmethod
-    def create(cls, edb: "pyedb.Edb", name: str = "Siwave_DCIR"):
-        """Create a SIWave DCIR simulation setup.
+    def create(cls, edb: "Edb", name: str = "HFSS_PI") -> "HFSSPISimulationSetup":
+        """Create a HFSS PI simulation setup.
 
         Parameters
         ----------
-        edb : Edb object
+        edb : Edb
             An EDB instance.
 
         name : str
@@ -55,34 +52,21 @@ class SIWaveDCIRSimulationSetup(SimulationSetup):
 
         Returns
         -------
-        SIWaveDCIRSimulationSetup
-            The SIWave DCIR simulation setup object.
+        HFSSPISimulationSetup
+            The HFSS PI simulation setup object.
 
         """
-        core_setup = GrpcSIWaveDCIRSimulationSetup.create(edb.active_cell, name=name)
+        core_setup = GrpcHFSSPISimulationSetup.create(edb.active_cell, name)
         return cls(edb, core_setup)
 
     @property
-    def dc_ir_settings(self):
-        """SIWave DCIR simulation settings.
-
-        ... deprecated:: 0.77.3
-        Use :attr:`settings.dc
-        <pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup.settings>`
-        instead.
-
-        """
-        warnings.warn("`dc_ir_settings` is deprecated. Use `settings.dc` instead.", DeprecationWarning)
-        return SIWaveDCSettings(self._pedb, self.core.settings)
-
-    @property
-    def settings(self) -> SIWaveSimulationSettings:
-        """SIWave DCIR simulation settings.
+    def settings(self) -> HFSSPISimulationSettings:
+        """Get the HFSS PI simulation settings.
 
         Returns
         -------
-        SIWaveSimulationSettings
-            The SIWave DCIR simulation settings object.
+        HFSSPISimulationSettings
+            The HFSS PI simulation settings object.
 
         """
-        return SIWaveSimulationSettings(self._pedb, self.core.settings)
+        return HFSSPISimulationSettings(self._pedb, self.core.settings)

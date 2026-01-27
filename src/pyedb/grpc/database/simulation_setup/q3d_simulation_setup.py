@@ -14,84 +14,78 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNE SS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 from typing import TYPE_CHECKING
 
-from ansys.edb.core.simulation_setup.raptor_x_simulation_setup import (
-    RaptorXSimulationSetup as GrpcRaptorXSimulationSetup,
-)
+from ansys.edb.core.simulation_setup.q3d_simulation_setup import Q3DSimulationSetup as GrpcQ3DSimulationSetup
 
+from pyedb.grpc.database.simulation_setup.q3d_simulation_settings import Q3DSimulationSettings
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
+from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
 if TYPE_CHECKING:
+    # Import only for type checking to avoid runtime circular imports
     from pyedb.grpc.edb import Edb
 
 
-from pyedb.grpc.database.simulation_setup.raptor_x_simulation_settings import RaptorXSimulationSettings
-from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
+class Q3DSimulationSetup(SimulationSetup):
+    """Q3D simulation setup management.
 
+    Parameters
+    ----------
+    pedb : :class:`Edb`
+        Inherited object.
+    """
 
-class RaptorXSimulationSetup(SimulationSetup):
-    """RaptorX simulation setup."""
-
-    def __init__(self, pedb, core: "GrpcRaptorXSimulationSetup"):
+    def __init__(self, pedb, core: "GrpcQ3DSimulationSetup"):
         super().__init__(pedb, core)
-        self.core = core
+        self.core: GrpcQ3DSimulationSetup = core
         self._pedb = pedb
 
     @classmethod
-    def create(cls, edb: "Edb", name: str = "RaptorX_Simulation_Setup"):
-        """Create RaptorX simulation setup.
+    def create(cls, edb: "Edb", name: str = "Q3D_setup") -> "Q3DSimulationSetup":
+        """Create a Q3D simulation setup.
 
         Parameters
         ----------
-        edb : PyEDB Edb object
-            PyEDB Edb object.
-        name : str
-            Name of the simulation setup.
+        edb : Edb
+            Inherited object.
+
+        name : str, optional
+            Name of the simulation setup, by default "Q3D_setup".
 
         Returns
         -------
-        RaptorXSimulationSetup
-            RaptorX simulation setup object.
-
+        Q3DSimulationSetup
+            The Q3D simulation setup object.
         """
-        core = GrpcRaptorXSimulationSetup.create(edb.active_cell, name)
+        core = GrpcQ3DSimulationSetup.create(edb.active_cell, name)
         return cls(edb, core)
 
     @property
-    def settings(self) -> RaptorXSimulationSettings:
-        """RaptorX simulation settings.
+    def settings(self) -> Q3DSimulationSettings:
+        """Q3D simulation settings.
 
         Returns
         -------
-        RaptorXSimulationSettings
-            RaptorX simulation settings object.
-
+        Q3DSimulationSettings
+            The Q3D simulation settings object.
         """
-        return RaptorXSimulationSettings(self._pedb, self.core.settings)
+        return Q3DSimulationSettings(self._pedb, self.core.settings)
 
     @property
     def sweep_data(self) -> list[SweepData]:
-        """Returns Frequency sweeps.
+        """Get sweep data.
 
         Returns
         -------
         list[SweepData]
-            List of SweepData objects.
-
+            List of sweep data objects.
         """
-        sweeps = []
-        for sweep in self.core.sweep_data:
-            sweeps.append(SweepData(self._pedb, core=sweep))
-        return sweeps
-
-    @sweep_data.setter
-    def sweep_data(self, value: list[SweepData]):
-        sweep_data = [sweep.core for sweep in value]
-        self.core.sweep_data = sweep_data
+        return [SweepData(self._pedb, sd) for sd in self.core.sweep_data]
