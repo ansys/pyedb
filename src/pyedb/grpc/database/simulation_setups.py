@@ -33,6 +33,7 @@ from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetu
 from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import SIWaveCPASimulationSetup
 from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
 from pyedb.grpc.database.simulation_setup.siwave_simulation_setup import SiwaveSimulationSetup
+from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.siwave_core.product_properties import SIwaveProperties
 
 
@@ -262,6 +263,7 @@ class SimulationSetups:
             setattr(setup, k, v)
         return setup
 
+    @deprecate_argument_name({"freq_step": "step_freq"})
     def create_hfss_setup(
         self,
         name=None,
