@@ -1,0 +1,6 @@
+apply
+=====
+
+.. currentmodule:: pyedb.configuration.cfg_boundaries
+
+.. automethod:: CfgBoundaries.apply

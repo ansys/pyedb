@@ -1,0 +1,104 @@
+
+
+
+
+
+
+:class:`Group`
+==============
+
+
+.. py:class:: pyedb.dotnet.database.cell.hierarchy.hierarchy_obj.Group(pedb, edb_object)
+
+   Bases: :py:obj:`HierarchyObj`
+
+
+   
+   Manages EDB functionalities for a connectable object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Group
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~ungroup`
+            - Dissolve a group.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.hierarchy.hierarchy_obj import Group
+
+
+
+Method detail
+-------------
+
+.. py:method:: ungroup(recursive=False)
+
+   
+   Dissolve a group.
+
+
+   :Parameters:
+
+       **recursive** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           If True, all subgroups will also be dissolved.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

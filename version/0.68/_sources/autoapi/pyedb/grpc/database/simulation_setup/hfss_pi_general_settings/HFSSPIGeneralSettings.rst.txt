@@ -1,0 +1,366 @@
+
+
+
+
+
+
+:class:`HFSSPIGeneralSettings`
+==============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_pi_general_settings.HFSSPIGeneralSettings(pedb, core: ansys.edb.core.simulation_setup.hfss_pi_simulation_settings.HFSSPIGeneralSettings)
+
+   
+   PyEDB HFSS PI general settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSPIGeneralSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~include_enhanced_bondwire_modeling`
+            - Flag indicating whether to include enhanced bondwire modeling.
+          * - :py:attr:`~min_plane_area_to_mesh`
+            - (General Mode Only) The minimum plane area to mesh.
+          * - :py:attr:`~min_void_area_to_mesh`
+            - (General Mode Only) The minimum void area to mesh.
+          * - :py:attr:`~model_type`
+            - Get the model type.
+          * - :py:attr:`~perform_erc`
+            - (General Mode Only) Flag indicating whether to perform error checking while generating the solver input file.
+          * - :py:attr:`~rms_surface_roughness`
+            - The RMS surface roughness.
+          * - :py:attr:`~simulation_preference`
+            - Get the simulation preference.
+          * - :py:attr:`~snap_length_threshold`
+            - (General Mode Only) The snap length threshold.
+          * - :py:attr:`~surface_roughness_model`
+            - Get the surface roughness model.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_pi_general_settings import HFSSPIGeneralSettings
+
+Property detail
+---------------
+
+.. py:property:: include_enhanced_bondwire_modeling
+   :type: bool
+
+
+   
+   Flag indicating whether to include enhanced bondwire modeling.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if include enhanced bondwire modeling is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_plane_area_to_mesh
+   :type: str
+
+
+   
+   (General Mode Only) The minimum plane area to mesh.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Minimum plane area to mesh as a string with units (e.g., "0.1mm2").
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_void_area_to_mesh
+   :type: str
+
+
+   
+   (General Mode Only) The minimum void area to mesh.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Minimum void area to mesh as a string with units (e.g., "0.1mm2").
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: model_type
+   :type: str
+
+
+   
+   Get the model type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The model type.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: perform_erc
+   :type: bool
+
+
+   
+   (General Mode Only) Flag indicating whether to perform error checking while generating the solver input file.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if perform ERC is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rms_surface_roughness
+   :type: str
+
+
+   
+   The RMS surface roughness.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           RMS surface roughness as a string with units (e.g., "0.5um").
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: simulation_preference
+   :type: str
+
+
+   
+   Get the simulation preference.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The simulation preference.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: snap_length_threshold
+   :type: str
+
+
+   
+   (General Mode Only) The snap length threshold.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Snap length threshold as a string with units (e.g., "0.1mm").
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: surface_roughness_model
+   :type: str
+
+
+   
+   Get the surface roughness model.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The surface roughness model.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

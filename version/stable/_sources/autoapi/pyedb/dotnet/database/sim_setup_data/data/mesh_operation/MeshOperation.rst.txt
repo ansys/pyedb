@@ -1,0 +1,349 @@
+
+
+
+
+
+
+:class:`MeshOperation`
+======================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.mesh_operation.MeshOperation(parent, edb_object)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Mesh Operation Class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: MeshOperation
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~net_layer_info`
+            - Adding property for grpc compatibility.
+          * - :py:attr:`~enabled`
+            - Whether if mesh operation is enabled.
+          * - :py:attr:`~mesh_operation_type`
+            - Mesh operation type.
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~mesh_region`
+            - Mesh region name.
+          * - :py:attr:`~name`
+            - Mesh operation name.
+          * - :py:attr:`~nets_layers_list`
+            - List of nets and layers.
+          * - :py:attr:`~refine_inside`
+            - Whether to turn on refine inside objects.
+          * - :py:attr:`~max_elements`
+            - Maximum number of elements.
+          * - :py:attr:`~restrict_max_elements`
+            - Whether to restrict maximum number  of elements.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.mesh_operation import MeshOperation
+
+Property detail
+---------------
+
+.. py:property:: net_layer_info
+
+   
+   Adding property for grpc compatibility.
+
+
+
+
+
+   :Returns:
+
+       The tuple is in this form: (net_name, layer_name, is_sheet)``.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enabled
+
+   
+   Whether if mesh operation is enabled.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if mesh operation is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_operation_type
+
+   
+   Mesh operation type.
+   Options:
+   0- ``kMeshSetupBase``
+   1- ``kMeshSetupLength``
+   2- ``kMeshSetupSkinDepth``
+   3- ``kNumMeshOpTypes``.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: type
+
+.. py:property:: mesh_region
+
+   
+   Mesh region name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the mesh region.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   Mesh operation name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: nets_layers_list
+
+   
+   List of nets and layers.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of lists with three elements. Each list must contain:
+           1- net name
+           2- layer name
+           3- bool.
+           Third element is represents whether if the mesh operation is enabled or disabled.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: refine_inside
+
+   
+   Whether to turn on refine inside objects.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if refine inside objects is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_elements
+
+   
+   Maximum number of elements.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: restrict_max_elements
+
+   
+   Whether to restrict maximum number  of elements.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

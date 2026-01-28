@@ -1,0 +1,6 @@
+dataset\_defs
+=============
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.dataset_defs

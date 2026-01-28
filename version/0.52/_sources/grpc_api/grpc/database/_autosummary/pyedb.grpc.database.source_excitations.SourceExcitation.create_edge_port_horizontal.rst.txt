@@ -1,0 +1,6 @@
+create\_edge\_port\_horizontal
+==============================
+
+.. currentmodule:: pyedb.grpc.database.source_excitations
+
+.. automethod:: SourceExcitation.create_edge_port_horizontal

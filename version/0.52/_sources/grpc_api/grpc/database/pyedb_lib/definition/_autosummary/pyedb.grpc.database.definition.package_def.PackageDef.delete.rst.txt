@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.grpc.database.definition.package_def
+
+.. automethod:: PackageDef.delete

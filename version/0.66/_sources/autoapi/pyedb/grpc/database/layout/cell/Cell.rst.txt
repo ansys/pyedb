@@ -1,0 +1,76 @@
+
+
+
+
+
+
+:class:`Cell`
+=============
+
+
+.. py:class:: pyedb.grpc.database.layout.cell.Cell(pedb, edb_object)
+
+   
+   Manage :class:`Cell <ansys.edb.core.layout.cell.Cell>`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Cell
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.layout.cell import Cell
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

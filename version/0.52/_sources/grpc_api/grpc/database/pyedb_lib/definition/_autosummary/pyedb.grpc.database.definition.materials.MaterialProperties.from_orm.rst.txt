@@ -1,0 +1,6 @@
+from\_orm
+=========
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: MaterialProperties.from_orm

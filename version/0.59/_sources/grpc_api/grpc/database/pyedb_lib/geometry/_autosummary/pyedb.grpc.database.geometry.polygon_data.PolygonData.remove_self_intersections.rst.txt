@@ -1,0 +1,6 @@
+remove\_self\_intersections
+===========================
+
+.. currentmodule:: pyedb.grpc.database.geometry.polygon_data
+
+.. automethod:: PolygonData.remove_self_intersections

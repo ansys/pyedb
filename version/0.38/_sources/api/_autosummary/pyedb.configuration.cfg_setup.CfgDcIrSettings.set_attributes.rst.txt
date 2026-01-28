@@ -1,0 +1,6 @@
+set\_attributes
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_setup
+
+.. automethod:: CfgDcIrSettings.set_attributes

@@ -1,0 +1,136 @@
+
+
+
+
+
+
+:class:`CfgPackage`
+===================
+
+
+.. py:class:: pyedb.configuration.cfg_package_definition.CfgPackage(**kwargs)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBase`
+
+
+   
+   Configuration package class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgPackage
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~heatsink`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~protected_attributes`
+            - 
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~component_definition`
+            - 
+          * - :py:attr:`~maximum_power`
+            - 
+          * - :py:attr:`~therm_cond`
+            - 
+          * - :py:attr:`~theta_jb`
+            - 
+          * - :py:attr:`~theta_jc`
+            - 
+          * - :py:attr:`~height`
+            - 
+          * - :py:attr:`~apply_to_all`
+            - 
+          * - :py:attr:`~components`
+            - 
+          * - :py:attr:`~extent_bounding_box`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_package_definition import CfgPackage
+
+Property detail
+---------------
+
+.. py:property:: heatsink
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: protected_attributes
+   :value: ['apply_to_all', 'components', 'extent_bounding_box', 'component_definition']
+
+
+.. py:attribute:: name
+
+.. py:attribute:: component_definition
+
+.. py:attribute:: maximum_power
+
+.. py:attribute:: therm_cond
+
+.. py:attribute:: theta_jb
+
+.. py:attribute:: theta_jc
+
+.. py:attribute:: height
+
+.. py:attribute:: apply_to_all
+
+.. py:attribute:: components
+
+.. py:attribute:: extent_bounding_box
+
+
+
+
+

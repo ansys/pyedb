@@ -1,0 +1,6 @@
+flattened\_layout
+=================
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. autoproperty:: Cell.flattened_layout

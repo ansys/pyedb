@@ -1,0 +1,55 @@
+﻿DCAdvancedSettings
+==================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoclass:: DCAdvancedSettings
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      DCAdvancedSettings.get_configurations
+      
+      
+      DCAdvancedSettings.restore_default
+      
+      
+      DCAdvancedSettings.set_dc_slider
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      DCAdvancedSettings.dc_min_plane_area_to_mesh
+      DCAdvancedSettings.dc_min_void_area_to_mesh
+      DCAdvancedSettings.energy_error
+      DCAdvancedSettings.max_init_mesh_edge_length
+      DCAdvancedSettings.max_num_pass
+      DCAdvancedSettings.max_num_passes
+      DCAdvancedSettings.mesh_bondwires
+      DCAdvancedSettings.mesh_vias
+      DCAdvancedSettings.min_num_pass
+      DCAdvancedSettings.min_num_passes
+      DCAdvancedSettings.num_bondwire_sides
+      DCAdvancedSettings.num_bw_sides
+      DCAdvancedSettings.num_via_sides
+      DCAdvancedSettings.percent_local_refinement
+      DCAdvancedSettings.perform_adaptive_refinement
+      DCAdvancedSettings.refine_bondwires
+      DCAdvancedSettings.refine_bws
+      DCAdvancedSettings.refine_vias
+      DCAdvancedSettings.sim_setup_info
+   
+   

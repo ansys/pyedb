@@ -1,0 +1,6 @@
+from\_orm
+=========
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: DiffPairLengthMatch.from_orm

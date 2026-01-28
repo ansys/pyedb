@@ -1,0 +1,536 @@
+
+
+
+
+
+
+:class:`SiwaveSimulationSetup`
+==============================
+
+
+.. py:class:: pyedb.dotnet.database.utilities.siwave_simulation_setup.SiwaveSimulationSetup(pedb, edb_object=None, name: str = None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup`
+
+
+   
+   Manages EDB methods for SIwave simulation setup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SiwaveSimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a SIwave SYZ setup.
+          * - :py:attr:`~get_configurations`
+            - Get SIwave SYZ simulation settings.
+          * - :py:attr:`~set_pi_slider`
+            - Set SIwave PI simulation accuracy level.
+          * - :py:attr:`~set_si_slider`
+            - Set SIwave SI simulation accuracy level.
+          * - :py:attr:`~add_sweep`
+            - Add frequency sweep.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~advanced_settings`
+            - SIwave advanced settings.
+          * - :py:attr:`~sim_setup_info`
+            - Overrides the default sim_setup_info object.
+          * - :py:attr:`~get_sim_setup_info`
+            - Get simulation information from the setup.
+          * - :py:attr:`~enabled`
+            - Flag indicating if the setup is enabled.
+          * - :py:attr:`~pi_slider_position`
+            - PI solider position. Values are from ``1`` to ``3``.
+          * - :py:attr:`~si_slider_position`
+            - SI slider position. Values are from ``1`` to ``3``.
+          * - :py:attr:`~use_custom_settings`
+            - Custom settings to use.
+          * - :py:attr:`~use_si_settings`
+            - Whether to use SI Settings.
+          * - :py:attr:`~sweeps`
+            - List of frequency sweeps.
+          * - :py:attr:`~dc_settings`
+            - SIwave DC setting.
+          * - :py:attr:`~dc_advanced_settings`
+            - Siwave DC advanced settings.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.siwave_simulation_setup import SiwaveSimulationSetup
+
+Property detail
+---------------
+
+.. py:property:: advanced_settings
+
+   
+   SIwave advanced settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sim_setup_info
+
+   
+   Overrides the default sim_setup_info object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: get_sim_setup_info
+
+   
+   Get simulation information from the setup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enabled
+
+   
+   Flag indicating if the setup is enabled.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pi_slider_position
+
+   
+   PI solider position. Values are from ``1`` to ``3``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: si_slider_position
+
+   
+   SI slider position. Values are from ``1`` to ``3``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_custom_settings
+
+   
+   Custom settings to use.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_si_settings
+
+   
+   Whether to use SI Settings.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sweeps
+
+   
+   List of frequency sweeps.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_settings
+
+   
+   SIwave DC setting.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_advanced_settings
+
+   
+   Siwave DC advanced settings.
+
+
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(name=None)
+
+   
+   Create a SIwave SYZ setup.
+
+
+
+
+
+   :Returns:
+
+       :class:`SiwaveDCSimulationSetup`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_configurations()
+
+   
+   Get SIwave SYZ simulation settings.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of SIwave SYZ simulation settings.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_pi_slider(value)
+
+   
+   Set SIwave PI simulation accuracy level.
+   Options are:
+   - ``0``: Optimal speed
+   - ``1``:  Balanced
+   - ``2``: Optimal accuracy
+
+   .. deprecated:: 0.7.5
+      Use :property:`pi_slider_position` property instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_si_slider(value)
+
+   
+   Set SIwave SI simulation accuracy level.
+
+   Options are:
+   - ``0``: Optimal speed;
+   - ``1``:  Balanced;
+   - ``2``: Optimal accuracy```.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_sweep(name: str = None, frequency_set: list = None, sweep_type: str = 'interpolation', **kwargs)
+
+   
+   Add frequency sweep.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the frequency sweep. The default is ``None``.
+
+       **frequency_set** : :class:`python:list`, :obj:`optional`
+           List of frequency points. The default is ``None``.
+
+       **sweep_type** : :class:`python:str`, :obj:`optional`
+           Sweep type. The default is ``"interpolation"``. Options are ``"discrete"``,"discrete"``.
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
+   >>> setup1.add_sweep(name="sw1", frequency_set=["linear count", "1MHz", "100MHz", 10])
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

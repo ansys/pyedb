@@ -1,0 +1,279 @@
+
+
+
+
+
+
+:class:`Variable`
+=================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.variables.Variable(pedb, name)
+
+   
+   Manages EDB methods for variable accessible from `Edb.Utility.VariableServer` property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Variable
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~delete`
+            - Delete this variable.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Get the name of this variable.
+          * - :py:attr:`~value_string`
+            - Get/Set the value of this variable.
+          * - :py:attr:`~value_object`
+            - Get/Set the value of this variable.
+          * - :py:attr:`~value`
+            - Get the value of this variable.
+          * - :py:attr:`~description`
+            - Get the description of this variable.
+          * - :py:attr:`~is_parameter`
+            - Determine whether this variable is a parameter.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.variables import Variable
+
+Property detail
+---------------
+
+.. py:property:: name
+
+   
+   Get the name of this variable.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: value_string
+
+   
+   Get/Set the value of this variable.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: value_object
+
+   
+   Get/Set the value of this variable.
+
+
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.edbvalue.EdbValue`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: value
+
+   
+   Get the value of this variable.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: description
+
+   
+   Get the description of this variable.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_parameter
+
+   
+   Determine whether this variable is a parameter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: delete()
+
+   
+   Delete this variable.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> edb.design_variables["new_variable"].delete()
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

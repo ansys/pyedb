@@ -1,0 +1,588 @@
+
+
+
+
+
+
+:class:`ComponentDef`
+=====================
+
+
+.. py:class:: pyedb.grpc.database.definition.component_def.ComponentDef(pedb, core)
+
+   
+   Manages EDB functionalities for component definitions.
+
+
+   :Parameters:
+
+       **edb_object** : :obj:`object`
+           Edb ComponentDef Object
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: ComponentDef
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~find`
+            - Find component definition by name.
+          * - :py:attr:`~create`
+            - Create a new component definition.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~assign_rlc_model`
+            - Assign RLC to all components under this part name.
+          * - :py:attr:`~assign_s_param_model`
+            - Assign S-parameter to all components under this part name.
+          * - :py:attr:`~assign_spice_model`
+            - Assign Spice model to all components under this part name.
+          * - :py:attr:`~add_n_port_model`
+            - Add N-port model.
+          * - :py:attr:`~get_properties`
+            - 
+          * - :py:attr:`~set_properties`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~part_name`
+            - Component definition name.
+          * - :py:attr:`~type`
+            - Component definition type.
+          * - :py:attr:`~components`
+            - Component instances belonging to the definition.
+          * - :py:attr:`~is_null`
+            - Check if the component definition is null.
+          * - :py:attr:`~component_pins`
+            - Component pins.
+          * - :py:attr:`~reference_file`
+            - Model reference file.
+          * - :py:attr:`~component_models`
+            - Component models.
+          * - :py:attr:`~name`
+            - Component definition name.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.definition.component_def import ComponentDef
+
+Property detail
+---------------
+
+.. py:property:: part_name
+   :type: str
+
+
+   
+   Component definition name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Component part name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: type
+   :type: str
+
+
+   
+   Component definition type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Component definition type.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: components
+   :type: dict[str, pyedb.grpc.database.hierarchy.component.Component]
+
+
+   
+   Component instances belonging to the definition.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_null
+   :type: bool
+
+
+   
+   Check if the component definition is null.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the component definition is null, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: component_pins
+   :type: list[pyedb.grpc.database.definition.component_pin.ComponentPin]
+
+
+   
+   Component pins.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`ComponentPin <pyedb.grpc.database.definition.component_pin.ComponentPin>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: reference_file
+   :type: list[str]
+
+
+   
+   Model reference file.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           List of reference files.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: component_models
+
+   
+   Component models.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`ComponentModel <ansys.edb.core.definition.component_model.ComponentModel>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   Component definition name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Component definition name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: find(edb, name)
+   :classmethod:
+
+
+   
+   Find component definition by name.
+
+
+   :Parameters:
+
+       **edb** : :class:`pyedb.grpc.edb.Edb`
+           EDB database object.
+
+       **name** : :class:`python:str`
+           Component definition name.
+
+
+
+   :Returns:
+
+       :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>` or :data:`python:None`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create(edb, name, fp=None)
+   :classmethod:
+
+
+   
+   Create a new component definition.
+
+
+   :Parameters:
+
+       **edb** : :class:`pyedb.grpc.edb.Edb`
+           EDB database object.
+
+       **name** : :class:`python:str`
+           Component definition name.
+
+       **fp** : :class:`python:str`, :obj:`optional`
+           Footprint cell name.
+
+
+
+   :Returns:
+
+       :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: assign_rlc_model(res=None, ind=None, cap=None, is_parallel=False) -> bool
+
+   
+   Assign RLC to all components under this part name.
+
+
+   :Parameters:
+
+       **res** : :class:`python:int`, :class:`python:float`
+           Resistance. Default is ``None``.
+
+       **ind** : :class:`python:int`, :class:`python:float`
+           Inductance. Default is ``None``.
+
+       **cap** : :class:`python:int`, :class:`python:float`
+           Capacitance. Default is ``None``.
+
+       **is_parallel** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether it is parallel or series RLC component.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: assign_s_param_model(file_path, model_name=None, reference_net=None) -> bool
+
+   
+   Assign S-parameter to all components under this part name.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str`
+           File path of the S-parameter model.
+
+       **model_name** : :class:`python:str`, :obj:`optional`
+           Name of the S-parameter model.
+
+       **reference_net** : :class:`python:str`, :obj:`optional`
+           Name of the reference net.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: assign_spice_model(file_path, model_name=None) -> bool
+
+   
+   Assign Spice model to all components under this part name.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str`
+           File path of the Spice model.
+
+       **model_name** : :class:`python:str`, :obj:`optional`
+           Name of the Spice model.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_n_port_model(fpath, name=None)
+
+   
+   Add N-port model.
+
+
+
+
+
+   :Returns:
+
+       **Nport model** : :class:`NPortComponentModel <ansys.edb.core.definition.component_model.NPortComponentModel>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_properties()
+
+.. py:method:: set_properties(**kwargs)
+
+
+
+

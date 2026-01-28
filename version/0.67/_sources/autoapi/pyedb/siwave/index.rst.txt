@@ -1,0 +1,112 @@
+
+
+
+
+
+
+The ``siwave.py`` module
+========================
+
+.. py:module:: pyedb.siwave
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: siwave
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.siwave.Siwave`
+            - Initializes SIwave based on the inputs provided and manages SIwave release and closing.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~wait_export_file`
+            - 
+
+
+          * - :py:obj:`~wait_export_folder`
+            - 
+
+
+          * - :py:obj:`~parser_file_path`
+            - 
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Siwave</autoapi/pyedb/siwave/Siwave>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains the ``Siwave`` class.
+
+The ``Siwave`` module can be initialized as standalone before launching an app or
+automatically initialized by an app to the latest installed AEDT version.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: wait_export_file(flag, file_path, time_sleep=0.5)
+
+.. py:function:: wait_export_folder(flag, folder_path, time_sleep=0.5)
+
+.. py:function:: parser_file_path(file_path)
+
+
+

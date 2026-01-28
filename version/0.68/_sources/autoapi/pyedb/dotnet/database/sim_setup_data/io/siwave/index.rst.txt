@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``siwave.py`` module
+========================
+
+.. py:module:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: siwave
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.io.siwave.SettingsBase`
+            - Provide base settings.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.io.siwave.AdvancedSettings`
+            - Provide base settings.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.io.siwave.DCSettings`
+            - Provide base settings.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.io.siwave.DCAdvancedSettings`
+            - Provide base settings.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SettingsBase</autoapi/pyedb/dotnet/database/sim_setup_data/io/siwave/SettingsBase>
+    <span class="nf nf-cod-symbol_class"></span> AdvancedSettings</autoapi/pyedb/dotnet/database/sim_setup_data/io/siwave/AdvancedSettings>
+    <span class="nf nf-cod-symbol_class"></span> DCSettings</autoapi/pyedb/dotnet/database/sim_setup_data/io/siwave/DCSettings>
+    <span class="nf nf-cod-symbol_class"></span> DCAdvancedSettings</autoapi/pyedb/dotnet/database/sim_setup_data/io/siwave/DCAdvancedSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,79 @@
+
+
+
+
+
+
+:class:`ControlFileSweep`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.utility.xml_control_file.ControlFileSweep(name, start, stop, step, sweep_type, step_type, use_q3d)
+
+
+.. py:currentmodule:: ControlFileSweep
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~start`
+            - 
+          * - :py:attr:`~stop`
+            - 
+          * - :py:attr:`~step`
+            - 
+          * - :py:attr:`~sweep_type`
+            - 
+          * - :py:attr:`~step_type`
+            - 
+          * - :py:attr:`~use_q3d`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.xml_control_file import ControlFileSweep
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+.. py:attribute:: start
+
+.. py:attribute:: stop
+
+.. py:attribute:: step
+
+.. py:attribute:: sweep_type
+
+.. py:attribute:: step_type
+
+.. py:attribute:: use_q3d
+
+
+
+
+

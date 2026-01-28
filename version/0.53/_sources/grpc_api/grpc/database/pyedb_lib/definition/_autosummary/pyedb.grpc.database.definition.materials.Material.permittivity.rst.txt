@@ -1,0 +1,6 @@
+permittivity
+============
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoproperty:: Material.permittivity

@@ -1,0 +1,6 @@
+copper\_fill\_ratio
+===================
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. autoproperty:: HatchGround.copper_fill_ratio

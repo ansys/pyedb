@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`HFSSSolverSettings`
+===========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_solver_settings.HFSSSolverSettings(pedb, core)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.hfss_simulation_settings.HFSSSolverSettings`
+
+
+   
+   HFSS solver settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_solver_settings import HFSSSolverSettings
+
+
+
+
+

@@ -1,0 +1,126 @@
+
+
+
+
+
+
+The ``components.py`` module
+============================
+
+.. py:module:: pyedb.dotnet.database.components
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: components
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.components.Components`
+            - Manages EDB components and related method accessible from `Edb.components` property.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~resistor_value_parser`
+            - Convert a resistor value.
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Components</autoapi/pyedb/dotnet/database/components/Components>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains the `Components` class.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: resistor_value_parser(RValue)
+
+   
+   Convert a resistor value.
+
+
+   :Parameters:
+
+       **RValue** : :class:`python:float`
+           Resistor value.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Resistor value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

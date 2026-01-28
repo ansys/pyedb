@@ -1,0 +1,288 @@
+
+
+
+
+
+
+:class:`JobPoolManager`
+=======================
+
+
+.. py:class:: pyedb.workflows.job_manager.backend.service.JobPoolManager(resource_limits: ResourceLimits)
+
+   
+   **Priority-aware** FIFO queues plus running-set tracker.
+
+   The implementation is **lock-free** (uses ``deque`` and ``dict``) and
+   **async-safe** (no awaits, therefore can be invoked from any thread).
+
+   :Parameters:
+
+       **resource_limits** : :obj:`ResourceLimits`
+           Constraints used by :meth:`can_start_job`.
+
+
+
+
+
+
+
+
+
+
+
+
+   :Attributes:
+
+       **job_queue** : :obj:`Deque`\[:class:`python:str`]
+           FIFO queue for normal priority jobs
+
+       **priority_queue** : :obj:`Dict`\[:class:`python:int`, :obj:`List`\[:class:`python:str`]]
+           Priority-based queues (key=priority, value=job_ids)
+
+       **running_jobs** : :obj:`Set`\[:class:`python:str`]
+           Set of currently running job IDs
+
+       **job_priorities** : :obj:`Dict`\[:class:`python:str`, :class:`python:int`]
+           Mapping of job_id to priority
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: JobPoolManager
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_job`
+            - Insert job into the **appropriate** queue (priority or FIFO).
+          * - :py:attr:`~get_next_job`
+            - Return the **next** job to be started (highest priority first).
+          * - :py:attr:`~remove_job`
+            - **Idempotently** remove a job from **all** queues.
+          * - :py:attr:`~can_start_job`
+            - **Boolean** predicate that decides whether a new job may be started.
+          * - :py:attr:`~get_queue_stats`
+            - Real-time snapshot for REST ``/queue`` endpoint.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~resource_limits`
+            - 
+          * - :py:attr:`~job_queue`
+            - 
+          * - :py:attr:`~priority_queue`
+            - 
+          * - :py:attr:`~running_jobs`
+            - 
+          * - :py:attr:`~job_priorities`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.job_manager.backend.service import JobPoolManager
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: resource_limits
+
+.. py:attribute:: job_queue
+   :type:  Deque[str]
+
+.. py:attribute:: priority_queue
+   :type:  Dict[int, List[str]]
+
+.. py:attribute:: running_jobs
+   :type:  Set[str]
+
+.. py:attribute:: job_priorities
+   :type:  Dict[str, int]
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_job(job_id: str, priority: int = 0)
+
+   
+   Insert job into the **appropriate** queue (priority or FIFO).
+
+
+   :Parameters:
+
+       **job_id** : :class:`python:str`
+           Unique identifier.
+
+       **priority** : :class:`python:int`, :obj:`optional`
+           Negative (low), zero (normal), positive (high). Default is ``0``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_next_job() -> Optional[str]
+
+   
+   Return the **next** job to be started (highest priority first).
+
+
+
+   :Returns:
+
+       :class:`python:str` or :data:`python:None`
+           Job identifier or ``None`` if all queues are empty.
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   Priority queues are checked first (highest to lowest), then the
+   normal FIFO queue.
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: remove_job(job_id: str)
+
+   
+   **Idempotently** remove a job from **all** queues.
+
+
+   :Parameters:
+
+       **job_id** : :class:`python:str`
+           Identifier to purge.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: can_start_job(resource_monitor: ResourceMonitor) -> bool
+
+   
+   **Boolean** predicate that decides whether a new job may be started.
+
+   Checks resource limits without violating constraints.
+
+   :Parameters:
+
+       **resource_monitor** : :obj:`ResourceMonitor`
+           Source of current host telemetry.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` → job may be started, ``False`` → remain queued.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_queue_stats() -> Dict[str, Any]
+
+   
+   Real-time snapshot for REST ``/queue`` endpoint.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Queue statistics with keys:
+           - total_queued: Total jobs in all queues
+           - regular_queue_size: Jobs in normal FIFO queue
+           - priority_queues: Dict of priority -> count
+           - running_jobs: Number of currently running jobs
+           - max_concurrent: Maximum concurrent jobs allowed
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

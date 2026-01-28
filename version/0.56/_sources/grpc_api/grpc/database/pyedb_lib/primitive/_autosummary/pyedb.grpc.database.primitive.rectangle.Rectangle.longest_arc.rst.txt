@@ -1,0 +1,6 @@
+longest\_arc
+============
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. autoproperty:: Rectangle.longest_arc

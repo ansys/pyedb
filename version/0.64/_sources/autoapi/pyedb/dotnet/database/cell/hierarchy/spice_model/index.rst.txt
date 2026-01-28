@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``spice_model.py`` module
+=============================
+
+.. py:module:: pyedb.dotnet.database.cell.hierarchy.spice_model
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: spice_model
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.hierarchy.spice_model.SPICEModel`
+            - Manages SPICE model class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SPICEModel</autoapi/pyedb/dotnet/database/cell/hierarchy/spice_model/SPICEModel>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

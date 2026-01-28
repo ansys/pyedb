@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``net.py`` module
+=====================
+
+.. py:module:: pyedb.grpc.database.net.net
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: net
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.net.net.Net`
+            - Manages EDB functionalities for net objects and their primitives.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Net</autoapi/pyedb/grpc/database/net/net/Net>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

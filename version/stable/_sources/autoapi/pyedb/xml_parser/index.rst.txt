@@ -1,0 +1,74 @@
+
+
+
+
+
+
+The ``xml_parser`` package
+==============================
+
+.. py:module:: pyedb.xml_parser
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: xml_parser
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.xml_parser.xml_parser`
+            - 
+
+
+          * - :py:obj:`~pyedb.xml_parser.xml_stackup`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> xml_parser</autoapi/pyedb/xml_parser/xml_parser/index>
+    <span class="nf nf-fa-file"></span> xml_stackup</autoapi/pyedb/xml_parser/xml_stackup/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

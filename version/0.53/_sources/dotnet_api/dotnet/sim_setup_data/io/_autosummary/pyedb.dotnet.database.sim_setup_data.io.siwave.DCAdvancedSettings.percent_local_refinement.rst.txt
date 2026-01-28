@@ -1,0 +1,6 @@
+percent\_local\_refinement
+==========================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoproperty:: DCAdvancedSettings.percent_local_refinement

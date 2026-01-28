@@ -1,0 +1,440 @@
+
+
+
+
+
+
+:class:`SiwaveDCSimulationSetup`
+================================
+
+
+.. py:class:: pyedb.dotnet.database.utilities.siwave_simulation_setup.SiwaveDCSimulationSetup(pedb, edb_object=None, name: str = None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup`
+
+
+   
+   Manages EDB methods for SIwave DC simulation setup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SiwaveDCSimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a SIwave DCIR setup.
+          * - :py:attr:`~get_configurations`
+            - Get SIwave DC simulation settings.
+          * - :py:attr:`~set_dc_slider`
+            - Set DC simulation accuracy level.
+          * - :py:attr:`~add_source_terminal_to_ground`
+            - Add a source terminal to ground.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~enabled`
+            - Flag indicating if the setup is enabled.
+          * - :py:attr:`~sim_setup_info`
+            - Overrides the default sim_setup_info object.
+          * - :py:attr:`~get_sim_setup_info`
+            - Get simulation information from the setup.
+          * - :py:attr:`~dc_ir_settings`
+            - DC IR settings.
+          * - :py:attr:`~dc_settings`
+            - SIwave DC setting.
+          * - :py:attr:`~settings`
+            - Get the settings interface for SIwave DC simulation.
+          * - :py:attr:`~dc_advanced_settings`
+            - Siwave DC advanced settings.
+          * - :py:attr:`~source_terms_to_ground`
+            - Dictionary of grounded terminals.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.siwave_simulation_setup import SiwaveDCSimulationSetup
+
+Property detail
+---------------
+
+.. py:property:: enabled
+
+   
+   Flag indicating if the setup is enabled.
+
+   .. deprecated:: 0.57.0
+       Use :property:`settings.enabled` property instead.
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sim_setup_info
+
+   
+   Overrides the default sim_setup_info object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: get_sim_setup_info
+
+   
+   Get simulation information from the setup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_ir_settings
+
+   
+   DC IR settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_settings
+
+   
+   SIwave DC setting.
+
+   deprecated:: 0.57.0
+         Use :property:`settings` property instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: settings
+
+   
+   Get the settings interface for SIwave DC simulation.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Settings`
+           An instance of the Settings class providing access to SIwave DC simulation settings.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_advanced_settings
+
+   
+   Siwave DC advanced settings.
+
+   .. deprecated :: 0.57.0
+           Use :property:`settings` property instead.
+
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_terms_to_ground
+
+   
+   Dictionary of grounded terminals.
+
+   .. deprecated:: 0.57.0
+       Use :property:`settings.source_terms_to_ground` property instead.
+
+
+
+
+   :Returns:
+
+       :obj:`Dictionary`
+           {str, int}, keys is source name, value int 0 unspecified, 1 negative node, 2 positive one.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(name=None)
+
+   
+   Create a SIwave DCIR setup.
+
+
+
+
+
+   :Returns:
+
+       :class:`SiwaveDCSimulationSetup`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_configurations()
+
+   
+   Get SIwave DC simulation settings.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of SIwave DC simulation settings.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_dc_slider(value)
+
+   
+   Set DC simulation accuracy level.
+
+   Options are:
+
+   - ``0``: Optimal speed
+   - ``1``: Balanced
+   - ``2``: Optimal accuracy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_source_terminal_to_ground(source_name, terminal=0)
+
+   
+   Add a source terminal to ground.
+
+   .. deprecated:: 0.57.0
+       Use :method:`settings.add_source_terminal_to_ground` method instead.
+
+   :Parameters:
+
+       **source_name** : str,
+           Source name.
+
+       **terminal** : :class:`python:int`, :obj:`optional`
+           Terminal to assign. Options are:
+           
+            - 0=Unspecified
+            - 1=Negative node
+            - 2=Positive none
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

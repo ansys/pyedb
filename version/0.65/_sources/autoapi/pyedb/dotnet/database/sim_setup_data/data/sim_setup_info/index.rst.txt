@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``sim_setup_info.py`` module
+================================
+
+.. py:module:: pyedb.dotnet.database.sim_setup_data.data.sim_setup_info
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: sim_setup_info
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.sim_setup_info.SimSetupInfo`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SimSetupInfo</autoapi/pyedb/dotnet/database/sim_setup_data/data/sim_setup_info/SimSetupInfo>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

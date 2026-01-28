@@ -1,0 +1,190 @@
+
+
+
+
+
+
+:class:`BroadbandAdaptiveSolution`
+==================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_general_settings.BroadbandAdaptiveSolution(pedb, core)
+
+
+.. py:currentmodule:: BroadbandAdaptiveSolution
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~high_frequency`
+            - High frequency for broadband adaptive solution.
+          * - :py:attr:`~low_frequency`
+            - Low frequency for broadband adaptive solution.
+          * - :py:attr:`~max_delta`
+            - Maximum delta for broadband adaptive solution.
+          * - :py:attr:`~max_num_passes`
+            - Maximum number of passes for broadband adaptive solution.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_general_settings import BroadbandAdaptiveSolution
+
+Property detail
+---------------
+
+.. py:property:: high_frequency
+   :type: str
+
+
+   
+   High frequency for broadband adaptive solution.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           High frequency value in Hz.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: low_frequency
+   :type: str
+
+
+   
+   Low frequency for broadband adaptive solution.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Low frequency value in Hz.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_delta
+   :type: str
+
+
+   
+   Maximum delta for broadband adaptive solution.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Maximum delta value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_num_passes
+   :type: int
+
+
+   
+   Maximum number of passes for broadband adaptive solution.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Maximum number of passes.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

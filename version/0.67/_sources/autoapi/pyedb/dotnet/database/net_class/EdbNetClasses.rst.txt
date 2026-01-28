@@ -1,0 +1,156 @@
+
+
+
+
+
+
+:class:`EdbNetClasses`
+======================
+
+
+.. py:class:: pyedb.dotnet.database.net_class.EdbNetClasses(p_edb)
+
+   Bases: :py:obj:`EdbCommon`, :py:obj:`object`
+
+
+   
+   Manages EDB methods for managing nets accessible from the ``Edb.net_classes`` property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+   >>> edb_nets = edbapp.net_classes
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EdbNetClasses
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a new net class.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~items`
+            - Extended nets.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.net_class import EdbNetClasses
+
+Property detail
+---------------
+
+.. py:property:: items
+
+   
+   Extended nets.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`]
+           Dictionary of extended nets.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(name: str, net: str | list) -> pyedb.dotnet.database.edb_data.nets_data.EDBNetClassData
+
+   
+   Create a new net class.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the net class.
+
+       **net** : :class:`python:str`, :class:`python:list`
+           Name of the nets to be added into this net class.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.nets_data.EDBNetClassData`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

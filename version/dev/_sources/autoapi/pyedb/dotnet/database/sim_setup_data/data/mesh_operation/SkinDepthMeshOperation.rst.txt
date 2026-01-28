@@ -1,0 +1,192 @@
+
+
+
+
+
+
+:class:`SkinDepthMeshOperation`
+===============================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.mesh_operation.SkinDepthMeshOperation(parent, edb_object)
+
+   Bases: :py:obj:`MeshOperation`, :py:obj:`object`
+
+
+   
+   Mesh operation Skin Depth class.
+   This class is accessible from Hfss Setup in EDB and assign_skin_depth_mesh_operation method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> mop = edbapp.setups["setup1a"].add_skin_depth_mesh_operation({"GND": ["TOP", "BOTTOM"]})
+   >>> mop.max_elements = 3000
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SkinDepthMeshOperation
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~skin_depth`
+            - Skin depth value.
+          * - :py:attr:`~surface_triangle_length`
+            - Surface triangle length value.
+          * - :py:attr:`~number_of_layers`
+            - Adding property for grpc compatibility.
+          * - :py:attr:`~number_of_layer_elements`
+            - Number of layer elements.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.mesh_operation import SkinDepthMeshOperation
+
+Property detail
+---------------
+
+.. py:property:: skin_depth
+
+   
+   Skin depth value.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: surface_triangle_length
+
+   
+   Surface triangle length value.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: number_of_layers
+
+   
+   Adding property for grpc compatibility.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: number_of_layer_elements
+
+   
+   Number of layer elements.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

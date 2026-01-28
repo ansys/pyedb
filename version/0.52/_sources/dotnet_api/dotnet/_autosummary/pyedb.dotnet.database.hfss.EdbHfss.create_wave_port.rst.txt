@@ -1,0 +1,6 @@
+create\_wave\_port
+==================
+
+.. currentmodule:: pyedb.dotnet.database.hfss
+
+.. automethod:: EdbHfss.create_wave_port

@@ -1,0 +1,6 @@
+instances\_by\_net
+==================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. autoproperty:: Padstacks.instances_by_net

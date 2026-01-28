@@ -1,0 +1,311 @@
+
+
+
+
+
+
+The ``general.py`` module
+=========================
+
+.. py:module:: pyedb.dotnet.database.general
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: general
+.. tab-set::
+
+
+
+
+
+    .. tab-item:: Enums
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.general.PadGeometryTpe`
+            - Generic enumeration.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.general.DielectricExtentType`
+            - Generic enumeration.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.general.Primitives`
+            - Generic enumeration.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.general.LayoutObjType`
+            - Generic enumeration.
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~convert_netdict_to_pydict`
+            - Convert a net dictionary to a Python dictionary.
+
+
+          * - :py:obj:`~convert_pytuple_to_nettuple`
+            - Convert a Python tuple into a .NET tuple.
+
+
+          * - :py:obj:`~convert_pydict_to_netdict`
+            - Convert a Python dictionary to a .NET dictionary.
+
+
+          * - :py:obj:`~convert_py_list_to_net_list`
+            - Convert a Python list to a Net list.
+
+
+          * - :py:obj:`~convert_net_list_to_py_list`
+            - Convert a Net list to a Python list.
+
+
+          * - :py:obj:`~pascal_to_snake`
+            - 
+
+
+          * - :py:obj:`~snake_to_pascal`
+            - 
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~logger`
+            - 
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_enum"></span> PadGeometryTpe</autoapi/pyedb/dotnet/database/general/PadGeometryTpe>
+    <span class="nf nf-cod-symbol_enum"></span> DielectricExtentType</autoapi/pyedb/dotnet/database/general/DielectricExtentType>
+    <span class="nf nf-cod-symbol_enum"></span> Primitives</autoapi/pyedb/dotnet/database/general/Primitives>
+    <span class="nf nf-cod-symbol_enum"></span> LayoutObjType</autoapi/pyedb/dotnet/database/general/LayoutObjType>
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains EDB general methods and related methods.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: convert_netdict_to_pydict(dict_in)
+
+   
+   Convert a net dictionary to a Python dictionary.
+
+
+   :Parameters:
+
+       **dict_in** : :class:`python:dict`
+           Net dictionary to convert.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary converted to Python.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_pytuple_to_nettuple(_tuple)
+
+   
+   Convert a Python tuple into a .NET tuple.
+   Parameters
+   ----------
+   tuple : Python tuple
+
+
+
+
+
+   :Returns:
+
+       :obj:`.NET` tuple.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_pydict_to_netdict(input_dict)
+
+   
+   Convert a Python dictionary to a .NET dictionary.
+
+
+   :Parameters:
+
+       **input_dict** : :class:`python:dict`
+           Python dictionary to convert.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary converted to .NET.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_py_list_to_net_list(pylist, list_type=None)
+
+   
+   Convert a Python list to a Net list.
+
+
+   :Parameters:
+
+       **pylist** : :class:`python:list`
+           Python list to convert.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List converted to Net.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_net_list_to_py_list(netlist)
+
+   
+   Convert a Net list to a Python list.
+
+
+   :Parameters:
+
+       **netlist** : :class:`python:list`
+           Net list to convert.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List converted to Python.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: pascal_to_snake(s)
+
+.. py:function:: snake_to_pascal(s)
+
+.. py:data:: logger
+
+
+

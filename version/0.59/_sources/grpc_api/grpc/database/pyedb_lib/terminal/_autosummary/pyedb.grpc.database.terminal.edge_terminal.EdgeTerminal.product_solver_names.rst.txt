@@ -1,0 +1,6 @@
+product\_solver\_names
+======================
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. automethod:: EdgeTerminal.product_solver_names

@@ -1,0 +1,6 @@
+open\_region\_type
+==================
+
+.. currentmodule:: pyedb.grpc.database.utility.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.open_region_type

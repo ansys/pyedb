@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`INFINITE_SPHERE_TYPE`
+=============================
+
+
+.. py:class:: pyedb.generic.constants.INFINITE_SPHERE_TYPE
+
+   Bases: :py:obj:`object`
+
+
+   
+   INFINITE_SPHERE_TYPE Enumerator class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import INFINITE_SPHERE_TYPE
+
+
+
+
+

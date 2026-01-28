@@ -1,0 +1,6 @@
+radius
+======
+
+.. currentmodule:: pyedb.libraries.rf_libraries.planar_antennas
+
+.. autoproperty:: CircularPatch.radius

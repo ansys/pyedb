@@ -1,0 +1,273 @@
+
+
+
+
+
+
+:class:`PinPairModel`
+=====================
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.pin_pair_model.PinPairModel(pedb, edb_object)
+
+   
+   Manage pin-pair model.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PinPairModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~rlc`
+            - Rlc mdodel.
+          * - :py:attr:`~rlc_enable`
+            - Enable model.
+          * - :py:attr:`~resistance`
+            - Resistance.
+          * - :py:attr:`~inductance`
+            - Inductance.
+          * - :py:attr:`~capacitance`
+            - Capacitance.
+          * - :py:attr:`~rlc_values`
+            - Rlc value.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
+
+Property detail
+---------------
+
+.. py:property:: rlc
+   :type: tuple[str, str]
+
+
+   
+   Rlc mdodel.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Tuple`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rlc_enable
+   :type: list[bool]
+
+
+   
+   Enable model.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[:obj:`Renabled`\(:ref:`bool <python:bltin-boolean-values>`), :obj:`Lenabled`\(:ref:`bool <python:bltin-boolean-values>`), :obj:`Cenabled`\(:ref:`bool <python:bltin-boolean-values>`)].
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: resistance
+   :type: float
+
+
+   
+   Resistance.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Resistance value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: inductance
+   :type: float
+
+
+   
+   Inductance.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Inductance value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: capacitance
+   :type: float
+
+
+   
+   Capacitance.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Capacitance value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rlc_values
+   :type: list[float]
+
+
+   
+   Rlc value.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:float`, :class:`python:float`, :class:`python:float`]
+           [R value, L value, C value].
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

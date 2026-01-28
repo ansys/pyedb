@@ -1,0 +1,148 @@
+﻿Path
+====
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. autoclass:: Path
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Path.add_point
+      
+      
+      Path.add_void
+      
+      
+      Path.area
+      
+      
+      Path.cast
+      
+      
+      Path.clone
+      
+      
+      Path.convert_to_polygon
+      
+      
+      Path.create
+      
+      
+      Path.create_3d_comp
+      
+      
+      Path.create_edge_port
+      
+      
+      Path.create_hfss
+      
+      
+      Path.create_stride
+      
+      
+      Path.create_via_fence
+      
+      
+      Path.delete
+      
+      
+      Path.expand
+      
+      
+      Path.find_by_id
+      
+      
+      Path.get_center_line
+      
+      
+      Path.get_clip_info
+      
+      
+      Path.get_closest_arc_midpoint
+      
+      
+      Path.get_closest_point
+      
+      
+      Path.get_connected_object_id_set
+      
+      
+      Path.get_connected_objects
+      
+      
+      Path.get_end_cap_style
+      
+      
+      Path.get_hfss_prop
+      
+      
+      Path.get_product_property
+      
+      
+      Path.get_product_property_ids
+      
+      
+      Path.intersect
+      
+      
+      Path.intersection_type
+      
+      
+      Path.is_intersecting
+      
+      
+      Path.make_zone_primitive
+      
+      
+      Path.plot
+      
+      
+      Path.points
+      
+      
+      Path.remove_hfss_prop
+      
+      
+      Path.render
+      
+      
+      Path.scale
+      
+      
+      Path.set_clip_info
+      
+      
+      Path.set_end_cap_style
+      
+      
+      Path.set_hfss_prop
+      
+      
+      Path.set_product_property
+      
+      
+      Path.subtract
+      
+      
+      Path.unite
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Path.layout_obj_type
+   
+   

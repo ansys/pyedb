@@ -1,0 +1,86 @@
+
+
+
+
+
+
+:class:`SolderBallsInfo`
+========================
+
+
+.. py:class:: pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo
+
+
+.. py:currentmodule:: SolderBallsInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~ref_des`
+            - 
+          * - :py:attr:`~shape`
+            - 
+          * - :py:attr:`~diameter`
+            - 
+          * - :py:attr:`~mid_diameter`
+            - 
+          * - :py:attr:`~height`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.sipi.hfss_auto_configuration import SolderBallsInfo
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: ref_des
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: shape
+   :type:  str
+   :value: 'cylinder'
+
+
+.. py:attribute:: diameter
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: mid_diameter
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: height
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+
+
+
+

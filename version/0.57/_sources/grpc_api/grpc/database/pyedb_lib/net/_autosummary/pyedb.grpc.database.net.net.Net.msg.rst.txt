@@ -1,0 +1,6 @@
+msg
+===
+
+.. currentmodule:: pyedb.grpc.database.net.net
+
+.. autoproperty:: Net.msg

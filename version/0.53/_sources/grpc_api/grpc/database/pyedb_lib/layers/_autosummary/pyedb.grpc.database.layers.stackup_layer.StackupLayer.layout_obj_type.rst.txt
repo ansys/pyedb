@@ -1,0 +1,6 @@
+layout\_obj\_type
+=================
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoattribute:: StackupLayer.layout_obj_type

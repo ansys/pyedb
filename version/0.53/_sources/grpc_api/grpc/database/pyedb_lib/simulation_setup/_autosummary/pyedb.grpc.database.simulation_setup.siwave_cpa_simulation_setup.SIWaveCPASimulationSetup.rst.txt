@@ -1,0 +1,29 @@
+﻿SIWaveCPASimulationSetup
+========================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup
+
+.. autoclass:: SIWaveCPASimulationSetup
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      SIWaveCPASimulationSetup.channel_setup
+      SIWaveCPASimulationSetup.mode
+      SIWaveCPASimulationSetup.model_type
+      SIWaveCPASimulationSetup.name
+      SIWaveCPASimulationSetup.net_processing_mode
+      SIWaveCPASimulationSetup.nets_to_process
+      SIWaveCPASimulationSetup.solver_options
+      SIWaveCPASimulationSetup.use_q3d_solver
+   
+   

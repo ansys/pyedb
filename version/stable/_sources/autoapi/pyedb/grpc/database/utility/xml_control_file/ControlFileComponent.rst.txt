@@ -1,0 +1,157 @@
+
+
+
+
+
+
+:class:`ControlFileComponent`
+=============================
+
+
+.. py:class:: pyedb.grpc.database.utility.xml_control_file.ControlFileComponent
+
+   
+   Components.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileComponent
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_pin`
+            - 
+          * - :py:attr:`~add_port`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~refdes`
+            - 
+          * - :py:attr:`~partname`
+            - 
+          * - :py:attr:`~parttype`
+            - 
+          * - :py:attr:`~die_type`
+            - 
+          * - :py:attr:`~die_orientation`
+            - 
+          * - :py:attr:`~solderball_shape`
+            - 
+          * - :py:attr:`~solder_diameter`
+            - 
+          * - :py:attr:`~solder_height`
+            - 
+          * - :py:attr:`~solder_material`
+            - 
+          * - :py:attr:`~pins`
+            - 
+          * - :py:attr:`~ports`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.xml_control_file import ControlFileComponent
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: refdes
+   :value: 'U1'
+
+
+.. py:attribute:: partname
+   :value: 'BGA'
+
+
+.. py:attribute:: parttype
+   :value: 'IC'
+
+
+.. py:attribute:: die_type
+   :value: 'None'
+
+
+.. py:attribute:: die_orientation
+   :value: 'Chip down'
+
+
+.. py:attribute:: solderball_shape
+   :value: 'None'
+
+
+.. py:attribute:: solder_diameter
+   :value: '65um'
+
+
+.. py:attribute:: solder_height
+   :value: '65um'
+
+
+.. py:attribute:: solder_material
+   :value: 'solder'
+
+
+.. py:attribute:: pins
+   :value: []
+
+
+.. py:attribute:: ports
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_pin(name, x, y, layer)
+
+.. py:method:: add_port(name, z0, pospin, refpin=None, pos_type='pin', ref_type='pin')
+
+
+
+

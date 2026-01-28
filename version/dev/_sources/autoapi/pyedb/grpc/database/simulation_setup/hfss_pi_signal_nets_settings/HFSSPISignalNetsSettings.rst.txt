@@ -1,0 +1,212 @@
+
+
+
+
+
+
+:class:`HFSSPISignalNetsSettings`
+=================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_pi_signal_nets_settings.HFSSPISignalNetsSettings(pedb, core: ansys.edb.core.simulation_setup.hfss_pi_simulation_settings.HFSSPISignalNetsSettings)
+
+   
+   PyEDB HFSS PI signal nets settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSPISignalNetsSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~conductor_modeling`
+            - Get the conductor modeling method.
+          * - :py:attr:`~error_tolerance`
+            - Get the error tolerance.
+          * - :py:attr:`~include_improved_dielectric_fill_refinement`
+            - Get the flag for improved dielectric fill refinement.
+          * - :py:attr:`~include_improved_loss_handling`
+            - Get the flag for improved loss handling.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_pi_signal_nets_settings import HFSSPISignalNetsSettings
+
+Property detail
+---------------
+
+.. py:property:: conductor_modeling
+   :type: str
+
+
+   
+   Get the conductor modeling method.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The conductor modeling method. Accepted values are 'mesh_inside' and 'impedance_boundary'.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: error_tolerance
+   :type: str
+
+
+   
+   Get the error tolerance.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The error tolerance. Values are `et_0_0`, `et_0_02`, `et_0_04`, `et_0_06`, `et_0_08`, `et_0_1`
+           `et_0_2`, `et_0_5`, `et_1_0`.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: include_improved_dielectric_fill_refinement
+   :type: bool
+
+
+   
+   Get the flag for improved dielectric fill refinement.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if improved dielectric fill refinement is included, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: include_improved_loss_handling
+   :type: bool
+
+
+   
+   Get the flag for improved loss handling.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if improved loss handling is included, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

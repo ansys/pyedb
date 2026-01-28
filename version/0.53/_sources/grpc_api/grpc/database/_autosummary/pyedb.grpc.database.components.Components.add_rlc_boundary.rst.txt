@@ -1,0 +1,6 @@
+add\_rlc\_boundary
+==================
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. automethod:: Components.add_rlc_boundary

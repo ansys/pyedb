@@ -1,0 +1,100 @@
+
+
+
+
+
+
+:class:`DCTerminal`
+===================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.sources.DCTerminal
+
+   Bases: :py:obj:`Source`
+
+
+   
+   Manages a dc terminal source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DCTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~source_type`
+            - Source type.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.sources import DCTerminal
+
+Property detail
+---------------
+
+.. py:property:: source_type
+
+   
+   Source type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

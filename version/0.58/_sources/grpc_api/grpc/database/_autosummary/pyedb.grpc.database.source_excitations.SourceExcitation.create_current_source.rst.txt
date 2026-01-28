@@ -1,0 +1,6 @@
+create\_current\_source
+=======================
+
+.. currentmodule:: pyedb.grpc.database.source_excitations
+
+.. automethod:: SourceExcitation.create_current_source

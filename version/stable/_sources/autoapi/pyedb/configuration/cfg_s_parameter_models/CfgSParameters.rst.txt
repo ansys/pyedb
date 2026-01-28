@@ -1,0 +1,80 @@
+
+
+
+
+
+
+:class:`CfgSParameters`
+=======================
+
+
+.. py:class:: pyedb.configuration.cfg_s_parameter_models.CfgSParameters(pedb, data, path_lib=None)
+
+
+.. py:currentmodule:: CfgSParameters
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~apply`
+            - 
+          * - :py:attr:`~get_data_from_db`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~path_libraries`
+            - 
+          * - :py:attr:`~s_parameters_models`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: path_libraries
+   :value: None
+
+
+.. py:attribute:: s_parameters_models
+
+
+
+Method detail
+-------------
+
+.. py:method:: apply()
+
+.. py:method:: get_data_from_db(cfg_components)
+
+
+
+

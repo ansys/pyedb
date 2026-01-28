@@ -1,0 +1,6 @@
+parametrize\_polygon
+====================
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. automethod:: Modeler.parametrize_polygon

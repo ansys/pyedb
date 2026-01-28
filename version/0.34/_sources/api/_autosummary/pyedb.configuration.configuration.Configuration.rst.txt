@@ -1,0 +1,33 @@
+﻿Configuration
+=============
+
+.. currentmodule:: pyedb.configuration.configuration
+
+.. autoclass:: Configuration
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Configuration.export
+      
+      
+      Configuration.get_data_from_db
+      
+      
+      Configuration.load
+      
+      
+      Configuration.run
+      
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+height
+======
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoproperty:: ICDieProperty.height
