@@ -9,6 +9,71 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.68.0 <https://github.com/ansys/pyedb/releases/tag/v0.68.0>`_ - January 27, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - XML Parser - stackup and nets
+          - `#1774 <https://github.com/ansys/pyedb/pull/1774>`_
+
+        * - Grpc simulation setup refactoring
+          - `#1776 <https://github.com/ansys/pyedb/pull/1776>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/checkout from 6.0.1 to 6.0.2
+          - `#1775 <https://github.com/ansys/pyedb/pull/1775>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update gRPC message.
+          - `#1773 <https://github.com/ansys/pyedb/pull/1773>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.67.3
+          - `#1770 <https://github.com/ansys/pyedb/pull/1770>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Terminal post processing
+          - `#1756 <https://github.com/ansys/pyedb/pull/1756>`_
+
+        * - Cfg setup enhancement
+          - `#1771 <https://github.com/ansys/pyedb/pull/1771>`_
+
+        * - Renaming grpc import
+          - `#1780 <https://github.com/ansys/pyedb/pull/1780>`_
+
+
 `0.67.3 <https://github.com/ansys/pyedb/releases/tag/v0.67.3>`_ - January 21, 2026
 ==================================================================================
 
