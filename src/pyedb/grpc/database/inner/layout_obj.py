@@ -33,9 +33,9 @@ class LayoutObj(ObjBase):
 
     @property
     def _edb_properties(self):
-        p = self.core.get_product_property(GrpcProductIdType.DESIGNER, 18)
+        p = self.core.product_solver_option(GrpcProductIdType.DESIGNER, "HFSS")
         return p
 
     @_edb_properties.setter
     def _edb_properties(self, value):
-        self.core.set_product_property(GrpcProductIdType.DESIGNER, 18, value)
+        self.core.set_product_solver_option(GrpcProductIdType.DESIGNER, "HFSS", value)
