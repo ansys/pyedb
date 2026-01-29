@@ -1,0 +1,430 @@
+
+
+
+
+
+
+:class:`CellClassDotNet`
+========================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.database.CellClassDotNet(app, active_cell=None)
+
+   
+   Cell Class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: CellClassDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - 
+          * - :py:attr:`~get_all_variable_names`
+            - Method added for compatibility with grpc.
+          * - :py:attr:`~get_variable_value`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~api_class`
+            - Return Ansys.Ansoft.Edb class object.
+          * - :py:attr:`~api_object`
+            - Return Ansys.Ansoft.Edb object.
+          * - :py:attr:`~terminal`
+            - Edb Dotnet Api Database `Edb.Cell.Terminal`.
+          * - :py:attr:`~hierarchy`
+            - Edb Dotnet Api Database `Edb.Cell.Hierarchy`.
+          * - :py:attr:`~cell`
+            - Edb Dotnet Api Database `Edb.Cell`.
+          * - :py:attr:`~net`
+            - Edb Dotnet Api Cell.Layer.
+          * - :py:attr:`~layer_type`
+            - Edb Dotnet Api Cell.LayerType.
+          * - :py:attr:`~layer_type_set`
+            - Edb Dotnet Api Cell.LayerTypeSet.
+          * - :py:attr:`~layer`
+            - Edb Dotnet Api Cell.Layer.
+          * - :py:attr:`~layout_object_type`
+            - Edb Dotnet Api LayoutObjType.
+          * - :py:attr:`~primitive`
+            - Edb Dotnet Api Database `Edb.Cell.Primitive`.
+          * - :py:attr:`~simulation_setups`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getattr__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.database import CellClassDotNet
+
+Property detail
+---------------
+
+.. py:property:: api_class
+
+   
+   Return Ansys.Ansoft.Edb class object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: api_object
+
+   
+   Return Ansys.Ansoft.Edb object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminal
+
+   
+   Edb Dotnet Api Database `Edb.Cell.Terminal`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hierarchy
+
+   
+   Edb Dotnet Api Database `Edb.Cell.Hierarchy`.
+
+
+
+
+
+   :Returns:
+
+       :class:`dotnet.database.dotnet.HierarchyDotNet`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cell
+
+   
+   Edb Dotnet Api Database `Edb.Cell`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net
+
+   
+   Edb Dotnet Api Cell.Layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer_type
+
+   
+   Edb Dotnet Api Cell.LayerType.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer_type_set
+
+   
+   Edb Dotnet Api Cell.LayerTypeSet.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer
+
+   
+   Edb Dotnet Api Cell.Layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layout_object_type
+
+   
+   Edb Dotnet Api LayoutObjType.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: primitive
+
+   
+   Edb Dotnet Api Database `Edb.Cell.Primitive`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: simulation_setups
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getattr__(key)
+
+.. py:method:: create(db, cell_type, cell_name)
+
+.. py:method:: get_all_variable_names()
+
+   
+   Method added for compatibility with grpc.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[:obj:`Str`]
+           List of variables name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_variable_value(variable_name)
+
+
+
+

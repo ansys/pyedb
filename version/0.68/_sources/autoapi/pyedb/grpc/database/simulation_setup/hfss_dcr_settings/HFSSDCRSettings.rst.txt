@@ -1,0 +1,375 @@
+
+
+
+
+
+
+:class:`HFSSDCRSettings`
+========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings(pedb, core: ansys.edb.core.simulation_setup.hfss_simulation_settings.HFSSDCRSettings)
+
+   
+   PyEDB HFSS DC settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSDCRSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~conduction_max_passes`
+            - Maximum number of conduction adaptive passes.
+          * - :py:attr:`~max_passes`
+            - Maximum number of conduction adaptive passes.
+          * - :py:attr:`~conduction_min_converged_passes`
+            - Minimum number of converged conduction adaptive passes.
+          * - :py:attr:`~min_converged_passes`
+            - Minimum number of converged conduction adaptive passes.
+          * - :py:attr:`~conduction_min_passes`
+            - Minimum number of conduction adaptive passes.
+          * - :py:attr:`~min_passes`
+            - Minimum number of conduction adaptive passes.
+          * - :py:attr:`~conduction_per_error`
+            - Conduction adaptive percent error.
+          * - :py:attr:`~percent_error`
+            - Conduction adaptive percent error.
+          * - :py:attr:`~conduction_per_refine`
+            - Conduction adaptive percent refinement per pass.
+          * - :py:attr:`~percent_refinement_per_pass`
+            - Conduction adaptive percent refinement per pass.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_dcr_settings import HFSSDCRSettings
+
+Property detail
+---------------
+
+.. py:property:: conduction_max_passes
+   :type: int
+
+
+   
+   Maximum number of conduction adaptive passes.
+
+   ... deprecated:: 0.77.3
+   Use :attr:`max_passes <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.max_passes>`
+   nstead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_passes
+   :type: int
+
+
+   
+   Maximum number of conduction adaptive passes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: conduction_min_converged_passes
+   :type: int
+
+
+   
+   Minimum number of converged conduction adaptive passes.
+
+   ... deprecated:: 0.77.3
+   Use :attr:`min_converged_passes
+   <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.min_converged_passes>`
+   instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_converged_passes
+   :type: int
+
+
+   
+   Minimum number of converged conduction adaptive passes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: conduction_min_passes
+   :type: int
+
+
+   
+   Minimum number of conduction adaptive passes.
+
+   ... deprecated:: 0.77.3
+   Use :attr:`min_passes <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.min_passes>`
+   instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_passes
+   :type: int
+
+
+   
+   Minimum number of conduction adaptive passes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: conduction_per_error
+   :type: float
+
+
+   
+   Conduction adaptive percent error.
+
+   ... deprecated:: 0.77.3
+   Use :attr:`percent_error <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.percent_error>`
+   instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: percent_error
+   :type: float
+
+
+   
+   Conduction adaptive percent error.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: conduction_per_refine
+   :type: float
+
+
+   
+   Conduction adaptive percent refinement per pass.
+
+   ... deprecated:: 0.77.3
+   Use :attr:
+   `percent_refinement_per_pass
+   <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.percent_refinement_per_pass>`
+   instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: percent_refinement_per_pass
+   :type: float
+
+
+   
+   Conduction adaptive percent refinement per pass.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

@@ -1,0 +1,357 @@
+
+
+
+
+
+
+:class:`HFSSSolverSettings`
+===========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_solver_settings.HFSSSolverSettings(pedb, core: ansys.edb.core.simulation_setup.hfss_simulation_settings.HFSSSolverSettings)
+
+   
+   HFSS solver settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSSolverSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~enable_intra_plane_coupling`
+            - Flag indicating if intra-plane coupling of power/ground nets is enabled to enhance accuracy..
+          * - :py:attr:`~max_delta_z0`
+            - Maximum percent change in characteristic impedance of ports between adaptive passes.
+          * - :py:attr:`~max_triangles_wave_port`
+            - Maximum number of triangles to use for meshing wave-ports.
+          * - :py:attr:`~max_triangles_for_wave_port`
+            - Maximum number of triangles to use for meshing wave-ports.
+          * - :py:attr:`~min_triangles_wave_port`
+            - Minimum number of triangles to use for meshing wave-ports.
+          * - :py:attr:`~min_triangles_for_wave_port`
+            - Minimum number of triangles to use for meshing wave-ports.
+          * - :py:attr:`~enable_set_triangles_wave_port`
+            - Flag indicating if the minimum and maximum triangle values for wave-ports are used.
+          * - :py:attr:`~set_triangles_for_wave_port`
+            - Flag indicating ifthe minimum and maximum triangle values for wave-ports are used.
+          * - :py:attr:`~thin_dielectric_layer_threshold`
+            - Value below which dielectric layers are merged with adjacent dielectric layers.
+          * - :py:attr:`~thin_signal_layer_threshold`
+            - Value below which signal layers are merged with adjacent signal layers.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_solver_settings import HFSSSolverSettings
+
+Property detail
+---------------
+
+.. py:property:: enable_intra_plane_coupling
+   :type: bool
+
+
+   
+   Flag indicating if intra-plane coupling of power/ground nets is enabled to enhance accuracy..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_delta_z0
+   :type: float
+
+
+   
+   Maximum percent change in characteristic impedance of ports between adaptive passes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_triangles_wave_port
+   :type: int
+
+
+   
+   Maximum number of triangles to use for meshing wave-ports.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_triangles_for_wave_port
+   :type: int
+
+
+   
+   Maximum number of triangles to use for meshing wave-ports.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_triangles_wave_port
+   :type: int
+
+
+   
+   Minimum number of triangles to use for meshing wave-ports.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_triangles_for_wave_port
+   :type: int
+
+
+   
+   Minimum number of triangles to use for meshing wave-ports.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enable_set_triangles_wave_port
+   :type: bool
+
+
+   
+   Flag indicating if the minimum and maximum triangle values for wave-ports are used.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: set_triangles_for_wave_port
+   :type: bool
+
+
+   
+   Flag indicating ifthe minimum and maximum triangle values for wave-ports are used.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: thin_dielectric_layer_threshold
+   :type: float
+
+
+   
+   Value below which dielectric layers are merged with adjacent dielectric layers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: thin_signal_layer_threshold
+   :type: float
+
+
+   
+   Value below which signal layers are merged with adjacent signal layers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

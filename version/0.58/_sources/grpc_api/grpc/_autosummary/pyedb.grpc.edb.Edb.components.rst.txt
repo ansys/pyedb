@@ -1,0 +1,6 @@
+components
+==========
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.components

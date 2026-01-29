@@ -1,0 +1,157 @@
+
+
+
+
+
+
+:class:`BundleTerminal`
+=======================
+
+
+.. py:class:: pyedb.dotnet.database.cell.terminal.bundle_terminal.BundleTerminal(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.terminal.terminal.Terminal`
+
+
+   
+   Manages bundle terminal properties.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`pyedb.edb.Edb`
+           EDB object from the ``Edblib`` library.
+
+       **edb_object** : :obj:`Ansys.Ansoft.Edb.Cell.Terminal.BundleTerminal`
+           BundleTerminal instance from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: BundleTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - 
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~decouple`
+            - Ungroup a bundle of terminals.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~terminals`
+            - Get terminals belonging to this excitation.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
+
+Property detail
+---------------
+
+.. py:property:: terminals
+
+   
+   Get terminals belonging to this excitation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: decouple()
+
+   
+   Ungroup a bundle of terminals.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create(pedb, name, terminals)
+   :classmethod:
+
+
+
+
+

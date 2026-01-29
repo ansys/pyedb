@@ -1,0 +1,521 @@
+
+
+
+
+
+
+:class:`SIWaveDCAdvancedSettings`
+=================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_dc_advanced.SIWaveDCAdvancedSettings(pedb, core: ansys.edb.core.simulation_setup.siwave_simulation_settings.SIWaveDCAdvancedSettings)
+
+   
+   Siwave DC Advanced simulation settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SIWaveDCAdvancedSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dc_min_plane_area_to_mesh`
+            - Minimum plane area to mesh.
+          * - :py:attr:`~dc_min_void_area_to_mesh`
+            - Minimum void area to mesh.
+          * - :py:attr:`~energy_error`
+            - Energy error.
+          * - :py:attr:`~max_init_mesh_edge_length`
+            - Maximum initial mesh edge length.
+          * - :py:attr:`~max_num_passes`
+            - Maximum number of passes.
+          * - :py:attr:`~mesh_bws`
+            - Mesh BWS.
+          * - :py:attr:`~mesh_vias`
+            - Mesh vias.
+          * - :py:attr:`~min_num_passes`
+            - Minimum number of passes.
+          * - :py:attr:`~num_bw_sides`
+            - Number of BWS sides.
+          * - :py:attr:`~num_via_sides`
+            - Number of via sides.
+          * - :py:attr:`~percent_local_refinement`
+            - Percentage of local refinement.
+          * - :py:attr:`~perform_adaptive_refinement`
+            - Perform adaptive refinement.
+          * - :py:attr:`~refine_bws`
+            - Refine BWS.
+          * - :py:attr:`~refine_vias`
+            - Refine vias.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_dc_advanced import SIWaveDCAdvancedSettings
+
+Property detail
+---------------
+
+.. py:property:: dc_min_plane_area_to_mesh
+   :type: str
+
+
+   
+   Minimum plane area to mesh.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Minimum plane area to mesh value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_min_void_area_to_mesh
+   :type: str
+
+
+   
+   Minimum void area to mesh.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Minimum void area to mesh value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: energy_error
+   :type: float
+
+
+   
+   Energy error.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Energy error value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_init_mesh_edge_length
+   :type: str
+
+
+   
+   Maximum initial mesh edge length.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Maximum initial mesh edge length value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_num_passes
+   :type: int
+
+
+   
+   Maximum number of passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Maximum number of passes value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_bws
+   :type: bool
+
+
+   
+   Mesh BWS.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Mesh BWS value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_vias
+   :type: bool
+
+
+   
+   Mesh vias.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Mesh vias value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_num_passes
+   :type: int
+
+
+   
+   Minimum number of passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Minimum number of passes value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_bw_sides
+   :type: int
+
+
+   
+   Number of BWS sides.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Number of BWS sides value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_via_sides
+   :type: int
+
+
+   
+   Number of via sides.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Number of via sides value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: percent_local_refinement
+   :type: float
+
+
+   
+   Percentage of local refinement.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Percentage of local refinement value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: perform_adaptive_refinement
+   :type: bool
+
+
+   
+   Perform adaptive refinement.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Perform adaptive refinement value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: refine_bws
+   :type: bool
+
+
+   
+   Refine BWS.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Refine BWS value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: refine_vias
+   :type: bool
+
+
+   
+   Refine vias.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Refine vias value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

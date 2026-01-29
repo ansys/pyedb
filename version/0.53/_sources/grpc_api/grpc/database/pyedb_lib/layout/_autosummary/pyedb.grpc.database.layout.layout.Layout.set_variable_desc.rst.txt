@@ -1,0 +1,6 @@
+set\_variable\_desc
+===================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.set_variable_desc

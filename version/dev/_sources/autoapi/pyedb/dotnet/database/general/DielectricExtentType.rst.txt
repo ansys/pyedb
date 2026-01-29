@@ -1,0 +1,100 @@
+
+
+
+
+
+
+:class:`DielectricExtentType`
+=============================
+
+
+.. py:class:: pyedb.dotnet.database.general.DielectricExtentType
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   
+   Generic enumeration.
+
+   Derive from this class to define new enumerations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DielectricExtentType
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~BoundingBox`
+            - 
+          * - :py:attr:`~Conforming`
+            - 
+          * - :py:attr:`~ConvexHull`
+            - 
+          * - :py:attr:`~Polygon`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.general import DielectricExtentType
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: BoundingBox
+   :value: 0
+
+
+.. py:attribute:: Conforming
+   :value: 1
+
+
+.. py:attribute:: ConvexHull
+   :value: 2
+
+
+.. py:attribute:: Polygon
+   :value: 3
+
+
+
+
+
+

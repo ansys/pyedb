@@ -1,0 +1,6 @@
+adaptive\_frequency
+===================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.adaptive_frequency
+
+.. autoproperty:: AdaptiveFrequency.adaptive_frequency

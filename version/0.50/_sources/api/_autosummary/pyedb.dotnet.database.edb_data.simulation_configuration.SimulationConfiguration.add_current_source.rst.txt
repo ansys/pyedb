@@ -1,0 +1,6 @@
+add\_current\_source
+====================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. automethod:: SimulationConfiguration.add_current_source

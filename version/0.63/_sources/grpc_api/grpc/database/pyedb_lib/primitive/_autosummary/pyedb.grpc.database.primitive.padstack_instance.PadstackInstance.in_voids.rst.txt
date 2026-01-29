@@ -1,0 +1,6 @@
+in\_voids
+=========
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. automethod:: PadstackInstance.in_voids

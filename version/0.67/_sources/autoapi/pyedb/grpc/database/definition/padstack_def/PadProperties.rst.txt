@@ -1,0 +1,349 @@
+
+
+
+
+
+
+:class:`PadProperties`
+======================
+
+
+.. py:class:: pyedb.grpc.database.definition.padstack_def.PadProperties(core, layer_name, pad_type, p_edb_padstack)
+
+   
+   Manages EDB functionalities for pad properties.
+
+
+   :Parameters:
+
+       **edb_padstack**
+           ..
+
+       **layer_name** : :class:`python:str`
+           Name of the layer.
+
+       **pad_type**
+           Type of the pad.
+
+       **pedbpadstack** : :class:`python:str`
+           Inherited AEDT object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(myedb, edbversion="2021.2")
+   >>> edb_pad_properties = edb.padstacks.definitions["MyPad"].pad_by_layer["TOP"]
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PadProperties
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~geometry_type`
+            - Geometry type.
+          * - :py:attr:`~shape`
+            - Pad shape.
+          * - :py:attr:`~parameters_values`
+            - Parameters.
+          * - :py:attr:`~parameters_values_string`
+            - Parameters value in string format.
+          * - :py:attr:`~polygon_data`
+            - Parameters.
+          * - :py:attr:`~offset_x`
+            - Offset for the X axis.
+          * - :py:attr:`~offset_y`
+            - Offset for the Y axis.
+          * - :py:attr:`~rotation`
+            - Rotation.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~layer_name`
+            - 
+          * - :py:attr:`~pad_type`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.definition.padstack_def import PadProperties
+
+Property detail
+---------------
+
+.. py:property:: geometry_type
+   :type: float
+
+
+   
+   Geometry type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Type of the geometry.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: shape
+   :type: str
+
+
+   
+   Pad shape.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           pad shape.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: parameters_values
+
+   
+   Parameters.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of parameters.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: parameters_values_string
+
+   
+   Parameters value in string format.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: polygon_data
+   :type: ansys.edb.core.geometry.polygon_data.PolygonData
+
+
+   
+   Parameters.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of parameters.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: offset_x
+   :type: float
+
+
+   
+   Offset for the X axis.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Offset for the X axis.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: offset_y
+   :type: float
+
+
+   
+   Offset for the Y axis.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Offset for the Y axis.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rotation
+   :type: float
+
+
+   
+   Rotation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Value for the rotation.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: layer_name
+
+.. py:attribute:: pad_type
+
+
+
+
+

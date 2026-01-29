@@ -1,0 +1,6 @@
+get\_powertree
+==============
+
+.. currentmodule:: pyedb.grpc.database.nets
+
+.. automethod:: Nets.get_powertree

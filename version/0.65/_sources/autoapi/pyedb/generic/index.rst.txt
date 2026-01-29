@@ -1,0 +1,109 @@
+
+
+
+
+
+
+The ``generic`` package
+===========================
+
+.. py:module:: pyedb.generic
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: generic
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.generic.constants`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.data_handlers`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.design_types`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.filesystem`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.general_methods`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.grpc_warnings`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.plot`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.process`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.settings`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> constants</autoapi/pyedb/generic/constants/index>
+    <span class="nf nf-fa-file"></span> data_handlers</autoapi/pyedb/generic/data_handlers/index>
+    <span class="nf nf-fa-file"></span> design_types</autoapi/pyedb/generic/design_types/index>
+    <span class="nf nf-fa-file"></span> filesystem</autoapi/pyedb/generic/filesystem/index>
+    <span class="nf nf-fa-file"></span> general_methods</autoapi/pyedb/generic/general_methods/index>
+    <span class="nf nf-fa-file"></span> grpc_warnings</autoapi/pyedb/generic/grpc_warnings/index>
+    <span class="nf nf-fa-file"></span> plot</autoapi/pyedb/generic/plot/index>
+    <span class="nf nf-fa-file"></span> process</autoapi/pyedb/generic/process/index>
+    <span class="nf nf-fa-file"></span> settings</autoapi/pyedb/generic/settings/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

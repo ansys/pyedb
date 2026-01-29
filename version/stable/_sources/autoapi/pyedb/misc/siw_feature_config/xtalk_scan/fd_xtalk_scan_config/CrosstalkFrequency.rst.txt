@@ -1,0 +1,176 @@
+
+
+
+
+
+
+:class:`CrosstalkFrequency`
+===========================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.xtalk_scan.fd_xtalk_scan_config.CrosstalkFrequency(pedb)
+
+   
+   Siwave frequency domain crosstalk configuration handler.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CrosstalkFrequency
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~extend_xml`
+            - Write class xml section.
+          * - :py:attr:`~add_single_ended_net`
+            - Add single ended net.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~min_transmission_line_segment_length`
+            - 
+          * - :py:attr:`~frequency`
+            - 
+          * - :py:attr:`~nets`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.xtalk_scan.fd_xtalk_scan_config import CrosstalkFrequency
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: min_transmission_line_segment_length
+   :value: '0.25mm'
+
+
+.. py:attribute:: frequency
+   :value: '2e9Hz'
+
+
+.. py:attribute:: nets
+
+
+
+Method detail
+-------------
+
+.. py:method:: extend_xml(parent)
+
+   
+   Write class xml section.
+
+
+   :Parameters:
+
+       **parent** : :class :obj:`xml.etree.cElementTree` :obj:`object`
+           ..
+
+       **Parent object.**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_single_ended_net(name, next_warning_threshold=5.0, next_violation_threshold=10.0, fext_warning_threshold_warning=5.0, fext_violation_threshold=5.0)
+
+   
+   Add single ended net.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Net name.
+
+       **next_warning_threshold** : :obj:`flot` or :class:`python:str`
+           Near end crosstalk warning threshold value. Default value is ``5.0``.
+
+       **next_violation_threshold** : :class:`python:float`, :class:`python:str`
+           Near end crosstalk violation threshold value. Default value is ``10.0
+
+       **fext_violation_threshold** : :class:`python:float`, :class:`python:str`
+           Far end crosstalk violation threshold value, Default value is ``5.0``
+
+       **fext_warning_threshold_warning** : :class:`python:float`, :class:`python:str`
+           Far end crosstalk warning threshold value, Default value is ``5.0``
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``modeler.py`` module
+=========================
+
+.. py:module:: pyedb.dotnet.database.modeler
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: modeler
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.modeler.Modeler`
+            - Manages EDB methods for primitives management accessible from `Edb.modeler` property.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Modeler</autoapi/pyedb/dotnet/database/modeler/Modeler>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains these classes: `EdbLayout` and `Shape`.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+generate\_solder\_balls
+=======================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationBatch.generate_solder_balls

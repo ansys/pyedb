@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`GLOBALCS`
+=================
+
+
+.. py:class:: pyedb.generic.constants.GLOBALCS
+
+   Bases: :py:obj:`object`
+
+
+   
+   GlobalCS Enumerator class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import GLOBALCS
+
+
+
+
+

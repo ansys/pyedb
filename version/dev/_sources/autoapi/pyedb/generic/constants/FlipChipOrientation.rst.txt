@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`FlipChipOrientation`
+============================
+
+
+.. py:class:: pyedb.generic.constants.FlipChipOrientation
+
+   Bases: :py:obj:`object`
+
+
+   
+   Chip orientation enumerator class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import FlipChipOrientation
+
+
+
+
+

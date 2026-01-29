@@ -1,0 +1,239 @@
+
+
+
+
+
+
+:class:`NetClasses`
+===================
+
+
+.. py:class:: pyedb.grpc.database.nets.NetClasses(pedb)
+
+   
+   Net classes management.
+
+   This class provides access to net classes in the EDB layout.
+   It allows for operations like retrieving nets, adding/removing nets,
+   and checking if a net is part of a net class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> net_classes = edb.net_classes
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: NetClasses
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a new net class.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~items`
+            - Extended nets.
+          * - :py:attr:`~name`
+            - Get the names of all net classes.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getitem__`
+            - Get a net by name.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.nets import NetClasses
+
+Property detail
+---------------
+
+.. py:property:: items
+   :type: Dict[str, pyedb.grpc.database.net.net_class.NetClass]
+
+
+   
+   Extended nets.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`pyedb.grpc.database.nets.nets_class.NetClass`]
+           Dictionary of extended nets.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   Get the names of all net classes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           List of net class names.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getitem__(name: str) -> pyedb.grpc.database.net.net_class.NetClass
+
+   
+   Get a net by name.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the net to retrieve.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create(name, net) -> Union[bool, pyedb.grpc.database.net.net_class.NetClass]
+
+   
+   Create a new net class.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the net class.
+
+       **net** : :class:`python:str`, :class:`python:list`
+           Name of the nets to be added into this net class.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.nets_data.EDBNetClassData` `False` :obj:`if` :obj:`net` :obj:`name` :obj:`already` exists.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

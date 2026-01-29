@@ -1,0 +1,6 @@
+is\_mcad
+========
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. autoproperty:: Primitive.is_mcad

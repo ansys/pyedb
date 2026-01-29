@@ -1,0 +1,85 @@
+
+
+
+
+
+
+:class:`DiffPair`
+=================
+
+
+.. py:class:: pyedb.workflows.drc.drc.DiffPair(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Differential-pair definition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DiffPair
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~positive`
+            - 
+          * - :py:attr:`~negative`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.drc.drc import DiffPair
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: positive
+   :type:  str
+
+.. py:attribute:: negative
+   :type:  str
+
+
+
+
+

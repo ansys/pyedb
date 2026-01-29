@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``hfss_pi_signal_nets_settings.py`` module
+==============================================
+
+.. py:module:: pyedb.grpc.database.simulation_setup.hfss_pi_signal_nets_settings
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: hfss_pi_signal_nets_settings
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_pi_signal_nets_settings.HFSSPISignalNetsSettings`
+            - PyEDB HFSS PI signal nets settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> HFSSPISignalNetsSettings</autoapi/pyedb/grpc/database/simulation_setup/hfss_pi_signal_nets_settings/HFSSPISignalNetsSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

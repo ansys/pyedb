@@ -1,0 +1,76 @@
+
+
+
+
+
+
+:class:`CfgBase`
+================
+
+
+.. py:class:: pyedb.configuration.cfg_common.CfgBase
+
+
+.. py:currentmodule:: CfgBase
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_attributes`
+            - 
+          * - :py:attr:`~set_attributes`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~protected_attributes`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_common import CfgBase
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: protected_attributes
+   :value: ['pedb', 'pyedb_obj', 'api']
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_attributes(exclude=None)
+
+.. py:method:: set_attributes(pedb_object)
+
+
+
+

@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``net_class.py`` module
+===========================
+
+.. py:module:: pyedb.dotnet.database.net_class
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: net_class
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.net_class.EdbCommon`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.net_class.EdbNetClasses`
+            - Manages EDB methods for managing nets accessible from the ``Edb.net_classes`` property.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.net_class.EdbExtendedNets`
+            - Manages EDB methods for managing nets accessible from the ``Edb.extended_nets`` property.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.net_class.EdbDifferentialPairs`
+            - Manages EDB methods for managing nets accessible from the ``Edb.differential_pairs`` property.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> EdbCommon</autoapi/pyedb/dotnet/database/net_class/EdbCommon>
+    <span class="nf nf-cod-symbol_class"></span> EdbNetClasses</autoapi/pyedb/dotnet/database/net_class/EdbNetClasses>
+    <span class="nf nf-cod-symbol_class"></span> EdbExtendedNets</autoapi/pyedb/dotnet/database/net_class/EdbExtendedNets>
+    <span class="nf nf-cod-symbol_class"></span> EdbDifferentialPairs</autoapi/pyedb/dotnet/database/net_class/EdbDifferentialPairs>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

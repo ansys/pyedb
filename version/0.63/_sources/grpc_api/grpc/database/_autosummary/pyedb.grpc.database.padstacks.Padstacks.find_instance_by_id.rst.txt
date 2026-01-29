@@ -1,0 +1,6 @@
+find\_instance\_by\_id
+======================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.find_instance_by_id

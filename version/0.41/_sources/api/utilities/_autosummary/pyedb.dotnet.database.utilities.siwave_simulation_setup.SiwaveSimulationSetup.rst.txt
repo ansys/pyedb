@@ -1,0 +1,69 @@
+﻿SiwaveSimulationSetup
+=====================
+
+.. currentmodule:: pyedb.dotnet.database.utilities.siwave_simulation_setup
+
+.. autoclass:: SiwaveSimulationSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      SiwaveSimulationSetup.add_frequency_sweep
+      
+      
+      SiwaveSimulationSetup.add_sweep
+      
+      
+      SiwaveSimulationSetup.create
+      
+      
+      SiwaveSimulationSetup.delete_frequency_sweep
+      
+      
+      SiwaveSimulationSetup.get_configurations
+      
+      
+      SiwaveSimulationSetup.get_simulation_settings
+      
+      
+      SiwaveSimulationSetup.set_si_slider
+      
+      
+      SiwaveSimulationSetup.set_sim_setup_info
+      
+      
+      SiwaveSimulationSetup.set_simulation_settings
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      SiwaveSimulationSetup.advanced_settings
+      SiwaveSimulationSetup.enabled
+      SiwaveSimulationSetup.frequency_sweeps
+      SiwaveSimulationSetup.get_sim_setup_info
+      SiwaveSimulationSetup.mesh_operations
+      SiwaveSimulationSetup.name
+      SiwaveSimulationSetup.pi_slider_position
+      SiwaveSimulationSetup.position
+      SiwaveSimulationSetup.setup_type
+      SiwaveSimulationSetup.si_slider_position
+      SiwaveSimulationSetup.sim_setup_info
+      SiwaveSimulationSetup.sweeps
+      SiwaveSimulationSetup.type
+      SiwaveSimulationSetup.use_custom_settings
+      SiwaveSimulationSetup.use_si_settings
+   
+   

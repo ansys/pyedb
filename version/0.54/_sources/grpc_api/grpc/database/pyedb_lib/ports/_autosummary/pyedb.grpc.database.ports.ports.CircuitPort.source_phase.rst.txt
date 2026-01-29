@@ -1,0 +1,6 @@
+source\_phase
+=============
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: CircuitPort.source_phase

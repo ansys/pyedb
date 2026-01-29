@@ -1,0 +1,6 @@
+edb\_uid
+========
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.edb_uid

@@ -1,0 +1,6 @@
+msg
+===
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.model
+
+.. autoproperty:: Model.msg

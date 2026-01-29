@@ -1,0 +1,6 @@
+signal\_layers
+==============
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. autoproperty:: LayerCollection.signal_layers

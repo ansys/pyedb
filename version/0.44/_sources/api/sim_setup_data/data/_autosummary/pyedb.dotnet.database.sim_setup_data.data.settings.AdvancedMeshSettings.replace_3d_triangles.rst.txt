@@ -1,0 +1,6 @@
+replace\_3d\_triangles
+======================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+.. autoproperty:: AdvancedMeshSettings.replace_3d_triangles

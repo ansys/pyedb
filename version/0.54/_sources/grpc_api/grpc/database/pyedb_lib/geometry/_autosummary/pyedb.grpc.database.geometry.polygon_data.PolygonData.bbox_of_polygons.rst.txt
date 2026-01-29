@@ -1,0 +1,6 @@
+bbox\_of\_polygons
+==================
+
+.. currentmodule:: pyedb.grpc.database.geometry.polygon_data
+
+.. automethod:: PolygonData.bbox_of_polygons

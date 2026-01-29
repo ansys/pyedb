@@ -1,0 +1,156 @@
+
+
+
+
+
+
+:class:`CrossTalkTime`
+======================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.xtalk_scan.td_xtalk_config.CrossTalkTime(pedb)
+
+   
+   Time domain crosstalk configuration class handler.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CrossTalkTime
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_single_ended_net`
+            - Add single ended net.
+          * - :py:attr:`~add_driver_pins`
+            - 
+          * - :py:attr:`~add_receiver_pin`
+            - 
+          * - :py:attr:`~extend_xml`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~nets`
+            - 
+          * - :py:attr:`~driver_pins`
+            - 
+          * - :py:attr:`~receiver_pins`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.xtalk_scan.td_xtalk_config import CrossTalkTime
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: nets
+
+.. py:attribute:: driver_pins
+   :value: []
+
+
+.. py:attribute:: receiver_pins
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_single_ended_net(name, driver_rise_time=5.0, voltage=10, driver_impedance=5.0, termination_impedance=5.0)
+
+   
+   Add single ended net.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Net name.
+
+       **driver_rise_time** : :obj:`flot` or :class:`python:str`
+           Near end crosstalk warning threshold value. Default value is ``5.0``.
+
+       **voltage** : :class:`python:float`, :class:`python:str`
+           Near end crosstalk violation threshold value. Default value is ``10.0
+
+       **driver_impedance** : :class:`python:float`, :class:`python:str`
+           Far end crosstalk violation threshold value, Default value is ``5.0``
+
+       **termination_impedance** : :class:`python:float`, :class:`python:str`
+           Far end crosstalk warning threshold value, Default value is ``5.0``
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_driver_pins(name, ref_des, rise_time='100ps', voltage=1.0, impedance=50.0)
+
+.. py:method:: add_receiver_pin(name, ref_des, impedance)
+
+.. py:method:: extend_xml(parent)
+
+
+
+

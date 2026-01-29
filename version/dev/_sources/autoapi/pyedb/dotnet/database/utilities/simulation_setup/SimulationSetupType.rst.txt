@@ -1,0 +1,160 @@
+
+
+
+
+
+
+:class:`SimulationSetupType`
+============================
+
+
+.. py:class:: pyedb.dotnet.database.utilities.simulation_setup.SimulationSetupType
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   
+   Generic enumeration.
+
+   Derive from this class to define new enumerations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SimulationSetupType
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~kHFSS`
+            - 
+          * - :py:attr:`~kPEM`
+            - 
+          * - :py:attr:`~kSIwave`
+            - 
+          * - :py:attr:`~kLNA`
+            - 
+          * - :py:attr:`~kTransient`
+            - 
+          * - :py:attr:`~kQEye`
+            - 
+          * - :py:attr:`~kVEye`
+            - 
+          * - :py:attr:`~kAMI`
+            - 
+          * - :py:attr:`~kAnalysisOption`
+            - 
+          * - :py:attr:`~kSIwaveDCIR`
+            - 
+          * - :py:attr:`~kSIwaveEMI`
+            - 
+          * - :py:attr:`~kHFSSPI`
+            - 
+          * - :py:attr:`~kDDRwizard`
+            - 
+          * - :py:attr:`~kQ3D`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.simulation_setup import SimulationSetupType
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: kHFSS
+   :value: 'hfss'
+
+
+.. py:attribute:: kPEM
+   :value: None
+
+
+.. py:attribute:: kSIwave
+   :value: 'siwave_ac'
+
+
+.. py:attribute:: kLNA
+   :value: 'lna'
+
+
+.. py:attribute:: kTransient
+   :value: 'transient'
+
+
+.. py:attribute:: kQEye
+   :value: 'quick_eye'
+
+
+.. py:attribute:: kVEye
+   :value: 'verif_eye'
+
+
+.. py:attribute:: kAMI
+   :value: 'ami'
+
+
+.. py:attribute:: kAnalysisOption
+   :value: 'analysis_option'
+
+
+.. py:attribute:: kSIwaveDCIR
+   :value: 'siwave_dc'
+
+
+.. py:attribute:: kSIwaveEMI
+   :value: 'siwave_emi'
+
+
+.. py:attribute:: kHFSSPI
+   :value: 'hfss_pi'
+
+
+.. py:attribute:: kDDRwizard
+   :value: 'ddrwizard'
+
+
+.. py:attribute:: kQ3D
+   :value: 'q3d'
+
+
+
+
+
+

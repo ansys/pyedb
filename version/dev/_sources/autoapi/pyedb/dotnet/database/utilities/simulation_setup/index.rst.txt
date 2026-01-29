@@ -1,0 +1,100 @@
+
+
+
+
+
+
+The ``simulation_setup.py`` module
+==================================
+
+.. py:module:: pyedb.dotnet.database.utilities.simulation_setup
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: simulation_setup
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.simulation_setup.AdaptiveType`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup`
+            - Provide base simulation setup.
+
+
+
+    .. tab-item:: Enums
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.simulation_setup.SimulationSetupType`
+            - Generic enumeration.
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> AdaptiveType</autoapi/pyedb/dotnet/database/utilities/simulation_setup/AdaptiveType>
+    <span class="nf nf-cod-symbol_class"></span> SimulationSetup</autoapi/pyedb/dotnet/database/utilities/simulation_setup/SimulationSetup>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_enum"></span> SimulationSetupType</autoapi/pyedb/dotnet/database/utilities/simulation_setup/SimulationSetupType>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

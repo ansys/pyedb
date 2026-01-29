@@ -1,0 +1,96 @@
+
+
+
+
+
+
+:class:`Sweep`
+==============
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.Sweep
+
+   
+   Frequency-sweep summary block.
+
+   :ivar str type: Sweep algorithm: ``Interpolating``, ``Discrete`` or ``Fast``.
+   :ivar int frequencies: Total number of frequency points requested.
+   :ivar list[float] solved: List of frequencies (Hz) actually solved.
+   :ivar int elapsed_sec: Wall clock time for the entire sweep.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Sweep
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~frequencies`
+            - 
+          * - :py:attr:`~solved`
+            - 
+          * - :py:attr:`~elapsed_sec`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import Sweep
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: type
+   :type:  str
+
+.. py:attribute:: frequencies
+   :type:  int
+
+.. py:attribute:: solved
+   :type:  List[float]
+
+.. py:attribute:: elapsed_sec
+   :type:  int
+
+
+
+
+

@@ -1,0 +1,6 @@
+cells\_per\_wavelength
+======================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings
+
+.. autoproperty:: RaptorXAdvancedSettings.cells_per_wavelength

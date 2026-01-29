@@ -1,0 +1,6 @@
+set\_position\_and\_rotation
+============================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. automethod:: PadstackInstance.set_position_and_rotation

@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``hfss.py`` module
+======================
+
+.. py:module:: pyedb.dotnet.database.hfss
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: hfss
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.hfss.EdbHfss`
+            - Manages EDB method to configure Hfss setup accessible from `Edb.hfss` property.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> EdbHfss</autoapi/pyedb/dotnet/database/hfss/EdbHfss>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains the ``EdbHfss`` class.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

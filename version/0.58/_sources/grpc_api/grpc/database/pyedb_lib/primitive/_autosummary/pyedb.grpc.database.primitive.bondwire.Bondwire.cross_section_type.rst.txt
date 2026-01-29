@@ -1,0 +1,6 @@
+cross\_section\_type
+====================
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. autoproperty:: Bondwire.cross_section_type

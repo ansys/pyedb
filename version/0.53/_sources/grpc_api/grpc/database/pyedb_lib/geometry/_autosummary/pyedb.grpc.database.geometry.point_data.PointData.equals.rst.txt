@@ -1,0 +1,6 @@
+equals
+======
+
+.. currentmodule:: pyedb.grpc.database.geometry.point_data
+
+.. automethod:: PointData.equals

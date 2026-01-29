@@ -1,0 +1,6 @@
+probes
+======
+
+.. currentmodule:: pyedb.dotnet.database.siwave
+
+.. autoproperty:: EdbSiwave.probes

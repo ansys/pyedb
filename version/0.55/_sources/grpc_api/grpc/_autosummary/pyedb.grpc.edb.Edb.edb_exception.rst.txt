@@ -1,0 +1,6 @@
+edb\_exception
+==============
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.edb_exception

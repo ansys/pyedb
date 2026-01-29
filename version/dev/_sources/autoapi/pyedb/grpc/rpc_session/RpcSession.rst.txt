@@ -1,0 +1,198 @@
+
+
+
+
+
+
+:class:`RpcSession`
+===================
+
+
+.. py:class:: pyedb.grpc.rpc_session.RpcSession
+
+   
+   Static Class managing RPC server.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+.. py:currentmodule:: RpcSession
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pid`
+            - 
+          * - :py:attr:`~rpc_session`
+            - 
+          * - :py:attr:`~base_path`
+            - 
+          * - :py:attr:`~port`
+            - 
+
+
+   .. tab-item:: Static methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~start`
+            - Start RPC-server, the server must be started before opening EDB.
+          * - :py:attr:`~kill`
+            - 
+          * - :py:attr:`~kill_all_instances`
+            - 
+          * - :py:attr:`~close`
+            - Terminate the current RPC session. Must be executed at the end of the script to close properly the session.
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.rpc_session import RpcSession
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: pid
+   :value: 0
+
+
+.. py:attribute:: rpc_session
+   :value: None
+
+
+.. py:attribute:: base_path
+   :value: None
+
+
+.. py:attribute:: port
+   :value: 10000
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: start(edb_version, port=0, restart_server=False)
+   :staticmethod:
+
+
+   
+   Start RPC-server, the server must be started before opening EDB.
+
+
+   :Parameters:
+
+       **edb_version** : :class:`python:str`, optional.
+           Specify ANSYS version.
+           If None, the latest installation will be detected on the local machine.
+
+       **port** : :class:`python:int`, :obj:`optional`
+           Port number used for the RPC session.
+           If not provided, a random free port is automatically selected.
+
+       **restart_server** : :ref:`bool <python:bltin-boolean-values>`, optional.
+           Force restarting the RPC server by killing the process in case EDB_RPC is already started.
+           All open EDB
+           connection will be lost.
+           This option must be used at the beginning of an application only to ensure the
+           server is properly started.
+
+       **kill_all_instances** : :ref:`bool <python:bltin-boolean-values>`, optional.
+           Force killing all RPC sever instances, including a zombie process.
+           To be used with caution, default value is `False`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: kill()
+   :staticmethod:
+
+
+.. py:method:: kill_all_instances()
+   :staticmethod:
+
+
+.. py:method:: close()
+   :staticmethod:
+
+
+   
+   Terminate the current RPC session. Must be executed at the end of the script to close properly the session.
+   If not executed, users should force restarting the process using the flag `restart_server`=`True`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

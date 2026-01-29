@@ -1,0 +1,102 @@
+
+
+
+
+
+
+:class:`WarningsBlockParser`
+============================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.WarningsBlockParser(lines: List[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Extract warning entries from the log.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: WarningsBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Parse warning messages.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import WarningsBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> List[WarningEntry]
+
+   
+   Parse warning messages.
+
+   :return: List of warning entries.
+   :rtype: list[WarningEntry]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+capacitance\_pf
+===============
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. autoproperty:: InterdigitalCapacitor.capacitance_pf

@@ -1,0 +1,6 @@
+lower\_elevation
+================
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoproperty:: StackupLayer.lower_elevation

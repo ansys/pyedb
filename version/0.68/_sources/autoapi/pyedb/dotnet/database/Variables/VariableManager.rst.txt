@@ -1,0 +1,1197 @@
+
+
+
+
+
+
+:class:`VariableManager`
+========================
+
+
+.. py:class:: pyedb.dotnet.database.Variables.VariableManager(app)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages design properties and project variables.
+
+   Design properties are the local variables in a design. Project
+   variables are defined at the project level and start with ``$``.
+
+   This class provides access to all variables or a subset of the
+   variables. Manipulation of the numerical or string definitions of
+   variable values is provided in the
+   :class:`pyedb.dotnet.database.Variables.Variable` class.
+
+   :Parameters:
+
+       **variables** : :class:`python:dict`
+           Dictionary of all design properties and project variables in
+           the active design.
+
+       **design_variables** : :class:`python:dict`
+           Dictionary of all design properties in the active design.
+
+       **project_variables** : :class:`python:dict`
+           Dictionary of all project variables available to the active
+           design (key by variable name).
+
+       **dependent_variables** : :class:`python:dict`
+           Dictionary of all dependent variables available to the active
+           design (key by variable name).
+
+       **independent_variables** : :class:`python:dict`
+           Dictionary of all independent variables (constant numeric
+           values) available to the active design (key by variable name).
+
+       **independent_design_variables** : :class:`python:dict`
+           ..
+
+       **independent_project_variables** : :class:`python:dict`
+           ..
+
+       **variable_names** : :class:`python:str` or :class:`python:list`
+           One or more variable names.
+
+       **project_variable_names** : :class:`python:str` or :class:`python:list`
+           One or more project variable names.
+
+       **design_variable_names** : :class:`python:str` or :class:`python:list`
+           One or more design variable names.
+
+       **dependent_variable_names** : :class:`python:str` or :class:`python:list`
+           All dependent variable names within the project.
+
+       **independent_variable_names** : :class:`python:list` :obj:`of` :class:`python:str`
+           All independent variable names within the project. These can
+           be sweep variables for optimetrics.
+
+       **independent_project_variable_names** : :class:`python:str` or :class:`python:list`
+           All independent project variable names within the
+           project. These can be sweep variables for optimetrics.
+
+       **independent_design_variable_names** : :class:`python:str` or :class:`python:list`
+           All independent design properties (local variables) within the
+           project. These can be sweep variables for optimetrics.
+
+
+
+
+
+
+
+
+
+
+   .. seealso::
+
+       
+       :obj:`pyedb.dotnet.database.Variables.Variable`
+           ..
+       
+
+
+   .. rubric:: Examples
+
+   >>> from ansys.aedt.core.maxwell import Maxwell3d
+   >>> from ansys.aedt.core.desktop import Desktop
+   >>> d = Desktop()
+   >>> aedtapp = Maxwell3d()
+
+   Define some test variables.
+
+   >>> aedtapp["Var1"] = 3
+   >>> aedtapp["Var2"] = "12deg"
+   >>> aedtapp["Var3"] = "Var1 * Var2"
+   >>> aedtapp["$PrjVar1"] = "pi"
+
+   Get the variable manager for the active design.
+
+   >>> v = aedtapp.variable_manager
+
+   Get a dictionary of all project and design variables.
+
+   >>> v.variables
+   {'Var1': <pyedb.dotnet.database.Variables.Variable at 0x2661f34c448>,
+    'Var2': <pyedb.dotnet.database.Variables.Variable at 0x2661f34c308>,
+    'Var3': <pyedb.dotnet.database.Variables.Expression at 0x2661f34cb48>,
+    '$PrjVar1': <pyedb.dotnet.database.Variables.Expression at 0x2661f34cc48>}
+
+   Get a dictionary of only the design variables.
+
+   >>> v.design_variables
+   {'Var1': <pyedb.dotnet.database.Variables.Variable at 0x2661f339508>,
+    'Var2': <pyedb.dotnet.database.Variables.Variable at 0x2661f3415c8>,
+    'Var3': <pyedb.dotnet.database.Variables.Expression at 0x2661f341808>}
+
+   Get a dictionary of only the independent design variables.
+
+   >>> v.independent_design_variables
+   {'Var1': <pyedb.dotnet.database.Variables.Variable at 0x2661f335d08>,
+    'Var2': <pyedb.dotnet.database.Variables.Variable at 0x2661f3557c8>}
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+.. py:currentmodule:: VariableManager
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~decompose`
+            - Decompose a variable string to a floating with its unit.
+          * - :py:attr:`~get_expression`
+            - Retrieve the variable value of a project or design variable as a string.
+          * - :py:attr:`~aedt_object`
+            - Retrieve an AEDT object.
+          * - :py:attr:`~set_variable`
+            - Set the value of a design property or project variable.
+          * - :py:attr:`~delete_separator`
+            - Delete a separator from either the active project or design.
+          * - :py:attr:`~delete_variable`
+            - Delete a variable.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~variables`
+            - Variables.
+          * - :py:attr:`~design_variables`
+            - Design variables.
+          * - :py:attr:`~project_variables`
+            - Project variables.
+          * - :py:attr:`~post_processing_variables`
+            - Post Processing variables.
+          * - :py:attr:`~independent_variables`
+            - Independent variables.
+          * - :py:attr:`~independent_project_variables`
+            - Independent project variables.
+          * - :py:attr:`~independent_design_variables`
+            - Independent design variables.
+          * - :py:attr:`~dependent_variables`
+            - Dependent variables.
+          * - :py:attr:`~dependent_project_variables`
+            - Dependent project variables.
+          * - :py:attr:`~dependent_design_variables`
+            - Dependent design variables.
+          * - :py:attr:`~variable_names`
+            - List of variables.
+          * - :py:attr:`~project_variable_names`
+            - List of project variables.
+          * - :py:attr:`~design_variable_names`
+            - List of design variables.
+          * - :py:attr:`~independent_project_variable_names`
+            - List of independent project variables.
+          * - :py:attr:`~independent_design_variable_names`
+            - List of independent design variables.
+          * - :py:attr:`~independent_variable_names`
+            - List of independent variables.
+          * - :py:attr:`~dependent_project_variable_names`
+            - List of dependent project variables.
+          * - :py:attr:`~dependent_design_variable_names`
+            - List of dependent design variables.
+          * - :py:attr:`~dependent_variable_names`
+            - List of dependent variables.
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__delitem__`
+            - Implement del with array name or index.
+          * - :py:attr:`~__getitem__`
+            - 
+          * - :py:attr:`~__setitem__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.Variables import VariableManager
+
+Property detail
+---------------
+
+.. py:property:: variables
+
+   
+   Variables.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of the `Variable` objects for each project variable and each
+           design property in the active design.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.GetVariables
+   >>> oDesign.GetVariables
+   >>> oProject.GetChildObject("Variables").GetChildNames
+   >>> oDesign.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: design_variables
+
+   
+   Design variables.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of the design properties (local properties) in the design.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oDesign.GetVariables
+   >>> oDesign.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: project_variables
+
+   
+   Project variables.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of the project properties.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.GetVariables
+   >>> oProject.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: post_processing_variables
+
+   
+   Post Processing variables.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of the post processing variables (constant numeric
+           values) available to the design.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.GetVariables
+   >>> oDesign.GetVariables
+   >>> oProject.GetChildObject("Variables").GetChildNames
+   >>> oDesign.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: independent_variables
+
+   
+   Independent variables.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of the independent variables (constant numeric
+           values) available to the design.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.GetVariables
+   >>> oDesign.GetVariables
+   >>> oProject.GetChildObject("Variables").GetChildNames
+   >>> oDesign.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: independent_project_variables
+
+   
+   Independent project variables.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of the independent project variables available to the design.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.GetVariables
+   >>> oProject.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: independent_design_variables
+
+   
+   Independent design variables.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of the independent design properties (local
+           variables) available to the design.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oDesign.GetVariables
+   >>> oDesign.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dependent_variables
+
+   
+   Dependent variables.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of the dependent design properties (local
+           variables) and project variables available to the design.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.GetVariables
+   >>> oDesign.GetVariables
+   >>> oProject.GetChildObject("Variables").GetChildNames
+   >>> oDesign.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dependent_project_variables
+
+   
+   Dependent project variables.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of the dependent project variables available to the design.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.GetVariables
+   >>> oProject.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dependent_design_variables
+
+   
+   Dependent design variables.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of the dependent design properties (local
+           variables) available to the design.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oDesign.GetVariables
+   >>> oDesign.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: variable_names
+
+   
+   List of variables.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: project_variable_names
+
+   
+   List of project variables.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.GetVariables
+   >>> oProject.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: design_variable_names
+
+   
+   List of design variables.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oDesign.GetVariables
+   >>> oDesign.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: independent_project_variable_names
+
+   
+   List of independent project variables.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.GetVariables
+   >>> oProject.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: independent_design_variable_names
+
+   
+   List of independent design variables.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oDesign.GetVariables
+   >>> oDesign.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: independent_variable_names
+
+   
+   List of independent variables.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.GetVariables
+   >>> oDesign.GetVariables
+   >>> oProject.GetChildObject("Variables").GetChildNames
+   >>> oDesign.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dependent_project_variable_names
+
+   
+   List of dependent project variables.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.GetVariables
+   >>> oProject.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dependent_design_variable_names
+
+   
+   List of dependent design variables.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oDesign.GetVariables
+   >>> oDesign.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dependent_variable_names
+
+   
+   List of dependent variables.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.GetVariables
+   >>> oDesign.GetVariables
+   >>> oProject.GetChildObject("Variables").GetChildNames
+   >>> oDesign.GetChildObject("Variables").GetChildNames
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: decompose(variable_value)
+
+   
+   Decompose a variable string to a floating with its unit.
+
+
+   :Parameters:
+
+       **variable_value** : :class:`python:str`
+           ..
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           The float value of the variable and the units exposed as a string.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> hfss = Hfss()
+   >>> print(hfss.variable_manager.decompose("5mm"))
+   >>> (5.0, "mm")
+   >>> hfss["v1"] = "3N"
+   >>> print(hfss.variable_manager.decompose("v1"))
+   >>> (3.0, "N")
+   >>> hfss["v2"] = "2*v1"
+   >>> print(hfss.variable_manager.decompose("v2"))
+   >>> (6.0, "N")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __delitem__(key)
+
+   
+   Implement del with array name or index.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __getitem__(variable_name)
+
+.. py:method:: __setitem__(variable, value)
+
+.. py:method:: get_expression(variable_name)
+
+   
+   Retrieve the variable value of a project or design variable as a string.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.GetVariableValue
+   >>> oDesign.GetVariableValue
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: aedt_object(variable)
+
+   
+   Retrieve an AEDT object.
+
+
+   :Parameters:
+
+       **variable** : :class:`python:str`
+           ..
+
+       **Name of the variable.**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_variable(variable_name, expression=None, readonly=False, hidden=False, description=None, overwrite=True, postprocessing=False, circuit_parameter=True)
+
+   
+   Set the value of a design property or project variable.
+
+
+   :Parameters:
+
+       **variable_name** : :class:`python:str`
+           Name of the design property or project variable
+           (``$var``). If this variable does not exist, a new one is
+           created and a value is set.
+
+       **expression** : :class:`python:str`
+           Valid string expression within the AEDT design and project
+           structure.  For example, ``"3*cos(34deg)"``.
+
+       **readonly** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to set the design property or project variable to
+           read-only. The default is ``False``.
+
+       **hidden** :  :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to hide the design property or project variable. The
+           default is ``False``.
+
+       **description** : :class:`python:str`, :obj:`optional`
+           Text to display for the design property or project variable in the
+           ``Properties`` window. The default is ``None``.
+
+       **overwrite** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to overwrite an existing value for the design
+           property or project variable. The default is ``False``, in
+           which case this method is ignored.
+
+       **postprocessing** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to define a postprocessing variable.
+            The default is ``False``, in which case the variable is not used in postprocessing.
+
+       **circuit_parameter** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to define a parameter in a circuit design or a local parameter.
+            The default is ``True``, in which case a circuit variable is created as a parameter default.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.ChangeProperty
+   >>> oDesign.ChangeProperty
+
+   .. only:: latex
+
+      
+
+   .. rubric:: Examples
+
+   Set the value of design property ``p1`` to ``"10mm"``,
+   creating the property if it does not already eixst.
+
+   >>> aedtapp.variable_manager.set_variable("p1", expression="10mm")
+
+   Set the value of design property ``p1`` to ``"20mm"`` only if
+   the property does not already exist.
+
+   >>> aedtapp.variable_manager.set_variable("p1", expression="20mm", overwrite=False)
+
+   Set the value of design property ``p2`` to ``"10mm"``,
+   creating the property if it does not already exist. Also make
+   it read-only and hidden and add a description.
+
+   >>> aedtapp.variable_manager.set_variable(
+   ...     variable_name="p2",
+   ...     expression="10mm",
+   ...     readonly=True,
+   ...     hidden=True,
+   ...     description="This is the description of this variable.",
+   ... )
+
+   Set the value of the project variable ``$p1`` to ``"30mm"``,
+   creating the variable if it does not exist.
+
+   >>> aedtapp.variable_manager.set_variable["$p1"] == "30mm"
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_separator(separator_name)
+
+   
+   Delete a separator from either the active project or design.
+
+
+   :Parameters:
+
+       **separator_name** : :class:`python:str`
+           Value to use for the delimiter.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when the separator exists and can be deleted, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.ChangeProperty
+   >>> oDesign.ChangeProperty
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_variable(var_name)
+
+   
+   Delete a variable.
+
+
+   :Parameters:
+
+       **var_name** : :class:`python:str`
+           Name of the variable.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.ChangeProperty
+   >>> oDesign.ChangeProperty
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

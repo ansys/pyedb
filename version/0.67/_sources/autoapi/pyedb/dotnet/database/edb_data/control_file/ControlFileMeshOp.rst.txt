@@ -1,0 +1,115 @@
+
+
+
+
+
+
+:class:`ControlFileMeshOp`
+==========================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.control_file.ControlFileMeshOp(name, region, type, nets_layers)
+
+
+.. py:currentmodule:: ControlFileMeshOp
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~region`
+            - 
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~nets_layers`
+            - 
+          * - :py:attr:`~num_max_elem`
+            - 
+          * - :py:attr:`~restrict_elem`
+            - 
+          * - :py:attr:`~restrict_length`
+            - 
+          * - :py:attr:`~max_length`
+            - 
+          * - :py:attr:`~skin_depth`
+            - 
+          * - :py:attr:`~surf_tri_length`
+            - 
+          * - :py:attr:`~num_layers`
+            - 
+          * - :py:attr:`~region_solve_inside`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.control_file import ControlFileMeshOp
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+.. py:attribute:: region
+
+.. py:attribute:: type
+
+.. py:attribute:: nets_layers
+
+.. py:attribute:: num_max_elem
+   :value: 1000
+
+
+.. py:attribute:: restrict_elem
+   :value: False
+
+
+.. py:attribute:: restrict_length
+   :value: True
+
+
+.. py:attribute:: max_length
+   :value: '20um'
+
+
+.. py:attribute:: skin_depth
+   :value: '1um'
+
+
+.. py:attribute:: surf_tri_length
+   :value: '1mm'
+
+
+.. py:attribute:: num_layers
+   :value: 2
+
+
+.. py:attribute:: region_solve_inside
+   :value: False
+
+
+
+
+
+

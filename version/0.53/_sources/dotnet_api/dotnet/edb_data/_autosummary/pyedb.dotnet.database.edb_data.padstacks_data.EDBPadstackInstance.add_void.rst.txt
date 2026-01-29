@@ -1,0 +1,6 @@
+add\_void
+=========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. automethod:: EDBPadstackInstance.add_void

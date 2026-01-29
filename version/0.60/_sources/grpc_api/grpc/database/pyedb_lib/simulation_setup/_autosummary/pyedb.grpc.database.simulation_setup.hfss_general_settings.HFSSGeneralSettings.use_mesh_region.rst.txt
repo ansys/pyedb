@@ -1,0 +1,6 @@
+use\_mesh\_region
+=================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_general_settings
+
+.. autoproperty:: HFSSGeneralSettings.use_mesh_region

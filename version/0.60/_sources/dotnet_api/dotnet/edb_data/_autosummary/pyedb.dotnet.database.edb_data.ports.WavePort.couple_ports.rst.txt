@@ -1,0 +1,6 @@
+couple\_ports
+=============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. automethod:: WavePort.couple_ports

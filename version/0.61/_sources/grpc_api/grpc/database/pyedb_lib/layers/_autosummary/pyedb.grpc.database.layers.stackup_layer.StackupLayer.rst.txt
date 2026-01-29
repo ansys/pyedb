@@ -1,0 +1,76 @@
+﻿StackupLayer
+============
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoclass:: StackupLayer
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      StackupLayer.assign_roughness_model
+      
+      
+      StackupLayer.cast
+      
+      
+      StackupLayer.clone
+      
+      
+      StackupLayer.create
+      
+      
+      StackupLayer.get_fill_material
+      
+      
+      StackupLayer.get_material
+      
+      
+      StackupLayer.get_product_property
+      
+      
+      StackupLayer.get_product_property_ids
+      
+      
+      StackupLayer.get_roughness_model
+      
+      
+      StackupLayer.is_in_zone
+      
+      
+      StackupLayer.set_fill_material
+      
+      
+      StackupLayer.set_is_in_zone
+      
+      
+      StackupLayer.set_material
+      
+      
+      StackupLayer.set_product_property
+      
+      
+      StackupLayer.set_roughness_model
+      
+      
+      StackupLayer.update
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      StackupLayer.layout_obj_type
+   
+   

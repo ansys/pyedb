@@ -1,0 +1,241 @@
+
+
+
+
+
+
+The ``xml_control_file.py`` module
+==================================
+
+.. py:module:: pyedb.grpc.database.utility.xml_control_file
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: xml_control_file
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlProperty`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlFileMaterial`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlFileDielectric`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlFileLayer`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlFileVia`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlFileStackup`
+            - Class that manages the Stackup info.
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlFileImportOptions`
+            - Import Options.
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlExtent`
+            - Extent options.
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlCircuitPt`
+            - Circuit Port.
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlFileComponent`
+            - Components.
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlFileComponents`
+            - Class for component management.
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlFileBoundaries`
+            - Boundaries management.
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlFileSweep`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlFileMeshOp`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlFileSetup`
+            - Setup Class.
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlFileSetups`
+            - Setup manager class.
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.xml_control_file.ControlFile`
+            - Control File Class. It helps the creation and modification of edb xml control files.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~convert_technology_file`
+            - Convert a technology file to edb control file (xml).
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> ControlProperty</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlProperty>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileMaterial</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlFileMaterial>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileDielectric</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlFileDielectric>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileLayer</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlFileLayer>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileVia</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlFileVia>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileStackup</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlFileStackup>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileImportOptions</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlFileImportOptions>
+    <span class="nf nf-cod-symbol_class"></span> ControlExtent</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlExtent>
+    <span class="nf nf-cod-symbol_class"></span> ControlCircuitPt</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlCircuitPt>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileComponent</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlFileComponent>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileComponents</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlFileComponents>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileBoundaries</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlFileBoundaries>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileSweep</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlFileSweep>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileMeshOp</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlFileMeshOp>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileSetup</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlFileSetup>
+    <span class="nf nf-cod-symbol_class"></span> ControlFileSetups</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlFileSetups>
+    <span class="nf nf-cod-symbol_class"></span> ControlFile</autoapi/pyedb/grpc/database/utility/xml_control_file/ControlFile>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: convert_technology_file(tech_file, edbversion=None, control_file=None)
+
+   
+   Convert a technology file to edb control file (xml).
+
+   .. warning::
+       Do not execute this function with untrusted function argument, environment
+       variables or pyedb global settings.
+       See the :ref:`security guide<ref_security_consideration>` for details.
+
+   :Parameters:
+
+       **tech_file** : :class:`python:str`
+           Full path to technology file
+
+       **edbversion** : :class:`python:str`,  :obj:`optional`
+           Edb version to use. Default is `None` to use latest available version of Edb.
+
+       **control_file** : :class:`python:str`,  :obj:`optional`
+           Control file output file. Default is `None` to use same path and same name of `tech_file`.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Control file full path if created.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

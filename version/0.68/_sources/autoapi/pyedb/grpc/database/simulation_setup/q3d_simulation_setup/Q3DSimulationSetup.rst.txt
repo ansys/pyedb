@@ -1,0 +1,207 @@
+
+
+
+
+
+
+:class:`Q3DSimulationSetup`
+===========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.q3d_simulation_setup.Q3DSimulationSetup(pedb, core: GrpcQ3DSimulationSetup)
+
+   Bases: :py:obj:`pyedb.grpc.database.simulation_setup.simulation_setup.SimulationSetup`
+
+
+   
+   Q3D simulation setup management.
+
+
+   :Parameters:
+
+       **pedb** : :class:`Edb`
+           Inherited object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Q3DSimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a Q3D simulation setup.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~settings`
+            - Q3D simulation settings.
+          * - :py:attr:`~sweep_data`
+            - Get sweep data.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.q3d_simulation_setup import Q3DSimulationSetup
+
+Property detail
+---------------
+
+.. py:property:: settings
+   :type: pyedb.grpc.database.simulation_setup.q3d_simulation_settings.Q3DSimulationSettings
+
+
+   
+   Q3D simulation settings.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Q3DSimulationSettings`
+           The Q3D simulation settings object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sweep_data
+   :type: list[pyedb.grpc.database.simulation_setup.sweep_data.SweepData]
+
+
+   
+   Get sweep data.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:obj:`SweepData`]
+           List of sweep data objects.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+   :type:  ansys.edb.core.simulation_setup.q3d_simulation_setup.Q3DSimulationSetup
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(edb: pyedb.grpc.edb.Edb, name: str = 'Q3D_setup') -> Q3DSimulationSetup
+   :classmethod:
+
+
+   
+   Create a Q3D simulation setup.
+
+
+   :Parameters:
+
+       **edb** : :obj:`Edb`
+           Inherited object.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the simulation setup, by default "Q3D_setup".
+
+
+
+   :Returns:
+
+       :obj:`Q3DSimulationSetup`
+           The Q3D simulation setup object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

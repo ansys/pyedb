@@ -1,0 +1,273 @@
+
+
+
+
+
+
+:class:`ParsedLog`
+==================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.ParsedLog
+
+   
+   Root container returned by :meth:`HFSSLogParser.parse`.
+
+   :ivar ProjectInfo project: Project meta-data.
+   :ivar InitMesh init_mesh: Initial-mesh metrics.
+   :ivar list[AdaptivePass] adaptive: Adaptive passes in chronological order.
+   :ivar Sweep | None sweep: Frequency-sweep summary (``None`` if absent).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ParsedLog
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~to_dict`
+            - Deep-convert the entire object to JSON-serialisable primitives.
+          * - :py:attr:`~is_converged`
+            - Return ``True`` if the adaptive solver declared convergence.
+          * - :py:attr:`~adaptive_passes`
+            - Alias to keep API explicit.
+          * - :py:attr:`~memory_on_convergence`
+            - Memory (MB) consumed by the *last* converged adaptive pass.
+          * - :py:attr:`~is_completed`
+            - Heuristic indicating a successful end-to-end solve.
+          * - :py:attr:`~errors`
+            - Extract only **error** lines (warnings are ignored).
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~project`
+            - 
+          * - :py:attr:`~init_mesh`
+            - 
+          * - :py:attr:`~adaptive`
+            - 
+          * - :py:attr:`~sweep`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import ParsedLog
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: project
+   :type:  ProjectInfo
+
+.. py:attribute:: init_mesh
+   :type:  InitMesh
+
+.. py:attribute:: adaptive
+   :type:  List[AdaptivePass]
+
+.. py:attribute:: sweep
+   :type:  Optional[Sweep]
+
+
+
+Method detail
+-------------
+
+.. py:method:: to_dict() -> dict
+
+   
+   Deep-convert the entire object to JSON-serialisable primitives.
+
+   :return: Plain ``dict`` / ``list`` / scalar structure.
+   :rtype: dict[str, Any]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_converged() -> bool
+
+   
+   Return ``True`` if the adaptive solver declared convergence.
+
+   :rtype: bool
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: adaptive_passes() -> List[AdaptivePass]
+
+   
+   Alias to keep API explicit.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: memory_on_convergence() -> float
+
+   
+   Memory (MB) consumed by the *last* converged adaptive pass.
+
+   :return: Megabytes, or :py:const:`math.nan` if no pass converged.
+   :rtype: float
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_completed() -> bool
+
+   
+   Heuristic indicating a successful end-to-end solve.
+
+   A simulation is considered complete when **both** of the following
+   conditions are satisfied:
+
+   1. At least one adaptive pass converged.
+   2. A frequency-sweep block exists with elapsed time greater than zero.
+
+   :rtype: bool
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: errors() -> List[str]
+
+   
+   Extract only **error** lines (warnings are ignored).
+
+   ANSYS marks errors with ``[error]`` or ``*** ERROR ***``.
+
+   :return: List of stripped error lines (empty if none).
+   :rtype: list[str]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

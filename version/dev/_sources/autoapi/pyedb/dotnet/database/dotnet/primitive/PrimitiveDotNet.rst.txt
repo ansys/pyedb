@@ -1,0 +1,690 @@
+
+
+
+
+
+
+:class:`PrimitiveDotNet`
+========================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.primitive.PrimitiveDotNet(api, prim_object=None)
+
+   
+   Base class representing primitive objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PrimitiveDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_void`
+            - Add a void to current primitive.
+          * - :py:attr:`~set_hfss_prop`
+            - Set HFSS properties.
+          * - :py:attr:`~get_hfss_prop`
+            - Get HFSS properties.
+          * - :py:attr:`~remove_hfss_prop`
+            - Remove HFSS properties.
+          * - :py:attr:`~make_zone_primitive`
+            - Make primitive a zone primitive with a zone specified by the provided id.
+          * - :py:attr:`~points`
+            - Return the list of points with arcs converted to segments.
+          * - :py:attr:`~points_raw`
+            - Return a list of Edb points.
+          * - :py:attr:`~expand`
+            - Expand the polygon shape by an absolute value in all direction.
+          * - :py:attr:`~scale`
+            - Scales the polygon relative to a center point by a factor.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~api_class`
+            - 
+          * - :py:attr:`~api_object`
+            - 
+          * - :py:attr:`~path`
+            - 
+          * - :py:attr:`~rectangle`
+            - 
+          * - :py:attr:`~circle`
+            - 
+          * - :py:attr:`~text`
+            - 
+          * - :py:attr:`~bondwire`
+            - 
+          * - :py:attr:`~padstack_instance`
+            - 
+          * - :py:attr:`~net`
+            - 
+          * - :py:attr:`~primitive_type`
+            - :class:`PrimitiveType`: Primitive type of the primitive.
+          * - :py:attr:`~layer`
+            - :class:`Layer <ansys.edb.layer.Layer>`: Layer that the primitive object is on.
+          * - :py:attr:`~is_negative`
+            - :obj:`bool`: If the primitive is negative.
+          * - :py:attr:`~is_void`
+            - :obj:`bool`: If a primitive is a void.
+          * - :py:attr:`~has_voids`
+            - :obj:`bool`: If a primitive has voids inside.
+          * - :py:attr:`~voids`
+            - :obj:`list` of :class:`Primitive <ansys.edb.primitive.Primitive>`: List of void        primitive objects inside the primitive.
+          * - :py:attr:`~owner`
+            - :class:`Primitive <ansys.edb.primitive.Primitive>`: Owner of the primitive object.
+          * - :py:attr:`~is_parameterized`
+            - :obj:`bool`: Primitive's parametrization.
+          * - :py:attr:`~is_zone_primitive`
+            - :obj:`bool`: If primitive object is a zone.
+          * - :py:attr:`~can_be_zone_primitive`
+            - :obj:`bool`: If a primitive can be a zone.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~api`
+            - 
+          * - :py:attr:`~core`
+            - 
+          * - :py:attr:`~prim_obj`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.primitive import PrimitiveDotNet
+
+Property detail
+---------------
+
+.. py:property:: api_class
+
+.. py:property:: api_object
+
+.. py:property:: path
+
+.. py:property:: rectangle
+
+.. py:property:: circle
+
+.. py:property:: text
+
+.. py:property:: bondwire
+
+.. py:property:: padstack_instance
+
+.. py:property:: net
+
+.. py:property:: primitive_type
+
+   
+   :class:`PrimitiveType`: Primitive type of the primitive.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer
+
+   
+   :class:`Layer <ansys.edb.layer.Layer>`: Layer that the primitive object is on.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_negative
+
+   
+   :obj:`bool`: If the primitive is negative.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_void
+
+   
+   :obj:`bool`: If a primitive is a void.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: has_voids
+
+   
+   :obj:`bool`: If a primitive has voids inside.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: voids
+
+   
+   :obj:`list` of :class:`Primitive <ansys.edb.primitive.Primitive>`: List of void        primitive objects inside the primitive.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: owner
+
+   
+   :class:`Primitive <ansys.edb.primitive.Primitive>`: Owner of the primitive object.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_parameterized
+
+   
+   :obj:`bool`: Primitive's parametrization.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_zone_primitive
+
+   
+   :obj:`bool`: If primitive object is a zone.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: can_be_zone_primitive
+
+   
+   :obj:`bool`: If a primitive can be a zone.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: api
+
+.. py:attribute:: core
+
+.. py:attribute:: prim_obj
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_void(point_list)
+
+   
+   Add a void to current primitive.
+
+
+   :Parameters:
+
+       **point_list** : :class:`python:list` or :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`             or :obj:`EDB` :obj:`Primitive` Object. :obj:`Point` :class:`python:list` :obj:`in` :obj:`the` :obj:`format` :obj:`of` `[[x1,y1], [x2,y2],..,[xn,yn]]`.
+           ..
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if successful, either  ``False``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_hfss_prop(material, solve_inside)
+
+   
+   Set HFSS properties.
+
+
+   :Parameters:
+
+       **material** : :class:`python:str`
+           Material property name to be set.
+
+       **solve_inside** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to do solve inside.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_hfss_prop()
+
+   
+   Get HFSS properties.
+
+
+
+
+
+   :Returns:
+
+       **material** : :class:`python:str`
+           Material property name.
+
+       **solve_inside** : :ref:`bool <python:bltin-boolean-values>`
+           If solve inside.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: remove_hfss_prop()
+
+   
+   Remove HFSS properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: make_zone_primitive(zone_id)
+
+   
+   Make primitive a zone primitive with a zone specified by the provided id.
+
+
+   :Parameters:
+
+       **zone_id** : :class:`python:int`
+           Id of zone primitive will use.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: points(arc_segments=6)
+
+   
+   Return the list of points with arcs converted to segments.
+
+
+   :Parameters:
+
+       **arc_segments** : :class:`python:int`
+           Number of facets to convert an arc. Default is `6`.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           The tuple contains 2 lists made of X and Y points coordinates.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: points_raw()
+
+   
+   Return a list of Edb points.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           Edb Points.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: expand(offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001)
+
+   
+   Expand the polygon shape by an absolute value in all direction.
+   Offset can be negative for negative expansion.
+
+
+   :Parameters:
+
+       **offset** : :class:`python:float`, :obj:`optional`
+           Offset value in meters.
+
+       **tolerance** : :class:`python:float`, :obj:`optional`
+           Tolerance in meters.
+
+       **round_corners** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to round corners or not.
+           If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+
+       **maximum_corner_extension** : :class:`python:float`, :obj:`optional`
+           The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: scale(factor, center=None)
+
+   
+   Scales the polygon relative to a center point by a factor.
+
+
+   :Parameters:
+
+       **factor** : :class:`python:float`
+           Scaling factor.
+
+       **center** : :obj:`List` :obj:`of` :class:`python:float` or :class:`python:str` [x,y], :obj:`optional`
+           If None scaling is done from polygon center.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+update\_forward\_refs
+=====================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: MaterialProperties.update_forward_refs
