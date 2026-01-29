@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -21,15 +21,15 @@
 # SOFTWARE.
 
 
-from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
-from ansys.edb.core.utility.value import Value as GrpcValue
+from ansys.edb.core.utility.rlc import Rlc as CoreRlc
+from ansys.edb.core.utility.value import Value as CoreValue
 
 
-class Rlc(GrpcRlc):
-    def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+class Rlc(CoreRlc):
+    def __init__(self, pedb, core):
+        super().__init__(core)
         self._pedb = pedb
-        self._edb_object = edb_object
+        self._edb_object = core
 
     @property
     def r(self) -> float:
@@ -45,7 +45,7 @@ class Rlc(GrpcRlc):
 
     @r.setter
     def r(self, value):
-        self.r = GrpcValue(value)
+        self.r = CoreValue(value)
 
     @property
     def l(self) -> float:
@@ -61,7 +61,7 @@ class Rlc(GrpcRlc):
 
     @l.setter
     def l(self, value):
-        self.l = GrpcValue(value)
+        self.l = CoreValue(value)
 
     @property
     def c(self) -> float:
@@ -77,4 +77,4 @@ class Rlc(GrpcRlc):
 
     @c.setter
     def c(self, value):
-        self.c = GrpcValue(value)
+        self.c = CoreValue(value)

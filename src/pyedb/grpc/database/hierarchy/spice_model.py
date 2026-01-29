@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,20 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.hierarchy.spice_model import SPICEModel as GrpcSpiceModel
+from ansys.edb.core.hierarchy.spice_model import SPICEModel as CoreSpiceModel
 
 
-class SpiceModel(GrpcSpiceModel):  # pragma: no cover
+class SpiceModel:  # pragma: no cover
     """Manage :class:`SpiceModel <ansys.edb.core.hierarchy.spice_model.SpiceModel>`"""
 
     def __init__(self, edb_object=None, name=None, file_path=None, sub_circuit=None):
         if edb_object:
-            super().__init__(edb_object.msg)
+            self.core = edb_object
         elif name and file_path:
             if not sub_circuit:
                 sub_circuit = name
-            edb_object = GrpcSpiceModel.create(name=name, path=file_path, sub_circuit=sub_circuit)
-            super().__init__(edb_object.msg)
+            edb_object = CoreSpiceModel.create(name=name, path=file_path, sub_circuit=sub_circuit)
+            self.core = edb_object
 
     @property
     def name(self):
@@ -45,8 +45,32 @@ class SpiceModel(GrpcSpiceModel):  # pragma: no cover
             Model name.
 
         """
-        return self.model_name
+        return self.core.model_name
 
     @property
     def spice_file_path(self):
-        return self.model_path
+        return self.core.model_path
+
+    @property
+    def file_path(self):
+        """SPICE file path.
+
+        Returns
+        -------
+        str
+            SPICE file path.
+
+        """
+        return self.core.model_path
+
+    @file_path.setter
+    def file_path(self, value):
+        """Set SPICE file path.
+
+        Parameters
+        ----------
+        value : str
+            New SPICE file path.
+
+        """
+        self.core.model_path = value

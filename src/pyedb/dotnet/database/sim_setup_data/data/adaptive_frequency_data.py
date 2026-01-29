@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -51,7 +51,7 @@ class AdaptiveFrequencyData(object):
         -------
         str
         """
-        return self._adaptive_frequency_data.MaxDelta
+        return float(self._adaptive_frequency_data.MaxDelta)
 
     @max_delta.setter
     def max_delta(self, value):

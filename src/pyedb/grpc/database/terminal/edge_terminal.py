@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -21,43 +21,90 @@
 # SOFTWARE.
 
 import re
+from typing import TYPE_CHECKING
 
-from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundleTerminal
-from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal
+from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as CoreEdgeTerminal
+
+from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
+from pyedb.grpc.database.terminal.terminal import Terminal
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.hierarchy.component import Component
 
 
-class EdgeTerminal(GrpcEdgeTerminal):
-    def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
-        self._pedb = pedb
-        self._edb_object = edb_object
+class EdgeTerminal(Terminal):
+    def __init__(self, pedb, core):
+        super().__init__(pedb, core)
         self._hfss_type = "Gap"
 
-    @property
-    def boundary_type(self) -> str:
-        """Boundary type.
+    @classmethod
+    def create(cls, layout, name, edge, net, is_ref=False):
+        """Create an edge terminal.
+
+        Parameters
+        ----------
+        layout : :class:`pyedb.grpc.database.layout.layout.Layout`
+            Layout object.
+        name : str
+            Terminal name.
+        edge : :class:`.Edge`
+            Edge object.
+        net : :class:`.Net` or str, optional
+            Net object or net name. If None, the terminal will not be assigned to any net.
+        is_ref : bool, optional
+            Whether the terminal is a reference terminal. Default is False.
 
         Returns
         -------
-        str : boundary type.
+        :class:`EdgeTerminal <pyedb.grpc.database.terminal.edge_terminal.EdgeTerminal>`
+            Edge terminal object.
         """
-        return super().boundary_type.name.lower()
+        if net is None:
+            raise Exception("Net must be specified to create an Edge Terminal.")
+        grpc_edge_terminal = CoreEdgeTerminal.create(
+            layout.core,
+            name,
+            edge,
+            net.core,
+            is_ref,
+        )
+        return cls(layout._pedb, grpc_edge_terminal)
 
     @property
-    def _edb_properties(self):
-        from ansys.edb.core.database import ProductIdType as GrpcProductIdType
+    def component(self):
+        """Component.
 
-        try:
-            p = self._edb_object.get_product_property(GrpcProductIdType.DESIGNER, 1)
-        except:
-            p = ""
-        return p
+        Returns
+        -------
+        Component object.
+            :class:`Component <pyedb.grpc.database.component.Component>`.
+        """
+        from pyedb.grpc.database.hierarchy.component import Component
 
-    @_edb_properties.setter
-    def _edb_properties(self, value):
-        from ansys.edb.core.database import ProductIdType as GrpcProductIdType
+        return Component(self._pedb, self.core.component)
 
-        self._edb_object.set_product_property(GrpcProductIdType.DESIGNER, 1, value)
+    @property
+    def is_circuit_port(self) -> bool:
+        """Is circuit port.
+
+        Returns
+        -------
+        bool : circuit port.
+        """
+        return self.core.is_circuit_port
+
+    @is_circuit_port.setter
+    def is_circuit_port(self, value):
+        self.core.is_circuit_port = value
+
+    @property
+    def port_post_processing_prop(self):
+        """Port post-processing property."""
+        return self.core.port_post_processing_prop
+
+    @port_post_processing_prop.setter
+    def port_post_processing_prop(self, value):
+        self.core.port_post_processing_prop = value
 
     @property
     def is_wave_port(self) -> bool:
@@ -66,40 +113,18 @@ class EdgeTerminal(GrpcEdgeTerminal):
         return False
 
     @property
-    def _hfss_port_property(self):
-        """HFSS port property."""
-        hfss_prop = re.search(r"HFSS\(.*?\)", self._edb_properties)
-        p = {}
-        if hfss_prop:
-            hfss_type = re.search(r"'HFSS Type'='([^']+)'", hfss_prop.group())
-            orientation = re.search(r"'Orientation'='([^']+)'", hfss_prop.group())
-            horizontal_ef = re.search(r"'Horizontal Extent Factor'='([^']+)'", hfss_prop.group())
-            vertical_ef = re.search(r"'Vertical Extent Factor'='([^']+)'", hfss_prop.group())
-            radial_ef = re.search(r"'Radial Extent Factor'='([^']+)'", hfss_prop.group())
-            pec_w = re.search(r"'PEC Launch Width'='([^']+)'", hfss_prop.group())
+    def is_reference_terminal(self) -> bool:
+        """Added for dotnet compatibility
 
-            p["HFSS Type"] = hfss_type.group(1) if hfss_type else ""
-            p["Orientation"] = orientation.group(1) if orientation else ""
-            p["Horizontal Extent Factor"] = float(horizontal_ef.group(1)) if horizontal_ef else ""
-            p["Vertical Extent Factor"] = float(vertical_ef.group(1)) if vertical_ef else ""
-            p["Radial Extent Factor"] = float(radial_ef.group(1)) if radial_ef else ""
-            p["PEC Launch Width"] = pec_w.group(1) if pec_w else ""
-        else:
-            p["HFSS Type"] = ""
-            p["Orientation"] = ""
-            p["Horizontal Extent Factor"] = ""
-            p["Vertical Extent Factor"] = ""
-            p["Radial Extent Factor"] = ""
-            p["PEC Launch Width"] = ""
-        return p
+        Returns
+        -------
+        bool
+        """
+        return self.core.is_reference_terminal
 
-    @_hfss_port_property.setter
-    def _hfss_port_property(self, value):
-        txt = []
-        for k, v in value.items():
-            txt.append("'{}'='{}'".format(k, v))
-        txt = ",".join(txt)
-        self._edb_properties = "HFSS({})".format(txt)
+    def set_product_solver_option(self, product_id, solver_name, option):
+        """Set product solver option."""
+        self.core.set_product_solver_option(product_id, solver_name, option)
 
     def couple_ports(self, port):
         """Create a bundle wave port.
@@ -118,38 +143,6 @@ class EdgeTerminal(GrpcEdgeTerminal):
             port = [port]
         temp = [self]
         temp.extend([i for i in port])
-        bundle_terminal = GrpcBundleTerminal.create(temp)
+        name = temp[0].name
+        bundle_terminal = BundleTerminal.create(self._pedb, name=name, terminals=temp)
         return self._pedb.ports[bundle_terminal.name]
-
-    @property
-    def is_port(self) -> bool:
-        """Added for dotnet compatibility"""
-        return True
-
-    @property
-    def ref_terminal(self) -> any:
-        """Return refeference terminal.
-
-        ..deprecated:: 0.44.0
-           Use: func:`reference_terminal` property instead.
-
-        """
-        self._pedb.logger.warning("ref_terminal is deprecated, use reference_terminal property instead.")
-        return self.reference_terminal
-
-    @ref_terminal.setter
-    def ref_terminal(self, value):
-        self._pedb.logger.warning("ref_terminal is deprecated, use reference_terminal property instead.")
-        self.reference_terminal = value
-
-    @property
-    def hfss_type(self) -> str:
-        return self._hfss_type
-
-    @hfss_type.setter
-    def hfss_type(self, value):
-        self._hfss_type = value
-
-    @property
-    def terminal_type(self) -> str:
-        return "EdgeTerminal"

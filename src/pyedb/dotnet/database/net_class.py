@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -245,6 +245,11 @@ class EdbExtendedNets(EdbCommon, object):
         return self._pedb.nets.generate_extended_nets(
             resistor_below, inductor_below, capacitor_above, exception_list, True, True
         )
+
+    def clean(self):
+        """Remove all extended nets."""
+        for net in self.items.values():
+            net.delete()
 
 
 class EdbDifferentialPairs(EdbCommon, object):

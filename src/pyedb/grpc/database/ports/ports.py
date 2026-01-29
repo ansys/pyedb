@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -47,30 +47,8 @@ class GapPort(EdgeTerminal):
     >>> gap_port = edb.ports["gap_port"]
     """
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
-
-    @property
-    def magnitude(self) -> float:
-        """Magnitude.
-
-        Returns
-        -------
-        float
-            Magnitude value.
-        """
-        return Value(self._edb_object.source_amplitude, self._pedb.active_cell)
-
-    @property
-    def phase(self) -> float:
-        """Phase.
-
-        Returns
-        -------
-        float
-            Phase value.
-        """
-        return Value(self._edb_object.source_phase, self._pedb.active_cell)
+    def __init__(self, pedb, core):
+        super().__init__(pedb, core)
 
     @property
     def renormalize(self) -> bool:
@@ -80,7 +58,7 @@ class GapPort(EdgeTerminal):
         -------
         bool
         """
-        return self._edb_object.port_post_processing_prop.do_renormalize
+        return self.core.port_post_processing_prop.do_renormalize
 
     @property
     def deembed(self) -> bool:
@@ -91,7 +69,7 @@ class GapPort(EdgeTerminal):
         bool
 
         """
-        return self._edb_object.port_post_processing_prop.do_deembed
+        return self.core.port_post_processing_prop.do_deembed
 
     @property
     def renormalize_z0(self) -> tuple[float, float]:
@@ -103,19 +81,9 @@ class GapPort(EdgeTerminal):
             (Real value, Imaginary value).
         """
         return (
-            self._edb_object.port_post_processing_prop.renormalizion_z0[0],
-            self._edb_object.port_post_processing_prop.renormalizion_z0[1],
+            self.core.port_post_processing_prop.renormalizion_z0[0],
+            self.core.port_post_processing_prop.renormalizion_z0[1],
         )
-
-    @property
-    def terminal_type(self) -> str:
-        """Returns terminal type.
-
-        Returns
-        -------
-        str
-        """
-        return self._edb_object.terminal_type
 
 
 class CircuitPort(GapPort):
@@ -218,13 +186,13 @@ class WavePort(EdgeTerminal):
         bool
 
         """
-        return self._edb_object.port_post_processing_prop.do_deembed
+        return self.port_post_processing_prop.do_deembed
 
     @deembed.setter
     def deembed(self, value):
-        p = self._edb_object.port_post_processing_prop
-        p.DoDeembed = value
-        self._edb_object.port_post_processing_prop = p
+        p = self.port_post_processing_prop
+        p.do_deembed = value
+        self.port_post_processing_prop = p
 
     @property
     def deembed_length(self) -> float:
@@ -235,16 +203,16 @@ class WavePort(EdgeTerminal):
         float
             deembed value.
         """
-        return Value(self._edb_object.port_post_processing_prop.deembed_length, self._pedb.active_cell)
+        return Value(self.core.port_post_processing_prop.deembed_length, self._pedb.active_cell)
 
     @deembed_length.setter
     def deembed_length(self, value):
-        p = self._edb_object.port_post_processing_prop
+        p = self.core.port_post_processing_prop
         p.deembed_length = Value(value)
-        self._edb_object.port_post_processing_prop = p
+        self.core.port_post_processing_prop = p
 
 
-class ExcitationSources(Terminal):
+class ExcitationSources(EdgeTerminal):
     """Manage sources properties.
 
     Parameters
@@ -282,8 +250,8 @@ class BundleWavePort(BundleTerminal):
 
     """
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
+    def __init__(self, pedb, core):
+        super().__init__(pedb, core)
 
     @property
     def _wave_port(self) -> WavePort:
@@ -295,7 +263,7 @@ class BundleWavePort(BundleTerminal):
         :class:`WavePort <pyedb.grpc.ports.ports.WavePort>`
 
         """
-        return WavePort(self._pedb, self.terminals[0]._edb_object)
+        return WavePort(self._pedb, self.terminals[0].core)
 
     @property
     def horizontal_extent_factor(self) -> float:

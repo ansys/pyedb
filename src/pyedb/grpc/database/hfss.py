@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -25,11 +25,11 @@ This module contains the ``EdbHfss`` class.
 """
 
 import math
+from typing import Optional
 import warnings
 
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
-from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import (
     HfssSimulationSetup,
 )
@@ -37,7 +37,7 @@ from pyedb.grpc.database.utility.hfss_extent_info import HfssExtentInfo
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
-class Hfss(object):
+class Hfss:
     """Manages EDB methods for HFSS setup configuration.
 
     Provides access to HFSS-specific operations including:
@@ -204,6 +204,8 @@ class Hfss(object):
 
         Examples
         --------
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_aedb")
         >>> widths = edb.hfss.get_trace_width_for_traces_with_ports()
         >>> for net_name, width in widths.items():
         ...     print(f"Net '{net_name}': Smallest width = {width}")
@@ -935,11 +937,11 @@ class Hfss(object):
 
         Examples
         --------
+        >>> from pyedb import Edb
+        >>> edb = Edb("my_aedb")
         >>> bbox = edb.hfss.get_layout_bounding_box()
         >>> print(f"Layout Bounding Box: {bbox}")
-        >>>
-        >>> # With custom parameters
-        >>> custom_layout = edb.layouts["MyLayout"]
+        >>> custom_layout = edb.active_layout
         >>> bbox = edb.hfss.get_layout_bounding_box(custom_layout, 5)
         """
         if not layout:
@@ -949,7 +951,7 @@ class Hfss(object):
         for lobj in layout_obj_instances:
             lobj_bbox = lobj.get_bbox()
             tuple_list.append(lobj_bbox)
-        _bbox = GrpcPolygonData.bbox_of_polygons(tuple_list)
+        _bbox = CorePolygonData.bbox_of_polygons(tuple_list)
         layout_bbox = [
             round(_bbox[0].x.value, digit_resolution),
             round(_bbox[0].y.value, digit_resolution),
@@ -1063,6 +1065,14 @@ class Hfss(object):
             "trim_component_reference_size` instead.",
             DeprecationWarning,
         )
+        # The `trim_to_terminals` parameter is kept for backward compatibility but is ignored.
+        # Warn the user if they pass a non-default value to make the deprecation explicit.
+        if trim_to_terminals is not False:
+            warnings.warn(
+                "The 'trim_to_terminals' argument is deprecated and is now ignored."
+                " Use the 'simulation_setup' configuration instead.",
+                DeprecationWarning,
+            )
         self._pedb.utility.simulation_configuration.ProcessSimulationConfiguration.trim_component_reference_size(
             simulation_setup
         )
@@ -1134,8 +1144,8 @@ class Hfss(object):
             ll = [bb[0].x.value, bb[0].y.value]
             ur = [bb[1].x.value, bb[1].y.value]
             dim = 0.30 * max(abs(ur[0] - ll[0]), abs(ur[1] - ll[1]))
-            terms_bbox.append(GrpcPolygonData([ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim]))
-        return GrpcPolygonData.bbox_of_polygons(terms_bbox)
+            terms_bbox.append(CorePolygonData([ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim]))
+        return CorePolygonData.bbox_of_polygons(terms_bbox)
 
     def get_ports_number(self):
         """Get number of excitation ports.
@@ -1218,85 +1228,27 @@ class Hfss(object):
         self,
         name=None,
         distribution="linear",
-        start_freq=0,
-        stop_freq=20e9,
-        step_freq=1e6,
+        start_freq=None,
+        stop_freq=None,
+        step_freq=None,
         discrete_sweep=False,
-    ) -> HfssSimulationSetup:
-        """Add HFSS analysis setup.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name (auto-generated if None).
-        distribution : str, optional
-            Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
-        start_freq : float, str, optional
-            Starting frequency (Hz).
-        stop_freq : float, str, optional
-            Stopping frequency (Hz).
-        step_freq : float, str, int, optional
-            Frequency step (Hz) or count depending on distribution.
-        discrete_sweep : bool, optional
-            Use discrete sweep.
-
-        Returns
-        -------
-        HfssSimulationSetup
-            Created setup object.
-
-        Examples
-        --------
-        >>> hfss_setup = edb.hfss.add_setup(
-        ...     name="MySetup",
-        ...     distribution="linear_count",
-        ...     start_freq=1e9,
-        ...     stop_freq=10e9,
-        ...     step_freq=100,
-        ... )
+    ) -> Optional[HfssSimulationSetup]:
         """
-        from ansys.edb.core.simulation_setup.hfss_simulation_setup import (
-            HfssSimulationSetup as GrpcHfssSimulationSetup,
-        )
-        from ansys.edb.core.simulation_setup.simulation_setup import (
-            Distribution as GrpcDistribution,
-            FrequencyData as GrpcFrequencyData,
-            SweepData as GrpcSweepData,
+        .. deprecated pyedb 0.67.0
+
+        Add HFSS analysis setup (deprecated).
+        use :func:`create_simulation_setup` instead.
+
+        """
+        warnings.warn("add_setup is deprecated use create_simulation_setup instead", DeprecationWarning)
+
+        return self._pedb.simulation_setups.create_hfss_setup(
+            name, distribution, start_freq, stop_freq, step_freq, discrete_sweep
         )
 
-        if not name:
-            name = generate_unique_name("HFSS_pyedb")
-        if name in self._pedb.setups:
-            self._pedb.logger.error(f"HFSS setup {name} already defined.")
-            return False
-        setup = GrpcHfssSimulationSetup.create(self._pedb.active_cell, name)
-        start_freq = self._pedb.number_with_units(start_freq, "Hz")
-        stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
-        if distribution.lower() == "linear":
-            distribution = "LIN"
-        elif distribution.lower() == "linear_count":
-            distribution = "LINC"
-        elif distribution.lower() == "exponential":
-            distribution = "ESTP"
-        elif distribution.lower() == "decade_count":
-            distribution = "DEC"
-        elif distribution.lower() == "octave_count":
-            distribution = "OCT"
-        else:
-            distribution = "LIN"
-        sweep_name = f"sweep_{len(setup.sweep_data) + 1}"
-        sweep_data = [
-            GrpcSweepData(
-                name=sweep_name,
-                frequency_data=GrpcFrequencyData(
-                    distribution=GrpcDistribution[distribution], start_f=start_freq, end_f=stop_freq, step=step_freq
-                ),
-            )
-        ]
-        if discrete_sweep:
-            sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
-        for sweep in setup.sweep_data:
-            sweep_data.append(sweep)
-        # TODO check bug #441 status
-        # setup.sweep_data = sweep_data
-        return HfssSimulationSetup(self._pedb, setup)
+    def generate_auto_hfss_regions(self):
+        """Generate auto HFSS regions.
+
+        This method automatically identifies areas for use as HFSS regions in SIwave simulations.
+        """
+        self._pedb.active_cell.generate_auto_hfss_regions()

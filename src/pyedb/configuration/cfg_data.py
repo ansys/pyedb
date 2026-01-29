@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -33,7 +33,7 @@ from pyedb.configuration.cfg_padstacks import CfgPadstacks
 from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 from pyedb.configuration.cfg_ports_sources import CfgPorts, CfgProbes, CfgSources
 from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
-from pyedb.configuration.cfg_setup import CfgSetups
+from pyedb.configuration.cfg_setup import CfgHFSSSetup, CfgSIwaveACSetup, CfgSIwaveDCSetup
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
 from pyedb.configuration.cfg_stackup import CfgStackup
 from pyedb.configuration.cfg_terminals import CfgTerminals
@@ -43,6 +43,8 @@ class CfgData(object):
     """Manages configure data."""
 
     def __init__(self, pedb, **kwargs):
+        self.setups = []
+
         self._pedb = pedb
         self.general = CfgGeneral(self._pedb, kwargs.get("general", {}))
 
@@ -56,7 +58,7 @@ class CfgData(object):
 
         self.components = CfgComponents(self._pedb, components_data=kwargs.get("components", []))
 
-        self.padstacks = CfgPadstacks(self._pedb, kwargs.get("padstacks", None))
+        self.padstacks = CfgPadstacks.create(**kwargs.get("padstacks", {}))
 
         self.pin_groups = CfgPinGroups(self._pedb, pingroup_data=kwargs.get("pin_groups", []))
 
@@ -66,7 +68,14 @@ class CfgData(object):
 
         self.sources = CfgSources(self._pedb, sources_data=kwargs.get("sources", []))
 
-        self.setups = CfgSetups(self._pedb, setups_data=kwargs.get("setups", []))
+        for stp in kwargs.get("setups", []):
+            setup_type = stp.get("type", "hfss").lower()
+            if setup_type == "hfss":
+                self.add_hfss_setup(**stp)
+            elif setup_type in ["siwave_ac", "siwave_syz"]:
+                self.add_siwave_ac_setup(**stp)
+            elif setup_type == "siwave_dc":
+                self.add_siwave_dc_setup(**stp)
 
         self.stackup = CfgStackup(**kwargs.get("stackup", {}))
 
@@ -85,3 +94,18 @@ class CfgData(object):
         self.variables = CfgVariables(variables=kwargs.get("variables", []))
 
         self.probes = CfgProbes(self._pedb, data=kwargs.get("probes", []))
+
+    def add_hfss_setup(self, **kwargs):
+        hfss_setup = CfgHFSSSetup(**kwargs)
+        self.setups.append(hfss_setup)
+        return hfss_setup
+
+    def add_siwave_ac_setup(self, **kwargs):
+        siwave_ac_setup = CfgSIwaveACSetup(**kwargs)
+        self.setups.append(siwave_ac_setup)
+        return siwave_ac_setup
+
+    def add_siwave_dc_setup(self, **kwargs):
+        siwave_dc_setup = CfgSIwaveDCSetup(**kwargs)
+        self.setups.append(siwave_dc_setup)
+        return siwave_dc_setup

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -260,21 +260,21 @@ class _GrpcAdapter(_BaseAdapter):
         return outline.type in {"polygon", "rectangle"}
 
     def pitch_from_outline(self, outline):
-        bbox = outline.polygon_data.bbox()
-        return self.edb.value(bbox[1].x - bbox[0].x), self.edb.value(bbox[1].y - bbox[0].y)
+        bbox = outline.polygon_data.bounding_box
+        return self.edb.value(bbox[1][0] - bbox[0][0]), self.edb.value(bbox[1][1] - bbox[0][1])
 
     def is_primitive_to_copy(self, prim):
         return prim.type in {"polygon", "rectangle", "circle"}
 
     def duplicate_primitive(self, prim, dx, dy, i, j):
-        moved_pd = prim.polygon_data.move((dx, dy))
-        voids = [voids.polygon_data.move((dx, dy)) for voids in prim.voids]
+        moved_pd = prim.polygon_data.core.move((dx, dy))
+        voids = [voids.polygon_data.core.move((dx, dy)) for voids in prim.voids]
         return self.edb.modeler.create_polygon(
             moved_pd, layer_name=prim.layer.name, net_name=prim.net.name, voids=voids
         )
 
     def duplicate_path(self, path, dx, dy, i, j):
-        moved_line = path.cast().center_line.move((dx, dy))
+        moved_line = path.core.polygon_data.move((dx, dy))
         self.edb.modeler.create_trace(
             moved_line,
             width=path.width,
@@ -291,7 +291,7 @@ class _GrpcAdapter(_BaseAdapter):
             self.active_layout,
             net=via.net,
             name=f"{via.name}_X{i}_Y{j}",
-            padstack_def=via.definition,
+            padstack_definition=via.definition,
             position_x=pos[0] + dx,
             position_y=pos[1] + dy,
             rotation=0.0,

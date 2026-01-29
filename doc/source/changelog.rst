@@ -9,6 +9,562 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.68.0 <https://github.com/ansys/pyedb/releases/tag/v0.68.0>`_ - January 27, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - XML Parser - stackup and nets
+          - `#1774 <https://github.com/ansys/pyedb/pull/1774>`_
+
+        * - Grpc simulation setup refactoring
+          - `#1776 <https://github.com/ansys/pyedb/pull/1776>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/checkout from 6.0.1 to 6.0.2
+          - `#1775 <https://github.com/ansys/pyedb/pull/1775>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update gRPC message.
+          - `#1773 <https://github.com/ansys/pyedb/pull/1773>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.67.3
+          - `#1770 <https://github.com/ansys/pyedb/pull/1770>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Terminal post processing
+          - `#1756 <https://github.com/ansys/pyedb/pull/1756>`_
+
+        * - Cfg setup enhancement
+          - `#1771 <https://github.com/ansys/pyedb/pull/1771>`_
+
+        * - Renaming grpc import
+          - `#1780 <https://github.com/ansys/pyedb/pull/1780>`_
+
+
+`0.67.3 <https://github.com/ansys/pyedb/releases/tag/v0.67.3>`_ - January 21, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Grpc wave port tests resurrected
+          - `#1761 <https://github.com/ansys/pyedb/pull/1761>`_
+
+        * - Grpc source bug fix + consolidation
+          - `#1763 <https://github.com/ansys/pyedb/pull/1763>`_
+
+        * - Grpc layers consolidation
+          - `#1764 <https://github.com/ansys/pyedb/pull/1764>`_
+
+        * - Create port from padstack instance name bug fix
+          - `#1765 <https://github.com/ansys/pyedb/pull/1765>`_
+
+        * - Sweep property
+          - `#1769 <https://github.com/ansys/pyedb/pull/1769>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.67.1
+          - `#1759 <https://github.com/ansys/pyedb/pull/1759>`_
+
+        * - Bump_release_0.68.dev0
+          - `#1760 <https://github.com/ansys/pyedb/pull/1760>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Edb cfg setup dotnet only
+          - `#1766 <https://github.com/ansys/pyedb/pull/1766>`_
+
+
+`0.67.1 <https://github.com/ansys/pyedb/releases/tag/v0.67.1>`_ - January 16, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Wirebond def management added
+          - `#1746 <https://github.com/ansys/pyedb/pull/1746>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Extend troubleshooting with uv venv on Windows
+          - `#1754 <https://github.com/ansys/pyedb/pull/1754>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Test modifying edb test file fixed
+          - `#1750 <https://github.com/ansys/pyedb/pull/1750>`_
+
+        * - Terminal hfss type
+          - `#1757 <https://github.com/ansys/pyedb/pull/1757>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.67.0
+          - `#1747 <https://github.com/ansys/pyedb/pull/1747>`_
+
+        * - Codecov component model
+          - `#1751 <https://github.com/ansys/pyedb/pull/1751>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Source excitation
+          - `#1744 <https://github.com/ansys/pyedb/pull/1744>`_
+
+        * - Ide error fix
+          - `#1748 <https://github.com/ansys/pyedb/pull/1748>`_
+
+        * - Add dependency xmltodict
+          - `#1752 <https://github.com/ansys/pyedb/pull/1752>`_
+
+        * - Edb cfg cutout arguments
+          - `#1753 <https://github.com/ansys/pyedb/pull/1753>`_
+
+        * - Edb_object replaced by core
+          - `#1755 <https://github.com/ansys/pyedb/pull/1755>`_
+
+
+`0.67.0 <https://github.com/ansys/pyedb/releases/tag/v0.67.0>`_ - January 12, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Generate auto hfss regions
+          - `#1714 <https://github.com/ansys/pyedb/pull/1714>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/checkout from 6.0.0 to 6.0.1
+          - `#1696 <https://github.com/ansys/pyedb/pull/1696>`_
+
+        * - Bump ansys/actions from 10.1.5 to 10.2.2
+          - `#1697 <https://github.com/ansys/pyedb/pull/1697>`_
+
+        * - Update ansys-edb-core requirement from <0.2.3,>=0.2.0 to >=0.2.0,<0.2.4
+          - `#1700 <https://github.com/ansys/pyedb/pull/1700>`_
+
+        * - Bump codecov/codecov-action from 5.5.1 to 5.5.2
+          - `#1705 <https://github.com/ansys/pyedb/pull/1705>`_
+
+        * - Bump actions/download-artifact from 6.0.0 to 7.0.0
+          - `#1708 <https://github.com/ansys/pyedb/pull/1708>`_
+
+        * - Bump ansys/actions from 10.2.2 to 10.2.3
+          - `#1720 <https://github.com/ansys/pyedb/pull/1720>`_
+
+        * - Update pytest requirement from <8.5,>=7.4.0 to >=7.4.0,<9.1
+          - `#1733 <https://github.com/ansys/pyedb/pull/1733>`_
+
+        * - Update sphinx requirement from <8.3,>=7.1.0 to >=7.1.0,<9.1
+          - `#1734 <https://github.com/ansys/pyedb/pull/1734>`_
+
+        * - Bump numpydoc from 1.5.0 to 1.10.0
+          - `#1735 <https://github.com/ansys/pyedb/pull/1735>`_
+
+        * - Update sphinx-gallery requirement from <0.20,>=0.14.0 to >=0.14.0,<0.21
+          - `#1736 <https://github.com/ansys/pyedb/pull/1736>`_
+
+        * - Bump ansys-api-edb to 0.2.5
+          - `#1743 <https://github.com/ansys/pyedb/pull/1743>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Change PyEDB documentation style
+          - `#1721 <https://github.com/ansys/pyedb/pull/1721>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Reuse terminal
+          - `#1738 <https://github.com/ansys/pyedb/pull/1738>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.66.0
+          - `#1712 <https://github.com/ansys/pyedb/pull/1712>`_
+
+        * - Bump release 0.67.dev0
+          - `#1715 <https://github.com/ansys/pyedb/pull/1715>`_
+
+        * - Fix \`\`zizmor\`\` warnings in relation with \`\`ansys/actions/check-actions-security\`\` action
+          - `#1723 <https://github.com/ansys/pyedb/pull/1723>`_
+
+        * - Update CHANGELOG for v0.66.1
+          - `#1732 <https://github.com/ansys/pyedb/pull/1732>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Remove cell from layout.py
+          - `#1713 <https://github.com/ansys/pyedb/pull/1713>`_
+
+        * - Dependencies updated
+          - `#1716 <https://github.com/ansys/pyedb/pull/1716>`_
+
+        * - Edb core refactoring
+          - `#1717 <https://github.com/ansys/pyedb/pull/1717>`_
+
+        * - Edb grpc main class warning fix
+          - `#1729 <https://github.com/ansys/pyedb/pull/1729>`_
+
+        * - Components refactoring
+          - `#1740 <https://github.com/ansys/pyedb/pull/1740>`_
+
+        * - Hfss refactoring
+          - `#1741 <https://github.com/ansys/pyedb/pull/1741>`_
+
+
+`0.66.1 <https://github.com/ansys/pyedb/releases/tag/v0.66.1>`_ - January 06, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update test path and extend with other tests
+          - `#1731 <https://github.com/ansys/pyedb/pull/1731>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Fix type hints and code warnings in padstacks.py
+          - `#1726 <https://github.com/ansys/pyedb/pull/1726>`_
+
+
+`0.66.1 <https://github.com/ansys/pyedb/releases/tag/v0.66.1>`_ - January 01, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Generate auto hfss regions
+          - `#1714 <https://github.com/ansys/pyedb/pull/1714>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/checkout from 6.0.0 to 6.0.1
+          - `#1696 <https://github.com/ansys/pyedb/pull/1696>`_
+
+        * - Bump ansys/actions from 10.1.5 to 10.2.2
+          - `#1697 <https://github.com/ansys/pyedb/pull/1697>`_
+
+        * - Update ansys-edb-core requirement from <0.2.3,>=0.2.0 to >=0.2.0,<0.2.4
+          - `#1700 <https://github.com/ansys/pyedb/pull/1700>`_
+
+        * - Bump codecov/codecov-action from 5.5.1 to 5.5.2
+          - `#1705 <https://github.com/ansys/pyedb/pull/1705>`_
+
+        * - Bump actions/download-artifact from 6.0.0 to 7.0.0
+          - `#1708 <https://github.com/ansys/pyedb/pull/1708>`_
+
+        * - Bump ansys/actions from 10.2.2 to 10.2.3
+          - `#1720 <https://github.com/ansys/pyedb/pull/1720>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Change PyEDB documentation style
+          - `#1721 <https://github.com/ansys/pyedb/pull/1721>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.66.0
+          - `#1712 <https://github.com/ansys/pyedb/pull/1712>`_
+
+        * - Bump release 0.67.dev0
+          - `#1715 <https://github.com/ansys/pyedb/pull/1715>`_
+
+        * - Fix \`\`zizmor\`\` warnings in relation with \`\`ansys/actions/check-actions-security\`\` action
+          - `#1723 <https://github.com/ansys/pyedb/pull/1723>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Remove cell from layout.py
+          - `#1713 <https://github.com/ansys/pyedb/pull/1713>`_
+
+        * - Dependencies updated
+          - `#1716 <https://github.com/ansys/pyedb/pull/1716>`_
+
+        * - Edb core refactoring
+          - `#1717 <https://github.com/ansys/pyedb/pull/1717>`_
+
+
+`0.66.0 <https://github.com/ansys/pyedb/releases/tag/v0.66.0>`_ - December 19, 2025
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/upload-artifact from 5.0.0 to 6.0.0
+          - `#1707 <https://github.com/ansys/pyedb/pull/1707>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Fix typo in AUTHORS
+          - `#1695 <https://github.com/ansys/pyedb/pull/1695>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Fixing static folder creation
+          - `#1711 <https://github.com/ansys/pyedb/pull/1711>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump release 0.66.dev0
+          - `#1682 <https://github.com/ansys/pyedb/pull/1682>`_
+
+        * - Update CHANGELOG for v0.65.1
+          - `#1684 <https://github.com/ansys/pyedb/pull/1684>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Component_def refactoring
+          - `#1686 <https://github.com/ansys/pyedb/pull/1686>`_
+
+        * - Material refactoring
+          - `#1688 <https://github.com/ansys/pyedb/pull/1688>`_
+
+        * - Nport component def refactoring
+          - `#1689 <https://github.com/ansys/pyedb/pull/1689>`_
+
+        * - Package def refactoring
+          - `#1690 <https://github.com/ansys/pyedb/pull/1690>`_
+
+        * - Edb cfg padstacks
+          - `#1692 <https://github.com/ansys/pyedb/pull/1692>`_
+
+        * - Random failure test
+          - `#1694 <https://github.com/ansys/pyedb/pull/1694>`_
+
+        * - Move control_file.py to generic folder
+          - `#1701 <https://github.com/ansys/pyedb/pull/1701>`_
+
+        * - Edb configure terminal
+          - `#1702 <https://github.com/ansys/pyedb/pull/1702>`_
+
+        * - Configure cfg_padstacks.py
+          - `#1703 <https://github.com/ansys/pyedb/pull/1703>`_
+
+        * - EDB CFG cutout
+          - `#1706 <https://github.com/ansys/pyedb/pull/1706>`_
+
+        * - Removing edb-core inheritance
+          - `#1710 <https://github.com/ansys/pyedb/pull/1710>`_
+
+
+`0.65.1 <https://github.com/ansys/pyedb/releases/tag/v0.65.1>`_ - November 27, 2025
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Insert 3d layout gRPC
+          - `#1667 <https://github.com/ansys/pyedb/pull/1667>`_
+
+        * - Place layout component enhancement
+          - `#1680 <https://github.com/ansys/pyedb/pull/1680>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Working fine on local reverting test on grpc and cicd to check
+          - `#1664 <https://github.com/ansys/pyedb/pull/1664>`_
+
+        * - GRPC boundaries
+          - `#1670 <https://github.com/ansys/pyedb/pull/1670>`_
+
+        * - Remove try-except from property position
+          - `#1679 <https://github.com/ansys/pyedb/pull/1679>`_
+
+        * - Remove LD_LIBRARY_PATH need
+          - `#1683 <https://github.com/ansys/pyedb/pull/1683>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.65.0
+          - `#1681 <https://github.com/ansys/pyedb/pull/1681>`_
+
+
 `0.65.0 <https://github.com/ansys/pyedb/releases/tag/v0.65.0>`_ - November 27, 2025
 ===================================================================================
 

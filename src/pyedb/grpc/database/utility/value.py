@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -21,16 +21,16 @@
 # SOFTWARE.
 
 import ansys.edb.core.utility.value
-from ansys.edb.core.utility.value import Value as GrpcValue
+from ansys.edb.core.utility.value import Value as CoreValue
 
 
-class Value(float, GrpcValue):
+class Value(float, CoreValue):
     """Class defining Edb Value properties."""
 
     def __new__(cls, val, owner=None) -> float:
-        edb_object = GrpcValue(val, owner)
-        inst = super().__new__(cls, float(edb_object.double))
-        inst._edb_object = edb_object
+        core = CoreValue(val, owner)
+        inst = super().__new__(cls, core.value)
+        inst._edb_object = core
         inst._context = owner
         return inst
 

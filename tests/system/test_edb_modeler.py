@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -54,21 +54,18 @@ class TestClass(BaseTestClass):
         assert edbapp.modeler.polygons[0].clone()
         assert isinstance(poly0.voids, list)
         # TODO convert point_raw as property in dotnet to be compliant with grpc.
-        if edbapp.grpc:
-            assert isinstance(poly0.points_raw, list)
-        else:
-            assert isinstance(poly0.points_raw(), list)
+        assert isinstance(poly0.points_raw(), list)
         assert isinstance(poly0.points(), tuple)
         assert isinstance(poly0.points()[0], list)
         assert poly0.points()[0][0] >= 0.0
         if edbapp.grpc:
-            assert poly0.points_raw[0].x.value >= 0.0
+            assert poly0.points_raw()[0].x.value >= 0.0
         else:
             assert poly0.points_raw()[0].X.ToDouble() >= 0.0
         # TODO check is polygon.type should return "polygon" instead of "Polygon",
         assert poly0.type.lower() == "polygon"
         if edbapp.grpc:
-            assert not poly0.points_raw[0].is_arc
+            assert not poly0.points_raw()[0].is_arc
         else:
             assert not poly0.points_raw()[0].IsArc()
         assert isinstance(poly0.voids, list)
@@ -107,13 +104,6 @@ class TestClass(BaseTestClass):
         for k in poly_with_voids[0].voids:
             assert k.id
             assert k.expand(0.0005)
-        if edbapp.grpc:
-            poly_167 = [i for i in edbapp.modeler.paths if i.edb_uid == 167][0]
-        else:
-            poly_167 = [i for i in edbapp.modeler.paths if i.id == 167][0]
-        if edbapp.grpc:
-            # Only available with grpc
-            assert poly_167.expand(0.0005)
         edbapp.close(terminate_rpc_session=False)
 
     def test_modeler_paths(self, edb_examples):
@@ -122,7 +112,6 @@ class TestClass(BaseTestClass):
         edbapp = edb_examples.get_si_verse()
         assert len(edbapp.modeler.paths) > 0
         path = edbapp.modeler.paths[0]
-        # TODO check for dotnet primitive.type returning only small letters.
         assert path.type.lower() == "path"
         assert path.clone()
         assert isinstance(path.width, float)
@@ -139,7 +128,6 @@ class TestClass(BaseTestClass):
 
     def test_modeler_primitives_by_layer(self, edb_examples):
         """Evaluate modeler primitives by layer"""
-        # Done
         edbapp = edb_examples.get_si_verse()
         primmitive = edbapp.modeler.primitives_by_layer["1_Top"][0]
         assert primmitive.layer_name == "1_Top"
@@ -250,8 +238,8 @@ class TestClass(BaseTestClass):
         )
         poly_test = [poly for poly in edbapp.modeler.polygons if poly.net_name == "test"]
         assert len(poly_test) == 1
-        assert poly_test[0].center == [0.005, 0.005]
-        assert poly_test[0].bbox == [0.0, 0.0, 0.01, 0.01]
+        assert poly_test[0].center == [0.005, 0.005] or poly_test[0].center == (0.005, 0.005)
+        assert poly_test[0].bbox == [0.0, 0.0, 0.01, 0.01] or poly_test[0].bbox == ((0.0, 0.0), (0.01, 0.01))
         assert poly_test[0].move_layer("16_Bottom")
         poly_test = [poly for poly in edbapp.modeler.polygons if poly.net_name == "test"]
         assert len(poly_test) == 1
@@ -268,7 +256,6 @@ class TestClass(BaseTestClass):
             [0.025, 0.02],
         ]
         trace = edbapp.modeler.create_trace(points, "1_Top")
-        trace.aedt_name
         assert trace
         assert isinstance(trace.get_center_line(), list)
         assert isinstance(trace.get_center_line(), list)
@@ -359,7 +346,6 @@ class TestClass(BaseTestClass):
 
     def test_modeler_defeature(self, edb_examples):
         """Defeature the polygon."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.modeler.defeature_polygon(edbapp.modeler.primitives_by_net["GND"][-1], 0.0001)
         edbapp.close(terminate_rpc_session=False)

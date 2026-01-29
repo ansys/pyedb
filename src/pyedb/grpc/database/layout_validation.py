@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -23,12 +23,10 @@
 import re
 from typing import Any, List, Optional, Union
 
-from ansys.edb.core.database import ProductIdType as GrpcProductIdType
+from ansys.edb.core.database import ProductIdType as CoreProductIdType
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-
-# from pyedb.grpc.database.primitive.primitive import Primitive
 
 
 class LayoutValidation:
@@ -56,6 +54,7 @@ class LayoutValidation:
 
         Examples
         --------
+        >>> from pyedb import Edb
         >>> edb = Edb("edb_file")
         >>> # Find shorts without fixing
         >>> shorts = edb.layout_validation.dc_shorts()
@@ -157,10 +156,9 @@ class LayoutValidation:
 
         Examples
         --------
+        >>> from pyedb import Edb
         >>> edb = Edb("edb_file")
-        >>> # Find disjoint nets on all nets
         >>> new_nets = edb.layout_validation.disjoint_nets()
-        >>>
         >>> # Clean disjoints on specific nets with advanced options
         >>> cleaned = edb.layout_validation.disjoint_nets(
         ...     net_list=["GND"],
@@ -195,8 +193,8 @@ class LayoutValidation:
         disjoints_objects = []
         self._pedb.logger.reset_timer()
         for net in net_list:
-            net_groups = []
-            obj_dict = {}
+            net_groups: List[List[int]] = []
+            obj_dict: dict[int, Any] = {}
             for i in _objects_list.get(net, []):
                 obj_dict[i.id] = i
             for i in _padstacks_list.get(net, []):
@@ -207,9 +205,9 @@ class LayoutValidation:
                 l1 = self._layout_instance.get_connected_objects(objs[0].layout_object_instance, False)
                 l1.append(objs[0].id)
                 repetition = False
-                for net_list in net_groups:
-                    if set(l1).intersection(net_list):
-                        net_groups.append([i for i in l1 if i not in net_list])
+                for group in net_groups:
+                    if set(l1).intersection(group):
+                        net_groups.append([i for i in l1 if i not in group])
                         repetition = True
                 if not repetition:
                     net_groups.append(l1)
@@ -217,19 +215,27 @@ class LayoutValidation:
                 l = len(objs)
             if len(net_groups) > 1:
 
-                def area_calc(elem):
-                    sum = 0
-                    for el in elem:
+                def area_calc(elem: List[int]) -> float:
+                    """Calculate total area for a group of element ids.
+
+                    The layout groups are stored as lists of element ids; resolve to
+                    actual objects using ``obj_dict`` before computing area.
+                    """
+                    total = 0.0
+                    for el_id in elem:
+                        obj = obj_dict.get(el_id)
+                        if obj is None:
+                            continue
                         try:
-                            if el.layout_obj.obj_type.value == 0:
-                                if not el.is_void:
-                                    sum += el.area()
+                            if obj.layout_obj.obj_type.value == 0:
+                                if not getattr(obj, "is_void", False):
+                                    total += obj.area()
                         except Exception as e:
                             self._pedb._logger.warning(
                                 f"A(n) {type(e).__name__} error occurred while calculating area "
-                                f"for element {elem} - Default value of 0 is used: {str(e)}"
+                                f"for element {el_id} - Default value of 0 is used: {str(e)}"
                             )
-                    return sum
+                    return total
 
                 if order_by_area:
                     areas = [area_calc(i) for i in net_groups]
@@ -292,6 +298,7 @@ class LayoutValidation:
 
         Examples
         --------
+        >>> from pyedb import Edb
         >>> edb = Edb("edb_file")
         >>> # Fix self-intersections on all nets
         >>> edb.layout_validation.fix_self_intersections()
@@ -318,6 +325,7 @@ class LayoutValidation:
 
         Examples
         --------
+        >>> from pyedb import Edb
         >>> edb = Edb("edb_file")
         >>> # Identify illegal net names
         >>> edb.layout_validation.illegal_net_names()
@@ -345,12 +353,13 @@ class LayoutValidation:
 
         Examples
         --------
+        >>> from pyedb import Edb
         >>> edb = Edb("edb_file")
         >>> # Identify components with illegal RLC values
         >>> bad_components = edb.layout_validation.illegal_rlc_values()
         >>>
-        >>> # Automatically fix invalid inductor values
-        >>> edb.layout_validation.illegal_rlc_values(fix=True)
+        # Automatically fix invalid inductor values
+        #     edb.layout_validation.illegal_rlc_values(fix=True)
         """
         inductors = self._pedb.components.inductors
 
@@ -369,27 +378,26 @@ class LayoutValidation:
 
         Examples
         --------
-        >>> edb = Edb("edb_file")
-        >>> # Report unnamed padstacks
-        >>> edb.layout_validation.padstacks_no_name()
+        # Use an Edb instance (see `dc_shorts` example above) and call:
+        #     edb.layout_validation.padstacks_no_name()
         >>>
-        >>> # Automatically assign names to unnamed padstacks
-        >>> edb.layout_validation.padstacks_no_name(fix=True)
+        # Automatically assign names to unnamed padstacks
+        #     edb.layout_validation.padstacks_no_name(fix=True)
         """
         pds = list(self._pedb.layout.padstack_instances.values())
         counts = 0
         via_count = 1
         for obj in pds:
-            name = obj.get_product_property(GrpcProductIdType.DESIGNER, 11)
+            name = obj.core.get_product_property(CoreProductIdType.DESIGNER, 11)
             name = str(name).strip("'")
             if name == "":
                 counts += 1
                 if fix:
                     if not obj.component:
-                        obj.set_product_property(GrpcProductIdType.DESIGNER, 11, f"Via{via_count}")
+                        obj.set_product_property(CoreProductIdType.DESIGNER, 11, f"Via{via_count}")
                         via_count = via_count + 1
                     else:
                         obj.set_product_property(
-                            GrpcProductIdType.DESIGNER, 11, f"{obj.component.name}-{obj.component_pin}"
+                            CoreProductIdType.DESIGNER, 11, f"{obj.component.name}-{obj.component_pin}"
                         )
         self._pedb.logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")

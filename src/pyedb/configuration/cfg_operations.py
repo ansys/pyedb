@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -27,15 +27,23 @@ from pydantic import BaseModel, Field
 # from pyedb.configuration.cfg_common import CfgBase
 
 
+class CfgAutoIdentifyNets(BaseModel):
+    enabled: bool = False
+    resistor_below: float | str | None = 100
+    inductor_below: float | str | None = 1
+    capacitor_above: float | str | None = "10nF"
+
+
 class CfgCutout(BaseModel):
-    auto_identify_nets: Optional[Dict] = {
-        "enabled": False,
-        "resistor_below": 100,
-        "inductor_below": 1,
-        "capacitor_above": 1,
-    }
-    signal_list: Optional[List[str]] = None
-    reference_list: Optional[List[str]] = None
+    auto_identify_nets: CfgAutoIdentifyNets | None = CfgAutoIdentifyNets()
+    signal_nets: Optional[List[str]] = Field(
+        default=None,
+        alias="signal_list",
+    )
+    reference_nets: Optional[List[str]] = Field(
+        default=None,
+        alias="reference_list",
+    )
     extent_type: Optional[str] = "ConvexHull"
     expansion_size: Optional[Union[float, str]] = 0.002
     number_of_threads: Optional[int] = 1
@@ -43,9 +51,12 @@ class CfgCutout(BaseModel):
     custom_extent_units: str = Field(default="meter")
     expansion_factor: Optional[float] = 0
 
+    model_config = dict(populate_by_name=True)
+
 
 class CfgOperations(BaseModel):
     cutout: Optional[CfgCutout] = None
+    generate_auto_hfss_regions: bool = False
 
     def add_cutout(self, **kwargs):
         self.cutout = CfgCutout(**kwargs)

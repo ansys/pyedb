@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -27,8 +27,8 @@ from typing import TYPE_CHECKING, Union
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.circle import Circle
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-from ansys.edb.core.net.net import Net as GrpcNet
-from ansys.edb.core.primitive.primitive import PrimitiveType as GrpcPrimitiveType
+from ansys.edb.core.net.net import Net as CoreNet
+from ansys.edb.core.primitive.primitive import PrimitiveType as CorePrimitiveType
 
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.path import Path
@@ -36,7 +36,7 @@ from pyedb.grpc.database.primitive.polygon import Polygon
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 
 
-class Net(GrpcNet):
+class Net:
     """Manages EDB functionalities for net objects and their primitives.
 
     Inherits properties from EDB objects and provides additional functionality
@@ -58,12 +58,73 @@ class Net(GrpcNet):
     'GND'
     """
 
-    def __init__(self, pedb, raw_net):
-        super().__init__(raw_net.msg)
+    def __init__(self, pedb, core):
+        self.core = core
         self._pedb = pedb
         self._core_components = pedb.components
         self._core_primitive = pedb.modeler
         self.__primitives = []
+
+    @property
+    def name(self):
+        """Name of the net.
+
+        Returns
+        -------
+        str
+            Name of the net.
+        """
+        try:
+            return self.core.name
+        except:
+            return ""
+
+    @name.setter
+    def name(self, value: str):
+        """Set the name of the net.
+
+        Parameters
+        ----------
+        value : str
+            New name for the net.
+        """
+        self.core.name = value
+
+    @property
+    def is_null(self) -> bool:
+        """Check if the net is a null net.
+
+        Returns
+        -------
+        bool
+            ``True`` if the net is a null net, ``False`` otherwise.
+        """
+        try:
+            return self.core.is_null
+        except:
+            return True
+
+    @property
+    def is_power_ground(self):
+        """Check if the net is a power or ground net.
+
+        Returns
+        -------
+        bool
+            ``True`` if the net is a power or ground net, ``False`` otherwise.
+        """
+        return self.core.is_power_ground
+
+    @is_power_ground.setter
+    def is_power_ground(self, value: bool):
+        """Set the net as a power or ground net.
+
+        Parameters
+        ----------
+        value : bool
+            ``True`` to set the net as a power or ground net, ``False`` otherwise.
+        """
+        self.core.is_power_ground = value
 
     @property
     def primitives(self) -> list[Union[Path, Polygon, Circle, Rectangle, Bondwire]]:
@@ -80,18 +141,18 @@ class Net(GrpcNet):
             - :class:`Bondwire <pyedb.grpc.database.primitive.bondwire.Bondwire>`
         """
 
-        primitives = super().primitives
+        primitives = self.core.primitives
         if not len(self.__primitives) == len(primitives):
             for primitive in primitives:
-                if primitive.primitive_type == GrpcPrimitiveType.PATH:
+                if primitive.primitive_type == CorePrimitiveType.PATH:
                     self.__primitives.append(Path(self._pedb, primitive))
-                elif primitive.primitive_type == GrpcPrimitiveType.POLYGON:
+                elif primitive.primitive_type == CorePrimitiveType.POLYGON:
                     self.__primitives.append(Polygon(self._pedb, primitive))
-                elif primitive.primitive_type == GrpcPrimitiveType.CIRCLE:
+                elif primitive.primitive_type == CorePrimitiveType.CIRCLE:
                     self.__primitives.append(Circle(self._pedb, primitive))
-                elif primitive.primitive_type == GrpcPrimitiveType.RECTANGLE:
+                elif primitive.primitive_type == CorePrimitiveType.RECTANGLE:
                     self.__primitives.append(Rectangle(self._pedb, primitive))
-                elif primitive.primitive_type == GrpcPrimitiveType.BONDWIRE:
+                elif primitive.primitive_type == CorePrimitiveType.BONDWIRE:
                     self.__primitives.append(Bondwire(self._pedb, primitive))
         return self.__primitives
 
@@ -106,7 +167,7 @@ class Net(GrpcNet):
         """
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
-        return [PadstackInstance(self._pedb, i) for i in super().padstack_instances]
+        return [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
 
     @property
     def components(self) -> dict[str, any]:
@@ -130,6 +191,23 @@ class Net(GrpcNet):
                         f"'components' property for object {self} - Empty dict is returned: {str(e)}"
                     )
         return components
+
+    @classmethod
+    def create(cls, layout, name: str):
+        """Create a new net in the EDB database.
+        Parameters
+        ----------
+        layout : :class:`pyedb.grpc.database.layout.layout.Layout`
+            Layout to create the net in.
+        name : str
+            Name of the new net.
+
+        Returns
+        -------
+        :class:`Net <pyedb.grpc.database.net.net.Net>`
+            Newly created net object.
+        """
+        return cls(layout._pedb, CoreNet.create(layout=layout.core, name=name))
 
     def find_dc_short(self, fix=False) -> list[list[str, str]]:
         """Find DC-shorted nets connected to this net.
@@ -191,7 +269,7 @@ class Net(GrpcNet):
             Smallest width found in database units. Returns 1e10 if no paths exist.
         """
         current_value = 1e10
-        paths = [prim for prim in self.primitives if prim.primitive_type == GrpcPrimitiveType.PATH]
+        paths = [prim for prim in self.primitives if prim.primitive_type == "path"]
         for path in paths:
             if path.width < current_value:
                 current_value = path.width
@@ -214,3 +292,27 @@ class Net(GrpcNet):
             return self._pedb.extended_nets.items[self.name]
         else:
             return None
+
+    def delete(self):
+        """Delete the net from the EDB database."""
+        self.core.delete()
+
+    @classmethod
+    def find_by_name(cls, layout, name):
+        """Find a net by name in a given layout.
+
+        Parameters
+        ----------
+        layout : :class:`.Layout`
+            Layout to search for the net.
+        name : str
+            Name of net.
+
+        Returns
+        -------
+        Net
+            Net found. Check the :obj:`is_null <.Net.is_null>` property
+            of the returned net to see if it exists.
+        """
+        net = CoreNet.find_by_name(layout.core, name)
+        return Net(layout._pedb, net)

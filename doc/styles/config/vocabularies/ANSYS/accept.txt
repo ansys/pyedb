@@ -11,7 +11,9 @@ codecov
 [Cc]omponents
 Conda
 CPython
+CSV
 DC
+DRC
 docstring
 [Dd]ocstrings
 [Ee][Dd][Bb]
@@ -38,6 +40,7 @@ SimulationConfiguration
 S[Ii]wave
 [Ss][Yy][Zz]
 (?i)stackup(?:\s3D|s)?
+uv
 vias
 [Xx][Mm][Ll]
 [Gg][Rr][Pp][Cc]
@@ -95,7 +98,7 @@ Getting Started: Your First Script
 Communication Protocol: gRPC
 e.g.
 Checking the Connection
-User Guide
+User guide
 [Cc]ore
 [Cc]oncepts
 Architecture: Client-Server Model
@@ -144,3 +147,4 @@ job_id
 Cohn
 Pydantic
 Drc
+SIPI

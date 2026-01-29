@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -29,8 +29,43 @@ import toml
 
 from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
-from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.misc.decorators import execution_timer
+
+
+def set_padstack_definition(pdef, pdef_obj):
+    if pdef.hole_parameters:
+        pdef_obj.set_hole_parameters(pdef.hole_parameters)
+    if pdef.hole_range:
+        pdef_obj.hole_range = pdef.hole_range
+    if pdef.hole_plating_thickness:
+        pdef_obj.hole_plating_thickness = pdef.hole_plating_thickness
+    if pdef.material:
+        pdef_obj.material = pdef.material
+    if pdef.pad_parameters:
+        pdef_obj.set_pad_parameters(pdef.pad_parameters)
+    if pdef.solder_ball_parameters:
+        pdef_obj.set_solder_parameters(pdef.solder_ball_parameters)
+
+
+def set_padstack_instance(inst, inst_obj):
+    inst_obj.is_pin = inst.is_pin
+    if inst.name is not None:
+        inst_obj.aedt_name = inst.name
+    if inst.net_name is not None:
+        inst_obj.net_name = inst_obj._pedb.nets.find_or_create_net(inst.net_name).name
+    if inst.layer_range is not None:
+        inst_obj.start_layer = inst.layer_range[0]
+    if inst.layer_range is not None:
+        inst_obj.stop_layer = inst.layer_range[1]
+    if inst.backdrill_parameters:
+        inst_obj.backdrill_parameters = inst.backdrill_parameters.model_dump(exclude_none=True)
+    if inst.solder_ball_layer:
+        inst_obj._edb_object.SetSolderBallLayer(inst_obj._pedb.stackup[inst.solder_ball_layer]._edb_object)
+
+    hole_override_enabled, hole_override_diam = inst_obj._edb_object.GetHoleOverrideValue()
+    hole_override_enabled = inst.hole_override_enabled if inst.hole_override_enabled else hole_override_enabled
+    hole_override_diam = inst.hole_override_diameter if inst.hole_override_diameter else hole_override_diam
+    inst_obj._edb_object.SetHoleOverride(hole_override_enabled, inst_obj._pedb.edb_value(hole_override_diam))
 
 
 class Configuration:
@@ -134,8 +169,7 @@ class Configuration:
         self.__apply_with_logging("Applying materials", self.apply_materials)
         self.__apply_with_logging("Updating stackup", self.apply_stackup)
 
-        if self.cfg_data.padstacks:
-            self.__apply_with_logging("Applying padstacks", self.cfg_data.padstacks.apply)
+        self.apply_padstacks()
 
         self.__apply_with_logging("Applying S-parameters", self.cfg_data.s_parameters.apply)
 
@@ -148,9 +182,119 @@ class Configuration:
         self.apply_terminals()
         self.__apply_with_logging("Placing probes", self.cfg_data.probes.apply)
         self.apply_operations()
-        self.cfg_data.setups.apply()
+        self.apply_setups()
 
         return True
+
+    @execution_timer("Applying setups")
+    def apply_setups(self):
+        cfg_setups = self.cfg_data.setups
+        for setup in cfg_setups:
+            if setup.type == "siwave_dc":
+                edb_setup = self._pedb.create_siwave_dc_setup(
+                    name=setup.name, dc_slider_position=setup.dc_slider_position
+                )
+                edb_setup.dc_settings.dc_slider_position = setup.dc_slider_position
+                dc_ir_settings = setup.dc_ir_settings
+                edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
+            else:
+                if setup.type == "hfss":
+                    edb_setup = self._pedb.create_hfss_setup(setup.name)
+                    edb_setup.set_solution_single_frequency(setup.f_adapt, setup.max_num_passes, setup.max_mag_delta_s)
+
+                    if setup.auto_mesh_operation.enabled:
+                        args = dict(setup.auto_mesh_operation)
+                        args.pop("enabled")
+                        edb_setup.auto_mesh_operation(**args)
+
+                    for mp in setup.mesh_operations:
+                        edb_setup.add_length_mesh_operation(
+                            name=mp.name,
+                            max_elements=mp.max_elements,
+                            max_length=mp.max_length,
+                            restrict_length=mp.restrict_length,
+                            refine_inside=mp.refine_inside,
+                            # mesh_region=mp.get(mesh_region),
+                            net_layer_list=mp.nets_layers_list,
+                        )
+                else:
+                    edb_setup = self._pedb.create_siwave_syz_setup(name=setup.name)
+                    if setup.si_slider_position is not None:
+                        edb_setup.si_slider_position = setup.si_slider_position
+                    else:
+                        edb_setup.pi_slider_position = setup.pi_slider_position
+
+                # Apply frequency sweeps
+                for sw in setup.freq_sweep:
+                    f_set = []
+                    freq_string = []
+                    for f in sw.frequencies:
+                        if isinstance(f, str):
+                            freq_string.append(f)
+                        else:
+                            f_set.append([f.distribution, f.start, f.stop, f.increment])
+
+                    sweep = edb_setup.add_sweep(sw.name, frequency_set=f_set, sweep_type=sw.type)
+                    if len(freq_string) > 0:
+                        sweep.frequency_string = freq_string
+
+                    sweep.compute_dc_point = sw.compute_dc_point
+                    sweep.enforce_causality = sw.enforce_causality
+                    sweep.enforce_passivity = sw.enforce_passivity
+                    sweep.adv_dc_extrapolation = sw.adv_dc_extrapolation
+
+    def get_setups(self):
+        self.cfg_data.setups = []
+        for _, setup in self._pedb.setups.items():
+            if setup.type == "siwave_dc":
+                self.cfg_data.add_siwave_dc_setup(
+                    name=setup.name,
+                    dc_slider_position=setup.dc_settings.dc_slider_position,
+                    dc_ir_settings={"export_dc_thermal_data": setup.dc_ir_settings.export_dc_thermal_data},
+                )
+            else:
+                if setup.type == "hfss":
+                    adaptive_frequency_data_list = list(setup.adaptive_settings.adaptive_frequency_data_list)[0]
+
+                    cfg_ac_setup = self.cfg_data.add_hfss_setup(
+                        name=setup.name,
+                        f_adapt=adaptive_frequency_data_list.adaptive_frequency,
+                        max_num_passes=adaptive_frequency_data_list.max_passes,
+                        max_mag_delta_s=adaptive_frequency_data_list.max_delta,
+                    )
+
+                    for name, mop in setup.mesh_operations.items():
+                        cfg_ac_setup.add_mesh_operation(
+                            **{
+                                "name": name,
+                                "type": mop.type,
+                                "max_elements": mop.max_elements,
+                                "max_length": mop.max_length,
+                                "restrict_length": mop.restrict_length,
+                                "refine_inside": mop.refine_inside,
+                                "nets_layers_list": mop.nets_layers_list,
+                            }
+                        )
+                else:  # siwave ac
+                    cfg_ac_setup = self.cfg_data.add_siwave_ac_setup(
+                        name=setup.name,
+                        use_si_settings=setup.use_si_settings,
+                        si_slider_position=setup.si_slider_position,
+                        pi_slider_position=setup.pi_slider_position,
+                    )
+
+                for name, sw in setup.sweeps.items():
+                    cfg_ac_setup.add_frequency_sweep(
+                        {
+                            "name": name,
+                            "type": sw.type,
+                            "frequencies": sw.frequency_string,
+                            "compute_dc_point": sw.compute_dc_point,
+                            "enforce_causality": sw.enforce_causality,
+                            "enforce_passivity": sw.enforce_passivity,
+                            "adv_dc_extrapolation": sw.adv_dc_extrapolation,
+                        }
+                    )
 
     def apply_boundaries(self):
         boundaries = self.cfg_data.boundaries
@@ -253,8 +397,7 @@ class Configuration:
                 pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
                 pdef.SetData(pdata)
                 pdef = self._pedb.pedb_class.database.edb_data.padstacks_data.EDBPadstack(pdef, self._pedb.padstacks)
-                p.pyedb_obj = pdef
-                p.set_parameters_to_edb()
+                set_padstack_definition(p, pdef)
 
         if modeler.padstack_instances:
             for p in modeler.padstack_instances:
@@ -265,8 +408,7 @@ class Configuration:
                     definition_name=p.definition,
                     rotation=p.rotation if p.rotation is not None else 0,
                 )
-                p.pyedb_obj = p_inst
-                p.set_parameters_to_edb()
+                set_padstack_instance(p, p_inst)
 
         if modeler.planes:
             for p in modeler.planes:
@@ -471,6 +613,52 @@ class Configuration:
         for name, obj in self._pedb.stackup.all_layers.items():
             self.cfg_data.stackup.add_layer_at_bottom(**obj.properties)
 
+    def get_padstacks(self):
+        padstacks = self.cfg_data.padstacks
+        padstacks.clean()
+
+        for name, obj in self._pedb.padstacks.definitions.items():
+            if name.lower() == "symbol":
+                continue
+            padstacks.add_padstack_definition(
+                name=obj.name,
+                hole_plating_thickness=obj.hole_plating_thickness,
+                material=obj.material,
+                hole_range=obj.hole_range,
+                pad_parameters=obj.get_pad_parameters(),
+                hole_parameters=obj.get_hole_parameters(),
+                solder_ball_parameters=obj.get_solder_parameters(),
+            )
+
+        for obj in self._pedb.layout.padstack_instances:
+            _, position, rotation = obj._edb_object.GetPositionAndRotationValue()
+            hole_override_enabled, hole_override_diameter = obj._edb_object.GetHoleOverrideValue()
+            padstacks.add_padstack_instance(
+                name=obj.aedt_name,
+                is_pin=obj.is_pin,
+                definition=obj.padstack_definition,
+                backdrill_parameters=obj.backdrill_parameters,
+                position=[position.X.ToString(), position.Y.ToString()],
+                rotation=rotation.ToString(),
+                eid=obj.id,
+                hole_override_enabled=hole_override_enabled,
+                hole_override_diameter=hole_override_diameter.ToString(),
+                solder_ball_layer=obj._edb_object.GetSolderBallLayer().GetName(),
+                layer_range=[obj.start_layer, obj.stop_layer],
+            )
+
+    @execution_timer("Applying padstack definitions and instances")
+    def apply_padstacks(self):
+        padstacks = self.cfg_data.padstacks
+
+        for pdef in padstacks.definitions:
+            pdef_obj = self._pedb.padstacks.definitions[pdef.name]
+            set_padstack_definition(pdef, pdef_obj)
+
+        for inst in padstacks.instances:
+            inst_obj = self._pedb.padstacks.instances_by_name[inst.name]
+            set_padstack_instance(inst, inst_obj)
+
     def get_data_from_db(self, **kwargs):
         """Get configuration data from layout.
 
@@ -498,9 +686,8 @@ class Configuration:
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):
-            setups = self.cfg_data.setups
-            setups.retrieve_parameters_from_edb()
-            data["setups"] = setups.to_dict()
+            self.get_setups()
+            data["setups"] = [i.model_dump(exclude_none=True) for i in self.cfg_data.setups]
         if kwargs.get("terminals", False):
             self.get_terminals()
             data.update(self.cfg_data.terminals.model_dump(exclude_none=True))
@@ -528,16 +715,8 @@ class Configuration:
             self.get_operations()
             data["operations"] = self.cfg_data.operations.model_dump()
         if kwargs.get("padstacks", False):
-            self.cfg_data.padstacks.retrieve_parameters_from_edb()
-            definitions = []
-            for i in self.cfg_data.padstacks.definitions:
-                definitions.append(i.get_attributes())
-            instances = []
-            for i in self.cfg_data.padstacks.instances:
-                instances.append(i.get_attributes())
-            data["padstacks"] = dict()
-            data["padstacks"]["definitions"] = definitions
-            data["padstacks"]["instances"] = instances
+            self.get_padstacks()
+            data["padstacks"] = self.cfg_data.padstacks.model_dump(exclude_none=True)
 
         if kwargs.get("boundaries", False):
             self.get_boundaries()
@@ -547,12 +726,13 @@ class Configuration:
     @execution_timer("Applying operations")
     def apply_operations(self):
         """Apply operations to the current design."""
-        op_cutout = self.cfg_data.operations.cutout
+        operations = self.cfg_data.operations
+        op_cutout = operations.cutout
         if op_cutout:
             cutout_params = op_cutout.model_dump()
             auto_identify_nets = cutout_params.pop("auto_identify_nets")
             if auto_identify_nets["enabled"]:
-                reference_list = cutout_params.get("reference_list", [])
+                reference_nets = cutout_params.get("reference_nets", [])
                 if auto_identify_nets:
                     self._pedb.nets.generate_extended_nets(
                         auto_identify_nets["resistor_below"],
@@ -562,22 +742,25 @@ class Configuration:
                     )
                     signal_nets = []
                     for i in self._pedb.terminals.values():
-                        if i.net_name in reference_list:
+                        if i.net_name in reference_nets:
                             continue
 
                         extended_net = i.net.extended_net
                         if extended_net:
-                            temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_list]
+                            temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_nets]
                             temp = [i2 for i2 in temp if i2 not in signal_nets]
                             signal_nets.extend(temp)
                         else:
                             signal_nets.append(i.net_name)
 
-                    cutout_params["signal_list"] = signal_nets
+                    cutout_params["signal_nets"] = signal_nets
             polygon_points = self._pedb.cutout(**cutout_params)
             if "pyedb_cutout" not in self._pedb.stackup.all_layers:
                 self._pedb.stackup.add_document_layer(name="pyedb_cutout")
                 self._pedb.modeler.create_polygon(polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout")
+
+        if operations.generate_auto_hfss_regions:
+            self._pedb.hfss.generate_auto_hfss_regions()
 
     def get_operations(self):
         if "pyedb_cutout" not in self._pedb.stackup.all_layers:
@@ -594,13 +777,11 @@ class Configuration:
                         continue
                     else:
                         net_names.append(name)
-            reference_list = []
-            signal_list = net_names
 
             self.cfg_data.operations.add_cutout(
                 custom_extent=custom_extent,
-                reference_list=reference_list,
-                signal_list=signal_list,
+                reference_nets=[],
+                signal_nets=net_names,
             )
 
     @execution_timer("Placing terminals")
@@ -610,50 +791,38 @@ class Configuration:
         edge_terminals = {}
         for cfg_terminal in self.cfg_data.terminals.terminals:
             if cfg_terminal.terminal_type == "padstack_instance":
-                if cfg_terminal.padstack_instance_id:
-                    pds = self._pedb.layout.find_padstack_instances(
-                        instance_id=cfg_terminal.padstack_instance_id,
-                        aedt_name=None,
-                        component_name=None,
-                        component_pin_name=None,
-                    )[0]
-                else:
-                    pds = self._pedb.layout.find_padstack_instances(
-                        instance_id=None,
-                        aedt_name=cfg_terminal.padstack_instance,
-                        component_name=None,
-                        component_pin_name=None,
-                    )[0]
-                terminal = pds.create_terminal(name=cfg_terminal.name)
+                terminal = self._pedb.source_excitation.create_padstack_instance_terminal(
+                    name=cfg_terminal.name,
+                    padstack_instance_id=cfg_terminal.padstack_instance_id,
+                    padstack_instance_name=cfg_terminal.padstack_instance,
+                )
 
             elif cfg_terminal.terminal_type == "pin_group":
-                pg = self._pedb.siwave.pin_groups[cfg_terminal.pin_group]
-                terminal = pg.create_terminal(name=cfg_terminal.name)
+                terminal = self._pedb.source_excitation.create_pin_group_terminal(
+                    name=cfg_terminal.name,
+                    pin_group=cfg_terminal.pin_group,
+                )
             elif cfg_terminal.terminal_type == "point":
-                terminal = self._pedb.get_point_terminal(
-                    cfg_terminal.name, cfg_terminal.net, [cfg_terminal.x, cfg_terminal.y], cfg_terminal.layer
+                terminal = self._pedb.source_excitation.create_point_terminal(
+                    name=cfg_terminal.name,
+                    net=cfg_terminal.net,
+                    x=cfg_terminal.x,
+                    y=cfg_terminal.y,
+                    layer=cfg_terminal.layer,
                 )
             elif cfg_terminal.terminal_type == "edge":
-                pt = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
-                    self._pedb, x=cfg_terminal.point_on_edge_x, y=cfg_terminal.point_on_edge_y
+                terminal = self._pedb.source_excitation.create_edge_terminal(
+                    primitive_name=cfg_terminal.primitive,
+                    x=cfg_terminal.point_on_edge_x,
+                    y=cfg_terminal.point_on_edge_y,
+                    name=cfg_terminal.name,
                 )
-                primitive = self._pedb.layout.primitives_by_aedt_name[cfg_terminal.primitive]
-                edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, pt._edb_object)
-                edge = convert_py_list_to_net_list(edge, self._pedb.core.Cell.Terminal.Edge)
-                _terminal = self._pedb.core.Cell.Terminal.EdgeTerminal.Create(
-                    primitive._edb_object.GetLayout(),
-                    primitive._edb_object.GetNet(),
-                    cfg_terminal.name,
-                    edge,
-                    isRef=False,
-                )
-                terminal = self._pedb.pedb_class.database.cell.terminal.edge_terminal.EdgeTerminal(
-                    self._pedb, _terminal
-                )
-                terminal.horizontal_extent_factor = terminal.horizontal_extent_factor
-                terminal.vertical_extent_factor = terminal.vertical_extent_factor
-                terminal.pec_launch_width = terminal.pec_launch_width
+
+                terminal.horizontal_extent_factor = cfg_terminal.horizontal_extent_factor
+                terminal.vertical_extent_factor = cfg_terminal.vertical_extent_factor
+                terminal.pec_launch_width = cfg_terminal.pec_launch_width
                 terminal.do_renormalize = True
+                terminal.hfss_type = cfg_terminal.hfss_type
                 edge_terminals[cfg_terminal.name] = terminal
             elif cfg_terminal.terminal_type == "bundle":
                 bungle_terminals.append(cfg_terminal)
@@ -677,19 +846,14 @@ class Configuration:
                 obj.reference_terminal = terminals_dict[cfg.reference_terminal][1]
 
         for i in bungle_terminals:
-            boundle_terminal = self._pedb.pedb_class.database.cell.terminal.bundle_terminal.BundleTerminal.create(
-                self._pedb, i.name, i.terminals
-            )
-            bundle_term = boundle_terminal.terminals
-            bundle_term[0].name = i.name + ":T1"
-            bundle_term[1].mame = i.name + ":T2"
+            self._pedb.source_excitation.create_bundle_terminal(terminals=i.terminals, name=i.name)
 
     @execution_timer("Retrieving terminal information")
     def get_terminals(self):
         manager = self.cfg_data.terminals
         manager.terminals = []
         for i in self._pedb.terminals.values():
-            if i.terminal_type == "PadstackInstanceTerminal":
+            if i.terminal_type in ["PadstackInstanceTerminal", "padstack_inst"]:
                 manager.add_padstack_instance_terminal(
                     padstack_instance=i.padstack_instance.aedt_name,
                     padstack_instance_id=i.padstack_instance.id,
@@ -703,9 +867,9 @@ class Configuration:
                     reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
                     hfss_type=i.hfss_type if i.hfss_type else "Wave",
                 )
-            elif i.terminal_type == "PinGroupTerminal":
+            elif i.terminal_type in ["PinGroupTerminal", "pin_group"]:
                 manager.add_pin_group_terminal(
-                    pin_group=i.pin_group().name,
+                    pin_group=i.pin_group.name,
                     name=i.name,
                     impedance=i.impedance,
                     boundary_type=i.boundary_type,
@@ -714,7 +878,7 @@ class Configuration:
                     phase=i.source_phase,
                     terminal_to_ground=i.terminal_to_ground,
                 )
-            elif i.terminal_type == "PointTerminal":
+            elif i.terminal_type in ["PointTerminal", "point"]:
                 manager.add_point_terminal(
                     x=i.location[0],
                     y=i.location[1],

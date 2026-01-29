@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -214,7 +214,7 @@ class EDBComponent(Group):
         if not name:
             name = "{}_{}".format(self.refdes, self.part_name)
         if name not in self._pedb.definitions.package:
-            self._pedb.definitions.add_package_def(name, component_part_name=component_part_name)
+            self._pedb.definitions.add_package(name, component_part_name=component_part_name)
             self.package_def = name
 
             from pyedb.dotnet.database.dotnet.database import PolygonDataDotNet

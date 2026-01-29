@@ -36,22 +36,20 @@ dependencies = [
     "toml == 0.10.2",
     "shapely",
     "scikit-rf",
-    "ansys-edb-core>=0.2.0",
+    "ansys-edb-core>=0.2.0,<0.2.6",
     "psutil",
     "defusedxml>=0.7,<8.0",
     "matplotlib>=3.5.0,<3.11",
-    "aiohttp>=3.8",
-    "python-socketio>=5.10",
-    "requests>=2.32,<3.0",
     "ezdxf>=1.4.2",
     "scipy>=1.13, <2.0",
+    "xmltodict"
 ]
 
 [project.optional-dependencies]
 tests = [
     "matplotlib>=3.5.0,<3.11",
     "mock>=5.1.0,<5.3",
-    "pytest>=7.4.0,<8.5",
+    "pytest>=7.4.0,<9.1",
     "pytest-cov>=4.0.0,<7.1",
     "pytest-xdist>=3.5.0,<3.7",
     "scikit-rf",
@@ -60,22 +58,19 @@ tests = [
 doc = [
     "ansys-sphinx-theme[autoapi]>=1.0.0,<1.7",
     "imageio>=2.30.0,<2.38",
-    "ipython>=8.13.0,<8.32",
     "jupyterlab>=4.0.0,<4.6",
     "jupytext>=1.16.0,<1.19",
-    "matplotlib>=3.5.0,<3.11",
     "nbsphinx>=0.9.0,<0.10",
     "nbconvert < 7.17",
-    "numpydoc==1.5.0",
+    "numpydoc==1.10.0",
     "pypandoc>=1.10.0,<1.17",
     # NOTE: Remove recommonmark once examples are reworked.
     "recommonmark",
-    "Sphinx>=7.1.0,<8.3",
+    "Sphinx>=7.1.0,<9.1",
     "sphinx-autobuild==2024.10.3",
     "sphinx-copybutton>=0.5.0,<0.6",
-    "sphinx-gallery>=0.14.0,<0.20",
+    "sphinx-gallery>=0.14.0,<0.21",
     "sphinx_design>=0.4.0,<0.7",
-    "shapely",
 ]
 
 

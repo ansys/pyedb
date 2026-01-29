@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -22,17 +22,17 @@
 
 
 # from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel
-from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as GrpcPinPairModel
+from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
 
 from pyedb.grpc.database.utility.value import Value
 
 
-class PinPairModel(GrpcPinPairModel):
+class PinPairModel:
     """Manage pin-pair model."""
 
     def __init__(self, pedb, edb_object):
+        self.core = edb_object
         self._pedb_comp = pedb
-        super().__init__(edb_object.msg)
 
     @property
     def rlc(self) -> tuple[str, str]:
@@ -43,7 +43,7 @@ class PinPairModel(GrpcPinPairModel):
         Tuple
 
         """
-        return super().rlc(self.pin_pairs()[0])
+        return self.core.rlc(self.core.pin_pairs()[0])
 
     @property
     def rlc_enable(self) -> list[bool]:

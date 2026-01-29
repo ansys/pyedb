@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -619,7 +619,7 @@ class EdbHfss(object):
 
         edb_list = convert_py_list_to_net_list([i._edb_object for i in terminals], self._edb.Cell.Terminal.Terminal)
         _edb_bundle_terminal = self._edb.Cell.Terminal.BundleTerminal.Create(edb_list)
-        return port_name, BundleWavePort(self._pedb, _edb_bundle_terminal)
+        return BundleWavePort(self._pedb, _edb_bundle_terminal)
 
     def create_hfss_ports_on_padstack(self, pinpos, portname=None):
         """Create an HFSS port on a padstack.
@@ -1661,3 +1661,11 @@ class EdbHfss(object):
             positive_pin_term.SetReferenceTerminal(negative_pin_term)
             return True
         return False  # pragma no cover
+
+    def generate_auto_hfss_regions(self):
+        """Generate auto HFSS regions.
+
+        This method automatically identifies areas for use as HFSS regions in SIwave simulations.
+        """
+        if not self._pedb.active_cell.GenerateAutoHFSSRegions():
+            raise RuntimeError("Failed to generate hfss regions.")

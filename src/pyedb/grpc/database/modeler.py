@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -27,17 +27,12 @@ This module contains these classes: `EdbLayout` and `Shape`.
 import math
 from typing import Any, Dict, Iterable, List, Optional, Union
 
-from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
+from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import (
-    PolygonData as GrpcPolygonData,
-)
-from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
-from ansys.edb.core.primitive.bondwire import BondwireType as GrpcBondwireType
-from ansys.edb.core.primitive.path import PathCornerType as GrpcPathCornerType, PathEndCapType as GrpcPathEndCapType
-from ansys.edb.core.primitive.rectangle import (
-    RectangleRepresentationType as GrpcRectangleRepresentationType,
+    PolygonData as CorePolygonData,
 )
 
+from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.circle import Circle
 from pyedb.grpc.database.primitive.path import Path
@@ -61,7 +56,6 @@ def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
         # already nested – just ensure every item is a *list* (not tuple)
         return [list(pair) for pair in pts]
     else:
-        # flat list – chunk into pairs
         if len(pts) % 2:
             raise ValueError("Odd number of coordinates supplied")
         return [[pts[i], pts[i + 1]] for i in range(0, len(pts), 2)]
@@ -107,6 +101,7 @@ class Modeler(object):
         self._primitives: dict[str, Primitive] = {}
 
         # Lazy indexes
+        self.primitives  # type: ignore  # Force initial load
         self._primitives_by_name: dict[str, Primitive] | None = None
         self._primitives_by_net: dict[str, list[Primitive]] | None = None
         self._primitives_by_layer: dict[str, list[Primitive]] | None = None
@@ -128,7 +123,7 @@ class Modeler(object):
     def _add_primitive(self, prim: Any):
         """Add primitive wrapper to caches."""
         try:
-            self._primitives[prim.edb_uid] = prim
+            self._primitives[prim.id] = prim
             if self._primitives_by_name is not None:
                 self._primitives_by_name[prim.aedt_name] = prim
             if self._primitives_by_net is not None and hasattr(prim, "net"):
@@ -201,7 +196,7 @@ class Modeler(object):
             List of primitive objects to delete.
         """
         for prim in prim_list:
-            prim._edb_object.delete()
+            prim.core.delete()
         self._reload_all()
 
     @property
@@ -346,40 +341,17 @@ class Modeler(object):
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` or bool
             Primitive object if found, False otherwise.
         """
-        if edb_uid:
-            for p in self._layout.primitives:
-                if p.edb_uid == primitive_id:
-                    return self.__mapping_primitive_type(p)
-            for p in self._layout.primitives:
-                for v in p.voids:
-                    if v.edb_uid == primitive_id:
-                        return self.__mapping_primitive_type(v)
-        else:
-            for p in self._layout.primitives:
-                if p.id == primitive_id:
-                    return self.__mapping_primitive_type(p)
-            for p in self._layout.primitives:
-                for v in p.voids:
-                    if v.id == primitive_id:
-                        return self.__mapping_primitive_type(v)
+        for p in self._layout.primitives:
+            if (edb_uid and p.edb_uid == primitive_id) or (not edb_uid and p.id == primitive_id):
+                return p
+            for v in p.voids:
+                if (edb_uid and v.edb_uid == primitive_id) or (not edb_uid and v.id == primitive_id):
+                    return v
 
     def __mapping_primitive_type(self, primitive):
         from ansys.edb.core.primitive.primitive import (
             PrimitiveType as GrpcPrimitiveType,
         )
-
-        if primitive.primitive_type == GrpcPrimitiveType.POLYGON:
-            return Polygon(self._pedb, primitive)
-        elif primitive.primitive_type == GrpcPrimitiveType.PATH:
-            return Path(self._pedb, primitive)
-        elif primitive.primitive_type == GrpcPrimitiveType.RECTANGLE:
-            return Rectangle(self._pedb, primitive)
-        elif primitive.primitive_type == GrpcPrimitiveType.CIRCLE:
-            return Circle(self._pedb, primitive)
-        elif primitive.primitive_type == GrpcPrimitiveType.BONDWIRE:
-            return Bondwire(self._pedb, primitive)
-        else:
-            return False
 
     @property
     def polygons_by_layer(self) -> Dict[str, List[Primitive]]:
@@ -399,7 +371,7 @@ class Modeler(object):
         return polygon_by_layer
 
     @property
-    def rectangles(self) -> List[Rectangle]:
+    def rectangles(self) -> List[Union[Rectangle, Primitive]]:
         """All rectangle primitives.
 
         Returns
@@ -407,10 +379,10 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` objects.
         """
-        return [Rectangle(self._pedb, i) for i in self.primitives if i.type == "rectangle"]
+        return [i for i in self.primitives if i.type == "rectangle"]
 
     @property
-    def circles(self) -> List[Circle]:
+    def circles(self) -> List[Union[Circle, Primitive]]:
         """All circle primitives.
 
         Returns
@@ -418,10 +390,10 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Circle` objects.
         """
-        return [Circle(self._pedb, i) for i in self.primitives if i.type == "circle"]
+        return [i for i in self.primitives if i.type == "circle"]
 
     @property
-    def paths(self) -> List[Path]:
+    def paths(self) -> List[Union[Path, Primitive]]:
         """All path primitives.
 
         Returns
@@ -429,18 +401,18 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Path` objects.
         """
-        return [Path(self._pedb, i) for i in self.primitives if i.type == "path"]
+        return [i for i in self.primitives if i.primitive_type == "path"]
 
     @property
-    def polygons(self) -> List[Polygon]:
+    def polygons(self) -> List[Union[Polygon, Primitive]]:
         """All polygon primitives.
 
         Returns
         -------
         list
-            List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Polygon` objects.
+            List of :class:`pyedb.grpc.database.primitive.polygon.Polygon` objects.
         """
-        return [Polygon(self._pedb, i) for i in self.primitives if i.type == "polygon"]
+        return [i for i in self.primitives if i.primitive_type == "polygon"]
 
     def get_polygons_by_layer(self, layer_name: str, net_list: Optional[List[str]] = None) -> List[Primitive]:
         """Retrieve polygons by layer.
@@ -498,8 +470,8 @@ class Modeler(object):
             layer = None
         if not isinstance(point, list) and len(point) == 2:
             self._logger.error("Provided point must be a list of two values")
-            return False
-        pt = GrpcPointData(point)
+            return []
+        pt = CorePointData(point)
         if isinstance(nets, str):
             nets = [nets]
         elif nets and not isinstance(nets, list) and len(nets) == len([net for net in nets if isinstance(net, str)]):
@@ -629,13 +601,13 @@ class Modeler(object):
         polygon_data = polygon.polygon_data
         bound_center = polygon_data.bounding_circle()[0]
         bound_center2 = selection_polygon_data.bounding_circle()[0]
-        center = [Value(bound_center.x), Value(bound_center.y)]
-        center2 = [Value(bound_center2.x), Value(bound_center2.y)]
+        center = [Value(bound_center[0]), Value(bound_center[1])]
+        center2 = [Value(bound_center2[0]), Value(bound_center2[1])]
         x1, y1 = calc_slope(center2, center)
 
         if not origin:
             origin = [center[0] + float(x1) * 10000, center[1] + float(y1) * 10000]
-        self._pedb.add_design_variable(offset_name, 0.0, is_parameter=True)
+        self._pedb.add_design_variable(offset_name, 0.0)
         i = 0
         continue_iterate = True
         prev_point = None
@@ -647,7 +619,7 @@ class Modeler(object):
                     if check_inside:
                         xcoeff, ycoeff = calc_slope([Value(point.x), Value(point.x)], origin)
 
-                        new_points = GrpcPointData(
+                        new_points = CorePointData(
                             [
                                 Value(str(Value(point.x) + f"{xcoeff}*{offset_name}")),
                                 Value(str(Value(point.y)) + f"{ycoeff}*{offset_name}"),
@@ -704,24 +676,6 @@ class Modeler(object):
             ``True`` when successful, ``False`` when failed.
         """
         net = self._pedb.nets.find_or_create_net(net_name)
-        if start_cap_style.lower() == "round":
-            start_cap_style = GrpcPathEndCapType.ROUND
-        elif start_cap_style.lower() == "extended":
-            start_cap_style = GrpcPathEndCapType.EXTENDED
-        else:
-            start_cap_style = GrpcPathEndCapType.FLAT
-        if end_cap_style.lower() == "round":
-            end_cap_style = GrpcPathEndCapType.ROUND
-        elif end_cap_style.lower() == "extended":
-            end_cap_style = GrpcPathEndCapType.EXTENDED
-        else:
-            end_cap_style = GrpcPathEndCapType.FLAT
-        if corner_style.lower() == "round":
-            corner_style = GrpcPathEndCapType.ROUND
-        elif corner_style.lower() == "sharp":
-            corner_style = GrpcPathCornerType.SHARP
-        else:
-            corner_style = GrpcPathCornerType.MITER
         _points = []
         if isinstance(points, (list, tuple)):
             points = normalize_pairs(points)
@@ -733,12 +687,12 @@ class Modeler(object):
                 _points.append(_pt)
             points = _points
             width = Value(width, self._pedb.active_cell)
-            polygon_data = GrpcPolygonData(points)
-        elif isinstance(points, GrpcPolygonData):
+            polygon_data = CorePolygonData(points)
+        elif isinstance(points, CorePolygonData):
             polygon_data = points
         else:
             raise TypeError("Points must be a list of points or a PolygonData object.")
-        path = Path(self._pedb).create(
+        path = Path.create(
             layout=self._active_layout,
             layer=layer_name,
             net=net,
@@ -751,11 +705,11 @@ class Modeler(object):
         if path.is_null:  # pragma: no cover
             self._logger.error("Null path created")
             return False
-        return Path(self._pedb, path)
+        return path
 
     def create_trace(
         self,
-        path_list: Union[Iterable[float], GrpcPolygonData],
+        path_list: Union[Iterable[float], CorePolygonData],
         layer_name: str,
         width: float = 1,
         net_name: str = "",
@@ -803,7 +757,7 @@ class Modeler(object):
 
     def create_polygon(
         self,
-        points: Union[List[List[float]], GrpcPolygonData],
+        points: Union[List[List[float]], CorePolygonData],
         layer_name: str,
         voids: Optional[List[Any]] = [],
         net_name: str = "",
@@ -831,11 +785,11 @@ class Modeler(object):
             new_points = []
             for idx, i in enumerate(points):
                 new_points.append(
-                    GrpcPointData([Value(i[0], self._pedb.active_cell), Value(i[1], self._pedb.active_cell)])
+                    CorePointData([Value(i[0], self._pedb.active_cell), Value(i[1], self._pedb.active_cell)])
                 )
-            polygon_data = GrpcPolygonData(points=new_points)
+            polygon_data = CorePolygonData(points=new_points)
 
-        elif isinstance(points, GrpcPolygonData):
+        elif isinstance(points, CorePolygonData):
             polygon_data = points
         else:
             polygon_data = points
@@ -844,8 +798,8 @@ class Modeler(object):
             return False
         for void in voids:
             if isinstance(void, list):
-                void_polygon_data = GrpcPolygonData(points=void)
-            elif isinstance(void, GrpcPolygonData):
+                void_polygon_data = CorePolygonData(points=void)
+            elif isinstance(void, CorePolygonData):
                 void_polygon_data = void
             else:
                 void_polygon_data = void.polygon_data
@@ -853,14 +807,12 @@ class Modeler(object):
                 self._logger.error("Failed to create void polygon data")
                 return False
             polygon_data.holes.append(void_polygon_data)
-        polygon = Polygon(self._pedb, None).create(
-            layout=self._active_layout, layer=layer_name, net=net, polygon_data=polygon_data
-        )
+        polygon = Polygon.create(layout=self._active_layout, layer=layer_name, net=net, polygon_data=polygon_data)
         if polygon.is_null or polygon_data is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
         self._add_primitive(polygon)
-        return Polygon(self._pedb, polygon)
+        return polygon
 
     def create_rectangle(
         self,
@@ -905,12 +857,12 @@ class Modeler(object):
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` or bool
             Rectangle object if created, False otherwise.
         """
-        edb_net = self._pedb.nets.find_or_create_net(net_name)
+        net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "lower_left_upper_right":
             rect = Rectangle(self._pedb).create(
                 layout=self._active_layout,
                 layer=layer_name,
-                net=edb_net,
+                net=net,
                 rep_type=representation_type,
                 param1=Value(lower_left_point[0]),
                 param2=Value(lower_left_point[1]),
@@ -920,7 +872,7 @@ class Modeler(object):
                 rotation=Value(rotation),
             )
         else:
-            rep_type = GrpcRectangleRepresentationType.CENTER_WIDTH_HEIGHT
+            rep_type = "center_width_height"
             if isinstance(width, str):
                 if width in self._pedb.variables:
                     width = Value(width, self._pedb.active_cell)
@@ -935,10 +887,10 @@ class Modeler(object):
                     height = Value(width)
             else:
                 height = Value(width)
-            rect = Rectangle(self._pedb).create(
+            rect = Rectangle.create(
                 layout=self._active_layout,
                 layer=layer_name,
-                net=edb_net,
+                net=net,
                 rep_type=rep_type,
                 param1=Value(center_point[0]),
                 param2=Value(center_point[1]),
@@ -1219,7 +1171,7 @@ class Modeler(object):
                         list_polygon_data.append(p.polygon_data)
                         delete_list.append(p)
                         all_voids.extend(p.voids)
-            united = GrpcPolygonData.unite(list_polygon_data)
+            united = CorePolygonData.unite(list_polygon_data)
             for item in united:
                 for void in all_voids:
                     if item.intersection_type(void.polygon_data) == 2:
@@ -1227,7 +1179,7 @@ class Modeler(object):
                 self.create_polygon(item, layer_name=lay, voids=[], net_name=net)
             for void in all_voids:
                 for poly in poly_by_nets[net]:  # pragma no cover
-                    if void.polygon_data.intersection_type(poly.polygon_data).value >= 2:
+                    if void.polygon_data.intersection_type(poly.polygon_data) >= 2:
                         try:
                             id = delete_list.index(poly)
                         except ValueError:
@@ -1243,6 +1195,7 @@ class Modeler(object):
                 p1 = self._pedb.padstacks.definitions[pad].edb_padstack.data
                 if len(p1.get_layer_names()) > 1:
                     self._pedb.padstacks.remove_pads_from_padstack(pad)
+        self._reload_all()
         return True
 
     def defeature_polygon(self, poly: Polygon, tolerance: float = 0.001) -> bool:
@@ -1260,13 +1213,13 @@ class Modeler(object):
         bool
             True if successful, False otherwise.
         """
-        new_poly = poly.polygon_data.defeature(tol=tolerance)
+        new_poly = poly.polygon_data.core.defeature(tol=tolerance)
         if not new_poly.points:
             self._pedb.logger.error(
                 f"Defeaturing on polygon {poly.id} returned empty polygon, tolerance threshold might too large. "
             )
             return False
-        poly.polygon_data = new_poly
+        poly.core.polygon_data = new_poly
         return True
 
     def get_layout_statistics(
@@ -1338,7 +1291,7 @@ class Modeler(object):
         start_cell_instance_name: Optional[str] = None,
         end_cell_instance_name: Optional[str] = None,
         bondwire_type: str = "jedec4",
-    ) -> Optional[Primitive]:
+    ) -> Bondwire:
         """Create bondwire.
 
         Parameters
@@ -1384,11 +1337,11 @@ class Modeler(object):
 
         start_cell_inst = None
         end_cell_inst = None
-        cell_instances = {cell_inst.name: cell_inst for cell_inst in self._active_layout.cell_instances}
+        cell_instances = {cell_inst.name: cell_inst for cell_inst in self._active_layout.core.cell_instances}
         if start_cell_instance_name:
             if start_cell_instance_name not in cell_instances:
                 start_cell_inst = GrpcCellInstance.create(
-                    self._pedb.active_layout, start_cell_instance_name, ref=self._pedb.active_layout
+                    self._pedb.active_layout.core, start_cell_instance_name, ref=self._pedb.active_layout.core
                 )
             else:
                 start_cell_inst = cell_instances[start_cell_instance_name]
@@ -1400,15 +1353,6 @@ class Modeler(object):
                 )
             else:
                 end_cell_inst = cell_instances[end_cell_instance_name]
-
-        if bondwire_type == "jedec4":
-            bondwire_type = GrpcBondwireType.JEDEC4
-        elif bondwire_type == "jedec5":
-            bondwire_type = GrpcBondwireType.JEDEC5
-        elif bondwire_type == "apd":
-            bondwire_type = GrpcBondwireType.APD
-        else:
-            bondwire_type = GrpcBondwireType.JEDEC4
         bw = Bondwire.create(
             layout=self._active_layout,
             bondwire_type=bondwire_type,
@@ -1423,12 +1367,11 @@ class Modeler(object):
             end_x=Value(end_x),
             end_y=Value(end_y),
             net=net,
-            end_context=end_cell_inst,
-            start_context=start_cell_inst,
+            end_cell_inst=end_cell_inst,
+            start_cell_inst=start_cell_inst,
         )
-        bondwire = Bondwire(self._pedb, bw)
-        self._add_primitive(bondwire)
-        return bondwire
+        self._add_primitive(bw)
+        return bw
 
     def create_pin_group(
         self,
@@ -1491,7 +1434,7 @@ class Modeler(object):
             self._logger.error("No pin found.")
             return False
         pins = list(pins.values())
-        obj = GrpcPinGroup.create(layout=self._pedb.active_layout, name=name, padstack_instances=pins)
+        obj = PinGroup.create(layout=self._pedb.active_layout, name=name, padstack_instances=pins)
         if obj.is_null:
             raise RuntimeError(f"Failed to create pin group {name}.")
         else:
@@ -1520,10 +1463,10 @@ class Modeler(object):
             void_shape = [void_shape]
         for void in void_shape:
             if isinstance(void, Primitive):
-                shape._edb_object.add_void(void)
+                shape.core.add_void(void.core)
                 flag = True
             else:
-                shape._edb_object.add_void(void)
+                shape.core.add_void(void.core)
                 flag = True
             if not flag:
                 return flag
@@ -1633,22 +1576,22 @@ class Modeler(object):
         """
 
         from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
-        from ansys.edb.core.hierarchy.cell_instance import CellInstance
+        from ansys.edb.core.hierarchy.cell_instance import CellInstance as GrpcCellInstance
         from ansys.edb.core.layout.cell import Cell, CellType
 
         from pyedb.generic.general_methods import generate_unique_name
 
         instance_name = generate_unique_name(cell_name, n=2)
-        cell = Cell.find(self._pedb._db, CellType.CIRCUIT_CELL, cell_name)
-        cell_inst = CellInstance.create(self._pedb.active_layout, instance_name, cell.layout)
+        edb_cell = Cell.find(self._pedb._db, CellType.CIRCUIT_CELL, cell_name)
+        cell_inst = GrpcCellInstance.create(self._pedb.active_layout.core, instance_name, edb_cell.layout)
         cell_inst.placement_3d = True
         t3d = cell_inst.transform3d
 
         # offsets
         location = GrpcPoint3DData(
-            (self._pedb.value(local_origin_x) * -1)._edb_object,
-            (self._pedb.value(local_origin_y) * -1)._edb_object,
-            (self._pedb.value(local_origin_z) * -1)._edb_object,
+            (self._pedb.value(local_origin_x) * -1),
+            (self._pedb.value(local_origin_y) * -1),
+            (self._pedb.value(local_origin_z) * -1),
         )
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
@@ -1723,7 +1666,7 @@ class Modeler(object):
         from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
         from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
 
-        mcad_model = GrpcMcadModel.create_3d_comp(layout=self._pedb.active_layout, filename=str(a3dcomp_path))
+        mcad_model = GrpcMcadModel.create_3d_comp(layout=self._pedb.active_layout.core, filename=str(a3dcomp_path))
         cell_inst = mcad_model.cell_instance
         cell_inst.placement_3d = True
         t3d = cell_inst.transform3d

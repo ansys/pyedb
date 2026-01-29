@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -50,6 +50,7 @@ class Connectable(LayoutObj):
     @property
     def net_name(self):
         """Get the primitive layer name.
+
 
         Returns
         -------

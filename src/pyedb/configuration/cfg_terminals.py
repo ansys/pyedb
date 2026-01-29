@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -39,7 +39,9 @@ class CfgTerminal(CfgBase):
     reference_terminal: Optional[str] = None
     amplitude: Optional[Union[float, int, str]] = 1
     phase: Optional[Union[float, int, str]] = 0
-    terminal_to_ground: Optional[Literal["kNoGround", "kNegative", "kPositive"]] = "kNoGround"
+    terminal_to_ground: Literal["kNoGround", "kNegative", "kPositive", "no_ground", "negative", "positive"] | None = (
+        "kNoGround"
+    )
     boundary_type: Literal[
         "PortBoundary",
         "PecBoundary",
@@ -51,6 +53,13 @@ class CfgTerminal(CfgBase):
         "kDcTerminal",
         "kVoltageProbe",
         "InvalidBoundary",
+        "port",
+        "dc_terminal",
+        "voltage_probe",
+        "voltage_source",
+        "current_source",
+        "rlc",
+        "pec",
     ]
     hfss_type: Literal["Wave", "Gap", None]
 
@@ -222,6 +231,7 @@ class CfgTerminals(CfgBase):
         amplitude=1,
         phase=0,
         terminal_to_ground="kNoGround",
+        hfss_type="Wave",
     ):
         terminal = CfgEdgeTerminal(
             name=name,
@@ -238,7 +248,7 @@ class CfgTerminals(CfgBase):
             horizontal_extent_factor=horizontal_extent_factor,
             vertical_extent_factor=vertical_extent_factor,
             pec_launch_width=pec_launch_width,
-            hfss_type="Wave",
+            hfss_type=hfss_type,
         )
         self.terminals.append(terminal)
 

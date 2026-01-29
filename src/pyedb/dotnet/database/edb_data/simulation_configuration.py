@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -23,6 +23,7 @@
 from collections import OrderedDict
 import json
 import os
+import warnings
 
 from pyedb.dotnet.clr_module import Dictionary
 from pyedb.dotnet.database.edb_data.sources import Source, SourceType
@@ -42,10 +43,15 @@ class SimulationConfigurationBatch(object):
     """Contains all Cutout and Batch analysis settings.
     The class is part of `SimulationConfiguration` class as a property.
 
+    .. deprecated:: 0.68.0
+        This class is deprecated and will be removed in future releases.
 
     """
 
     def __init__(self):
+        warnings.warn(
+            "SimulationConfigurationBatch is deprecated and will be removed in future releases.",
+        )
         self._signal_nets = []
         self._power_nets = []
         self._components = []
@@ -2127,7 +2133,7 @@ class SimulationConfiguration(object):
 
     Define the frequency used for adaptive meshing (available for both HFSS and SIwave).
 
-    >>> from dotnet.generic.constants import RadiationBoxType
+    >>> from pyedb.dotnet.generic.constants import RadiationBoxType
     >>> sim_setup.radiation_box = RadiationBoxType.ConvexHull
 
     Defined the radiation box type, Conformal, Bounding box and ConvexHull are supported (HFSS only).
@@ -2727,7 +2733,7 @@ class SimulationConfiguration(object):
 
         Examples
         --------
-        >>> from dotnet.database.edb_data.simulation_configuration import SimulationConfiguration
+        >>> from pyedb.dotnet.database.edb_data.simulation_configuration import SimulationConfiguration
         >>> test = SimulationConfiguration()
         >>> test.import_json(r"C:\Temp\test_json\test.json")
         """

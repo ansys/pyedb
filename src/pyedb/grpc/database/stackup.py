@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -25,7 +25,7 @@ This module contains the `EdbStackup` class.
 
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, annotations
 
 from collections import OrderedDict
 import json
@@ -34,21 +34,21 @@ import math
 from typing import Any, Dict, List, Optional, Tuple, Union
 import warnings
 
-from ansys.edb.core.definition.die_property import DieOrientation as GrpcDieOrientation
+from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation
 from ansys.edb.core.definition.solder_ball_property import (
-    SolderballPlacement as GrpcSolderballPlacement,
+    SolderballPlacement as CoreSolderballPlacement,
 )
-from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
-from ansys.edb.core.hierarchy.cell_instance import CellInstance as GrpcCellInstance
-from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
-from ansys.edb.core.layer.layer import LayerType as GrpcLayerType, TopBottomAssociation as GrpcTopBottomAssociation
+from ansys.edb.core.geometry.point3d_data import Point3DData as CorePoint3DData
+from ansys.edb.core.hierarchy.cell_instance import CellInstance as CoreCellInstance
+from ansys.edb.core.hierarchy.component_group import ComponentType as CoreComponentType
+from ansys.edb.core.layer.layer import LayerType as CoreLayerType, TopBottomAssociation as CoreTopBottomAssociation
 from ansys.edb.core.layer.layer_collection import (
-    LayerCollection as GrpcLayerCollection,
-    LayerCollectionMode as GrpcLayerCollectionMode,
-    LayerTypeSet as GrpcLayerTypeSet,
+    LayerCollection as CoreLayerCollection,
+    LayerCollectionMode as CoreLayerCollectionMode,
+    LayerTypeSet as CoreLayerTypeSet,
 )
-from ansys.edb.core.layer.stackup_layer import StackupLayer as GrpcStackupLayer
-from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
+from ansys.edb.core.layer.stackup_layer import StackupLayer as CoreStackupLayer
+from ansys.edb.core.layout.mcad_model import McadModel as CoreMcadModel
 from defusedxml.ElementTree import parse as defused_parse
 import matplotlib.colors as colors
 import numpy as np
@@ -59,11 +59,12 @@ from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
+from pyedb.misc.decorators import deprecate_argument_name
 
 logger = logging.getLogger(__name__)
 
 
-class LayerCollection(GrpcLayerCollection):
+class LayerCollection:
     """Manages layer collections in an EDB database.
 
     Parameters
@@ -74,10 +75,25 @@ class LayerCollection(GrpcLayerCollection):
         EDB layer collection object.
     """
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
-        self._layer_collection = edb_object
+    def __init__(self, pedb=None, core=None):
+        self.core = core
         self._pedb = pedb
+
+    @classmethod
+    def create(cls, mode: str = "laminate") -> LayerCollection:
+        """Create layer collection.
+
+        Parameters
+        ----------
+        mode : str, optional
+            layer mode. Valid values, `"laminate"`, `"overlapping"`. Default value is `"laminate"`
+
+        Returns
+        -------
+        LayerCollection
+        """
+        layer_collection = CoreLayerCollection.create(mode=CoreLayerCollectionMode.LAMINATE)
+        return cls(None, layer_collection)
 
     def update_layout(self):
         """Update the layout with the current layer collection.
@@ -121,13 +137,15 @@ class LayerCollection(GrpcLayerCollection):
         if "thickness" in kwargs:
             thickness = Value(kwargs["thickness"])
         elevation = Value(0.0)
-        _layer_type = GrpcLayerType.SIGNAL_LAYER
-        if layer_type.lower() == "dielectric":
-            _layer_type = GrpcLayerType.DIELECTRIC_LAYER
-        layer = GrpcStackupLayer.create(
-            name=name, layer_type=_layer_type, thickness=thickness, material="copper", elevation=elevation
+        layer = StackupLayer.create(
+            layout=self._pedb.layout,
+            name=name,
+            layer_type=layer_type,
+            thickness=thickness,
+            material="copper",
+            elevation=elevation,
         )
-        return self._layer_collection.add_layer_top(layer)
+        return self.core.add_layer_top(layer.core)
 
     def add_layer_bottom(self, name: str, layer_type: str = "signal", **kwargs) -> Union["Layer", None]:
         """Add a layer at the bottom of the stackup.
@@ -158,24 +176,28 @@ class LayerCollection(GrpcLayerCollection):
         ... )
         """
         thickness = Value(0.0)
-        layer_type_map = {"dielectric": GrpcLayerType.DIELECTRIC_LAYER, "signal": GrpcLayerType.SIGNAL_LAYER}
         if "thickness" in kwargs:
             thickness = Value(kwargs["thickness"])
         elevation = Value(0.0)
         if "type" in kwargs:
-            _layer_type = layer_type_map[kwargs["type"]]
+            _layer_type = kwargs["type"]
         else:
-            _layer_type = layer_type_map[layer_type]
+            _layer_type = layer_type
         if "material" in kwargs:
             _material = kwargs["material"]
         else:
             _material = "copper"
-        layer = GrpcStackupLayer.create(
-            name=name, layer_type=_layer_type, thickness=thickness, material=_material, elevation=elevation
+        layer = StackupLayer.create(
+            layout=self._pedb.layout,
+            name=name,
+            layer_type=_layer_type,
+            thickness=thickness,
+            material=_material,
+            elevation=elevation,
         )
         if "fill_material" in kwargs:
-            layer.set_fill_material(kwargs["fill_material"])
-        return self._layer_collection.add_layer_bottom(layer)
+            layer.core.set_fill_material(kwargs["fill_material"])
+        return self.core.add_layer_bottom(layer.core)
 
     def add_layer_below(
         self, name: str, base_layer_name: str, layer_type: str = "signal", **kwargs
@@ -211,20 +233,20 @@ class LayerCollection(GrpcLayerCollection):
             thickness = Value(kwargs["thickness"])
         elevation = Value(0.0)
         if "type" in kwargs:
-            _l_map = {"signal": GrpcLayerType.SIGNAL_LAYER, "dielectric": GrpcLayerType.DIELECTRIC_LAYER}
-            _layer_type = _l_map[kwargs["type"]]
-        else:
-            _layer_type = GrpcLayerType.SIGNAL_LAYER
-            if layer_type.lower() == "dielectric":
-                _layer_type = GrpcLayerType.DIELECTRIC_LAYER
+            layer_type = kwargs["type"]
         if "material" in kwargs:
             material = kwargs["material"]
         else:
             material = "copper"
-        layer = GrpcStackupLayer.create(
-            name=name, layer_type=_layer_type, thickness=thickness, material=material, elevation=elevation
+        layer = StackupLayer.create(
+            layout=self._pedb.layout,
+            name=name,
+            layer_type=layer_type,
+            thickness=thickness,
+            material=material,
+            elevation=elevation,
         )
-        return self._layer_collection.add_layer_below(layer, base_layer_name)
+        return self.core.add_layer_below(layer.core, base_layer_name)
 
     def add_layer_above(
         self, name: str, base_layer_name: str, layer_type: str = "signal", **kwargs
@@ -259,13 +281,15 @@ class LayerCollection(GrpcLayerCollection):
         if "thickness" in kwargs:
             thickness = Value(kwargs["thickness"])
         elevation = Value(0.0)
-        _layer_type = GrpcLayerType.SIGNAL_LAYER
-        if layer_type.lower() == "dielectric":
-            _layer_type = GrpcLayerType.DIELECTRIC_LAYER
-        layer = GrpcStackupLayer.create(
-            name=name, layer_type=_layer_type, thickness=thickness, material="copper", elevation=elevation
+        layer = StackupLayer.create(
+            layout=self._pedb.layout,
+            name=name,
+            layer_type=layer_type,
+            thickness=thickness,
+            material="copper",
+            elevation=elevation,
         )
-        return self._layer_collection.add_layer_above(layer, base_layer_name)
+        return self.core.add_layer_above(layer.core, base_layer_name)
 
     def add_document_layer(self, name: str, layer_type: str = "user", **kwargs: Any) -> Optional["Layer"]:
         """Add a document layer.
@@ -291,7 +315,7 @@ class LayerCollection(GrpcLayerCollection):
         >>> outline_layer = edb.stackup.add_document_layer("Outline", layer_type="outline")
         """
         added_layer = self.add_layer_top(name)
-        added_layer.type = GrpcLayerType.USER_LAYER
+        added_layer.type = CoreLayerType.USER_LAYER
         return added_layer
 
     @property
@@ -324,9 +348,7 @@ class LayerCollection(GrpcLayerCollection):
         >>> edb = Edb()
         >>> non_stackup = edb.stackup.non_stackup_layers
         """
-        return {
-            layer.name: Layer(self._pedb, layer) for layer in self.get_layers(GrpcLayerTypeSet.NON_STACKUP_LAYER_SET)
-        }
+        return {layer.name: Layer(core=layer) for layer in self.core.get_layers(CoreLayerTypeSet.NON_STACKUP_LAYER_SET)}
 
     @property
     def all_layers(self) -> Dict[str, Layer]:
@@ -343,7 +365,7 @@ class LayerCollection(GrpcLayerCollection):
         >>> edb = Edb()
         >>> all_layers = edb.stackup.all_layers
         """
-        return {layer.name: Layer(self._pedb, layer) for layer in self.get_layers(GrpcLayerTypeSet.ALL_LAYER_SET)}
+        return {layer.name: Layer(core=layer) for layer in self.core.get_layers(CoreLayerTypeSet.ALL_LAYER_SET)}
 
     @property
     def signal_layers(self) -> Dict[str, StackupLayer]:
@@ -361,7 +383,8 @@ class LayerCollection(GrpcLayerCollection):
         >>> signal_layers = edb.stackup.signal_layers
         """
         return {
-            layer.name: StackupLayer(self._pedb, layer) for layer in self.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
+            layer.name: StackupLayer(self._pedb, layer)
+            for layer in self.core.get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
         }
 
     @property
@@ -381,7 +404,7 @@ class LayerCollection(GrpcLayerCollection):
         """
         return {
             layer.name: StackupLayer(self._pedb, layer)
-            for layer in self.get_layers(GrpcLayerTypeSet.DIELECTRIC_LAYER_SET)
+            for layer in self.core.get_layers(CoreLayerTypeSet.DIELECTRIC_LAYER_SET)
         }
 
     @property
@@ -399,7 +422,7 @@ class LayerCollection(GrpcLayerCollection):
         >>> edb = Edb()
         >>> layers_by_id = edb.stackup.layers_by_id
         """
-        return [[obj.id, name] for name, obj in self.all_layers.items()]
+        return [[layer.id, layer.name] for layer in self.core.get_layers(CoreLayerTypeSet.ALL_LAYER_SET)]
 
     @property
     def layers(self) -> Dict[str, StackupLayer]:
@@ -416,7 +439,9 @@ class LayerCollection(GrpcLayerCollection):
         >>> edb = Edb()
         >>> layers = edb.stackup.layers
         """
-        return {obj.name: StackupLayer(self._pedb, obj) for obj in self.get_layers(GrpcLayerTypeSet.STACKUP_LAYER_SET)}
+        return {
+            obj.name: StackupLayer(self._pedb, obj) for obj in self.core.get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)
+        }
 
     def find_layer_by_name(self, name: str):
         """Find a layer by its name.
@@ -444,13 +469,13 @@ class LayerCollection(GrpcLayerCollection):
             "`pyedb.grpc.core.excitations.find_by_name` instead.",
             DeprecationWarning,
         )
-        layer = self.find_by_name(name)
+        layer = self.core.find_by_name(name)
         if layer.is_null:
             raise ValueError(f"Layer with name '{name}' was not found.")
         return layer
 
 
-class Stackup(LayerCollection):
+class Stackup:
     """Manages EDB methods for stackup operations.
 
     Parameters
@@ -461,21 +486,94 @@ class Stackup(LayerCollection):
         EDB layer collection object. The default is ``None``.
     """
 
-    def __init__(self, pedb, edb_object=None):
-        super().__init__(pedb, edb_object)
+    def __init__(self, pedb, core=None):
+        self.core = core
         self._pedb = pedb
+        self.layer_collection = LayerCollection(pedb, core)
 
     def __getitem__(self, item):
         if item in self.non_stackup_layers:
-            return Layer(self._pedb, self.find_by_name(item))
+            return Layer(core=self.core.find_by_name(item))
         elif item in self.layers:
-            return StackupLayer(self._pedb, self.find_by_name(item))
+            return StackupLayer(self._pedb, core=self.core.find_by_name(item))
         else:
             return None
 
     @property
     def _logger(self):
         return self._pedb.logger
+
+    @property
+    def signal_layers(self):
+        """Retrieve the dictionary of signal layers.
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
+            Dictionary of signal layers.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> signal_layers = edb.stackup.signal_layers
+        """
+        return {
+            layer.name: StackupLayer(self._pedb, layer)
+            for layer in self.core.get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
+        }
+
+    @property
+    def dielectric_layers(self):
+        """Retrieve the dictionary of dielectric layers.
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
+            Dictionary of dielectric layers."""
+        return {
+            layer.name: StackupLayer(self._pedb, layer)
+            for layer in self.core.get_layers(CoreLayerTypeSet.DIELECTRIC_LAYER_SET)
+        }
+
+    @property
+    def layers(self):
+        """Retrieve the dictionary of stackup layers (signal and dielectric).
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
+            Dictionary of stackup layers.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> layers = edb.stackup.layers
+        """
+        return {
+            obj.name: StackupLayer(self._pedb, obj) for obj in self.core.get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)
+        }
+
+    @property
+    def non_stackup_layers(self):
+        """Retrieve the dictionary of non-stackup layers.
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.grpc.database.layers.layer.Layer`]
+            Dictionary of non-stackup layers.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> non_stackup = edb.stackup.non_stackup_layers
+        """
+        return {
+            layer.name: Layer(core=layer)
+            for layer in self._pedb.stackup.core.get_layers(CoreLayerTypeSet.NON_STACKUP_LAYER_SET)
+        }
 
     @property
     def thickness(self) -> float:
@@ -509,7 +607,7 @@ class Stackup(LayerCollection):
         >>> edb = Edb()
         >>> num_layers = edb.stackup.num_layers
         """
-        return len(list(self.layers.keys()))
+        return len(self.layers)
 
     def create_symmetric_stackup(
         self,
@@ -655,26 +753,27 @@ class Stackup(LayerCollection):
         >>> edb = Edb()
         >>> mode = edb.stackup.mode
         """
-        return super().mode.name.lower()
+        return self.core.mode.name.lower()
 
     @mode.setter
     def mode(self, value):
-        if value == 0 or value == GrpcLayerCollectionMode.LAMINATE or value == "laminate" or value == "Laminate":
-            super(LayerCollection, self.__class__).mode.__set__(self, GrpcLayerCollectionMode.LAMINATE)
+        if value == 0 or value == CoreLayerCollectionMode.LAMINATE or value == "laminate" or value == "Laminate":
+            self.core.mode = CoreLayerCollectionMode.LAMINATE
         elif (
             value == 1
-            or value == GrpcLayerCollectionMode.OVERLAPPING
+            or value == CoreLayerCollectionMode.OVERLAPPING
             or value == "overlapping"
             or value == "Overlapping"
         ):
-            super(LayerCollection, self.__class__).mode.__set__(self, GrpcLayerCollectionMode.OVERLAPPING)
-        elif value == 2 or value == GrpcLayerCollectionMode.MULTIZONE or value == "multizone" or value == "MultiZone":
-            super(LayerCollection, self.__class__).mode.__set__(self, GrpcLayerCollectionMode.MULTIZONE)
-        self.update_layout()
+            self.core.mode = CoreLayerCollectionMode.OVERLAPPING
+        elif value == 2 or value == CoreLayerCollectionMode.MULTIZONE or value == "multizone" or value == "MultiZone":
+            self.core.mode = CoreLayerCollectionMode.MULTIZONE
+        # self.core.update_layout()
+        # TODO check if still needed with gRPC
 
     def _set_layout_stackup(
-        self, layer_clone: GrpcStackupLayer, operation: str, base_layer: Optional[str] = None, method: int = 1
-    ) -> None:
+        self, layer_clone: CoreStackupLayer, operation: str, base_layer: Optional[str] = None, method: int = 1
+    ) -> bool:
         """Internal method. Apply stackup change into EDB.
 
         Parameters
@@ -693,54 +792,54 @@ class Stackup(LayerCollection):
         bool
             ``True`` when successful.
         """
-        lc = self._pedb.layout.layer_collection
+        lc = self.core
         if operation in ["change_position", "change_attribute", "change_name"]:
-            _lc = GrpcLayerCollection.create()
+            _lc = CoreLayerCollection.create()
 
-            layers = [i for i in lc.get_layers(GrpcLayerTypeSet.STACKUP_LAYER_SET)]
-            non_stackup = [i for i in lc.get_layers(GrpcLayerTypeSet.NON_STACKUP_LAYER_SET)]
+            layers = [i for i in lc.get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)]
+            non_stackup = [i for i in lc.get_layers(CoreLayerTypeSet.NON_STACKUP_LAYER_SET)]
             _lc.mode = lc.mode
             if lc.mode.name.lower() == "overlapping":
                 for layer in layers:
                     if layer.name == layer_clone.name or layer.name == base_layer:
-                        _lc.add_stackup_layer_at_elevation(layer_clone)
+                        _lc.add_stackup_layer_at_elevation(layer_clone.core)
                     else:
-                        _lc.add_stackup_layer_at_elevation(layer)
+                        _lc.add_stackup_layer_at_elevation(layer.core)
             else:
                 for layer in layers:
                     if layer.name == layer_clone.name or layer.name == base_layer:
-                        _lc.add_layer_bottom(layer_clone)
+                        _lc.add_layer_bottom(layer_clone.core)
                     else:
-                        _lc.add_layer_bottom(layer)
+                        _lc.add_layer_bottom(layer.core)
             for layer in non_stackup:
-                _lc.add_layer_bottom(layer)
+                _lc.add_layer_bottom(layer.core)
         elif operation == "insert_below":
-            lc.add_layer_below(layer_clone, base_layer)
+            lc.add_layer_below(layer_clone.core, base_layer)
         elif operation == "insert_above":
-            lc.add_layer_above(layer_clone, base_layer)
+            lc.add_layer_above(layer_clone.core, base_layer)
         elif operation == "add_on_top":
-            lc.add_layer_top(layer_clone)
+            lc.add_layer_top(layer_clone.core)
         elif operation == "add_on_bottom":
-            lc.add_layer_bottom(layer_clone)
+            lc.add_layer_bottom(layer_clone.core)
         elif operation == "add_at_elevation":
-            lc.add_stackup_layer_at_elevation(layer_clone)
+            lc.add_stackup_layer_at_elevation(layer_clone.core)
         elif operation == "non_stackup":
-            lc.add_layer_bottom(layer_clone)
-        self._pedb.layout.layer_collection = lc
+            lc.add_layer_bottom(layer_clone.core)
+        self.core = lc
         return True
 
     def _create_stackup_layer(
         self, layer_name: str, thickness: Union[str, float], layer_type: str = "signal", material: str = "copper"
     ) -> StackupLayer:
-        if layer_type == "signal":
-            _layer_type = GrpcLayerType.SIGNAL_LAYER
-        else:
-            _layer_type = GrpcLayerType.DIELECTRIC_LAYER
+        if layer_type == "signal" and not material:
+            material = "copper"
+        elif layer_type == "dielectric":
             material = "FR4_epoxy"
         thickness = Value(thickness, self._pedb.active_db)
         layer = StackupLayer.create(
+            layout=self._pedb.active_layout,
             name=layer_name,
-            layer_type=_layer_type,
+            layer_type=layer_type,
             thickness=thickness,
             elevation=Value(0),
             material=material,
@@ -748,41 +847,9 @@ class Stackup(LayerCollection):
         return layer
 
     def _create_nonstackup_layer(self, layer_name: str, layer_type: str):
-        if layer_type == "conducting":  # pragma: no cover
-            _layer_type = GrpcLayerType.CONDUCTING_LAYER
-        elif layer_type == "airlines":  # pragma: no cover
-            _layer_type = GrpcLayerType.AIRLINES_LAYER
-        elif layer_type == "error":  # pragma: no cover
-            _layer_type = GrpcLayerType.ERRORS_LAYER
-        elif layer_type == "symbol":  # pragma: no cover
-            _layer_type = GrpcLayerType.SYMBOL_LAYER
-        elif layer_type == "measure":  # pragma: no cover
-            _layer_type = GrpcLayerType.MEASURE_LAYER
-        elif layer_type == "assembly":  # pragma: no cover
-            _layer_type = GrpcLayerType.ASSEMBLY_LAYER
-        elif layer_type == "silkscreen":  # pragma: no cover
-            _layer_type = GrpcLayerType.SILKSCREEN_LAYER
-        elif layer_type == "soldermask":  # pragma: no cover
-            _layer_type = GrpcLayerType.SOLDER_MASK_LAYER
-        elif layer_type == "solderpaste":  # pragma: no cover
-            _layer_type = GrpcLayerType.SOLDER_PASTE_LAYER
-        elif layer_type == "glue":  # pragma: no cover
-            _layer_type = GrpcLayerType.GLUE_LAYER
-        elif layer_type == "wirebond":  # pragma: no cover
-            _layer_type = GrpcLayerType.WIREBOND_LAYER
-        elif layer_type == "user":  # pragma: no cover
-            _layer_type = GrpcLayerType.USER_LAYER
-        elif layer_type == "siwavehfsssolverregions":  # pragma: no cover
-            _layer_type = GrpcLayerType.SIWAVE_HFSS_SOLVER_REGIONS
-        elif layer_type == "outline":  # pragma: no cover
-            _layer_type = GrpcLayerType.OUTLINE_LAYER
-        elif layer_type == "postprocessing":  # pragma: no cover
-            _layer_type = GrpcLayerType.POST_PROCESSING_LAYER
-        else:  # pragma: no cover
-            _layer_type = GrpcLayerType.UNDEFINED_LAYER_TYPE
-
-        result = Layer.create(layer_name, _layer_type)
-        return result
+        layer = Layer.create(layer_name, layer_type)
+        self.core.add_layer_top(layer.core)
+        return layer
 
     def add_outline_layer(self, name: str = "Outline") -> bool:
         """Add an outline layer named "Outline" if it is not present.
@@ -798,8 +865,9 @@ class Stackup(LayerCollection):
         >>> edb = Edb()
         >>> edb.stackup.add_outline_layer()
         """
-        return self.add_document_layer(name="Outline", layer_type="outline")
+        return self.add_layer(layer_name="Outline", layer_type="outline")
 
+    @deprecate_argument_name({"fillMaterial": "filling_material"})
     def add_layer(
         self,
         layer_name: str,
@@ -807,7 +875,7 @@ class Stackup(LayerCollection):
         method: str = "add_on_top",
         layer_type: str = "signal",
         material: str = "copper",
-        fillMaterial: str = "FR4_epoxy",
+        filling_material: str = "FR4_epoxy",
         thickness: Union[str, float] = "35um",
         etch_factor: Optional[float] = None,
         is_negative: bool = False,
@@ -848,7 +916,7 @@ class Stackup(LayerCollection):
             - ``"user"``
         material : str, optional
             Material of the layer.
-        fillMaterial : str, optional
+        filling_material : str, optional
             Fill material of the layer.
         thickness : str, float, optional
             Thickness of the layer.
@@ -871,8 +939,8 @@ class Stackup(LayerCollection):
             return False
         if not material:
             material = "copper" if layer_type == "signal" else "FR4_epoxy"
-        if not fillMaterial:
-            fillMaterial = "FR4_epoxy"
+        if not filling_material:
+            filling_material = "FR4_epoxy"
 
         materials = self._pedb.materials
         if material not in materials:
@@ -883,19 +951,19 @@ class Stackup(LayerCollection):
             else:
                 logger.warning(f"Material {material} not found. Check the library and retry.")
 
-        if layer_type != "dielectric" and fillMaterial not in materials:
-            material_properties = self._pedb.materials.read_syslib_material(fillMaterial)
+        if layer_type != "dielectric" and filling_material not in materials:
+            material_properties = self._pedb.materials.read_syslib_material(filling_material)
             if material_properties:
-                logger.info(f"Material {fillMaterial} found in syslib. Adding it to aedb project.")
-                materials.add_material(fillMaterial, **material_properties)
+                logger.info(f"Material {filling_material} found in syslib. Adding it to aedb project.")
+                materials.add_material(filling_material, **material_properties)
             else:
-                logger.warning(f"Material {fillMaterial} not found. Check the library and retry.")
+                logger.warning(f"Material {filling_material} not found. Check the library and retry.")
 
         if layer_type in ["signal", "dielectric"]:
             new_layer = self._create_stackup_layer(layer_name, thickness, layer_type)
-            new_layer.set_material(material)
+            new_layer.core.set_material(material)
             if layer_type != "dielectric":
-                new_layer.set_fill_material(fillMaterial)
+                new_layer.core.set_fill_material(filling_material)
             new_layer.negative = is_negative
             l1 = len(self.layers)
             if method == "add_at_elevation" and elevation:
@@ -907,11 +975,151 @@ class Stackup(LayerCollection):
             self._set_layout_stackup(new_layer, method, base_layer)
             if len(self.layers) == l1:
                 self._set_layout_stackup(new_layer, method, base_layer, method=2)
+            if layer_name in self.layers:
+                return True
         else:
-            new_layer = self._create_nonstackup_layer(layer_name, layer_type)
-            self._set_layout_stackup(new_layer, "non_stackup")
-            return self.non_stackup_layers[layer_name]
-        return self.layers[layer_name]
+            self._create_nonstackup_layer(layer_name, layer_type)
+            if layer_name in self.non_stackup_layers:
+                return True
+            return False
+        return False
+
+    def add_layer_top(self, name: str, layer_type: str = "signal", **kwargs) -> Union["Layer", None]:
+        """Add a layer on top of the stackup.
+
+        Parameters
+        ----------
+        name : str
+            Name of the layer.
+        layer_type : str, optional
+            Type of the layer. The default is ``"signal"``. Options are ``"signal"`` and ``"dielectric"``.
+        **kwargs : dict, optional
+            Additional keyword arguments. Possible keys are:
+            - ``thickness`` : float, layer thickness.
+            - ``material`` : str, layer material.
+
+        Returns
+        -------
+        :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
+            Layer object created.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> top_layer = edb.stackup.add_layer_top(
+        ...     "NewTopLayer", layer_type="signal", thickness="0.1mm", material="copper"
+        ... )
+        """
+        return self.layer_collection.add_layer_top(name, layer_type, **kwargs)
+
+    def add_layer_bottom(self, name: str, layer_type: str = "signal", **kwargs) -> Union["Layer", None]:
+        """Add a layer at the bottom of the stackup.
+
+        Parameters
+        ----------
+        name : str
+            Name of the layer.
+        layer_type : str, optional
+            Type of the layer. The default is ``"signal"``. Options are ``"signal"`` and ``"dielectric"``.
+        **kwargs : dict, optional
+            Additional keyword arguments. Possible keys are:
+            - ``thickness`` : float, layer thickness.
+            - ``material`` : str, layer material.
+
+        Returns
+        -------
+        :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
+            Layer object created.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> bot_layer = edb.stackup.add_layer_bottom(
+        ...     "NewBottomLayer", layer_type="signal", thickness="0.1mm", material="copper"
+        ... )
+        """
+        return self.layer_collection.add_layer_bottom(name, layer_type, **kwargs)
+
+    def add_layer_below(
+        self, name: str, base_layer_name: str, layer_type: str = "signal", **kwargs
+    ) -> Union["Layer", None]:
+        """Add a layer below a specified layer.
+
+        Parameters
+        ----------
+        name : str
+            Name of the layer.
+        base_layer_name : str
+            Name of the base layer.
+        layer_type : str, optional
+            Type of the layer. The default is ``"signal"``. Options are ``"signal"`` and ``"dielectric"``.
+        **kwargs : dict, optional
+            Additional keyword arguments. Possible keys are:
+            - ``thickness`` : float, layer thickness.
+            - ``material`` : str, layer material.
+
+        Returns
+        -------
+        :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
+            Layer object created.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> new_layer = edb.stackup.add_layer_below("NewLayer", "TopLayer", layer_type="dielectric", thickness="0.05mm")
+        """
+        return self.layer_collection.add_layer_below(name, base_layer_name, layer_type, **kwargs)
+
+    def add_layer_above(
+        self, name: str, base_layer_name: str, layer_type: str = "signal", **kwargs
+    ) -> Union["Layer", None]:
+        """Add a layer above a specified layer.
+
+        Parameters
+        ----------
+        name : str
+            Name of the layer.
+        base_layer_name : str
+            Name of the base layer.
+        layer_type : str, optional
+            Type of the layer. The default is ``"signal"``. Options are ``"signal"`` and ``"dielectric"``.
+        **kwargs : dict, optional
+            Additional keyword arguments. Possible keys are:
+            - ``thickness`` : float, layer thickness.
+            - ``material`` : str, layer material.
+
+        Returns
+        -------
+        :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
+            Layer object created.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> new_layer = edb.stackup.add_layer_above("NewLayer", "BottomLayer", layer_type="signal", thickness="0.05mm")
+        """
+        return self.layer_collection.add_layer_above(name, base_layer_name, layer_type, **kwargs)
+
+    @property
+    def layers_by_id(self) -> List[List[Union[int, str]]]:
+        """Retrieve the list of layers with their IDs.
+
+        Returns
+        -------
+        list[list[int, str]]
+            List of layers with their IDs and names.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> layers_by_id = edb.stackup.layers_by_id
+        """
+        return self.layer_collection.layers_by_id
 
     def remove_layer(self, name: str) -> bool:
         """Remove a layer from stackup.
@@ -929,9 +1137,9 @@ class Stackup(LayerCollection):
         new_layer_collection = LayerCollection.create()
         for layer_name, lyr in self.layers.items():
             if not (layer_name == name):
-                new_layer_collection.add_layer_bottom(lyr)
+                new_layer_collection.core.add_layer_bottom(lyr.core)
 
-        self._pedb.layout.layer_collection = new_layer_collection
+        self._pedb.layout.core.layer_collection = new_layer_collection.core
         return True
 
     def export(self, fpath: str, file_format: str = "xml", include_material_with_layer: bool = False) -> bool:
@@ -1082,11 +1290,11 @@ class Stackup(LayerCollection):
             - Lower layer bottom elevation
         """
         if only_metals:
-            input_layers = GrpcLayerTypeSet.SIGNAL_LAYER_SET
+            input_layers = CoreLayerTypeSet.SIGNAL_LAYER_SET
         else:
-            input_layers = GrpcLayerTypeSet.STACKUP_LAYER_SET
+            input_layers = CoreLayerTypeSet.STACKUP_LAYER_SET
 
-        res = self.get_top_bottom_stackup_layers(input_layers)
+        res = self.core.get_top_bottom_stackup_layers(input_layers)
         upper_layer = res[0]
         upper_layer_top_elevationm = res[1]
         lower_layer = res[2]
@@ -1113,7 +1321,7 @@ class Stackup(LayerCollection):
             new_lc = LayerCollection.create()
             new_lc.mode = lc.mode
             max_elevation = 0.0
-            for layer in lc.get_layers(GrpcLayerTypeSet.STACKUP_LAYER_SET):
+            for layer in lc.get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET):
                 if "RadBox" not in layer.name:  # Ignore RadBox
                     lower_elevation = Value(layer.clone().lower_elevation) * 1.0e6
                     upper_elevation = Value(layer.Clone().upper_elevation) * 1.0e6
@@ -1130,23 +1338,23 @@ class Stackup(LayerCollection):
                     updated_lower_el = max_elevation - upper_elevation
                     val = Value(f"{updated_lower_el}um")
                     cloned_layer.lower_elevation = val
-                    if cloned_layer.top_bottom_association == GrpcTopBottomAssociation.TOP_ASSOCIATED:
-                        cloned_layer.top_bottom_association = GrpcTopBottomAssociation.BOTTOM_ASSOCIATED
+                    if cloned_layer.top_bottom_association == CoreTopBottomAssociation.TOP_ASSOCIATED:
+                        cloned_layer.top_bottom_association = CoreTopBottomAssociation.BOTTOM_ASSOCIATED
                     else:
-                        cloned_layer.top_bottom_association = GrpcTopBottomAssociation.TOP_BOTTOM_ASSOCIATION_COUNT
+                        cloned_layer.top_bottom_association = CoreTopBottomAssociation.TOP_BOTTOM_ASSOCIATION_COUNT
                     new_lc.add_stackup_layer_at_elevation(cloned_layer)
 
-            vialayers = [lay for lay in lc.get_layers(GrpcLayerTypeSet.STACKUP_LAYER_SET) if lay.clone().is_via_layer]
+            vialayers = [lay for lay in lc.get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET) if lay.clone().is_via_layer]
             for layer in vialayers:
                 cloned_via_layer = layer.clone()
                 upper_ref_name = cloned_via_layer.get_ref_layer_name(True)
                 lower_ref_name = cloned_via_layer.get_ref_layer_name(False)
-                upper_ref = [lay for lay in lc.Layers(GrpcLayerTypeSet.ALL_LAYER_SET) if lay.name == upper_ref_name][0]
-                lower_ref = [lay for lay in lc.Layers(GrpcLayerTypeSet.ALL_LAYER_SET) if lay.name == lower_ref_name][0]
+                upper_ref = [lay for lay in lc.Layers(CoreLayerTypeSet.ALL_LAYER_SET) if lay.name == upper_ref_name][0]
+                lower_ref = [lay for lay in lc.Layers(CoreLayerTypeSet.ALL_LAYER_SET) if lay.name == lower_ref_name][0]
                 cloned_via_layer.set_ref_layer(lower_ref, True)
                 cloned_via_layer.set_ref_layer(upper_ref, False)
                 ref_layer_in_flipped_stackup = [
-                    lay for lay in new_lc.get_layers(GrpcLayerTypeSet.ALL_LAYER_SET) if lay.name == upper_ref_name
+                    lay for lay in new_lc.get_layers(CoreLayerTypeSet.ALL_LAYER_SET) if lay.name == upper_ref_name
                 ][0]
                 via_layer_lower_elevation = (
                     ref_layer_in_flipped_stackup.lower_elevation + ref_layer_in_flipped_stackup.thickness
@@ -1161,31 +1369,31 @@ class Stackup(LayerCollection):
                 cmp_type = cmp.type
                 cmp_prop = cmp.component_property
                 try:
-                    if cmp_prop.solder_ball_property.placement == GrpcSolderballPlacement.ABOVE_PADSTACK:
+                    if cmp_prop.solder_ball_property.placement == CoreSolderballPlacement.ABOVE_PADSTACK:
                         sball_prop = cmp_prop.solder_ball_property
-                        sball_prop.placement = GrpcSolderballPlacement.BELOW_PADSTACK
+                        sball_prop.placement = CoreSolderballPlacement.BELOW_PADSTACK
                         cmp_prop.solder_ball_property = sball_prop
-                    elif cmp_prop.solder_ball_property.placement == GrpcSolderballPlacement.BELOW_PADSTACK:
+                    elif cmp_prop.solder_ball_property.placement == CoreSolderballPlacement.BELOW_PADSTACK:
                         sball_prop = cmp_prop.solder_ball_property
-                        sball_prop.placement = GrpcSolderballPlacement.ABOVE_PADSTACK
+                        sball_prop.placement = CoreSolderballPlacement.ABOVE_PADSTACK
                         cmp_prop.solder_ball_property = sball_prop
                 except Exception as e:
                     self._logger.warning(
                         f"A(n) {type(e).__name__} error occurred while attempting to update "
                         f"solder_ball_property for component {cmp}: {str(e)}"
                     )
-                if cmp_type == GrpcComponentType.IC:
+                if cmp_type == CoreComponentType.IC:
                     die_prop = cmp_prop.die_property
                     chip_orientation = die_prop.die_orientation
-                    if chip_orientation == GrpcDieOrientation.CHIP_DOWN:
-                        die_prop.die_orientation = GrpcDieOrientation.CHIP_UP
-                        cmp_prop.die_property = die_prop
+                    if chip_orientation == CoreDieOrientation.CHIP_DOWN:
+                        die_prop.die_orientation = CoreDieOrientation.CHIP_UP
+                        cmp_prop.solder_ball_property = die_prop
                     else:
-                        die_prop.die_orientation = GrpcDieOrientation.CHIP_DOWN
-                        cmp_prop.die_property = die_prop
+                        die_prop.die_orientation = CoreDieOrientation.CHIP_DOWN
+                        cmp_prop.solder_ball_property = die_prop
                 cmp.component_property = cmp_prop
 
-            lay_list = new_lc.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
+            lay_list = new_lc.get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
             for padstack in list(self._pedb.padstacks.instances.values()):
                 start_layer_id = [lay.id for lay in lay_list if lay.name == padstack.start_layer]
                 stop_layer_id = [lay.id for lay in lay_list if lay.name == padstack.stop_layer]
@@ -1349,9 +1557,9 @@ class Stackup(LayerCollection):
         if edb_cell.name not in self._pedb.cell_names:
             list_cells = self._pedb.copy_cells([edb_cell])
             edb_cell = list_cells[0]
-        self._pedb.layout.cell.is_blackbox = True
-        cell_inst2 = GrpcCellInstance.create(
-            layout=edb_cell.layout, name=self._pedb.layout.cell.name, ref=self._pedb.active_layout
+        self._pedb.active_cell.is_blackbox = True
+        cell_inst2 = CoreCellInstance.create(
+            layout=edb_cell.layout, name=self._pedb.active_cell.name, ref=self._pedb.active_layout
         )
         cell_trans = cell_inst2.transform
         cell_trans.rotation = _angle
@@ -1363,9 +1571,9 @@ class Stackup(LayerCollection):
         stackup_target = edb_cell.layout.layer_collection
 
         if place_on_top:
-            cell_inst2.placement_layer = stackup_target.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)[0]
+            cell_inst2.placement_layer = stackup_target.get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)[0]
         else:
-            cell_inst2.placement_layer = stackup_target.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)[-1]
+            cell_inst2.placement_layer = stackup_target.get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)[-1]
         return True
 
     def place_in_layout_3d_placement(
@@ -1424,7 +1632,7 @@ class Stackup(LayerCollection):
         if solder_height <= 0:
             if flipped_stackup and not place_on_top or (place_on_top and not flipped_stackup):
                 minimum_elevation = None
-                layers_from_the_bottom = sorted(self.signal_layers.values(), key=lambda lay: lay.upper_elevation)
+                layers_from_the_bottom = sorted(self.layers.values(), key=lambda lay: lay.upper_elevation)
                 for lay in layers_from_the_bottom:
                     if minimum_elevation is None:
                         minimum_elevation = lay.lower_elevation
@@ -1435,7 +1643,7 @@ class Stackup(LayerCollection):
                     self._remove_solder_pec(lay.name)
             else:
                 maximum_elevation = None
-                layers_from_the_top = sorted(self.signal_layers.values(), key=lambda lay: -lay.upper_elevation)
+                layers_from_the_top = sorted(self.layers.values(), key=lambda lay: -lay.upper_elevation)
                 for lay in layers_from_the_top:
                     if maximum_elevation is None:
                         maximum_elevation = lay.upper_elevation
@@ -1456,23 +1664,22 @@ class Stackup(LayerCollection):
         if edb_cell.name not in self._pedb.cell_names:
             list_cells = self._pedb.copy_cells(edb_cell)
             edb_cell = list_cells[0]
-        self._pedb.layout.cell.is_blackbox = True
-        cell_inst2 = GrpcCellInstance.create(
-            layout=edb_cell.layout, name=self._pedb.layout.cell.name, ref=self._pedb.active_layout
+        self._pedb.active_cell.is_blackbox = True
+        cell_inst2 = CoreCellInstance.create(
+            layout=edb_cell.layout, name=self._pedb.active_cell.name, ref=self._pedb.active_layout.core
         )
 
         stackup_target = edb_cell.layout.layer_collection
-        stackup_source = self._pedb.layout.layer_collection
-
+        stackup_source = self._pedb.layout.core.layer_collection
         if place_on_top:
-            cell_inst2.placement_layer = list(LayerCollection(self._pedb, stackup_target).layers.values())[0]
+            cell_inst2.placement_layer = list(LayerCollection(self._pedb, stackup_target).layers.values())[0].core
         else:
-            cell_inst2.placement_layer = list(LayerCollection(self._pedb, stackup_target).layers.values())[-1]
+            cell_inst2.placement_layer = list(LayerCollection(self._pedb, stackup_target).layers.values())[-1].core
         cell_inst2.placement_3d = True
-        res = stackup_target.get_top_bottom_stackup_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
+        res = stackup_target.get_top_bottom_stackup_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
         target_top_elevation = res[1]
         target_bottom_elevation = res[3]
-        res_s = stackup_source.get_top_bottom_stackup_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
+        res_s = stackup_source.get_top_bottom_stackup_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
         source_stack_top_elevation = res_s[1]
         source_stack_bot_elevation = res_s[3]
 
@@ -1491,10 +1698,10 @@ class Stackup(LayerCollection):
 
         zero_data = Value(0.0)
         one_data = Value(1.0)
-        point3d_t = GrpcPoint3DData(_offset_x, _offset_y, h_stackup)
-        point_loc = GrpcPoint3DData(zero_data, zero_data, zero_data)
-        point_from = GrpcPoint3DData(one_data, zero_data, zero_data)
-        point_to = GrpcPoint3DData(math.cos(_angle), -1 * math.sin(_angle), zero_data)
+        point3d_t = CorePoint3DData(_offset_x, _offset_y, h_stackup)
+        point_loc = CorePoint3DData(zero_data, zero_data, zero_data)
+        point_from = CorePoint3DData(one_data, zero_data, zero_data)
+        point_to = CorePoint3DData(math.cos(_angle), -1 * math.sin(_angle), zero_data)
         transform = cell_inst2.transform3d.create_from_one_axis_to_another(from_axis=point_from, to_axis=point_to)
         cell_inst2.transform3d = transform
         transform = cell_inst2.transform3d.create_from_axis_and_angle(axis=point_loc, angle=angle)
@@ -1514,7 +1721,7 @@ class Stackup(LayerCollection):
         flipped_stackup: bool = True,
         place_on_top: bool = True,
         solder_height: float = 0,
-    ) -> GrpcCellInstance:
+    ) -> CoreCellInstance:
         """Place a component instance in the layout using 3D placement.
 
         Parameters
@@ -1547,7 +1754,7 @@ class Stackup(LayerCollection):
             if flipped_stackup and not place_on_top or (place_on_top and not flipped_stackup):
                 minimum_elevation = None
                 layers_from_the_bottom = sorted(
-                    component_edb.stackup.signal_layers.values(), key=lambda lay: lay.upper_elevation
+                    component_edb.stackup.layers.values(), key=lambda lay: lay.upper_elevation
                 )
                 for lay in layers_from_the_bottom:
                     if minimum_elevation is None:
@@ -1560,7 +1767,7 @@ class Stackup(LayerCollection):
             else:
                 maximum_elevation = None
                 layers_from_the_top = sorted(
-                    component_edb.stackup.signal_layers.values(), key=lambda lay: -lay.upper_elevation
+                    component_edb.stackup.layers.values(), key=lambda lay: -lay.upper_elevation
                 )
                 for lay in layers_from_the_top:
                     if maximum_elevation is None:
@@ -1591,20 +1798,22 @@ class Stackup(LayerCollection):
 
         instance_name = generate_unique_name(edb_cell.name, n=2)
 
-        cell_inst2 = GrpcCellInstance.create(layout=self._pedb.active_layout, name=instance_name, ref=edb_cell.layout)
+        cell_inst2 = CoreCellInstance.create(
+            layout=self._pedb.active_layout.core, name=instance_name, ref=edb_cell.layout
+        )
 
         stackup_source = edb_cell.layout.layer_collection
-        stackup_target = self._pedb.layout.layer_collection
+        stackup_target = self._pedb.layout.core.layer_collection
 
         if place_on_top:
-            cell_inst2.placement_layer = stackup_target.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)[0]
+            cell_inst2.placement_layer = stackup_target.get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)[0]
         else:
-            cell_inst2.placement_layer = stackup_target.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)[-1]
+            cell_inst2.placement_layer = stackup_target.get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)[-1]
         cell_inst2.placement_3d = True
-        res = stackup_target.get_top_bottom_stackup_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
+        res = stackup_target.get_top_bottom_stackup_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
         target_top_elevation = res[1]
         target_bottom_elevation = res[3]
-        res_s = stackup_source.get_top_bottom_stackup_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
+        res_s = stackup_source.get_top_bottom_stackup_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
         source_stack_top_elevation = res_s[1]
         source_stack_bot_elevation = res_s[3]
 
@@ -1623,10 +1832,10 @@ class Stackup(LayerCollection):
 
         zero_data = Value(0.0)
         one_data = Value(1.0)
-        point3d_t = GrpcPoint3DData(_offset_x, _offset_y, h_stackup)
-        point_loc = GrpcPoint3DData(zero_data, zero_data, zero_data)
-        point_from = GrpcPoint3DData(one_data, zero_data, zero_data)
-        point_to = GrpcPoint3DData(math.cos(_angle), -1 * math.sin(_angle), zero_data)
+        point3d_t = CorePoint3DData(_offset_x, _offset_y, h_stackup)
+        point_loc = CorePoint3DData(zero_data, zero_data, zero_data)
+        point_from = CorePoint3DData(one_data, zero_data, zero_data)
+        point_to = CorePoint3DData(math.cos(_angle), -1 * math.sin(_angle), zero_data)
         transform = cell_inst2.transform3d.create_from_axis_and_angle(axis=point_loc, angle=angle)
         cell_inst2.transform3d = transform
         transform = cell_inst2.transform3d.create_from_one_axis_to_another(point_from, point_to)
@@ -1684,12 +1893,12 @@ class Stackup(LayerCollection):
         ...     place_on_top=True,
         ... )
         """
-        rotation_axis_from = GrpcPoint3DData(1.0, 0.0, 0.0)
+        rotation_axis_from = CorePoint3DData(1.0, 0.0, 0.0)
         _angle = angle * math.pi / 180.0
-        rotation_axis_to = GrpcPoint3DData(math.cos(_angle), -1 * math.sin(_angle), 0.0)
+        rotation_axis_to = CorePoint3DData(math.cos(_angle), -1 * math.sin(_angle), 0.0)
 
-        stackup_target = LayerCollection(self._pedb, self._pedb.layout.layer_collection)
-        res = stackup_target.get_top_bottom_stackup_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
+        stackup_target = LayerCollection(self._pedb, self._pedb.layout.core.layer_collection)
+        res = stackup_target.core.get_top_bottom_stackup_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
         target_top_elevation = res[1]
         target_bottom_elevation = res[3]
         flip_angle = Value("0deg")
@@ -1699,8 +1908,8 @@ class Stackup(LayerCollection):
             flip_angle = Value("180deg")
             elevation = target_bottom_elevation - offset_z
         h_stackup = Value(elevation)
-        location = GrpcPoint3DData(offset_x, offset_y, h_stackup)
-        mcad_model = GrpcMcadModel.create_3d_comp(layout=self._pedb.active_layout, filename=a3dcomp_path)
+        location = CorePoint3DData(offset_x, offset_y, h_stackup)
+        mcad_model = CoreMcadModel.create_3d_comp(layout=self._pedb.active_layout.core, filename=a3dcomp_path)
         if mcad_model.is_null:  # pragma: no cover
             logger.error("Failed to create MCAD model from a3dcomp")
             return False
@@ -1887,10 +2096,9 @@ class Stackup(LayerCollection):
                     fillMaterial=default_layer["dielectric_fill"],
                     thickness=default_layer["thickness"],
                 )
-
-            new_layer.color = default_layer["color"]
+            new_layer = self.layers[layer_name]
+            new_layer.color = tuple(default_layer["color"])
             new_layer.etch_factor = default_layer["etch_factor"]
-
             new_layer.roughness_enabled = default_layer["roughness_enabled"]
             new_layer.top_hallhuray_nodule_radius = default_layer["top_hallhuray_nodule_radius"]
             new_layer.top_hallhuray_surface_ratio = default_layer["top_hallhuray_surface_ratio"]
@@ -1898,7 +2106,6 @@ class Stackup(LayerCollection):
             new_layer.bottom_hallhuray_surface_ratio = default_layer["bottom_hallhuray_surface_ratio"]
             new_layer.side_hallhuray_nodule_radius = default_layer["side_hallhuray_nodule_radius"]
             new_layer.side_hallhuray_surface_ratio = default_layer["side_hallhuray_surface_ratio"]
-
         return True
 
     def _import_json(self, file_path: str, rename: bool = False) -> bool:
@@ -1948,19 +2155,19 @@ class Stackup(LayerCollection):
                 layer.type = layer_type
             else:
                 layer = self.add_layer(name, layer_type=layer_type, material="copper", fillMaterial="copper")
-
+            layer = self.layers[name]
             layer.material = layer_info.Material
             layer.thickness = layer_info.Thickness
             if not str(layer_info.Dielectric_Fill) == "nan":
                 layer.dielectric_fill = layer_info.Dielectric_Fill
 
-        lc_new = GrpcLayerCollection.create()
+        lc_new = CoreLayerCollection.create()
         for name, _ in df.iterrows():
             layer = self.layers[name]
-            lc_new.add_layer_bottom(layer)
+            lc_new.add_layer_bottom(layer.core)
 
         for name, layer in self.non_stackup_layers.items():
-            lc_new.add_layer_bottom(layer)
+            lc_new.add_layer_bottom(layer.core)
 
         self._pedb.layout.layer_collection = lc_new
         return True
@@ -2017,7 +2224,7 @@ class Stackup(LayerCollection):
                         lyr.dielectric_fill = val["FillMaterial"] if val["Type"] == "signal" else ""
                         lyr.thickness = val["Thickness"]
                         if prev_layer:
-                            self._set_layout_stackup(lyr._edb_layer, "change_position", prev_layer)
+                            self._set_layout_stackup(lyr.core, "change_position", prev_layer)
                     else:
                         if prev_layer and prev_layer in self.layers:
                             layer_name = prev_layer

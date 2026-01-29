@@ -25,7 +25,7 @@ warnings, profiling data, and completion status.
 - JSON export capability
 
 
-Quick Start
+Quick start
 -----------
 
 Basic usage:
@@ -120,7 +120,7 @@ Profile entries
 Block parsers (advanced usage)
 -------------------------------
 
-These parsers handle specific sections of the log file. Most users will not need
+These parsers handle specific sections of the log file. Most users does not need
 to use them directly, as they are orchestrated by :class:`SiwaveLogParser`.
 
 .. autoclass:: HeaderBlockParser
@@ -268,7 +268,7 @@ Export to JSON
    data = log.to_dict()
 
 
-See Also
+See also
 --------
 
 - :ref:`hfss_log_parser_api` - HFSS log parser with similar functionality

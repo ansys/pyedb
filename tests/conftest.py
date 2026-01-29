@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -34,6 +34,9 @@ import pytest
 
 from pyedb.generic.design_types import Edb
 from pyedb.generic.filesystem import Scratch
+from pyedb.generic.settings import settings
+
+settings.enable_global_log_file = False
 
 local_path = os.path.dirname(os.path.realpath(__file__))
 example_models_path = Path(__file__).parent / "example_models"
@@ -103,7 +106,7 @@ def local_scratch(init_scratch):
 
 
 class EdbExamples:
-    def __init__(self, local_scratch, grpc=False):
+    def __init__(self, local_scratch: Scratch, grpc=False):
         self.grpc = grpc
         self.local_scratch = local_scratch
         self.example_models_path = example_models_path
@@ -112,9 +115,14 @@ class EdbExamples:
     def get_local_file_folder(self, name):
         return os.path.join(self.local_scratch.path, name)
 
-    def _create_test_folder(self):
+    def _create_test_folder(self, name=None):
         """Create a local folder under `local_scratch`."""
-        self.test_folder = os.path.join(self.local_scratch.path, generate_random_string(6))
+        if name:
+            temp = Path(self.local_scratch.path) / name
+            temp.mkdir(parents=True, exist_ok=True)
+            self.test_folder = str(temp)
+        else:
+            self.test_folder = os.path.join(self.local_scratch.path, generate_random_string(6))
         return self.test_folder
 
     def _copy_file_folder_into_local_folder(self, file_folder_path):
@@ -147,6 +155,11 @@ class EdbExamples:
     def get_si_verse(self, edbapp=True, additional_files_folders="", version=None):
         return self._get_test_board(
             edbapp, additional_files_folders, version, source_file_path="si_verse/ANSYS-HSD_V1.aedb"
+        )
+
+    def get_wirebond_jedec4_project(self, edbapp=True, additional_files_folders="", version=None):
+        return self._get_test_board(
+            edbapp, additional_files_folders, version, source_file_path="wirebond_projects/test_wb_jedec4.aedb"
         )
 
     def get_si_verse_sfp(self, edbapp=True, additional_files_folders="", version=None):

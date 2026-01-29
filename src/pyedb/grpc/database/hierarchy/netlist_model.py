@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.hierarchy.netlist_model import NetlistModel as GrpcNetlistModel
+from ansys.edb.core.hierarchy.netlist_model import NetlistModel as CoreNetlistModel
 
 
-class NetlistModel(GrpcNetlistModel):
+class NetlistModel(CoreNetlistModel):
     """Manage :class:`NetlistModel <ansys.edb.core.hierarchy.netlist_model.NetlistModel>`."""
 
     def __init__(self):

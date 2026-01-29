@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -372,6 +372,11 @@ class PinGroup(object):
         name : str, optional
             Name of the terminal.
         """
+        existing_terminal = self.terminal
+        if existing_terminal is not None:
+            self._pedb.logger.warning(f"Terminal already exists on pin group {self.name}.")
+            return existing_terminal
+
         if not name:
             name = generate_unique_name(self.name)
         from pyedb.dotnet.database.cell.terminal.pingroup_terminal import (

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -64,6 +64,7 @@ class PinGroupTerminal(Terminal):
         else:
             return term
 
+    @property
     def pin_group(self):
         """Gets the pin group the terminal refers to."""
         name = self._edb_object.GetPinGroup().GetName()

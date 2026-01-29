@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -25,7 +25,7 @@ from pyedb.generic.constants import NodeType, SourceType
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 
 
-class Node(object):
+class Node:
     """Provides for handling nodes for Siwave sources."""
 
     def __init__(self):

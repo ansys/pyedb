@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,11 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.layout.cell import Cell as GrpcCell
 
-
-class Cell(GrpcCell):
+class Cell:
     """Manage :class:`Cell <ansys.edb.core.layout.cell.Cell>`"""
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+    def __init__(self, pedb, core):
+        self.core = core
+        self._pedb = pedb

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -43,6 +43,16 @@ import tempfile
 import time
 import traceback
 from typing import Dict
+
+# Backwards-compatible re-exports (decorators were moved to pyedb.misc.decorators)
+from pyedb.misc.decorators import deprecate_argument_name, execution_timer
+
+__all__ = [
+    "installed_ansys_em_versions",
+    "get_filename_without_extension",
+    "deprecate_argument_name",
+    "execution_timer",
+]
 
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.settings import settings

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -203,7 +203,7 @@ class GrpcCutout:
                 _polys.append(rectangle_data)
         for prim in self._edb.modeler.primitives:
             if prim is not None and prim.net_name in self.signals:
-                _polys.append(prim.polygon_data)
+                _polys.append(prim.core.polygon_data)
         if self.smart_cutout:
             objs_data = self._smart_cut()
             if objs_data:
@@ -248,20 +248,20 @@ class GrpcCutout:
             unite_polys = []
             for i in _polys:
                 if hasattr(i, "polygon_data"):
-                    obj_data = i.polygon_data.expand(
+                    obj_data = i.polygon_data.core.expand(
                         offset=expansion_size,
                         round_corner=self.use_round_corner,
                         max_corner_ext=expansion_size,
                         tol=tolerance,
                     )
                 else:
-                    obj_data = i.expand(
+                    obj_data = i.core.expand(
                         offset=expansion_size,
                         round_corner=self.use_round_corner,
                         max_corner_ext=expansion_size,
                         tol=tolerance,
                     )
-                if self.include_voids_in_extents and hasattr(i, "polygon_data") and i.has_voids and obj_data:
+                if self.include_voids_in_extents and hasattr(i, "polygon_data") and i.core.has_voids and obj_data:
                     for void in i.voids:
                         void_data = void.polygon_data.expand(
                             offset=-1 * expansion_size,
@@ -336,17 +336,17 @@ class GrpcCutout:
                     "SParameterModel",
                     "NetlistModel",
                 ] and list(set(el.nets[:]) & set(self.signals[:])):
-                    _pins_to_preserve.extend([i.edb_uid for i in el.pins.values()])
+                    _pins_to_preserve.extend([i.id for i in el.pins.values()])
                     _nets_to_preserve.extend(el.nets)
         if self.include_pingroups:
             for pingroup in self._edb.padstacks.pingroups:
                 for pin in pingroup.pins.values():
                     if pin.net_name in self.references:
-                        _pins_to_preserve.append(pin.edb_uid)
+                        _pins_to_preserve.append(pin.id)
         return _pins_to_preserve, _nets_to_preserve
 
     def _compute_pyaedt_extent(self):
-        signal_nets = [self._edb.nets.nets[n] for n in self.signals]
+        signal_nets = [self._edb.nets.nets[n].core for n in self.signals]
 
         if str(self.extent_type).lower() in ["conforming", "conformal", "1"]:
             _poly = self._create_conformal(
@@ -354,7 +354,7 @@ class GrpcCutout:
             )
 
         elif str(self.extent_type).lower() in ["bounding", "0", "bounding_box", "bbox", "boundingbox"]:
-            _poly = self._edb.layout.expanded_extent(
+            _poly = self._edb.layout.core.expanded_extent(
                 signal_nets,
                 GrpcExtentType.BOUNDING_BOX,
                 self.expansion_size,
@@ -432,13 +432,13 @@ class GrpcCutout:
         _poly = self._extent()
         # Create new cutout cell/design
         # validate nets in layout
-        net_signals = [net for net in self._edb.layout.nets if net.name in self.signals]
+        net_signals = [net.core for net in self._edb.layout.nets if net.name in self.signals]
 
         # reference nets in layout
-        ref_nets = [net for net in self._edb.layout.nets if net.name in self.references]
+        ref_nets = [net.core for net in self._edb.layout.nets if net.name in self.references]
 
         # validate references in layout
-        _netsClip = [net for net in self._edb.layout.nets if net.name in self.references]
+        _netsClip = [net.core for net in self._edb.layout.nets if net.name in self.references]
         included_nets_list = net_signals + ref_nets
         # included_nets = [net for net in self._edb.layout.nets if net.name in included_nets_list]
         _cutout = self._edb.active_cell.cutout(included_nets_list, _netsClip, _poly, True)
@@ -592,7 +592,7 @@ class GrpcCutout:
             if extent_poly.intersection_type(pdata) == 0:
                 prims_to_clip.append(path)
                 continue
-            if not path.set_clip_info(extent_poly, True):
+            if not path.core.set_clip_info(extent_poly, True):
                 # clipping failed – treat as polygon
                 reference_prims.append(path)
 

@@ -4,7 +4,7 @@ Security considerations
 =======================
 
 This section provides information on security considerations for the use
-of pyedb. It is important to understand the capabilities which pyedb
+of PyEDB. It is important to understand the capabilities which PyEDB
 provides, especially when using it to build applications or scripts that
 accept untrusted input.
 
@@ -18,10 +18,10 @@ In such cases, it is essential to pay close attention to:
 - **Environment variables**: Be cautious of environment variables that can
   influence the behavior of the function, particularly if they are user-defined
   or inherited from an untrusted execution context.
-- **Global settings (`settings`)**: Pyedb settings control various aspects of
+- **Global settings (`settings`)**: PyEDB settings control various aspects of
   runtime behavior such as AEDT features, use of LSF cluster or remote server
   connections. Review these settings to avoid unexpected side effects or security
   vulnerabilities.
 
 Always validate external input, avoid executing arbitrary commands or code,
-and follow the principle of least privilege when developing with pyedb.
+and follow the principle of least privilege when developing with PyEDB.

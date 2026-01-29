@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -21,8 +21,9 @@
 # SOFTWARE.
 
 from typing import Dict, List, Optional, Union
+import warnings
 
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
 from pyedb.grpc.database.definition.component_def import ComponentDef
 from pyedb.grpc.database.definition.package_def import PackageDef
@@ -33,7 +34,79 @@ class Definitions:
         self._pedb = pedb
 
     @property
-    def component(self) -> Dict[str, ComponentDef]:
+    def component_defs(self) -> Dict[str, ComponentDef]:
+        """Component definitions.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`components` instead.
+
+        """
+        warnings.warn("component_defs is deprecated, use components instead", DeprecationWarning)
+        return self.components
+
+    @property
+    def component(self):
+        """Component definitions.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`components` instead.
+
+        """
+        warnings.warn("component is deprecated, use components instead", DeprecationWarning)
+        return self.components
+
+    @property
+    def apd_bondwire_defs(self):
+        """Get all APD bondwire definitions in this Database.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`apd_bondwires` instead.
+
+        """
+        warnings.warn("apd_bondwire_defs is deprecated, use apd_bondwires instead", DeprecationWarning)
+        return self.apd_bondwires
+
+    @property
+    def jedec4_bondwire_defs(self):
+        """Get all JEDEC4 bondwire definitions in this Database.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`jedec4_bondwires` instead.
+
+        """
+        warnings.warn("jedec4_bondwire_defs is deprecated, use jedec4_bondwires instead", DeprecationWarning)
+        return self.jedec4_bondwires
+
+    @property
+    def jedec5_bondwire_defs(self):
+        """Get all JEDEC5 bondwire definitions in this Database.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`jedec5_bondwires` instead.
+
+        """
+        warnings.warn("jedec5_bondwire_defs is deprecated, use jedec5_bondwires instead", DeprecationWarning)
+        return self.jedec5_bondwires
+
+    @property
+    def package_defs(self) -> Dict[str, PackageDef]:
+        """Package definitions.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`packages` instead.
+
+        """
+        warnings.warn("package_defs is deprecated, use packages instead", DeprecationWarning)
+        return self.packages
+
+    @property
+    def components(self) -> Dict[str, ComponentDef]:
         """Component definitions
 
         Examples
@@ -47,7 +120,19 @@ class Definitions:
         return {l.name: ComponentDef(self._pedb, l) for l in self._pedb.active_db.component_defs}
 
     @property
-    def package(self) -> Dict[str, PackageDef]:
+    def package(self):
+        """Package definitions.
+
+        .. deprecated:: 0.66.0
+
+           Use :attr:`packages` instead.
+
+        """
+        warnings.warn("package is deprecated, use packages instead", DeprecationWarning)
+        return self.packages
+
+    @property
+    def packages(self) -> Dict[str, PackageDef]:
         """Package definitions.
 
         Examples
@@ -60,7 +145,65 @@ class Definitions:
         """
         return {l.name: PackageDef(self._pedb, l) for l in self._pedb.active_db.package_defs}
 
+    @property
+    def apd_bondwires(self):
+        """Get all APD bondwire definitions in this Database.
+
+        Returns
+        -------
+        list[:class:`ApdBondwireDef <ansys.edb.definition.ApdBondwireDef>`]
+        """
+        from pyedb.grpc.database.definition.wirebond_def import ApdBondwireDef
+
+        return {
+            apd_def.name.value: ApdBondwireDef(self._pedb, apd_def)
+            for apd_def in self._pedb.active_db.apd_bondwire_defs
+        }
+
+    @property
+    def jedec4_bondwires(self):
+        """Get all JEDEC4 bondwire definitions in this Database.
+
+        Returns
+        -------
+        list[:class:`Jedec4BondwireDef <ansys.edb.definition.Jedec4BondwireDef>`]
+        """
+        from pyedb.grpc.database.definition.wirebond_def import Jedec4BondwireDef
+
+        return {
+            apd_def.name.value: Jedec4BondwireDef(self._pedb, apd_def)
+            for apd_def in self._pedb.active_db.jedec4_bondwire_defs
+        }
+
+    @property
+    def jedec5_bondwires(self):
+        """Get all JEDEC5 bondwire definitions in this Database.
+
+        Returns
+        -------
+        list[:class:`Jedec5BondwireDef <ansys.edb.definition.Jedec5BondwireDef>`]
+        """
+        from pyedb.grpc.database.definition.wirebond_def import Jedec5BondwireDef
+
+        return {
+            jedec5_def.name.value: Jedec5BondwireDef(self._pedb, jedec5_def)
+            for jedec5_def in self._pedb.active_db.jedec5_bondwire_defs
+        }
+
     def add_package_def(
+        self, name: str, component_part_name: Optional[str] = None, boundary_points: Optional[List[List[float]]] = None
+    ) -> Union[PackageDef, bool]:
+        """Add a package definition.
+
+        .. deprecated:: 0.66.0
+
+           Use :meth:`add_package` instead.
+
+        """
+        warnings.warn("add_package_def is deprecated, use add_package instead", DeprecationWarning, stacklevel=2)
+        return self.add_package(name, component_part_name=component_part_name, boundary_points=boundary_points)
+
+    def add_package(
         self, name: str, component_part_name: Optional[str] = None, boundary_points: Optional[List[List[float]]] = None
     ) -> Union[PackageDef, bool]:
         """Add a package definition.
@@ -94,15 +237,15 @@ class Definitions:
         >>> if custom_pkg:
         ...     print(f"Custom package boundary: {custom_pkg.exterior_boundary}")
         """
-        if not name in self.package:
-            package_def = PackageDef.create(self._pedb.active_db, name=name)
-            if component_part_name in self.component:
-                definition = self.component[component_part_name]
+        if not name in self.packages:
+            package_def = PackageDef.create(self._pedb, name)
+            if component_part_name in self.components:
+                definition = self.components[component_part_name]
                 if not boundary_points and not definition.is_null:
-                    package_def.exterior_boundary = GrpcPolygonData(
-                        points=list(definition.components.values())[0].bounding_box
+                    package_def.exterior_boundary = CorePolygonData(
+                        points=list(definition.components.values())[0].bounding_box  # type: ignore[arg-type]
                     )
             if boundary_points:
-                package_def.exterior_boundary = GrpcPolygonData(points=boundary_points)
-            return PackageDef(self._pedb, package_def)
+                package_def.exterior_boundary = CorePolygonData(points=boundary_points)  # type: ignore[arg-type]
+            return package_def
         return False

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -694,6 +694,13 @@ class ViaDesignBackend:
             differential_signals=self.cfg["differential_signals"],
         )
         board.populate_config(cfg_json)
+        temp = []
+        for i in cfg_json["modeler"]["padstack_definitions"]:
+            i.pop("pad_diameter")
+            i.pop("hole_diameter")
+            i.pop("shape")
+            temp.append(i)
+        cfg_json["modeler"]["padstack_definitions"] = temp
 
         self.output_dir.mkdir(parents=True, exist_ok=True)
         with open(self.output_dir / "config.json", "w") as f:
