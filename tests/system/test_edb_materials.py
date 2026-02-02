@@ -64,7 +64,6 @@ MATERIAL_NAME = "DummyMaterial"
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-
     def test_material_name(self, edb_examples):
         """Evaluate material properties."""
         edbapp = edb_examples.create_empty_edb()
