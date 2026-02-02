@@ -351,16 +351,16 @@ class Configuration:
         boundaries.radiation_level = edb_hfss_extent_info.radiation_level
         boundaries.dielectric_extent_type = edb_hfss_extent_info.dielectric_extent_type
         size, is_multiple = edb_hfss_extent_info.get_dielectric_extent()
-        boundaries.dielectric_extent_size = boundaries.PaddingData(size=size,is_multiple= is_multiple)
+        boundaries.dielectric_extent_size = boundaries.PaddingData(size=size, is_multiple=is_multiple)
         boundaries.honor_user_dielectric = edb_hfss_extent_info.honor_user_dielectric
         boundaries.extent_type = edb_hfss_extent_info.extent_type
         boundaries.truncate_air_box_at_ground = edb_hfss_extent_info.truncate_air_box_at_ground
         size, is_multiple = edb_hfss_extent_info.get_air_box_horizontal_extent()
-        boundaries.air_box_horizontal_extent = boundaries.PaddingData(size=size,is_multiple= is_multiple)
+        boundaries.air_box_horizontal_extent = boundaries.PaddingData(size=size, is_multiple=is_multiple)
         size, is_multiple = edb_hfss_extent_info.get_air_box_positive_vertical_extent()
-        boundaries.air_box_positive_vertical_extent = boundaries.PaddingData(size=size,is_multiple= is_multiple)
+        boundaries.air_box_positive_vertical_extent = boundaries.PaddingData(size=size, is_multiple=is_multiple)
         size, is_multiple = edb_hfss_extent_info.get_air_box_negative_vertical_extent()
-        boundaries.air_box_negative_vertical_extent = boundaries.PaddingData(size=size,is_multiple= is_multiple)
+        boundaries.air_box_negative_vertical_extent = boundaries.PaddingData(size=size, is_multiple=is_multiple)
         boundaries.base_polygon = edb_hfss_extent_info.base_polygon
         boundaries.dielectric_base_polygon = edb_hfss_extent_info.dielectric_base_polygon
         boundaries.sync_air_box_vertical_extent = edb_hfss_extent_info.sync_air_box_vertical_extent
