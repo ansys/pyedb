@@ -30,30 +30,31 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 import re
 
-from ansys.edb.core.terminal.edge_terminal import EdgeType as GrpcEdgeType
+from ansys.edb.core.terminal.edge_terminal import EdgeType as CoreEdgeType
 from ansys.edb.core.terminal.terminal import (
-    BoundaryType as GrpcBoundaryType,
-    TerminalType as GrpcTerminalType,
+    BoundaryType as CoreBoundaryType,
+    TerminalType as CoreTerminalType,
 )
 
 from pyedb.grpc.database.primitive.primitive import Primitive
+from pyedb.grpc.database.utility.port_post_processing_prop import PortPostProcessingProp
 from pyedb.grpc.database.utility.value import Value
 
 mapping_boundary_type = {
-    "port": GrpcBoundaryType.PORT,
-    "dc_terminal": GrpcBoundaryType.DC_TERMINAL,
-    "voltage_probe": GrpcBoundaryType.VOLTAGE_PROBE,
-    "voltage_source": GrpcBoundaryType.VOLTAGE_SOURCE,
-    "current_source": GrpcBoundaryType.CURRENT_SOURCE,
-    "rlc": GrpcBoundaryType.RLC,
-    "pec": GrpcBoundaryType.PEC,
-    "portboundary": GrpcBoundaryType.PORT,
-    "kdcterminal": GrpcBoundaryType.DC_TERMINAL,
-    "kvoltageprobe": GrpcBoundaryType.VOLTAGE_PROBE,
-    "kvoltagesource": GrpcBoundaryType.VOLTAGE_SOURCE,
-    "kcurrentsource": GrpcBoundaryType.CURRENT_SOURCE,
-    "rlcboundary": GrpcBoundaryType.RLC,
-    "pecboundary": GrpcBoundaryType.PEC,
+    "port": CoreBoundaryType.PORT,
+    "dc_terminal": CoreBoundaryType.DC_TERMINAL,
+    "voltage_probe": CoreBoundaryType.VOLTAGE_PROBE,
+    "voltage_source": CoreBoundaryType.VOLTAGE_SOURCE,
+    "current_source": CoreBoundaryType.CURRENT_SOURCE,
+    "rlc": CoreBoundaryType.RLC,
+    "pec": CoreBoundaryType.PEC,
+    "portboundary": CoreBoundaryType.PORT,
+    "kdcterminal": CoreBoundaryType.DC_TERMINAL,
+    "kvoltageprobe": CoreBoundaryType.VOLTAGE_PROBE,
+    "kvoltagesource": CoreBoundaryType.VOLTAGE_SOURCE,
+    "kcurrentsource": CoreBoundaryType.CURRENT_SOURCE,
+    "rlcboundary": CoreBoundaryType.RLC,
+    "pecboundary": CoreBoundaryType.PEC,
 }
 
 
@@ -64,13 +65,17 @@ class Terminal(ConnObj):
         self._reference_object = None
 
         self._terminal_type_mapping = {
-            "edge": GrpcTerminalType.EDGE,
-            "point": GrpcTerminalType.POINT,
-            "terminal_instance": GrpcTerminalType.TERM_INST,
-            "padstack_instance": GrpcTerminalType.PADSTACK_INST,
-            "bundle": GrpcTerminalType.BUNDLE,
-            "pin_group": GrpcTerminalType.PIN_GROUP,
+            "edge": CoreTerminalType.EDGE,
+            "point": CoreTerminalType.POINT,
+            "terminal_instance": CoreTerminalType.TERM_INST,
+            "padstack_instance": CoreTerminalType.PADSTACK_INST,
+            "bundle": CoreTerminalType.BUNDLE,
+            "pin_group": CoreTerminalType.PIN_GROUP,
         }
+
+    @property
+    def port_post_processing_prop(self):
+        return PortPostProcessingProp(self.core.port_post_processing_prop)
 
     @property
     def _hfss_port_property(self):
@@ -134,11 +139,26 @@ class Terminal(ConnObj):
         bool
 
         """
-        return self.core.port_post_processing_prop.do_renormalize
+        return self.port_post_processing_prop.do_renormalize
 
     @do_renormalize.setter
     def do_renormalize(self, value):
-        self.core.port_post_processing_prop.do_renormalize = value
+        self.port_post_processing_prop.do_renormalize = value
+
+    @property
+    def renormalization_impedance(self) -> float:
+        """Get the renormalization impedance value.
+
+        Returns
+        -------
+        float
+
+        """
+        return self.port_post_processing_prop.renormalization_impedance
+
+    @renormalization_impedance.setter
+    def renormalization_impedance(self, value):
+        self.port_post_processing_prop.renormalization_impedance = value
 
     @property
     def net_name(self) -> str:
@@ -190,7 +210,7 @@ class Terminal(ConnObj):
     def boundary_type(self, value):
         if isinstance(value, str):
             value = mapping_boundary_type.get(value.lower(), None)
-        if not isinstance(value, GrpcBoundaryType):
+        if not isinstance(value, CoreBoundaryType):
             raise ValueError("Value must be a string or BoundaryType enum.")
         self.core.boundary_type = value
 
@@ -284,7 +304,7 @@ class Terminal(ConnObj):
             if self.terminal_type == "edge":
                 edges = self.core.edges
                 edge_type = edges[0].type
-                if edge_type == GrpcEdgeType.PADSTACK:
+                if edge_type == CoreEdgeType.PADSTACK:
                     self._reference_object = self.get_pad_edge_terminal_reference_pin()
                 else:
                     self._reference_object = self.get_edge_terminal_reference_primitive()
@@ -349,22 +369,22 @@ class Terminal(ConnObj):
         :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
         """
 
-        refTerm = self.core.reference_terminal
-        if self.core.type == GrpcTerminalType.PIN_GROUP:
-            padStackInstance = self.core.pin_group.pins[0]
-            pingroup = refTerm.pin_group
-            refPinList = pingroup.pins
-            return self._get_closest_pin(padStackInstance, refPinList, gnd_net_name_preference)
-        elif self.core.type == GrpcTerminalType.PADSTACK_INST:
-            _, padStackInstance, _ = self.core.get_parameters()
-            if refTerm.type == GrpcTerminalType.PIN_GROUP:
-                pingroup = refTerm.pin_group
-                refPinList = pingroup.pins
-                return self._get_closest_pin(padStackInstance, refPinList, gnd_net_name_preference)
+        ref_term = self.core.reference_terminal
+        if self.core.type == CoreTerminalType.PIN_GROUP:
+            padstack_instance = self.core.pin_group.pins[0]
+            pingroup = ref_term.pin_group
+            ref_pins = pingroup.pins
+            return self._get_closest_pin(padstack_instance, ref_pins, gnd_net_name_preference)
+        elif self.core.type == CoreTerminalType.PADSTACK_INST:
+            _, padstack_instance, _ = self.core.get_parameters()
+            if ref_term.type == CoreTerminalType.PIN_GROUP:
+                pingroup = ref_term.pin_group
+                ref_pins = pingroup.pins
+                return self._get_closest_pin(padstack_instance, ref_pins, gnd_net_name_preference)
             else:
                 try:
-                    _, refTermPSI, _ = refTerm.get_parameters()
-                    return PadstackInstance(self._pedb, refTermPSI)
+                    _, ref_term_psi, _ = ref_term.get_parameters()
+                    return PadstackInstance(self._pedb, ref_term_psi)
                 except AttributeError:
                     return False
         return False
@@ -381,7 +401,6 @@ class Terminal(ConnObj):
         ref_layer = self.reference_layer
         edges = self.core.edges
         _, _, point_data = edges[0].get_parameters()
-        # shape_pd = self._pedb.core.geometry.point_data(X, Y)
         layer_name = ref_layer.name
         for primitive in self._pedb.layout.primitives:
             if primitive.layer.name == layer_name:
@@ -404,11 +423,9 @@ class Terminal(ConnObj):
 
         ref_term = self.core.reference_terminal  # return value is type terminal
         _, point_data, layer = ref_term.get_parameters()
-        # shape_pd = self._pedb.core.geometry.point_data(X, Y)
         layer_name = layer.name
         for primitive in self._pedb.layout.primitives:
             if primitive.layer.name == layer_name:
-                prim_shape_data = primitive.GetPolygonData()
                 if primitive.polygon_data.point_in_polygon(point_data):
                     return Primitive(self._pedb, primitive)
         for vias in self._pedb.padstacks.instances.values():

@@ -20,24 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING
+from ansys.edb.core.geometry.point_data import PointData as CorePointData
+from ansys.edb.core.terminal.point_terminal import PointTerminal as CorePointTerminal
+from ansys.edb.core.terminal.terminal import BoundaryType as CoreBoundaryType
 
-from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-from ansys.edb.core.terminal.point_terminal import PointTerminal as GrpcPointTerminal
-from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
-
-if TYPE_CHECKING:
-    from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from pyedb.grpc.database.utility.value import Value
 
 mapping_boundary_type = {
-    "port": GrpcBoundaryType.PORT,
-    "dc_terminal": GrpcBoundaryType.DC_TERMINAL,
-    "voltage_probe": GrpcBoundaryType.VOLTAGE_PROBE,
-    "voltage_source": GrpcBoundaryType.VOLTAGE_SOURCE,
-    "current_source": GrpcBoundaryType.CURRENT_SOURCE,
-    "rlc": GrpcBoundaryType.RLC,
-    "pec": GrpcBoundaryType.PEC,
+    "port": CoreBoundaryType.PORT,
+    "dc_terminal": CoreBoundaryType.DC_TERMINAL,
+    "voltage_probe": CoreBoundaryType.VOLTAGE_PROBE,
+    "voltage_source": CoreBoundaryType.VOLTAGE_SOURCE,
+    "current_source": CoreBoundaryType.CURRENT_SOURCE,
+    "rlc": CoreBoundaryType.RLC,
+    "pec": CoreBoundaryType.PEC,
 }
 from pyedb.grpc.database.terminal.terminal import Terminal
 
@@ -74,12 +70,12 @@ class PointTerminal(Terminal):
             Point terminal object.
         """
         if isinstance(point, list):
-            point = GrpcPointData([Value(i) for i in point])
+            point = CorePointData([Value(i) for i in point])
         if isinstance(net, str):
             net = layout._pedb.nets[net]
         if isinstance(layer, str):
             layer = layout._pedb.stackup.layers[layer]
-        core_terminal = GrpcPointTerminal.create(
+        core_terminal = CorePointTerminal.create(
             layout=layout.core, net=net.core, layer=layer.core, name=name, point=point
         )
         return cls(layout._pedb, core_terminal)
@@ -123,7 +119,7 @@ class PointTerminal(Terminal):
         if not isinstance(value, list):
             return
         value = [Value(i) for i in value]
-        self.core.point = GrpcPointData(value)
+        self.core.point = CorePointData(value)
 
     @property
     def reference_layer(self):

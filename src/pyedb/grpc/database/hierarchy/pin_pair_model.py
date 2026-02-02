@@ -22,7 +22,7 @@
 
 
 # from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel
-from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as GrpcPinPairModel
+from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
 
 from pyedb.grpc.database.utility.value import Value
 

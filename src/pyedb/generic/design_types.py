@@ -293,6 +293,7 @@ def Edb(
             isaedtowned=isaedtowned,
             oproject=oproject,
             use_ppe=use_ppe,
+            map_file=map_file,
             technology_file=technology_file,
             control_file=control_file,
         )

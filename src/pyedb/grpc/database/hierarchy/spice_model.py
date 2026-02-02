@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.hierarchy.spice_model import SPICEModel as GrpcSpiceModel
+from ansys.edb.core.hierarchy.spice_model import SPICEModel as CoreSpiceModel
 
 
 class SpiceModel:  # pragma: no cover
@@ -32,7 +32,7 @@ class SpiceModel:  # pragma: no cover
         elif name and file_path:
             if not sub_circuit:
                 sub_circuit = name
-            edb_object = GrpcSpiceModel.create(name=name, path=file_path, sub_circuit=sub_circuit)
+            edb_object = CoreSpiceModel.create(name=name, path=file_path, sub_circuit=sub_circuit)
             self.core = edb_object
 
     @property

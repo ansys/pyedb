@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.layout.cell import Cell as GrpcCell
-
 
 class Cell:
     """Manage :class:`Cell <ansys.edb.core.layout.cell.Cell>`"""

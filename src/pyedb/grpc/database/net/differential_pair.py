@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 import re
 
 from ansys.edb.core.net.differential_pair import (
-    DifferentialPair as GrpcDifferentialPair,
+    DifferentialPair as CoreDifferentialPair,
 )
 
 
@@ -71,7 +71,7 @@ class DifferentialPairs:
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
             return False
-        GrpcDifferentialPair.create(layout=self._pedb.layout.core, name=name, pos_net=net_p, neg_net=net_n)
+        CoreDifferentialPair.create(layout=self._pedb.layout.core, name=name, pos_net=net_p, neg_net=net_n)
         return self.items[name]
 
     def auto_identify(self, positive_differentiator="_P", negative_differentiator="_N") -> list[str]:
@@ -122,7 +122,7 @@ class DifferentialPairs:
         return temp
 
 
-class DifferentialPair(GrpcDifferentialPair):
+class DifferentialPair(CoreDifferentialPair):
     """Manages EDB functionalities for a primitive.
     It inherits EDB object properties.
     """

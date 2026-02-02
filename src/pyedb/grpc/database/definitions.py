@@ -23,7 +23,7 @@
 from typing import Dict, List, Optional, Union
 import warnings
 
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
 from pyedb.grpc.database.definition.component_def import ComponentDef
 from pyedb.grpc.database.definition.package_def import PackageDef
@@ -242,10 +242,10 @@ class Definitions:
             if component_part_name in self.components:
                 definition = self.components[component_part_name]
                 if not boundary_points and not definition.is_null:
-                    package_def.exterior_boundary = GrpcPolygonData(
+                    package_def.exterior_boundary = CorePolygonData(
                         points=list(definition.components.values())[0].bounding_box  # type: ignore[arg-type]
                     )
             if boundary_points:
-                package_def.exterior_boundary = GrpcPolygonData(points=boundary_points)  # type: ignore[arg-type]
+                package_def.exterior_boundary = CorePolygonData(points=boundary_points)  # type: ignore[arg-type]
             return package_def
         return False

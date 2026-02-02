@@ -14,15 +14,18 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNE SS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.simulation_setup.raptor_x_simulation_setup import (
-    RaptorXSimulationSettings as GrpcRaptorXSimulationSettings,
-)
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ansys.edb.core.simulation_setup.raptor_x_simulation_setup import (
+        RaptorXSimulationSettings as CoreRaptorXSimulationSettings,
+    )
 
 from pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings import (
     RaptorXAdvancedSettings,
@@ -32,11 +35,11 @@ from pyedb.grpc.database.simulation_setup.raptor_x_general_settings import (
 )
 
 
-class RaptorXSimulationSettings(GrpcRaptorXSimulationSettings):
+class RaptorXSimulationSettings:
     """Raptor X simulation settings class."""
 
-    def __init__(self, pedb, core):
-        super().__init__(core)
+    def __init__(self, pedb, core: "CoreRaptorXSimulationSettings"):
+        self.core = core
         self._pedb = pedb
 
     @property
@@ -49,7 +52,7 @@ class RaptorXSimulationSettings(GrpcRaptorXSimulationSettings):
         raptor_x_advanced_settings.RaptorXAdvancedSettings>`
 
         """
-        return RaptorXAdvancedSettings(self._pedb, self.advanced)
+        return RaptorXAdvancedSettings(self._pedb, self.core.advanced)
 
     @property
     def general(self) -> RaptorXGeneralSettings:
@@ -61,4 +64,20 @@ class RaptorXSimulationSettings(GrpcRaptorXSimulationSettings):
         raptor_x_general_settings.RaptorXGeneralSettings>`
 
         """
-        RaptorXGeneralSettings(self._pedb, self.general)
+        return RaptorXGeneralSettings(self._pedb, self.core.general)
+
+    @property
+    def enabled(self) -> bool:
+        """Enabled flag.
+
+        Returns
+        -------
+        bool
+            Enabled flag.
+
+        """
+        return self.core.enabled
+
+    @enabled.setter
+    def enabled(self, value: bool):
+        self.core.enabled = value

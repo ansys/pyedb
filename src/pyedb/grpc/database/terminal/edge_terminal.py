@@ -23,7 +23,7 @@
 import re
 from typing import TYPE_CHECKING
 
-from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal
+from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as CoreEdgeTerminal
 
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.database.terminal.terminal import Terminal
@@ -61,7 +61,7 @@ class EdgeTerminal(Terminal):
         """
         if net is None:
             raise Exception("Net must be specified to create an Edge Terminal.")
-        grpc_edge_terminal = GrpcEdgeTerminal.create(
+        grpc_edge_terminal = CoreEdgeTerminal.create(
             layout.core,
             name,
             edge,

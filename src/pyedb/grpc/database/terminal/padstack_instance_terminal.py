@@ -24,10 +24,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ansys.edb.core.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
-)
-from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
+from ansys.edb.core.terminal.padstack_instance_terminal import PadstackInstanceTerminal as CorePadstackInstanceTerminal
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.hierarchy.component import Component
@@ -35,7 +32,6 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecated_property
 
 
 class PadstackInstanceTerminal(Terminal):
@@ -66,7 +62,7 @@ class PadstackInstanceTerminal(Terminal):
         """
         if net is None:
             net = padstack_instance.net
-        edb_terminal_inst = GrpcPadstackInstanceTerminal.create(
+        edb_terminal_inst = CorePadstackInstanceTerminal.create(
             layout=layout.core,
             name=name,
             padstack_instance=padstack_instance.core,

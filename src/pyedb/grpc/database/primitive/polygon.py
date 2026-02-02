@@ -24,9 +24,9 @@
 import math
 from typing import Union
 
-from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.primitive.polygon import Polygon as GrpcPolygon
+from ansys.edb.core.geometry.point_data import PointData as CorePointData
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
+from ansys.edb.core.primitive.polygon import Polygon as CorePolygon
 
 from pyedb.grpc.database.geometry.polygon_data import PolygonData
 from pyedb.grpc.database.layers.layer import Layer
@@ -144,14 +144,14 @@ class Polygon(Primitive):
         if not polygon_data:
             raise ValueError("Polygon data or point list is required to create a polygon.")
         if isinstance(polygon_data, list):
-            polygon_data = GrpcPolygonData(polygon_data)
+            polygon_data = CorePolygonData(polygon_data)
         if isinstance(polygon_data, PolygonData):
             polygon_data = polygon_data.core
         if isinstance(layer, Layer):
             layer = layer.core
         if isinstance(net, Net):
             net = net.core
-        edb_object = GrpcPolygon.create(layout=layout.core, layer=layer, net=net, polygon_data=polygon_data)
+        edb_object = CorePolygon.create(layout=layout.core, layer=layer, net=net, polygon_data=polygon_data)
         new_polygon = cls(layout._pedb, edb_object)
         # keep modeler cache in sync
         layout._pedb.modeler._add_primitive(new_polygon)
@@ -283,7 +283,7 @@ class Polygon(Primitive):
                 else:
                     self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
             elif isinstance(center, list) and len(center) == 2:
-                center = GrpcPointData([Value(center[0]), Value(center[1])])
+                center = CorePointData([Value(center[0]), Value(center[1])])
                 self.polygon_data = PolygonData(self.polygon_data.core.scale(factor, center))
                 return True
         return False
@@ -358,11 +358,11 @@ class Polygon(Primitive):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        int_val = 1 if self.polygon_data.core.is_inside(GrpcPointData(point_data)) else 0
+        int_val = 1 if self.polygon_data.core.is_inside(CorePointData(point_data)) else 0
         if int_val == 0:
             return False
         else:
-            int_val = self.polygon_data.core.intersection_type(GrpcPolygonData(point_data))
+            int_val = self.polygon_data.core.intersection_type(CorePolygonData(point_data))
         # Intersection type:
         # 0 = objects do not intersect
         # 1 = this object fully inside other (no common contour points)

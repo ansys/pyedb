@@ -23,12 +23,10 @@
 import re
 from typing import Any, List, Optional, Union
 
-from ansys.edb.core.database import ProductIdType as GrpcProductIdType
+from ansys.edb.core.database import ProductIdType as CoreProductIdType
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-
-# from pyedb.grpc.database.primitive.primitive import Primitive
 
 
 class LayoutValidation:
@@ -390,16 +388,16 @@ class LayoutValidation:
         counts = 0
         via_count = 1
         for obj in pds:
-            name = obj.core.get_product_property(GrpcProductIdType.DESIGNER, 11)
+            name = obj.core.get_product_property(CoreProductIdType.DESIGNER, 11)
             name = str(name).strip("'")
             if name == "":
                 counts += 1
                 if fix:
                     if not obj.component:
-                        obj.set_product_property(GrpcProductIdType.DESIGNER, 11, f"Via{via_count}")
+                        obj.set_product_property(CoreProductIdType.DESIGNER, 11, f"Via{via_count}")
                         via_count = via_count + 1
                     else:
                         obj.set_product_property(
-                            GrpcProductIdType.DESIGNER, 11, f"{obj.component.name}-{obj.component_pin}"
+                            CoreProductIdType.DESIGNER, 11, f"{obj.component.name}-{obj.component_pin}"
                         )
         self._pedb.logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")

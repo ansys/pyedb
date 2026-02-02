@@ -21,9 +21,9 @@
 # SOFTWARE.
 
 from ansys.edb.core.primitive.bondwire import (
-    Bondwire as GrpcBondWire,
-    BondwireCrossSectionType as GrpcBondwireCrossSectionType,
-    BondwireType as GrpcBondWireType,
+    Bondwire as CoreBondWire,
+    BondwireCrossSectionType as CoreBondwireCrossSectionType,
+    BondwireType as CoreBondWireType,
 )
 
 from pyedb.grpc.database.utility.value import Value
@@ -100,17 +100,17 @@ class Bondwire:
 
         """
         if bondwire_type == "jedec4":
-            bondwire_type = GrpcBondWireType.JEDEC4
+            bondwire_type = CoreBondWireType.JEDEC4
         elif bondwire_type == "jedec5":
-            bondwire_type = GrpcBondWireType.JEDEC5
+            bondwire_type = CoreBondWireType.JEDEC5
         elif bondwire_type == "apd":
-            bondwire_type = GrpcBondWireType.APD
+            bondwire_type = CoreBondWireType.APD
         else:
-            bondwire_type = GrpcBondWireType.JEDEC4
+            bondwire_type = CoreBondWireType.JEDEC4
         if material not in layout._pedb.materials.materials:
             layout._pedb.materials.add_conductor_material(material)
             layout._pedb.logger("Material {material} not found. Added to the material library.")
-        core_bondwire = GrpcBondWire.create(
+        core_bondwire = CoreBondWire.create(
             layout=layout.core,
             bondwire_type=bondwire_type,
             definition_name=definition_name,
@@ -163,10 +163,10 @@ class Bondwire:
     @type.setter
     def type(self, bondwire_type):
         mapping = {
-            "apd": GrpcBondWireType.APD,
-            "jedec4": GrpcBondWireType.JEDEC4,
-            "jedec5": GrpcBondWireType.JEDEC5,
-            "num_of_type": GrpcBondWireType.NUM_OF_TYPE,
+            "apd": CoreBondWireType.APD,
+            "jedec4": CoreBondWireType.JEDEC4,
+            "jedec5": CoreBondWireType.JEDEC5,
+            "num_of_type": CoreBondWireType.NUM_OF_TYPE,
         }
         self.core.type = mapping[bondwire_type]
 
@@ -184,7 +184,7 @@ class Bondwire:
 
     @cross_section_type.setter
     def cross_section_type(self, cross_section_type):
-        mapping = {"round": GrpcBondwireCrossSectionType.ROUND, "rectangle": GrpcBondwireCrossSectionType.RECTANGLE}
+        mapping = {"round": CoreBondwireCrossSectionType.ROUND, "rectangle": CoreBondwireCrossSectionType.RECTANGLE}
         self.core.cross_section_type = mapping[cross_section_type]
 
     @property

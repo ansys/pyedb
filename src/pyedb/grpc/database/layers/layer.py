@@ -28,26 +28,26 @@
 
 from __future__ import absolute_import, annotations
 
-from ansys.edb.core.layer.layer import Layer as GrpcLayer, LayerType as GrpcLayerType
+from ansys.edb.core.layer.layer import Layer as GrpcLayer, LayerType as CoreLayerType
 
 layer_type_mapping = {
-    "conducting": GrpcLayerType.CONDUCTING_LAYER,
-    "air_lines": GrpcLayerType.AIRLINES_LAYER,
-    "errors": GrpcLayerType.ERRORS_LAYER,
-    "symbol": GrpcLayerType.SYMBOL_LAYER,
-    "measure": GrpcLayerType.MEASURE_LAYER,
-    "assembly": GrpcLayerType.ASSEMBLY_LAYER,
-    "silkscreen": GrpcLayerType.SILKSCREEN_LAYER,
-    "solder_mask": GrpcLayerType.SOLDER_MASK_LAYER,
-    "solder_paste": GrpcLayerType.SOLDER_PASTE_LAYER,
-    "glue": GrpcLayerType.GLUE_LAYER,
-    "wirebond": GrpcLayerType.WIREBOND_LAYER,
-    "user": GrpcLayerType.USER_LAYER,
-    "siwave_hfss_solver_regions": GrpcLayerType.SIWAVE_HFSS_SOLVER_REGIONS,
-    "postprocessing": GrpcLayerType.POST_PROCESSING_LAYER,
-    "outline": GrpcLayerType.OUTLINE_LAYER,
-    "layer_types_count": GrpcLayerType.LAYER_TYPES_COUNT,
-    "undefined_layer_type": GrpcLayerType.UNDEFINED_LAYER_TYPE,
+    "conducting": CoreLayerType.CONDUCTING_LAYER,
+    "air_lines": CoreLayerType.AIRLINES_LAYER,
+    "errors": CoreLayerType.ERRORS_LAYER,
+    "symbol": CoreLayerType.SYMBOL_LAYER,
+    "measure": CoreLayerType.MEASURE_LAYER,
+    "assembly": CoreLayerType.ASSEMBLY_LAYER,
+    "silkscreen": CoreLayerType.SILKSCREEN_LAYER,
+    "solder_mask": CoreLayerType.SOLDER_MASK_LAYER,
+    "solder_paste": CoreLayerType.SOLDER_PASTE_LAYER,
+    "glue": CoreLayerType.GLUE_LAYER,
+    "wirebond": CoreLayerType.WIREBOND_LAYER,
+    "user": CoreLayerType.USER_LAYER,
+    "siwave_hfss_solver_regions": CoreLayerType.SIWAVE_HFSS_SOLVER_REGIONS,
+    "postprocessing": CoreLayerType.POST_PROCESSING_LAYER,
+    "outline": CoreLayerType.OUTLINE_LAYER,
+    "layer_types_count": CoreLayerType.LAYER_TYPES_COUNT,
+    "undefined_layer_type": CoreLayerType.UNDEFINED_LAYER_TYPE,
 }
 
 
