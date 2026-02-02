@@ -1427,9 +1427,9 @@ class TestClassSetups(BaseTestClass):
                             "enforce_passivity": False,
                             "adv_dc_extrapolation": True,
                             "frequencies": [
-                                {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"},
-                                {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
-                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11},
+                                {"distribution": "linear_scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"},
+                                {"distribution": "log_scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
+                                {"distribution": "linear_count", "start": "10MHz", "stop": "20MHz", "points": 11},
                             ],
                         },
                         {

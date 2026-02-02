@@ -27,9 +27,9 @@ from pydantic import AliasChoices, BaseModel, Field
 class CfgFrequencies(BaseModel):
     start: float | str = Field(..., description="Start frequency in Hz")
     stop: float | str = Field(..., description="Stop frequency in Hz")
-    increment: int | str = Field("50Hz", validation_alias=AliasChoices("points", "samples", "step"))
+    increment: int | str = Field(..., validation_alias=AliasChoices("increment", "points", "samples", "step"))
     distribution: Literal[
-        "linear_step", "log_step", "single", "linear_count", "log_count", "linear scale", "log scale", "linear count"
+        "linear_scale", "log_scale", "single", "linear_count", "log_count", "linear scale", "log scale", "linear count"
     ] = Field(
         ..., description="Frequency distribution type, e.g., linear_step, log_step, single, linear_count, log_count"
     )
