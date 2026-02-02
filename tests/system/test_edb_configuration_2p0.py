@@ -1422,7 +1422,7 @@ class TestClassSetups(BaseTestClass):
                         {
                             "name": "sweep1",
                             "type": "interpolation",
-                            "use_q3d_for_dc":True,
+                            "use_q3d_for_dc": True,
                             "compute_dc_point": True,
                             "enforce_causality": True,
                             "enforce_passivity": False,
