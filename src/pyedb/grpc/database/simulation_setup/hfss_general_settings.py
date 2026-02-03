@@ -599,7 +599,7 @@ class HFSSGeneralSettings:
 
     @property
     def multi_frequency_adaptive_solution(self) -> MultiFrequencyAdaptiveSolution:
-        return MultiFrequencyAdaptiveSolution(self._pedb, self.core)
+        return MultiFrequencyAdaptiveSolution(self._pedb, self.core.multi_frequency_adaptive_solution)
 
     @property
     def save_fields(self) -> bool:
