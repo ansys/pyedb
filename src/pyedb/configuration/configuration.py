@@ -238,6 +238,7 @@ class Configuration:
                     if len(freq_string) > 0:
                         sweep.frequency_string = freq_string
 
+                    sweep.use_q3d_for_dc = sw.use_q3d_for_dc
                     sweep.compute_dc_point = sw.compute_dc_point
                     sweep.enforce_causality = sw.enforce_causality
                     sweep.enforce_passivity = sw.enforce_passivity

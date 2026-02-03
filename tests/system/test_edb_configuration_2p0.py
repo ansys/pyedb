@@ -1422,12 +1422,13 @@ class TestClassSetups(BaseTestClass):
                         {
                             "name": "sweep1",
                             "type": "interpolation",
+                            "use_q3d_for_dc": True,
                             "compute_dc_point": True,
                             "enforce_causality": True,
                             "enforce_passivity": False,
                             "adv_dc_extrapolation": True,
                             "frequencies": [
-                                {"distribution": "linear_scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"},
+                                {"distribution": "linear_scale", "start": "0MHz", "stop": "200MHz", "step": "10MHz"},
                                 {"distribution": "log_scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
                                 {"distribution": "linear_count", "start": "10MHz", "stop": "20MHz", "points": 11},
                             ],
@@ -1457,7 +1458,7 @@ class TestClassSetups(BaseTestClass):
         assert not sweep1["enforce_passivity"]
         assert sweep1["adv_dc_extrapolation"]
         assert sweep1["frequencies"] == [
-            "LIN 0.05GHz 0.2GHz 0.01GHz",
+            "LIN 0.0GHz 0.2GHz 0.01GHz",
             "DEC 1e-06GHz 0.0001GHz 10",
             "LINC 0.01GHz 0.02GHz 11",
         ]
