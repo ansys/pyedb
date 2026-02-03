@@ -999,7 +999,7 @@ class Modeler(object):
                 if not el.layer.name == layer_name:
                     continue
             if prim_type:
-                if not el.primitive_type.name.lower() == prim_type:
+                if not el.primitive_type == prim_type:
                     continue
             if not el.is_void == is_void:
                 continue
