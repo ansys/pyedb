@@ -3757,6 +3757,9 @@ class Edb:
         # type: (str) -> SimulationConfiguration
         """New SimulationConfiguration Object.
 
+        .. derecated:: 0.68.0
+        This configuration method is deprecated. Use edbapp.configuration class instead.
+
         Parameters
         ----------
         filename : str, optional
@@ -3766,6 +3769,7 @@ class Edb:
         -------
         :class:`legacy.database.edb_data.simulation_configuration.SimulationConfiguration`
         """
+
         return SimulationConfiguration(filename, self)
 
     @property
@@ -3815,7 +3819,7 @@ class Edb:
         Dict[str, :class:`legacy.database.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`]
 
         """
-        return {name: i for name, i in self.setups.items() if i.setup_type == "kHFSS"}
+        return {name: i for name, i in self.setups.items() if i.setup_type in ["kHFSS", "hfss"]}
 
     @property
     def siwave_dc_setups(self):

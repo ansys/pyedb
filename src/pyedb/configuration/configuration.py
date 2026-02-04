@@ -238,6 +238,7 @@ class Configuration:
                     if len(freq_string) > 0:
                         sweep.frequency_string = freq_string
 
+                    sweep.use_q3d_for_dc = sw.use_q3d_for_dc
                     sweep.compute_dc_point = sw.compute_dc_point
                     sweep.enforce_causality = sw.enforce_causality
                     sweep.enforce_passivity = sw.enforce_passivity
@@ -275,25 +276,28 @@ class Configuration:
                                 "nets_layers_list": mop.nets_layers_list,
                             }
                         )
-                else:  # siwave ac
+                elif setup.type == "siwave_ac":  # siwave ac
                     cfg_ac_setup = self.cfg_data.add_siwave_ac_setup(
                         name=setup.name,
                         use_si_settings=setup.use_si_settings,
                         si_slider_position=setup.si_slider_position,
                         pi_slider_position=setup.pi_slider_position,
                     )
+                else:
+                    self._pedb.logger.warning(f"Unsupported setup type '{setup.type}'.")
+                    continue
 
                 for name, sw in setup.sweeps.items():
                     cfg_ac_setup.add_frequency_sweep(
-                        {
-                            "name": name,
-                            "type": sw.type,
-                            "frequencies": sw.frequency_string,
-                            "compute_dc_point": sw.compute_dc_point,
-                            "enforce_causality": sw.enforce_causality,
-                            "enforce_passivity": sw.enforce_passivity,
-                            "adv_dc_extrapolation": sw.adv_dc_extrapolation,
-                        }
+                        cfg_ac_setup.CfgFrequencySweep(
+                            name=name,
+                            type=sw.type,
+                            frequencies=sw.frequency_string,
+                            compute_dc_point=sw.compute_dc_point,
+                            enforce_causality=sw.enforce_causality,
+                            enforce_passivity=sw.enforce_passivity,
+                            adv_dc_extrapolation=sw.adv_dc_extrapolation,
+                        )
                     )
 
     def apply_boundaries(self):
@@ -348,16 +352,16 @@ class Configuration:
         boundaries.radiation_level = edb_hfss_extent_info.radiation_level
         boundaries.dielectric_extent_type = edb_hfss_extent_info.dielectric_extent_type
         size, is_multiple = edb_hfss_extent_info.get_dielectric_extent()
-        boundaries.dielectric_extent_size = {"size": size, "is_multiple": is_multiple}
+        boundaries.dielectric_extent_size = boundaries.PaddingData(size=size, is_multiple=is_multiple)
         boundaries.honor_user_dielectric = edb_hfss_extent_info.honor_user_dielectric
         boundaries.extent_type = edb_hfss_extent_info.extent_type
         boundaries.truncate_air_box_at_ground = edb_hfss_extent_info.truncate_air_box_at_ground
         size, is_multiple = edb_hfss_extent_info.get_air_box_horizontal_extent()
-        boundaries.air_box_horizontal_extent = {"size": size, "is_multiple": is_multiple}
+        boundaries.air_box_horizontal_extent = boundaries.PaddingData(size=size, is_multiple=is_multiple)
         size, is_multiple = edb_hfss_extent_info.get_air_box_positive_vertical_extent()
-        boundaries.air_box_positive_vertical_extent = {"size": size, "is_multiple": is_multiple}
+        boundaries.air_box_positive_vertical_extent = boundaries.PaddingData(size=size, is_multiple=is_multiple)
         size, is_multiple = edb_hfss_extent_info.get_air_box_negative_vertical_extent()
-        boundaries.air_box_negative_vertical_extent = {"size": size, "is_multiple": is_multiple}
+        boundaries.air_box_negative_vertical_extent = boundaries.PaddingData(size=size, is_multiple=is_multiple)
         boundaries.base_polygon = edb_hfss_extent_info.base_polygon
         boundaries.dielectric_base_polygon = edb_hfss_extent_info.dielectric_base_polygon
         boundaries.sync_air_box_vertical_extent = edb_hfss_extent_info.sync_air_box_vertical_extent

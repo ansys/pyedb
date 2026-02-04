@@ -2572,3 +2572,92 @@ class TestClass(BaseTestClass):
         sweep.use_q3d_for_dc = True
         assert sweep.use_q3d_for_dc
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(config["use_grpc"], reason="Safeguard test for dotnet compatibility with grpc")
+    def test_siwave_simulation_setup_dotnet_compatibility(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        setup = edbapp.create_siwave_dc_setup()
+        settings = setup.settings
+
+        # settings
+        settings.dc_report_config_file = "custom_dc_report.cfg"
+        assert settings.dc_report_config_file == "custom_dc_report.cfg"
+        settings.enabled = False
+        assert not settings.enabled
+        settings.enabled = True
+        assert not settings.frequency_sweeps
+        settings.icepak_temp_file = "icepak_temp_file.txt"
+        assert settings.icepak_temp_file == "icepak_temp_file.txt"
+        settings.icepak_temp_file_path = "icepak_temp_file_path.txt"
+        assert settings.icepak_temp_file_path == "icepak_temp_file_path.txt"
+        settings.import_thermal_data = True
+        assert settings.import_thermal_data
+        settings.per_pin_res_path = "per_pin_res.txt"
+        assert settings.per_pin_res_path == "per_pin_res.txt"
+        settings.pin_use_pin_format = True
+        assert settings.pin_use_pin_format
+        settings.via_report_path = "via_report.txt"
+        assert settings.via_report_path == "via_report.txt"
+        settings.use_loop_res_for_per_pin = False
+        assert not settings.use_loop_res_for_per_pin
+        assert settings.setup_type == "siwave_dc"
+
+        settings.export_dc_thermal_data = True
+        assert settings.export_dc_thermal_data
+        settings.full_dc_report_path = "full_dc_report.txt"
+        assert settings.full_dc_report_path == "full_dc_report.txt"
+
+        # dc settings same as grpc
+        dc = settings.dc
+        dc.compute_inductance = True
+        assert dc.compute_inductance
+        dc.contact_radius = "1mm"
+        assert dc.contact_radius == "1mm"
+        dc.dc_slider_pos = 0
+        assert dc.dc_slider_pos == 0
+        dc.plot_jv = False
+        assert not dc.plot_jv
+        dc.use_dc_customer_settings = False
+        assert not dc.use_dc_customer_settings
+
+        # dc advanced settings same as grpc
+        dc_adv = settings.dc_advanced
+        dc_adv.dc_min_plane_area_to_mesh = "0.30mm2"
+        assert dc_adv.dc_min_plane_area_to_mesh == "0.30mm2"
+        dc_adv.dc_min_void_area_to_mesh = "0.02mm2"
+        assert dc_adv.dc_min_void_area_to_mesh == "0.02mm2"
+        dc_adv.energy_error = 1.5
+        assert dc_adv.energy_error == 1.5
+        dc_adv.max_init_mesh_edge_length = "2.0mm"
+        assert dc_adv.max_init_mesh_edge_length == "2.0mm"
+        dc_adv.max_num_passes = 10
+        assert dc_adv.max_num_passes == 10
+        dc_adv.mesh_bws = False
+        assert not dc_adv.mesh_bws
+        dc_adv.mesh_vias = False
+        assert not dc_adv.mesh_vias
+        dc_adv.min_num_passes = 5
+        dc_adv.num_bw_sides = 12
+        assert dc_adv.num_bw_sides == 12
+        dc_adv.num_via_sides = 12
+        assert dc_adv.num_via_sides == 12
+        dc_adv.percent_local_refinement = 30
+        assert dc_adv.percent_local_refinement == 30
+        dc_adv.refine_bws = True
+        assert dc_adv.refine_bws
+        dc_adv.refine_vias = True
+        assert dc_adv.refine_vias
+
+        # general settings same as grpc
+        general = settings.general
+        general.compute_inductance = True
+        assert general.compute_inductance
+        general.contact_radius = "1mm"
+        assert general.contact_radius == "1mm"
+        general.dc_slider_pos = 0
+        assert general.dc_slider_pos == 0
+        general.plot_jv = False
+        assert not general.plot_jv
+        general.use_dc_custom_settings = False
+        assert not general.use_dc_custom_settings
+        edbapp.close()
