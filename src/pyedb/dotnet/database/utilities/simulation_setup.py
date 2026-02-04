@@ -261,7 +261,10 @@ class SimulationSetup(object):
     @property
     def sweeps(self):
         """List of frequency sweeps."""
-        return {i.name: i for i in self.sim_setup_info.sweep_data_list}
+        if self.sim_setup_info:
+            return {i.name: i for i in self.sim_setup_info.sweep_data_list}
+        else:
+            return {}
 
     @property
     def sweep_data(self):
