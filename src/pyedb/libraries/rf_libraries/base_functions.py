@@ -657,7 +657,7 @@ class CPW:
         bool
             True on success.
         """
-        if not self._edn.grpc:
+        if not self._edb.grpc:
             self._edb["l"] = self.length
             self._edb["w"] = self.width
             self._edb["g"] = self.gap
@@ -699,15 +699,17 @@ class CPW:
             self._edb.add_design_variable("l", self.length, is_parameter=True)
             self._edb.add_design_variable("w", self.width, is_parameter=True)
             self._edb.add_design_variable("g", self.gap, is_parameter=True)
+            self._edb.nets.find_or_create_net("sig")
+            net = self._edb.nets.nets["sig"].core
 
             core_object = CoreRectangle.create(
                 layout=self._edb.active_cell.layout,
                 layer=self._edb.stackup.layers["TOP_METAL"].core,
                 net=net,
                 rep_type=CoreRectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT,
-                param1=CoreValue(0.0),
+                param1="w/2",
                 param2=CoreValue(0.0),
-                param3="w+l",
+                param3="w/2",
                 param4="l",
                 corner_rad=CoreValue(1e-3),
                 rotation=CoreValue(0.0),
