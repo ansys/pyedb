@@ -32,6 +32,7 @@ _setup_type_mapping = {
     "kHFSS": "hfss",
     "KPEM": "pem",
     "KSiwave": "siwave",
+    "kSIWave": "siwave",
     "kLNA": "lna",
     "kTransient": "transient",
     "kQEye": "quick_eye",
@@ -48,8 +49,10 @@ _setup_type_mapping = {
 
 class SimulationSetupType(Enum):
     kHFSS = "hfss"
+    hfss = "hfss"
     kPEM = None
     kSIwave = "siwave_ac"
+    siwave = "siwave_ac"
     kLNA = "lna"
     kTransient = "transient"
     kQEye = "quick_eye"
@@ -57,10 +60,12 @@ class SimulationSetupType(Enum):
     kAMI = "ami"
     kAnalysisOption = "analysis_option"
     kSIwaveDCIR = "siwave_dc"
+    siwave_dc = "siwave_dc"
     kSIwaveEMI = "siwave_emi"
     kHFSSPI = "hfss_pi"
     kDDRwizard = "ddrwizard"
     kQ3D = "q3d"
+    unknown = "unknown"
 
 
 class AdaptiveType(object):
@@ -256,10 +261,7 @@ class SimulationSetup(object):
     @property
     def sweeps(self):
         """List of frequency sweeps."""
-        if self.sweep_data:
-            return {i.name: i for i in self.sim_setup_info.sweep_data_list}
-        else:
-            return {}
+        return {i.name: i for i in self.sim_setup_info.sweep_data_list}
 
     @property
     def sweep_data(self):
