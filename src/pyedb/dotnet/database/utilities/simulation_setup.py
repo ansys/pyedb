@@ -28,6 +28,23 @@ from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInf
 from pyedb.dotnet.database.sim_setup_data.data.sweep_data import SweepData
 from pyedb.generic.general_methods import generate_unique_name
 
+_setup_type_mapping = {
+    "kHFSS": "hfss",
+    "KPEM": "pem",
+    "KSiwave": "siwave",
+    "kLNA": "lna",
+    "kTransient": "transient",
+    "kQEye": "quick_eye",
+    "kVEye": "verif_eye",
+    "kAMI": "ami",
+    "kAnalysisOption": "analysis_option",
+    "kSIWaveDCIR": "siwave_dc",
+    "kSIWaveEMI": "siwave_emi",
+    "kHFSSPI": "hfss_pi",
+    "kDDRwizard": "ddrwizard",
+    "kQ3D": "q3d",
+}
+
 
 class SimulationSetupType(Enum):
     kHFSS = "hfss"
@@ -98,7 +115,10 @@ class SimulationSetup(object):
 
     @property
     def sim_setup_info(self):
-        return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_object.GetSimSetupInfo())
+        if hasattr(self._edb_object, "GetSimSetupInfo"):
+            return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_object.GetSimSetupInfo())
+        else:
+            return None
 
     def set_sim_setup_info(self, sim_setup_info):
         self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
@@ -129,10 +149,6 @@ class SimulationSetup(object):
             if k in self.get_simulation_settings():
                 setattr(self.sim_setup_info.simulation_settings, k, v)
         self._update_setup()
-
-    @property
-    def setup_type(self):
-        return self.sim_setup_info.sim_setup_type
 
     @property
     def type(self):
@@ -230,7 +246,7 @@ class SimulationSetup(object):
     @property
     def setup_type(self):
         """Type of the setup."""
-        return self.sim_setup_info.sim_setup_type
+        return _setup_type_mapping.get(str(self._edb_object.GetType()), "unknown")
 
     @property
     def frequency_sweeps(self):
@@ -240,12 +256,18 @@ class SimulationSetup(object):
     @property
     def sweeps(self):
         """List of frequency sweeps."""
-        return {i.name: i for i in self.sim_setup_info.sweep_data_list}
+        if self.sweep_data:
+            return {i.name: i for i in self.sim_setup_info.sweep_data_list}
+        else:
+            return {}
 
     @property
     def sweep_data(self):
         """Adding property for compatibility with grpc."""
-        return list(self.sweeps.values())
+        if self.sim_setup_info:
+            return list(self.sweeps.values())
+        else:
+            return []
 
     @sweep_data.setter
     def sweep_data(self, sweep_data):
