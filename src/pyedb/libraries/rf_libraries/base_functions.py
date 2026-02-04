@@ -657,36 +657,63 @@ class CPW:
         bool
             True on success.
         """
-        self._edb["l"] = self.length
-        self._edb["w"] = self.width
-        self._edb["g"] = self.gap
+        if not self._edn.grpc:
+            self._edb["l"] = self.length
+            self._edb["w"] = self.width
+            self._edb["g"] = self.gap
 
-        # signal
-        self._edb.modeler.create_rectangle(
-            self.layer,
-            net_name=self.net,
-            lower_left_point=[-self.width / 2, 0],
-            upper_right_point=[self.width / 2, self.length],
-        )
-        # grounds
-        self._edb.modeler.create_rectangle(
-            self.layer,
-            net_name=self.ground_net,
-            lower_left_point=[-self.width / 2 - self.gap - self.ground_width, 0],
-            upper_right_point=[-self.width / 2 - self.gap, self.length],
-        )
-        self._edb.modeler.create_rectangle(
-            self.layer,
-            net_name=self.ground_net,
-            lower_left_point=[self.width / 2 + self.gap, 0],
-            upper_right_point=[self.width / 2 + self.gap + self.ground_width, self.length],
-        )
-        self._edb.modeler.create_rectangle(
-            self.ground_layer,
-            lower_left_point=[-self.width / 2 - self.gap - self.ground_width, 0],
-            upper_right_point=[self.width / 2 + self.gap + self.ground_width, self.length],
-        )
-        return True
+            # signal
+            self._edb.modeler.create_rectangle(
+                self.layer,
+                net_name=self.net,
+                lower_left_point=[-self.width / 2, 0],
+                upper_right_point=[self.width / 2, self.length],
+            )
+            # grounds
+            self._edb.modeler.create_rectangle(
+                self.layer,
+                net_name=self.ground_net,
+                lower_left_point=[-self.width / 2 - self.gap - self.ground_width, 0],
+                upper_right_point=[-self.width / 2 - self.gap, self.length],
+            )
+            self._edb.modeler.create_rectangle(
+                self.layer,
+                net_name=self.ground_net,
+                lower_left_point=[self.width / 2 + self.gap, 0],
+                upper_right_point=[self.width / 2 + self.gap + self.ground_width, self.length],
+            )
+            self._edb.modeler.create_rectangle(
+                self.ground_layer,
+                lower_left_point=[-self.width / 2 - self.gap - self.ground_width, 0],
+                upper_right_point=[self.width / 2 + self.gap + self.ground_width, self.length],
+            )
+            return True
+        else:
+            from ansys.edb.core.net.net import Net as CoreNet
+            from ansys.edb.core.primitive.rectangle import (
+                Rectangle as CoreRectangle,
+                RectangleRepresentationType as CoreRectangleRepresentationType,
+            )
+            from ansys.edb.core.utility.value import Value as CoreValue
+
+            self._edb.add_design_variable("l", self.length, is_parameter=True)
+            self._edb.add_design_variable("w", self.width, is_parameter=True)
+            self._edb.add_design_variable("g", self.gap, is_parameter=True)
+
+            core_object = CoreRectangle.create(
+                layout=self._edb.active_cell.layout,
+                layer=self._edb.stackup.layers["TOP_METAL"].core,
+                net=net,
+                rep_type=CoreRectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT,
+                param1=CoreValue(0.0),
+                param2=CoreValue(0.0),
+                param3="w+l",
+                param4="l",
+                corner_rad=CoreValue(1e-3),
+                rotation=CoreValue(0.0),
+            )
+
+            return True
 
 
 class RadialStub:

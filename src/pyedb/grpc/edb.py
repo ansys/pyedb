@@ -2065,7 +2065,7 @@ class Edb(EdbInit):
         """
         return list(self.active_cell.get_all_variable_names())
 
-    def add_project_variable(self, variable_name, variable_value, description=None) -> bool:
+    def add_project_variable(self, variable_name, variable_value, description=None, is_parameter: bool = False) -> bool:
         """Add project variable.
 
         Parameters
@@ -2076,6 +2076,8 @@ class Edb(EdbInit):
             Variable value with units.
         description : str, optional
             Variable description.
+        is_parameter : bool, optional
+            Whether the variable is a parameter, for instance used for parametric geometry creation. Default is False.
 
         Returns
         -------
@@ -2083,17 +2085,23 @@ class Edb(EdbInit):
             True if successful, False if variable exists.
         """
         if not variable_name.startswith("$"):
+            self.logger.warning(
+                f"Variable {variable_name} does not start with '$', adding '$' prefix for project level ones."
+            )
             variable_name = f"${variable_name}"
         if not self.variable_exists(variable_name):
-            var = self.active_db.add_variable(variable_name, variable_value)
+            self.active_db.add_variable(variable_name, variable_value, is_param=is_parameter)
             if description:
                 self.active_db.set_variable_desc(name=variable_name, desc=description)
-            return var
+        if self.variable_exists(variable_name):
+            return True
         else:
             self.logger.error(f"Variable {variable_name} already exists.")
             return False
 
-    def add_design_variable(self, variable_name, variable_value, description: str = "") -> bool:
+    def add_design_variable(
+        self, variable_name, variable_value, description: str = "", is_parameter: bool = False
+    ) -> bool:
         """Add design variable.
 
         Parameters
@@ -2104,6 +2112,8 @@ class Edb(EdbInit):
             Variable value with units.
         description : str, optional
             Variable description.
+        is_parameter : bool, optional
+            Whether the variable is a parameter, for instance used for parametric geometry creation. Default is False.
 
         Returns
         -------
@@ -2111,12 +2121,17 @@ class Edb(EdbInit):
             True if successful, False if variable exists.
         """
         if variable_name.startswith("$"):
+            self.logger.warning(
+                f"Variable {variable_name} starts with '$', this is not compatible with design "
+                f"level variable name. Removing '$' prefix."
+            )
             variable_name = variable_name[1:]
         if not self.variable_exists(variable_name):
-            var = self.active_cell.add_variable(variable_name, variable_value)
+            self.active_cell.add_variable(variable_name, variable_value, is_param=is_parameter)
             if description:
                 self.active_cell.set_variable_desc(name=variable_name, desc=description)
-            return var
+        if self.variable_exists(variable_name):
+            return True
         else:
             self.logger.error(f"Variable {variable_name} already exists.")
             return False
