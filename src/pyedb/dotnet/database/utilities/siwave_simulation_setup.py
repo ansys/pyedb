@@ -630,14 +630,6 @@ class Settings(SimulationSetup):
         self.dc_ir.icepak_temp_file_path = value
 
     @property
-    def per_pin_use_pin_format(self):
-        return self.dc_ir.per_pin_use_pin_format
-
-    @per_pin_use_pin_format.setter
-    def per_pin_use_pin_format(self, value: bool):
-        self.dc_ir.per_pin_use_pin_format = value
-
-    @property
     def icepak_temp_file(self):
         """Icepak temporary file name."""
         return self.dc_ir.icepak_temp_file
