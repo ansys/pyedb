@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import warnings
-
 from pyedb.dotnet.database.general import (
     convert_netdict_to_pydict,
     convert_pydict_to_netdict,
@@ -184,7 +182,7 @@ class SiwaveSimulationSetup(SimulationSetup):
            Use :property:`pi_slider_position` property instead.
 
         """
-        warnings.warn("`set_pi_slider` is deprecated. Use `pi_slider_position` property instead.", DeprecationWarning)
+        self._pedb.logger.warning("`set_pi_slider` is deprecated. Use `pi_slider_position` property instead.")
         self.pi_slider_position = value
 
     def set_si_slider(self, value):
@@ -359,7 +357,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         bool
         """
 
-        warnings.warn("`enabled` property is deprecated. Use `settings.enabled` property instead.", DeprecationWarning)
+        self._pedb.logger.warning("`enabled` property is deprecated. Use `settings.enabled` property instead.")
         return self.settings.enabled
 
     @property
@@ -374,7 +372,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
     @property
     def get_sim_setup_info(self):  # todo remove after refactoring
         """Get simulation information from the setup."""
-        warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
+        self._pedb.logger.warning("Use new property :func:`sim_setup_info` instead.")
         sim_setup_info = SimSetupInfo(
             self._pedb, sim_setup=self, setup_type="kSIwaveDCIR", name=self._edb_object.GetName()
         )
@@ -400,7 +398,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         use :property:`settings.dc_ir` property instead.
 
         """
-        warnings.warn("`dc_ir_settings` is deprecated. Use `settings.dc_ir` property instead.", DeprecationWarning)
+        self._pedb.logger.warning("`dc_ir_settings` is deprecated. Use `settings.dc_ir` property instead.")
         return self.settings
 
     def get_configurations(self):
@@ -437,7 +435,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
               Use :property:`settings` property instead.
 
         """
-        warnings.warn("`dc_settings` is deprecated. Use `settings.dc` property instead.", DeprecationWarning)
+        self._pedb.logger.warning("`dc_settings` is deprecated. Use `settings.dc` property instead.")
         return self.settings.dc
 
     @property
@@ -451,9 +449,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         -------
         :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
         """
-        warnings.warn(
-            "`dc_advanced_settings` is deprecated. Use `settings.dc_advanced` property instead.", DeprecationWarning
-        )
+        self._pedb.logger.warning("`dc_advanced_settings` is deprecated. Use `settings.dc_advanced` property instead.")
         return self.settings.dc_advanced
 
     @property
@@ -469,9 +465,8 @@ class SiwaveDCSimulationSetup(SimulationSetup):
             {str, int}, keys is source name, value int 0 unspecified, 1 negative node, 2 positive one.
 
         """
-        warnings.warn(
-            "`source_terms_to_ground` is deprecated. Use `settings.source_terms_to_ground` property instead.",
-            DeprecationWarning,
+        self._pedb.logger.warning(
+            "`source_terms_to_ground` is deprecated. Use `settings.source_terms_to_ground` property instead."
         )
         return self.settings.source_terms_to_ground
 
@@ -497,10 +492,9 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         bool
 
         """
-        warnings.warn(
+        self._pedb.logger.warning(
             "`add_source_terminal_to_ground` is deprecated. Use "
-            "`settings.add_source_terminal_to_ground` method instead.",
-            DeprecationWarning,
+            "`settings.add_source_terminal_to_ground` method instead."
         )
         return self.settings.add_source_terminal_to_ground(source_name, terminal)
 
