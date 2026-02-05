@@ -600,7 +600,7 @@ class SweepData(object):
         self._edb_object.Frequencies.Clear()
 
     @property
-    def use_hfss_solver_regions(self) :
+    def use_hfss_solver_regions(self):
         return self._edb_object.UseHFSSSolverRegions
 
     @use_hfss_solver_regions.setter

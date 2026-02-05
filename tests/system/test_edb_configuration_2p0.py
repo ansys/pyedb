@@ -1504,7 +1504,7 @@ class TestClassSetups(BaseTestClass):
                             "name": "Sweep1",
                             "type": "discrete",
                             "adv_dc_extrapolation": False,
-                            "use_hfss_solver_regions":True,
+                            "use_hfss_solver_regions": True,
                             "hfss_solver_region_setup_name": "hfss_setup_1",
                             "hfss_solver_region_sweep_name": "sweep2",
                             "frequencies": [
@@ -1540,7 +1540,7 @@ class TestClassSetups(BaseTestClass):
         assert siwave_ac.si_slider_position == 1
 
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        src_siwave_dc = [i for i in data_from_db["setups"] if i["name"]=="siwave_1"][0]
+        src_siwave_dc = [i for i in data_from_db["setups"] if i["name"] == "siwave_1"][0]
         assert src_siwave_dc["si_slider_position"] == 1
         assert src_siwave_dc["use_si_settings"] is True
         edbapp.close(terminate_rpc_session=False)
