@@ -73,7 +73,7 @@ class SIWaveDCIRSimulationSetup(SimulationSetup):
 
         """
         warnings.warn("`dc_ir_settings` is deprecated. Use `settings.dc_ir` instead.", DeprecationWarning)
-        return SIWaveDCSettings(self._pedb, self.core.settings)
+        return self.settings.dc_ir
 
     @property
     def settings(self) -> SIWaveSimulationSettings:
