@@ -87,7 +87,6 @@ class TestClass(BaseTestClass):
         assert edb.variables["w"] == 1e-05
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
     def test_diff_tline(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)

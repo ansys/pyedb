@@ -645,36 +645,6 @@ class Modeler(object):
         end_cap_style="Round",
         corner_style="Round",
     ):
-        """
-        Create a path based on a list of points.
-
-        Parameters
-        ----------
-        points: .:class:`dotnet.database.layout.Shape`
-            List of points.
-        layer_name : str
-            Name of the layer on which to create the path.
-        width : float, optional
-            Width of the path. The default is ``1``.
-        net_name: str, optional
-            Name of the net. The default is ``""``.
-        start_cap_style : str, optional
-            Style of the cap at its start. Options are ``"Round"``,
-            ``"Extended", `` and ``"Flat"``. The default is
-            ``"Round".
-        end_cap_style : str, optional
-            Style of the cap at its end. Options are ``"Round"``,
-            ``"Extended", `` and ``"Flat"``. The default is
-            ``"Round".
-        corner_style : str, optional
-            Style of the corner. Options are ``"Round"``,
-            ``"Sharp"`` and ``"Mitered"``. The default is ``"Round".
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            ``True`` when successful, ``False`` when failed.
-        """
         net = self._pedb.nets.find_or_create_net(net_name)
         _points = []
         if isinstance(points, (list, tuple)):
@@ -716,6 +686,7 @@ class Modeler(object):
         start_cap_style: str = "Round",
         end_cap_style: str = "Round",
         corner_style: str = "Round",
+        parametrized: bool = False,
     ) -> Optional[Primitive]:
         """Create trace path.
 
@@ -736,12 +707,55 @@ class Modeler(object):
             End cap style ("Round", "Extended", "Flat").
         corner_style : str, optional
             Corner style ("Round", "Sharp", "Mitered").
+        parametrized : bool, optional
+            Whether width is a parametrized variable. Variable has to be created beforehand.
+            If width passed as string, it will be considered as variable name or expression, for instance `w*2+l`.
+            This expression will be evaluated once imported in AEDT and updated when parameters are changed.
 
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Path` or bool
             Path object if created, False otherwise.
         """
+
+        net = self._pedb.nets.find_or_create_net(net_name)
+        if isinstance(path_list, CorePolygonData):
+            center_line = path_list
+        else:
+            _points = []
+            if isinstance(path_list, (list, tuple)):
+                points = normalize_pairs(path_list)
+                for pt in points:
+                    _pt = []
+                    for coord in pt:
+                        if isinstance(coord, str) and parametrized:
+                            continue
+                        coord = Value(coord, self._pedb.active_cell)
+                        _pt.append(coord)
+                    _points.append(_pt)
+                points = _points
+                center_line = CorePolygonData(points)
+                if isinstance(width, str) and parametrized:
+                    pass
+                else:
+                    width = Value(width)
+            else:
+                raise TypeError("Points must be a list of points or a PolygonData object.")
+        path = Path.create(
+            layout=self._active_layout,
+            layer=layer_name,
+            net=net,
+            width=width,
+            end_cap1=start_cap_style,
+            end_cap2=end_cap_style,
+            corner_style=corner_style,
+            points=center_line,
+            parametrized=parametrized,
+        )
+        if path.is_null:  # pragma: no cover
+            self._logger.error("Null path created")
+            return False
+        return path
 
         primitive = self._create_path(
             points=path_list,

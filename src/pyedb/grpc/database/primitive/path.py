@@ -91,6 +91,7 @@ class Path(Primitive):
         end_cap2: Union[str, CorePathEndCapType] = "flat",
         corner_style: Union[str, CorePathCornerType] = "sharp",
         points: Union[list, CorePolygonData] = None,
+        parametrized: bool = False,
     ):
         """
         Create a path in the specified layout, layer, and net with the given parameters.
@@ -118,6 +119,8 @@ class Path(Primitive):
         points : Union[list, GrpcPolygonData], optional
             The points defining the path. This can be a list of points or an instance of `GrpcPolygonData`.
             This parameter is required and must be specified.
+        parametrized : bool, optional
+            Whether the path is parametrized. The default value is `False`.
 
         Returns
         -------
@@ -158,11 +161,13 @@ class Path(Primitive):
             raise ValueError("Points are required to create a path.")
         if isinstance(points, list):
             points = CorePolygonData(points=points)
+        if not parametrized:
+            width = Value(width)
         _path = CorePath.create(
             layout=layout.core,
             layer=layer,
             net=net.core,
-            width=Value(width),
+            width=width,
             end_cap1=end_cap1,
             end_cap2=end_cap2,
             corner_style=corner_style,
