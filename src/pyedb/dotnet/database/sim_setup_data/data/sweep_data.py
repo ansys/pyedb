@@ -598,3 +598,30 @@ class SweepData(object):
 
     def clear(self):
         self._edb_object.Frequencies.Clear()
+
+    @property
+    def use_hfss_solver_regions(self):
+        return self._edb_object.UseHFSSSolverRegions
+
+    @use_hfss_solver_regions.setter
+    def use_hfss_solver_regions(self, value):
+        self._edb_object.UseHFSSSolverRegions = value
+        self._update_sweep()
+
+    @property
+    def hfss_solver_region_setup_name(self):
+        return self._edb_object.HFSSSolverRegionsSetupName
+
+    @hfss_solver_region_setup_name.setter
+    def hfss_solver_region_setup_name(self, value):
+        self._edb_object.HFSSSolverRegionsSetupName = value
+        self._update_sweep()
+
+    @property
+    def hfss_solver_region_sweep_name(self):
+        return self._edb_object.HFSSSolverRegionsSweepName
+
+    @hfss_solver_region_sweep_name.setter
+    def hfss_solver_region_sweep_name(self, value):
+        self._edb_object.HFSSSolverRegionsSweepName = value
+        self._update_sweep()
