@@ -826,6 +826,7 @@ class Modeler(object):
         representation_type: str = "lower_left_upper_right",
         corner_radius: str = "0mm",
         rotation: str = "0deg",
+        parametrized: bool = False,
     ) -> Optional[Primitive]:
         """Create rectangle primitive.
 
@@ -851,25 +852,45 @@ class Modeler(object):
             Corner radius with units.
         rotation : str, optional
             Rotation angle with units.
+        parametrized : bool, optional
+            Whether width and height are parametrized variables.
+            Variables has to be created beforehand. If Parameters passed string, it will be considered as variable name
+            or expression, for instance `w*2+l`. This expression will be evaluated once imported in AEDT and updated
+            when parameters are changed.
 
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` or bool
             Rectangle object if created, False otherwise.
         """
+        if parametrized:
+            if isinstance(lower_left_point, list):
+                lower_left_point = [Value(val) for val in lower_left_point if isinstance(val, (int, float))]
+            if isinstance(upper_right_point, list):
+                upper_right_point = [Value(val) for val in upper_right_point if isinstance(val, (int, float))]
+            if isinstance(center_point, (float, int)):
+                center_point = Value(center_point)
+            if isinstance(corner_radius, (float, int)):
+                corner_radius = Value(corner_radius)
+            if isinstance(rotation, (float, int)):
+                rotation = Value(rotation)
+            if isinstance(width, (float, int)):
+                width = Value(width)
+            if isinstance(height, (float, int)):
+                height = Value(height)
         net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "lower_left_upper_right":
-            rect = Rectangle(self._pedb).create(
+            rect = Rectangle.create(
                 layout=self._active_layout,
                 layer=layer_name,
                 net=net,
                 rep_type=representation_type,
-                param1=Value(lower_left_point[0]),
-                param2=Value(lower_left_point[1]),
-                param3=Value(upper_right_point[0]),
-                param4=Value(upper_right_point[1]),
-                corner_rad=Value(corner_radius),
-                rotation=Value(rotation),
+                param1=lower_left_point[0],
+                param2=lower_left_point[1],
+                param3=upper_right_point[0],
+                param4=upper_right_point[1],
+                corner_rad=corner_radius,
+                rotation=rotation,
             )
         else:
             rep_type = "center_width_height"

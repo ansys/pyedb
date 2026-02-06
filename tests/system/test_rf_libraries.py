@@ -69,9 +69,9 @@ class TestClass(BaseTestClass):
             edb_cell=edb,
             width=10e-6,
             gap=5e-6,
-            layer="METAL_TOP",
+            layer="TOP_METAL",
             ground_net="GND",
-            ground_layer="METAL_BOT",
+            ground_layer="BOT_METAL",
             length=1e-3,
         )
         cpw.substrate.er = edb.materials["Silicon"].permittivity
@@ -79,7 +79,7 @@ class TestClass(BaseTestClass):
         cpw.create()
         assert round(cpw.analytical_z0, 3) == 10.678
         assert cpw.gap == 5e-6
-        assert cpw.ground_layer == "METAL_BOT"
+        assert cpw.ground_layer == "BOT_METAL"
         assert len(edb.modeler.rectangles) == 4
         assert edb.modeler.rectangles[0].net.name == "SIG"
         assert edb.modeler.rectangles[0].bbox == [-5e-06, 0.0, 5e-06, 0.001]

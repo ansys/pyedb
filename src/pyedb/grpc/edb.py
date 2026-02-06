@@ -119,9 +119,6 @@ from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import (
 from pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup import (
     RaptorXSimulationSetup,
 )
-from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
-    SIWaveCPASimulationSetup,
-)
 from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup,
 )
@@ -361,32 +358,10 @@ class Edb(EdbInit):
         variable_value : str, float, int, list/tuple
             Value with units. List/tuple format: [value, description]
         """
-        type_error_message = "Allowed values are str, numeric or two-item list with variable description."
-        if type(variable_value) in [
-            list,
-            tuple,
-        ]:  # Two-item list or tuple. 2nd argument is a str description.
-            if len(variable_value) == 2:
-                if type(variable_value[1]) is str:
-                    description = variable_value[1] if len(variable_value[1]) > 0 else None
-                else:
-                    description = None
-                    self.logger.warning("Invalid type for Edb variable description is ignored.")
-                val = variable_value[0]
-            else:
-                raise TypeError(type_error_message)
+        if variable_name.startswith("$"):
+            self.add_project_variable(variable_name, variable_value, is_parameter=True)
         else:
-            description = None
-            val = variable_value
-        if self.variable_exists(variable_name):
-            self.change_design_variable_value(variable_name, val)
-        else:
-            if variable_name.startswith("$"):
-                self.add_project_variable(variable_name, val)
-            else:
-                self.add_design_variable(variable_name, val)
-        if description:  # Add the variable description if a two-item list is passed for variable_value.
-            self.__getitem__(variable_name).description = description
+            self.add_design_variable(variable_name, variable_value, is_parameter=True)
 
     @property
     def core(self) -> "ansys.edb.core":
