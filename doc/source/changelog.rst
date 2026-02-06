@@ -9,6 +9,42 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.68.3 <https://github.com/ansys/pyedb/releases/tag/v0.68.3>`_ - February 06, 2026
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - HFSS REGION
+          - `#1813 <https://github.com/ansys/pyedb/pull/1813>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Issue#1800 #1810
+          - `#1811 <https://github.com/ansys/pyedb/pull/1811>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.68.2
+          - `#1808 <https://github.com/ansys/pyedb/pull/1808>`_
+
+
 `0.68.2 <https://github.com/ansys/pyedb/releases/tag/v0.68.2>`_ - February 04, 2026
 ===================================================================================
 
