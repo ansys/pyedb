@@ -1,0 +1,594 @@
+
+
+
+
+
+
+:class:`PinGroup`
+=================
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.pingroup.PinGroup(pedb, edb_pin_group=None)
+
+   
+   Manages pin groups.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: PinGroup
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a pin group.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create_terminal`
+            - Create a terminal.
+          * - :py:attr:`~create_current_source_terminal`
+            - Create current source terminal.
+          * - :py:attr:`~create_voltage_source_terminal`
+            - Create voltage source terminal.
+          * - :py:attr:`~create_voltage_probe_terminal`
+            - Create voltage probe terminal.
+          * - :py:attr:`~create_port_terminal`
+            - Create port terminal.
+          * - :py:attr:`~delete`
+            - Delete active pin group.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Pin group name.
+          * - :py:attr:`~component`
+            - Component.
+          * - :py:attr:`~is_null`
+            - Check if pin group is null.
+          * - :py:attr:`~pins`
+            - Pin group pins.
+          * - :py:attr:`~net`
+            - Net.
+          * - :py:attr:`~net_name`
+            - Net name.
+          * - :py:attr:`~terminal`
+            - Terminal.
+
+
+
+   .. tab-item:: Static methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~unique_name`
+            - Generate unique name.
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.pingroup import PinGroup
+
+Property detail
+---------------
+
+.. py:property:: name
+
+   
+   Pin group name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Pin group name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: component
+   :type: pyedb.grpc.database.hierarchy.component.Component
+
+
+   
+   Component.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_null
+   :type: bool
+
+
+   
+   Check if pin group is null.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if pin group is null, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pins
+   :type: dict[str, pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+
+   
+   Pin group pins.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`].
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net
+   :type: pyedb.grpc.database.net.net.Net
+
+
+   
+   Net.
+
+
+
+
+
+   :Returns:
+
+       :class:`Net <ansys.edb.core.net.net.Net>`.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net_name
+   :type: str
+
+
+   
+   Net name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Net name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminal
+   :type: Union[pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal, None]
+
+
+   
+   Terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, name, padstack_instances) -> PinGroup
+   :classmethod:
+
+
+   
+   Create a pin group.
+
+
+   :Parameters:
+
+       **layout** : :class:`Layout <ansys.edb.core.layout.layout.Layout>`
+           Layout object.
+
+       **name** : :class:`python:str`
+           Pin group name.
+
+       **padstack_instances** : :obj:`List`\[:class:
+           ..
+
+       **`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]**
+           List of padstack instances.
+
+
+
+   :Returns:
+
+       :class:`PinGroup <pyedb.grpc.database.hierarchy.pingroup.PinGroup>`
+           Pin group object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: unique_name(layout, base_name: str) -> str
+   :staticmethod:
+
+
+   
+   Generate unique name.
+
+
+   :Parameters:
+
+       **layout** : :class:`Layout <pyedb.edb.layout.layout.Layout>`
+           Layout object.
+
+       **base_name** : :class:`python:str`
+           Base name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Unique name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_terminal(name=None) -> pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal
+
+   
+   Create a terminal.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the terminal.
+
+
+
+   :Returns:
+
+       :class:`PinGroupTerminal <pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal>`.
+           Pin group terminal.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_current_source_terminal(magnitude=1.0, phase=0, impedance=1000000.0) -> pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal
+
+   
+   Create current source terminal.
+
+
+   :Parameters:
+
+       **magnitude** : :class:`python:float` or :class:`python:int`, :obj:`optional`
+           Source magnitude, default value ``1.0``.
+
+       **phase** : :class:`python:float` or :class:`python:int`, :obj:`optional`
+           Source phase, default value ``0.0``.
+
+       **impedance** : :class:`python:float`, :obj:`optional`
+           Source impedance, default value ``1e6``.
+
+
+
+   :Returns:
+
+       :class:`PinGroupTerminal <pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal>`.
+           Pin group terminal.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_source_terminal(magnitude=1, phase=0, impedance=0.001) -> pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal
+
+   
+   Create voltage source terminal.
+
+
+   :Parameters:
+
+       **magnitude** : :class:`python:float` or :class:`python:int`, :obj:`optional`
+           Source magnitude, default value ``1.0``.
+
+       **phase** : :class:`python:float` or :class:`python:int`, :obj:`optional`
+           Source phase, default value ``0.0``.
+
+       **impedance** : :class:`python:float`, :obj:`optional`
+           Source impedance, default value ``1e-3``.
+
+
+
+   :Returns:
+
+       :class:`PinGroupTerminal <pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal>`.
+           Pin group terminal.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_probe_terminal(impedance=1000000.0) -> pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal
+
+   
+   Create voltage probe terminal.
+
+
+   :Parameters:
+
+       **impedance** : :class:`python:float`, :obj:`optional`
+           Probe impedance, default value ``1e6``.
+
+
+
+   :Returns:
+
+       :class:`PinGroupTerminal <pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal>`.
+           Pin group terminal.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_port_terminal(impedance=50) -> pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal
+
+   
+   Create port terminal.
+
+
+   :Parameters:
+
+       **impedance** : :class:`python:float`, :obj:`optional`
+           Port impedance, default value ``50``.
+
+
+
+   :Returns:
+
+       :class:`PinGroupTerminal <pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal>`.
+           Pin group terminal.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete()
+
+   
+   Delete active pin group.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

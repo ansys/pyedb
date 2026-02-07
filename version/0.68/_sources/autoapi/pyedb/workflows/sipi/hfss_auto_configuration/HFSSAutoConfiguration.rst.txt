@@ -1,0 +1,469 @@
+
+
+
+
+
+
+:class:`HFSSAutoConfiguration`
+==============================
+
+
+.. py:class:: pyedb.workflows.sipi.hfss_auto_configuration.HFSSAutoConfiguration(edb=None)
+
+
+.. py:currentmodule:: HFSSAutoConfiguration
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~auto_populate_batch_groups`
+            - Automatically create and populate :attr:`batch_groups` from the current
+          * - :py:attr:`~add_batch_group`
+            - Append a new BatchGroup to the configuration.
+          * - :py:attr:`~add_solder_ball`
+            - Append a new :class:`.SolderBallsInfo` entry to the configuration.
+          * - :py:attr:`~add_simulation_setup`
+            - Create a: class:`.SimulationSetup` instance and attach it to the configuration.
+          * - :py:attr:`~group_nets_by_prefix`
+            - Group signal nets into *disjoint* batches while preserving differential pairs.
+          * - :py:attr:`~create_projects`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~ansys_version`
+            - 
+          * - :py:attr:`~grpc`
+            - 
+          * - :py:attr:`~source_edb_path`
+            - 
+          * - :py:attr:`~target_edb_path`
+            - 
+          * - :py:attr:`~batch_group_folder`
+            - 
+          * - :py:attr:`~signal_nets`
+            - 
+          * - :py:attr:`~power_nets`
+            - 
+          * - :py:attr:`~reference_net`
+            - 
+          * - :py:attr:`~batch_size`
+            - 
+          * - :py:attr:`~batch_groups`
+            - 
+          * - :py:attr:`~components`
+            - 
+          * - :py:attr:`~solder_balls`
+            - 
+          * - :py:attr:`~simulation_setup`
+            - 
+          * - :py:attr:`~extent_type`
+            - 
+          * - :py:attr:`~cutout_expansion`
+            - 
+          * - :py:attr:`~auto_mesh_seeding`
+            - 
+          * - :py:attr:`~port_type`
+            - 
+          * - :py:attr:`~create_pin_group`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.sipi.hfss_auto_configuration import HFSSAutoConfiguration
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: ansys_version
+   :type:  str
+   :value: '2025.2'
+
+
+.. py:attribute:: grpc
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: source_edb_path
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: target_edb_path
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: batch_group_folder
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: signal_nets
+   :type:  list
+   :value: []
+
+
+.. py:attribute:: power_nets
+   :type:  list
+   :value: []
+
+
+.. py:attribute:: reference_net
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: batch_size
+   :type:  int
+   :value: 100
+
+
+.. py:attribute:: batch_groups
+   :type:  list[BatchGroup]
+   :value: []
+
+
+.. py:attribute:: components
+   :type:  list[str]
+   :value: []
+
+
+.. py:attribute:: solder_balls
+   :type:  list[SolderBallsInfo]
+   :value: []
+
+
+.. py:attribute:: simulation_setup
+   :type:  SimulationSetup
+
+.. py:attribute:: extent_type
+   :type:  str
+   :value: 'bounding_box'
+
+
+.. py:attribute:: cutout_expansion
+   :type:  Union[float, str]
+   :value: '2mm'
+
+
+.. py:attribute:: auto_mesh_seeding
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: port_type
+   :type:  str
+   :value: 'coaxial'
+
+
+.. py:attribute:: create_pin_group
+   :type:  bool
+   :value: False
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: auto_populate_batch_groups(pattern: str | list[str] | None = None) -> None
+
+   
+   Automatically create and populate :attr:`batch_groups` from the current
+   :attr:`signal_nets`.
+
+   This is a thin convenience wrapper around :meth:`group_nets_by_prefix`.
+   It **only** executes when both:
+
+   * :attr:`auto_evaluate_batch_groups` is ``True``, and
+   * :attr:`signal_nets` is non-empty.
+
+   :Parameters:
+
+       **pattern** : :class:`str` | :class:`list` [:class:`str`] | ``None``, :obj:`optional`
+           POSIX ERE prefix pattern(s) that control which nets are grouped.
+           
+           * ``None`` *(default)* – activate **auto-discovery** mode: nets are
+             clustered heuristically and then split into chunks of size
+             :attr:`batch_size`.
+           * :class:`str` – treat the single string as a prefix pattern
+             (automatically anchored: ``pattern + ".*"``).
+           * :class:`list` [:class:`str`] – each list element becomes its own
+             prefix pattern; one :class:`.BatchGroup` is created **per list
+             entry**, regardless of :attr:`batch_size`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_batch_group(name: str, nets: Sequence[str] | None = None, *, simulation_setup: SimulationSetup | None = None) -> BatchGroup
+
+   
+   Append a new BatchGroup to the configuration.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Descriptive name for the group (will also become the regex
+           pattern when the group is built automatically).
+
+       **nets** : :obj:`Sequence`\[:class:`python:str`], :obj:`optional`
+           List of net names that belong to this batch.  If omitted
+           an empty list is assumed and you can fill it later.
+
+       **simulation_setup** : :obj:`SimulationSetup`, :obj:`optional`
+           Per-batch simulation settings.  When None the global
+           ``self.simulation_setup`` is used.
+
+
+
+   :Returns:
+
+       :obj:`BatchGroup`
+           The freshly created instance (already appended to
+           ``self.batch_groups``) so the caller can further
+           manipulate it if desired.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_solder_ball(ref_des: str, shape: str = 'cylinder', diameter: Optional[Union[str, float]] = None, mid_diameter: Optional[Union[str, float]] = None, height: Optional[Union[str, float]] = None) -> SolderBallsInfo
+
+   
+   Append a new :class:`.SolderBallsInfo` entry to the configuration.
+
+
+   :Parameters:
+
+       **ref_des** : :class:`str`
+           Reference designator of the component to which the solder-ball
+           definition applies (e.g. ``"U1"``).
+
+       **shape** : :class:`str`, :obj:`default` ``"cylinder"``
+           Geometric model used for the solder ball. Supported values are
+           ``"cylinder"``, ``"sphere"``, ``"spheroid"``, etc.
+
+       **diameter** : :class:`str` | :class:`float` | ``None``, :obj:`optional`
+           Nominal diameter.  When ``None`` HFSS auto-evaluates the value
+           from the footprint.
+
+       **mid_diameter** : :class:`str` | :class:`float` | ``None``, :obj:`optional`
+           Middle diameter **required only for spheroid shapes**.  Ignored
+           for all other geometries.
+
+       **height** : :class:`str` | :class:`float` | ``None``, :obj:`optional`
+           Ball height.  When ``None`` HFSS computes an appropriate value
+           automatically.
+
+
+
+   :Returns:
+
+       :class:`.SolderBallsInfo`
+           The newly created instance (already appended to
+           :attr:`solder_balls`).  The object can be further edited in-place
+           by the caller if desired.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg = HfssAutoConfig()
+   >>> cfg.add_solder_ball("U1", diameter="0.3mm", height="0.2mm")
+   >>> cfg.add_solder_ball(
+   ...     "U2",
+   ...     shape="spheroid",
+   ...     diameter="0.25mm",
+   ...     mid_diameter="0.35mm",
+   ...     height="0.18mm",
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_simulation_setup(meshing_frequency: Optional[Union[str, float]] = '10GHz', maximum_pass_number: int = 15, start_frequency: Optional[Union[str, float]] = 0, stop_frequency: Optional[Union[str, float]] = '40GHz', frequency_step: Optional[Union[str, float]] = '0.05GHz', replace: bool = True) -> SimulationSetup
+
+   
+   Create a: class:`.SimulationSetup` instance and attach it to the configuration.
+
+
+   :Parameters:
+
+       **meshing_frequency** : :obj:`Union`\[:class:`str`,: class:`float`], default ``"10GHz"``
+           Driven frequency used during mesh generation.
+
+       **maximum_pass_number** : class:`int`, default ``15``
+           Maximum number of adaptive passes.
+
+       **start_frequency** : :obj:`Union`\[:class:`str`,: class:`float`], default ``0``
+           Lower bound of the sweep window.
+
+       **stop_frequency** : :obj:`Union`\[:class:`str`,: class:`float`], default ``"40GHz"``
+           Upper bound of the sweep window.
+
+       **frequency_step** : :obj:`Union`\[:class:`str`,: class:`float`], default ``"0.05GHz"``
+           Linear step size for the frequency sweep.
+
+       **mesh_operation_size** : :obj:`Union`\[:class:`str`,: class:`float`, ``None``], :obj:`optional`
+           Maximum element size for mesh operations.  When ``None`` HFSS
+           computes an appropriate value automatically.
+
+       **replace** : class:`bool`, default ``False``
+           Placement strategy for the new setup:
+           
+           * ``False`` – append a *per-batch* setup by creating an auxiliary
+             :class:`.BatchGroup` (``name="extra_setup"``) whose
+             :attr:`.BatchGroup.simulation_setup` points to the new object.
+           * ``True`` – overwrite the **global**: attr:`simulation_setup`
+             attribute of the current :class:`.HfssAutoConfig` instance.
+
+
+
+   :Returns:
+
+       :class:`.SimulationSetup`
+           The newly created instance (already stored inside the configuration).
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg = HfssAutoConfig()
+   >>> # global setup
+   >>> cfg.add_simulation_setup(frequency_max="60GHz", replace=True)
+   >>> # per-batch setup
+   >>> cfg.add_simulation_setup(frequency_step="0.1GHz")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: group_nets_by_prefix(prefix_patterns: Optional[Sequence[str]] = None) -> Dict[str, List[List[str]]]
+
+   
+   Group signal nets into *disjoint* batches while preserving differential pairs.
+
+
+   :Parameters:
+
+       **prefix_patterns** : :obj:`Sequence`\[:class:`python:str`], :obj:`optional`
+           POSIX ERE patterns that define the prefixes to be grouped.
+           Example: ``["PCIe", "USB"]``  ➜  interpreted as ``["PCIe.*", "USB.*"]``.
+           If ``None`` patterns are derived heuristically from the data set
+           (see :meth:`_infer_prefix_patterns`).
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :obj:`List`\[:obj:`List`\[:class:`python:str`]]]
+           Keys are the original / generated pattern strings.
+           Values are lists of batches; each batch is an alphabetically sorted
+           list of net names.  When *prefix_patterns* was supplied the list
+           contains **exactly one** element (the complete group); in auto-discovery
+           mode the list may contain multiple slices sized according to
+           :attr:`batch_size`.
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   * Differential recognition strips the suffixes ``_[PN]``, ``_[ML]``, ``_[+-]``
+     (case-insensitive).
+   * The function updates the instance attribute :attr:`batch_groups` in place.
+
+
+   .. rubric:: Examples
+
+   Explicit grouping (production intent)::
+
+       >>> cfg.signal_nets = ["PCIe_RX0_P", "PCIe_RX0_N", "PCIe_TX0_P",
+       ...                    "USB3_DP", "USB3_DN", "DDR4_A0", "DDR4_A1"]
+       >>> cfg.batch_size = 1_000          # ignored when patterns are supplied
+       >>> cfg.group_nets_by_prefix(["PCIe", "USB"])
+       {'PCIe.*': [['PCIe_RX0_N', 'PCIe_RX0_P', 'PCIe_TX0_P']],
+        'USB.*':  [['USB3_DN', 'USB3_DP']]}
+
+   Auto-discovery with batching::
+
+       >>> cfg.group_nets_by_prefix()      # batch_size = 2
+       {'PCIe.*': [['PCIe_RX0_N', 'PCIe_RX0_P'], ['PCIe_TX0_P']],
+        'USB.*':  [['USB3_DN', 'USB3_DP']],
+        'DDR4.*': [['DDR4_A0', 'DDR4_A1']]}
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_projects()
+
+
+
+

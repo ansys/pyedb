@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``design_options.py`` module
+================================
+
+.. py:module:: pyedb.dotnet.database.edb_data.design_options
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: design_options
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.design_options.EdbDesignOptions`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> EdbDesignOptions</autoapi/pyedb/dotnet/database/edb_data/design_options/EdbDesignOptions>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

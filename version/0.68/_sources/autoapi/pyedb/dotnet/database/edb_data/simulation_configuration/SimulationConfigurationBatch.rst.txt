@@ -1,0 +1,1139 @@
+
+
+
+
+
+
+:class:`SimulationConfigurationBatch`
+=====================================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfigurationBatch
+
+   Bases: :py:obj:`object`
+
+
+   
+   Contains all Cutout and Batch analysis settings.
+   The class is part of `SimulationConfiguration` class as a property.
+
+   .. deprecated:: 0.68.0
+       This class is deprecated and will be removed in future releases.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SimulationConfigurationBatch
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_source`
+            - Add a new source to configuration.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~coplanar_instances`
+            - Retrieve the list of component to be replaced by circuit ports (obsolete).
+          * - :py:attr:`~signal_layer_etching_instances`
+            - Retrieve the list of layers which has layer etching activated.
+          * - :py:attr:`~etching_factor_instances`
+            - Retrieve the list of etching factor with associated layers.
+          * - :py:attr:`~dielectric_extent`
+            - Retrieve the value of dielectric extent.
+          * - :py:attr:`~use_dielectric_extent_multiple`
+            - Whether the multiple value of the dielectric extent is used.
+          * - :py:attr:`~airbox_horizontal_extent`
+            - Horizontal extent of the airbox for HFSS. When absolute dimensions are used,
+          * - :py:attr:`~use_airbox_horizontal_extent_multiple`
+            - Whether the multiple value is used for the horizontal extent of the air box.
+          * - :py:attr:`~airbox_negative_vertical_extent`
+            - Negative vertical extent of the airbox for HFSS. When absolute dimensions
+          * - :py:attr:`~use_airbox_negative_vertical_extent_multiple`
+            - Multiple value for the negative extent of the airbox.
+          * - :py:attr:`~airbox_positive_vertical_extent`
+            - Positive vertical extent of the airbox for HFSS. When absolute dimensions are
+          * - :py:attr:`~use_airbox_positive_vertical_extent_multiple`
+            - Whether the multiple value for the positive extent of the airbox is used.
+          * - :py:attr:`~use_pyaedt_cutout`
+            - Whether the default EDB cutout or a new PyAEDT cutout is used.
+          * - :py:attr:`~use_default_cutout`
+            - Whether to use the default EDB cutout. The default is ``False``, in which case
+          * - :py:attr:`~do_pingroup`
+            - Do pingroup on multi-pin component. ``True`` all pins from the same net are grouped, ``False`` one port
+          * - :py:attr:`~generate_solder_balls`
+            - Retrieve the boolean for applying solder balls.
+          * - :py:attr:`~signal_nets`
+            - Retrieve the list of signal net names.
+          * - :py:attr:`~power_nets`
+            - Retrieve the list of power and reference net names.
+          * - :py:attr:`~components`
+            - Retrieve the list component name to be included in the simulation.
+          * - :py:attr:`~coax_solder_ball_diameter`
+            - Retrieve the list of solder balls diameter values when the auto evaluated one is overwritten.
+          * - :py:attr:`~use_default_coax_port_radial_extension`
+            - Retrieve the boolean for using the default coaxial port extension value.
+          * - :py:attr:`~trim_reference_size`
+            - Retrieve the trim reference size when used.
+          * - :py:attr:`~do_cutout_subdesign`
+            - Retrieve boolean to perform the cutout during the project build.
+          * - :py:attr:`~cutout_subdesign_type`
+            - Retrieve the CutoutSubdesignType selection for clipping the design.
+          * - :py:attr:`~cutout_subdesign_expansion`
+            - Retrieve expansion factor used for clipping the design.
+          * - :py:attr:`~cutout_subdesign_round_corner`
+            - Retrieve boolean to perform the design clipping using round corner for the extent generation.
+          * - :py:attr:`~output_aedb`
+            - Retrieve the path for the output aedb folder. When provided will copy the initial aedb to the specified
+          * - :py:attr:`~sources`
+            - Retrieve the source list.
+          * - :py:attr:`~honor_user_dielectric`
+            - Retrieve the boolean to activate the feature "'Honor user dielectric'".
+          * - :py:attr:`~truncate_airbox_at_ground`
+            - Retrieve the boolean to truncate hfss air box at ground.
+          * - :py:attr:`~use_radiation_boundary`
+            - Retrieve the boolean to use radiation boundary with HFSS.
+          * - :py:attr:`~signal_layers_properties`
+            - Retrieve the list of layers to have properties changes.
+          * - :py:attr:`~generate_excitations`
+            - Activate ports and sources for DC generation when build project with the class.
+          * - :py:attr:`~add_frequency_sweep`
+            - Activate the frequency sweep creation when build project with the class.
+          * - :py:attr:`~include_only_selected_nets`
+            - Include only net selection in the project. It is only used when ``do_cutout`` is set to ``False``.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.simulation_configuration import SimulationConfigurationBatch
+
+Property detail
+---------------
+
+.. py:property:: coplanar_instances
+
+   
+   Retrieve the list of component to be replaced by circuit ports (obsolete).
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           ..
+
+       :obj:`List` :obj:`of` :obj:`component` name.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: signal_layer_etching_instances
+
+   
+   Retrieve the list of layers which has layer etching activated.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           ..
+
+       :obj:`List` :obj:`of` :obj:`layer` name.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: etching_factor_instances
+
+   
+   Retrieve the list of etching factor with associated layers.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           ..
+
+       :class:`python:list` :obj:`etching` :obj:`parameters` :obj:`with` :obj:`layer` name.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dielectric_extent
+
+   
+   Retrieve the value of dielectric extent.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Value of the dielectric extent. When absolute dimensions are used,
+           the values are in meters.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_dielectric_extent_multiple
+
+   
+   Whether the multiple value of the dielectric extent is used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when the multiple value (extent factor) is used. ``False`` when
+           absolute dimensions are used.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: airbox_horizontal_extent
+
+   
+   Horizontal extent of the airbox for HFSS. When absolute dimensions are used,
+   the values are in meters.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`the` :obj:`air` :obj:`box` :obj:`horizontal` extent.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_airbox_horizontal_extent_multiple
+
+   
+   Whether the multiple value is used for the horizontal extent of the air box.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when the multiple value (extent factor) is used. ``False`` when
+           absolute dimensions are used.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: airbox_negative_vertical_extent
+
+   
+   Negative vertical extent of the airbox for HFSS. When absolute dimensions
+   are used, the values are in meters.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`the` :obj:`air` :obj:`box` :obj:`negative` :obj:`vertical` extent.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_airbox_negative_vertical_extent_multiple
+
+   
+   Multiple value for the negative extent of the airbox.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when the multiple value (extent factor) is used. ``False`` when
+           absolute dimensions are used.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: airbox_positive_vertical_extent
+
+   
+   Positive vertical extent of the airbox for HFSS. When absolute dimensions are
+   used, the values are in meters.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`the` :obj:`air` :obj:`box` :obj:`positive` :obj:`vertical` extent.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_airbox_positive_vertical_extent_multiple
+
+   
+   Whether the multiple value for the positive extent of the airbox is used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when the multiple value (extent factor) is used. ``False`` when
+           absolute dimensions are used.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_pyaedt_cutout
+
+   
+   Whether the default EDB cutout or a new PyAEDT cutout is used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_default_cutout
+
+   
+   Whether to use the default EDB cutout. The default is ``False``, in which case
+   a new PyAEDT cutout is used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: do_pingroup
+
+   
+   Do pingroup on multi-pin component. ``True`` all pins from the same net are grouped, ``False`` one port
+   is created for each pin.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: generate_solder_balls
+
+   
+   Retrieve the boolean for applying solder balls.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when applied ``False`` if not.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: signal_nets
+
+   
+   Retrieve the list of signal net names.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:str`]
+           List of signal net names.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: power_nets
+
+   
+   Retrieve the list of power and reference net names.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           List of the net name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: components
+
+   
+   Retrieve the list component name to be included in the simulation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           List of the component name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: coax_solder_ball_diameter
+
+   
+   Retrieve the list of solder balls diameter values when the auto evaluated one is overwritten.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:float`]
+           List of the solder balls diameter.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_default_coax_port_radial_extension
+
+   
+   Retrieve the boolean for using the default coaxial port extension value.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when the default value is used ``False`` if not.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: trim_reference_size
+
+   
+   Retrieve the trim reference size when used.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           The size value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: do_cutout_subdesign
+
+   
+   Retrieve boolean to perform the cutout during the project build.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` :obj:`clipping` :obj:`the` :obj:`design` :obj:`is` :obj:`applied` ``False`` :obj:`is` not.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cutout_subdesign_type
+
+   
+   Retrieve the CutoutSubdesignType selection for clipping the design.
+
+
+
+
+
+   :Returns:
+
+       :obj:`CutoutSubdesignType` :obj:`object`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cutout_subdesign_expansion
+
+   
+   Retrieve expansion factor used for clipping the design.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           The value used as a ratio.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cutout_subdesign_round_corner
+
+   
+   Retrieve boolean to perform the design clipping using round corner for the extent generation.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when using round corner, ``False`` if not.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: output_aedb
+
+   
+   Retrieve the path for the output aedb folder. When provided will copy the initial aedb to the specified
+   path. This is used especially to preserve the initial project when several files have to be build based on
+   the last one. When the path is None, the initial project will be overwritten. So when cutout is applied mand
+   you want to preserve the project make sure you provide the full path for the new aedb folder.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Absolute path for the created aedb folder.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sources
+
+   
+   Retrieve the source list.
+
+
+
+
+
+   :Returns:
+
+       :class:`dotnet.database.edb_data.sources.Source`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: honor_user_dielectric
+
+   
+   Retrieve the boolean to activate the feature "'Honor user dielectric'".
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` activated, ``False`` deactivated.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: truncate_airbox_at_ground
+
+   
+   Retrieve the boolean to truncate hfss air box at ground.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` activated, ``False`` deactivated.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_radiation_boundary
+
+   
+   Retrieve the boolean to use radiation boundary with HFSS.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` activated, ``False`` deactivated.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: signal_layers_properties
+
+   
+   Retrieve the list of layers to have properties changes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           List of layer name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: generate_excitations
+
+   
+   Activate ports and sources for DC generation when build project with the class.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` ports are created, ``False`` skip port generation. Default value is ``True``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: add_frequency_sweep
+
+   
+   Activate the frequency sweep creation when build project with the class.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` frequency sweep is created, ``False`` skip sweep adding. Default value is ``True``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: include_only_selected_nets
+
+   
+   Include only net selection in the project. It is only used when ``do_cutout`` is set to ``False``.
+   Will also be ignored if signal_nets and power_nets are ``None``, resulting project will have all nets included.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` or ``False``. Default value is ``False``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_source(source=None)
+
+   
+   Add a new source to configuration.
+
+
+   :Parameters:
+
+       **source** : :class:`pyedb.dotnet.database.edb_data.sources.Source`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

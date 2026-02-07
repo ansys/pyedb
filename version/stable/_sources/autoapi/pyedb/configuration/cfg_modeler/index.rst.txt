@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_modeler`` library
+===============================================
+
+.. py:module:: pyedb.configuration.cfg_modeler
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_modeler
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_modeler.CfgTrace`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_modeler.CfgPlane`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_modeler.PrimitivesToDeleteDict`
+            - ..
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_modeler.CfgModeler`
+            - Manage configuration general settings.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgTrace</autoapi/pyedb/configuration/cfg_modeler/CfgTrace>
+    <span class="nf nf-cod-symbol_class"></span> CfgPlane</autoapi/pyedb/configuration/cfg_modeler/CfgPlane>
+    <span class="nf nf-cod-symbol_class"></span> PrimitivesToDeleteDict</autoapi/pyedb/configuration/cfg_modeler/PrimitivesToDeleteDict>
+    <span class="nf nf-cod-symbol_class"></span> CfgModeler</autoapi/pyedb/configuration/cfg_modeler/CfgModeler>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

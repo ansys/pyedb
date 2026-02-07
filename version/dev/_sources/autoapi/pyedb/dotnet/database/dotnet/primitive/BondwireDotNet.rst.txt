@@ -1,0 +1,598 @@
+
+
+
+
+
+
+:class:`BondwireDotNet`
+=======================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.primitive.BondwireDotNet(api, prim_obj=None)
+
+   Bases: :py:obj:`PrimitiveDotNet`
+
+
+   
+   Class representing a bondwire object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: BondwireDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a bondwire object.
+          * - :py:attr:`~get_material`
+            - Get material of the bondwire.
+          * - :py:attr:`~set_material`
+            - Set the material of a bondwire.
+          * - :py:attr:`~get_definition_name`
+            - Get definition name of a bondwire object.
+          * - :py:attr:`~set_definition_name`
+            - Set the definition name of a bondwire.
+          * - :py:attr:`~get_traj`
+            - Get trajectory parameters of a bondwire object.
+          * - :py:attr:`~set_traj`
+            - Set the parameters of the trajectory of a bondwire.
+          * - :py:attr:`~get_start_elevation`
+            - Get the start elevation layer of a bondwire object.
+          * - :py:attr:`~set_start_elevation`
+            - Set the start elevation of a bondwire.
+          * - :py:attr:`~get_end_elevation`
+            - Get the end elevation layer of a bondwire object.
+          * - :py:attr:`~set_end_elevation`
+            - Set the end elevation of a bondwire.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~type`
+            - :class:`BondwireType`: Bondwire-type of a bondwire object.
+          * - :py:attr:`~cross_section_type`
+            - :class:`BondwireCrossSectionType`: Bondwire-cross-section-type of a bondwire object.
+          * - :py:attr:`~cross_section_height`
+            - :class:`Value <ansys.edb.utility.Value>`: Bondwire-cross-section height of a bondwire object.
+          * - :py:attr:`~width`
+            - :class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.primitive import BondwireDotNet
+
+Property detail
+---------------
+
+.. py:property:: type
+
+   
+   :class:`BondwireType`: Bondwire-type of a bondwire object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cross_section_type
+
+   
+   :class:`BondwireCrossSectionType`: Bondwire-cross-section-type of a bondwire object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cross_section_height
+
+   
+   :class:`Value <ansys.edb.utility.Value>`: Bondwire-cross-section height of a bondwire object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: width
+
+   
+   :class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, bondwire_type, definition_name, placement_layer, width, material, start_context, start_layer_name, start_x, start_y, end_context, end_layer_name, end_x, end_y, net)
+
+   
+   Create a bondwire object.
+
+
+   :Parameters:
+
+       **layout** : :class:`Layout <ansys.edb.layout.Layout>`
+           Layout this bondwire will be in.
+
+       **bondwire_type** : :class:`BondwireType`
+           Type of bondwire: kAPDBondWire or kJDECBondWire types.
+
+       **definition_name** : :class:`python:str`
+           Bondwire definition name.
+
+       **placement_layer** : :class:`python:str`
+           Layer name this bondwire will be on.
+
+       **width** : :class:`Value <ansys.edb.utility.Value>`
+           Bondwire width.
+
+       **material** : :class:`python:str`
+           Bondwire material name.
+
+       **start_context** : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
+           Start context: None means top level.
+
+       **start_layer_name** : :class:`python:str`
+           Name of start layer.
+
+       **start_x** : :class:`Value <ansys.edb.utility.Value>`
+           X value of start point.
+
+       **start_y** : :class:`Value <ansys.edb.utility.Value>`
+           Y value of start point.
+
+       **end_context** : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
+           End context: None means top level.
+
+       **end_layer_name** : :class:`python:str`
+           Name of end layer.
+
+       **end_x** : :class:`Value <ansys.edb.utility.Value>`
+           X value of end point.
+
+       **end_y** : :class:`Value <ansys.edb.utility.Value>`
+           Y value of end point.
+
+       **net** : :class:`python:str` or :class:`Net <ansys.edb.net.Net>` or :data:`python:None`
+           Net of the Bondwire.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.dotnet.primitive.BondwireDotNet`
+           Bondwire object created.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_material(evaluated=True)
+
+   
+   Get material of the bondwire.
+
+
+   :Parameters:
+
+       **evaluated** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           True if an evaluated material name is wanted.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Material name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_material(material)
+
+   
+   Set the material of a bondwire.
+
+
+   :Parameters:
+
+       **material** : :class:`python:str`
+           Material name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_definition_name(evaluated=True)
+
+   
+   Get definition name of a bondwire object.
+
+
+   :Parameters:
+
+       **evaluated** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           True if an evaluated (in variable namespace) material name is wanted.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Bondwire name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_definition_name(definition_name)
+
+   
+   Set the definition name of a bondwire.
+
+
+   :Parameters:
+
+       **definition_name** : :class:`python:str`
+           Bondwire name to be set.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_traj()
+
+   
+   Get trajectory parameters of a bondwire object.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[
+           :class:`Value <ansys.edb.utility.Value>`,
+           :class:`Value <ansys.edb.utility.Value>`,
+           :class:`Value <ansys.edb.utility.Value>`,
+           :class:`Value <ansys.edb.utility.Value>`
+
+       ]
+           Returns a tuple of the following format:
+           
+           **(x1, y1, x2, y2)**
+           
+           **x1** : X value of the start point.
+           
+           **y1** : Y value of the start point.
+           
+           **x1** : X value of the end point.
+           
+           **y1** : Y value of the end point.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_traj(x1, y1, x2, y2)
+
+   
+   Set the parameters of the trajectory of a bondwire.
+
+
+   :Parameters:
+
+       **x1** : :class:`Value <ansys.edb.utility.Value>`
+           X value of the start point.
+
+       **y1** : :class:`Value <ansys.edb.utility.Value>`
+           Y value of the start point.
+
+       **x2** : :class:`Value <ansys.edb.utility.Value>`
+           X value of the end point.
+
+       **y2** : :class:`Value <ansys.edb.utility.Value>`
+           Y value of the end point.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_start_elevation(start_context)
+
+   
+   Get the start elevation layer of a bondwire object.
+
+
+   :Parameters:
+
+       **start_context** : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
+           Start cell context of the bondwire.
+
+
+
+   :Returns:
+
+       :class:`Layer <ansys.edb.layer.Layer>`
+           Start context of the bondwire.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_start_elevation(start_context, layer)
+
+   
+   Set the start elevation of a bondwire.
+
+
+   :Parameters:
+
+       **start_context** : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
+           Start cell context of the bondwire. None means top level.
+
+       **layer** : :class:`python:str` or :class:`Layer <ansys.edb.layer.Layer>`
+           Start layer of the bondwire.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_end_elevation(end_context)
+
+   
+   Get the end elevation layer of a bondwire object.
+
+
+   :Parameters:
+
+       **end_context** : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
+           End cell context of the bondwire.
+
+
+
+   :Returns:
+
+       :class:`Layer <ansys.edb.layer.Layer>`
+           End context of the bondwire.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_end_elevation(end_context, layer)
+
+   
+   Set the end elevation of a bondwire.
+
+
+   :Parameters:
+
+       **end_context** : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
+           End cell context of the bondwire. None means top level.
+
+       **layer** : :class:`python:str` or :class:`Layer <ansys.edb.layer.Layer>`
+           End layer of the bondwire.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

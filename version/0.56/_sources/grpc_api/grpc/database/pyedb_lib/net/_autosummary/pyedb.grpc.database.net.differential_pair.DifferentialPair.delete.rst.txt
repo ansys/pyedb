@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.grpc.database.net.differential_pair
+
+.. automethod:: DifferentialPair.delete

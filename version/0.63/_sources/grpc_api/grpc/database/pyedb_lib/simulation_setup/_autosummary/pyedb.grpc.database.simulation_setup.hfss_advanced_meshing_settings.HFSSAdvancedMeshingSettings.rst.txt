@@ -1,0 +1,15 @@
+﻿HFSSAdvancedMeshingSettings
+===========================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings
+
+.. autoclass:: HFSSAdvancedMeshingSettings
+
+   
+
+   
+   
+
+   
+   
+   

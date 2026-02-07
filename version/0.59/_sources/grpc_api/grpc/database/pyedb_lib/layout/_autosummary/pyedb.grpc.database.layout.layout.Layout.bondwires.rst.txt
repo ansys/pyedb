@@ -1,0 +1,6 @@
+bondwires
+=========
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. autoproperty:: Layout.bondwires

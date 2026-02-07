@@ -1,0 +1,6 @@
+end\_cap2
+=========
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. autoproperty:: Path.end_cap2

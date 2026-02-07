@@ -1,0 +1,130 @@
+
+
+
+
+
+
+:class:`SiwaveScanConfig`
+=========================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.xtalk_scan.scan_config.SiwaveScanConfig(pedb, scan_type='impedance')
+
+   
+   XML control file handle for Siwave crosstalk scan.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SiwaveScanConfig
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~write_xml`
+            - Write XML control file
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~file_path`
+            - 
+          * - :py:attr:`~impedance_scan`
+            - 
+          * - :py:attr:`~frequency_xtalk_scan`
+            - 
+          * - :py:attr:`~time_xtalk_scan`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: file_path
+   :value: ''
+
+
+.. py:attribute:: impedance_scan
+
+.. py:attribute:: frequency_xtalk_scan
+
+.. py:attribute:: time_xtalk_scan
+
+
+
+Method detail
+-------------
+
+.. py:method:: write_xml()
+
+   
+   Write XML control file
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

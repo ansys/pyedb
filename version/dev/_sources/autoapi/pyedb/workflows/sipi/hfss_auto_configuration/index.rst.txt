@@ -1,0 +1,165 @@
+
+
+
+
+
+
+The ``hfss_auto_configuration.py`` module
+=========================================
+
+.. py:module:: pyedb.workflows.sipi.hfss_auto_configuration
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: hfss_auto_configuration
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo`
+            - 
+
+
+          * - :py:obj:`~pyedb.workflows.sipi.hfss_auto_configuration.SimulationSetup`
+            - 
+
+
+          * - :py:obj:`~pyedb.workflows.sipi.hfss_auto_configuration.BatchGroup`
+            - 
+
+
+          * - :py:obj:`~pyedb.workflows.sipi.hfss_auto_configuration.HFSSAutoConfiguration`
+            - 
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~create_hfss_auto_configuration`
+            - Factory function that creates an HFSSAutoConfiguration instance
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ref_patterns`
+            - 
+
+
+          * - :py:obj:`~combined_ref`
+            - 
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SolderBallsInfo</autoapi/pyedb/workflows/sipi/hfss_auto_configuration/SolderBallsInfo>
+    <span class="nf nf-cod-symbol_class"></span> SimulationSetup</autoapi/pyedb/workflows/sipi/hfss_auto_configuration/SimulationSetup>
+    <span class="nf nf-cod-symbol_class"></span> BatchGroup</autoapi/pyedb/workflows/sipi/hfss_auto_configuration/BatchGroup>
+    <span class="nf nf-cod-symbol_class"></span> HFSSAutoConfiguration</autoapi/pyedb/workflows/sipi/hfss_auto_configuration/HFSSAutoConfiguration>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: create_hfss_auto_configuration(edb: Optional[pyedb.Edb] = None, ansys_version: Optional[str] = None, grpc: Optional[bool] = None, source_edb_path: Optional[str] = None, target_edb_path: Optional[str] = None, signal_nets: Optional[list] = None, power_nets: Optional[list] = None, reference_net: Optional[str] = None, batch_size: Optional[int] = None, batch_groups: Optional[list] = None, components: Optional[list[str]] = None, solder_balls: Optional[list] = None, simulation_setup: Optional[SimulationSetup] = None, extent_type: Optional[str] = None, cutout_expansion: Optional[Union[str, float]] = None, auto_mesh_seeding: Optional[bool] = None, port_type: Optional[str] = None, create_pin_group: Optional[bool] = None) -> HFSSAutoConfiguration
+
+   
+   Factory function that creates an HFSSAutoConfiguration instance
+   with optional overrides for every public attribute.
+
+
+   :Parameters:
+
+       **All parameters are optional. When omitted, the class-level defaults**
+           ..
+
+       **(defined in HFSSAutoConfiguration.__init__) are kept.**
+           ..
+
+
+
+   :Returns:
+
+       :obj:`HFSSAutoConfiguration`
+           A fully configured instance ready for further use or inspection.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: ref_patterns
+   :value: ['^GND\\d*$', '^GND_\\w+', '^GND$', '^VSS\\d*$', '^VSS\\w*', '^DGND$', '^AGND$', '^PGND$',...
+
+
+.. py:data:: combined_ref
+
+
+

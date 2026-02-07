@@ -1,0 +1,197 @@
+
+
+
+
+
+
+:class:`Circle`
+===============
+
+
+.. py:class:: pyedb.grpc.database.primitive.circle.Circle(pedb, core=None)
+
+   Bases: :py:obj:`pyedb.grpc.database.primitive.primitive.Primitive`
+
+
+   
+   Manages EDB functionalities for a primitives.
+   It inherits EDB Object properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(myedb, edbversion="2025.2", grpc=True)
+   >>> edb_prim = edb.modeler.primitives[0]
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Circle
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - 
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~delete`
+            - Delete the circle from the layout.
+          * - :py:attr:`~get_parameters`
+            - Returns parameters.
+          * - :py:attr:`~set_parameters`
+            - Set parameters.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.primitive.circle import Circle
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, layer: Union[str, pyedb.grpc.database.layers.layer.Layer] = None, net: Union[str, pyedb.grpc.database.net.net.Net, None] = None, center_x: float = None, center_y: float = None, radius: float = 0.0)
+   :classmethod:
+
+
+.. py:method:: delete()
+
+   
+   Delete the circle from the layout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_parameters() -> tuple[float, float, float]
+
+   
+   Returns parameters.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[
+           :class:`.Value`,
+           :class:`.Value`,
+           :class:`.Value`
+
+       ]
+           Returns a tuple in this format:
+           
+           **(center_x, center_y, radius)**
+           
+           **center_x** : X value of center point.
+           
+           **center_y** : Y value of center point.
+           
+           **radius** : Radius value of the circle.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_parameters(center_x, center_y, radius)
+
+   
+   Set parameters.
+
+
+   :Parameters:
+
+       **center_x** : :class:`python:float`
+           Center x value.
+
+       **center_y** : :class:`python:float`
+           Center y value
+
+       **radius** : :class:`python:float`
+           Circle radius.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

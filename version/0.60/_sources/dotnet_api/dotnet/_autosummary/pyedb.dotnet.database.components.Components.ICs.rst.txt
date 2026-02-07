@@ -1,0 +1,6 @@
+ICs
+===
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. autoproperty:: Components.ICs

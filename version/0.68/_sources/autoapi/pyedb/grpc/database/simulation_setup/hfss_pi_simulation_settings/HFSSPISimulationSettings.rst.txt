@@ -1,0 +1,242 @@
+
+
+
+
+
+
+:class:`HFSSPISimulationSettings`
+=================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_pi_simulation_settings.HFSSPISimulationSettings(pedb, core: ansys.edb.core.simulation_setup.hfss_pi_simulation_settings.HFSSPISimulationSettings)
+
+   
+   PyEDB HFSS PI simulation setup class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSPISimulationSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~enabled`
+            - Get or set the enabled status of the HFSS PI simulation setup.
+          * - :py:attr:`~general`
+            - Get the HFSS PI general simulation settings.
+          * - :py:attr:`~net_processing`
+            - Get the HFSS PI net processing simulation settings.
+          * - :py:attr:`~power_ground_nets`
+            - Get the HFSS PI power and ground nets simulation settings.
+          * - :py:attr:`~signal_nets`
+            - Get the HFSS PI signal nets simulation settings.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_pi_simulation_settings import HFSSPISimulationSettings
+
+Property detail
+---------------
+
+.. py:property:: enabled
+   :type: bool
+
+
+   
+   Get or set the enabled status of the HFSS PI simulation setup.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the simulation setup is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: general
+   :type: pyedb.grpc.database.simulation_setup.hfss_pi_general_settings.HFSSPIGeneralSettings
+
+
+   
+   Get the HFSS PI general simulation settings.
+
+
+
+
+
+   :Returns:
+
+       :obj:`HFSSPIGeneralSettings`
+           The HFSS PI general simulation settings object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net_processing
+   :type: pyedb.grpc.database.simulation_setup.hfss_pi_net_processing_settings.HFSSPINetProcessingSettings
+
+
+   
+   Get the HFSS PI net processing simulation settings.
+
+
+
+
+
+   :Returns:
+
+       :obj:`HFSSPINetProcessingSettings`
+           The HFSS PI net processing simulation settings object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: power_ground_nets
+   :type: pyedb.grpc.database.simulation_setup.hfss_pi_power_ground_nets_settings.HFSSPIPowerGroundNetsSettings
+
+
+   
+   Get the HFSS PI power and ground nets simulation settings.
+
+
+
+
+
+   :Returns:
+
+       :obj:`HFSSPIPowerGroundNetsSettings`
+           The HFSS PI power and ground nets simulation settings object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: signal_nets
+   :type: pyedb.grpc.database.simulation_setup.hfss_pi_signal_nets_settings.HFSSPISignalNetsSettings
+
+
+   
+   Get the HFSS PI signal nets simulation settings.
+
+
+
+
+
+   :Returns:
+
+       :obj:`HFSSPISignalNetsSettings`
+           The HFSS PI signal nets simulation settings object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

@@ -1,0 +1,118 @@
+
+
+
+
+
+
+The ``data`` package
+========================
+
+.. py:module:: pyedb.dotnet.database.sim_setup_data.data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: data
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.adaptive_frequency_data`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.mesh_operation`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.settings`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.sim_setup_info`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.simulation_settings`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.sweep_data`
+            - 
+
+
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~workdir`
+            - 
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> adaptive_frequency_data</autoapi/pyedb/dotnet/database/sim_setup_data/data/adaptive_frequency_data/index>
+    <span class="nf nf-fa-file"></span> mesh_operation</autoapi/pyedb/dotnet/database/sim_setup_data/data/mesh_operation/index>
+    <span class="nf nf-fa-file"></span> settings</autoapi/pyedb/dotnet/database/sim_setup_data/data/settings/index>
+    <span class="nf nf-fa-file"></span> sim_setup_info</autoapi/pyedb/dotnet/database/sim_setup_data/data/sim_setup_info/index>
+    <span class="nf nf-fa-file"></span> simulation_settings</autoapi/pyedb/dotnet/database/sim_setup_data/data/simulation_settings/index>
+    <span class="nf nf-fa-file"></span> siw_dc_ir_settings</autoapi/pyedb/dotnet/database/sim_setup_data/data/siw_dc_ir_settings/index>
+    <span class="nf nf-fa-file"></span> sweep_data</autoapi/pyedb/dotnet/database/sim_setup_data/data/sweep_data/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: workdir
+
+
+

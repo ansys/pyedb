@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``definition_obj.py`` module
+================================
+
+.. py:module:: pyedb.dotnet.database.definition.definition_obj
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: definition_obj
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.definition_obj.DefinitionObj`
+            - Base class for definition objects.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> DefinitionObj</autoapi/pyedb/dotnet/database/definition/definition_obj/DefinitionObj>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

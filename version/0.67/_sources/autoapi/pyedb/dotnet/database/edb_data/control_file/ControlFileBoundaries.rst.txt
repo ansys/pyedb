@@ -1,0 +1,218 @@
+
+
+
+
+
+
+:class:`ControlFileBoundaries`
+==============================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.control_file.ControlFileBoundaries(units='um')
+
+   
+   Boundaries management.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileBoundaries
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_port`
+            - Add a new port to the gds.
+          * - :py:attr:`~add_extent`
+            - Add a new extent.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~ports`
+            - 
+          * - :py:attr:`~extents`
+            - 
+          * - :py:attr:`~circuit_models`
+            - 
+          * - :py:attr:`~circuit_elements`
+            - 
+          * - :py:attr:`~units`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.control_file import ControlFileBoundaries
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: ports
+
+.. py:attribute:: extents
+   :value: []
+
+
+.. py:attribute:: circuit_models
+
+.. py:attribute:: circuit_elements
+
+.. py:attribute:: units
+   :value: 'um'
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_port(name, x1, y1, layer1, x2, y2, layer2, z0=50)
+
+   
+   Add a new port to the gds.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Port name.
+
+       **x1** : :class:`python:str`
+           Pin 1 x position.
+
+       **y1** : :class:`python:str`
+           Pin 1 y position.
+
+       **layer1** : :class:`python:str`
+           Pin 1 layer.
+
+       **x2** : :class:`python:str`
+           Pin 2 x position.
+
+       **y2** : :class:`python:str`
+           Pin 2 y position.
+
+       **layer2** : :class:`python:str`
+           Pin 2 layer.
+
+       **z0** : :class:`python:str`
+           Characteristic impedance.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.control_file.ControlCircuitPt`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_extent(type='bbox', dieltype='bbox', diel_hactor=0.25, airbox_hfactor=0.25, airbox_vr_p=0.25, airbox_vr_n=0.25, useradiation=True, honor_primitives=True, truncate_at_gnd=True)
+
+   
+   Add a new extent.
+
+
+   :Parameters:
+
+       **type**
+           ..
+
+       **dieltype**
+           ..
+
+       **diel_hactor**
+           ..
+
+       **airbox_hfactor**
+           ..
+
+       **airbox_vr_p**
+           ..
+
+       **airbox_vr_n**
+           ..
+
+       **useradiation**
+           ..
+
+       **honor_primitives**
+           ..
+
+       **truncate_at_gnd**
+           ..
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

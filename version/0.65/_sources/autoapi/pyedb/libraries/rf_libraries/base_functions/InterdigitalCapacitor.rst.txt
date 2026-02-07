@@ -1,0 +1,220 @@
+
+
+
+
+
+
+:class:`InterdigitalCapacitor`
+==============================
+
+
+.. py:class:: pyedb.libraries.rf_libraries.base_functions.InterdigitalCapacitor(edb_cell: Optional[pyedb.Edb] = None, fingers: int = 8, finger_length: Union[float, str] = '0.9mm', finger_width: Union[float, str] = '0.08mm', gap: Union[float, str] = '0.04mm', comb_gap: Union[float, str] = '0.06mm', bus_width: Union[float, str] = '0.25mm', layer: str = 'TOP', net_a: str = 'PORT1', net_b: str = 'PORT2')
+
+   
+   Inter-digitated comb capacitor with fully parametric fingers.
+
+   All dimensions are stored as native EDB variables so they remain
+   editable inside AEDT after the library cell is imported.
+
+   :Parameters:
+
+       **fingers** : :class:`python:int`, :obj:`default` 8
+           Number of finger pairs.
+
+       **finger_length** : :class:`python:str`, :obj:`default` "0.9 mm"
+           Length of each finger (string with units).
+
+       **finger_width** : :class:`python:str`, :obj:`default` "0.08 mm"
+           Width of each finger.
+
+       **gap** : :class:`python:str`, :obj:`default` "0.04 mm"
+           Gap between adjacent fingers.
+
+       **comb_gap** : :class:`python:str`, :obj:`default` "0.06 mm"
+           Gap between the two combs at the open end.
+
+       **bus_width** : :class:`python:str`, :obj:`default` "0.25 mm"
+           Width of the top/bottom bus bars.
+
+       **layer** : :class:`python:str`, :obj:`default` "TOP"
+           Layer on which the capacitor is drawn.
+
+       **net_a** : :class:`python:str`, :obj:`default` "PORT1"
+           Net for the bottom comb.
+
+       **net_b** : :class:`python:str`, :obj:`default` "PORT2"
+           Net for the top comb.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> idc = InterdigitalCapacitor(fingers=10, finger_length="0.5mm", gap="0.03mm")
+   >>> edb = Edb("idc.aedb")
+   >>> idc._pedb = edb
+   >>> idc.create()
+   >>> f"{idc.capacitance_pf:.2f} pF"
+   '0.74 pF'
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: InterdigitalCapacitor
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Draw the two bus bars and interleaved fingers.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~capacitance_pf`
+            - Quick parallel-plate estimate of the total capacitance.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~VAR_PREFIX`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~net_a`
+            - 
+          * - :py:attr:`~net_b`
+            - 
+          * - :py:attr:`~substrate`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.rf_libraries.base_functions import InterdigitalCapacitor
+
+Property detail
+---------------
+
+.. py:property:: capacitance_pf
+   :type: float
+
+
+   
+   Quick parallel-plate estimate of the total capacitance.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Capacitance in pico-Farads.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: VAR_PREFIX
+   :value: 'IDC'
+
+
+.. py:attribute:: layer
+   :value: 'TOP'
+
+
+.. py:attribute:: net_a
+   :value: 'PORT1'
+
+
+.. py:attribute:: net_b
+   :value: 'PORT2'
+
+
+.. py:attribute:: substrate
+
+
+
+Method detail
+-------------
+
+.. py:method:: create() -> bool
+
+   
+   Draw the two bus bars and interleaved fingers.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True on success.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

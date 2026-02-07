@@ -1,0 +1,6 @@
+thickness
+=========
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. autoproperty:: Stackup.thickness

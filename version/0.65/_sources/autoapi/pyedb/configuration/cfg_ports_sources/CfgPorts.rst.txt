@@ -1,0 +1,84 @@
+
+
+
+
+
+
+:class:`CfgPorts`
+=================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgPorts(pedb, ports_data)
+
+
+.. py:currentmodule:: CfgPorts
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_pin_group`
+            - 
+          * - :py:attr:`~apply`
+            - 
+          * - :py:attr:`~get_data_from_db`
+            - 
+          * - :py:attr:`~export_properties`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~ports`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgPorts
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: ports
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_pin_group(port)
+
+.. py:method:: apply()
+
+.. py:method:: get_data_from_db()
+
+.. py:method:: export_properties()
+
+
+
+

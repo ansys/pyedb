@@ -1,0 +1,6 @@
+create\_via\_fence
+==================
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. automethod:: Path.create_via_fence

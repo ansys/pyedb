@@ -1,0 +1,251 @@
+
+
+
+
+
+
+:class:`RaptorXSimulationSetup`
+===============================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup(pedb, edb_object=None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup`
+
+
+   
+   Manages EDB methods for RaptorX simulation setup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: RaptorXSimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create an HFSS setup.
+          * - :py:attr:`~add_frequency_sweep`
+            - Add frequency sweep.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~setup_type`
+            - Type of the setup.
+          * - :py:attr:`~settings`
+            - 
+          * - :py:attr:`~enabled`
+            - Flag indicating if the setup is enabled.
+          * - :py:attr:`~position`
+            - Position in the setup list.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~logger`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import RaptorXSimulationSetup
+
+Property detail
+---------------
+
+.. py:property:: setup_type
+
+   
+   Type of the setup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: settings
+
+.. py:property:: enabled
+
+   
+   Flag indicating if the setup is enabled.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: position
+
+   
+   Position in the setup list.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: logger
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(name=None)
+
+   
+   Create an HFSS setup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_frequency_sweep(name=None, frequency_sweep=None)
+
+   
+   Add frequency sweep.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the frequency sweep.
+
+       **frequency_sweep** : :class:`python:list`, :obj:`optional`
+           List of frequency points.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.simulation_setup.EdbFrequencySweep`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> setup1 = edbapp.create_hfss_setup("setup1")
+   >>> setup1.add_frequency_sweep(
+   ...     frequency_sweep=[
+   ...         ["linear count", "0", "1kHz", 1],
+   ...         ["log scale", "1kHz", "0.1GHz", 10],
+   ...         ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+   ...     ]
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

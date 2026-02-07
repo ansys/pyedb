@@ -1,0 +1,6 @@
+via\_settings
+=============
+
+.. currentmodule:: pyedb.dotnet.database.utilities.hfss_simulation_setup
+
+.. autoproperty:: HfssSimulationSetup.via_settings

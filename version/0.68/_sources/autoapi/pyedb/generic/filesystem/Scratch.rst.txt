@@ -1,0 +1,166 @@
+
+
+
+
+
+
+:class:`Scratch`
+================
+
+
+.. py:class:: pyedb.generic.filesystem.Scratch(local_path, permission=511, volatile=False)
+
+
+
+
+.. py:currentmodule:: Scratch
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~remove`
+            - 
+          * - :py:attr:`~copyfile`
+            - Copy a file to the scratch directory. The target filename is optional.
+          * - :py:attr:`~copyfolder`
+            - :Parameters:
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~path`
+            - 
+          * - :py:attr:`~is_empty`
+            - 
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__enter__`
+            - 
+          * - :py:attr:`~__exit__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.filesystem import Scratch
+
+Property detail
+---------------
+
+.. py:property:: path
+
+.. py:property:: is_empty
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: remove()
+
+.. py:method:: copyfile(src_file, dst_filename=None)
+
+   
+   Copy a file to the scratch directory. The target filename is optional.
+   If omitted, the target file name is identical to the source file name.
+
+
+   :Parameters:
+
+       **src_file** : :class:`python:str`
+           Source file with fullpath.
+
+       **dst_filename** : :class:`python:str`, :obj:`optional`
+           Destination filename with the extension. The default is ``None``,
+           in which case the destination file is given the same name as the
+           source file.
+
+
+
+   :Returns:
+
+       **dst_file** : :class:`python:str`
+           Full path and file name of the copied file.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: copyfolder(src_folder, destfolder=None)
+
+   
+
+
+
+   :Parameters:
+
+       **src_folder**
+           ..
+
+       **destfolder**
+           ..
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __enter__()
+
+.. py:method:: __exit__(ex_type, ex_value, ex_traceback)
+
+
+
+

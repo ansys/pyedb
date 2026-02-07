@@ -1,0 +1,6 @@
+CFG\_TERMINAL\_TYPES
+====================
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. autoattribute:: CfgTerminalInfo.CFG_TERMINAL_TYPES

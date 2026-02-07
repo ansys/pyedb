@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`LayoutObjInstance`
+==========================
+
+
+.. py:class:: pyedb.dotnet.database.layout_obj_instance.LayoutObjInstance(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.dotnet.database.utilities.obj_base.ObjBase`
+
+
+   
+   Manages EDB functionalities for the layout object instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.layout_obj_instance import LayoutObjInstance
+
+
+
+
+

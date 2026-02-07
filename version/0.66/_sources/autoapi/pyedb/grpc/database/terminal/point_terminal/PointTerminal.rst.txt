@@ -1,0 +1,429 @@
+
+
+
+
+
+
+:class:`PointTerminal`
+======================
+
+
+.. py:class:: pyedb.grpc.database.terminal.point_terminal.PointTerminal(pedb, edb_object)
+
+   
+   Manages point terminal properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: PointTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a point terminal.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Terminal name.
+          * - :py:attr:`~is_reference_terminal`
+            - Whether the terminal is a reference terminal.
+          * - :py:attr:`~point`
+            - Terminal point.
+          * - :py:attr:`~boundary_type`
+            - Boundary type.
+          * - :py:attr:`~location`
+            - Terminal position.
+          * - :py:attr:`~layer`
+            - Terminal layer.
+          * - :py:attr:`~ref_terminal`
+            - Reference terminal.
+          * - :py:attr:`~reference_terminal`
+            - Reference terminal.
+          * - :py:attr:`~terminal_type`
+            - 
+          * - :py:attr:`~is_port`
+            - Adding DotNet compatibility.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.terminal.point_terminal import PointTerminal
+
+Property detail
+---------------
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Terminal name.
+
+
+
+   :Returns:
+
+       **str** : :obj:`terminal` name.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_reference_terminal
+   :type: bool
+
+
+   
+   Whether the terminal is a reference terminal.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the terminal is a reference terminal, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: point
+   :type: tuple[float, float]
+
+
+   
+   Terminal point.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[:class:`python:float`, :class:`python:float`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: boundary_type
+
+   
+   Boundary type.
+
+
+
+   :Returns:
+
+       **str** : :obj:`boundary` type.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: location
+   :type: tuple[float, float]
+
+
+   
+   Terminal position.
+
+
+
+   :Returns:
+
+       **tuple[float, float]** : (x,y])
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer
+   :type: pyedb.grpc.database.layers.stackup_layer.StackupLayer
+
+
+   
+   Terminal layer.
+
+
+
+   :Returns:
+
+       :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ref_terminal
+   :type: PointTerminal
+
+
+   
+   Reference terminal.
+
+
+
+   :Returns:
+
+       :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: reference_terminal
+   :type: PointTerminal
+
+
+   
+   Reference terminal.
+
+
+
+   :Returns:
+
+       :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminal_type
+   :type: str
+
+
+.. py:property:: is_port
+   :type: bool
+
+
+   
+   Adding DotNet compatibility.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, net, layer, name, point)
+   :classmethod:
+
+
+   
+   Create a point terminal.
+
+
+   :Parameters:
+
+       **layout** : :class: <``Layout` pyedb.grpc.database.layout.layout.Layout>
+           Layout object associated with the terminal.
+
+       **net** : :obj:`Net`
+           :class: `Net` <pyedb.grpc.database.net.net.Net> object associated with the terminal.
+
+       **name** : :class:`python:str`
+           Terminal name.
+
+       **point** : [:class:`python:float`, :class:`python:float`]
+           [x,y] location of the terminal.
+
+       **layer** : :class:`python:str`
+           Layer name.
+
+       **net** : :class: <``Net` pyedb.grpc.database.net.net.Net>, optional
+           Net object associated with the terminal. If None, the terminal will be
+           associated with the ground net.
+
+   :Returns:
+
+       :obj:`PointTerminal`
+           Point terminal object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

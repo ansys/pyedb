@@ -1,0 +1,197 @@
+
+
+
+
+
+
+:class:`TextDotNet`
+===================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.primitive.TextDotNet(api, prim_obj=None)
+
+   Bases: :py:obj:`PrimitiveDotNet`
+
+
+   
+   Class representing a text object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: TextDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a text object.
+          * - :py:attr:`~get_text_data`
+            - Get the text data of a text.
+          * - :py:attr:`~set_text_data`
+            - Set the text data of a text.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.primitive import TextDotNet
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, layer, center_x, center_y, text)
+
+   
+   Create a text object.
+
+
+   :Parameters:
+
+       **layout: :class:`Layout <ansys.edb.layout.Layout>`**
+           Layout this text will be in.
+
+       **layer: str or Layer**
+           Layer this text will be on.
+
+       **center_x: :class:`Value <ansys.edb.utility.Value>`**
+           X value of center point.
+
+       **center_y: :class:`Value <ansys.edb.utility.Value>`**
+           Y value of center point.
+
+       **text: str**
+           Text string.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.dotnet.primitive.TextDotNet`
+           The text Object that was created.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_text_data()
+
+   
+   Get the text data of a text.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[
+           :class:`Value <ansys.edb.utility.Value>`,
+           :class:`Value <ansys.edb.utility.Value>`,
+           str
+
+       ]
+           Returns a tuple of the following format:
+           
+           **(center_x, center_y, text)**
+           
+           **center_x** : X value of center point.
+           
+           **center_y** : Y value of center point.
+           
+           **radius** : Text object's String value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_text_data(center_x, center_y, text)
+
+   
+   Set the text data of a text.
+
+
+   :Parameters:
+
+       **center_x: :class:`Value <ansys.edb.utility.Value>`**
+           X value of center point.
+
+       **center_y: :class:`Value <ansys.edb.utility.Value>`**
+           Y value of center point.
+
+       **text: str**
+           Text object's String value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

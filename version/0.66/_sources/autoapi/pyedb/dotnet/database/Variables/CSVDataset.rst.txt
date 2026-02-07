@@ -1,0 +1,315 @@
+
+
+
+
+
+
+:class:`CSVDataset`
+===================
+
+
+.. py:class:: pyedb.dotnet.database.Variables.CSVDataset(csv_file=None, separator=None, units_dict=None, append_dict=None, valid_solutions=True, invalid_solutions=False)
+
+   
+   Reads in a CSV file and extracts data, which can be augmented with constant values.
+
+
+   :Parameters:
+
+       **csv_file** : :class:`python:str`, :obj:`optional`
+           Input file consisting of delimited data with the first line as the header.
+           The CSV value includes the header and data, which supports AEDT units information
+           such as ``"1.23Wb"``. You can also augment the data with constant values.
+
+       **separator** : :class:`python:str`, :obj:`optional`
+           Value to use for the delimiter. The default is``None`` in which case a comma is
+           assumed.
+
+       **units_dict** : :class:`python:dict`, :obj:`optional`
+           Dictionary consisting of ``{Variable Name: unit}`` to rescale the data
+           if it is not in the desired unit system.
+
+       **append_dict** : :class:`python:dict`, :obj:`optional`
+           Dictionary consisting of ``{New Variable Name: value}`` to add variables
+           with constant values to all data points. This dictionary is used to add
+           multiple sweeps to one result file.
+
+       **valid_solutions** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           The default is ``True``.
+
+       **invalid_solutions** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           The default is ``False``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+
+.. py:currentmodule:: CSVDataset
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~next`
+            - Yield the next row.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~number_of_rows`
+            - Number of rows.
+          * - :py:attr:`~number_of_columns`
+            - Number of columns.
+          * - :py:attr:`~header`
+            - Header.
+          * - :py:attr:`~data`
+            - Data.
+          * - :py:attr:`~path`
+            - Path.
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getitem__`
+            - 
+          * - :py:attr:`~__add__`
+            - 
+          * - :py:attr:`~__iadd__`
+            - Incrementally add the dataset in one CSV file to a dataset in another CSV file.
+          * - :py:attr:`~__iter__`
+            - 
+          * - :py:attr:`~__next__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.Variables import CSVDataset
+
+Property detail
+---------------
+
+.. py:property:: number_of_rows
+
+   
+   Number of rows.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: number_of_columns
+
+   
+   Number of columns.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: header
+
+   
+   Header.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: data
+
+   
+   Data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: path
+
+   
+   Path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getitem__(item)
+
+.. py:method:: __add__(other)
+
+.. py:method:: __iadd__(other)
+
+   
+   Incrementally add the dataset in one CSV file to a dataset in another CSV file.
+
+   .. note:
+      This assumes that the number of columns in both datasets are the same,
+      or that one of the datasets is empty. No checking is done for
+      equivalency of units or variable names.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __iter__()
+
+.. py:method:: __next__()
+
+.. py:method:: next()
+
+   
+   Yield the next row.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

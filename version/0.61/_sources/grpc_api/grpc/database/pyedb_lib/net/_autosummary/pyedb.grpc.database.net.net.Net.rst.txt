@@ -1,0 +1,56 @@
+﻿Net
+===
+
+.. currentmodule:: pyedb.grpc.database.net.net
+
+.. autoclass:: Net
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Net.create
+      
+      
+      Net.delete
+      
+      
+      Net.find_by_name
+      
+      
+      Net.find_dc_short
+      
+      
+      Net.get_product_property
+      
+      
+      Net.get_product_property_ids
+      
+      
+      Net.get_smallest_trace_width
+      
+      
+      Net.plot
+      
+      
+      Net.set_product_property
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Net.layout_obj_type
+      Net.no_net_name
+   
+   

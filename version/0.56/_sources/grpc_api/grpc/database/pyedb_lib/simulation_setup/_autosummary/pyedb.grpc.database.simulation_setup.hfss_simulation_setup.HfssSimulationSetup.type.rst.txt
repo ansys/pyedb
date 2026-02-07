@@ -1,0 +1,6 @@
+type
+====
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_simulation_setup
+
+.. autoproperty:: HfssSimulationSetup.type

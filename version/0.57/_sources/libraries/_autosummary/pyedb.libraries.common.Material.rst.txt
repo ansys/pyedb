@@ -1,0 +1,22 @@
+﻿Material
+========
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoclass:: Material
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Material.name
+   
+   

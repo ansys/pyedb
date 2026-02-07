@@ -1,0 +1,131 @@
+
+
+
+
+
+
+:class:`ControlFileSetups`
+==========================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.control_file.ControlFileSetups
+
+   
+   Setup manager class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileSetups
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_setup`
+            - Add a new setup
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~setups`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.control_file import ControlFileSetups
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: setups
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_setup(name, adapt_freq, maxdelta, maxpasses)
+
+   
+   Add a new setup
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Setup Name.
+
+       **adapt_freq** : :class:`python:str`, :obj:`optional`
+           Setup Frequency.
+
+       **maxdelta** : :class:`python:float`, :obj:`optional`
+           Maximum Delta.
+
+       **maxpasses** : :class:`python:int`, :obj:`optional`
+           Maximum Number of Passes.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileSetup`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

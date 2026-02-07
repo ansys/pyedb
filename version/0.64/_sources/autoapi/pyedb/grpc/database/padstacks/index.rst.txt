@@ -1,0 +1,103 @@
+
+
+
+
+
+
+The ``padstacks.py`` module
+===========================
+
+.. py:module:: pyedb.grpc.database.padstacks
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: padstacks
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.padstacks.Padstacks`
+            - Manages EDB methods for padstacks accessible from `Edb.padstacks` property.
+
+
+
+
+
+
+
+    .. tab-item:: Constants
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~GEOMETRY_MAP`
+            - 
+
+
+          * - :py:obj:`~PAD_TYPE_MAP`
+            - 
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Padstacks</autoapi/pyedb/grpc/database/padstacks/Padstacks>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains the `EdbPadstacks` class.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: GEOMETRY_MAP
+
+.. py:data:: PAD_TYPE_MAP
+
+
+

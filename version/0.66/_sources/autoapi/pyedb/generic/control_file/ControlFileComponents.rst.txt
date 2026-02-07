@@ -1,0 +1,142 @@
+
+
+
+
+
+
+:class:`ControlFileComponents`
+==============================
+
+
+.. py:class:: pyedb.generic.control_file.ControlFileComponents
+
+   
+   Manages components for the control file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileComponents
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_component`
+            - Add a new component.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~units`
+            - 
+          * - :py:attr:`~components`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.control_file import ControlFileComponents
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: units
+   :type:  str
+   :value: 'um'
+
+
+.. py:attribute:: components
+   :type:  List[str]
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_component(ref_des: str, partname: str, component_type: str, die_type: str = 'None', solderball_shape: str = 'None') -> ControlFileComponent
+
+   
+   Add a new component.
+
+
+   :Parameters:
+
+       **ref_des** : :class:`python:str`
+           Reference designator.
+
+       **partname** : :class:`python:str`
+           Part name.
+
+       **component_type** : :class:`python:str`
+           Component type ("IC", "IO", or "Other").
+
+       **die_type** : :class:`python:str`, :obj:`optional`
+           Die type ("None", "Flip chip", or "Wire bond"). Default is "None".
+
+       **solderball_shape** : :class:`python:str`, :obj:`optional`
+           Solderball shape ("None", "Cylinder", or "Spheroid"). Default is "None".
+
+   :Returns:
+
+       :obj:`ControlFileComponent`
+           Created component object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

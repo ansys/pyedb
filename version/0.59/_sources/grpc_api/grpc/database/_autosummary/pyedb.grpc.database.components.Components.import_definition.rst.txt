@@ -1,0 +1,6 @@
+import\_definition
+==================
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. automethod:: Components.import_definition

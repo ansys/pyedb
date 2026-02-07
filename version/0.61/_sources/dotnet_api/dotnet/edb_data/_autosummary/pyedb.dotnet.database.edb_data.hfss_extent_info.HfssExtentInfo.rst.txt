@@ -1,0 +1,27 @@
+﻿HfssExtentInfo
+==============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.hfss_extent_info
+
+.. autoclass:: HfssExtentInfo
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      HfssExtentInfo.export_config
+      
+      
+      HfssExtentInfo.load_config
+      
+   
+   
+
+   
+   
+   

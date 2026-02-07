@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`SymbolStyle`
+====================
+
+
+.. py:class:: pyedb.generic.constants.SymbolStyle
+
+   Bases: :py:obj:`object`
+
+
+   
+   Provides symbol style constants.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import SymbolStyle
+
+
+
+
+

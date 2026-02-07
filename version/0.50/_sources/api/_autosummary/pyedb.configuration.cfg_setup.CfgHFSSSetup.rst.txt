@@ -1,0 +1,24 @@
+﻿CfgHFSSSetup
+============
+
+.. currentmodule:: pyedb.configuration.cfg_setup
+
+.. autoclass:: CfgHFSSSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgHFSSSetup.to_dict
+      
+   
+   
+
+   
+   
+   

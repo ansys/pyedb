@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``hfss_dcr_settings.py`` module
+===================================
+
+.. py:module:: pyedb.grpc.database.simulation_setup.hfss_dcr_settings
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: hfss_dcr_settings
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings`
+            - PyEDB HFSS DC settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> HFSSDCRSettings</autoapi/pyedb/grpc/database/simulation_setup/hfss_dcr_settings/HFSSDCRSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

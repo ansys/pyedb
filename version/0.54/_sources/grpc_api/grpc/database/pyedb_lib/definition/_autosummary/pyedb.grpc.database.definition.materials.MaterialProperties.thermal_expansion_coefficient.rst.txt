@@ -1,0 +1,6 @@
+thermal\_expansion\_coefficient
+===============================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoattribute:: MaterialProperties.thermal_expansion_coefficient

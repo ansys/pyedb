@@ -1,0 +1,6 @@
+use\_relaxed\_z\_axis
+=====================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings
+
+.. autoproperty:: RaptorXAdvancedSettings.use_relaxed_z_axis

@@ -1,0 +1,6 @@
+fin\_spacing
+============
+
+.. currentmodule:: pyedb.dotnet.database.utilities.heatsink
+
+.. autoproperty:: HeatSink.fin_spacing

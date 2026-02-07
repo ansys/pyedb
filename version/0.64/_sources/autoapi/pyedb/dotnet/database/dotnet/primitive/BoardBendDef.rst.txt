@@ -1,0 +1,257 @@
+
+
+
+
+
+
+:class:`BoardBendDef`
+=====================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.primitive.BoardBendDef(api, prim_obj=None)
+
+   Bases: :py:obj:`PrimitiveDotNet`
+
+
+   
+   Class representing board bending definitions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: BoardBendDef
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a board bend definition.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~boundary_primitive`
+            - :class:`Primitive <Primitive>`: Zone primitive the board bend is placed on.
+          * - :py:attr:`~bend_middle`
+            - :term:`PointDataTuple`: Tuple of the bend middle starting and ending points.
+          * - :py:attr:`~radius`
+            - :term:`ValueLike`: Radius of the bend.
+          * - :py:attr:`~angle`
+            - :term:`ValueLike`: Angle of the bend.
+          * - :py:attr:`~bent_regions`
+            - :obj:`list` of :class:`PolygonData <ansys.edb.geometry.PolygonData>`: Bent region polygons.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.primitive import BoardBendDef
+
+Property detail
+---------------
+
+.. py:property:: boundary_primitive
+
+   
+   :class:`Primitive <Primitive>`: Zone primitive the board bend is placed on.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: bend_middle
+
+   
+   :term:`PointDataTuple`: Tuple of the bend middle starting and ending points.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: radius
+
+   
+   :term:`ValueLike`: Radius of the bend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: angle
+
+   
+   :term:`ValueLike`: Angle of the bend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: bent_regions
+
+   
+   :obj:`list` of :class:`PolygonData <ansys.edb.geometry.PolygonData>`: Bent region polygons.
+
+       Collection of polygon data representing the areas bent by this bend definition.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(zone_prim, bend_middle, bend_radius, bend_angle)
+
+   
+   Create a board bend definition.
+
+
+   :Parameters:
+
+       **zone_prim** : :class:`Primitive <Primitive>`
+           Zone primitive this board bend definition exists on.
+
+       **bend_middle** : :term:`PointDataTuple`
+           Tuple containing the starting and ending points of the line that represents the middle of the bend.
+
+       **bend_radius** : :term:`ValueLike`
+           Radius of the bend.
+
+       **bend_angle** : :term:`ValueLike`
+           Angle of the bend.
+
+   :Returns:
+
+       :obj:`BoardBendDef`
+           BoardBendDef that was created.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

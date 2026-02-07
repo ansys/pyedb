@@ -1,0 +1,6 @@
+get\_pin\_position
+==================
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. automethod:: Components.get_pin_position

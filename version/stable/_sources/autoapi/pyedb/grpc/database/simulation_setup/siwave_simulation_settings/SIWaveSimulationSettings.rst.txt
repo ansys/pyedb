@@ -1,0 +1,267 @@
+
+
+
+
+
+
+:class:`SIWaveSimulationSettings`
+=================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_simulation_settings.SIWaveSimulationSettings(pedb, core: ansys.edb.core.simulation_setup.siwave_simulation_settings.SIWaveSimulationSettings)
+
+
+.. py:currentmodule:: SIWaveSimulationSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~advanced`
+            - Advanced settings class.
+          * - :py:attr:`~dc`
+            - DC settings class.
+          * - :py:attr:`~dc_advanced`
+            - DC advanced settings class.
+          * - :py:attr:`~enabled`
+            - Enabled status of the SIWave simulation.
+          * - :py:attr:`~general`
+            - General settings class.
+          * - :py:attr:`~s_parameter`
+            - S-Parameter settings class.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_simulation_settings import SIWaveSimulationSettings
+
+Property detail
+---------------
+
+.. py:property:: advanced
+   :type: pyedb.grpc.database.simulation_setup.siwave_advanced_settings.SIWaveAdvancedSettings
+
+
+   
+   Advanced settings class.
+
+
+
+
+
+   :Returns:
+
+       :class:`SIWaveAdvancedSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       siwave_advanced_settings.SIWaveAdvancedSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc
+   :type: pyedb.grpc.database.simulation_setup.siwave_dc_settings.SIWaveDCSettings
+
+
+   
+   DC settings class.
+
+
+
+
+
+   :Returns:
+
+       :class:`SIWaveDCSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       siwave_dc_settings.SIWaveDCSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_advanced
+   :type: pyedb.grpc.database.simulation_setup.siwave_dc_advanced.SIWaveDCAdvancedSettings
+
+
+   
+   DC advanced settings class.
+
+
+
+
+
+   :Returns:
+
+       :class:`SIWaveDCAdvancedSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       siwave_dc_advanced.SIWaveDCAdvancedSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enabled
+   :type: bool
+
+
+   
+   Enabled status of the SIWave simulation.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: general
+   :type: pyedb.grpc.database.simulation_setup.siwave_general_settings.SIWaveGeneralSettings
+
+
+   
+   General settings class.
+
+
+
+
+
+   :Returns:
+
+       :class:`SIWaveGeneralSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       siwave_general_settings.SIWaveGeneralSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: s_parameter
+   :type: pyedb.grpc.database.simulation_setup.siwave_s_parameter_settings.SIWaveSParameterSettings
+
+
+   
+   S-Parameter settings class.
+
+
+
+
+
+   :Returns:
+
+       :class:`SIWaveSParameterSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       siwave_s_parameter_settings.SIWaveSParameterSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

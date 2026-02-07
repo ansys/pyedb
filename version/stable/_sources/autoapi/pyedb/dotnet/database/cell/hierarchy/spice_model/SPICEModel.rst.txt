@@ -1,0 +1,125 @@
+
+
+
+
+
+
+:class:`SPICEModel`
+===================
+
+
+.. py:class:: pyedb.dotnet.database.cell.hierarchy.spice_model.SPICEModel(pedb, edb_object=None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.hierarchy.model.Model`
+
+
+   
+   Manages SPICE model class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SPICEModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model_name`
+            - SPICE model name.
+          * - :py:attr:`~spice_file_path`
+            - SPICE file path.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.hierarchy.spice_model import SPICEModel
+
+Property detail
+---------------
+
+.. py:property:: model_name
+
+   
+   SPICE model name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: spice_file_path
+
+   
+   SPICE file path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

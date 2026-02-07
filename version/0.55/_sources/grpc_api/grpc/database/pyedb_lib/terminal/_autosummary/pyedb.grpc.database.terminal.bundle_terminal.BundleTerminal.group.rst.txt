@@ -1,0 +1,6 @@
+group
+=====
+
+.. currentmodule:: pyedb.grpc.database.terminal.bundle_terminal
+
+.. autoproperty:: BundleTerminal.group

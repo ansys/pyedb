@@ -1,0 +1,15 @@
+﻿CfgGeneral
+==========
+
+.. currentmodule:: pyedb.configuration.cfg_general
+
+.. autoclass:: CfgGeneral
+
+   
+
+   
+   
+
+   
+   
+   

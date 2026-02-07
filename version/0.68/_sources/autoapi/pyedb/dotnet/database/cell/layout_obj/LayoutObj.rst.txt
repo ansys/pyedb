@@ -1,0 +1,140 @@
+
+
+
+
+
+
+:class:`LayoutObj`
+==================
+
+
+.. py:class:: pyedb.dotnet.database.cell.layout_obj.LayoutObj(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.dotnet.database.utilities.obj_base.ObjBase`
+
+
+   
+   Manages EDB functionalities for the layout object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: LayoutObj
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~delete`
+            - Delete this primitive.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~id`
+            - Primitive ID.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.layout_obj import LayoutObj
+
+Property detail
+---------------
+
+.. py:property:: id
+
+   
+   Primitive ID.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: delete()
+
+   
+   Delete this primitive.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,1034 @@
+
+
+
+
+
+
+:class:`Stackup`
+================
+
+
+.. py:class:: pyedb.grpc.database.stackup.Stackup(pedb, edb_object=None)
+
+   Bases: :py:obj:`LayerCollection`
+
+
+   
+   Manages EDB methods for stackup operations.
+
+
+   :Parameters:
+
+       **pedb** : :class:`pyedb.Edb`
+           EDB object.
+
+       **edb_object** : :class:`ansys.edb.core.layer.LayerCollection`, :obj:`optional`
+           EDB layer collection object. The default is ``None``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Stackup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create_symmetric_stackup`
+            - Create a symmetric stackup.
+          * - :py:attr:`~add_outline_layer`
+            - Add an outline layer named "Outline" if it is not present.
+          * - :py:attr:`~add_layer`
+            - Insert a layer into stackup.
+          * - :py:attr:`~remove_layer`
+            - Remove a layer from stackup.
+          * - :py:attr:`~export`
+            - Export stackup definition to a file.
+          * - :py:attr:`~export_stackup`
+            - Export stackup definition to a file.
+          * - :py:attr:`~limits`
+            - Retrieve stackup limits.
+          * - :py:attr:`~flip_design`
+            - Flip the current design of a layout.
+          * - :py:attr:`~get_layout_thickness`
+            - Return the layout thickness.
+          * - :py:attr:`~adjust_solder_dielectrics`
+            - Adjust the stack-up by adding or modifying dielectric layers that contain solder balls.
+          * - :py:attr:`~place_in_layout`
+            - Place current cell into another cell using layer placement method.
+          * - :py:attr:`~place_in_layout_3d_placement`
+            - Place current cell into another cell using 3D placement method.
+          * - :py:attr:`~place_instance`
+            - Place a component instance in the layout using 3D placement.
+          * - :py:attr:`~place_a3dcomp_3d_placement`
+            - Place a 3D component into the current layout.
+          * - :py:attr:`~residual_copper_area_per_layer`
+            - Report residual copper area per layer in percentage.
+          * - :py:attr:`~load`
+            - Import stackup from a file.
+          * - :py:attr:`~plot`
+            - Plot the current stackup and optionally overlap padstack definitions.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~thickness`
+            - Retrieve the stackup thickness.
+          * - :py:attr:`~num_layers`
+            - Retrieve the number of layers in the stackup.
+          * - :py:attr:`~mode`
+            - Stackup mode.
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getitem__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.stackup import Stackup
+
+Property detail
+---------------
+
+.. py:property:: thickness
+   :type: float
+
+
+   
+   Retrieve the stackup thickness.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Stackup thickness.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> thickness = edb.stackup.thickness
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_layers
+   :type: int
+
+
+   
+   Retrieve the number of layers in the stackup.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Number of layers.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> num_layers = edb.stackup.num_layers
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mode
+   :type: str
+
+
+   
+   Stackup mode.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Type of the stackup mode. Options are:
+           - ``"laminate"``
+           - ``"overlapping"``
+           - ``"multizone"``
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> mode = edb.stackup.mode
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getitem__(item)
+
+.. py:method:: create_symmetric_stackup(layer_count: int, inner_layer_thickness: str = '17um', outer_layer_thickness: str = '50um', dielectric_thickness: str = '100um', dielectric_material: str = 'FR4_epoxy', soldermask: bool = True, soldermask_thickness: str = '20um') -> bool
+
+   
+   Create a symmetric stackup.
+
+
+   :Parameters:
+
+       **layer_count** : :class:`python:int`
+           Number of layers. Must be even.
+
+       **inner_layer_thickness** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Thickness of inner conductor layer.
+
+       **outer_layer_thickness** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Thickness of outer conductor layer.
+
+       **dielectric_thickness** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Thickness of dielectric layer.
+
+       **dielectric_material** : :class:`python:str`, :obj:`optional`
+           Material of dielectric layer.
+
+       **soldermask** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to create soldermask layers. The default is ``True``.
+
+       **soldermask_thickness** : :class:`python:str`, :obj:`optional`
+           Thickness of soldermask layer.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> edb.stackup.create_symmetric_stackup(layer_count=4)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_outline_layer(name: str = 'Outline') -> bool
+
+   
+   Add an outline layer named "Outline" if it is not present.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> edb.stackup.add_outline_layer()
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_layer(layer_name: str, base_layer: Optional[str] = None, method: str = 'add_on_top', layer_type: str = 'signal', material: str = 'copper', fillMaterial: str = 'FR4_epoxy', thickness: Union[str, float] = '35um', etch_factor: Optional[float] = None, is_negative: bool = False, enable_roughness: bool = False, elevation: Optional[float] = None) -> bool
+
+   
+   Insert a layer into stackup.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`
+           Name of the layer.
+
+       **base_layer** : :class:`python:str`, :obj:`optional`
+           Name of the base layer.
+
+       **method** : :class:`python:str`, :obj:`optional`
+           Where to insert the new layer. The default is ``"add_on_top"``. Options are:
+           - ``"add_on_top"``
+           - ``"add_on_bottom"``
+           - ``"insert_above"``
+           - ``"insert_below"``
+           - ``"add_at_elevation"``
+
+       **layer_type** : :class:`python:str`, :obj:`optional`
+           Type of layer. The default is ``"signal"``. Options are:
+           - ``"signal"``
+           - ``"dielectric"``
+           - ``"conducting"``
+           - ``"air_lines"``
+           - ``"error"``
+           - ``"symbol"``
+           - ``"measure"``
+           - ``"assembly"``
+           - ``"silkscreen"``
+           - ``"solder_mask"``
+           - ``"solder_paste"``
+           - ``"glue"``
+           - ``"wirebond"``
+           - ``"hfss_region"``
+           - ``"user"``
+
+       **material** : :class:`python:str`, :obj:`optional`
+           Material of the layer.
+
+       **fillMaterial** : :class:`python:str`, :obj:`optional`
+           Fill material of the layer.
+
+       **thickness** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Thickness of the layer.
+
+       **etch_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Etch factor of the layer.
+
+       **is_negative** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether the layer is negative.
+
+       **enable_roughness** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether roughness is enabled.
+
+       **elevation** : :class:`python:float`, :obj:`optional`
+           Elevation of new layer. Only valid for Overlapping Stackup.
+
+   :Returns:
+
+       :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
+           Layer object created.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: remove_layer(name: str) -> bool
+
+   
+   Remove a layer from stackup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the layer to remove.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export(fpath: str, file_format: str = 'xml', include_material_with_layer: bool = False) -> bool
+
+   
+   Export stackup definition to a file.
+
+
+   :Parameters:
+
+       **fpath** : :class:`python:str`
+           File path to export to.
+
+       **file_format** : :class:`python:str`, :obj:`optional`
+           Format of the file to export. The default is ``"xml"``. Options are:
+           - ``"csv"``
+           - ``"xlsx"``
+           - ``"json"``
+           - ``"xml"``
+
+       **include_material_with_layer** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to include the material definition inside layer objects. This parameter is only used
+           when a JSON file is exported. The default is ``False``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> edb.stackup.export("stackup.xml")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_stackup(fpath, file_format='xml', include_material_with_layer=False)
+
+   
+   Export stackup definition to a file.
+
+   .. deprecated:: 0.6.61
+      Use :func:`export` instead.
+
+   :Parameters:
+
+       **fpath** : :class:`python:str`
+           File path to export to.
+
+       **file_format** : :class:`python:str`, :obj:`optional`
+           Format of the file to export. The default is ``"xml"``. Options are:
+           - ``"csv"``
+           - ``"xlsx"``
+           - ``"json"``
+
+       **include_material_with_layer** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to include the material definition inside layer objects. This parameter is only used
+           when a JSON file is exported. The default is ``False``.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> edb.stackup.export_stackup("stackup.xml")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: limits(only_metals: bool = False) -> Tuple[str, str]
+
+   
+   Retrieve stackup limits.
+
+
+   :Parameters:
+
+       **only_metals** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve only metals. The default is ``False``.
+
+   :Returns:
+
+       :class:`python:tuple`
+           Tuple containing:
+           - Upper layer name
+           - Upper layer top elevation
+           - Lower layer name
+           - Lower layer bottom elevation
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: flip_design() -> bool
+
+   
+   Flip the current design of a layout.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edb = Edb(edbpath=targetfile, edbversion="2021.2")
+   >>> edb.stackup.flip_design()
+   >>> edb.save()
+   >>> edb.close_edb()
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_layout_thickness() -> float
+
+   
+   Return the layout thickness.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Thickness value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: adjust_solder_dielectrics() -> bool
+
+   
+   Adjust the stack-up by adding or modifying dielectric layers that contain solder balls.
+
+   This method identifies the solder-ball height and adjusts the dielectric thickness on top (or bottom)
+   to fit the thickness in order to merge another layout.
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: place_in_layout(edb: Edb, angle: float = 0.0, offset_x: float = 0.0, offset_y: float = 0.0, flipped_stackup: bool = True, place_on_top: bool = True) -> bool
+
+   
+   Place current cell into another cell using layer placement method.
+
+   Flip the current layer stackup of a layout if requested.
+
+   :Parameters:
+
+       **edb** : :class:`pyedb.Edb`
+           Target Edb object.
+
+       **angle** : :class:`python:float`, :obj:`optional`
+           Rotation angle in degrees. The default is ``0.0``.
+
+       **offset_x** : :class:`python:float`, :obj:`optional`
+           X offset value. The default is ``0.0``.
+
+       **offset_y** : :class:`python:float`, :obj:`optional`
+           Y offset value. The default is ``0.0``.
+
+       **flipped_stackup** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to flip the current layout. The default is ``True``.
+
+       **place_on_top** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to place the current layout on top of the destination layout. The default is ``True``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edb1 = Edb(edbpath=targetfile1, edbversion="2021.2")
+   >>> edb2 = Edb(edbpath=targetfile2, edbversion="2021.2")
+
+   >>> hosting_cmp = edb1.components.get_component_by_name("U100")
+   >>> mounted_cmp = edb2.components.get_component_by_name("BGA")
+
+   >>> vector, rotation, solder_ball_height = edb1.components.get_component_placement_vector(
+   ...     mounted_component=mounted_cmp,
+   ...     hosting_component=hosting_cmp,
+   ...     mounted_component_pin1="A12",
+   ...     mounted_component_pin2="A14",
+   ...     hosting_component_pin1="A12",
+   ...     hosting_component_pin2="A14",
+   ... )
+   >>> edb2.stackup.place_in_layout(
+   ...     edb1.active_cell,
+   ...     angle=0.0,
+   ...     offset_x=vector[0],
+   ...     offset_y=vector[1],
+   ...     flipped_stackup=False,
+   ...     place_on_top=True,
+   ... )
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: place_in_layout_3d_placement(edb: Edb, angle: float = 0.0, offset_x: float = 0.0, offset_y: float = 0.0, flipped_stackup: bool = True, place_on_top: bool = True, solder_height: float = 0) -> bool
+
+   
+   Place current cell into another cell using 3D placement method.
+
+   Flip the current layer stackup of a layout if requested.
+
+   :Parameters:
+
+       **edb** : :class:`pyedb.Edb`
+           Target Edb object.
+
+       **angle** : :class:`python:float`, :obj:`optional`
+           Rotation angle in degrees. The default is ``0.0``.
+
+       **offset_x** : :class:`python:float`, :obj:`optional`
+           X offset value. The default is ``0.0``.
+
+       **offset_y** : :class:`python:float`, :obj:`optional`
+           Y offset value. The default is ``0.0``.
+
+       **flipped_stackup** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to flip the current layout. The default is ``True``.
+
+       **place_on_top** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to place the current layout on top of the destination layout. The default is ``True``.
+
+       **solder_height** : :class:`python:float`, :obj:`optional`
+           Solder ball or bumps height. This value will be added to the elevation to align the two layouts.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edb1 = Edb(edbpath=targetfile1, edbversion="2021.2")
+   >>> edb2 = Edb(edbpath=targetfile2, edbversion="2021.2")
+   >>> hosting_cmp = edb1.components.get_component_by_name("U100")
+   >>> mounted_cmp = edb2.components.get_component_by_name("BGA")
+   >>> edb2.stackup.place_in_layout(
+   ...     edb1.active_cell,
+   ...     angle=0.0,
+   ...     offset_x="1mm",
+   ...     offset_y="2mm",
+   ...     flipped_stackup=False,
+   ...     place_on_top=True,
+   ... )
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: place_instance(component_edb: Edb, angle: float = 0.0, offset_x: float = 0.0, offset_y: float = 0.0, offset_z: float = 0.0, flipped_stackup: bool = True, place_on_top: bool = True, solder_height: float = 0) -> ansys.edb.core.hierarchy.cell_instance.CellInstance
+
+   
+   Place a component instance in the layout using 3D placement.
+
+
+   :Parameters:
+
+       **component_edb** : :class:`pyedb.Edb`
+           Component Edb object to place.
+
+       **angle** : :class:`python:float`, :obj:`optional`
+           Rotation angle in degrees. The default is ``0.0``.
+
+       **offset_x** : :class:`python:float`, :obj:`optional`
+           X offset value. The default is ``0.0``.
+
+       **offset_y** : :class:`python:float`, :obj:`optional`
+           Y offset value. The default is ``0.0``.
+
+       **offset_z** : :class:`python:float`, :obj:`optional`
+           Z offset value (elevation offset). The default is ``0.0``.
+
+       **flipped_stackup** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to flip the component stackup. The default is ``True``.
+
+       **place_on_top** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to place the component on top of the target layout. The default is ``True``.
+
+       **solder_height** : :class:`python:float`, :obj:`optional`
+           Solder ball or bumps height. The default is ``0``.
+
+   :Returns:
+
+       :class:`ansys.edb.core.hierarchy.CellInstance`
+           Cell instance created.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: place_a3dcomp_3d_placement(a3dcomp_path: str, angle: float = 0.0, offset_x: float = 0.0, offset_y: float = 0.0, offset_z: float = 0.0, place_on_top: bool = True) -> bool
+
+   
+   Place a 3D component into the current layout.
+
+   3D Component ports are not visible via EDB. They will be visible after the EDB has been opened in Ansys
+   Electronics Desktop as a project.
+
+   :Parameters:
+
+       **a3dcomp_path** : :class:`python:str`
+           Path to the 3D Component file (``*.a3dcomp``) to place.
+
+       **angle** : :class:`python:float`, :obj:`optional`
+           Clockwise rotation angle applied to the a3dcomp.
+
+       **offset_x** : :class:`python:float`, :obj:`optional`
+           X offset value. The default is ``0.0``.
+
+       **offset_y** : :class:`python:float`, :obj:`optional`
+           Y offset value. The default is ``0.0``.
+
+       **offset_z** : :class:`python:float`, :obj:`optional`
+           Z offset value (elevation). The default is ``0.0``.
+
+       **place_on_top** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to place the 3D component on the top or the bottom of this layout. If ``False``, the 3D component
+           will be flipped over around its X axis.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if successful, ``False`` if not.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edb1 = Edb(edbpath=targetfile1, edbversion="2021.2")
+   >>> a3dcomp_path = "connector.a3dcomp"
+   >>> edb1.stackup.place_a3dcomp_3d_placement(
+   ...     a3dcomp_path,
+   ...     angle=0.0,
+   ...     offset_x="1mm",
+   ...     offset_y="2mm",
+   ...     flipped_stackup=False,
+   ...     place_on_top=True,
+   ... )
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: residual_copper_area_per_layer() -> Dict[str, float]
+
+   
+   Report residual copper area per layer in percentage.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of copper area per layer.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edb = Edb(edbpath=targetfile1, edbversion="2021.2")
+   >>> edb.stackup.residual_copper_area_per_layer()
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: load(file_path: Union[str, Dict], rename: bool = False) -> bool
+
+   
+   Import stackup from a file.
+
+   Supported formats: XML, CSV, JSON.
+
+   :Parameters:
+
+       **file_path** : :class:`python:str` or :class:`python:dict`
+           Path to stackup file or dictionary with stackup details.
+
+       **rename** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           If ``False``, layers in layout not found in the stackup file are deleted.
+           If ``True`` and the number of layers in the stackup file equals the number of stackup layers
+           in the layout, layers are renamed according to the file.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> edb.stackup.load("stackup.xml")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: plot(save_plot: Optional[str] = None, size: Tuple[int, int] = (2000, 1500), plot_definitions: Optional[Union[str, List[str]]] = None, first_layer: Optional[Union[str, pyedb.grpc.database.layers.layer.Layer]] = None, last_layer: Optional[Union[str, pyedb.grpc.database.layers.layer.Layer]] = None, scale_elevation: bool = True, show: bool = True) -> Any
+
+   
+   Plot the current stackup and optionally overlap padstack definitions.
+
+   Only supports 'Laminate' and 'Overlapping' stackup types.
+
+   :Parameters:
+
+       **save_plot** : :class:`python:str`, :obj:`optional`
+           Path to save the plot image. If provided, ``show`` is ignored.
+
+       **size** : :class:`python:tuple`, :obj:`optional`
+           Image size in pixels (width, height). Default is ``(2000, 1500)``.
+
+       **plot_definitions** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           List of padstack definitions to plot on the stackup. Only supported for Laminate mode.
+
+       **first_layer** : :class:`python:str` or :class:`pyedb.grpc.database.layers.layer.Layer`, :obj:`optional`
+           First layer to plot from the bottom. Default is ``None`` (start from bottom).
+
+       **last_layer** : :class:`python:str` or :class:`pyedb.grpc.database.layers.layer.Layer`, :obj:`optional`
+           Last layer to plot from the bottom. Default is ``None`` (plot up to top layer).
+
+       **scale_elevation** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Scale real layer thickness so that max_thickness = 3 * min_thickness. Default is ``True``.
+
+       **show** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to show the plot. Default is ``True``.
+
+   :Returns:
+
+       :class:`matplotlib.pyplot`
+           Matplotlib plot object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,1670 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Modeler &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../../../_static/documentation_options.js?v=f1844525"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/pyedb/dotnet/database/modeler/Modeler';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.68';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.68.3" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/autoapi/pyedb/dotnet/database/modeler/Modeler.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.68/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.68/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html"> <span class="nf nf-md-package"></span> database</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../cell/index.html"> <span class="nf nf-md-package"></span> cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../definition/index.html"> <span class="nf nf-md-package"></span> definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dotnet/index.html"> <span class="nf nf-md-package"></span> dotnet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../edb_data/index.html"> <span class="nf nf-md-package"></span> edb_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/index.html"> <span class="nf nf-md-package"></span> geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sim_setup_data/index.html"> <span class="nf nf-md-package"></span> sim_setup_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utilities/index.html"> <span class="nf nf-md-package"></span> utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Variables/index.html"> <span class="nf nf-fa-file"></span> Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../components/index.html"> <span class="nf nf-fa-file"></span> components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../general/index.html"> <span class="nf nf-fa-file"></span> general</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hfss/index.html"> <span class="nf nf-fa-file"></span> hfss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layout_obj_instance/index.html"> <span class="nf nf-fa-file"></span> layout_obj_instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layout_validation/index.html"> <span class="nf nf-fa-file"></span> layout_validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../materials/index.html"> <span class="nf nf-fa-file"></span> materials</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html"> <span class="nf nf-fa-file"></span> modeler</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="current reference internal" href="#"> <span class="nf nf-cod-symbol_class"></span> Modeler</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="Modeler.Shape.html"> Shape</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../net_class/index.html"> <span class="nf nf-fa-file"></span> net_class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../nets/index.html"> <span class="nf nf-fa-file"></span> nets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../padstack/index.html"> <span class="nf nf-fa-file"></span> padstack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../siwave/index.html"> <span class="nf nf-fa-file"></span> siwave</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../source_excitations/index.html"> <span class="nf nf-fa-file"></span> source_excitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../stackup/index.html"> <span class="nf nf-fa-file"></span> stackup</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../clr_module/index.html"> <span class="nf nf-fa-file"></span> clr_module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../edb/index.html"> <span class="nf nf-fa-file"></span> edb</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="xref py py-class docutils literal notranslate"><span class="pre">Modeler</span></code></span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="modeler">
+<h1><code class="xref py py-class docutils literal notranslate"><span class="pre">Modeler</span></code><a class="headerlink" href="#modeler" title="Link to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyedb.dotnet.database.modeler.Modeler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyedb.dotnet.database.modeler.</span></span><span class="sig-name descname"><span class="pre">Modeler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_edb</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyedb.dotnet.database.modeler.Modeler" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Manages EDB methods for primitives management accessible from <cite>Edb.modeler</cite> property.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="n">edbversion</span><span class="o">=</span><span class="s2">&quot;2021.2&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edb_layout</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">modeler</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Methods</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.get_primitive" title="Modeler.get_primitive"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_primitive</span></code></a></p></td>
+<td><p>Retrieve primitive from give id.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.get_polygons_by_layer" title="Modeler.get_polygons_by_layer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_polygons_by_layer</span></code></a></p></td>
+<td><p>Retrieve polygons by a layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.get_primitive_by_layer_and_point" title="Modeler.get_primitive_by_layer_and_point"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_primitive_by_layer_and_point</span></code></a></p></td>
+<td><p>Return primitive given coordinate point [x, y], layer name and nets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.get_polygon_bounding_box" title="Modeler.get_polygon_bounding_box"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_polygon_bounding_box</span></code></a></p></td>
+<td><p>Retrieve a polygon bounding box.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.get_polygon_points" title="Modeler.get_polygon_points"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_polygon_points</span></code></a></p></td>
+<td><p>Retrieve polygon points.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.parametrize_polygon" title="Modeler.parametrize_polygon"><code class="xref py py-attr docutils literal notranslate"><span class="pre">parametrize_polygon</span></code></a></p></td>
+<td><p>Parametrize pieces of a polygon based on another polygon.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.create_trace" title="Modeler.create_trace"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_trace</span></code></a></p></td>
+<td><p>Create a trace based on a list of points.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.create_polygon" title="Modeler.create_polygon"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_polygon</span></code></a></p></td>
+<td><p>Create a polygon based on a list of points and voids.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Modeler.create_polygon_from_points" title="Modeler.create_polygon_from_points"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_polygon_from_points</span></code></a></p></td>
+<td><p>Create a new polygon from a point list.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.create_rectangle" title="Modeler.create_rectangle"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_rectangle</span></code></a></p></td>
+<td><p>Create rectangle.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.create_circle" title="Modeler.create_circle"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_circle</span></code></a></p></td>
+<td><p>Create a circle on a specified layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.delete_primitives" title="Modeler.delete_primitives"><code class="xref py py-attr docutils literal notranslate"><span class="pre">delete_primitives</span></code></a></p></td>
+<td><p>Delete primitives by net names.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.get_primitives" title="Modeler.get_primitives"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_primitives</span></code></a></p></td>
+<td><p>Get primitives by conditions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.fix_circle_void_for_clipping" title="Modeler.fix_circle_void_for_clipping"><code class="xref py py-attr docutils literal notranslate"><span class="pre">fix_circle_void_for_clipping</span></code></a></p></td>
+<td><p>Fix issues when circle void are clipped due to a bug in EDB.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.add_void" title="Modeler.add_void"><code class="xref py py-attr docutils literal notranslate"><span class="pre">add_void</span></code></a></p></td>
+<td><p>Add a void into a shape.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Modeler.shape_to_polygon_data" title="Modeler.shape_to_polygon_data"><code class="xref py py-attr docutils literal notranslate"><span class="pre">shape_to_polygon_data</span></code></a></p></td>
+<td><p>Convert a shape to polygon data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.parametrize_trace_width" title="Modeler.parametrize_trace_width"><code class="xref py py-attr docutils literal notranslate"><span class="pre">parametrize_trace_width</span></code></a></p></td>
+<td><p>Parametrize a Trace on specific layer or all stackup.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.unite_polygons_on_layer" title="Modeler.unite_polygons_on_layer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">unite_polygons_on_layer</span></code></a></p></td>
+<td><p>Try to unite all Polygons on specified layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.defeature_polygon" title="Modeler.defeature_polygon"><code class="xref py py-attr docutils literal notranslate"><span class="pre">defeature_polygon</span></code></a></p></td>
+<td><p>Defeature the polygon based on the maximum surface deviation criteria.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.get_layout_statistics" title="Modeler.get_layout_statistics"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_layout_statistics</span></code></a></p></td>
+<td><p>Return EDBStatistics object from a layout.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.create_bondwire" title="Modeler.create_bondwire"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_bondwire</span></code></a></p></td>
+<td><p>Create a bondwire object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.create_pin_group" title="Modeler.create_pin_group"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_pin_group</span></code></a></p></td>
+<td><p>Create a PinGroup.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Properties</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.db" title="Modeler.db"><code class="xref py py-attr docutils literal notranslate"><span class="pre">db</span></code></a></p></td>
+<td><p>Db object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.layers" title="Modeler.layers"><code class="xref py py-attr docutils literal notranslate"><span class="pre">layers</span></code></a></p></td>
+<td><p>Dictionary of layers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.primitives" title="Modeler.primitives"><code class="xref py py-attr docutils literal notranslate"><span class="pre">primitives</span></code></a></p></td>
+<td><p>Primitives.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.polygons_by_layer" title="Modeler.polygons_by_layer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">polygons_by_layer</span></code></a></p></td>
+<td><p>Primitives with layer names as keys.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.primitives_by_net" title="Modeler.primitives_by_net"><code class="xref py py-attr docutils literal notranslate"><span class="pre">primitives_by_net</span></code></a></p></td>
+<td><p>Primitives with net names as keys.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.primitives_by_layer" title="Modeler.primitives_by_layer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">primitives_by_layer</span></code></a></p></td>
+<td><p>Primitives with layer names as keys.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.rectangles" title="Modeler.rectangles"><code class="xref py py-attr docutils literal notranslate"><span class="pre">rectangles</span></code></a></p></td>
+<td><p>Rectangles.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.circles" title="Modeler.circles"><code class="xref py py-attr docutils literal notranslate"><span class="pre">circles</span></code></a></p></td>
+<td><p>Circles.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.paths" title="Modeler.paths"><code class="xref py py-attr docutils literal notranslate"><span class="pre">paths</span></code></a></p></td>
+<td><p>Paths.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.polygons" title="Modeler.polygons"><code class="xref py py-attr docutils literal notranslate"><span class="pre">polygons</span></code></a></p></td>
+<td><p>Polygons.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-2">
+Special methods</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.__getitem__" title="Modeler.__getitem__"><code class="xref py py-attr docutils literal notranslate"><span class="pre">__getitem__</span></code></a></p></td>
+<td><p>Get  a layout instance from the Edb project.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="import-detail">
+<h2>Import detail<a class="headerlink" href="#import-detail" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.modeler</span><span class="w"> </span><span class="kn">import</span> <span class="n">Modeler</span>
+</pre></div>
+</div>
+</section>
+<section id="property-detail">
+<h2>Property detail<a class="headerlink" href="#property-detail" title="Link to this heading">#</a></h2>
+<dl class="py property">
+<dt class="sig sig-object py" id="Modeler.db">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">db</span></span><a class="headerlink" href="#Modeler.db" title="Link to this definition">#</a></dt>
+<dd><p>Db object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Modeler.layers">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">layers</span></span><a class="headerlink" href="#Modeler.layers" title="Link to this definition">#</a></dt>
+<dd><p>Dictionary of layers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of layers.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Modeler.primitives">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">primitives</span></span><a class="headerlink" href="#Modeler.primitives" title="Link to this definition">#</a></dt>
+<dd><p>Primitives.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.primitives_data.Primitive</span></code></dt><dd><p>List of primitives.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Modeler.polygons_by_layer">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">polygons_by_layer</span></span><a class="headerlink" href="#Modeler.polygons_by_layer" title="Link to this definition">#</a></dt>
+<dd><p>Primitives with layer names as keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of primitives with layer names as keys.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Modeler.primitives_by_net">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">primitives_by_net</span></span><a class="headerlink" href="#Modeler.primitives_by_net" title="Link to this definition">#</a></dt>
+<dd><p>Primitives with net names as keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of primitives with nat names as keys.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Modeler.primitives_by_layer">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">primitives_by_layer</span></span><a class="headerlink" href="#Modeler.primitives_by_layer" title="Link to this definition">#</a></dt>
+<dd><p>Primitives with layer names as keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of primitives with layer names as keys.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Modeler.rectangles">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">rectangles</span></span><a class="headerlink" href="#Modeler.rectangles" title="Link to this definition">#</a></dt>
+<dd><p>Rectangles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.primitives_data.Primitive</span></code></dt><dd><p>List of rectangles.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Modeler.circles">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">circles</span></span><a class="headerlink" href="#Modeler.circles" title="Link to this definition">#</a></dt>
+<dd><p>Circles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.primitives_data.Primitive</span></code></dt><dd><p>List of circles.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Modeler.paths">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">paths</span></span><a class="headerlink" href="#Modeler.paths" title="Link to this definition">#</a></dt>
+<dd><p>Paths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.primitives_data.Primitive</span></code></dt><dd><p>List of paths.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Modeler.polygons">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">polygons</span></span><a class="headerlink" href="#Modeler.polygons" title="Link to this definition">#</a></dt>
+<dd><p>Polygons.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.primitives_data.Primitive</span></code></dt><dd><p>List of polygons.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="method-detail">
+<h2>Method detail<a class="headerlink" href="#method-detail" title="Link to this heading">#</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.__getitem__">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.__getitem__" title="Link to this definition">#</a></dt>
+<dd><p>Get  a layout instance from the Edb project.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="../cell/hierarchy/component/EDBComponent.html#pyedb.dotnet.database.cell.hierarchy.component.EDBComponent" title="pyedb.dotnet.database.cell.hierarchy.component.EDBComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.cell.hierarchy.component.EDBComponent</span></code></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.get_primitive">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">get_primitive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primitive_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.get_primitive" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve primitive from give id.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>primitive_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Primitive id.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.primitives_data.Primitive</span></code></dt><dd><p>List of primitives.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.get_polygons_by_layer">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">get_polygons_by_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.get_polygons_by_layer" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve polygons by a layer.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>layer_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the layer.</p>
+</dd>
+<dt><strong>net_list</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>List of net names.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>List of primitive objects.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.get_primitive_by_layer_and_point">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">get_primitive_by_layer_and_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.get_primitive_by_layer_and_point" title="Link to this definition">#</a></dt>
+<dd><p>Return primitive given coordinate point [x, y], layer name and nets.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>point</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Coordinate [x, y]</p>
+</dd>
+<dt><strong>layer</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>list of layer name or layer name applied on filter.</p>
+</dd>
+<dt><strong>nets</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>list of net name or single net name applied on filter</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.primitives_data.Primitive</span></code></dt><dd><p>List of primitives, polygons, paths and rectangles.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.get_polygon_bounding_box">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">get_polygon_bounding_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.get_polygon_bounding_box" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve a polygon bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>polygon</strong></dt><dd><p>Name of the polygon.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>List of bounding box coordinates in the format <code class="docutils literal notranslate"><span class="pre">[-x,</span> <span class="pre">-y,</span> <span class="pre">+x,</span> <span class="pre">+y]</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">poly</span> <span class="o">=</span> <span class="n">database</span><span class="o">.</span><span class="n">modeler</span><span class="o">.</span><span class="n">get_polygons_by_layer</span><span class="p">(</span><span class="s2">&quot;GND&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">bounding</span> <span class="o">=</span> <span class="n">database</span><span class="o">.</span><span class="n">modeler</span><span class="o">.</span><span class="n">get_polygon_bounding_box</span><span class="p">(</span><span class="n">poly</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.get_polygon_points">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">get_polygon_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.get_polygon_points" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve polygon points.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For arcs, one point is returned.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>polygon</strong></dt><dd><p>class: <cite>dotnet.database.edb_data.primitives_data.Primitive</cite></p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><dl class="simple">
+<dt>List of tuples. Each tuple provides x, y point coordinate. If the length of two consecutives tuples</dt><dd><p>from the list equals 2, a segment is defined. The first tuple defines the starting point while the second
+tuple the ending one. If the length of one tuple equals one, that means a polyline is defined and the value
+is giving the arc height. Therefore to polyline is defined as starting point for the tuple
+before in the list, the current one the arc height and the tuple after the polyline ending point.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">poly</span> <span class="o">=</span> <span class="n">database</span><span class="o">.</span><span class="n">modeler</span><span class="o">.</span><span class="n">get_polygons_by_layer</span><span class="p">(</span><span class="s2">&quot;GND&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">points</span> <span class="o">=</span> <span class="n">database</span><span class="o">.</span><span class="n">modeler</span><span class="o">.</span><span class="n">get_polygon_points</span><span class="p">(</span><span class="n">poly</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.parametrize_polygon">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">parametrize_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selection_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'offsetx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.parametrize_polygon" title="Link to this definition">#</a></dt>
+<dd><p>Parametrize pieces of a polygon based on another polygon.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>polygon</strong></dt><dd><p>Name of the polygon.</p>
+</dd>
+<dt><strong>selection_polygon</strong></dt><dd><p>Polygon to use as a filter.</p>
+</dd>
+<dt><strong>offset_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the offset to create.  The default is <code class="docutils literal notranslate"><span class="pre">&quot;offsetx&quot;</span></code>.</p>
+</dd>
+<dt><strong>origin</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>List of the X and Y origins, which impacts the vector
+computation and is needed to determine expansion direction.
+The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, in which case the vector is
+computed from the polygon’s center.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.create_trace">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">create_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_cap_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Round'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_cap_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Round'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corner_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Round'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.create_trace" title="Link to this definition">#</a></dt>
+<dd><p>Create a trace based on a list of points.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>path_list</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>List of points.</p>
+</dd>
+<dt><strong>layer_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the layer on which to create the path.</p>
+</dd>
+<dt><strong>width</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Width of the path. The default is <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</dd>
+<dt><strong>net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the net. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+<dt><strong>start_cap_style</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Style of the cap at its start. Options are <code class="docutils literal notranslate"><span class="pre">&quot;Round&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;Extended&quot;,</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;Flat&quot;</span></code>. The default is
+<code class="docutils literal notranslate"><span class="pre">&quot;Round&quot;</span></code>.</p>
+</dd>
+<dt><strong>end_cap_style</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Style of the cap at its end. Options are <code class="docutils literal notranslate"><span class="pre">&quot;Round&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;Extended&quot;,</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;Flat&quot;</span></code>. The default is
+<code class="docutils literal notranslate"><span class="pre">&quot;Round&quot;</span></code>.</p>
+</dd>
+<dt><strong>corner_style</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Style of the corner. Options are <code class="docutils literal notranslate"><span class="pre">&quot;Round&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;Sharp&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;Mitered&quot;</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">&quot;Round&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.primitives_data.Primitive</span></code></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.create_polygon">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">create_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">main_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.create_polygon" title="Link to this definition">#</a></dt>
+<dd><p>Create a polygon based on a list of points and voids.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>main_shape</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">points</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">PolygonData</span></code> or <code class="docutils literal notranslate"><span class="pre">modeler.Shape</span></code></span></dt><dd><p>Shape or point lists of the main object. Point list can be in the format of <cite>[[x1,y1], [x2,y2],..,[xn,yn]]</cite>.
+Each point can be:
+- [x, y] coordinate
+- [x, y, height] for an arc with specific height (between previous point and actual point)
+- [x, y, rotation, xc, yc] for an arc given a point, rotation and center.</p>
+</dd>
+<dt><strong>layer_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the layer on which to create the polygon.</p>
+</dd>
+<dt><strong>voids</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>List of shape objects for voids or points that creates the shapes. The default is``[]``.</p>
+</dd>
+<dt><strong>net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the net. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+<dt><strong>points</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Added for compatibility with grpc.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dotnet.database.edb_data.primitives.Primitive</span></code></dt><dd><p>Polygon when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.create_polygon_from_points">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">create_polygon_from_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.create_polygon_from_points" title="Link to this definition">#</a></dt>
+<dd><p>Create a new polygon from a point list.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.6.73.</span></p>
+</div>
+<p>Use <a class="reference internal" href="../../../grpc/database/modeler/Modeler.html#Modeler.create_polygon" title="Modeler.create_polygon"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_polygon()</span></code></a> method instead. It now supports point lists as arguments.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>point_list</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Point list in the format of <cite>[[x1,y1], [x2,y2],..,[xn,yn]]</cite>.
+Each point can be:
+- [x,y] coordinate
+- [x,y, height] for an arc with specific height (between previous point and actual point)
+- [x,y, rotation, xc,yc] for an arc given a point, rotation and center.</p>
+</dd>
+<dt><strong>layer_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of layer on which create the polygon.</p>
+</dd>
+<dt><strong>net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the net on which create the polygon.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.primitives_data.Primitive</span></code></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.create_rectangle">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">create_rectangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_left_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_right_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">representation_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LowerLeftUpperRight'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corner_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0mm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0deg'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.create_rectangle" title="Link to this definition">#</a></dt>
+<dd><p>Create rectangle.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>layer_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the layer on which to create the rectangle.</p>
+</dd>
+<dt><strong>net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the net. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+<dt><strong>lower_left_point</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Lower left point when <code class="docutils literal notranslate"><span class="pre">representation_type=&quot;LowerLeftUpperRight&quot;</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+<dt><strong>upper_right_point</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Upper right point when <code class="docutils literal notranslate"><span class="pre">representation_type=&quot;LowerLeftUpperRight&quot;</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+<dt><strong>center_point</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Center point when <code class="docutils literal notranslate"><span class="pre">representation_type=&quot;CenterWidthHeight&quot;</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+<dt><strong>width</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Width of the rectangle when <code class="docutils literal notranslate"><span class="pre">representation_type=&quot;CenterWidthHeight&quot;</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+<dt><strong>height</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Height of the rectangle when <code class="docutils literal notranslate"><span class="pre">representation_type=&quot;CenterWidthHeight&quot;</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+<dt><strong>representation_type</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Type of the rectangle representation. The default is <code class="docutils literal notranslate"><span class="pre">LowerLeftUpperRight</span></code>. Options are
+<code class="docutils literal notranslate"><span class="pre">&quot;LowerLeftUpperRight&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;CenterWidthHeight&quot;</span></code>.</p>
+</dd>
+<dt><strong>corner_radius</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Radius of the rectangle corner. The default is <code class="docutils literal notranslate"><span class="pre">&quot;0mm&quot;</span></code>.</p>
+</dd>
+<dt><strong>rotation</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Rotation of the rectangle. The default is <code class="docutils literal notranslate"><span class="pre">&quot;0deg&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.primitives_data.Primitive</span></code></dt><dd><p>Rectangle when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.create_circle">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">create_circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.create_circle" title="Link to this definition">#</a></dt>
+<dd><p>Create a circle on a specified layer.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>layer_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the layer.</p>
+</dd>
+<dt><strong>x</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Position on the X axis.</p>
+</dd>
+<dt><strong>y</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Position on the Y axis.</p>
+</dd>
+<dt><strong>radius</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Radius of the circle.</p>
+</dd>
+<dt><strong>net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the net. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, in which case the
+default name is assigned.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.primitives_data.Primitive</span></code></dt><dd><p>Objects of the circle created when successful.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.delete_primitives">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">delete_primitives</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.delete_primitives" title="Link to this definition">#</a></dt>
+<dd><p>Delete primitives by net names.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>net_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Names of the nets to delete.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">Edb</span><span class="o">.</span><span class="n">modeler</span><span class="o">.</span><span class="n">delete_primitives</span><span class="p">(</span><span class="n">net_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GND&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.get_primitives">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">get_primitives</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prim_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_void</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.get_primitives" title="Link to this definition">#</a></dt>
+<dd><p>Get primitives by conditions.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Set filter on net_name. Default is <cite>None</cite>.</p>
+</dd>
+<dt><strong>layer_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Set filter on layer_name. Default is <cite>None</cite>.</p>
+</dd>
+<dt><strong>prim_type</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Set filter on primitive type. Default is <cite>None</cite>.</p>
+</dd>
+<dt><strong>is_void</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Set filter on is_void. Default is ‘False’</p>
+</dd>
+<dt><strong>Returns</strong></dt><dd></dd>
+<dt><strong>——-</strong></dt><dd></dd>
+<dt><strong>list</strong></dt><dd><p>List of filtered primitives</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.fix_circle_void_for_clipping">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">fix_circle_void_for_clipping</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.fix_circle_void_for_clipping" title="Link to this definition">#</a></dt>
+<dd><p>Fix issues when circle void are clipped due to a bug in EDB.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when no changes were applied.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.add_void">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">add_void</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">void_shape</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.add_void" title="Link to this definition">#</a></dt>
+<dd><p>Add a void into a shape.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>shape</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Polygon</span></code></span></dt><dd><p>Shape of the main object.</p>
+</dd>
+<dt><strong>void_shape</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Path</span></code></span></dt><dd><p>Shape of the voids.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.shape_to_polygon_data">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">shape_to_polygon_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.shape_to_polygon_data" title="Link to this definition">#</a></dt>
+<dd><p>Convert a shape to polygon data.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>shape</strong><span class="classifier"><a class="reference internal" href="Modeler.Shape.html#pyedb.dotnet.database.modeler.Modeler.Shape" title="pyedb.dotnet.database.modeler.Modeler.Shape"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.modeler.Modeler.Shape</span></code></a></span></dt><dd><p>Type of the shape to convert. Options are <code class="docutils literal notranslate"><span class="pre">&quot;rectangle&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;polygon&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.parametrize_trace_width">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">parametrize_trace_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nets_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'trace_width'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.parametrize_trace_width" title="Link to this definition">#</a></dt>
+<dd><p>Parametrize a Trace on specific layer or all stackup.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>nets_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>name of the net or list of nets to parametrize.</p>
+</dd>
+<dt><strong>layers_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>name of the layer or list of layers to which the net to parametrize has to be included.</p>
+</dd>
+<dt><strong>parameter_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>name of the parameter to create.</p>
+</dd>
+<dt><strong>variable_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>value with units of parameter to create.
+If None, the first trace width of Net will be used as parameter value.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.unite_polygons_on_layer">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">unite_polygons_on_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_padstack_gemometries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_names_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.unite_polygons_on_layer" title="Link to this definition">#</a></dt>
+<dd><p>Try to unite all Polygons on specified layer.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>layer_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of layer name to unite objects on. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, in which case all layers are taken.</p>
+</dd>
+<dt><strong>delete_padstack_gemometries</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to delete all padstack geometries. The default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt><strong>net_names_list</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>]</span><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Net names list filter. The default is <code class="docutils literal notranslate"><span class="pre">[]</span></code>, in which case all nets are taken.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> is successful.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.defeature_polygon">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">defeature_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">poly</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.defeature_polygon" title="Link to this definition">#</a></dt>
+<dd><p>Defeature the polygon based on the maximum surface deviation criteria.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>maximum_surface_deviation</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd></dd>
+<dt><strong>poly</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Edb</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">Polygon</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">primitive</span></code></span></dt><dd><p>Polygon to defeature.</p>
+</dd>
+<dt><strong>tolerance</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Maximum tolerance criteria. The default is <code class="docutils literal notranslate"><span class="pre">0.001</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.get_layout_statistics">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">get_layout_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluate_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.get_layout_statistics" title="Link to this definition">#</a></dt>
+<dd><p>Return EDBStatistics object from a layout.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>evaluate_area</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>When True evaluates the layout metal surface, can take time-consuming,
+avoid using this option on large design.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">EDBStatistics</span></code> object.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.create_bondwire">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">create_bondwire</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">definition_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placement_layer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_layer_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_layer_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bondwire_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jedec4'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_cell_instance_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.create_bondwire" title="Link to this definition">#</a></dt>
+<dd><p>Create a bondwire object.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>bondwire_type</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">BondwireType</span></code></span></dt><dd><p>Type of bondwire: kAPDBondWire or kJDECBondWire types.</p>
+</dd>
+<dt><strong>definition_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Bondwire definition name.</p>
+</dd>
+<dt><strong>placement_layer</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Layer name this bondwire will be on.</p>
+</dd>
+<dt><strong>width</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">Value</span></code></span></dt><dd><p>Bondwire width.</p>
+</dd>
+<dt><strong>material</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Bondwire material name.</p>
+</dd>
+<dt><strong>start_layer_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of start layer.</p>
+</dd>
+<dt><strong>start_x</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">Value</span></code></span></dt><dd><p>X value of start point.</p>
+</dd>
+<dt><strong>start_y</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">Value</span></code></span></dt><dd><p>Y value of start point.</p>
+</dd>
+<dt><strong>end_layer_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of end layer.</p>
+</dd>
+<dt><strong>end_x</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">Value</span></code></span></dt><dd><p>X value of end point.</p>
+</dd>
+<dt><strong>end_y</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">Value</span></code></span></dt><dd><p>Y value of end point.</p>
+</dd>
+<dt><strong>net</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">Net</span></code> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Net of the Bondwire.</p>
+</dd>
+<dt><strong>start_cell_instance_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Added for grpc compatibility.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="../dotnet/primitive/BondwireDotNet.html#pyedb.dotnet.database.dotnet.primitive.BondwireDotNet" title="pyedb.dotnet.database.dotnet.primitive.BondwireDotNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.dotnet.primitive.BondwireDotNet</span></code></a></dt><dd><p>Bondwire object created.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Modeler.create_pin_group">
+<span class="sig-prename descclassname"><span class="pre">Modeler.</span></span><span class="sig-name descname"><span class="pre">create_pin_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pins_by_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pins_by_aedt_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pins_by_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Modeler.create_pin_group" title="Link to this definition">#</a></dt>
+<dd><p>Create a PinGroup.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the PinGroup.</p>
+</dd>
+<dt><strong>pins_by_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>] <code class="xref py py-obj docutils literal notranslate"><span class="pre">or</span></code> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>List of pins by ID.</p>
+</dd>
+<dt><strong>pins_by_aedt_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>] <code class="xref py py-obj docutils literal notranslate"><span class="pre">or</span></code> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>List of pins by AEDT name.</p>
+</dd>
+<dt><strong>pins_by_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>] <code class="xref py py-obj docutils literal notranslate"><span class="pre">or</span></code> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>List of pins by name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="Modeler.Shape.html#pyedb.dotnet.database.modeler.Modeler.Shape" title="pyedb.dotnet.database.modeler.Modeler.Shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shape</span></code></a></p></td>
+<td><p>Shape class.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyedb.dotnet.database.modeler.Modeler"><code class="docutils literal notranslate"><span class="pre">Modeler</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-detail">Import detail</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#property-detail">Property detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.db"><code class="docutils literal notranslate"><span class="pre">db</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.layers"><code class="docutils literal notranslate"><span class="pre">layers</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.primitives"><code class="docutils literal notranslate"><span class="pre">primitives</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.polygons_by_layer"><code class="docutils literal notranslate"><span class="pre">polygons_by_layer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.primitives_by_net"><code class="docutils literal notranslate"><span class="pre">primitives_by_net</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.primitives_by_layer"><code class="docutils literal notranslate"><span class="pre">primitives_by_layer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.rectangles"><code class="docutils literal notranslate"><span class="pre">rectangles</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.circles"><code class="docutils literal notranslate"><span class="pre">circles</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.paths"><code class="docutils literal notranslate"><span class="pre">paths</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.polygons"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-detail">Method detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.__getitem__"><code class="docutils literal notranslate"><span class="pre">__getitem__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.get_primitive"><code class="docutils literal notranslate"><span class="pre">get_primitive()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.get_polygons_by_layer"><code class="docutils literal notranslate"><span class="pre">get_polygons_by_layer()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.get_primitive_by_layer_and_point"><code class="docutils literal notranslate"><span class="pre">get_primitive_by_layer_and_point()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.get_polygon_bounding_box"><code class="docutils literal notranslate"><span class="pre">get_polygon_bounding_box()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.get_polygon_points"><code class="docutils literal notranslate"><span class="pre">get_polygon_points()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.parametrize_polygon"><code class="docutils literal notranslate"><span class="pre">parametrize_polygon()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.create_trace"><code class="docutils literal notranslate"><span class="pre">create_trace()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.create_polygon"><code class="docutils literal notranslate"><span class="pre">create_polygon()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.create_polygon_from_points"><code class="docutils literal notranslate"><span class="pre">create_polygon_from_points()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.create_rectangle"><code class="docutils literal notranslate"><span class="pre">create_rectangle()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.create_circle"><code class="docutils literal notranslate"><span class="pre">create_circle()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.delete_primitives"><code class="docutils literal notranslate"><span class="pre">delete_primitives()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.get_primitives"><code class="docutils literal notranslate"><span class="pre">get_primitives()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.fix_circle_void_for_clipping"><code class="docutils literal notranslate"><span class="pre">fix_circle_void_for_clipping()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.add_void"><code class="docutils literal notranslate"><span class="pre">add_void()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.shape_to_polygon_data"><code class="docutils literal notranslate"><span class="pre">shape_to_polygon_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.parametrize_trace_width"><code class="docutils literal notranslate"><span class="pre">parametrize_trace_width()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.unite_polygons_on_layer"><code class="docutils literal notranslate"><span class="pre">unite_polygons_on_layer()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.defeature_polygon"><code class="docutils literal notranslate"><span class="pre">defeature_polygon()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.get_layout_statistics"><code class="docutils literal notranslate"><span class="pre">get_layout_statistics()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.create_bondwire"><code class="docutils literal notranslate"><span class="pre">create_bondwire()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Modeler.create_pin_group"><code class="docutils literal notranslate"><span class="pre">create_pin_group()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="http://github.com/ansys/pyedb/edit/main/src/pyedb/dotnet/database/modeler/Modeler.py">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../../../_sources/autoapi/pyedb/dotnet/database/modeler/Modeler.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../../../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../../../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.4. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

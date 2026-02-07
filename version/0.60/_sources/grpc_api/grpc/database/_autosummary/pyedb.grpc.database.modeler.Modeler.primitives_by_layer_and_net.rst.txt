@@ -1,0 +1,6 @@
+primitives\_by\_layer\_and\_net
+===============================
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. autoproperty:: Modeler.primitives_by_layer_and_net

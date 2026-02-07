@@ -1,0 +1,705 @@
+
+
+
+
+
+
+:class:`LayerCollection`
+========================
+
+
+.. py:class:: pyedb.grpc.database.stackup.LayerCollection(pedb=None, core=None)
+
+   
+   Manages layer collections in an EDB database.
+
+
+   :Parameters:
+
+       **pedb** : :class:`pyedb.Edb`
+           EDB object.
+
+       **edb_object** : :class:`ansys.edb.core.layer.LayerCollection`
+           EDB layer collection object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: LayerCollection
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create layer collection.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~update_layout`
+            - Update the layout with the current layer collection.
+          * - :py:attr:`~add_layer_top`
+            - Add a layer on top of the stackup.
+          * - :py:attr:`~add_layer_bottom`
+            - Add a layer at the bottom of the stackup.
+          * - :py:attr:`~add_layer_below`
+            - Add a layer below a specified layer.
+          * - :py:attr:`~add_layer_above`
+            - Add a layer above a specified layer.
+          * - :py:attr:`~add_document_layer`
+            - Add a document layer.
+          * - :py:attr:`~find_layer_by_name`
+            - Find a layer by its name.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~stackup_layers`
+            - Retrieve the dictionary of signal and dielectric layers.
+          * - :py:attr:`~non_stackup_layers`
+            - Retrieve the dictionary of non-stackup layers.
+          * - :py:attr:`~all_layers`
+            - Retrieve all layers.
+          * - :py:attr:`~signal_layers`
+            - Retrieve the dictionary of signal layers.
+          * - :py:attr:`~dielectric_layers`
+            - Retrieve the dictionary of dielectric layers.
+          * - :py:attr:`~layers_by_id`
+            - Retrieve the list of layers with their IDs.
+          * - :py:attr:`~layers`
+            - Retrieve the dictionary of stackup layers (signal and dielectric).
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.stackup import LayerCollection
+
+Property detail
+---------------
+
+.. py:property:: stackup_layers
+
+   
+   Retrieve the dictionary of signal and dielectric layers.
+
+   .. deprecated:: 0.6.61
+       Use :func:`layers` instead.
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
+           Dictionary of stackup layers.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: non_stackup_layers
+   :type: Dict[str, pyedb.grpc.database.layers.layer.Layer]
+
+
+   
+   Retrieve the dictionary of non-stackup layers.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.grpc.database.layers.layer.Layer`]
+           Dictionary of non-stackup layers.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> non_stackup = edb.stackup.non_stackup_layers
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: all_layers
+   :type: Dict[str, pyedb.grpc.database.layers.layer.Layer]
+
+
+   
+   Retrieve all layers.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.grpc.database.layers.layer.Layer`]
+           Dictionary of all layers.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> all_layers = edb.stackup.all_layers
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: signal_layers
+   :type: Dict[str, pyedb.grpc.database.layers.stackup_layer.StackupLayer]
+
+
+   
+   Retrieve the dictionary of signal layers.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
+           Dictionary of signal layers.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> signal_layers = edb.stackup.signal_layers
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dielectric_layers
+   :type: Dict[str, pyedb.grpc.database.layers.stackup_layer.StackupLayer]
+
+
+   
+   Retrieve the dictionary of dielectric layers.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
+           Dictionary of dielectric layers.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> dielectric_layers = edb.stackup.dielectric_layers
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layers_by_id
+   :type: List[List[Union[int, str]]]
+
+
+   
+   Retrieve the list of layers with their IDs.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:list`\[:class:`python:int`, :class:`python:str`]]
+           List of layers with their IDs and names.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> layers_by_id = edb.stackup.layers_by_id
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layers
+   :type: Dict[str, pyedb.grpc.database.layers.stackup_layer.StackupLayer]
+
+
+   
+   Retrieve the dictionary of stackup layers (signal and dielectric).
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
+           Dictionary of stackup layers.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> layers = edb.stackup.layers
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(mode: str = 'laminate') -> LayerCollection
+   :classmethod:
+
+
+   
+   Create layer collection.
+
+
+   :Parameters:
+
+       **mode** : :class:`python:str`, :obj:`optional`
+           layer mode. Valid values, `"laminate"`, `"overlapping"`. Default value is `"laminate"`
+
+
+
+   :Returns:
+
+       :obj:`LayerCollection`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: update_layout()
+
+   
+   Update the layout with the current layer collection.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> edb.stackup.update_layout()
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_layer_top(name: str, layer_type: str = 'signal', **kwargs) -> Union[pyedb.grpc.database.layers.layer.Layer, None]
+
+   
+   Add a layer on top of the stackup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the layer.
+
+       **layer_type** : :class:`python:str`, :obj:`optional`
+           Type of the layer. The default is ``"signal"``. Options are ``"signal"`` and ``"dielectric"``.
+
+       **\*\*kwargs** : :class:`python:dict`, :obj:`optional`
+           Additional keyword arguments. Possible keys are:
+           - ``thickness`` : float, layer thickness.
+           - ``material`` : str, layer material.
+
+
+
+   :Returns:
+
+       :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
+           Layer object created.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> top_layer = edb.stackup.add_layer_top(
+   ...     "NewTopLayer", layer_type="signal", thickness="0.1mm", material="copper"
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_layer_bottom(name: str, layer_type: str = 'signal', **kwargs) -> Union[pyedb.grpc.database.layers.layer.Layer, None]
+
+   
+   Add a layer at the bottom of the stackup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the layer.
+
+       **layer_type** : :class:`python:str`, :obj:`optional`
+           Type of the layer. The default is ``"signal"``. Options are ``"signal"`` and ``"dielectric"``.
+
+       **\*\*kwargs** : :class:`python:dict`, :obj:`optional`
+           Additional keyword arguments. Possible keys are:
+           - ``thickness`` : float, layer thickness.
+           - ``material`` : str, layer material.
+           - ``fill_material`` : str, fill material.
+
+
+
+   :Returns:
+
+       :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
+           Layer object created.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> bot_layer = edb.stackup.add_layer_bottom(
+   ...     "NewBottomLayer", layer_type="signal", thickness="0.1mm", material="copper"
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_layer_below(name: str, base_layer_name: str, layer_type: str = 'signal', **kwargs) -> Union[pyedb.grpc.database.layers.layer.Layer, None]
+
+   
+   Add a layer below a specified layer.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the layer.
+
+       **base_layer_name** : :class:`python:str`
+           Name of the base layer.
+
+       **layer_type** : :class:`python:str`, :obj:`optional`
+           Type of the layer. The default is ``"signal"``. Options are ``"signal"`` and ``"dielectric"``.
+
+       **\*\*kwargs** : :class:`python:dict`, :obj:`optional`
+           Additional keyword arguments. Possible keys are:
+           - ``thickness`` : float, layer thickness.
+           - ``material`` : str, layer material.
+
+
+
+   :Returns:
+
+       :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
+           Layer object created.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> new_layer = edb.stackup.add_layer_below("NewLayer", "TopLayer", layer_type="dielectric", thickness="0.05mm")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_layer_above(name: str, base_layer_name: str, layer_type: str = 'signal', **kwargs) -> Union[pyedb.grpc.database.layers.layer.Layer, None]
+
+   
+   Add a layer above a specified layer.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the layer.
+
+       **base_layer_name** : :class:`python:str`
+           Name of the base layer.
+
+       **layer_type** : :class:`python:str`, :obj:`optional`
+           Type of the layer. The default is ``"signal"``. Options are ``"signal"`` and ``"dielectric"``.
+
+       **\*\*kwargs** : :class:`python:dict`, :obj:`optional`
+           Additional keyword arguments. Possible keys are:
+           - ``thickness`` : float, layer thickness.
+           - ``material`` : str, layer material.
+
+
+
+   :Returns:
+
+       :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
+           Layer object created.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> new_layer = edb.stackup.add_layer_above("NewLayer", "BottomLayer", layer_type="signal", thickness="0.05mm")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_document_layer(name: str, layer_type: str = 'user', **kwargs: Any) -> Optional[pyedb.grpc.database.layers.layer.Layer]
+
+   
+   Add a document layer.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the layer.
+
+       **layer_type** : :class:`python:str`, :obj:`optional`
+           Type of the layer. The default is ``"user"``. Options are ``"user"`` and ``"outline"``.
+
+       **\*\*kwargs** : :class:`python:dict`, :obj:`optional`
+           Additional keyword arguments.
+
+
+
+   :Returns:
+
+       :class:`pyedb.grpc.database.layers.layer.Layer`
+           Layer object created.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> outline_layer = edb.stackup.add_document_layer("Outline", layer_type="outline")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_layer_by_name(name: str)
+
+   
+   Find a layer by its name.
+
+   .. deprecated:: 0.29.0
+       Use :func:`find_by_name` instead.
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the layer.
+
+
+
+   :Returns:
+
+       :class:`ansys.edb.core.layer.Layer`
+           Layer object found.
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If no layer with the given name is found.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

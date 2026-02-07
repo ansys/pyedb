@@ -1,0 +1,383 @@
+
+
+
+
+
+
+:class:`PolygonDataDotNet`
+==========================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.database.PolygonDataDotNet(pedb, api_object=None)
+
+   
+   Polygon Data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: PolygonDataDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_point`
+            - Add a point at the end of the point list of the polygon.
+          * - :py:attr:`~get_bbox_of_boxes`
+            - Get the EDB .NET API ``Edb.Geometry.GetBBoxOfBoxes`` database.
+          * - :py:attr:`~get_bbox_of_polygons`
+            - Edb Dotnet Api Database `Edb.Geometry.GetBBoxOfPolygons`.
+          * - :py:attr:`~create_from_bbox`
+            - Edb Dotnet Api Database `Edb.Geometry.CreateFromBBox`.
+          * - :py:attr:`~create_from_arcs`
+            - Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.
+          * - :py:attr:`~unite`
+            - Edb Dotnet Api Database `Edb.Geometry.Unite`.
+          * - :py:attr:`~get_convex_hull_of_polygons`
+            - Edb Dotnet Api Database `Edb.Geometry.GetConvexHullOfPolygons`.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~api_class`
+            - :class:`Ansys.Ansoft.Edb` class object.
+          * - :py:attr:`~arcs`
+            - List of Edb.Geometry.ArcData.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dotnetobj`
+            - 
+          * - :py:attr:`~core`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getattr__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.database import PolygonDataDotNet
+
+Property detail
+---------------
+
+.. py:property:: api_class
+
+   
+   :class:`Ansys.Ansoft.Edb` class object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: arcs
+
+   
+   List of Edb.Geometry.ArcData.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: dotnetobj
+
+.. py:attribute:: core
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getattr__(key)
+
+.. py:method:: add_point(x, y, incremental=False)
+
+   
+   Add a point at the end of the point list of the polygon.
+
+
+   :Parameters:
+
+       **x: str, int, float**
+           X coordinate.
+
+       **y: str, in, float**
+           Y coordinate.
+
+       **incremental: bool**
+           Whether to add the point incrementally. The default value is ``False``. When
+           ``True``, the coordinates of the added point are incremental to the last point.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_bbox_of_boxes(points)
+
+   
+   Get the EDB .NET API ``Edb.Geometry.GetBBoxOfBoxes`` database.
+
+
+   :Parameters:
+
+       **points** : :class:`python:list` or `Edb.Geometry.PointData`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_bbox_of_polygons(polygons)
+
+   
+   Edb Dotnet Api Database `Edb.Geometry.GetBBoxOfPolygons`.
+
+
+   :Parameters:
+
+       **polygons** : :class:`python:list` or `Edb.Geometry.PolygonData`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_from_bbox(points)
+
+   
+   Edb Dotnet Api Database `Edb.Geometry.CreateFromBBox`.
+
+
+   :Parameters:
+
+       **points** : :class:`python:list` or `Edb.Geometry.PointData`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_from_arcs(arcs, flag)
+
+   
+   Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.
+
+
+   :Parameters:
+
+       **arcs** : :class:`python:list` or `Edb.Geometry.ArcData`
+           List of ArcData.
+
+       **flag** : :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: unite(pdata)
+
+   
+   Edb Dotnet Api Database `Edb.Geometry.Unite`.
+
+
+   :Parameters:
+
+       **pdata** : :class:`python:list` or `Edb.Geometry.PolygonData`
+           Polygons to unite.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_convex_hull_of_polygons(pdata)
+
+   
+   Edb Dotnet Api Database `Edb.Geometry.GetConvexHullOfPolygons`.
+
+
+   :Parameters:
+
+       **pdata** : :class:`python:list` or :obj:`List` :obj:`of` `Edb.Geometry.PolygonData`
+           Polygons to unite in a Convex Hull.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

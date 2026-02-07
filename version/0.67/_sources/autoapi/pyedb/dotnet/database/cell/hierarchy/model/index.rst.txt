@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``model.py`` module
+=======================
+
+.. py:module:: pyedb.dotnet.database.cell.hierarchy.model
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: model
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.hierarchy.model.Model`
+            - Manages model class.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.hierarchy.model.PinPairModel`
+            - Manages pin pair model class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Model</autoapi/pyedb/dotnet/database/cell/hierarchy/model/Model>
+    <span class="nf nf-cod-symbol_class"></span> PinPairModel</autoapi/pyedb/dotnet/database/cell/hierarchy/model/PinPairModel>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

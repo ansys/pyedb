@@ -1,0 +1,496 @@
+
+
+
+
+
+
+:class:`LayoutStatistics`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.utility.layout_statistics.LayoutStatistics
+
+   Bases: :py:obj:`object`
+
+
+   
+   Statistics object
+
+   Object properties example.
+   >>> stat_model = EDBStatistics()
+   >>> stat_model.num_capacitors
+   >>> stat_model.num_resistors
+   >>> stat_model.num_inductors
+   >>> stat_model.layout_size
+   >>> stat_model.num_discrete_components
+   >>> stat_model.num_inductors
+   >>> stat_model.num_resistors
+   >>> stat_model.num_capacitors
+   >>> stat_model.num_nets
+   >>> stat_model.num_traces
+   >>> stat_model.num_polygons
+   >>> stat_model.num_vias
+   >>> stat_model.stackup_thickness
+   >>> stat_model.occupying_surface
+   >>> stat_model.occupying_ratio
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: LayoutStatistics
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~num_layers`
+            - Layer number.
+          * - :py:attr:`~stackup_thickness`
+            - Stackup total thickness.
+          * - :py:attr:`~num_vias`
+            - Via number.
+          * - :py:attr:`~occupying_ratio`
+            - Occupying ratio.
+          * - :py:attr:`~occupying_surface`
+            - Occupying surface.
+          * - :py:attr:`~layout_size`
+            - Layout size.
+          * - :py:attr:`~num_polygons`
+            - Polygon number.
+          * - :py:attr:`~num_traces`
+            - Trace number.
+          * - :py:attr:`~num_nets`
+            - Net number.
+          * - :py:attr:`~num_discrete_components`
+            - Discrete component number.
+          * - :py:attr:`~num_inductors`
+            - Inductor number.
+          * - :py:attr:`~num_capacitors`
+            - Capacitor number.
+          * - :py:attr:`~num_resistors`
+            - Resistor number.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
+
+Property detail
+---------------
+
+.. py:property:: num_layers
+   :type: int
+
+
+   
+   Layer number.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Number of layers.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: stackup_thickness
+   :type: float
+
+
+   
+   Stackup total thickness.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Stack up total thickness value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_vias
+   :type: int
+
+
+   
+   Via number.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Total number of vias.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: occupying_ratio
+   :type: float
+
+
+   
+   Occupying ratio.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Occupying ration value.
+           Value representing metal coverage versus total layout surface.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: occupying_surface
+   :type: bool
+
+
+   
+   Occupying surface.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Occupying surface value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layout_size
+   :type: list[float]
+
+
+   
+   Layout size.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[(:class:`python:float`, :class:`python:float`), (:class:`python:float`, :class:`python:float`)]
+           Layout bounding box, lower left corner (x, y) upper right corner (x, y).
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_polygons
+   :type: int
+
+
+   
+   Polygon number.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Total number of polygons.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_traces
+   :type: int
+
+
+   
+   Trace number.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Total number of traces.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_nets
+   :type: int
+
+
+   
+   Net number.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Total number og nets.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_discrete_components
+   :type: int
+
+
+   
+   Discrete component number.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Total number of discrete components.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_inductors
+   :type: int
+
+
+   
+   Inductor number.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Total number of inductors.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_capacitors
+   :type: int
+
+
+   
+   Capacitor number.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Total number of capacitors.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_resistors
+   :type: int
+
+
+   
+   Resistor number.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Total number of resistors.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

@@ -1,0 +1,1586 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Nets &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../../../_static/documentation_options.js?v=f1844525"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/pyedb/grpc/database/nets/Nets';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.68';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="NetClasses" href="NetClasses.html" />
+    <link rel="prev" title="The nets.py module" href="index.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.68.3" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/autoapi/pyedb/grpc/database/nets/Nets.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.68/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.68/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../index.html">The <code class="docutils literal notranslate"><span class="pre">grpc</span></code> package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../index.html"> <span class="nf nf-md-package"></span> database</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../definition/index.html"> <span class="nf nf-md-package"></span> definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/index.html"> <span class="nf nf-md-package"></span> geometry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hierarchy/index.html"> <span class="nf nf-md-package"></span> hierarchy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../layers/index.html"> <span class="nf nf-md-package"></span> layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../layout/index.html"> <span class="nf nf-md-package"></span> layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../net/index.html"> <span class="nf nf-md-package"></span> net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ports/index.html"> <span class="nf nf-md-package"></span> ports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../primitive/index.html"> <span class="nf nf-md-package"></span> primitive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../simulation_setup/index.html"> <span class="nf nf-md-package"></span> simulation_setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../terminal/index.html"> <span class="nf nf-md-package"></span> terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../utility/index.html"> <span class="nf nf-md-package"></span> utility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/index.html"> <span class="nf nf-fa-file"></span> components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../definitions/index.html"> <span class="nf nf-fa-file"></span> definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../general/index.html"> <span class="nf nf-fa-file"></span> general</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hfss/index.html"> <span class="nf nf-fa-file"></span> hfss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../layout_validation/index.html"> <span class="nf nf-fa-file"></span> layout_validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modeler/index.html"> <span class="nf nf-fa-file"></span> modeler</a></li>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="index.html"> <span class="nf nf-fa-file"></span> nets</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4 current active"><a class="current reference internal" href="#"> <span class="nf nf-cod-symbol_class"></span> Nets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="NetClasses.html"> <span class="nf nf-cod-symbol_class"></span> NetClasses</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../padstacks/index.html"> <span class="nf nf-fa-file"></span> padstacks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../simulation_setups/index.html"> <span class="nf nf-fa-file"></span> simulation_setups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../siwave/index.html"> <span class="nf nf-fa-file"></span> siwave</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../source_excitations/index.html"> <span class="nf nf-fa-file"></span> source_excitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stackup/index.html"> <span class="nf nf-fa-file"></span> stackup</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../edb/index.html"> <span class="nf nf-fa-file"></span> edb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../edb_init/index.html"> <span class="nf nf-fa-file"></span> edb_init</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../rpc_session/index.html"> <span class="nf nf-fa-file"></span> rpc_session</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../../../../grpc_api/index.html" class="nav-link">API reference</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">grpc</span></code> package</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">pyedb.grpc.database</span></code> library</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">nets.py</span></code> module</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nets</span></code></span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="nets">
+<h1><code class="xref py py-class docutils literal notranslate"><span class="pre">Nets</span></code><a class="headerlink" href="#nets" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyedb.grpc.database.nets.Nets">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyedb.grpc.database.nets.</span></span><span class="sig-name descname"><span class="pre">Nets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_edb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyedb.grpc.database.nets.Nets" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../common/nets/CommonNets.html#pyedb.common.nets.CommonNets" title="pyedb.common.nets.CommonNets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyedb.common.nets.CommonNets</span></code></a></p>
+<p>Manages EDB methods for nets management accessible from <cite>Edb.nets</cite> property.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Initialize EDB session</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="n">edbversion</span><span class="o">=</span><span class="s2">&quot;2025.2&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Access Nets class</span>
+<span class="gp">>>> </span><span class="n">nets</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># =================</span>
+<span class="gp">>>> </span><span class="c1"># Property examples</span>
+<span class="gp">>>> </span><span class="c1"># =================</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Get all nets dictionary</span>
+<span class="gp">>>> </span><span class="n">all_nets</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">nets</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All nets:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">all_nets</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Get net names list</span>
+<span class="gp">>>> </span><span class="n">net_names</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">netlist</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Net names:&quot;</span><span class="p">,</span> <span class="n">net_names</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Get signal nets</span>
+<span class="gp">>>> </span><span class="n">signal_nets</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">signal</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Signal nets:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">signal_nets</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Get power/ground nets</span>
+<span class="gp">>>> </span><span class="n">power_nets</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">power</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Power nets:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">power_nets</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Get nets by components</span>
+<span class="gp">>>> </span><span class="n">nets_by_comps</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">nets_by_components</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nets by components:&quot;</span><span class="p">,</span> <span class="n">nets_by_comps</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Get components by nets</span>
+<span class="gp">>>> </span><span class="n">comps_by_nets</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">components_by_nets</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Components by nets:&quot;</span><span class="p">,</span> <span class="n">comps_by_nets</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># ===============</span>
+<span class="gp">>>> </span><span class="c1"># Method examples</span>
+<span class="gp">>>> </span><span class="c1"># ===============</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Get net by name</span>
+<span class="gp">>>> </span><span class="n">net_obj</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="p">[</span><span class="s2">&quot;GND&quot;</span><span class="p">]</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Net object: </span><span class="si">{</span><span class="n">net_obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Check net existence</span>
+<span class="gp">>>> </span><span class="k">if</span> <span class="s2">&quot;PCIe_RX&quot;</span> <span class="ow">in</span> <span class="n">nets</span><span class="p">:</span>
+<span class="gp">>>> </span>   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PCIe_RX exists&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Identify eligible power nets</span>
+<span class="gp">>>> </span><span class="n">eligible_pwr</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">eligible_power_nets</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Eligible power nets:&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">net</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">net</span> <span class="ow">in</span> <span class="n">eligible_pwr</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Generate extended nets (deprecated)</span>
+<span class="gp">>>> </span><span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">generate_extended_nets</span><span class="p">(</span><span class="n">resistor_below</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">inductor_below</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">capacitor_above</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Classify nets</span>
+<span class="gp">>>> </span><span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">classify_nets</span><span class="p">(</span><span class="n">power_nets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;VDD_CPU&quot;</span><span class="p">,</span> <span class="s2">&quot;VDD_MEM&quot;</span><span class="p">],</span> <span class="n">signal_nets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PCIe_TX&quot;</span><span class="p">,</span> <span class="s2">&quot;ETH_RX&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Check power/ground status</span>
+<span class="gp">>>> </span><span class="n">is_power</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">is_power_gound_net</span><span class="p">([</span><span class="s2">&quot;VDD_CPU&quot;</span><span class="p">,</span> <span class="s2">&quot;PCIe_TX&quot;</span><span class="p">])</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Is power net:&quot;</span><span class="p">,</span> <span class="n">is_power</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Get DC-connected nets</span>
+<span class="gp">>>> </span><span class="n">dc_connected</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">get_dcconnected_net_list</span><span class="p">(</span><span class="n">ground_nets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GND&quot;</span><span class="p">],</span> <span class="n">res_value</span><span class="o">=</span><span class="mf">0.002</span><span class="p">)</span>
+<span class="go">    print(&quot;DC-connected nets:&quot;, dc_connected)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Get power tree</span>
+<span class="gp">>>> </span><span class="n">comp_list</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">net_group</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">get_powertree</span><span class="p">(</span><span class="n">power_net_name</span><span class="o">=</span><span class="s2">&quot;VDD_CPU&quot;</span><span class="p">,</span> <span class="n">ground_nets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GND&quot;</span><span class="p">])</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Power tree components:&quot;</span><span class="p">,</span> <span class="n">comp_list</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Find net by name</span>
+<span class="gp">>>> </span><span class="n">found_net</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">get_net_by_name</span><span class="p">(</span><span class="s2">&quot;PCIe_TX&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found net: </span><span class="si">{</span><span class="n">found_net</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Delete nets</span>
+<span class="gp">>>> </span><span class="n">deleted</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">delete</span><span class="p">([</span><span class="s2">&quot;Unused_Net&quot;</span><span class="p">,</span> <span class="s2">&quot;Test_Net&quot;</span><span class="p">])</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Deleted nets:&quot;</span><span class="p">,</span> <span class="n">deleted</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Find or create net</span>
+<span class="gp">>>> </span><span class="n">new_net</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">find_or_create_net</span><span class="p">(</span><span class="n">net_name</span><span class="o">=</span><span class="s2">&quot;New_Net&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created net: </span><span class="si">{</span><span class="n">new_net</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Check net-component association</span>
+<span class="gp">>>> </span><span class="n">in_component</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">is_net_in_component</span><span class="p">(</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="s2">&quot;VDD_CPU&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Net in component:&quot;</span><span class="p">,</span> <span class="n">in_component</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Find and fix disjoint nets (deprecated)</span>
+<span class="gp">>>> </span><span class="n">fixed_nets</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">find_and_fix_disjoint_nets</span><span class="p">(</span><span class="n">net_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PCIe_TX&quot;</span><span class="p">],</span> <span class="n">clean_disjoints_less_than</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fixed nets:&quot;</span><span class="p">,</span> <span class="n">fixed_nets</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="c1"># Merge net polygons</span>
+<span class="gp">>>> </span><span class="n">merged</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">merge_nets_polygons</span><span class="p">([</span><span class="s2">&quot;VDD_CPU&quot;</span><span class="p">,</span> <span class="s2">&quot;VDD_MEM&quot;</span><span class="p">])</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Polygons merged:&quot;</span><span class="p">,</span> <span class="n">merged</span><span class="p">)</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p># Close EDB session</p>
+</div></blockquote>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">edbapp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Methods</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Nets.eligible_power_nets" title="Nets.eligible_power_nets"><code class="xref py py-attr docutils literal notranslate"><span class="pre">eligible_power_nets</span></code></a></p></td>
+<td><p>Identify nets eligible for power/ground classification based on area ratio.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Nets.generate_extended_nets" title="Nets.generate_extended_nets"><code class="xref py py-attr docutils literal notranslate"><span class="pre">generate_extended_nets</span></code></a></p></td>
+<td><p>Generate extended nets based on component thresholds.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Nets.classify_nets" title="Nets.classify_nets"><code class="xref py py-attr docutils literal notranslate"><span class="pre">classify_nets</span></code></a></p></td>
+<td><p>Reassign net classifications as power/ground or signal.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Nets.is_power_gound_net" title="Nets.is_power_gound_net"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_power_gound_net</span></code></a></p></td>
+<td><p>Check if any net in a list is a power/ground net.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Nets.get_dcconnected_net_list" title="Nets.get_dcconnected_net_list"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_dcconnected_net_list</span></code></a></p></td>
+<td><p>Get nets connected to DC through inductors and low-value resistors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Nets.get_powertree" title="Nets.get_powertree"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_powertree</span></code></a></p></td>
+<td><p>Retrieve power tree for a given power net.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Nets.get_net_by_name" title="Nets.get_net_by_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_net_by_name</span></code></a></p></td>
+<td><p>Find a net by name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Nets.delete" title="Nets.delete"><code class="xref py py-attr docutils literal notranslate"><span class="pre">delete</span></code></a></p></td>
+<td><p>Delete one or more nets from the layout.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Nets.find_or_create_net" title="Nets.find_or_create_net"><code class="xref py py-attr docutils literal notranslate"><span class="pre">find_or_create_net</span></code></a></p></td>
+<td><p>Find or create a net based on given criteria.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Nets.is_net_in_component" title="Nets.is_net_in_component"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_net_in_component</span></code></a></p></td>
+<td><p>Check if a net belongs to a component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Nets.find_and_fix_disjoint_nets" title="Nets.find_and_fix_disjoint_nets"><code class="xref py py-attr docutils literal notranslate"><span class="pre">find_and_fix_disjoint_nets</span></code></a></p></td>
+<td><p>Find and fix disjoint nets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Nets.merge_nets_polygons" title="Nets.merge_nets_polygons"><code class="xref py py-attr docutils literal notranslate"><span class="pre">merge_nets_polygons</span></code></a></p></td>
+<td><p>Merge polygons for specified nets on each layer.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Properties</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Nets.db" title="Nets.db"><code class="xref py py-attr docutils literal notranslate"><span class="pre">db</span></code></a></p></td>
+<td><p>Database object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Nets.nets" title="Nets.nets"><code class="xref py py-attr docutils literal notranslate"><span class="pre">nets</span></code></a></p></td>
+<td><p>All nets in the layout.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Nets.netlist" title="Nets.netlist"><code class="xref py py-attr docutils literal notranslate"><span class="pre">netlist</span></code></a></p></td>
+<td><p>List of all net names.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Nets.signal" title="Nets.signal"><code class="xref py py-attr docutils literal notranslate"><span class="pre">signal</span></code></a></p></td>
+<td><p>Signal nets in the layout.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Nets.power" title="Nets.power"><code class="xref py py-attr docutils literal notranslate"><span class="pre">power</span></code></a></p></td>
+<td><p>Power and ground nets in the layout.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Nets.nets_by_components" title="Nets.nets_by_components"><code class="xref py py-attr docutils literal notranslate"><span class="pre">nets_by_components</span></code></a></p></td>
+<td><p>Mapping of components to their associated nets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Nets.components_by_nets" title="Nets.components_by_nets"><code class="xref py py-attr docutils literal notranslate"><span class="pre">components_by_nets</span></code></a></p></td>
+<td><p>Mapping of nets to their associated components.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-2">
+Special methods</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Nets.__getitem__" title="Nets.__getitem__"><code class="xref py py-attr docutils literal notranslate"><span class="pre">__getitem__</span></code></a></p></td>
+<td><p>Get a net by name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Nets.__contains__" title="Nets.__contains__"><code class="xref py py-attr docutils literal notranslate"><span class="pre">__contains__</span></code></a></p></td>
+<td><p>Check if a net exists in the layout.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="import-detail">
+<h2>Import detail<a class="headerlink" href="#import-detail" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.grpc.database.nets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Nets</span>
+</pre></div>
+</div>
+</section>
+<section id="property-detail">
+<h2>Property detail<a class="headerlink" href="#property-detail" title="Link to this heading">#</a></h2>
+<dl class="py property">
+<dt class="sig sig-object py" id="Nets.db">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">db</span></span><a class="headerlink" href="#Nets.db" title="Link to this definition">#</a></dt>
+<dd><p>Database object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Nets.nets">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">nets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><span class="pre">pyedb.grpc.database.net.net.Net</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#Nets.nets" title="Link to this definition">#</a></dt>
+<dd><p>All nets in the layout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyedb.grpc.database.net.net.Net</span></code></a>]</dt><dd><p>Dictionary of net names to Net objects.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">all_nets</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">nets</span>
+<span class="gp">>>> </span><span class="k">for</span> <span class="n">net_name</span><span class="p">,</span> <span class="n">net_obj</span> <span class="ow">in</span> <span class="n">all_nets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">net_name</span><span class="p">,</span> <span class="n">net_obj</span><span class="o">.</span><span class="n">is_power_ground</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Nets.netlist">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">netlist</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#Nets.netlist" title="Link to this definition">#</a></dt>
+<dd><p>List of all net names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>]</dt><dd><p>Names of all nets in the layout.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">net_names</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">netlist</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total nets:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">net_names</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Nets.signal">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">signal</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><span class="pre">pyedb.grpc.database.net.net.Net</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#Nets.signal" title="Link to this definition">#</a></dt>
+<dd><p>Signal nets in the layout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyedb.grpc.database.net.net.Net</span></code></a>]</dt><dd><p>Dictionary of signal net names to Net objects.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">signal_nets</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">signal</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Signal nets:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">signal_nets</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Nets.power">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">power</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><span class="pre">pyedb.grpc.database.net.net.Net</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#Nets.power" title="Link to this definition">#</a></dt>
+<dd><p>Power and ground nets in the layout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyedb.grpc.database.net.net.Net</span></code></a>]</dt><dd><p>Dictionary of power/ground net names to Net objects.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">power_nets</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">power</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Power nets:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">power_nets</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Nets.nets_by_components">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">nets_by_components</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#Nets.nets_by_components" title="Link to this definition">#</a></dt>
+<dd><p>Mapping of components to their associated nets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>]]</dt><dd><p>Dictionary mapping component names to list of net names.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">nets_by_comps</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">nets_by_components</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;U1 nets:&quot;</span><span class="p">,</span> <span class="n">nets_by_comps</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Nets.components_by_nets">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">components_by_nets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#Nets.components_by_nets" title="Link to this definition">#</a></dt>
+<dd><p>Mapping of nets to their associated components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>]]</dt><dd><p>Dictionary mapping net names to list of component names.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">comps_by_nets</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">components_by_nets</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Components on GND:&quot;</span><span class="p">,</span> <span class="n">comps_by_nets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;GND&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="method-detail">
+<h2>Method detail<a class="headerlink" href="#method-detail" title="Link to this heading">#</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="Nets.__getitem__">
+<span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><span class="pre">pyedb.grpc.database.net.net.Net</span></a></span></span><a class="headerlink" href="#Nets.__getitem__" title="Link to this definition">#</a></dt>
+<dd><p>Get a net by name.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the net to retrieve.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyedb.grpc.database.net.net.Net</span></code></a></dt><dd><p>Net object if found, otherwise None.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">gnd_net</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="p">[</span><span class="s2">&quot;GND&quot;</span><span class="p">]</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="n">gnd_net</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Nets.__contains__">
+<span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#Nets.__contains__" title="Link to this definition">#</a></dt>
+<dd><p>Check if a net exists in the layout.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the net to check.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p>True if the net exists, False otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="k">if</span> <span class="s2">&quot;PCIe_RX&quot;</span> <span class="ow">in</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="p">:</span>
+<span class="gp">>>> </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Net exists&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Nets.eligible_power_nets">
+<span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">eligible_power_nets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><span class="pre">pyedb.grpc.database.net.net.Net</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#Nets.eligible_power_nets" title="Link to this definition">#</a></dt>
+<dd><p>Identify nets eligible for power/ground classification based on area ratio.</p>
+<p>Uses the same algorithm implemented in SIwave.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>threshold</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Area ratio threshold. Nets with plane area ratio above this value are
+considered power/ground nets.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyedb.grpc.database.net.net.Net</span></code></a>]</dt><dd><p>List of nets eligible as power/ground nets.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">eligible_pwr</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">eligible_power_nets</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">([</span><span class="n">net</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">net</span> <span class="ow">in</span> <span class="n">eligible_pwr</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Nets.generate_extended_nets">
+<span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">generate_extended_nets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resistor_below</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inductor_below</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacitor_above</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exception_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#Nets.generate_extended_nets" title="Link to this definition">#</a></dt>
+<dd><p>Generate extended nets based on component thresholds.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version pyedb: </span>0.30.0
+Use <code class="xref py py-func docutils literal notranslate"><span class="pre">pyedb.grpc.extended_nets.generate_extended_nets()</span></code> instead.</p>
+</div>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>resistor_below</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Resistor threshold value. Components below this value are considered.</p>
+</dd>
+<dt><strong>inductor_below</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Inductor threshold value. Components below this value are considered.</p>
+</dd>
+<dt><strong>capacitor_above</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Capacitor threshold value. Components above this value are considered.</p>
+</dd>
+<dt><strong>exception_list</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>List of components to bypass during threshold checks.</p>
+</dd>
+<dt><strong>include_signal</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to include signal nets in extended net generation.</p>
+</dd>
+<dt><strong>include_power</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to include power nets in extended net generation.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>List of generated extended nets.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edb</span><span class="o">.</span><span class="n">extended_nets</span><span class="o">.</span><span class="n">generate_extended_nets</span><span class="p">(</span><span class="n">resistor_below</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">inductor_below</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">capacitor_above</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Nets.classify_nets">
+<span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">classify_nets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power_nets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_nets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#Nets.classify_nets" title="Link to this definition">#</a></dt>
+<dd><p>Reassign net classifications as power/ground or signal.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>power_nets</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Nets to classify as power/ground.</p>
+</dd>
+<dt><strong>signal_nets</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Nets to classify as signal.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p>True if successful, False otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">classify_nets</span><span class="p">(</span><span class="n">power_nets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;VDD_CPU&quot;</span><span class="p">,</span> <span class="s2">&quot;VDD_MEM&quot;</span><span class="p">],</span> <span class="n">signal_nets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PCIe_TX&quot;</span><span class="p">,</span> <span class="s2">&quot;ETH_RX&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Nets.is_power_gound_net">
+<span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">is_power_gound_net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">netname_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#Nets.is_power_gound_net" title="Link to this definition">#</a></dt>
+<dd><p>Check if any net in a list is a power/ground net.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>netname_list</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>]</span></dt><dd><p>Net name or list of net names to check.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p>True if any net is power/ground, False otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">is_power</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">is_power_gound_net</span><span class="p">([</span><span class="s2">&quot;VDD_CPU&quot;</span><span class="p">,</span> <span class="s2">&quot;PCIe_TX&quot;</span><span class="p">])</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Contains power net:&quot;</span><span class="p">,</span> <span class="n">is_power</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Nets.get_dcconnected_net_list">
+<span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">get_dcconnected_net_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_nets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['GND']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#Nets.get_dcconnected_net_list" title="Link to this definition">#</a></dt>
+<dd><p>Get nets connected to DC through inductors and low-value resistors.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ground_nets</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Ground net names. Default is (“GND”,).</p>
+</dd>
+<dt><strong>res_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Resistance threshold value. Default is 0.001 ohms.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set</span></code></a>]</dt><dd><p>List of sets of connected nets.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">dc_connected</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">get_dcconnected_net_list</span><span class="p">(</span><span class="n">ground_nets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GND&quot;</span><span class="p">],</span> <span class="n">res_value</span><span class="o">=</span><span class="mf">0.002</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="k">for</span> <span class="n">net_group</span> <span class="ow">in</span> <span class="n">dc_connected</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connected nets:&quot;</span><span class="p">,</span> <span class="n">net_group</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Nets.get_powertree">
+<span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">get_powertree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power_net_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_nets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#Nets.get_powertree" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve power tree for a given power net.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>power_net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the power net.</p>
+</dd>
+<dt><strong>ground_nets</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>List of ground net names.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><p>(component_list, component_list_columns, net_group)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">comp_list</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">net_group</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">get_powertree</span><span class="p">(</span><span class="n">power_net_name</span><span class="o">=</span><span class="s2">&quot;VDD_CPU&quot;</span><span class="p">,</span> <span class="n">ground_nets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GND&quot;</span><span class="p">])</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Power tree components:&quot;</span><span class="p">,</span> <span class="n">comp_list</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Nets.get_net_by_name">
+<span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">get_net_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><span class="pre">pyedb.grpc.database.net.net.Net</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#Nets.get_net_by_name" title="Link to this definition">#</a></dt>
+<dd><p>Find a net by name.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the net to find.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyedb.grpc.database.net.net.Net</span></code></a></dt><dd><p>Net object if found, otherwise None.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">found_net</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">get_net_by_name</span><span class="p">(</span><span class="s2">&quot;PCIe_TX&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="k">if</span> <span class="n">found_net</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Net found:&quot;</span><span class="p">,</span> <span class="n">found_net</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Nets.delete">
+<span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">netlist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#Nets.delete" title="Link to this definition">#</a></dt>
+<dd><p>Delete one or more nets from the layout.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>netlist</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>]</span></dt><dd><p>Net name or list of net names to delete.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>]</dt><dd><p>Names of nets that were deleted.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">deleted_nets</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">active_db</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">delete</span><span class="p">([</span><span class="s2">&quot;Net1&quot;</span><span class="p">,</span> <span class="s2">&quot;Net2&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Nets.find_or_create_net">
+<span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">find_or_create_net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_with</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_with</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><span class="pre">pyedb.grpc.database.net.net.Net</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><span class="pre">pyedb.grpc.database.net.net.Net</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#Nets.find_or_create_net" title="Link to this definition">#</a></dt>
+<dd><p>Find or create a net based on given criteria.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Exact name of the net to find or create.</p>
+</dd>
+<dt><strong>start_with</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Find nets starting with this string.</p>
+</dd>
+<dt><strong>contain</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Find nets containing this string.</p>
+</dd>
+<dt><strong>end_with</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Find nets ending with this string.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyedb.grpc.database.net.net.Net</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference internal" href="../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyedb.grpc.database.net.net.Net</span></code></a>]</dt><dd><p>Net object or list of matching net objects.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">new_net</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">find_or_create_net</span><span class="p">(</span><span class="n">net_name</span><span class="o">=</span><span class="s2">&quot;New_Net&quot;</span><span class="p">)</span>
+<span class="gp">>>></span>
+<span class="gp">>>> </span><span class="c1"># Find existing net</span>
+<span class="gp">>>> </span><span class="n">existing_net</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">find_or_create_net</span><span class="p">(</span><span class="n">net_name</span><span class="o">=</span><span class="s2">&quot;GND&quot;</span><span class="p">)</span>
+<span class="gp">>>></span>
+<span class="gp">>>> </span><span class="c1"># Find nets starting with &quot;VDD&quot;</span>
+<span class="gp">>>> </span><span class="n">vdd_nets</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">find_or_create_net</span><span class="p">(</span><span class="n">start_with</span><span class="o">=</span><span class="s2">&quot;VDD&quot;</span><span class="p">)</span>
+<span class="gp">>>></span>
+<span class="gp">>>> </span><span class="c1"># Find nets ending with &quot;_P&quot;</span>
+<span class="gp">>>> </span><span class="n">pos_nets</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">find_or_create_net</span><span class="p">(</span><span class="n">end_with</span><span class="o">=</span><span class="s2">&quot;_P&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Nets.is_net_in_component">
+<span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">is_net_in_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#Nets.is_net_in_component" title="Link to this definition">#</a></dt>
+<dd><p>Check if a net belongs to a component.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the component.</p>
+</dd>
+<dt><strong>net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the net.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p>True if the net is found in the component, False otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">in_component</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">is_net_in_component</span><span class="p">(</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="s2">&quot;VDD_CPU&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Net in component:&quot;</span><span class="p">,</span> <span class="n">in_component</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Nets.find_and_fix_disjoint_nets">
+<span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">find_and_fix_disjoint_nets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_only_main_net</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_disjoints_less_than</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_by_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#Nets.find_and_fix_disjoint_nets" title="Link to this definition">#</a></dt>
+<dd><p>Find and fix disjoint nets.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version pyedb: </span>0.30.0
+Use <code class="xref py py-func docutils literal notranslate"><span class="pre">edb.layout_validation.disjoint_nets()</span></code> instead.</p>
+</div>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>net_list</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>List of nets to check. Checks all nets if None.</p>
+</dd>
+<dt><strong>keep_only_main_net</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Keep only the main net segment if True.</p>
+</dd>
+<dt><strong>clean_disjoints_less_than</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Clean disjoint nets smaller than this area (in m²).</p>
+</dd>
+<dt><strong>order_by_area</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Order naming by area instead of object count.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>New ne</p>
+<p>New nets created.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">fixed_nets</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">layout_validation</span><span class="o">.</span><span class="n">disjoint_nets</span><span class="p">(</span><span class="n">net_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PCIe_TX&quot;</span><span class="p">],</span> <span class="n">clean_disjoints_less_than</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fixed nets:&quot;</span><span class="p">,</span> <span class="n">fixed_nets</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Nets.merge_nets_polygons">
+<span class="sig-prename descclassname"><span class="pre">Nets.</span></span><span class="sig-name descname"><span class="pre">merge_nets_polygons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net_names_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#Nets.merge_nets_polygons" title="Link to this definition">#</a></dt>
+<dd><p>Merge polygons for specified nets on each layer.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>net_names_list</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>]</span></dt><dd><p>Net name or list of net names.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p>True if successful, False otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.edb&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">merged</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">merge_nets_polygons</span><span class="p">([</span><span class="s2">&quot;VDD_CPU&quot;</span><span class="p">,</span> <span class="s2">&quot;VDD_MEM&quot;</span><span class="p">])</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Merge successful:&quot;</span><span class="p">,</span> <span class="n">merged</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyedb.grpc.database.nets.Nets"><code class="docutils literal notranslate"><span class="pre">Nets</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-detail">Import detail</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#property-detail">Property detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.db"><code class="docutils literal notranslate"><span class="pre">db</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.nets"><code class="docutils literal notranslate"><span class="pre">nets</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.netlist"><code class="docutils literal notranslate"><span class="pre">netlist</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.signal"><code class="docutils literal notranslate"><span class="pre">signal</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.power"><code class="docutils literal notranslate"><span class="pre">power</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.nets_by_components"><code class="docutils literal notranslate"><span class="pre">nets_by_components</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.components_by_nets"><code class="docutils literal notranslate"><span class="pre">components_by_nets</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-detail">Method detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.__getitem__"><code class="docutils literal notranslate"><span class="pre">__getitem__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.__contains__"><code class="docutils literal notranslate"><span class="pre">__contains__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.eligible_power_nets"><code class="docutils literal notranslate"><span class="pre">eligible_power_nets()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.generate_extended_nets"><code class="docutils literal notranslate"><span class="pre">generate_extended_nets()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.classify_nets"><code class="docutils literal notranslate"><span class="pre">classify_nets()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.is_power_gound_net"><code class="docutils literal notranslate"><span class="pre">is_power_gound_net()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.get_dcconnected_net_list"><code class="docutils literal notranslate"><span class="pre">get_dcconnected_net_list()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.get_powertree"><code class="docutils literal notranslate"><span class="pre">get_powertree()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.get_net_by_name"><code class="docutils literal notranslate"><span class="pre">get_net_by_name()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.delete"><code class="docutils literal notranslate"><span class="pre">delete()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.find_or_create_net"><code class="docutils literal notranslate"><span class="pre">find_or_create_net()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.is_net_in_component"><code class="docutils literal notranslate"><span class="pre">is_net_in_component()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.find_and_fix_disjoint_nets"><code class="docutils literal notranslate"><span class="pre">find_and_fix_disjoint_nets()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Nets.merge_nets_polygons"><code class="docutils literal notranslate"><span class="pre">merge_nets_polygons()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="http://github.com/ansys/pyedb/edit/main/src/pyedb/grpc/database/nets/Nets.py">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../../../_sources/autoapi/pyedb/grpc/database/nets/Nets.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../../../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../../../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.4. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

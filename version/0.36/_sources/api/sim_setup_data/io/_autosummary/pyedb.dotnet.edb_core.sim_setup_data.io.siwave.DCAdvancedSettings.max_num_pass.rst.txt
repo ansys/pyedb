@@ -1,0 +1,6 @@
+max\_num\_pass
+==============
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
+
+.. autoproperty:: DCAdvancedSettings.max_num_pass

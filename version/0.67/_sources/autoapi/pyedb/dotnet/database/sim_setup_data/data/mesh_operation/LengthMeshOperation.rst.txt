@@ -1,0 +1,163 @@
+
+
+
+
+
+
+:class:`LengthMeshOperation`
+============================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.mesh_operation.LengthMeshOperation(parent, edb_object)
+
+   Bases: :py:obj:`MeshOperation`, :py:obj:`object`
+
+
+   
+   Mesh operation Length class.
+   This class is accessible from Hfss Setup in EDB and add_length_mesh_operation method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> mop = edbapp.setups["setup1a"].add_length_mesh_operation({"GND": ["TOP", "BOTTOM"]})
+   >>> mop.max_elements = 3000
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: LengthMeshOperation
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~max_length`
+            - Maximum length of elements.
+          * - :py:attr:`~restrict_max_length`
+            - Adding property for grpc compatibility.
+          * - :py:attr:`~restrict_length`
+            - Whether to restrict length of elements.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.mesh_operation import LengthMeshOperation
+
+Property detail
+---------------
+
+.. py:property:: max_length
+
+   
+   Maximum length of elements.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: restrict_max_length
+
+   
+   Adding property for grpc compatibility.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: restrict_length
+
+   
+   Whether to restrict length of elements.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

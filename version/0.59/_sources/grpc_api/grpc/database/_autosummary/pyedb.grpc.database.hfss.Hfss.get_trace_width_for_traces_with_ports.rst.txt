@@ -1,0 +1,6 @@
+get\_trace\_width\_for\_traces\_with\_ports
+===========================================
+
+.. currentmodule:: pyedb.grpc.database.hfss
+
+.. automethod:: Hfss.get_trace_width_for_traces_with_ports

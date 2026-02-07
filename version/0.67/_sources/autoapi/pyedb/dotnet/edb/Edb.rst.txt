@@ -1,0 +1,4424 @@
+
+
+
+
+
+
+:class:`Edb`
+============
+
+.. toctree::
+   :hidden:
+
+    Boundaries</autoapi/pyedb/dotnet/edb/Edb.Boundaries>
+
+
+.. py:class:: pyedb.dotnet.edb.Edb(edbpath: Union[str, pathlib.Path] = None, cellname: str = None, isreadonly: bool = False, isaedtowned: bool = False, oproject=None, use_ppe: bool = False, control_file: str = None, map_file: str = None, technology_file: str = None, layer_filter: str = None, remove_existing_aedt: bool = False)
+
+   
+   Provides the EDB application interface.
+
+   This module inherits all objects that belong to EDB.
+
+   :Parameters:
+
+       **edbpath** : :class:`python:str`, :obj:`optional`
+           Full path to the ``aedb`` folder. The variable can also contain
+           the path to a layout to import. Allowed formats are BRD, MCM,
+           XML (IPC2581), GDS, ODB++(TGZ and ZIP) and DXF. The default is ``None``.
+           For GDS import, the Ansys control file (also XML) should have the same
+           name as the GDS file. Only the file extension differs.
+
+       **cellname** : :class:`python:str`, :obj:`optional`
+           Name of the cell to select. The default is ``None``.
+
+       **isreadonly** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to open EBD in read-only mode when it is
+           owned by HFSS 3D Layout. The default is ``False``.
+
+       **version** : :class:`python:str`, :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Version of EDB to use. The default is ``None``.
+           Examples of input values are ``232``, ``23.2``, ``2023.2``, ``"2023.2"``.
+
+       **isaedtowned** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to launch EDB from HFSS 3D Layout. The
+           default is ``False``.
+
+       **oproject** : :obj:`optional`
+           Reference to the AEDT project object.
+
+       **student_version** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to open the AEDT student version. The default is ``False.``
+
+       **control_file** : :class:`python:str`, :obj:`optional`
+           Path to the XML file. The default is ``None``, in which case an attempt is made to find
+           the XML file in the same directory as the board file. To succeed, the XML file and board file
+           must have the same name. Only the extension differs.
+
+       **map_file** : :class:`python:str`, :obj:`optional`
+           Layer map .map file.
+
+       **technology_file** : :class:`python:str`, :obj:`optional`
+           Full path to technology file to be converted to xml before importing or xml.
+           Supported by GDS format only.
+
+       **layer_filter:str,optional**
+           Layer filter .txt file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Create an ``Edb`` object and a new EDB cell.
+
+   >>> from pyedb import Edb
+   >>> app = Edb()
+
+   Add a new variable named "s1" to the ``Edb`` instance.
+
+   >>> app["s1"] = "0.25 mm"
+   >>> app["s1"].tofloat
+   >>> 0.00025
+   >>> app["s1"].tostring
+   >>> "0.25mm"
+
+   or add a new parameter with description:
+
+   >>> app["s2"] = ["20um", "Spacing between traces"]
+   >>> app["s2"].value
+   >>> 1.9999999999999998e-05
+   >>> app["s2"].description
+   >>> "Spacing between traces"
+
+   Create an ``Edb`` object and open the specified project.
+
+   >>> app = Edb("myfile.aedb")
+
+   Create an ``Edb`` object from GDS and control files.
+   The XML control file resides in the same directory as the GDS file: (myfile.xml).
+
+   >>> app = Edb("/path/to/file/myfile.gds")
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+.. py:currentmodule:: Edb
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~value`
+            - Convert a value into a pyedb value.
+          * - :py:attr:`~open_edb`
+            - Open EDB.
+          * - :py:attr:`~create_edb`
+            - Create EDB.
+          * - :py:attr:`~import_layout_pcb`
+            - Import a board file and generate an ``edb.def`` file in the working directory.
+          * - :py:attr:`~import_layout_file`
+            - Import a board file and generate an ``edb.def`` file in the working directory.
+          * - :py:attr:`~import_vlctech_stackup`
+            - Import a vlc.tech file and generate an ``edb.def`` file in the working directory containing only the stackup.
+          * - :py:attr:`~export_to_ipc2581`
+            - Export design to IPC2581 format.
+          * - :py:attr:`~edb_exception`
+            - Write the trace stack to AEDT when a Python error occurs.
+          * - :py:attr:`~get_connected_objects`
+            - Get connected objects.
+          * - :py:attr:`~edb_value`
+            - Convert a value to an EDB value. Value can be a string, float or integer. Mainly used in internal calls.
+          * - :py:attr:`~point_3d`
+            - Compute the Edb 3d Point Data.
+          * - :py:attr:`~copy_cells`
+            - Copy Cells from other Databases or this Database into this Database.
+          * - :py:attr:`~point_data`
+            - Compute the Edb Point Data.
+          * - :py:attr:`~close_edb`
+            - Close EDB and cleanup variables.
+          * - :py:attr:`~close`
+            - Close EDB and cleanup variables.
+          * - :py:attr:`~save_edb`
+            - Save the EDB file.
+          * - :py:attr:`~save`
+            - Save the EDB file.
+          * - :py:attr:`~save_edb_as`
+            - Save the EDB file as another file.
+          * - :py:attr:`~save_as`
+            - Save the EDB file as another file.
+          * - :py:attr:`~execute`
+            - Execute a function.
+          * - :py:attr:`~import_cadence_file`
+            - Import a board file and generate an ``edb.def`` file in the working directory.
+          * - :py:attr:`~cutout`
+            - Create a cutout using an approach entirely based on PyAEDT.
+          * - :py:attr:`~create_cutout`
+            - Create a cutout using an approach entirely based on legacy.
+          * - :py:attr:`~create_cutout_multithread`
+            - Create a cutout using an approach entirely based on legacy.
+          * - :py:attr:`~get_conformal_polygon_from_netlist`
+            - Return an EDB conformal polygon based on a netlist.
+          * - :py:attr:`~number_with_units`
+            - Convert a number to a string with units. If value is a string, it's returned as is.
+          * - :py:attr:`~create_cutout_on_point_list`
+            - Create a cutout on a specified shape and save it to a new AEDB file.
+          * - :py:attr:`~write_export3d_option_config_file`
+            - Write the options for a 3D export to a configuration file.
+          * - :py:attr:`~export_hfss`
+            - Export EDB to HFSS.
+          * - :py:attr:`~export_q3d`
+            - Export EDB to Q3D.
+          * - :py:attr:`~export_maxwell`
+            - Export EDB to Maxwell 3D.
+          * - :py:attr:`~solve_siwave`
+            - Close EDB and solve it with Siwave.
+          * - :py:attr:`~export_siwave_dc_results`
+            - Close EDB and solve it with Siwave.
+          * - :py:attr:`~variable_exists`
+            - Check if a variable exists or not.
+          * - :py:attr:`~get_all_variable_names`
+            - Method added for compatibility with grpc.
+          * - :py:attr:`~get_variable`
+            - Return Variable Value if variable exists.
+          * - :py:attr:`~add_project_variable`
+            - Add a variable to edb database (project). The variable will have the prefix `$`.
+          * - :py:attr:`~add_design_variable`
+            - Add a variable to edb. The variable can be a design one or a project variable (using ``$`` prefix).
+          * - :py:attr:`~change_design_variable_value`
+            - Change a variable value.
+          * - :py:attr:`~get_bounding_box`
+            - Get the layout bounding box.
+          * - :py:attr:`~build_simulation_project`
+            - Build a ready-to-solve simulation project.
+          * - :py:attr:`~get_statistics`
+            - Get the EDBStatistics object.
+          * - :py:attr:`~are_port_reference_terminals_connected`
+            - Check if all terminal references in design are connected.
+          * - :py:attr:`~new_simulation_configuration`
+            - New SimulationConfiguration Object.
+          * - :py:attr:`~create_hfss_setup`
+            - Create an HFSS simulation setup from a template.
+          * - :py:attr:`~create_raptorx_setup`
+            - Create an RaptorX simulation setup from a template.
+          * - :py:attr:`~create_hfsspi_setup`
+            - Create an HFSS PI simulation setup from a template.
+          * - :py:attr:`~create_siwave_syz_setup`
+            - Create a setup from a template.
+          * - :py:attr:`~create_siwave_dc_setup`
+            - Create a setup from a template.
+          * - :py:attr:`~calculate_initial_extent`
+            - Compute a float representing the larger number between the dielectric thickness or trace width
+          * - :py:attr:`~copy_zones`
+            - Copy multizone EDB project to one new edb per zone.
+          * - :py:attr:`~cutout_multizone_layout`
+            - Create a multizone project cutout.
+          * - :py:attr:`~create_port`
+            - Create a port.
+          * - :py:attr:`~create_voltage_probe`
+            - Create a voltage probe.
+          * - :py:attr:`~create_voltage_source`
+            - Create a voltage source.
+          * - :py:attr:`~create_current_source`
+            - Create a current source.
+          * - :py:attr:`~get_point_terminal`
+            - Place a voltage probe between two points.
+          * - :py:attr:`~auto_parametrize_design`
+            - Assign automatically design and project variables with current values.
+          * - :py:attr:`~create_model_for_arbitrary_wave_ports`
+            - Generate EDB design to be consumed by PyAEDT to generate arbitrary wave ports shapes.
+          * - :py:attr:`~export_gds_comp_xml`
+            - Exports an XML file with selected components information for use in a GDS import.
+          * - :py:attr:`~get_variable_value`
+            - Added to get closer architecture as for grpc.
+          * - :py:attr:`~compare`
+            - Compares current open database with another one.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~logger`
+            - 
+          * - :py:attr:`~version`
+            - 
+          * - :py:attr:`~base_path`
+            - 
+          * - :py:attr:`~pedb_class`
+            - 
+          * - :py:attr:`~grpc`
+            - grpc flag.
+          * - :py:attr:`~cell_names`
+            - Cell name container.
+          * - :py:attr:`~design_variables`
+            - Get all edb design variables.
+          * - :py:attr:`~ansys_em_path`
+            - 
+          * - :py:attr:`~project_variables`
+            - Get all project variables.
+          * - :py:attr:`~layout_validation`
+            - :class:`pyedb.dotnet.database.edb_data.layout_validation.LayoutValidation`.
+          * - :py:attr:`~variables`
+            - Get all Edb variables.
+          * - :py:attr:`~terminals`
+            - Get terminals belonging to active layout.
+          * - :py:attr:`~excitations`
+            - Get all layout excitations.
+          * - :py:attr:`~ports`
+            - Get all ports.
+          * - :py:attr:`~excitations_nets`
+            - Get all excitations net names.
+          * - :py:attr:`~sources`
+            - Get all layout sources.
+          * - :py:attr:`~voltage_regulator_modules`
+            - Get all voltage regulator modules
+          * - :py:attr:`~probes`
+            - Get all layout probes.
+          * - :py:attr:`~core`
+            - Edb Dotnet Api class.
+          * - :py:attr:`~configuration`
+            - Edb project configuration from file.
+          * - :py:attr:`~active_db`
+            - Database object.
+          * - :py:attr:`~active_cell`
+            - Active cell.
+          * - :py:attr:`~core_components`
+            - Edb Components methods and properties.
+          * - :py:attr:`~components`
+            - Edb Components methods and properties.
+          * - :py:attr:`~core_stackup`
+            - Core stackup.
+          * - :py:attr:`~design_options`
+            - Edb Design Settings and Options.
+          * - :py:attr:`~stackup`
+            - Stackup manager.
+          * - :py:attr:`~source_excitation`
+            - 
+          * - :py:attr:`~materials`
+            - Material Database.
+          * - :py:attr:`~core_padstack`
+            - Core padstack.
+          * - :py:attr:`~padstacks`
+            - Core padstack.
+          * - :py:attr:`~core_siwave`
+            - Core SIWave methods and properties.
+          * - :py:attr:`~siwave`
+            - Core SIWave methods and properties.
+          * - :py:attr:`~core_hfss`
+            - Core HFSS methods and properties.
+          * - :py:attr:`~hfss`
+            - Core HFSS methods and properties.
+          * - :py:attr:`~core_nets`
+            - Core nets.
+          * - :py:attr:`~nets`
+            - Core nets.
+          * - :py:attr:`~net_classes`
+            - Get all net classes.
+          * - :py:attr:`~extended_nets`
+            - Get all extended nets.
+          * - :py:attr:`~differential_pairs`
+            - Get all differential pairs.
+          * - :py:attr:`~core_primitives`
+            - Core primitives.
+          * - :py:attr:`~modeler`
+            - Core primitives modeler.
+          * - :py:attr:`~layout`
+            - Layout object.
+          * - :py:attr:`~active_layout`
+            - Active layout.
+          * - :py:attr:`~layout_instance`
+            - Edb Layout Instance.
+          * - :py:attr:`~pins`
+            - EDB padstack instance of the component.
+          * - :py:attr:`~setups`
+            - Get the dictionary of all EDB HFSS and SIwave setups.
+          * - :py:attr:`~hfss_setups`
+            - Active HFSS setup in EDB.
+          * - :py:attr:`~siwave_dc_setups`
+            - Active Siwave DC IR Setups.
+          * - :py:attr:`~siwave_ac_setups`
+            - Active Siwave SYZ setups.
+          * - :py:attr:`~definitions`
+            - Definitions class.
+          * - :py:attr:`~workflow`
+            - Workflow class.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~standalone`
+            - 
+          * - :py:attr:`~oproject`
+            - 
+          * - :py:attr:`~isaedtowned`
+            - 
+          * - :py:attr:`~isreadonly`
+            - 
+          * - :py:attr:`~cellname`
+            - 
+          * - :py:attr:`~edbpath`
+            - 
+          * - :py:attr:`~log_name`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__enter__`
+            - 
+          * - :py:attr:`~__exit__`
+            - 
+          * - :py:attr:`~__getitem__`
+            - Get or Set a variable to the Edb project. The variable can be project using ``$`` prefix or
+          * - :py:attr:`~__setitem__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.edb import Edb
+
+Property detail
+---------------
+
+.. py:property:: logger
+
+.. py:property:: version
+
+.. py:property:: base_path
+
+.. py:property:: pedb_class
+
+.. py:property:: grpc
+
+   
+   grpc flag.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cell_names
+
+   
+   Cell name container.
+
+
+
+
+
+   :Returns:
+
+       **list of cell names** : :obj:`List`\[:class:`python:str`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: design_variables
+
+   
+   Get all edb design variables.
+
+
+
+
+
+   :Returns:
+
+       **variable dictionary** : :obj:`Dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.edb_data.variables.Variable`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ansys_em_path
+
+.. py:property:: project_variables
+
+   
+   Get all project variables.
+
+
+
+
+
+   :Returns:
+
+       **variables dictionary** : :obj:`Dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.edb_data.variables.Variable`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layout_validation
+
+   
+   :class:`pyedb.dotnet.database.edb_data.layout_validation.LayoutValidation`.
+
+
+
+
+
+   :Returns:
+
+       **layout validation object** : :class: 'pyedb.dotnet.database.layout_validation.LayoutValidation'
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: variables
+
+   
+   Get all Edb variables.
+
+
+
+
+
+   :Returns:
+
+       **variables dictionary** : :obj:`Dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.edb_data.variables.Variable`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminals
+
+   
+   Get terminals belonging to active layout.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Dict`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: excitations
+
+   
+   Get all layout excitations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ports
+
+   
+   Get all ports.
+
+
+
+
+
+   :Returns:
+
+       **port dictionary** : :obj:`Dict`\[:class:`python:str`, [:class:`pyedb.dotnet.database.edb_data.ports.GapPort`,
+           :class:`pyedb.dotnet.database.edb_data.ports.WavePort`,]]
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: excitations_nets
+
+   
+   Get all excitations net names.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sources
+
+   
+   Get all layout sources.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: voltage_regulator_modules
+
+   
+   Get all voltage regulator modules
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: probes
+
+   
+   Get all layout probes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: core
+
+   
+   Edb Dotnet Api class.
+
+
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.dotnet.database.CellDotNet`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: configuration
+
+   
+   Edb project configuration from file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: active_db
+
+   
+   Database object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: active_cell
+
+   
+   Active cell.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: core_components
+
+   
+   Edb Components methods and properties.
+
+   .. deprecated:: 0.6.62
+      Use new property :func:`components` instead.
+
+
+
+
+   :Returns:
+
+       :obj:`Instance` :obj:`of` :class:`pyedb.dotnet.database.Components.Components`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> comp = edbapp.components.get_component_by_name("J1")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: components
+
+   
+   Edb Components methods and properties.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Instance` :obj:`of` :class:`pyedb.dotnet.database.components.Components`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> comp = edbapp.components.get_component_by_name("J1")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: core_stackup
+
+   
+   Core stackup.
+
+   .. deprecated:: 0.6.5
+       There is no need to use the ``core_stackup`` property anymore.
+       You can instantiate a new ``stackup`` class directly from the ``Edb`` class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: design_options
+
+   
+   Edb Design Settings and Options.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Instance` :obj:`of` :class:`pyedb.dotnet.database.edb_data.design_options.EdbDesignOptions`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: stackup
+
+   
+   Stackup manager.
+
+
+
+
+
+   :Returns:
+
+       Instance of :class: 'pyedb.dotnet.database.Stackup`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> edbapp.stackup.layers["TOP"].thickness = 4e-5
+   >>> edbapp.stackup.layers["TOP"].thickness == 4e-05
+   >>> edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_excitation
+
+.. py:property:: materials
+
+   
+   Material Database.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Instance` :obj:`of` :class: `pyedb.dotnet.database.Materials`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb()
+   >>> edbapp.materials.add_material("air", permittivity=1.0)
+   >>> edbapp.materials.add_debye_material("debye_mat", 5, 3, 0.02, 0.05, 1e5, 1e9)
+   >>> edbapp.materials.add_djordjevicsarkar_material("djord_mat", 3.3, 0.02, 3.3)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: core_padstack
+
+   
+   Core padstack.
+
+   .. deprecated:: 0.6.62
+      Use new property :func:`padstacks` instead.
+
+
+
+
+   :Returns:
+
+       :obj:`Instance` :obj:`of` :class: `pyedb.dotnet.database.padstack.EdbPadstack`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
+   >>> edbapp.padstacks.get_pad_parameters(
+   >>> ... p, "TOP", edbapp.padstacks.pad_type.RegularPad
+   >>> ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: padstacks
+
+   
+   Core padstack.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Instance` :obj:`of` :class: `legacy.database.padstack.EdbPadstack`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
+   >>> edbapp.padstacks.get_pad_parameters(
+   >>> ... p, "TOP", edbapp.padstacks.pad_type.RegularPad
+   >>> ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: core_siwave
+
+   
+   Core SIWave methods and properties.
+
+   .. deprecated:: 0.6.62
+      Use new property :func:`siwave` instead.
+
+
+
+
+   :Returns:
+
+       :obj:`Instance` :obj:`of` :class: `pyedb.dotnet.database.siwave.EdbSiwave`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: siwave
+
+   
+   Core SIWave methods and properties.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Instance` :obj:`of` :class: `pyedb.dotnet.database.siwave.EdbSiwave`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: core_hfss
+
+   
+   Core HFSS methods and properties.
+
+   .. deprecated:: 0.6.62
+      Use new property :func:`hfss` instead.
+
+
+
+
+   :Returns:
+
+       :obj:`Instance` :obj:`of` :class:`legacy.database.hfss.EdbHfss`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hfss
+
+   
+   Core HFSS methods and properties.
+
+
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.hfss.EdbHfss`
+           ..
+
+
+
+
+
+
+
+   .. seealso::
+
+       
+       :class:`legacy.database.edb_data.simulation_configuration.SimulationConfiguration`
+           ..
+       
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> sim_config = edbapp.new_simulation_configuration()
+   >>> sim_config.mesh_freq = "10Ghz"
+   >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: core_nets
+
+   
+   Core nets.
+
+   .. deprecated:: 0.6.62
+      Use new property :func:`nets` instead.
+
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.nets.EdbNets`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> edbapp.nets.find_or_create_net("GND")
+   >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: nets
+
+   
+   Core nets.
+
+
+
+
+
+   :Returns:
+
+       :class:`legacy.database.nets.EdbNets`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb"myproject.aedb")
+   >>> edbapp.nets.find_or_create_net("GND")
+   >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net_classes
+
+   
+   Get all net classes.
+
+
+
+
+
+   :Returns:
+
+       :class:`legacy.database.nets.EdbNetClasses`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> edbapp.net_classes
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: extended_nets
+
+   
+   Get all extended nets.
+
+
+
+
+
+   :Returns:
+
+       :class:`legacy.database.nets.EdbExtendedNets`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> edbapp.extended_nets
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: differential_pairs
+
+   
+   Get all differential pairs.
+
+
+
+
+
+   :Returns:
+
+       :class:`legacy.database.nets.EdbDifferentialPairs`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> edbapp.differential_pairs
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: core_primitives
+
+   
+   Core primitives.
+
+   .. deprecated:: 0.6.62
+      Use new property :func:`modeler` instead.
+
+
+
+
+   :Returns:
+
+       :obj:`Instance` :obj:`of` :class: `legacy.database.layout.EdbLayout`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: modeler
+
+   
+   Core primitives modeler.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Instance` :obj:`of` :class: `legacy.database.layout.EdbLayout`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layout
+   :type: pyedb.dotnet.database.cell.layout.Layout
+
+
+   
+   Layout object.
+
+
+
+
+
+   :Returns:
+
+       :class:`legacy.database.dotnet.layout.Layout`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: active_layout
+
+   
+   Active layout.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Instance` :obj:`of` :obj:`EDB` :obj:`API` :obj:`Layout` Class.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layout_instance
+
+   
+   Edb Layout Instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pins
+
+   
+   EDB padstack instance of the component.
+
+   .. deprecated:: 0.6.62
+      Use new method :func:`edb.padstacks.pins` instead.
+
+
+
+
+   :Returns:
+
+       :obj:`dic`\[:class:`python:str`, :class:`legacy.database.edb_data.definitions.EDBPadstackInstance`]
+           Dictionary of EDBPadstackInstance Components.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myproject.aedb")
+   >>> pin_net_name = edbapp.pins[424968329].netname
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: setups
+
+   
+   Get the dictionary of all EDB HFSS and SIwave setups.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`legacy.database.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`] :obj:`or`
+           ..
+
+       :obj:`Dict`\[:class:`python:str`, :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveDCSimulationSetup`] :obj:`or`
+           ..
+
+       :obj:`Dict`\[:class:`python:str`, :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hfss_setups
+
+   
+   Active HFSS setup in EDB.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`legacy.database.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: siwave_dc_setups
+
+   
+   Active Siwave DC IR Setups.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveDCSimulationSetup`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: siwave_ac_setups
+
+   
+   Active Siwave SYZ setups.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: definitions
+
+   
+   Definitions class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: workflow
+
+   
+   Workflow class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: standalone
+   :value: True
+
+
+.. py:attribute:: oproject
+   :value: None
+
+
+.. py:attribute:: isaedtowned
+   :value: False
+
+
+.. py:attribute:: isreadonly
+   :value: False
+
+
+.. py:attribute:: cellname
+   :value: None
+
+
+.. py:attribute:: edbpath
+   :value: None
+
+
+.. py:attribute:: log_name
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __enter__()
+
+.. py:method:: __exit__(ex_type, ex_value, ex_traceback)
+
+.. py:method:: __getitem__(variable_name)
+
+   
+   Get or Set a variable to the Edb project. The variable can be project using ``$`` prefix or
+   it can be a design variable, in which case the ``$`` is omitted.
+
+
+   :Parameters:
+
+       **variable_name** : :class:`python:str`
+           ..
+
+
+
+   :Returns:
+
+       **variable object** : :class:`pyedb.dotnet.database.edb_data.variables.Variable`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __setitem__(variable_name, variable_value)
+
+.. py:method:: value(val)
+
+   
+   Convert a value into a pyedb value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: open_edb()
+
+   
+   Open EDB.
+
+
+
+
+
+   :Returns:
+
+       **``True`` when succeed ``False`` if failed** : :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_edb()
+
+   
+   Create EDB.
+
+
+
+
+
+   :Returns:
+
+       **``True`` when succeed ``False`` if failed** : :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: import_layout_pcb(input_file, working_dir='', anstranslator_full_path='', use_ppe=False, control_file=None, map_file=None, tech_file=None, layer_filter=None)
+
+   
+   Import a board file and generate an ``edb.def`` file in the working directory.
+
+   .. deprecated:: 0.42.0
+      Use :func:`import_layout_file` method instead.
+
+   This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
+
+   :Parameters:
+
+       **input_file** : :class:`python:str`
+           Full path to the board file.
+
+       **working_dir** : :class:`python:str`, :obj:`optional`
+           Directory in which to create the ``aedb`` folder. The name given to the AEDB file
+           is the same as the name of the board file.
+
+       **anstranslator_full_path** : :class:`python:str`, :obj:`optional`
+           Full path to the Ansys translator. The default is ``""``.
+
+       **use_ppe** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to use the PPE License. The default is ``False``.
+
+       **control_file** : :class:`python:str`, :obj:`optional`
+           Path to the XML file. The default is ``None``, in which case an attempt is made to find
+           the XML file in the same directory as the board file. To succeed, the XML file and board file
+           must have the same name. Only the extension differs.
+
+       **tech_file** : :class:`python:str`, :obj:`optional`
+           Technology file. The file can be *.ircx, *.vlc.tech, or *.itf
+
+       **map_file** : :class:`python:str`, :obj:`optional`
+           Layer map .map file.
+
+       **layer_filter:str,optional**
+           Layer filter .txt file.
+
+
+
+   :Returns:
+
+       **Full path to the AEDB file** : :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: import_layout_file(input_file, working_dir='', anstranslator_full_path='', use_ppe=False, control_file=None, map_file=None, tech_file=None, layer_filter=None)
+
+   
+   Import a board file and generate an ``edb.def`` file in the working directory.
+
+   This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
+
+   .. warning::
+       Do not execute this function with untrusted function argument, environment
+       variables or pyedb global settings.
+       See the :ref:`security guide<ref_security_consideration>` for details.
+
+   :Parameters:
+
+       **input_file** : :class:`python:str`
+           Full path to the board file.
+
+       **working_dir** : :class:`python:str`, :obj:`optional`
+           Directory in which to create the ``aedb`` folder. The name given to the AEDB file
+           is the same as the name of the board file.
+
+       **anstranslator_full_path** : :class:`python:str`, :obj:`optional`
+           Full path to the Ansys translator. The default is ``""``.
+
+       **use_ppe** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to use the PPE License. The default is ``False``.
+
+       **control_file** : :class:`python:str`, :obj:`optional`
+           Path to the XML file. The default is ``None``, in which case an attempt is made to find
+           the XML file in the same directory as the board file. To succeed, the XML file and board file
+           must have the same name. Only the extension differs.
+
+       **tech_file** : :class:`python:str`, :obj:`optional`
+           Technology file. The file can be *.ircx, *.vlc.tech, or *.itf
+
+       **map_file** : :class:`python:str`, :obj:`optional`
+           Layer map .map file.
+
+       **layer_filter:str,optional**
+           Layer filter .txt file.
+
+
+
+   :Returns:
+
+       **Full path to the AEDB file** : :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: import_vlctech_stackup(vlctech_file, working_dir='', export_xml=None)
+
+   
+   Import a vlc.tech file and generate an ``edb.def`` file in the working directory containing only the stackup.
+
+
+   :Parameters:
+
+       **vlctech_file** : :class:`python:str`
+           Full path to the technology stackup file. It must be vlc.tech.
+
+       **working_dir** : :class:`python:str`, :obj:`optional`
+           Directory in which to create the ``aedb`` folder. The name given to the AEDB file
+           is the same as the name of the board file.
+
+       **export_xml** : :class:`python:str`, :obj:`optional`
+           Export technology file in XML control file format.
+
+
+
+   :Returns:
+
+       **Full path to the AEDB file** : :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_to_ipc2581(edbpath='', anstranslator_full_path='', ipc_path=None) -> str
+
+   
+   Export design to IPC2581 format.
+
+
+   :Parameters:
+
+       **edbpath: str**
+           Full path to aedb folder of the design to convert.
+
+       **anstranslator_full_path** : :class:`python:str`, :obj:`optional`
+           Path to Ansys translator executable.
+
+       **ipc_path** : :class:`python:str`, :obj:`optional`
+           Output XML file path. Default: <edb_path>.xml.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Path to output IPC2581 file, and corresponding log file.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> # Export to IPC2581 format:
+   >>> edb.export_to_ipc2581("output.xml")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: edb_exception(ex_value, tb_data)
+
+   
+   Write the trace stack to AEDT when a Python error occurs.
+
+
+   :Parameters:
+
+       **ex_value**
+           ..
+
+       **tb_data**
+           ..
+
+
+
+   :Returns:
+
+       :data:`python:None`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_connected_objects(layout_object_instance)
+
+   
+   Get connected objects.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: edb_value(value, var_server=None)
+
+   
+   Convert a value to an EDB value. Value can be a string, float or integer. Mainly used in internal calls.
+
+
+   :Parameters:
+
+       **value** : :class:`python:str`, :class:`python:float`, :class:`python:int`
+           ..
+
+
+
+   :Returns:
+
+       :obj:`Instance` :obj:`of` `Edb.Utility.Value`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: point_3d(x, y, z=0.0)
+
+   
+   Compute the Edb 3d Point Data.
+
+
+   :Parameters:
+
+       **x** : :class:`python:float`, :class:`python:int` or :class:`python:str`
+           X value.
+
+       **y** : :class:`python:float`, :class:`python:int` or :class:`python:str`
+           Y value.
+
+       **z** : :class:`python:float`, :class:`python:int` or :class:`python:str`, :obj:`optional`
+           Z value.
+
+
+
+   :Returns:
+
+       ``Geometry.Point3DData``.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: copy_cells(cells_to_copy)
+
+   
+   Copy Cells from other Databases or this Database into this Database.
+
+
+   :Parameters:
+
+       **cells_to_copy** : :class:`python:list`\[:class:`Cell <ansys.edb.layout.Cell>`]
+           Cells to copy.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`Cell <ansys.edb.layout.Cell>`]
+           New Cells created in this Database.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: point_data(x, y=None)
+
+   
+   Compute the Edb Point Data.
+
+
+   :Parameters:
+
+       **x** : :class:`python:float`, :class:`python:int` or :class:`python:str`
+           X value.
+
+       **y** : :class:`python:float`, :class:`python:int` or :class:`python:str`, :obj:`optional`
+           Y value.
+
+
+
+   :Returns:
+
+       ``Geometry.PointData``.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: close_edb()
+
+   
+   Close EDB and cleanup variables.
+
+   . deprecated:: pyedb 0.47.0
+   Use: func:`close` instead.
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: close(**kwargs)
+
+   
+   Close EDB and cleanup variables.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: save_edb()
+
+   
+   Save the EDB file.
+
+   . deprecated:: pyedb 0.47.0
+   Use: func:`save` instead.
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: save()
+
+   
+   Save the EDB file.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: save_edb_as(path)
+
+   
+   Save the EDB file as another file.
+
+   . deprecated:: pyedb 0.47.0
+   Use: func:`save_as` instead.
+
+   :Parameters:
+
+       **path** : :class:`python:str`
+           Name of the new file to save to.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: save_as(path)
+
+   
+   Save the EDB file as another file.
+
+
+   :Parameters:
+
+       **path** : :class:`python:str`
+           Name of the new file to save to.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: execute(func)
+
+   
+   Execute a function.
+
+
+   :Parameters:
+
+       **func** : :class:`python:str`
+           Function to execute.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: import_cadence_file(inputBrd, WorkDir=None, anstranslator_full_path='', use_ppe=False)
+
+   
+   Import a board file and generate an ``edb.def`` file in the working directory.
+
+
+   :Parameters:
+
+       **inputBrd** : :class:`python:str`
+           Full path to the board file.
+
+       **WorkDir** : :class:`python:str`, :obj:`optional`
+           Directory in which to create the ``aedb`` folder. The default value is ``None``,
+           in which case the AEDB file is given the same name as the board file. Only
+           the extension differs.
+
+       **anstranslator_full_path** : :class:`python:str`, :obj:`optional`
+           Full path to the Ansys translator.
+
+       **use_ppe** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to use the PPE License. The default is ``False``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: cutout(signal_nets=None, reference_nets=None, extent_type='ConvexHull', expansion_size=0.002, use_round_corner=False, output_aedb_path=None, open_cutout_at_end=True, use_pyaedt_cutout=True, number_of_threads=1, use_pyaedt_extent_computing=True, extent_defeature=0, remove_single_pin_components=False, custom_extent=None, custom_extent_units='mm', include_partial_instances=False, keep_voids=True, check_terminals=False, include_pingroups=False, expansion_factor=0, maximum_iterations=10, preserve_components_with_model=False, simple_pad_check=True, keep_lines_as_path=False, include_voids_in_extents=False)
+
+   
+   Create a cutout using an approach entirely based on PyAEDT.
+   This method replaces all legacy cutout methods in PyAEDT.
+   It does in sequence:
+   - delete all nets not in list,
+   - create a extent of the nets,
+   - check and delete all vias not in the extent,
+   - check and delete all the primitives not in extent,
+   - check and intersect all the primitives that intersect the extent.
+
+
+   :Parameters:
+
+       **signal_nets** : :class:`python:list`
+           List of signal strings.
+
+       **reference_nets** : :class:`python:list`, :obj:`optional`
+           List of references to add. The default is ``["GND"]``.
+
+       **extent_type** : :class:`python:str`, :obj:`optional`
+           Type of the extension. Options are ``"Conforming"``, ``"ConvexHull"``, and
+           ``"Bounding"``. The default is ``"Conforming"``.
+
+       **expansion_size** : :class:`python:float`, :class:`python:str`, :obj:`optional`
+           Expansion size ratio in meters. The default is ``0.002``.
+
+       **use_round_corner** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to use round corners. The default is ``False``.
+
+       **output_aedb_path** : :class:`python:str`, :obj:`optional`
+           Full path and name for the new AEDB file. If None, then current aedb will be cutout.
+
+       **open_cutout_at_end** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to open the cutout at the end. The default is ``True``.
+
+       **use_pyaedt_cutout** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to use new PyAEDT cutout method or EDB API method.
+           New method is faster than native API method since it benefits of multithread.
+
+       **number_of_threads** : :class:`python:int`, :obj:`optional`
+           Number of thread to use. Default is 4. Valid only if ``use_pyaedt_cutout`` is set to ``True``.
+
+       **use_pyaedt_extent_computing** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to use legacy extent computing (experimental) or EDB API.
+
+       **extent_defeature** : :class:`python:float`, :obj:`optional`
+           Defeature the cutout before applying it to produce simpler geometry for mesh (Experimental).
+           It applies only to Conforming bounding box. Default value is ``0`` which disable it.
+
+       **remove_single_pin_components** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Remove all Single Pin RLC after the cutout is completed. Default is `False`.
+
+       **custom_extent** : :class:`python:list`
+           Points list defining the cutout shape. This setting will override `extent_type` field.
+
+       **custom_extent_units** : :class:`python:str`
+           Units of the point list. The default is ``"mm"``. Valid only if `custom_extend` is provided.
+
+       **include_partial_instances** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to include padstack instances that have bounding boxes intersecting with point list polygons.
+           This operation may slow down the cutout export.Valid only if `custom_extend` and
+           `use_pyaedt_cutout` is provided.
+
+       **keep_voids** : :ref:`bool <python:bltin-boolean-values>`
+           Boolean used for keep or not the voids intersecting the polygon used for clipping the layout.
+           Default value is ``True``, ``False`` will remove the voids.Valid only if `custom_extend` is provided.
+
+       **check_terminals** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to check for all reference terminals and increase extent to include them into the cutout.
+           This applies to components which have a model (spice, touchstone or netlist) associated.
+
+       **include_pingroups** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to check for all pingroups terminals and increase extent to include them into the cutout.
+           It requires ``check_terminals``.
+
+       **expansion_factor** : :class:`python:int`, :obj:`optional`
+           The method computes a float representing the largest number between
+           the dielectric thickness or trace width multiplied by the expansion_factor factor.
+           The trace width search is limited to nets with ports attached. Works only if `use_pyaedt_cutout`.
+           Default is `0` to disable the search.
+
+       **maximum_iterations** : :class:`python:int`, :obj:`optional`
+           Maximum number of iterations before stopping a search for a cutout with an error.
+           Default is `10`.
+
+       **preserve_components_with_model** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to preserve all pins of components that have associated models (Spice or NPort).
+           This parameter is applicable only for a PyAEDT cutout (except point list).
+
+       **simple_pad_check** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to use the center of the pad to find the intersection with extent or use the bounding box.
+           Second method is much slower and requires to disable multithread on padstack removal.
+           Default is `True`.
+
+       **keep_lines_as_path** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to keep the lines as Path after they are cutout or convert them to PolygonData.
+           This feature works only in Electronics Desktop (3D Layout).
+           If the flag is set to ``True`` it can cause issues in SiWave once the Edb is imported.
+           Default is ``False`` to generate PolygonData of cut lines.
+
+       **include_voids_in_extents** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to compute and include voids in pyaedt extent before the cutout. Cutout time can be affected.
+           It works only with Conforming cutout.
+           Default is ``False`` to generate extent without voids.
+
+
+
+   :Returns:
+
+       :obj:`List`
+           List of coordinate points defining the extent used for clipping the design. If it failed return an empty
+           list.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(r"C:\test.aedb", version="2022.2")
+   >>> edb.logger.info_timer("Edb Opening")
+   >>> edb.logger.reset_timer()
+   >>> start = time.time()
+   >>> signal_list = []
+   >>> for net in edb.nets.netlist:
+   >>>      if "3V3" in net:
+   >>>           signal_list.append(net)
+   >>> power_list = ["PGND"]
+   >>> edb.cutout(signal_nets=signal_list, reference_nets=power_list, extent_type="Conforming")
+   >>> end_time = str((time.time() - start) / 60)
+   >>> edb.logger.info("Total legacy cutout time in min %s", end_time)
+   >>> edb.nets.plot(signal_list, None, color_by_net=True)
+   >>> edb.nets.plot(power_list, None, color_by_net=True)
+   >>> edb.save()
+   >>> edb.close()
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_cutout(signal_list=[], reference_list=['GND'], extent_type='Conforming', expansion_size=0.002, use_round_corner=False, output_aedb_path=None, open_cutout_at_end=True, use_pyaedt_extent_computing=False)
+
+   
+   Create a cutout using an approach entirely based on legacy.
+   It does in sequence:
+   - delete all nets not in list,
+   - create an extent of the nets,
+   - check and delete all vias not in the extent,
+   - check and delete all the primitives not in extent,
+   - check and intersect all the primitives that intersect the extent.
+
+   .. deprecated:: 0.6.58
+      Use new method :func:`cutout` instead.
+
+   :Parameters:
+
+       **signal_list** : :class:`python:list`
+           List of signal strings.
+
+       **reference_list** : :class:`python:list`, :obj:`optional`
+           List of references to add. The default is ``["GND"]``.
+
+       **extent_type** : :class:`python:str`, :obj:`optional`
+           Type of the extension. Options are ``"Conforming"``, ``"ConvexHull"``, and
+           ``"Bounding"``. The default is ``"Conforming"``.
+
+       **expansion_size** : :class:`python:float`, :class:`python:str`, :obj:`optional`
+           Expansion size ratio in meters. The default is ``0.002``.
+
+       **use_round_corner** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to use round corners. The default is ``False``.
+
+       **output_aedb_path** : :class:`python:str`, :obj:`optional`
+           Full path and name for the new AEDB file.
+
+       **open_cutout_at_end** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to open the cutout at the end. The default
+           is ``True``.
+
+       **use_pyaedt_extent_computing** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to use legacy extent computing (experimental).
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_cutout_multithread(signal_list=[], reference_list=['GND'], extent_type='Conforming', expansion_size=0.002, use_round_corner=False, number_of_threads=4, custom_extent=None, output_aedb_path=None, remove_single_pin_components=False, use_pyaedt_extent_computing=False, extent_defeature=0, keep_lines_as_path=False, return_extent=False)
+
+   
+   Create a cutout using an approach entirely based on legacy.
+   It does in sequence:
+   - delete all nets not in list,
+   - create a extent of the nets,
+   - check and delete all vias not in the extent,
+   - check and delete all the primitives not in extent,
+   - check and intersect all the primitives that intersect the extent.
+
+   .. deprecated:: 0.6.58
+      Use new method :func:`cutout` instead.
+
+   :Parameters:
+
+       **signal_list** : :class:`python:list`
+           List of signal strings.
+
+       **reference_list** : :class:`python:list`, :obj:`optional`
+           List of references to add. The default is ``["GND"]``.
+
+       **extent_type** : :class:`python:str`, :obj:`optional`
+           Type of the extension. Options are ``"Conforming"``, ``"ConvexHull"``, and
+           ``"Bounding"``. The default is ``"Conforming"``.
+
+       **expansion_size** : :class:`python:float`, :class:`python:str`, :obj:`optional`
+           Expansion size ratio in meters. The default is ``0.002``.
+
+       **use_round_corner** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to use round corners. The default is ``False``.
+
+       **number_of_threads** : :class:`python:int`, :obj:`optional`
+           Number of thread to use. Default is 4
+
+       **custom_extent** : :class:`python:list`, :obj:`optional`
+           Custom extent to use for the cutout. It has to be a list of points [[x1,y1],[x2,y2]....] or
+           Edb PolygonData object. In this case, both signal_list and reference_list will be cut.
+
+       **output_aedb_path** : :class:`python:str`, :obj:`optional`
+           Full path and name for the new AEDB file. If None, then current aedb will be cutout.
+
+       **remove_single_pin_components** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Remove all Single Pin RLC after the cutout is completed. Default is `False`.
+
+       **use_pyaedt_extent_computing** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to use legacy extent computing (experimental).
+
+       **extent_defeature** : :class:`python:float`, :obj:`optional`
+           Defeature the cutout before applying it to produce simpler geometry for mesh (Experimental).
+           It applies only to Conforming bounding box. Default value is ``0`` which disable it.
+
+       **keep_lines_as_path** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to keep the lines as Path after they are cutout or convert them to PolygonData.
+           This feature works only in Electronics Desktop (3D Layout).
+           If the flag is set to True it can cause issues in SiWave once the Edb is imported.
+           Default is ``False`` to generate PolygonData of cut lines.
+
+       **return_extent** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           When ``True`` extent used for clipping is returned, if ``False`` only the boolean indicating whether
+           clipping succeed or not is returned. Not applicable with custom extent usage.
+           Default is ``False``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(r"C:\test.aedb", version="2022.2")
+   >>> edb.logger.info_timer("Edb Opening")
+   >>> edb.logger.reset_timer()
+   >>> start = time.time()
+   >>> signal_list = []
+   >>> for net in edb.nets.nets.keys():
+   >>>      if "3V3" in net:
+   >>>           signal_list.append(net)
+   >>> power_list = ["PGND"]
+   >>> edb.create_cutout_multithread(signal_list=signal_list, reference_list=power_list, extent_type="Conforming")
+   >>> end_time = str((time.time() - start) / 60)
+   >>> edb.logger.info("Total legacy cutout time in min %s", end_time)
+   >>> edb.nets.plot(signal_list, None, color_by_net=True)
+   >>> edb.nets.plot(power_list, None, color_by_net=True)
+   >>> edb.save_edb()
+   >>> edb.close_edb()
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_conformal_polygon_from_netlist(netlist=None)
+
+   
+   Return an EDB conformal polygon based on a netlist.
+
+
+   :Parameters:
+
+       **netlist** : :obj:`List` :obj:`of` :obj:`net` names.
+           list[str]
+
+
+
+   :Returns:
+
+       :class:`Edb.Cell.Primitive.Polygon`
+           Edb polygon object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: number_with_units(value, units=None)
+
+   
+   Convert a number to a string with units. If value is a string, it's returned as is.
+
+
+   :Parameters:
+
+       **value** : :class:`python:float`, :class:`python:int`, :class:`python:str`
+           Input number or string.
+
+       **units** : :obj:`optional`
+           Units for formatting. The default is ``None``, which uses ``"meter"``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           String concatenating the value and unit.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_cutout_on_point_list(point_list, units='mm', output_aedb_path=None, open_cutout_at_end=True, nets_to_include=None, include_partial_instances=False, keep_voids=True)
+
+   
+   Create a cutout on a specified shape and save it to a new AEDB file.
+
+   .. deprecated:: 0.6.58
+      Use new method :func:`cutout` instead.
+
+   :Parameters:
+
+       **point_list** : :class:`python:list`
+           Points list defining the cutout shape.
+
+       **units** : :class:`python:str`
+           Units of the point list. The default is ``"mm"``.
+
+       **output_aedb_path** : :class:`python:str`, :obj:`optional`
+           Full path and name for the new AEDB file.
+           The aedb folder shall not exist otherwise the method will return ``False``.
+
+       **open_cutout_at_end** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to open the cutout at the end. The default is ``True``.
+
+       **nets_to_include** : :class:`python:list`, :obj:`optional`
+           List of nets to include in the cutout. The default is ``None``, in
+           which case all nets are included.
+
+       **include_partial_instances** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to include padstack instances that have bounding boxes intersecting with point list polygons.
+           This operation may slow down the cutout export.
+
+       **keep_voids** : :ref:`bool <python:bltin-boolean-values>`
+           Boolean used for keep or not the voids intersecting the polygon used for clipping the layout.
+           Default value is ``True``, ``False`` will remove the voids.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: write_export3d_option_config_file(path_to_output, config_dictionaries=None)
+
+   
+   Write the options for a 3D export to a configuration file.
+
+
+   :Parameters:
+
+       **path_to_output** : :class:`python:str`
+           Full path to the configuration file to save 3D export options to.
+
+       **config_dictionaries** : :class:`python:dict`, :obj:`optional`
+           Configuration dictionaries. The default is ``None``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_hfss(path_to_output, net_list=None, num_cores=None, aedt_file_name=None, hidden=False)
+
+   
+   Export EDB to HFSS.
+
+
+   :Parameters:
+
+       **path_to_output** : :class:`python:str`
+           Full path and name for saving the AEDT file.
+
+       **net_list** : :class:`python:list`, :obj:`optional`
+           List of nets to export if only certain ones are to be exported.
+           The default is ``None``, in which case all nets are eported.
+
+       **num_cores** : :class:`python:int`, :obj:`optional`
+           Number of cores to use for the export. The default is ``None``.
+
+       **aedt_file_name** : :class:`python:str`, :obj:`optional`
+           Name of the AEDT output file without the ``.aedt`` extension. The default is ``None``,
+           in which case the default name is used.
+
+       **hidden** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Open Siwave in embedding mode. User will only see Siwave Icon but UI will be hidden.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Full path to the AEDT file.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(edbpath="C:\temp\myproject.aedb", version="2023.2")
+
+   >>> options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
+   >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
+   >>> edb.export_hfss(r"C:\temp")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_q3d(path_to_output, net_list=None, num_cores=None, aedt_file_name=None, hidden=False)
+
+   
+   Export EDB to Q3D.
+
+
+   :Parameters:
+
+       **path_to_output** : :class:`python:str`
+           Full path and name for saving the AEDT file.
+
+       **net_list** : :class:`python:list`, :obj:`optional`
+           List of nets to export only if certain ones are to be exported.
+           The default is ``None``, in which case all nets are eported.
+
+       **num_cores** : :class:`python:int`, :obj:`optional`
+           Number of cores to use for the export. The default is ``None``.
+
+       **aedt_file_name** : :class:`python:str`, :obj:`optional`
+           Name of the AEDT output file without the ``.aedt`` extension. The default is ``None``,
+           in which case the default name is used.
+
+       **hidden** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Open Siwave in embedding mode. User will only see Siwave Icon but UI will be hidden.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Full path to the AEDT file.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(edbpath="C:\temp\myproject.aedb", version="2021.2")
+   >>> options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
+   >>> edb.write_export3d_option_config_file("C:\temp", options_config)
+   >>> edb.export_q3d("C:\temp")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_maxwell(path_to_output, net_list=None, num_cores=None, aedt_file_name=None, hidden=False)
+
+   
+   Export EDB to Maxwell 3D.
+
+
+   :Parameters:
+
+       **path_to_output** : :class:`python:str`
+           Full path and name for saving the AEDT file.
+
+       **net_list** : :class:`python:list`, :obj:`optional`
+           List of nets to export only if certain ones are to be
+           exported. The default is ``None``, in which case all nets are exported.
+
+       **num_cores** : :class:`python:int`, :obj:`optional`
+           Number of cores to use for the export. The default is ``None.``
+
+       **aedt_file_name** : :class:`python:str`, :obj:`optional`
+           Name of the AEDT output file without the ``.aedt`` extension. The default is ``None``,
+           in which case the default name is used.
+
+       **hidden** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Open Siwave in embedding mode. User will only see Siwave Icon but UI will be hidden.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Full path to the AEDT file.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+
+   >>> edb = Edb(edbpath="C:\temp\myproject.aedb", version="2021.2")
+
+   >>> options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
+   >>> edb.write_export3d_option_config_file("C:\temp", options_config)
+   >>> edb.export_maxwell("C:\temp")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: solve_siwave()
+
+   
+   Close EDB and solve it with Siwave.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Siwave project path.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_siwave_dc_results(siwave_project, solution_name, output_folder=None, html_report=True, vias=True, voltage_probes=True, current_sources=True, voltage_sources=True, power_tree=True, loop_res=True)
+
+   
+   Close EDB and solve it with Siwave.
+
+
+   :Parameters:
+
+       **siwave_project** : :class:`python:str`
+           Siwave full project name.
+
+       **solution_name** : :class:`python:str`
+           Siwave DC Analysis name.
+
+       **output_folder** : :class:`python:str`, :obj:`optional`
+           Ouptu folder where files will be downloaded.
+
+       **html_report** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if generate or not html report. Default is `True`.
+
+       **vias** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if generate or not vias report. Default is `True`.
+
+       **voltage_probes** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if generate or not voltage probe report. Default is `True`.
+
+       **current_sources** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if generate or not current source report. Default is `True`.
+
+       **voltage_sources** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if generate or not voltage source report. Default is `True`.
+
+       **power_tree** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if generate or not power tree image. Default is `True`.
+
+       **loop_res** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if generate or not loop resistance report. Default is `True`.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of files generated.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: variable_exists(variable_name)
+
+   
+   Check if a variable exists or not.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:tuple` :obj:`of` :ref:`bool <python:bltin-boolean-values>` :obj:`and` :obj:`VariableServer`
+           It returns a booleand to check if the variable exists and the variable
+           server that should contain the variable.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_all_variable_names()
+
+   
+   Method added for compatibility with grpc.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[:obj:`Str`]
+           List of variables name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_variable(variable_name)
+
+   
+   Return Variable Value if variable exists.
+
+
+   :Parameters:
+
+       **variable_name**
+           ..
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.edbvalue.EdbValue`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_project_variable(variable_name, variable_value, description='')
+
+   
+   Add a variable to edb database (project). The variable will have the prefix `$`.
+
+   ..note::
+       User can use also the setitem to create or assign a variable. See example below.
+
+   :Parameters:
+
+       **variable_name** : :class:`python:str`
+           Name of the variable. Name can be provided without ``$`` prefix.
+
+       **variable_value** : :class:`python:str`, :class:`python:float`
+           Value of the variable with units.
+
+       **description** : :class:`python:str`, :obj:`optional`
+           Description of the variable.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           Tuple containing the ``AddVariable`` result and variable server.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb_app = Edb()
+   >>> boolean_1, ant_length = edb_app.add_project_variable("my_local_variable", "1cm")
+   >>> print(edb_app["$my_local_variable"])  # using getitem
+   >>> edb_app["$my_local_variable"] = "1cm"  # using setitem
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_design_variable(variable_name, variable_value, is_parameter=False, description='')
+
+   
+   Add a variable to edb. The variable can be a design one or a project variable (using ``$`` prefix).
+
+   ..note::
+       User can use also the setitem to create or assign a variable. See example below.
+
+   :Parameters:
+
+       **variable_name** : :class:`python:str`
+           Name of the variable. To added the variable as a project variable, the name
+           must begin with ``$``.
+
+       **variable_value** : :class:`python:str`, :class:`python:float`
+           Value of the variable with units.
+
+       **is_parameter** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to add the variable as a local variable. The default is ``False``.
+           When ``True``, the variable is added as a parameter default.
+
+       **description** : :class:`python:str`, :obj:`optional`
+           Description of the variable.
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+       **tuple**
+           Tuple containing the ``AddVariable`` result and variable server.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb_app = Edb()
+   >>> boolean_1, ant_length = edb_app.add_design_variable("my_local_variable", "1cm")
+   >>> print(edb_app["my_local_variable"])  # using getitem
+   >>> edb_app["my_local_variable"] = "1cm"  # using setitem
+   >>> boolean_2, para_length = edb_app.change_design_variable_value("my_parameter", "1m", is_parameter=True
+   >>> boolean_3, project_length = edb_app.change_design_variable_value("$my_project_variable", "1m")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: change_design_variable_value(variable_name, variable_value)
+
+   
+   Change a variable value.
+
+   ..note::
+       User can use also the getitem to read the variable value. See example below.
+
+   :Parameters:
+
+       **variable_name** : :class:`python:str`
+           Name of the variable.
+
+       **variable_value** : :class:`python:str`, :class:`python:float`
+           Value of the variable with units.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           Tuple containing the ``SetVariableValue`` result and variable server.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb_app = Edb()
+   >>> boolean, ant_length = edb_app.add_design_variable("ant_length", "1cm")
+   >>> boolean, ant_length = edb_app.change_design_variable_value("ant_length", "1m")
+   >>> print(edb_app["ant_length"])  # using getitem
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_bounding_box()
+
+   
+   Get the layout bounding box.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`python:list` :obj:`of` :obj:`double`
+           Bounding box as a [lower-left X, lower-left Y], [upper-right X, upper-right Y]) pair in meters.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: build_simulation_project(simulation_setup: pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfiguration) -> bool
+
+   
+   Build a ready-to-solve simulation project.
+
+
+   :Parameters:
+
+       **simulation_setup** : :class:`pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfiguration`.
+           SimulationConfiguration object that can be instantiated or directly loaded with a
+           configuration file.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, False when ``Failed``.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> from pyedb.dotnet.database.edb_data.simulation_configuration import SimulationConfiguration
+   >>> config_file = path_configuration_file
+   >>> source_file = path_to_edb_folder
+   >>> edb = Edb(source_file)
+   >>> sim_setup = SimulationConfiguration(config_file)
+   >>> edb.build_simulation_project(sim_setup)
+   >>> edb.save_edb()
+   >>> edb.close_edb()
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_statistics(compute_area=False)
+
+   
+   Get the EDBStatistics object.
+
+
+
+
+
+   :Returns:
+
+       :obj:`EDBStatistics` :obj:`object` :obj:`from` :obj:`the` :obj:`loaded` layout.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: are_port_reference_terminals_connected(common_reference=None)
+
+   
+   Check if all terminal references in design are connected.
+   If the reference nets are different, there is no hope for the terminal references to be connected.
+   After we have identified a common reference net we need to loop the terminals again to get
+   the correct reference terminals that uses that net.
+
+
+   :Parameters:
+
+       **common_reference** : :class:`python:str`, :obj:`optional`
+           Common Reference name. If ``None`` it will be searched in ports terminal.
+           If a string is passed then all excitations must have such reference assigned.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Either if the ports are connected to reference_name or not.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>>edb = Edb()
+   >>> edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
+   >>> edb.hfss.create_edge_port_horizontal(
+   >>> ... prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
+   >>> ... )
+   >>> edb.hfss.create_wave_port(traces[0].id, trace_paths[0][0], "wave_port")
+   >>> edb.cutout(["Net1"])
+   >>> assert edb.are_port_reference_terminals_connected()
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: new_simulation_configuration(filename: str = None) -> pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfiguration
+
+   
+   New SimulationConfiguration Object.
+
+
+   :Parameters:
+
+       **filename** : :class:`python:str`, :obj:`optional`
+           Input config file.
+
+
+
+   :Returns:
+
+       :class:`legacy.database.edb_data.simulation_configuration.SimulationConfiguration`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_hfss_setup(name=None)
+
+   
+   Create an HFSS simulation setup from a template.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name.
+
+
+
+   :Returns:
+
+       :class:`legacy.database.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb()
+   >>> setup1 = edbapp.create_hfss_setup("setup1")
+   >>> setup1.hfss_port_settings.max_delta_z0 = 0.5
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_raptorx_setup(name=None)
+
+   
+   Create an RaptorX simulation setup from a template.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name.
+
+
+
+   :Returns:
+
+       :class:`legacy.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_hfsspi_setup(name=None)
+
+   
+   Create an HFSS PI simulation setup from a template.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name.
+
+
+
+   :Returns:
+
+       :class:`legacy.database.edb_data.hfss_pi_simulation_setup_data.HFSSPISimulationSetup when succeeded, ``False``
+           ..
+
+       :obj:`when` failed.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_siwave_syz_setup(name=None, **kwargs)
+
+   
+   Create a setup from a template.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb()
+   >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
+   >>> setup1.add_frequency_sweep(
+   ...     frequency_sweep=[
+   ...         ["linear count", "0", "1kHz", 1],
+   ...         ["log scale", "1kHz", "0.1GHz", 10],
+   ...         ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+   ...     ]
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_siwave_dc_setup(name=None, **kwargs)
+
+   
+   Create a setup from a template.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name.
+
+
+
+   :Returns:
+
+       :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb()
+   >>> setup1 = edbapp.create_siwave_dc_setup("setup1")
+   >>> setup1.mesh_bondwires = True
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: calculate_initial_extent(expansion_factor)
+
+   
+   Compute a float representing the larger number between the dielectric thickness or trace width
+   multiplied by the nW factor. The trace width search is limited to nets with ports attached.
+
+
+   :Parameters:
+
+       **expansion_factor** : :class:`python:float`
+           Value for the width multiplier (nW factor).
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: copy_zones(working_directory=None)
+
+   
+   Copy multizone EDB project to one new edb per zone.
+
+
+   :Parameters:
+
+       **working_directory** : :class:`python:str`
+           Directory path where all EDB project are copied, if empty will use the current EDB project.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`](:class:`python:int`, :obj:`EDB` :obj:`PolygonData`)
+           ..
+
+       :obj:`Return` :obj:`a` :obj:`dictionary` :obj:`with` :obj:`edb` :obj:`path` :obj:`as` :obj:`key` :obj:`and` :class:`python:tuple` :obj:`Zone` :obj:`Id` :obj:`as` :obj:`first` :obj:`item` :obj:`and` :obj:`EDB` :obj:`polygon` :obj:`Data` :obj:`defining`
+           ..
+
+       :obj:`the` :obj:`region` :obj:`as` :obj:`second` item.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: cutout_multizone_layout(zone_dict, common_reference_net=None)
+
+   
+   Create a multizone project cutout.
+
+
+   :Parameters:
+
+       **zone_dict** : :class:`python:dict`\[:class:`python:str`](:obj:`EDB` :obj:`PolygonData`)
+           Dictionary with EDB path as key and EDB PolygonData as value defining the zone region.
+           This dictionary is returned from the command copy_zones():
+           >>> edb = Edb(edb_file)
+           >>> zone_dict = edb.copy_zones("C:/Temp/test")
+
+       **common_reference_net** : :class:`python:str`
+           the common reference net name. This net name must be provided to provide a valid project.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`][:class:`python:str`] , :class:`python:list` :obj:`of` :class:`python:str`
+           ..
+
+       :obj:`first` :obj:`dictionary` :obj:`defined_ports` :obj:`with` :obj:`edb` :obj:`name` :obj:`as` :obj:`key` :obj:`and` :obj:`existing` :obj:`port` :obj:`name` :class:`python:list` :obj:`as` value. :obj:`Those` :obj:`ports` :obj:`are` :obj:`the`
+           ..
+
+       :obj:`ones` :obj:`defined` :obj:`before` :obj:`processing` :obj:`the` :obj:`multizone` clipping.
+           ..
+
+       :obj:`second` :obj:`is` :obj:`the` :class:`python:list` :obj:`of` :obj:`connected` port.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_port(terminal, ref_terminal=None, is_circuit_port=False, name=None)
+
+   
+   Create a port.
+
+
+   :Parameters:
+
+       **terminal** : class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
+           class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,
+           class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,
+           class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`,
+           Positive terminal of the port.
+
+       **ref_terminal** : class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
+           class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,
+           class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,
+           class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`,
+           optional
+           Negative terminal of the port.
+
+       **is_circuit_port** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether it is a circuit port. The default is ``False``.
+
+       **name: str, optional**
+           Name of the created port. The default is None, a random name is generated.
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+       **list: [:class:`pyedb.dotnet.database.edb_data.ports.GapPort`,**
+           :class:`pyedb.dotnet.database.edb_data.ports.WavePort`,].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_probe(terminal, ref_terminal)
+
+   
+   Create a voltage probe.
+
+
+   :Parameters:
+
+       **terminal** : :class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
+           :class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,
+           :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,
+           :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`,
+           Positive terminal of the port.
+
+       **ref_terminal** : :class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
+           :class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,
+           :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,
+           :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`,
+           Negative terminal of the probe.
+
+
+
+   :Returns:
+
+       :obj:`pyedb.dotnet.database.edb_data.terminals.Terminal`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_source(terminal, ref_terminal)
+
+   
+   Create a voltage source.
+
+
+   :Parameters:
+
+       **terminal** : :class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,             :class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,             :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,             :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`
+           Positive terminal of the port.
+
+       **ref_terminal** : class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,             :class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,             :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,             :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`
+           Negative terminal of the source.
+
+
+
+   :Returns:
+
+       class:`legacy.database.edb_data.ports.ExcitationSources`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_current_source(terminal, ref_terminal)
+
+   
+   Create a current source.
+
+
+   :Parameters:
+
+       **terminal** : :class:`legacy.database.edb_data.terminals.EdgeTerminal`,
+           :class:`legacy.database.edb_data.terminals.PadstackInstanceTerminal`,
+           :class:`legacy.database.edb_data.terminals.PointTerminal`,
+           :class:`legacy.database.edb_data.terminals.PinGroupTerminal`,
+           Positive terminal of the port.
+
+       **ref_terminal** : class:`legacy.database.edb_data.terminals.EdgeTerminal`,
+           :class:`legacy.database.edb_data.terminals.PadstackInstanceTerminal`,
+           :class:`legacy.database.edb_data.terminals.PointTerminal`,
+           :class:`legacy.database.edb_data.terminals.PinGroupTerminal`,
+           Negative terminal of the source.
+
+
+
+   :Returns:
+
+       :class:`legacy.edb_core.edb_data.ports.ExcitationSources`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_point_terminal(name, net_name, location, layer)
+
+   
+   Place a voltage probe between two points.
+
+
+   :Parameters:
+
+       **name** : str,
+           Name of the terminal.
+
+       **net_name** : :class:`python:str`
+           Name of the net.
+
+       **location** : :class:`python:list`
+           Location of the terminal.
+
+       **layer** : str,
+           Layer of the terminal.
+
+
+
+   :Returns:
+
+       :class:`legacy.edb_core.edb_data.terminals.PointTerminal`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: auto_parametrize_design(layers=True, materials=True, via_holes=True, pads=True, antipads=True, traces=True, layer_filter=None, material_filter=None, padstack_definition_filter=None, trace_net_filter=None, use_single_variable_for_padstack_definitions=True, use_relative_variables=True, output_aedb_path=None, open_aedb_at_end=True, expand_polygons_size=0, expand_voids_size=0, via_offset=True)
+
+   
+   Assign automatically design and project variables with current values.
+
+
+   :Parameters:
+
+       **layers** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Enable layer thickness parametrization. Default value is ``True``.
+
+       **materials** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Enable material parametrization. Default value is ``True``.
+
+       **via_holes** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Enable via diameter parametrization. Default value is ``True``.
+
+       **pads** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Enable pads size parametrization. Default value is ``True``.
+
+       **antipads** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Enable anti pads size parametrization. Default value is ``True``.
+
+       **traces** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Enable trace width parametrization. Default value is ``True``.
+
+       **layer_filter** : :class:`python:str`, :obj:`List`\(:class:`python:str`), :obj:`optional`
+           Enable layer filter. Default value is ``None``, all layers are parametrized.
+
+       **material_filter** : :class:`python:str`, :obj:`List`\(:class:`python:str`), :obj:`optional`
+           Enable material filter. Default value is ``None``, all material are parametrized.
+
+       **padstack_definition_filter** : :class:`python:str`, :obj:`List`\(:class:`python:str`), :obj:`optional`
+           Enable padstack definition filter. Default value is ``None``, all padsatcks are parametrized.
+
+       **trace_net_filter** : :class:`python:str`, :obj:`List`\(:class:`python:str`), :obj:`optional`
+           Enable nets filter for trace width parametrization. Default value is ``None``, all layers are parametrized.
+
+       **use_single_variable_for_padstack_definitions** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to use a single design variable for each padstack definition or a variable per pad layer.
+           Default value is ``True``.
+
+       **use_relative_variables** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether if use an absolute variable for each trace, padstacks and layers or a delta variable instead.
+           Default value is ``True``.
+
+       **output_aedb_path** : :class:`python:str`, :obj:`optional`
+           Full path and name for the new AEDB file. If None, then current aedb will be cutout.
+
+       **open_aedb_at_end** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to open the cutout at the end. The default is ``True``.
+
+       **expand_polygons_size** : :class:`python:float`, :obj:`optional`
+           Expansion size on polygons. Polygons will be expanded in all directions. The default is ``0``.
+
+       **expand_voids_size** : :class:`python:float`, :obj:`optional`
+           Expansion size on polygon voids. Polygons voids will be expanded in all directions. The default is ``0``.
+
+       **via_offset** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether if offset the via position or not. The default is ``True``.
+
+
+
+   :Returns:
+
+       :obj:`List`\(:class:`python:str`)
+           List of all parameters name created.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_model_for_arbitrary_wave_ports(temp_directory, mounting_side='top', signal_nets=None, terminal_diameter=None, output_edb=None, launching_box_thickness='100um')
+
+   
+   Generate EDB design to be consumed by PyAEDT to generate arbitrary wave ports shapes.
+   This model has to be considered as merged onto another one. The current opened design must have voids
+   surrounding the pad-stacks where wave ports terminal will be created. THe open design won't be edited, only
+   primitives like voids and pads-stack definition included in the voids are collected to generate a new design.
+
+
+   :Parameters:
+
+       **temp_directory** : :class:`python:str`
+           Temporary directory used during the method execution.
+
+       **mounting_side** : :class:`python:str`
+           Gives the orientation to be considered for the current design. 2 options are available ``"top"`` and
+           ``"bottom". Default value is ``"top"``. If ``"top"`` is selected the method will voids at the top signal
+           layer, and the bottom layer if ``"bottom"`` is used.
+
+       **signal_nets** : :obj:`List`\[:class:`python:str`], :obj:`optional`
+           Provides the nets to be included for the model creation. Default value is ``None``. If None is provided,
+           all nets will be included.
+
+       **terminal_diameter** : :class:`python:float`, :class:`python:str`, :obj:`optional`
+           When ``None``, the terminal diameter is evaluated at each pads-tack instance found inside the voids. The top
+           or bottom layer pad diameter will be taken, depending on ``mounting_side`` selected. If value is provided,
+           it will overwrite the evaluated diameter.
+
+       **output_edb** : :class:`python:str`, :obj:`optional`
+           The output EDB absolute. If ``None`` the edb is created in the ``temp_directory`` as default name
+           `"waveport_model.aedb"``
+
+       **launching_box_thickness** : :class:`python:float`, :class:`python:str`, :obj:`optional`
+           Launching box thickness  used for wave ports. Default value is ``"100um"``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when succeeded, ``False`` if failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_gds_comp_xml(comps_to_export, gds_comps_unit='mm', control_path=None)
+
+   
+   Exports an XML file with selected components information for use in a GDS import.
+
+
+   :Parameters:
+
+       **comps_to_export** : :class:`python:list`
+           List of components whose information will be exported to xml file.
+
+       **gds_comps_unit** : :class:`python:str`, :obj:`optional`
+           GDS_COMPONENTS section units. Default is ``"mm"``.
+
+       **control_path** : :class:`python:str`, :obj:`optional`
+           Path for outputting the XML file.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_variable_value(variable_name)
+
+   
+   Added to get closer architecture as for grpc.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: compare(input_file, results='')
+
+   
+   Compares current open database with another one.
+
+   .. warning::
+       Do not execute this function with untrusted function argument, environment
+       variables or pyedb global settings.
+       See the :ref:`security guide<ref_security_consideration>` for details.
+
+   :Parameters:
+
+       **input_file** : :class:`python:str`
+           Path to the edb file.
+
+       **results: str, optional**
+           Path to directory in which results will be saved. If no path is given, a new "_compare_results"
+           directory will be created with the same naming and path as the .aedb folder.
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+       **bool**
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.dotnet.edb.Edb.Boundaries
+
+
+
+

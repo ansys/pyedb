@@ -1,0 +1,239 @@
+
+
+
+
+
+
+:class:`Layer`
+==============
+
+
+.. py:class:: pyedb.grpc.database.layers.layer.Layer(edb_object=None, name='', layer_type='undefined', **kwargs)
+
+   
+   Manages Layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Layer
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - :Parameters:
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~update`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~id`
+            - Get the layer ID.
+          * - :py:attr:`~name`
+            - Get the layer name.
+          * - :py:attr:`~properties`
+            - 
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~is_stackup_layer`
+            - Check if the layer is a stackup layer.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.layers.layer import Layer
+
+Property detail
+---------------
+
+.. py:property:: id
+
+   
+   Get the layer ID.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Get the layer name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: properties
+   :type: dict[str, str]
+
+
+.. py:property:: type
+   :type: str
+
+
+.. py:property:: is_stackup_layer
+
+   
+   Check if the layer is a stackup layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(name, layer_type: str = 'solder_mask') -> Layer
+   :classmethod:
+
+
+   
+
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Layer name
+
+       **layer_type** : :class:`python:str`
+           Layer type
+
+   :Returns:
+
+       :class: `Layer <pyedb.`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: update(**kwargs)
+
+
+
+

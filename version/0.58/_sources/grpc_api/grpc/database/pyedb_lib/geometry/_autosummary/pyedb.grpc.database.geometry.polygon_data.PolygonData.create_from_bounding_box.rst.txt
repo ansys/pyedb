@@ -1,0 +1,6 @@
+create\_from\_bounding\_box
+===========================
+
+.. currentmodule:: pyedb.grpc.database.geometry.polygon_data
+
+.. automethod:: PolygonData.create_from_bounding_box

@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`ConnObj`
+================
+
+
+.. py:class:: pyedb.grpc.database.inner.conn_obj.ConnObj(pedb, core)
+
+   Bases: :py:obj:`pyedb.grpc.database.inner.layout_obj.LayoutObj`
+
+
+   
+   Represents a layout object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.inner.conn_obj import ConnObj
+
+
+
+
+

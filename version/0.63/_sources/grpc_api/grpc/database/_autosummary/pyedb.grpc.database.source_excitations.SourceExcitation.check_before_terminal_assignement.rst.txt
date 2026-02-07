@@ -1,0 +1,6 @@
+check\_before\_terminal\_assignement
+====================================
+
+.. currentmodule:: pyedb.grpc.database.source_excitations
+
+.. automethod:: SourceExcitation.check_before_terminal_assignement

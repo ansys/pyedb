@@ -1,0 +1,138 @@
+
+
+
+
+
+
+:class:`EdbDesignOptions`
+=========================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.design_options.EdbDesignOptions(active_cell)
+
+
+.. py:currentmodule:: EdbDesignOptions
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~suppress_pads`
+            - Whether to suppress non-functional pads.
+          * - :py:attr:`~antipads_always_on`
+            - Whether to always turn on antipad.
+          * - :py:attr:`~anti_pads_always_on`
+            - Whether to always turn on antipad.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.design_options import EdbDesignOptions
+
+Property detail
+---------------
+
+.. py:property:: suppress_pads
+
+   
+   Whether to suppress non-functional pads.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if suppress non-functional pads is on, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: antipads_always_on
+
+   
+   Whether to always turn on antipad.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if antipad is always on, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: anti_pads_always_on
+
+   
+   Whether to always turn on antipad.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if antipad is always on, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

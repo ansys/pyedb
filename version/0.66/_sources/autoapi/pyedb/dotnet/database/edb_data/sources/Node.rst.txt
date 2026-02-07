@@ -1,0 +1,175 @@
+
+
+
+
+
+
+:class:`Node`
+=============
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.sources.Node
+
+   Bases: :py:obj:`object`
+
+
+   
+   Provides for handling nodes for Siwave sources.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Node
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~component`
+            - Component name containing the node.
+          * - :py:attr:`~net`
+            - Net of the node.
+          * - :py:attr:`~node_type`
+            - Type of the node.
+          * - :py:attr:`~name`
+            - Name of the node.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.sources import Node
+
+Property detail
+---------------
+
+.. py:property:: component
+
+   
+   Component name containing the node.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net
+
+   
+   Net of the node.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: node_type
+
+   
+   Type of the node.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   Name of the node.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

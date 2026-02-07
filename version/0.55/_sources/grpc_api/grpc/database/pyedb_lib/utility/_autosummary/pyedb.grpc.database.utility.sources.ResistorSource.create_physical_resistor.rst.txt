@@ -1,0 +1,6 @@
+create\_physical\_resistor
+==========================
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoproperty:: ResistorSource.create_physical_resistor

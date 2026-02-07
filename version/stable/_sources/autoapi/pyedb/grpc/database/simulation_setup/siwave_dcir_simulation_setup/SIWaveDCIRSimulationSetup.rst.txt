@@ -1,0 +1,200 @@
+
+
+
+
+
+
+:class:`SIWaveDCIRSimulationSetup`
+==================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup(pedb, core: ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup)
+
+   Bases: :py:obj:`pyedb.grpc.database.simulation_setup.simulation_setup.SimulationSetup`
+
+
+   
+   Siwave Dcir simulation setup class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: SIWaveDCIRSimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a SIWave DCIR simulation setup.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dc_ir_settings`
+            - SIWave DCIR simulation settings.
+          * - :py:attr:`~settings`
+            - SIWave DCIR simulation settings.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
+
+Property detail
+---------------
+
+.. py:property:: dc_ir_settings
+
+   
+   SIWave DCIR simulation settings.
+
+   ... deprecated:: 0.77.3
+   Use :attr:`settings.dc
+   <pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup.settings.dc>`
+   instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: settings
+   :type: pyedb.grpc.database.simulation_setup.siwave_dcir_settings.SIWaveDCIRSettings
+
+
+   
+   SIWave DCIR simulation settings.
+
+
+
+
+
+   :Returns:
+
+       :obj:`SIWaveSimulationSettings`
+           The SIWave DCIR simulation settings object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(edb: pyedb.Edb, name: str = 'Siwave_DCIR')
+   :classmethod:
+
+
+   
+   Create a SIWave DCIR simulation setup.
+
+
+   :Parameters:
+
+       **edb** : :obj:`Edb` :obj:`object`
+           An EDB instance.
+
+       **name** : :class:`python:str`
+           Name of the simulation setup.
+
+
+
+   :Returns:
+
+       :obj:`SIWaveDCIRSimulationSetup`
+           The SIWave DCIR simulation setup object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

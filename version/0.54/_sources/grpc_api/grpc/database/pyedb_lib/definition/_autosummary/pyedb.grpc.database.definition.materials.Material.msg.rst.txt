@@ -1,0 +1,6 @@
+msg
+===
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoproperty:: Material.msg

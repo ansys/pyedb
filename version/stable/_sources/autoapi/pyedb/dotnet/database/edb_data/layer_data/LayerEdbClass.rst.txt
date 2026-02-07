@@ -1,0 +1,293 @@
+
+
+
+
+
+
+:class:`LayerEdbClass`
+======================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.layer_data.LayerEdbClass(pedb, edb_object=None, name='', layer_type='undefined', **kwargs)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages Edb Layers. Replaces EDBLayer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: LayerEdbClass
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~update`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~id`
+            - 
+          * - :py:attr:`~fill_material`
+            - The layer's fill material.
+          * - :py:attr:`~is_stackup_layer`
+            - Determine whether this layer is a stackup layer.
+          * - :py:attr:`~is_via_layer`
+            - Determine whether this layer is a via layer.
+          * - :py:attr:`~color`
+            - Color of the layer.
+          * - :py:attr:`~transparency`
+            - Retrieve transparency of the layer.
+          * - :py:attr:`~name`
+            - Retrieve name of the layer.
+          * - :py:attr:`~type`
+            - Retrieve type of the layer.
+          * - :py:attr:`~properties`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.layer_data import LayerEdbClass
+
+Property detail
+---------------
+
+.. py:property:: id
+
+.. py:property:: fill_material
+
+   
+   The layer's fill material.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_stackup_layer
+
+   
+   Determine whether this layer is a stackup layer.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if this layer is a stackup layer, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_via_layer
+
+   
+   Determine whether this layer is a via layer.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if this layer is a via layer, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: color
+
+   
+   Color of the layer.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           RGB.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: transparency
+
+   
+   Retrieve transparency of the layer.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           An integer between 0 and 100 with 0 being fully opaque and 100 being fully transparent.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   Retrieve name of the layer.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: type
+
+   
+   Retrieve type of the layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: properties
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: update(**kwargs)
+
+
+
+

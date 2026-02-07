@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`TraceType`
+==================
+
+
+.. py:class:: pyedb.generic.constants.TraceType
+
+   Bases: :py:obj:`object`
+
+
+   
+   Provides trace type constants.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import TraceType
+
+
+
+
+

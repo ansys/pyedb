@@ -1,0 +1,6 @@
+create\_terminals
+=================
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. automethod:: CfgSource.create_terminals

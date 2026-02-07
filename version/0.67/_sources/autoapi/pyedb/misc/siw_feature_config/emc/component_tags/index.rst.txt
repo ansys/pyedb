@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``component_tags.py`` module
+================================
+
+.. py:module:: pyedb.misc.siw_feature_config.emc.component_tags
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: component_tags
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc.component_tags.Comp`
+            - Manages component tags.
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc.component_tags.ComponentTags`
+            - Manages component tags.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Comp</autoapi/pyedb/misc/siw_feature_config/emc/component_tags/Comp>
+    <span class="nf nf-cod-symbol_class"></span> ComponentTags</autoapi/pyedb/misc/siw_feature_config/emc/component_tags/ComponentTags>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

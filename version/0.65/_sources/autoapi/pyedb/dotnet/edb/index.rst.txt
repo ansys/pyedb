@@ -1,0 +1,82 @@
+
+
+
+
+
+
+The ``pyedb.dotnet.edb`` library
+================================
+
+.. py:module:: pyedb.dotnet.edb
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: edb
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.edb.Edb`
+            - Provides the EDB application interface.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Edb</autoapi/pyedb/dotnet/edb/Edb>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains the ``Edb`` class.
+
+This module is implicitly loaded in HFSS 3D Layout when launched.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+
