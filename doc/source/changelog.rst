@@ -9,6 +9,118 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.68.3 <https://github.com/ansys/pyedb/releases/tag/v0.68.3>`_ - February 06, 2026
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - HFSS REGION
+          - `#1813 <https://github.com/ansys/pyedb/pull/1813>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Issue#1800 #1810
+          - `#1811 <https://github.com/ansys/pyedb/pull/1811>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.68.2
+          - `#1808 <https://github.com/ansys/pyedb/pull/1808>`_
+
+
+`0.68.2 <https://github.com/ansys/pyedb/releases/tag/v0.68.2>`_ - February 04, 2026
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump ansys/actions from 10.2.3 to 10.2.4
+          - `#1786 <https://github.com/ansys/pyedb/pull/1786>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Mapping nap file with Edb grpc
+          - `#1790 <https://github.com/ansys/pyedb/pull/1790>`_
+
+        * - Edb cfg freq sweep typos
+          - `#1797 <https://github.com/ansys/pyedb/pull/1797>`_
+
+        * - Class MultiFrequencyAdaptSolution grpc
+          - `#1798 <https://github.com/ansys/pyedb/pull/1798>`_
+
+        * - CFG use Q3D for DC
+          - `#1799 <https://github.com/ansys/pyedb/pull/1799>`_
+
+        * - CFG setup minor
+          - `#1801 <https://github.com/ansys/pyedb/pull/1801>`_
+
+        * - Raptor fix
+          - `#1804 <https://github.com/ansys/pyedb/pull/1804>`_
+
+        * - Issue #1803 fix
+          - `#1805 <https://github.com/ansys/pyedb/pull/1805>`_
+
+        * - #1800 fix
+          - `#1806 <https://github.com/ansys/pyedb/pull/1806>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.68.0
+          - `#1781 <https://github.com/ansys/pyedb/pull/1781>`_
+
+        * - Bump release 0.69.0
+          - `#1782 <https://github.com/ansys/pyedb/pull/1782>`_
+
+        * - Update missing or outdated files
+          - `#1795 <https://github.com/ansys/pyedb/pull/1795>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Removing cfg file 1.0 test and deprecating entire class.
+          - `#1783 <https://github.com/ansys/pyedb/pull/1783>`_
+
+        * - Test_edb_materials.py
+          - `#1802 <https://github.com/ansys/pyedb/pull/1802>`_
+
+
 `0.68.0 <https://github.com/ansys/pyedb/releases/tag/v0.68.0>`_ - January 27, 2026
 ==================================================================================
 

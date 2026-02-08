@@ -27,27 +27,12 @@ from pydantic import AliasChoices, BaseModel, Field
 class CfgFrequencies(BaseModel):
     start: float | str = Field(..., description="Start frequency in Hz")
     stop: float | str = Field(..., description="Stop frequency in Hz")
-    increment: int | str = Field("50Hz", validation_alias=AliasChoices("points", "samples", "step"))
+    increment: int | str = Field(..., validation_alias=AliasChoices("increment", "points", "samples", "step"))
     distribution: Literal[
-        "linear_step", "log_step", "single", "linear_count", "log_count", "linear scale", "log scale", "linear count"
+        "linear_scale", "log_scale", "single", "linear_count", "log_count", "linear scale", "log scale", "linear count"
     ] = Field(
         ..., description="Frequency distribution type, e.g., linear_step, log_step, single, linear_count, log_count"
     )
-
-
-class CfgFrequencySweep(BaseModel):
-    name: str
-    type: Literal["discrete", "interpolation"]
-    frequencies: list[CfgFrequencies | str] = Field(list(), description="List of frequency definitions or strings")
-
-    use_q3d_for_dc: bool = Field(False, description="Use Q3D for DC analysis. Only applicable for HFSS setup.")
-    compute_dc_point: bool = Field(False, description="AC/DC Merge checkbox in GUI.")
-    enforce_causality: bool = False
-    enforce_passivity: bool = True
-    adv_dc_extrapolation: bool = False
-
-    def add_frequencies(self, freq: CfgFrequencies):
-        self.frequencies.append(freq)
 
 
 class CfgSetupDC(BaseModel):
@@ -55,6 +40,24 @@ class CfgSetupDC(BaseModel):
 
 
 class CfgSetupAC(CfgSetupDC):
+    class CfgFrequencySweep(BaseModel):
+        name: str
+        type: Literal["discrete", "interpolation"]
+        frequencies: list[CfgFrequencies | str] = Field(list(), description="List of frequency definitions or strings")
+
+        use_q3d_for_dc: bool = Field(False, description="Use Q3D for DC analysis. Only applicable for HFSS setup.")
+        compute_dc_point: bool = Field(False, description="AC/DC Merge checkbox in GUI.")
+        enforce_causality: bool = False
+        enforce_passivity: bool = True
+        adv_dc_extrapolation: bool = False
+
+        use_hfss_solver_regions: bool = Field(False)
+        hfss_solver_region_setup_name: str | None = "<default>"
+        hfss_solver_region_sweep_name: str | None = "<default>"
+
+        def add_frequencies(self, freq: CfgFrequencies):
+            self.frequencies.append(freq)
+
     freq_sweep: list[CfgFrequencySweep] | None = list()
 
     def add_frequency_sweep(self, sweep: CfgFrequencySweep):

@@ -2343,7 +2343,7 @@ class Edb(EdbInit):
               Use :func:`self.simulation_setups.create` instead.
         """
 
-        return self.simulation_setups.create_raptorx_setup(name=name, start_freq=0.0, stop_freq=20e9)
+        return self.simulation_setups.create_raptor_x_setup(name=name, start_freq=0.0, stop_freq=20e9)
 
     def create_siwave_syz_setup(self, name=None, **kwargs) -> SiwaveSimulationSetup:
         """Create SIwave SYZ analysis setup.

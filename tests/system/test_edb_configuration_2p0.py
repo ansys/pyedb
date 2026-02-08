@@ -1422,14 +1422,15 @@ class TestClassSetups(BaseTestClass):
                         {
                             "name": "sweep1",
                             "type": "interpolation",
+                            "use_q3d_for_dc": True,
                             "compute_dc_point": True,
                             "enforce_causality": True,
                             "enforce_passivity": False,
                             "adv_dc_extrapolation": True,
                             "frequencies": [
-                                {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"},
-                                {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
-                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11},
+                                {"distribution": "linear_scale", "start": "0MHz", "stop": "200MHz", "step": "10MHz"},
+                                {"distribution": "log_scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
+                                {"distribution": "linear_count", "start": "10MHz", "stop": "20MHz", "points": 11},
                             ],
                         },
                         {
@@ -1457,7 +1458,7 @@ class TestClassSetups(BaseTestClass):
         assert not sweep1["enforce_passivity"]
         assert sweep1["adv_dc_extrapolation"]
         assert sweep1["frequencies"] == [
-            "LIN 0.05GHz 0.2GHz 0.01GHz",
+            "LIN 0.0GHz 0.2GHz 0.01GHz",
             "DEC 1e-06GHz 0.0001GHz 10",
             "LINC 0.01GHz 0.02GHz 11",
         ]
@@ -1503,14 +1504,33 @@ class TestClassSetups(BaseTestClass):
                             "name": "Sweep1",
                             "type": "discrete",
                             "adv_dc_extrapolation": False,
+                            "use_hfss_solver_regions": True,
+                            "hfss_solver_region_setup_name": "hfss_setup_1",
+                            "hfss_solver_region_sweep_name": "sweep2",
                             "frequencies": [
                                 "LIN 0.05GHz 0.2GHz 0.01GHz",
                                 "DEC 1e-06GHz 0.0001GHz 10",
                                 "LINC 0.01GHz 0.02GHz 11",
                             ],
-                        }
+                        },
                     ],
-                }
+                },
+                {
+                    "name": "hfss_setup_1",
+                    "type": "hfss",
+                    "f_adapt": "5GHz",
+                    "max_num_passes": 10,
+                    "max_mag_delta_s": 0.02,
+                    "freq_sweep": [
+                        {
+                            "name": "sweep2",
+                            "type": "discrete",
+                            "frequencies": [
+                                "LINC 0.01GHz 0.02GHz 11",
+                            ],
+                        },
+                    ],
+                },
             ]
         }
         edbapp = edb_examples.get_si_verse()
@@ -1520,7 +1540,7 @@ class TestClassSetups(BaseTestClass):
         assert siwave_ac.si_slider_position == 1
 
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        src_siwave_dc = data_from_db["setups"][0]
+        src_siwave_dc = [i for i in data_from_db["setups"] if i["name"] == "siwave_1"][0]
         assert src_siwave_dc["si_slider_position"] == 1
         assert src_siwave_dc["use_si_settings"] is True
         edbapp.close(terminate_rpc_session=False)

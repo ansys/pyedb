@@ -177,6 +177,24 @@ class SiwaveDCIRSettings:
         self._parent._update_setup()
 
     @property
+    def icepak_temp_file_path(self):
+        """Icepak Temp File Path.
+
+        Returns
+        -------
+            str
+            path for the Icepak temp file.
+        """
+        return self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.IcepakTempFile
+
+    @icepak_temp_file_path.setter
+    def icepak_temp_file_path(self, value):
+        edb_setup_info = self._parent.get_sim_setup_info
+        edb_setup_info.simulation_settings.DCIRSettings.IcepakTempFile = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
+    @property
     def per_pin_res_path(self):
         """Per Pin Res Path.
 

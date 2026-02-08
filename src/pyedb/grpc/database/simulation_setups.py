@@ -187,7 +187,7 @@ class SimulationSetups:
         name : str, optional
             Setup name (auto-generated if None).
         solver : str, optional
-            Simulation setup type ("hfss", "siwave", "siwave_dcir", "raptorx", "q3d").
+            Simulation setup type ("hfss", "siwave", "siwave_dcir", "raptor_x", "q3d").
         distribution : str, optional
             Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
         start_freq : float, str, optional

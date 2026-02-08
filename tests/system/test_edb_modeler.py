@@ -666,3 +666,13 @@ class TestClass(BaseTestClass):
         )
         assert not cell_inst_2.is_null
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="issue #1803 fix grpc consolidation")
+    def test_modeler_get_primitives(self, edb_examples):
+        # fixing issue #1803 and adding grpc safeguard test
+        edbapp = edb_examples.get_si_verse()
+        paths = edbapp.modeler.get_primitives(net_name="GND", prim_type="path")
+        assert len(paths) == 407
+        polygons = edbapp.modeler.get_primitives(net_name="GND", prim_type="polygon")
+        assert len(polygons) == 39
+        edbapp.close(terminate_rpc_session=False)

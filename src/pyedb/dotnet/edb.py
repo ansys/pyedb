@@ -3819,7 +3819,7 @@ class Edb:
         Dict[str, :class:`legacy.database.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`]
 
         """
-        return {name: i for name, i in self.setups.items() if i.setup_type == "kHFSS"}
+        return {name: i for name, i in self.setups.items() if i.setup_type in ["kHFSS", "hfss"]}
 
     @property
     def siwave_dc_setups(self):
