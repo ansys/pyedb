@@ -22,6 +22,7 @@
 
 from pathlib import Path
 import secrets
+
 import pytest
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
