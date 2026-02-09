@@ -51,6 +51,10 @@ class CfgSetupAC(CfgSetupDC):
         enforce_passivity: bool = True
         adv_dc_extrapolation: bool = False
 
+        use_hfss_solver_regions: bool = Field(False)
+        hfss_solver_region_setup_name: str | None = "<default>"
+        hfss_solver_region_sweep_name: str | None = "<default>"
+
         def add_frequencies(self, freq: CfgFrequencies):
             self.frequencies.append(freq)
 
