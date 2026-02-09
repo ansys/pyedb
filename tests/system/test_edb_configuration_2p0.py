@@ -1169,7 +1169,8 @@ class TestClassTerminals(BaseTestClass):
     bundle_terminal = {
         "terminal_type": "bundle",
         "terminals": ["edge_terminal_1", "edge_terminal_2"],
-        "name": "bundle_terminal"}
+        "name": "bundle_terminal",
+    }
 
     def test_padstack_instance_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
