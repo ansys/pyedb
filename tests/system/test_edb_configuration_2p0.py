@@ -1332,21 +1332,18 @@ class TestClassTerminals(BaseTestClass):
 @pytest.mark.usefixtures("close_rpc_session")
 @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassSetups(BaseTestClass):
-    @pytest.fixture(autouse=True)
-    def init(self, edb_examples):
-        """init runs before each test."""
-        self.terminal1 = {
-            "name": "terminal1",
-            "impedance": 1,
-            "is_circuit_port": False,
-            "boundary_type": "port" if config["use_grpc"] else "PortBoundary",
-            "hfss_type": "Wave",
-            "terminal_type": "padstack_instance",
-            "padstack_instance": "U7-M7",
-            "layer": None,
-        }
+    terminal1 = {
+        "name": "terminal1",
+        "impedance": 1,
+        "is_circuit_port": False,
+        "boundary_type": "port" if config["use_grpc"] else "PortBoundary",
+        "hfss_type": "Wave",
+        "terminal_type": "padstack_instance",
+        "padstack_instance": "U7-M7",
+        "layer": None,
+    }
 
-    def test_hfss(self, edb_examples):
+    def test_hfss(self):
         data = {
             "setups": [
                 {
@@ -1377,13 +1374,13 @@ class TestClassSetups(BaseTestClass):
             ]
         }
 
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
         assert data == data_from_db
         edbapp.close(terminate_rpc_session=False)
 
-    def test_hfss_auto_mesh_operation(self, edb_examples):
+    def test_hfss_auto_mesh_operation(self):
         data = {
             "terminals": [self.terminal1],
             "setups": [
@@ -1403,7 +1400,7 @@ class TestClassSetups(BaseTestClass):
             ],
         }
 
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
         assert data_from_db["setups"][0]["mesh_operations"][0]["name"] == "hfss_setup_1_AutoMeshOp"
@@ -1446,7 +1443,7 @@ class TestClassSetups(BaseTestClass):
                 },
             ]
         }
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
         setup = data_from_db["setups"][0]
