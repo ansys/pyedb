@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from copy import deepcopy
 from datetime import datetime
 import json
 import os
@@ -108,7 +109,7 @@ class Configuration:
             Config dictionary.
         """
         if isinstance(config_file, dict):
-            data = config_file
+            data = deepcopy(config_file)
         else:
             config_file = str(config_file)
             if os.path.isfile(config_file):
