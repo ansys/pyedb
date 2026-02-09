@@ -25,7 +25,6 @@ from pathlib import Path
 
 import pytest
 
-from pyedb.generic.general_methods import is_linux
 from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
