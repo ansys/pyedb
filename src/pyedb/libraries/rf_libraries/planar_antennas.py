@@ -157,8 +157,9 @@ class RectangularPatch:
             "ANT",
             representation_type="CenterWidthHeight",
             center_point=[0, 0],
-            height=self.length,
-            width=self.width,
+            height="l",
+            width="w",
+            parametrized=True,
         )
         # ground
         self._edb.modeler.create_rectangle(
@@ -166,8 +167,9 @@ class RectangularPatch:
             "GND",
             representation_type="CenterWidthHeight",
             center_point=[0, 0],
-            height=self.length * 2,
-            width=self.width * 2,
+            height="l*2",
+            width="w*2",
+            parametrized=True,
         )
         # feed
         if self.length_feeding_line > 0:

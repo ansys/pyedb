@@ -729,11 +729,13 @@ class Modeler(object):
                     _pt = []
                     for coord in pt:
                         if isinstance(coord, str) and parametrized:
+                            _pt.append(coord)
                             continue
-                        coord = Value(coord, self._pedb.active_cell)
+                        coord = Value(coord)
                         _pt.append(coord)
                     _points.append(_pt)
                 points = _points
+                # points = [CorePointData(pt) for pt in points]
                 center_line = CorePolygonData(points)
                 if isinstance(width, str) and parametrized:
                     pass
@@ -879,9 +881,9 @@ class Modeler(object):
         """
         if parametrized:
             if isinstance(lower_left_point, list):
-                lower_left_point = [Value(val) for val in lower_left_point if isinstance(val, (int, float))]
+                lower_left_point = [Value(pt) if isinstance(pt, (float, int)) else pt for pt in lower_left_point]
             if isinstance(upper_right_point, list):
-                upper_right_point = [Value(val) for val in upper_right_point if isinstance(val, (int, float))]
+                upper_right_point = [Value(pt) if isinstance(pt, (float, int)) else pt for pt in upper_right_point]
             if isinstance(center_point, (float, int)):
                 center_point = Value(center_point)
             if isinstance(corner_radius, (float, int)):
@@ -908,31 +910,17 @@ class Modeler(object):
             )
         else:
             rep_type = "center_width_height"
-            if isinstance(width, str):
-                if width in self._pedb.variables:
-                    width = Value(width, self._pedb.active_cell)
-                else:
-                    width = Value(width)
-            else:
-                width = Value(width)
-            if isinstance(height, str):
-                if height in self._pedb.variables:
-                    height = Value(height, self._pedb.active_cell)
-                else:
-                    height = Value(width)
-            else:
-                height = Value(width)
             rect = Rectangle.create(
                 layout=self._active_layout,
                 layer=layer_name,
                 net=net,
                 rep_type=rep_type,
-                param1=Value(center_point[0]),
-                param2=Value(center_point[1]),
-                param3=Value(width),
-                param4=Value(height),
-                corner_rad=Value(corner_radius),
-                rotation=Value(rotation),
+                param1=center_point[0],
+                param2=center_point[1],
+                param3=width,
+                param4=height,
+                corner_rad=corner_radius,
+                rotation=rotation,
             )
         if not rect.is_null:
             self._add_primitive(rect)

@@ -755,14 +755,14 @@ class RadialStub:
         """
         self._edb["r"] = self.radius
         self._edb["ang"] = self.angle_deg
+        self._edb["theta"] = math.radians(self.angle_deg)
         self._edb["w"] = self.width
 
         # Create wedge polygon
-        theta = math.radians(self.angle_deg)
         pts = [
             [0, 0],
-            [self.radius * math.cos(-theta / 2), self.radius * math.sin(-theta / 2)],
-            [self.radius * math.cos(theta / 2), self.radius * math.sin(theta / 2)],
+            ["r*cos(-theta/2)", "r*sin(-theta/2"],
+            ["r*cos(theta/2)", "r*sin(theta/2)"],
         ]
         self._edb.modeler.create_polygon(main_shape=pts, layer_name=self.layer, net_name=self.net)
         # feed
@@ -1063,7 +1063,7 @@ class InterdigitalCapacitor:
             True on success.
         """
         pfx = self.VAR_PREFIX
-        pitch = f"({pfx}_finger_width + {pfx}_gap)"
+        pitch = f"({pfx}_finger_width+{pfx}_gap)"
         total_width = f"(2*{pfx}_bus_width + (2*{pfx}_fingers-1)*{pitch} + {pfx}_finger_width)"
         total_height = f"(2*{pfx}_bus_width + 2*{pfx}_finger_length + {pfx}_comb_gap)"
 
@@ -1071,8 +1071,9 @@ class InterdigitalCapacitor:
         self._edb.modeler.create_rectangle(
             layer_name=self.layer,
             net_name=self.net_a,
-            lower_left_point=["0", "0"],
+            lower_left_point=[0.0, 0.0],
             upper_right_point=[total_width, f"{pfx}_bus_width"],
+            parametrized=True,
         )
 
         # 2. Top bus bar (NET_B)
@@ -1082,6 +1083,7 @@ class InterdigitalCapacitor:
             net_name=self.net_b,
             lower_left_point=["0", right_bar_y],
             upper_right_point=[total_width, total_height],
+            parametrized=True,
         )
 
         # 3. Fingers (interleaved)
@@ -1096,6 +1098,7 @@ class InterdigitalCapacitor:
                     net_name=self.net_a,
                     lower_left_point=[x, y_a],
                     upper_right_point=[f"{x} + {pfx}_finger_width", f"{y_a} + {pfx}_finger_length"],
+                    parametrized=True,
                 )
             else:  # NET_B finger (points down)
                 self._edb.modeler.create_rectangle(
@@ -1103,6 +1106,7 @@ class InterdigitalCapacitor:
                     net_name=self.net_b,
                     lower_left_point=[x, y_b],
                     upper_right_point=[f"{x} + {pfx}_finger_width", f"{y_b} + {pfx}_finger_length"],
+                    parametrized=True,
                 )
 
         return True
@@ -1163,13 +1167,7 @@ class DifferentialTLine:
         self.layer = layer
         self.net_p = net_p
         self.net_n = net_n
-
-        self._edb["diff_len"] = self.length  # total length
-        self._edb["diff_w"] = self.width  # single trace width
-        self._edb["diff_s"] = self.spacing  # edge-to-edge spacing
-        self._edb["diff_x0"] = self.x0  # start-x
-        self._edb["diff_y0"] = self.y0  # start-y
-        self._edb["diff_angle"] = math.degrees(angle)  # rotation in degrees
+        self.angle = angle
 
     @property
     def diff_impedance(self) -> float:
@@ -1196,6 +1194,13 @@ class DifferentialTLine:
         list[float]
             EDB object IDs of the positive and negative traces.
         """
+        self._edb["diff_len"] = self.length  # total length
+        self._edb["diff_w"] = self.width  # single trace width
+        self._edb["diff_s"] = self.spacing  # edge-to-edge spacing
+        self._edb["diff_x0"] = self.x0  # start-x
+        self._edb["diff_y0"] = self.y0  # start-y
+        self._edb["diff_angle"] = math.degrees(self.angle)  # rotation in degrees
+
         pos_trace = self._edb.modeler.create_trace(
             path_list=[
                 ["diff_x0", "diff_y0"],
@@ -1204,8 +1209,9 @@ class DifferentialTLine:
             layer_name=self.layer,
             width="diff_w",
             net_name=self.net_p,
-            start_cap_style="Flat",
-            end_cap_style="Flat",
+            start_cap_style="flat",
+            end_cap_style="flat",
+            parametrized=True,
         )
 
         neg_y_expr = "diff_y0 - diff_w - diff_s"
