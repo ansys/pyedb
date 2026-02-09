@@ -21,8 +21,7 @@
 # SOFTWARE.
 
 from pathlib import Path
-import random
-
+import secrets
 import pytest
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -40,8 +39,7 @@ class BaseTestClass:
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, edb_examples, request):
         """init runs before each test."""
-        temp = Path(local_scratch.path) / f"{request.node.name}_{random.randint(1000, 9999)}"
-        print(temp)
+        temp = Path(local_scratch.path) / f"{request.node.name}_{secrets.token_hex(2)}"
         temp.mkdir(parents=True)
         self.edb_examples = edb_examples
         self.edb_examples.test_folder = temp
