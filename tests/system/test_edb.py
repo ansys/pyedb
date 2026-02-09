@@ -41,11 +41,16 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path2, target_path4):
+    def init(self, local_scratch, target_path, target_path2, target_path4, request):
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path2 = target_path2
         self.target_path4 = target_path4
+
+        self.current_test_temp_folder = Path(self.local_scratch.path) / request.node.name
+        self.current_test_temp_folder.mkdir(parents=True)
+        yield
+        self.current_test_temp_folder = ""
 
     def test_hfss_create_coax_port_on_component_from_hfss(self, edb_examples):
         """Create a coaxial port on a component from its pin."""
@@ -1168,12 +1173,11 @@ class TestClass(BaseTestClass):
         )
         assert setup.sweeps
 
-    @pytest.mark.skipif(is_linux, reason="Failing download files")
     def test_create_edb_with_dxf(self, edb_examples):
         """Create EDB from dxf file."""
-        src = os.path.join(local_path, "example_models", test_subfolder, "edb_test_82.dxf")
-        dxf_path = self.local_scratch.copyfile(src)
-        edb3 = edb_examples.load_edb(dxf_path, copy_to_temp=False)
+        edb_examples.test_folder = self.current_test_temp_folder
+        dxf = edb_examples.copy_test_files_into_local_folder("TEDB/edb_test_82.dxf")[0]
+        edb3 = edb_examples.load_edb(dxf, copy_to_temp=False)
         assert len(edb3.modeler.polygons) == 1
         assert edb3.modeler.polygons[0].polygon_data.points == [
             (0.0, 0.0),

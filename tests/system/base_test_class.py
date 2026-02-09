@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from pathlib import Path
 
 import pytest
 
@@ -35,9 +36,12 @@ class BaseTestClass:
         yield
 
     @pytest.fixture(autouse=True)
-    def init(self, edb_examples):
+    def init(self, edb_examples, request):
         """init runs before each test."""
-        return
+        self.current_test_temp_folder = Path(self.local_scratch.path) / request.node.name
+        self.current_test_temp_folder.mkdir(parents=True)
+        yield
+        self.current_test_temp_folder = ""
 
     @pytest.fixture(autouse=True)
     def teardown(self, request, edb_examples):
