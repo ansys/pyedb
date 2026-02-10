@@ -25,10 +25,10 @@
 
 import atexit
 import os
+from pathlib import Path
 import signal
 import sys
 import time
-from pathlib import Path
 
 import ansys.edb.core.database as database
 
@@ -287,7 +287,7 @@ class EdbInit(object):
         """
         return database.Database.find_by_id(db_id)
 
-    def save_as(self, path:str|Path, version:str="")->bool:
+    def save_as(self, path: str | Path, version: str = "") -> bool:
         """Save this Database to a new location and older EDB version.
 
         Parameters

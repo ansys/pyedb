@@ -1710,7 +1710,7 @@ class Edb:
         return self.save_as(path)
 
     @execution_timer("EDB file save")
-    def save_as(self, path:str|Path):
+    def save_as(self, path: str | Path):
         """Save the EDB file as another file.
 
         Parameters
