@@ -24,7 +24,6 @@
 
 import os
 from pathlib import Path
-from typing import Sequence
 from unittest.mock import MagicMock, patch
 
 import pytest
