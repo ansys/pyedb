@@ -2068,8 +2068,9 @@ class Edb(EdbInit):
             self.active_db.add_variable(variable_name, variable_value, is_param=is_parameter)
             if description:
                 self.active_db.set_variable_desc(name=variable_name, desc=description)
-        if self.variable_exists(variable_name):
-            return True
+            if self.variable_exists(variable_name):
+                return True
+            return False
         else:
             self.logger.error(f"Variable {variable_name} already exists.")
             return False
@@ -2105,8 +2106,8 @@ class Edb(EdbInit):
             self.active_cell.add_variable(variable_name, variable_value, is_param=is_parameter)
             if description:
                 self.active_cell.set_variable_desc(name=variable_name, desc=description)
-        if self.variable_exists(variable_name):
-            return True
+            if self.variable_exists(variable_name):
+                return True
         else:
             self.logger.error(f"Variable {variable_name} already exists.")
             return False

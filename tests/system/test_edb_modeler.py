@@ -421,8 +421,8 @@ class TestClass(BaseTestClass):
         assert round(net5_length, 5) == 0.02629
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Check pyedb-core issue #693")
     def test_duplicate(self, edb_examples):
-        # Done
         edbapp = edb_examples.create_empty_edb()
         edbapp["$H"] = "0.65mil"
         assert edbapp["$H"] == 1.651e-5
