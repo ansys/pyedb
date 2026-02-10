@@ -36,17 +36,11 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path2, target_path4):
-        self.local_scratch = local_scratch
-        self.target_path = target_path
-        self.target_path2 = target_path2
-        self.target_path4 = target_path4
 
-    def test_modeler_polygons(self, edb_examples):
+    def test_modeler_polygons(self):
         """Evaluate modeler polygons"""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert len(edbapp.modeler.polygons) > 0
         assert not edbapp.modeler.polygons[0].is_void
 
@@ -106,10 +100,10 @@ class TestClass(BaseTestClass):
             assert k.expand(0.0005)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_paths(self, edb_examples):
+    def test_modeler_paths(self):
         """Evaluate modeler paths"""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert len(edbapp.modeler.paths) > 0
         path = edbapp.modeler.paths[0]
         assert path.type.lower() == "path"
@@ -126,9 +120,9 @@ class TestClass(BaseTestClass):
         assert edbapp.modeler["poly_3022"].type.lower() == "polygon"
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_primitives_by_layer(self, edb_examples):
+    def test_modeler_primitives_by_layer(self):
         """Evaluate modeler primitives by layer"""
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         primmitive = edbapp.modeler.primitives_by_layer["1_Top"][0]
         assert primmitive.layer_name == "1_Top"
         assert not primmitive.is_negative
@@ -143,10 +137,10 @@ class TestClass(BaseTestClass):
         assert primmitive.can_be_zone_primitive
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_primitives(self, edb_examples):
+    def test_modeler_primitives(self):
         """Evaluate modeler primitives"""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert len(edbapp.modeler.rectangles) > 0
         assert len(edbapp.modeler.circles) > 0
         assert len(edbapp.layout.bondwires) == 0
@@ -157,38 +151,38 @@ class TestClass(BaseTestClass):
         assert edbapp.modeler.circles[0].type.lower() == "circle"
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_get_polygons_bounding(self, edb_examples):
+    def test_modeler_get_polygons_bounding(self):
         """Retrieve polygons bounding box."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         polys = edbapp.modeler.get_polygons_by_layer("GND")
         for poly in polys:
             bounding = edbapp.modeler.get_polygon_bounding_box(poly)
             assert len(bounding) == 4
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_get_polygons_by_layer_and_nets(self, edb_examples):
+    def test_modeler_get_polygons_by_layer_and_nets(self):
         """Retrieve polygons by layer and nets."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         nets = ["GND", "1V0"]
         polys = edbapp.modeler.get_polygons_by_layer("16_Bottom", nets)
         assert polys
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_get_polygons_points(self, edb_examples):
+    def test_modeler_get_polygons_points(self):
         """Retrieve polygons points."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         polys = edbapp.modeler.get_polygons_by_layer("GND")
         for poly in polys:
             points = edbapp.modeler.get_polygon_points(poly)
             assert points
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_create_polygon(self, edb_examples):
+    def test_modeler_create_polygon(self):
         """Create a polygon based on a shape or points."""
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         settings.enable_error_handler = True
         points = [
             [-0.025, -0.02],
@@ -229,10 +223,10 @@ class TestClass(BaseTestClass):
         assert not poly.has_self_intersections
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_create_polygon_from_shape(self, edb_examples):
+    def test_modeler_create_polygon_from_shape(self):
         """Create polygon from shape."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         edbapp.modeler.create_polygon(
             points=[[0.0, 0.0], [0.0, 10e-3], [10e-3, 10e-3], [10e-3, 0]], layer_name="1_Top", net_name="test"
         )
@@ -246,10 +240,10 @@ class TestClass(BaseTestClass):
         assert poly_test[0].layer_name == "16_Bottom"
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_create_trace(self, edb_examples):
+    def test_modeler_create_trace(self):
         """Create a trace based on a list of points."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         points = [
             [-0.025, -0.02],
             [0.025, -0.02],
@@ -268,10 +262,10 @@ class TestClass(BaseTestClass):
         # assert trace.get_center_line()[-1] == [0.001, 0.002]
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_add_void(self, edb_examples):
+    def test_modeler_add_void(self):
         """Add a void into a shape."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         plane_shape = edbapp.modeler.create_rectangle(
             lower_left_point=["-5mm", "-5mm"], upper_right_point=["5mm", "5mm"], layer_name="1_Top"
         )
@@ -281,17 +275,17 @@ class TestClass(BaseTestClass):
         plane.add_void(void)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_fix_circle_void(self, edb_examples):
+    def test_modeler_fix_circle_void(self):
         """Fix issues when circle void are clipped due to a bug in EDB."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.modeler.fix_circle_void_for_clipping()
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_primitives_area(self, edb_examples):
+    def test_modeler_primitives_area(self):
         """Access primitives total area."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         i = 0
         while i < 2:
             prim = edbapp.modeler.primitives[i]
@@ -305,10 +299,10 @@ class TestClass(BaseTestClass):
         assert edbapp.modeler.paths[0].length
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_create_rectangle(self, edb_examples):
+    def test_modeler_create_rectangle(self):
         """Create rectangle."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         rect = edbapp.modeler.create_rectangle(
             layer_name="1_Top", lower_left_point=["0", "0"], upper_right_point=["2mm", "3mm"]
         )
@@ -326,10 +320,10 @@ class TestClass(BaseTestClass):
         )
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_create_circle(self, edb_examples):
+    def test_modeler_create_circle(self):
         """Create circle."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         poly = edbapp.modeler.create_polygon(points=[[0, 0], [100, 0], [100, 100], [0, 100]], layer_name="1_Top")
         assert poly
         poly.add_void([[20, 20], [20, 30], [100, 30], [100, 20]])
@@ -344,16 +338,16 @@ class TestClass(BaseTestClass):
         assert circle2.unite(intersection)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_defeature(self, edb_examples):
+    def test_modeler_defeature(self):
         """Defeature the polygon."""
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.modeler.defeature_polygon(edbapp.modeler.primitives_by_net["GND"][-1], 0.0001)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_modeler_primitives_boolean_operation(self, edb_examples):
+    def test_modeler_primitives_boolean_operation(self):
         """Evaluate modeler primitives boolean operations."""
         # TODO check bug #464.
-        edb = edb_examples.create_empty_edb()
+        edb = self.edb_examples.create_empty_edb()
         edb.stackup.add_layer(layer_name="test")
         x = edb.modeler.create_polygon(layer_name="test", points=[[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]])
         assert not x.is_null
@@ -380,20 +374,21 @@ class TestClass(BaseTestClass):
         assert y_clone.voids
         edb.close(terminate_rpc_session=False)
 
-    def test_modeler_path_convert_to_polygon(self, edb_examples):
+    def test_modeler_path_convert_to_polygon(self):
         # Done
         target_path = os.path.join(local_path, "example_models", "convert_and_merge_path.aedb")
-        edbapp = edb_examples.load_edb(target_path)
+        target_path = self.edb_examples.copy_test_files_into_local_folder("convert_and_merge_path.aedb")[0]
+        edbapp = self.edb_examples.load_edb(target_path)
         for path in edbapp.modeler.paths:
             assert path.convert_to_polygon()
         # cannot merge one net only - see test: test_unite_polygon for reference
         edbapp.close(terminate_rpc_session=False)
 
-    def test_156_check_path_length(self, edb_examples):
+    def test_156_check_path_length(self):
         """"""
         # Done
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "test_path_length.aedb")
-        edbapp = edb_examples.load_edb(edb_path=source_path)
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/test_path_length.aedb")[0]
+        edbapp = self.edb_examples.load_edb(edb_path=source_path)
         net1 = [path for path in edbapp.modeler.paths if path.net_name == "loop1"]
         net1_length = 0
         for path in net1:
@@ -421,9 +416,9 @@ class TestClass(BaseTestClass):
         assert round(net5_length, 5) == 0.02629
         edbapp.close(terminate_rpc_session=False)
 
-    def test_duplicate(self, edb_examples):
+    def test_duplicate(self):
         # Done
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         edbapp["$H"] = "0.65mil"
         assert edbapp["$H"] == 1.651e-5
         edbapp["$S_D"] = "10.65mil"
@@ -463,9 +458,9 @@ class TestClass(BaseTestClass):
         assert edbapp.modeler.primitives_by_layer["bot_gnd"]
         edbapp.close(terminate_rpc_session=False)
 
-    def test_unite_polygon(self, edb_examples):
+    def test_unite_polygon(self):
         # Done
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         edbapp["$H"] = "0.65mil"
         edbapp["$Via_S"] = "40mil"
         edbapp["$MS_W"] = "4.75mil"
@@ -508,26 +503,24 @@ class TestClass(BaseTestClass):
         assert len(edbapp.modeler.polygons) == 1
         edbapp.close(terminate_rpc_session=False)
 
-    def test_layer_name(self, edb_examples):
-        # Done
-        edbapp = edb_examples.get_si_verse()
+    def test_layer_name(self):
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.modeler.polygons[50].layer_name == "1_Top"
         edbapp.modeler.polygons[50].layer_name = "16_Bottom"
         assert edbapp.modeler.polygons[50].layer_name == "16_Bottom"
         edbapp.close(terminate_rpc_session=False)
 
-    def test_287_circuit_ports(self, edb_examples):
-        # Done
-        edbapp = edb_examples.get_si_verse()
+    def test_287_circuit_ports(self):
+        edbapp = self.edb_examples.get_si_verse()
         cap = edbapp.components.capacitors["C1"]
         assert edbapp.siwave.create_circuit_port_on_pin(pos_pin=cap.pins["1"], neg_pin=cap.pins["2"])
         assert edbapp.components.capacitors["C3"].pins
         assert edbapp.padstacks.pins
         edbapp.close(terminate_rpc_session=False)
 
-    def test_get_primitives_by_point_layer_and_nets(self, edb_examples):
+    def test_get_primitives_by_point_layer_and_nets(self):
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         primitives = edbapp.modeler.get_primitive_by_layer_and_point(layer="Inner1(GND1)", point=[20e-3, 30e-3])
         assert primitives
         assert len(primitives) == 1
@@ -537,31 +530,24 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(True, reason="This test fails randomly, needs to be fixed.")
-    def test_arbitrary_wave_ports(self, edb_examples):
-        # Done
-        example_folder = os.path.join(local_path, "example_models", test_subfolder)
-        source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
-        temp_directory = os.path.join(self.local_scratch.path, "test_wave_ports")
-        target_path_edb = os.path.join(temp_directory, "test.aedb")
-        work_dir = os.path.join(temp_directory, "_work")
-        output_edb = os.path.join(temp_directory, "wave_ports.aedb")
-        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = edb_examples.load_edb(edb_path=target_path_edb, copy_to_temp=False)
+    def test_arbitrary_wave_ports(self):
+        target_path_edb = self.edb_examples.copy_test_files_into_local_folder("TEDB/example_arbitrary_wave_ports.aedb")[0]
+        edbapp = self.edb_examples.load_edb(edb_path=target_path_edb)
         assert edbapp.create_model_for_arbitrary_wave_ports(
-            temp_directory=work_dir,
-            output_edb=output_edb,
+            temp_directory=os.path.join(self.edb_examples.test_folder, "_work"),
+            output_edb=os.path.join(self.edb_examples.test_folder, "wave_ports.aedb"),
             mounting_side="top",
         )
         edbapp.close(terminate_rpc_session=False)
-        test_edb = edb_examples.load_edb(edb_path=output_edb, copy_to_temp=False)
+        test_edb = self.edb_examples.load_edb(edb_path=output_edb, copy_to_temp=False)
         assert len(list(test_edb.nets.signal.keys())) == 13
         assert len(list(test_edb.stackup.layers.keys())) == 3
         assert "ref" in test_edb.stackup.layers
         assert len(test_edb.modeler.polygons) == 12
         test_edb.close(terminate_rpc_session=False)
 
-    def test_path_center_line(self, edb_examples):
-        edb = edb_examples.create_empty_edb()
+    def test_path_center_line(self):
+        edb = self.edb_examples.create_empty_edb()
         edb.stackup.add_layer("GND", "Gap")
         edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.2mm", material="Duroid (tm)")
         edb.stackup.add_layer("TOP", "Substrat")
@@ -583,24 +569,24 @@ class TestClass(BaseTestClass):
         # edb.modeler.paths[0].set_center_line([[0.0, 0.0], [0.0, 5e-3]]) # Path does not have center_lin setter.
         # assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.0, 5e-3]]
 
-    def test_polygon_data_refactoring_bounding_box(self, edb_examples):
+    def test_polygon_data_refactoring_bounding_box(self):
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         poly_with_voids = [pp for pp in edbapp.modeler.polygons if pp.has_voids]
         for poly in poly_with_voids:
             for void in poly.voids:
                 assert void.bbox
         edbapp.close(terminate_rpc_session=False)
 
-    def test_aedt_name(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_aedt_name(self):
+        edbapp = self.edb_examples.get_si_verse()
         primitives = edbapp.modeler.primitives
         assert primitives[0].aedt_name == "line_0"
 
     @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
-    def test_insert_layout_instance(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        edb2_path = edb_examples.get_package(edbapp=False)
+    def test_insert_layout_instance(self):
+        edbapp = self.edb_examples.get_si_verse()
+        edb2_path = self.edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
         cell_inst = edbapp.modeler.insert_layout_instance_on_layer("analysis", "1_Top", "180deg", "1mm", "2mm", True)
         assert cell_inst.transform3d.shift.x.value == pytest.approx(0.001)
@@ -609,9 +595,9 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
-    def test_insert_layout_instance_place_on_bottom(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        edb2_path = edb_examples.get_package(edbapp=False)
+    def test_insert_layout_instance_place_on_bottom(self):
+        edbapp = self.edb_examples.get_si_verse()
+        edb2_path = self.edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
         cell_inst = edbapp.modeler.insert_layout_instance_on_layer(
             "analysis", "16_Bottom", 2, "180deg", "32mm", "-1mm", True, True
@@ -620,9 +606,9 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
-    def test_insert_layout_instance_placement_3d(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        edb2_path = edb_examples.get_package(edbapp=False)
+    def test_insert_layout_instance_placement_3d(self):
+        edbapp = self.edb_examples.get_si_verse()
+        edb2_path = self.edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
         cell_inst = edbapp.modeler.insert_layout_instance_placement_3d(
             "analysis",
@@ -635,8 +621,8 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
-    def test_insert_3d_component_placement_3d(self, edb_examples):
-        edbapp = edb_examples.get_si_board(additional_files_folders=["si_board/SMA.a3dcomp"])
+    def test_insert_3d_component_placement_3d(self):
+        edbapp = self.edb_examples.get_si_board(additional_files_folders=["si_board/SMA.a3dcomp"])
         cell_inst_1 = edbapp.modeler.insert_3d_component_placement_3d(
             a3dcomp_path=Path(edbapp.edbpath).with_name("SMA.a3dcomp"),
             x="1mm",
@@ -651,8 +637,8 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
-    def test_insert_3d_component_on_layer(self, edb_examples):
-        edbapp = edb_examples.get_si_board(additional_files_folders=["si_board/SMA.a3dcomp"])
+    def test_insert_3d_component_on_layer(self):
+        edbapp = self.edb_examples.get_si_board(additional_files_folders=["si_board/SMA.a3dcomp"])
         cell_inst_1 = edbapp.modeler.insert_3d_component_on_layer(
             a3dcomp_path=Path(edbapp.edbpath).with_name("SMA.a3dcomp"), x="1mm", y="2mm", placement_layer="s1"
         )
@@ -668,9 +654,8 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config.get("use_grpc"), reason="issue #1803 fix grpc consolidation")
-    def test_modeler_get_primitives(self, edb_examples):
-        # fixing issue #1803 and adding grpc safeguard test
-        edbapp = edb_examples.get_si_verse()
+    def test_modeler_get_primitives(self):
+        edbapp = self.edb_examples.get_si_verse()
         paths = edbapp.modeler.get_primitives(net_name="GND", prim_type="path")
         assert len(paths) == 407
         polygons = edbapp.modeler.get_primitives(net_name="GND", prim_type="polygon")
