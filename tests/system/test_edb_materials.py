@@ -64,16 +64,16 @@ MATERIAL_NAME = "DummyMaterial"
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    def test_material_name(self, edb_examples):
+    def test_material_name(self):
         """Evaluate material properties."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         material = edbapp.materials.add_material(MATERIAL_NAME)
         assert MATERIAL_NAME == material.name
         edbapp.close(terminate_rpc_session=False)
 
-    def test_material_properties(self, edb_examples):
+    def test_material_properties(self):
         """Evaluate material properties."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         material = edbapp.materials.add_material(MATERIAL_NAME)
         for property in PROPERTIES:
             for value in VALUES:
@@ -83,9 +83,9 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=not GRPC, reason="Need to refactor dielectric model for DotNet")
-    def test_material_dc_properties(self, edb_examples):
+    def test_material_dc_properties(self):
         """Evaluate material DC properties."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         material = edbapp.materials.add_material(MATERIAL_NAME)
         material.set_djordjecvic_sarkar_model()
         for property in DC_PROPERTIES:
@@ -98,9 +98,9 @@ class TestClass(BaseTestClass):
                 assert float(STR_VALUE) == getattr(material, property)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_material_to_dict(self, edb_examples):
+    def test_material_to_dict(self):
         """Evaluate material conversion into a dictionary."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         material = edbapp.materials.add_material(MATERIAL_NAME)
         for property in PROPERTIES:
             setattr(material, property, FLOAT_VALUE)
@@ -117,9 +117,9 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=not GRPC, reason="Need to refactor dielectric model for DotNet")
-    def test_material_with_dc_model_to_dict(self, edb_examples):
+    def test_material_with_dc_model_to_dict(self):
         """Evaluate material conversion into a dictionary."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         material = edbapp.materials.add_material(MATERIAL_NAME)
         material.set_djordjecvic_sarkar_model()
         for property in DC_PROPERTIES:
@@ -134,9 +134,9 @@ class TestClass(BaseTestClass):
             assert expected_result[property] == material_dict[property]
         edbapp.close(terminate_rpc_session=False)
 
-    def test_material_update_properties(self, edb_examples):
+    def test_material_update_properties(self):
         """Evaluate material properties update."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         material = edbapp.materials.add_material(MATERIAL_NAME)
         for property in PROPERTIES:
             setattr(material, property, FLOAT_VALUE)
@@ -151,23 +151,23 @@ class TestClass(BaseTestClass):
                 assert expected_value == getattr(material, property)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_materials_syslib(self, edb_examples):
+    def test_materials_syslib(self):
         """Evaluate system library."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         assert materials.syslib
         edbapp.close(terminate_rpc_session=False)
 
-    def test_materials_materials(self, edb_examples):
+    def test_materials_materials(self):
         """Evaluate materials."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         assert not materials.materials
         edbapp.close(terminate_rpc_session=False)
 
-    def test_materials_add_material(self, edb_examples):
+    def test_materials_add_material(self):
         """Evalue add material."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         material = materials.add_material(MATERIAL_NAME, permittivity=12)
         assert material
@@ -178,9 +178,9 @@ class TestClass(BaseTestClass):
             materials.add_material(MATERIAL_NAME, permittivity=12)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_materials_add_conductor_material(self, edb_examples):
+    def test_materials_add_conductor_material(self):
         """Evalue add conductor material."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         material = materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
         assert material
@@ -191,9 +191,9 @@ class TestClass(BaseTestClass):
             materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_materials_add_dielectric_material(self, edb_examples):
+    def test_materials_add_dielectric_material(self):
         """Evalue add dielectric material."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         material = materials.add_dielectric_material(MATERIAL_NAME, 12, 12, conductivity=12)
         assert material
@@ -204,9 +204,9 @@ class TestClass(BaseTestClass):
             materials.add_dielectric_material(MATERIAL_NAME, 12, 12, conductivity=12)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_materials_add_djordjevicsarkar_dielectric(self, edb_examples):
+    def test_materials_add_djordjevicsarkar_dielectric(self):
         """Evalue add djordjevicsarkar dielectric material."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         material = materials.add_djordjevicsarkar_dielectric(
             MATERIAL_NAME, 4.3, 0.02, 9, dc_conductivity=1e-12, dc_permittivity=5, conductivity=0
@@ -221,9 +221,9 @@ class TestClass(BaseTestClass):
             )
         edbapp.close(terminate_rpc_session=False)
 
-    def test_materials_add_debye_material(self, edb_examples):
+    def test_materials_add_debye_material(self):
         """Evalue add debye material material."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         material = materials.add_debye_material(MATERIAL_NAME, 6, 4, 0.02, 0.05, 1e9, 10e9, conductivity=0)
         assert material
@@ -234,9 +234,9 @@ class TestClass(BaseTestClass):
             materials.add_debye_material(MATERIAL_NAME, 6, 4, 0.02, 0.05, 1e9, 10e9, conductivity=0)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_materials_add_multipole_debye_material(self, edb_examples):
+    def test_materials_add_multipole_debye_material(self):
         """Evalue add multipole debye material."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         frequencies = [0, 2, 3, 4, 5, 6]
         relative_permitivities = [1e9, 1.1e9, 1.2e9, 1.3e9, 1.5e9, 1.6e9]
@@ -255,9 +255,9 @@ class TestClass(BaseTestClass):
             )
         edbapp.close(terminate_rpc_session=False)
 
-    def test_materials_duplicate(self, edb_examples):
+    def test_materials_duplicate(self):
         """Evalue duplicate material."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         kwargs = MaterialProperties(**{field: 12 for field in MaterialProperties.__annotations__}).model_dump()
         material = materials.add_material(MATERIAL_NAME, **kwargs)
@@ -270,9 +270,9 @@ class TestClass(BaseTestClass):
             materials.duplicate(MATERIAL_NAME, other_name)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_materials_delete_material(self, edb_examples):
+    def test_materials_delete_material(self):
         """Evaluate delete material."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         _ = materials.add_material(MATERIAL_NAME)
         materials.delete_material(MATERIAL_NAME)
@@ -282,10 +282,10 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=GRPC, reason="This test is not valid for gRPC mode")
-    def test_materials_material_property_to_id(self, edb_examples):
+    def test_materials_material_property_to_id(self):
         """Evaluate materials map between material property and id."""
         pytest.skip("This test is not available in gRPC mode.")
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         permittivity_id = edbapp.core.Definition.MaterialPropertyId.Permittivity
         invalid_id = edbapp.core.Definition.MaterialPropertyId.InvalidProperty
@@ -293,9 +293,9 @@ class TestClass(BaseTestClass):
         assert invalid_id == materials.material_property_to_id("azertyuiop")
         edbapp.close(terminate_rpc_session=False)
 
-    def test_material_load_amat(self, edb_examples):
+    def test_material_load_amat(self):
         """Evaluate load material from an AMAT file."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         nb_materials = len(materials.materials)
         mat_file = os.path.join(edbapp.base_path, "syslib", "Materials.amat")
@@ -306,9 +306,9 @@ class TestClass(BaseTestClass):
         assert 3.0 == materials["Rogers RO3003 (tm)"].permittivity
         edbapp.close(terminate_rpc_session=False)
 
-    def test_materials_read_materials(self, edb_examples):
+    def test_materials_read_materials(self):
         """Evaluate read materials."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         mat_file = os.path.join(local_path, "example_models", "syslib", "Materials.amat")
         name_to_material = materials.read_materials(mat_file)
@@ -337,9 +337,9 @@ class TestClass(BaseTestClass):
         assert name_to_material[key]["thermal_expansion_coefficient"] == 1.08e-005
         edbapp.close(terminate_rpc_session=False)
 
-    def test_materials_load_conductor_material(self, edb_examples):
+    def test_materials_load_conductor_material(self):
         """Load conductor material."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         conductor_material_properties = {"name": MATERIAL_NAME, "conductivity": 2e4}
 
@@ -349,9 +349,9 @@ class TestClass(BaseTestClass):
         assert 2e4 == material.conductivity
         edbapp.close(terminate_rpc_session=False)
 
-    def test_materials_load_dielectric_material(self, edb_examples):
+    def test_materials_load_dielectric_material(self):
         """Load dielectric material."""
-        edbapp = edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         materials = edbapp.materials
         dielectric_material_properties = {"name": MATERIAL_NAME, "permittivity": 12, "loss_tangent": 0.00045}
 
@@ -363,8 +363,8 @@ class TestClass(BaseTestClass):
         assert 12 == material.permittivity
         edbapp.close(terminate_rpc_session=False)
 
-    def test_update_materials_from_syslib(self, edb_examples):
-        edbapp = edb_examples.create_empty_edb()
+    def test_update_materials_from_syslib(self):
+        edbapp = self.edb_examples.create_empty_edb()
         edbapp.materials.add_material("copper")
         edbapp.materials.update_materials_from_sys_library(False, "copper")
         assert edbapp.materials["copper"].thermal_conductivity == 400
@@ -373,8 +373,8 @@ class TestClass(BaseTestClass):
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
         edbapp.close(terminate_rpc_session=False)
 
-    def test_material_thermal_modifier(self, edb_examples):
-        edbapp = edb_examples.create_empty_edb()
+    def test_material_thermal_modifier(self):
+        edbapp = self.edb_examples.create_empty_edb()
         THERMAL_MODIFIER = {
             "basic_quadratic_temperature_reference": 21,
             "basic_quadratic_c1": 0.1,
