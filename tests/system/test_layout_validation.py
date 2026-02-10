@@ -32,40 +32,40 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.mark.skipif(True, reason="fails randomly.")
-    def test_disjoint_nets(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_disjoint_nets(self):
+        edbapp = self.edb_examples.get_si_verse()
         edbapp.layout_validation.disjoint_nets()
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(True, reason="fails randomly.")
-    def test_dc_shorts(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_dc_shorts(self):
+        edbapp = self.edb_examples.get_si_verse()
         edbapp.layout_validation.dc_shorts(fix=True)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_fix_self_intersecting(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_fix_self_intersecting(self):
+        edbapp = self.edb_examples.get_si_verse()
         edbapp.layout_validation.fix_self_intersections()
         edbapp.close(terminate_rpc_session=False)
 
-    def test_illegal_net_names(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_illegal_net_names(self):
+        edbapp = self.edb_examples.get_si_verse()
         edbapp.layout_validation.illegal_net_names(fix=True)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_padstacks_no_name(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_padstacks_no_name(self):
+        edbapp = self.edb_examples.get_si_verse()
         edbapp.layout_validation.padstacks_no_name(fix=True)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_padstacks_no_layer(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_padstacks_no_layer(self):
+        edbapp = self.edb_examples.get_si_verse()
         edbapp.layout_validation.illegal_rlc_values(fix=True)
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
-    def test_empty_pin_groups(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_empty_pin_groups(self):
+        edbapp = self.edb_examples.get_si_verse()
         _, pg = edbapp.siwave.create_pin_group("U9", ["32", "33"])
         pg.remove_pins(["32", "33"])
         assert len(edbapp.siwave.pin_groups) == 1
