@@ -36,24 +36,21 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 @pytest.mark.usefixtures("close_rpc_session")
 @pytest.mark.skipif(True, reason="skipping test on CI because they fail in non-graphical")
 class TestClass(BaseTestClass):
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch):
-        self.local_scratch = local_scratch
 
     def test_siwave(self):
         """Create Siwave."""
 
         siw = Siwave(desktop_version)
         time.sleep(10)
-        example_project = os.path.join(local_path, "example_models", "siwave", "siw_dc.siw")
-        target_path = os.path.join(self.local_scratch.path, "siw_dc.siw")
-        self.local_scratch.copyfile(example_project, target_path)
+
+        target_path = self.edb_examples.copy_test_files_into_local_folder("siwave/siw_dc.siw")
+
         assert siw
         assert siw.close_project()
         siw.open_project(target_path)
         siw.run_dc_simulation()
         export_report = os.path.join(siw.results_directory, "test.htm")
-        assert siw.export_siwave_report("DC IR Sim 3", export_report)
+        assert siw.export_dc_simulation_report("DC IR Sim 3", export_report)
         assert siw.export_dc_simulation_report("DC IR Sim 3", os.path.join(siw.results_directory, "test2"))
         export_data = os.path.join(siw.results_directory, "test.txt")
         assert siw.export_element_data("DC IR Sim 3", export_data)
@@ -61,8 +58,8 @@ class TestClass(BaseTestClass):
         assert siw.export_icepak_project(export_icepak, "DC IR Sim 3")
         assert siw.quit_application()
 
-    def test_configuration(self, get_edb_examples):
-        edbapp = get_edb_examples.get_si_verse(edbapp=False)
+    def test_configuration(self):
+        edbapp = self.edb_examples.edb_examples.get_si_verse(edbapp=False)
         data = {
             "ports": [
                 {
@@ -86,14 +83,14 @@ class TestClass(BaseTestClass):
             },
         }
 
-        cfg_json = os.path.join(get_edb_examples.test_folder, "cfg.json")
+        cfg_json = os.path.join(self.edb_examples.test_folder, "cfg.json")
         with open(cfg_json, "w") as f:
             json.dump(data, f)
 
         siw = Siwave(desktop_version)
         siw.import_edb(edbapp)
         siw.load_configuration(cfg_json)
-        cfg_json_2 = os.path.join(get_edb_examples.test_folder, "cfg2.json")
+        cfg_json_2 = os.path.join(self.edb_examples.test_folder, "cfg2.json")
         siw.export_configuration(cfg_json_2)
         siw.quit_application()
         with open(cfg_json_2, "r") as f:
