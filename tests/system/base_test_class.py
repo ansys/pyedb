@@ -20,6 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pathlib import Path
+import secrets
+
 import pytest
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -35,9 +38,15 @@ class BaseTestClass:
         yield
 
     @pytest.fixture(autouse=True)
-    def init(self, edb_examples):
+    def init(self, local_scratch, edb_examples, request):
         """init runs before each test."""
-        return
+        temp = Path(local_scratch.path) / f"{request.node.name}_{secrets.token_hex(2)}"
+        temp.mkdir(parents=True)
+        self.edb_examples = edb_examples
+        self.edb_examples.test_folder = temp
+        yield
+        del temp
+        del self.edb_examples
 
     @pytest.fixture(autouse=True)
     def teardown(self, request, edb_examples):

@@ -132,6 +132,24 @@ class EdbExamples:
         dst = self.local_scratch.copyfolder(src, file_folder_name)
         return dst
 
+    def copy_test_files_into_local_folder(self, file_folder_path):
+        """Copy files or folders from example_models into local test folder."""
+        source_folder = Path(__file__).parent / "example_models"
+        files = file_folder_path if isinstance(file_folder_path, list) else [file_folder_path]
+        target_files = []
+        for f in files:
+            src_files = source_folder / f
+            target_file_folder_name = os.path.join(self.test_folder, src_files.name)
+
+            if not src_files.exists():
+                raise FileNotFoundError(f"Source file or folder {src_files} does not exist.")
+            elif os.path.isfile(src_files):
+                self.local_scratch.copyfile(src_files, target_file_folder_name)
+            else:
+                self.local_scratch.copyfolder(src_files, target_file_folder_name)
+            target_files.append(target_file_folder_name)
+        return target_files
+
     def _get_test_board(self, edbapp, additional_files_folders, version, source_file_path):
         """Copy si_verse board file into local folder. A new temporary folder will be created."""
         aedb = self._copy_file_folder_into_local_folder(source_file_path)
