@@ -62,7 +62,6 @@ class TestClass(BaseTestClass):
         assert stackup.top_metal.material.conductivity == 5.8e7
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
     def test_cpw(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
@@ -70,9 +69,9 @@ class TestClass(BaseTestClass):
             edb_cell=edb,
             width=10e-6,
             gap=5e-6,
-            layer="METAL_TOP",
+            layer="TOP_METAL",
             ground_net="GND",
-            ground_layer="METAL_BOT",
+            ground_layer="BOT_METAL",
             length=1e-3,
         )
         cpw.substrate.er = edb.materials["Silicon"].permittivity
@@ -80,7 +79,7 @@ class TestClass(BaseTestClass):
         cpw.create()
         assert round(cpw.analytical_z0, 3) == 10.678
         assert cpw.gap == 5e-6
-        assert cpw.ground_layer == "METAL_BOT"
+        assert cpw.ground_layer == "BOT_METAL"
         assert len(edb.modeler.rectangles) == 4
         assert edb.modeler.rectangles[0].net.name == "SIG"
         assert edb.modeler.rectangles[0].bbox == [-5e-06, 0.0, 5e-06, 0.001]
@@ -88,7 +87,7 @@ class TestClass(BaseTestClass):
         assert edb.variables["w"] == 1e-05
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Check pyedb-core issue #691")
     def test_diff_tline(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
@@ -119,7 +118,6 @@ class TestClass(BaseTestClass):
         assert len(edb.modeler.polygons[0].arcs) == 4
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
     def test_interdigited_capacitor(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
@@ -131,7 +129,7 @@ class TestClass(BaseTestClass):
             gap="0.04mm",
             comb_gap="0.06mm",
             bus_width="0.25mm",
-            layer="METAL_TOP",
+            layer="TOP_METAL",
             net_a="P1",
             net_b="P2",
         )
@@ -142,7 +140,7 @@ class TestClass(BaseTestClass):
         assert edb.modeler.rectangles[0].net.name == "P1"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Check pyedb-core issue #691")
     def test_radial_stud(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
@@ -153,7 +151,7 @@ class TestClass(BaseTestClass):
         assert edb.modeler.rectangles[0].net.name == "RF"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Check pyedb-core issue #691")
     def test_rat_race(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
@@ -174,6 +172,7 @@ class TestClass(BaseTestClass):
         assert edb.modeler.paths[0].net.name == "RR"
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Check pyedb-core issue #691")
     def test_spiral_inductor(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         edb.materials.add_dielectric_material(name="SiO2", permittivity=4, dielectric_loss_tangent=0)
@@ -208,7 +207,7 @@ class TestClass(BaseTestClass):
         assert edb.modeler.paths[0].net.name == "IN"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Check pyedb-core issue #691")
     def test_ustrip(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
@@ -219,7 +218,7 @@ class TestClass(BaseTestClass):
         assert ustrip.width == 300e-6
         assert ustrip.impedance == 37.52
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Check pyedb-core issue #691")
     def test_patch_antenna(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(pedb=edb)
@@ -237,7 +236,7 @@ class TestClass(BaseTestClass):
         assert patch_antenna.length == 0.03337
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Check pyedb-core issue #691")
     def test_circular_patch_antenna(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(pedb=edb)
@@ -249,7 +248,7 @@ class TestClass(BaseTestClass):
         assert patch_antenna.radius == 0.0174
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="Check pyedb-core issue #691")
     def test_triangular_antenna(self, edb_examples):
         edb = edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(pedb=edb)

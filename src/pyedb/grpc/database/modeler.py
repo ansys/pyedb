@@ -645,36 +645,6 @@ class Modeler(object):
         end_cap_style="Round",
         corner_style="Round",
     ):
-        """
-        Create a path based on a list of points.
-
-        Parameters
-        ----------
-        points: .:class:`dotnet.database.layout.Shape`
-            List of points.
-        layer_name : str
-            Name of the layer on which to create the path.
-        width : float, optional
-            Width of the path. The default is ``1``.
-        net_name: str, optional
-            Name of the net. The default is ``""``.
-        start_cap_style : str, optional
-            Style of the cap at its start. Options are ``"Round"``,
-            ``"Extended", `` and ``"Flat"``. The default is
-            ``"Round".
-        end_cap_style : str, optional
-            Style of the cap at its end. Options are ``"Round"``,
-            ``"Extended", `` and ``"Flat"``. The default is
-            ``"Round".
-        corner_style : str, optional
-            Style of the corner. Options are ``"Round"``,
-            ``"Sharp"`` and ``"Mitered"``. The default is ``"Round".
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            ``True`` when successful, ``False`` when failed.
-        """
         net = self._pedb.nets.find_or_create_net(net_name)
         _points = []
         if isinstance(points, (list, tuple)):
@@ -716,6 +686,7 @@ class Modeler(object):
         start_cap_style: str = "Round",
         end_cap_style: str = "Round",
         corner_style: str = "Round",
+        parametrized: bool = False,
     ) -> Optional[Primitive]:
         """Create trace path.
 
@@ -736,12 +707,57 @@ class Modeler(object):
             End cap style ("Round", "Extended", "Flat").
         corner_style : str, optional
             Corner style ("Round", "Sharp", "Mitered").
+        parametrized : bool, optional
+            Whether width is a parametrized variable. Variable has to be created beforehand.
+            If width passed as string, it will be considered as variable name or expression, for instance `w*2+l`.
+            This expression will be evaluated once imported in AEDT and updated when parameters are changed.
 
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Path` or bool
             Path object if created, False otherwise.
         """
+
+        net = self._pedb.nets.find_or_create_net(net_name)
+        if isinstance(path_list, CorePolygonData):
+            center_line = path_list
+        else:
+            _points = []
+            if isinstance(path_list, (list, tuple)):
+                points = normalize_pairs(path_list)
+                for pt in points:
+                    _pt = []
+                    for coord in pt:
+                        if isinstance(coord, str) and parametrized:
+                            _pt.append(coord)
+                            continue
+                        coord = Value(coord)
+                        _pt.append(coord)
+                    _points.append(_pt)
+                points = _points
+                # points = [CorePointData(pt) for pt in points]
+                center_line = CorePolygonData(points)
+                if isinstance(width, str) and parametrized:
+                    pass
+                else:
+                    width = Value(width)
+            else:
+                raise TypeError("Points must be a list of points or a PolygonData object.")
+        path = Path.create(
+            layout=self._active_layout,
+            layer=layer_name,
+            net=net,
+            width=width,
+            end_cap1=start_cap_style,
+            end_cap2=end_cap_style,
+            corner_style=corner_style,
+            points=center_line,
+            parametrized=parametrized,
+        )
+        if path.is_null:  # pragma: no cover
+            self._logger.error("Null path created")
+            return False
+        return path
 
         primitive = self._create_path(
             points=path_list,
@@ -826,6 +842,7 @@ class Modeler(object):
         representation_type: str = "lower_left_upper_right",
         corner_radius: str = "0mm",
         rotation: str = "0deg",
+        parametrized: bool = False,
     ) -> Optional[Primitive]:
         """Create rectangle primitive.
 
@@ -851,53 +868,59 @@ class Modeler(object):
             Corner radius with units.
         rotation : str, optional
             Rotation angle with units.
+        parametrized : bool, optional
+            Whether width and height are parametrized variables.
+            Variables has to be created beforehand. If Parameters passed string, it will be considered as variable name
+            or expression, for instance `w*2+l`. This expression will be evaluated once imported in AEDT and updated
+            when parameters are changed.
 
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` or bool
             Rectangle object if created, False otherwise.
         """
+        if parametrized:
+            if isinstance(lower_left_point, list):
+                lower_left_point = [Value(pt) if isinstance(pt, (float, int)) else pt for pt in lower_left_point]
+            if isinstance(upper_right_point, list):
+                upper_right_point = [Value(pt) if isinstance(pt, (float, int)) else pt for pt in upper_right_point]
+            if isinstance(center_point, (float, int)):
+                center_point = Value(center_point)
+            if isinstance(corner_radius, (float, int)):
+                corner_radius = Value(corner_radius)
+            if isinstance(rotation, (float, int)):
+                rotation = Value(rotation)
+            if isinstance(width, (float, int)):
+                width = Value(width)
+            if isinstance(height, (float, int)):
+                height = Value(height)
         net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "lower_left_upper_right":
-            rect = Rectangle(self._pedb).create(
+            rect = Rectangle.create(
                 layout=self._active_layout,
                 layer=layer_name,
                 net=net,
                 rep_type=representation_type,
-                param1=Value(lower_left_point[0]),
-                param2=Value(lower_left_point[1]),
-                param3=Value(upper_right_point[0]),
-                param4=Value(upper_right_point[1]),
-                corner_rad=Value(corner_radius),
-                rotation=Value(rotation),
+                param1=lower_left_point[0],
+                param2=lower_left_point[1],
+                param3=upper_right_point[0],
+                param4=upper_right_point[1],
+                corner_rad=corner_radius,
+                rotation=rotation,
             )
         else:
             rep_type = "center_width_height"
-            if isinstance(width, str):
-                if width in self._pedb.variables:
-                    width = Value(width, self._pedb.active_cell)
-                else:
-                    width = Value(width)
-            else:
-                width = Value(width)
-            if isinstance(height, str):
-                if height in self._pedb.variables:
-                    height = Value(height, self._pedb.active_cell)
-                else:
-                    height = Value(width)
-            else:
-                height = Value(width)
             rect = Rectangle.create(
                 layout=self._active_layout,
                 layer=layer_name,
                 net=net,
                 rep_type=rep_type,
-                param1=Value(center_point[0]),
-                param2=Value(center_point[1]),
-                param3=Value(width),
-                param4=Value(height),
-                corner_rad=Value(corner_radius),
-                rotation=Value(rotation),
+                param1=center_point[0],
+                param2=center_point[1],
+                param3=width,
+                param4=height,
+                corner_rad=corner_radius,
+                rotation=rotation,
             )
         if not rect.is_null:
             self._add_primitive(rect)

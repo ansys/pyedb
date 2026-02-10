@@ -71,12 +71,12 @@ class Rectangle(Primitive):
         layer: Union[str, Layer] = None,
         net: Union[str, "Net"] = None,
         rep_type: str = "center_width_height",
-        param1: float = None,
-        param2: float = None,
-        param3: float = None,
-        param4: float = None,
-        corner_rad: float = 0.0,
-        rotation: float = 0.0,
+        param1: Union[str, Value] = None,
+        param2: Union[str, Value] = None,
+        param3: Union[str, Value] = None,
+        param4: Union[str, Value] = None,
+        corner_rad: Union[str, Value] = 0.0,
+        rotation: Union[str, Value] = 0.0,
     ):
         """
         Create a rectangle primitive in the specified layout, layer, and net with the given parameters.
@@ -144,12 +144,12 @@ class Rectangle(Primitive):
             layer=layer,
             net=net.core,
             rep_type=rep_type,
-            param1=Value(param1),
-            param2=Value(param2),
-            param3=Value(param3),
-            param4=Value(param4),
-            corner_rad=Value(corner_rad),
-            rotation=Value(rotation),
+            param1=param1,
+            param2=param2,
+            param3=param3,
+            param4=param4,
+            corner_rad=corner_rad,
+            rotation=rotation,
         )
         # keep cache synced
         new_rect = cls(layout._pedb, edb_object)

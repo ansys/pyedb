@@ -586,6 +586,7 @@ class Modeler(object):
         start_cap_style="Round",
         end_cap_style="Round",
         corner_style="Round",
+        parametrized=False,
     ):
         """
         Create a trace based on a list of points.
@@ -611,7 +612,8 @@ class Modeler(object):
         corner_style : str, optional
             Style of the corner. Options are ``"Round"``,
             ``"Sharp"`` and ``"Mitered"``. The default is ``"Round"``.
-
+        parametrized : bool, optional
+            Added for compatibility with grpc.
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
@@ -771,6 +773,7 @@ class Modeler(object):
         representation_type="LowerLeftUpperRight",
         corner_radius="0mm",
         rotation="0deg",
+        parametrized=False,
     ):
         """Create rectangle.
 
@@ -797,6 +800,8 @@ class Modeler(object):
             Radius of the rectangle corner. The default is ``"0mm"``.
         rotation : str, optional
             Rotation of the rectangle. The default is ``"0deg"``.
+        parametrized : bool, optional
+            Added for compatibility with grpc.
 
         Returns
         -------
