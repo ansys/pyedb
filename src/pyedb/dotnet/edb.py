@@ -1710,7 +1710,7 @@ class Edb:
         return self.save_as(path)
 
     @execution_timer("EDB file save")
-    def save_as(self, path):
+    def save_as(self, path: str | Path):
         """Save the EDB file as another file.
 
         Parameters
@@ -1724,6 +1724,8 @@ class Edb:
             ``True`` when successful, ``False`` when failed.
 
         """
+        path = str(path) if isinstance(path, Path) else path
+
         origin_name = "pyedb_" + os.path.splitext(os.path.split(self.edbpath)[-1])[0]
         self._db.SaveAs(path, "")
         self._wait_for_file_release()

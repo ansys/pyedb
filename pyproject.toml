@@ -26,14 +26,14 @@ classifiers = [
 
 dependencies = [
     "cffi>=1.16.0,<2.1; platform_system=='Linux'",
-    "pywin32 >= 303;platform_system=='Windows'",
-    "ansys-pythonnet >= 3.1.0rc4",
-    "dotnetcore2 ==3.1.23;platform_system=='Linux'",
+    "pywin32>=303;platform_system=='Windows'",
+    "ansys-pythonnet>=3.1.0rc4",
+    "dotnetcore2==3.1.23;platform_system=='Linux'",
     "numpy>=1.20.0,<3",
     "pandas>=1.1.0,<2.4",
     "pydantic>=2.6.4,<2.13",
-    "Rtree >= 1.2.0",
-    "toml == 0.10.2",
+    "Rtree>=1.2.0",
+    "toml==0.10.2",
     "shapely",
     "scikit-rf",
     "ansys-edb-core>=0.2.0,<0.2.6",
@@ -41,19 +41,16 @@ dependencies = [
     "defusedxml>=0.7,<8.0",
     "matplotlib>=3.5.0,<3.11",
     "ezdxf>=1.4.2",
-    "scipy>=1.13, <2.0",
+    "scipy>=1.13,<2.0",
     "xmltodict"
 ]
 
 [project.optional-dependencies]
 tests = [
-    "matplotlib>=3.5.0,<3.11",
     "mock>=5.1.0,<5.3",
     "pytest>=7.4.0,<9.1",
     "pytest-cov>=4.0.0,<7.1",
     "pytest-xdist>=3.5.0,<3.7",
-    "scikit-rf",
-    "shapely"
 ]
 doc = [
     "ansys-sphinx-theme[autoapi]>=1.0.0,<1.7",
@@ -61,7 +58,7 @@ doc = [
     "jupyterlab>=4.0.0,<4.6",
     "jupytext>=1.16.0,<1.19",
     "nbsphinx>=0.9.0,<0.10",
-    "nbconvert < 7.17",
+    "nbconvert<7.18",
     "numpydoc==1.10.0",
     "pypandoc>=1.10.0,<1.17",
     # NOTE: Remove recommonmark once examples are reworked.
@@ -82,7 +79,7 @@ Bugs = "https://github.com/ansys/pyedb/issues"
 Documentation = "https://edb.docs.pyansys.com"
 Source = "https://github.com/ansys/pyedb"
 Discussions = "https://github.com/ansys/pyedb/discussions"
- Releases = "https://github.com/ansys/pyedb/releases"
+Releases = "https://github.com/ansys/pyedb/releases"
 
 [tool.ruff]
 line-length = 120

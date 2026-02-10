@@ -135,9 +135,7 @@ class EdbExamples:
     def copy_test_files_into_local_folder(self, file_folder_path):
         """Copy files or folders from example_models into local test folder."""
         source_folder = Path(__file__).parent / "example_models"
-        files = (
-            file_folder_path if isinstance(file_folder_path, list) else [file_folder_path]
-        )
+        files = file_folder_path if isinstance(file_folder_path, list) else [file_folder_path]
         target_files = []
         for f in files:
             src_files = source_folder / f

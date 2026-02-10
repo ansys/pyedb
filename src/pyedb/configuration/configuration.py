@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from copy import deepcopy
 from datetime import datetime
 import json
 import os
@@ -108,7 +109,7 @@ class Configuration:
             Config dictionary.
         """
         if isinstance(config_file, dict):
-            data = config_file
+            data = deepcopy(config_file)
         else:
             config_file = str(config_file)
             if os.path.isfile(config_file):
@@ -217,12 +218,14 @@ class Configuration:
                             # mesh_region=mp.get(mesh_region),
                             net_layer_list=mp.nets_layers_list,
                         )
-                else:
+                elif setup.type == "siwave_ac":  # siwave ac
                     edb_setup = self._pedb.create_siwave_syz_setup(name=setup.name)
                     if setup.si_slider_position is not None:
                         edb_setup.si_slider_position = setup.si_slider_position
                     else:
                         edb_setup.pi_slider_position = setup.pi_slider_position
+                else:
+                    raise SyntaxError(f"Unsupported setup type '{setup.type}'.")
 
                 # Apply frequency sweeps
                 for sw in setup.freq_sweep:
@@ -243,6 +246,11 @@ class Configuration:
                     sweep.enforce_causality = sw.enforce_causality
                     sweep.enforce_passivity = sw.enforce_passivity
                     sweep.adv_dc_extrapolation = sw.adv_dc_extrapolation
+
+                    if setup.type == "siwave_ac":
+                        sweep.use_hfss_solver_regions = sw.use_hfss_solver_regions
+                        sweep.hfss_solver_region_setup_name = sw.hfss_solver_region_setup_name
+                        sweep.hfss_solver_region_sweep_name = sw.hfss_solver_region_sweep_name
 
     def get_setups(self):
         self.cfg_data.setups = []
@@ -297,6 +305,9 @@ class Configuration:
                             enforce_causality=sw.enforce_causality,
                             enforce_passivity=sw.enforce_passivity,
                             adv_dc_extrapolation=sw.adv_dc_extrapolation,
+                            use_hfss_solver_regions=sw.use_hfss_solver_regions,
+                            hfss_solver_region_setup_name=sw.hfss_solver_region_setup_name,
+                            hfss_solver_region_sweep_name=sw.hfss_solver_region_sweep_name,
                         )
                     )
 

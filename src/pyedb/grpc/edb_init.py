@@ -25,6 +25,7 @@
 
 import atexit
 import os
+from pathlib import Path
 import signal
 import sys
 import time
@@ -286,7 +287,7 @@ class EdbInit(object):
         """
         return database.Database.find_by_id(db_id)
 
-    def save_as(self, path, version=""):
+    def save_as(self, path: str | Path, version: str = "") -> bool:
         """Save this Database to a new location and older EDB version.
 
         Parameters
@@ -296,6 +297,7 @@ class EdbInit(object):
         version : str
             EDB version to save to. Empty string means current version.
         """
+        path = str(path) if isinstance(path, Path) else path
         self._db.save_as(path, version)
         if os.path.exists(path):
             return True
