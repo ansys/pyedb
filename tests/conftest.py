@@ -176,7 +176,7 @@ class EdbExamples:
 
     def get_package(self, edbapp=True, additional_files_folders="", version=None):
         """ "Copy package board file into local folder. A new temporary folder will be created."""
-        target_file = self.copy_test_files_into_local_folder("TEDB/ANSYS-example_package.aedb")[0]
+        target_file = self.copy_test_files_into_local_folder("TEDB/example_package.aedb")[0]
         if edbapp:
             version = desktop_version if version is None else version
             return Edb(target_file, version=version, grpc=self.grpc)
