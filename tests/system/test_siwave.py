@@ -61,8 +61,8 @@ class TestClass(BaseTestClass):
         assert siw.export_icepak_project(export_icepak, "DC IR Sim 3")
         assert siw.quit_application()
 
-    def test_configuration(self, edb_examples):
-        edbapp = edb_examples.get_si_verse(edbapp=False)
+    def test_configuration(self, get_edb_examples):
+        edbapp = get_edb_examples.get_si_verse(edbapp=False)
         data = {
             "ports": [
                 {
@@ -86,14 +86,14 @@ class TestClass(BaseTestClass):
             },
         }
 
-        cfg_json = os.path.join(edb_examples.test_folder, "cfg.json")
+        cfg_json = os.path.join(get_edb_examples.test_folder, "cfg.json")
         with open(cfg_json, "w") as f:
             json.dump(data, f)
 
         siw = Siwave(desktop_version)
         siw.import_edb(edbapp)
         siw.load_configuration(cfg_json)
-        cfg_json_2 = os.path.join(edb_examples.test_folder, "cfg2.json")
+        cfg_json_2 = os.path.join(get_edb_examples.test_folder, "cfg2.json")
         siw.export_configuration(cfg_json_2)
         siw.quit_application()
         with open(cfg_json_2, "r") as f:

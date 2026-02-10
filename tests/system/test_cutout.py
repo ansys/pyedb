@@ -32,7 +32,7 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    def test_create_custom_cutout_0(self, edb_examples):
+    def test_create_custom_cutout_0(self):
         """Create custom cutout 0."""
         edbapp = self.edb_examples.get_si_verse()
         output = str(Path(self.edb_examples.test_folder) / "cutout.aedb")

@@ -24,8 +24,6 @@
 
 import pytest
 
-from pyedb.generic.general_methods import is_windows
-from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -33,16 +31,10 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path2, target_path4):
-        self.local_scratch = local_scratch
-        self.target_path = target_path
-        self.target_path2 = target_path2
-        self.target_path4 = target_path4
 
-    def test_nets_queries(self, edb_examples):
+    def test_nets_queries(self):
         """Evaluate nets queries"""
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.extended_nets.auto_identify_signal()
         assert edbapp.extended_nets.auto_identify_power()
         extended_net_name, _ = next(iter(edbapp.extended_nets.items.items()))

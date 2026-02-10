@@ -48,8 +48,8 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
-    def init(self, edb_examples, local_scratch, target_path, target_path2, target_path4):
-        self.edbapp = edb_examples.get_si_verse()
+    def init(self, get_edb_examples, local_scratch, target_path, target_path2, target_path4):
+        self.edbapp = get_edb_examples.get_si_verse()
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path2 = target_path2

@@ -52,8 +52,8 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    def test_stackup(self, edb_examples):
-        edb = edb_examples.create_empty_edb()
+    def test_stackup(self, get_edb_examples):
+        edb = get_edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(edb)
         stackup.substrate.material.permittivity = 11.9
         assert stackup.substrate.material.permittivity == 11.9
@@ -63,8 +63,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
-    def test_cpw(self, edb_examples):
-        edb = edb_examples.create_empty_edb()
+    def test_cpw(self, get_edb_examples):
+        edb = get_edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
         cpw = CPW(
             edb_cell=edb,
@@ -89,8 +89,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
-    def test_diff_tline(self, edb_examples):
-        edb = edb_examples.create_empty_edb()
+    def test_diff_tline(self, get_edb_examples):
+        edb = get_edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
         pair = DifferentialTLine(edb, layer="METAL_TOP", length=10e-3, width=0.2e-3, spacing=0.18e-3)
         pair.create()
@@ -100,8 +100,8 @@ class TestClass(BaseTestClass):
         assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.01, 0.0]]
         edb.close(terminate_rpc_session=False)
 
-    def test_hatch_grounded(self, edb_examples):
-        edb = edb_examples.create_empty_edb()
+    def test_hatch_grounded(self, get_edb_examples):
+        edb = get_edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb, botton_layer_name="METAL_BOT")
         hatch = HatchGround(
             edb_cell=edb,
@@ -120,8 +120,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
-    def test_interdigited_capacitor(self, edb_examples):
-        edb = edb_examples.create_empty_edb()
+    def test_interdigited_capacitor(self, get_edb_examples):
+        edb = get_edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
         idc = InterdigitalCapacitor(
             edb_cell=edb,
@@ -143,8 +143,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
-    def test_radial_stud(self, edb_examples):
-        edb = edb_examples.create_empty_edb()
+    def test_radial_stud(self, get_edb_examples):
+        edb = get_edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
         stub = RadialStub(edb, layer="METAL_TOP", width=200e-6, radius=1e-3)
         stub.create()
@@ -154,8 +154,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
-    def test_rat_race(self, edb_examples):
-        edb = edb_examples.create_empty_edb()
+    def test_rat_race(self, get_edb_examples):
+        edb = get_edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
         rat_race = RatRace(
             edb_cell=edb,
@@ -174,8 +174,8 @@ class TestClass(BaseTestClass):
         assert edb.modeler.paths[0].net.name == "RR"
         edb.close(terminate_rpc_session=False)
 
-    def test_spiral_inductor(self, edb_examples):
-        edb = edb_examples.create_empty_edb()
+    def test_spiral_inductor(self, get_edb_examples):
+        edb = get_edb_examples.create_empty_edb()
         edb.materials.add_dielectric_material(name="SiO2", permittivity=4, dielectric_loss_tangent=0)
         edb.materials.add_dielectric_material(name="air", permittivity=1, dielectric_loss_tangent=0)
 
@@ -209,8 +209,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
-    def test_ustrip(self, edb_examples):
-        edb = edb_examples.create_empty_edb()
+    def test_ustrip(self, get_edb_examples):
+        edb = get_edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
         ustrip = MicroStripLine(edb_cell=edb, layer="METAL_TOP", net="Rf", length="2mm", freq=10e9)
         ustrip.create()
@@ -220,8 +220,8 @@ class TestClass(BaseTestClass):
         assert ustrip.impedance == 37.52
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
-    def test_patch_antenna(self, edb_examples):
-        edb = edb_examples.create_empty_edb()
+    def test_patch_antenna(self, get_edb_examples):
+        edb = get_edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(pedb=edb)
         stackup.substrate.thickness = 254e-6
         stackup.substrate.material.permittivity = 3.5
@@ -238,8 +238,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
-    def test_circular_patch_antenna(self, edb_examples):
-        edb = edb_examples.create_empty_edb()
+    def test_circular_patch_antenna(self, get_edb_examples):
+        edb = get_edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(pedb=edb)
         stackup.substrate.thickness = 254e-6
         stackup.substrate.material.permittivity = 3.5
@@ -250,8 +250,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
-    def test_triangular_antenna(self, edb_examples):
-        edb = edb_examples.create_empty_edb()
+    def test_triangular_antenna(self, get_edb_examples):
+        edb = get_edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(pedb=edb)
         stackup.substrate.thickness = 254e-6
         stackup.substrate.material.permittivity = 3.5

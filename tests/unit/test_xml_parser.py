@@ -31,7 +31,7 @@ pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
 
 class TestClass(BaseTestClass):
-    def test_create(self, edb_examples):
+    def test_create(self, get_edb_examples):
         xml_parser = XmlParser()
         xml_stackup = xml_parser.add_stackup()
         xml_materials = xml_stackup.add_materials()
@@ -66,7 +66,7 @@ class TestClass(BaseTestClass):
         )
         assert xml_parser.stackup.layers.layer[1].material == "fr4"
 
-        assert Path(xml_parser.to_xml_file(Path(edb_examples.test_folder) / "test_xml_parser_create.xml")).exists()
+        assert Path(xml_parser.to_xml_file(Path(get_edb_examples.test_folder) / "test_xml_parser_create.xml")).exists()
 
     def test_load_from_xml(self):
         xml_file = \

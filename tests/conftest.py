@@ -225,7 +225,7 @@ class EdbExamples:
 
 
 @pytest.fixture(scope="class", autouse=True)
-def edb_examples(local_scratch):
+def get_edb_examples(local_scratch):
     return EdbExamples(local_scratch, GRPC)
 
 

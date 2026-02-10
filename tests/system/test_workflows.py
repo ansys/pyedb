@@ -41,10 +41,10 @@ class TestClass:
         self.local_scratch = local_scratch
 
     @pytest.mark.skipif(True, reason="Unstable test.")
-    def test_hfss_log_parser(self, edb_examples):
+    def test_hfss_log_parser(self, get_edb_examples):
         from pyedb.workflows.utilities.hfss_log_parser import HFSSLogParser
 
-        log_file = edb_examples.get_log_file_example()
+        log_file = get_edb_examples.get_log_file_example()
         log_parser = HFSSLogParser(log_file).parse()
         for nr, line in enumerate(Path(log_file).read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
             if "converge" in line.lower():
@@ -63,10 +63,10 @@ class TestClass:
         assert log_parser.adaptive_passes()
         assert log_parser.memory_on_convergence() == 263
 
-    def test_hfss_auto_setup(self, edb_examples):
+    def test_hfss_auto_setup(self, get_edb_examples):
         from pyedb.workflows.sipi.hfss_auto_configuration import create_hfss_auto_configuration
 
-        edbapp = edb_examples.get_si_verse()
+        edbapp = get_edb_examples.get_si_verse()
         hfss_auto_config = create_hfss_auto_configuration(source_edb_path=edbapp.edbpath, edb=edbapp)
         hfss_auto_config.grpc = edbapp.grpc
         hfss_auto_config.ansys_version = edbapp.version
@@ -107,7 +107,7 @@ class TestClass:
         assert rules.copper_balance[0].max_percent == 15
 
     @pytest.mark.skipif(True, reason="Unstable test.")
-    def test_drc_rules_from_file(self, edb_examples):
+    def test_drc_rules_from_file(self, get_edb_examples):
         from pyedb.workflows.drc.drc import Drc, Rules
 
         RULES_DICT = {
@@ -124,7 +124,7 @@ class TestClass:
             "back_drill_stub_length": [{"name": "STUB", "value": "6mil"}],
             "copper_balance": [{"name": "CB", "max_percent": 15, "layers": ["L3", "L4"]}],
         }
-        edbapp = edb_examples.get_si_verse()
+        edbapp = get_edb_examples.get_si_verse()
         rules = Rules.from_dict(RULES_DICT)
         drc = Drc(edbapp)
         drc.check(rules)
@@ -134,10 +134,10 @@ class TestClass:
         edbapp.close()
 
     @pytest.mark.skipif(True, reason="Unstable test.")
-    def test_siwave_log_parser(self, edb_examples):
+    def test_siwave_log_parser(self, get_edb_examples):
         from pyedb.workflows.utilities.siwave_log_parser import SiwaveLogParser
 
-        log_file = edb_examples.get_siwave_log_file_example()
+        log_file = get_edb_examples.get_siwave_log_file_example()
         parser = SiwaveLogParser(log_file)
         log_parser = parser.parse()
         assert log_parser.aedt

@@ -33,8 +33,8 @@ VERSION = 2024.2
 @pytest.mark.usefixtures("close_rpc_session")
 @pytest.mark.skipif(True, reason="AEDT 2024.2 is not installed")
 class TestClass(BaseTestClass):
-    def test_add_raptorx_setup(self, edb_examples):
-        edbapp = edb_examples.get_si_verse(version=VERSION)
+    def test_add_raptorx_setup(self):
+        edbapp = self.edb_examples.get_si_verse(version=VERSION)
         setup = edbapp.create_raptorx_setup("test")
         assert "test" in edbapp.setups
         setup.add_frequency_sweep(frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
@@ -117,8 +117,8 @@ class TestClass(BaseTestClass):
         assert advanced_settings.use_relaxed_z_axis
         edbapp.close(terminate_rpc_session=False)
 
-    def test_create_hfss_pi_setup(self, edb_examples):
-        edbapp = edb_examples.get_si_verse(version=VERSION)
+    def test_create_hfss_pi_setup(self):
+        edbapp = self.edb_examples.get_si_verse(version=VERSION)
         setup = edbapp.create_hfsspi_setup("test")
         assert setup.get_simulation_settings()
         settings = {
@@ -147,8 +147,8 @@ class TestClass(BaseTestClass):
         for k, v in settings.items():
             assert settings[k] == settings_get[k]
 
-    def test_create_hfss_pi_setup_add_sweep(self, edb_examples):
-        edbapp = edb_examples.get_si_verse(version=VERSION)
+    def test_create_hfss_pi_setup_add_sweep(self):
+        edbapp = self.edb_examples.get_si_verse(version=VERSION)
         setup = edbapp.create_hfsspi_setup("test")
         setup.add_sweep(name="sweep1", frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
         assert setup.sweeps["sweep1"].frequencies
