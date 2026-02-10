@@ -40,17 +40,6 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path2, target_path4, request):
-        self.local_scratch = local_scratch
-        self.target_path = target_path
-        self.target_path2 = target_path2
-        self.target_path4 = target_path4
-
-        self.current_test_temp_folder = Path(self.local_scratch.path) / request.node.name
-        self.current_test_temp_folder.mkdir(parents=True)
-        yield
-        self.current_test_temp_folder = ""
 
     def test_hfss_create_coax_port_on_component_from_hfss(self, edb_examples):
         """Create a coaxial port on a component from its pin."""
@@ -235,11 +224,12 @@ class TestClass(BaseTestClass):
             assert not edbapp.add_project_variable("$my_project_variable", "3mm")[0]
         edbapp.close(terminate_rpc_session=False)
 
-    def test_save_edb_as(self, edb_examples):
+    def test_save_edb_as(self):
         """Save edb as some file."""
-        edbapp = edb_examples.create_empty_edb()
-        assert edbapp.save_as(os.path.join(self.local_scratch.path, "si_verse_new.aedb"))
-        assert os.path.exists(os.path.join(self.local_scratch.path, "si_verse_new.aedb", "edb.def"))
+        edbapp = self.edb_examples.create_empty_edb()
+        target_path = Path(self.edb_examples.test_folder) / "si_verse_new.aedb"
+        assert edbapp.save_as(target_path)
+        assert (target_path / "edb.def").exists()
         edbapp.close(terminate_rpc_session=False)
 
     def test_export_3d(self, edb_examples):
@@ -786,12 +776,10 @@ class TestClass(BaseTestClass):
         assert edbapp.ports["test1"].is_circuit_port
         edbapp.close(terminate_rpc_session=False)
 
-    def test_siwave_source_setter(self, edb_examples):
+    def test_siwave_source_setter(self):
         """Evaluate siwave sources property."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "test_sources.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_134_source_setter.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = edb_examples.load_edb(target_path)
+        target_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/test_sources.aedb")[0]
+        edbapp = self.edb_examples.load_edb(target_path)
         sources = list(edbapp.siwave.sources.values())
         sources[0].magnitude = 1.45
         sources[1].magnitude = 1.45
@@ -800,13 +788,11 @@ class TestClass(BaseTestClass):
         assert sources[1].magnitude == 1.45
         edbapp.close(terminate_rpc_session=False)
 
-    def test_delete_pingroup(self, edb_examples):
+    def test_delete_pingroup(self):
         """Delete siwave pin groups."""
         # Done
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "test_pin_group.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_135_pin_group.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = edb_examples.load_edb(target_path)
+        target_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/test_pin_group.aedb")[0]
+        edbapp = self.edb_examples.load_edb(target_path)
         for _, pingroup in edbapp.siwave.pin_groups.items():
             pingroup.delete()
         assert not edbapp.siwave.pin_groups
@@ -1017,7 +1003,7 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    def test_import_gds_from_tech(self, edb_examples):
+    def test_import_gds_from_tech(self):
         """Use techfile."""
         from pyedb.dotnet.database.edb_data.control_file import ControlFile
 
@@ -1036,8 +1022,7 @@ class TestClass(BaseTestClass):
             "GDS",
             "sky130_fictitious_dtc_example.gds",
         )
-        gds_out = os.path.join(self.local_scratch.path, "sky130_fictitious_dtc_example.gds")
-        self.local_scratch.copyfile(gds_in, gds_out)
+        gds_out = self.edb_examples.copy_test_files_into_local_folder(gds_in)[0]
 
         c = ControlFile(c_file_in, layer_map=c_map)
         setup = c.setups.add_setup("Setup1", "1GHz", 0.02, 10)
@@ -1055,11 +1040,11 @@ class TestClass(BaseTestClass):
         for via in c.stackup.vias:
             via.create_via_group = True
             via.snap_via_group = True
-        c.write_xml(os.path.join(self.local_scratch.path, "test_138.xml"))
+        c.write_xml(self.edb_examples.test_folder/ "test_138.xml")
         c.import_options.import_dummy_nets = True
 
-        edb = edb_examples.load_edb(
-            gds_out, control_file=os.path.join(self.local_scratch.path, "test_138.xml"), copy_to_temp=False
+        edb = self.edb_examples.load_edb(
+            gds_out, control_file=self.edb_examples.test_folder / "test_138.xml", copy_to_temp=False
         )
 
         assert edb
@@ -1173,11 +1158,10 @@ class TestClass(BaseTestClass):
         )
         assert setup.sweeps
 
-    def test_create_edb_with_dxf(self, edb_examples):
+    def test_create_edb_with_dxf(self):
         """Create EDB from dxf file."""
-        edb_examples.test_folder = self.current_test_temp_folder
-        dxf = edb_examples.copy_test_files_into_local_folder("TEDB/edb_test_82.dxf")[0]
-        edb3 = edb_examples.load_edb(dxf, copy_to_temp=False)
+        dxf = self.edb_examples.copy_test_files_into_local_folder("TEDB/edb_test_82.dxf")[0]
+        edb3 = self.edb_examples.load_edb(dxf, copy_to_temp=False)
         assert len(edb3.modeler.polygons) == 1
         assert edb3.modeler.polygons[0].polygon_data.points == [
             (0.0, 0.0),
@@ -1431,11 +1415,8 @@ class TestClass(BaseTestClass):
 
     def test_create_edb_with_zip(self):
         """Create EDB from zip file."""
-        from pyedb import Edb
-
-        src = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1_0.zip")
-        zip_path = self.local_scratch.copyfile(src)
-        edb = Edb(zip_path)
+        zip_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1_0.zip")[0]
+        edb = self.edb_examples.load_edb(zip_path, copy_to_temp=False)
         assert edb.nets
         assert edb.components
         edb.close(terminate_rpc_session=False)
@@ -1665,25 +1646,13 @@ class TestClass(BaseTestClass):
 
         edb.close(terminate_rpc_session=False)
 
-    def test_import_layout_file(self, edb_examples):
-        def copy_gds_file():
-            input_file_src = os.path.join(
-                local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example.gds"
-            )
-            control_file_src = os.path.join(
-                local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
-            )
-            map_file_src = os.path.join(local_path, "example_models", "cad", "GDS", "dummy_layermap.map")
-            input_file = os.path.join(self.local_scratch.path, "sky130_fictitious_dtc_example.gds")
-            control_file = os.path.join(self.local_scratch.path, "sky130_fictitious_dtc_example_control_no_map.xml")
-            map_file = os.path.join(self.local_scratch.path, "dummy_layermap.map")
-            self.local_scratch.copyfile(input_file_src, input_file)
-            self.local_scratch.copyfile(control_file_src, control_file)
-            self.local_scratch.copyfile(map_file_src, map_file)
-            return input_file, control_file, map_file
-
-        input_file, control_file, map_file = copy_gds_file()
-        edb = edb_examples.create_empty_edb()
+    def test_import_layout_file(self):
+        input_file, control_file, map_file = self.edb_examples.copy_test_files_into_local_folder(
+            ["cad/GDS/sky130_fictitious_dtc_example.gds",
+             "cad/GDS/sky130_fictitious_dtc_example_control_no_map.xml",
+             "cad/GDS/dummy_layermap.map"]
+        )
+        edb = self.edb_examples.create_empty_edb()
         assert edb.import_layout_file(input_file=input_file, control_file=control_file, map_file=map_file)
         assert edb.close(terminate_rpc_session=False)
 
