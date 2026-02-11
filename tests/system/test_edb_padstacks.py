@@ -36,15 +36,12 @@ from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
+target_path  = "TEDB/example_package.aedb"
+target_path3 = "TEDB/ANSYS-HSD_V1_cut.aedb"
+target_path4 = "TEDB/Package.aedb"
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path3, target_path4):
-        self.local_scratch = local_scratch
-        self.target_path = target_path
-        self.target_path3 = target_path3
-        self.target_path4 = target_path4
 
     def test_get_pad_parameters(self):
         """Access to pad parameters."""
@@ -260,7 +257,7 @@ class TestClass(BaseTestClass):
 
     def test_microvias(self):
         """Convert padstack to microvias 3D objects."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/padstacks.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
         assert edbapp.padstacks.definitions["Padstack_Circle"].convert_to_3d_microvias(False)
         assert edbapp.padstacks.definitions["Padstack_Rectangle"].convert_to_3d_microvias(False, hole_wall_angle=10)
@@ -281,7 +278,8 @@ class TestClass(BaseTestClass):
 
     def test_split_microvias(self):
         """Convert padstack definition to multiple microvias definitions."""
-        edbapp = self.edb_examples.load_edb(self.target_path4, copy_to_temp=False)
+        fpath = self.edb_examples.copy_test_files_into_local_folder(target_path4)[0]
+        edbapp = self.edb_examples.load_edb(fpath)
         assert len(edbapp.padstacks.instances_by_name["via219"].split()) > 1
         assert "via219_2" in [i.name for i in edbapp.padstacks.definitions["BALL_VIA_1"].instances]
         edbapp.padstacks.instances_by_name["via218"].convert_hole_to_conical_shape()
@@ -296,7 +294,7 @@ class TestClass(BaseTestClass):
 
     def test_padstack_search_reference_pins(self):
         """Search for reference pins using given criteria."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
         pin = edbapp.components.instances["J5"].pins["19"]
         assert pin
@@ -330,7 +328,7 @@ class TestClass(BaseTestClass):
     @pytest.mark.parametrize("return_points", [True, False])
     def test_padstacks_create_rectangle_in_pad(self, return_points: bool):
         """Create a rectangle inscribed inside a padstack instance pad."""
-        example_model = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
+        example_model = self.edb_examples.copy_test_files_into_local_folder("TEDB/padstacks.aedb")[0]
         edb = self.edb_examples.load_edb(
             edb_path=example_model,
             isreadonly=True,
@@ -368,7 +366,7 @@ class TestClass(BaseTestClass):
     @pytest.mark.skipif(True, reason="Unstable test.")
     def test_padstaks_plot_on_matplotlib(self):
         """Plot a Net to Matplotlib 2D Chart."""
-        edb_plot = self.edb_examples.load_edb(self.target_path3, copy_to_temp=False)
+        edb_plot = self.edb_examples.load_edb(self.target_path3)
 
         local_png1 = os.path.join(self.local_scratch.path, "test1.png")
         edb_plot.nets.plot(
@@ -422,8 +420,7 @@ class TestClass(BaseTestClass):
         edb_plot.close(terminate_rpc_session=False)
 
     def test_update_padstacks_after_layer_name_changed(self):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
         signal_layer_list = [layer for layer in list(edbapp.stackup.layers.values()) if layer.type == "signal"]
         old_layers = []
@@ -438,13 +435,13 @@ class TestClass(BaseTestClass):
         edbapp.close_edb()
 
     def test_hole(self):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
         edbapp.padstacks.definitions["v35h15"].hole_diameter = "0.16mm"
         assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
 
     def test_padstack_instances_rtree_index(self):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
         index = edbapp.padstacks.get_padstack_instances_rtree_index()
         assert [round(val, 6) for val in index.bounds] == [-0.013785, -0.00225, 0.148, 0.078]
@@ -462,7 +459,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_polygon_based_padstack(self):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
         polygon_data = edbapp.modeler.paths[0].polygon_data
         edbapp.padstacks.create(
@@ -497,12 +494,8 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(condition=GRPC, reason="Needs to be checked with grpc")
     def test_via_fence(self):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "via_fence_generic_project.aedb")
-        target_path1 = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence1.aedb")
-        target_path2 = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence2.aedb")
-        self.local_scratch.copyfolder(source_path, target_path1)
-        self.local_scratch.copyfolder(source_path, target_path2)
-        edbapp = self.edb_examples.load_edb(target_path1, copy_to_temp=False)
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/via_fence_generic_project.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
         assert edbapp.padstacks.merge_via_along_lines(net_name="GND", distance_threshold=2e-3, minimum_via_number=6)
         assert not edbapp.padstacks.merge_via_along_lines(
             net_name="test_dummy", distance_threshold=2e-3, minimum_via_number=6
@@ -510,7 +503,11 @@ class TestClass(BaseTestClass):
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions
         edbapp.close(terminate_rpc_session=False)
-        edbapp = self.edb_examples.load_edb(target_path2, copy_to_temp=False)
+
+    @pytest.mark.skipif(condition=GRPC, reason="Needs to be checked with grpc")
+    def test_via_fence2(self):
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/via_fence_generic_project.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
         assert edbapp.padstacks.merge_via_along_lines(net_name="GND", distance_threshold=2e-3, minimum_via_number=6)
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions
@@ -554,7 +551,7 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_dbscan(self):
-        source_path = self.edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
 
         # "NET_1" one cluster with 20 vias
@@ -574,7 +571,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_reduce_via_by_density(self):
-        source_path = self.edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
 
         inst = edbapp.padstacks.instances
