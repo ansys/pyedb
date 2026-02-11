@@ -628,7 +628,7 @@ class TestClass(BaseTestClass):
 
         layer_name = "Trace"
         dxf = self.edb_examples.copy_test_files_into_local_folder("dxf_swap/rectangle.dxf")[0]
-        edb = self.edb_examples.load_edb(dxf)
+        edb = self.edb_examples.load_dxf_edb()
         point_aedt = ["170mm", "70mm"]
         swap_polygon_with_dxf_center_point(edb, dxf, layer_name, point_aedt)
         edb.save()
@@ -647,7 +647,7 @@ class TestClass(BaseTestClass):
 
         layer_name = "Trace"
         dxf = self.edb_examples.copy_test_files_into_local_folder("dxf_swap/rectangle.dxf")[0]
-        edb = self.edb_examples.load_edb(dxf)
+        edb = self.edb_examples.load_dxf_edb()
         point_aedt = ["170mm", "70mm"]
         point_dxf = ["40mm", "25mm"]
         swap_polygon_with_dxf(edb, dxf, layer_name, point_dxf, point_aedt)
