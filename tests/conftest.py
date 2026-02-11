@@ -130,26 +130,6 @@ class EdbExamples:
             target_files.append(target_file_folder_name)
         return target_files
 
-    def _get_test_board(self, edbapp, additional_files_folders, version, source_file_path):
-        """Copy si_verse board file into local folder. A new temporary folder will be created."""
-        aedb = self._copy_file_folder_into_local_folder(source_file_path)
-        if additional_files_folders:
-            files = (
-                additional_files_folders if isinstance(additional_files_folders, list) else [additional_files_folders]
-            )
-            for f in files:
-                src = os.path.join(self.example_models_path, f)
-                file_folder_name = os.path.join(self.test_folder, os.path.split(src)[-1])
-                if os.path.isfile(src):
-                    self.local_scratch.copyfile(src, file_folder_name)
-                else:
-                    self.local_scratch.copyfolder(src, file_folder_name)
-        if edbapp:
-            version = desktop_version if version is None else version
-            return Edb(aedb, edbversion=version, grpc=self.grpc)
-        else:
-            return aedb
-
     def get_si_verse(self, edbapp=True, version=None):
         target_file = self.copy_test_files_into_local_folder("si_verse/ANSYS-HSD_V1.aedb")[0]
         if edbapp:

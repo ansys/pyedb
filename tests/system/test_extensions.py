@@ -28,7 +28,6 @@ from pyedb.extensions.via_design_backend import ViaDesignBackend
 from tests.conftest import GRPC, desktop_version
 from tests.system.base_test_class import BaseTestClass
 
-# from tests.conftest import _get_test_board
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 

@@ -35,28 +35,22 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path2, target_path4):
-        self.local_scratch = local_scratch
-        self.target_path = target_path
-        self.target_path2 = target_path2
-        self.target_path4 = target_path4
 
-    def test_stackup_get_signal_layers(self, get_edb_examples):
+    def test_stackup_get_signal_layers(self):
         """Report residual copper area per layer."""
-        edbapp = get_edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.stackup.residual_copper_area_per_layer()
         edbapp.close(terminate_rpc_session=False)
 
-    def test_stackup_limits(self, get_edb_examples):
+    def test_stackup_limits(self):
         """Retrieve stackup limits."""
-        edbapp = get_edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.stackup.limits()
         edbapp.close(terminate_rpc_session=False)
 
-    def test_stackup_add_outline(self, get_edb_examples):
+    def test_stackup_add_outline(self):
         """Add an outline layer named ``"Outline1"`` if it is not present."""
-        edbapp = get_edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         assert edbapp.stackup.add_outline_layer()
         assert "Outline" in edbapp.stackup.non_stackup_layers
         edbapp.stackup.add_layer("1_Top")
@@ -65,22 +59,22 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.layers["1_Top"].thickness == 4e-05
         edbapp.close(terminate_rpc_session=False)
 
-    def test_stackup_create_symmetric_stackup(self, get_edb_examples):
+    def test_stackup_create_symmetric_stackup(self):
         """Create a symmetric stackup."""
-        app_edb = get_edb_examples.create_empty_edb()
+        app_edb = self.edb_examples.create_empty_edb()
         assert not app_edb.stackup.create_symmetric_stackup(9)
         assert app_edb.stackup.create_symmetric_stackup(8)
         app_edb.close(terminate_rpc_session=False)
 
-        app_edb = get_edb_examples.create_empty_edb()
+        app_edb = self.edb_examples.create_empty_edb()
         assert app_edb.stackup.create_symmetric_stackup(8, soldermask=False)
         app_edb.close(terminate_rpc_session=False)
 
-    def test_stackup_place_a3dcomp_3d_placement(self, get_edb_examples):
+    def test_stackup_place_a3dcomp_3d_placement(self):
         """Place a 3D Component into current layout."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "lam_for_bottom_place.aedb")
-        laminate_edb = get_edb_examples.load_edb(source_path)
-        chip_a3dcomp = os.path.join(local_path, "example_models", test_subfolder, "chip.a3dcomp")
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/lam_for_bottom_place.aedb")[0]
+        laminate_edb = self.edb_examples.load_edb(source_path)
+        chip_a3dcomp = self.edb_examples.copy_test_files_into_local_folder("TEDB/chip.a3dcomp")[0]
         try:
             layout = laminate_edb.active_layout
             if laminate_edb.grpc:
@@ -153,11 +147,11 @@ class TestClass(BaseTestClass):
         finally:
             laminate_edb.close(terminate_rpc_session=False)
 
-    def test_stackup_place_a3dcomp_3d_placement_on_bottom(self, get_edb_examples):
+    def test_stackup_place_a3dcomp_3d_placement_on_bottom(self):
         """Place a 3D Component into current layout."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "lam_for_bottom_place.aedb")
-        laminate_edb = get_edb_examples.load_edb(source_path)
-        chip_a3dcomp = os.path.join(local_path, "example_models", test_subfolder, "chip.a3dcomp")
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/lam_for_bottom_place.aedb")[0]
+        laminate_edb = self.edb_examples.load_edb(source_path)
+        chip_a3dcomp = self.edb_examples.copy_test_files_into_local_folder("TEDB/chip.a3dcomp")[0]
         try:
             layout = laminate_edb.active_layout
             if laminate_edb.grpc:
@@ -233,10 +227,10 @@ class TestClass(BaseTestClass):
         finally:
             laminate_edb.close(terminate_rpc_session=False)
 
-    def test_stackup_properties_0(self, get_edb_examples):
+    def test_stackup_properties_0(self):
         """Evaluate various stackup properties."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        edbapp = get_edb_examples.load_edb(source_path)
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
         assert isinstance(edbapp.stackup.layers, dict)
         assert isinstance(edbapp.stackup.signal_layers, dict)
         assert isinstance(edbapp.stackup.dielectric_layers, dict)
@@ -290,36 +284,36 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.add_layer("new_bottom", "1_Top", "add_at_elevation", "dielectric", elevation=0.0003)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_stackup_properties_1(self, get_edb_examples):
+    def test_stackup_properties_1(self):
         """Evaluate various stackup properties."""
-        edbapp = get_edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         import_method = edbapp.stackup.load
         export_method = edbapp.stackup.export
 
-        assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.csv"))
+        assert import_method(self.edb_examples.copy_test_files_into_local_folder("TEDB/ansys_pcb_stackup.csv")[0])
         assert "18_Bottom" in edbapp.stackup.layers.keys()
         assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
-        export_stackup_path = os.path.join(self.local_scratch.path, "export_stackup.csv")
+        export_stackup_path = os.path.join(self.edb_examples.test_folder, "export_stackup.csv")
         assert export_method(export_stackup_path)
         assert os.path.exists(export_stackup_path)
 
         edbapp.close(terminate_rpc_session=False)
 
-    def test_stackup_properties_2(self, get_edb_examples):
+    def test_stackup_properties_2(self):
         """Evaluate various stackup properties."""
-        edbapp = get_edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.create_empty_edb()
         import_method = edbapp.stackup.load
         export_method = edbapp.stackup.export
 
-        assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.csv"))
+        assert import_method(self.edb_examples.copy_test_files_into_local_folder("TEDB/ansys_pcb_stackup.csv")[0])
         assert "18_Bottom" in edbapp.stackup.layers.keys()
         assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
-        export_stackup_path = os.path.join(self.local_scratch.path, "export_stackup.csv")
+        export_stackup_path = os.path.join(self.edb_examples.test_folder, "export_stackup.csv")
         assert export_method(export_stackup_path)
         assert os.path.exists(export_stackup_path)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_stackup_layer_properties(self, get_edb_examples):
+    def test_stackup_layer_properties(self):
         """Evaluate various layer properties."""
         # TODO
         # edbapp = edb_examples.get_si_verse()
@@ -347,15 +341,17 @@ class TestClass(BaseTestClass):
         # edbapp.close(terminate_rpc_session=False)
         pass
 
-    def test_stackup_load_json(self, get_edb_examples):
+    def test_stackup_load_json(self):
         """Import stackup from a file."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        fpath = os.path.join(local_path, "example_models", test_subfolder, "stackup.json")
-        edbapp = get_edb_examples.load_edb(source_path)
+
+        source_path, fpath = self.edb_examples.copy_test_files_into_local_folder(
+            ["TEDB/ANSYS-HSD_V1.aedb", "TEDB/stackup.json"]
+        )
+        edbapp = self.edb_examples.load_edb(source_path)
         edbapp.stackup.load(fpath)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_stackup_export_json(self, get_edb_examples):
+    def test_stackup_export_json(self):
         """Export stackup into a JSON file."""
         import json
 
@@ -396,9 +392,10 @@ class TestClass(BaseTestClass):
             "upper_elevation": 0.001596,
             "lower_elevation": 0.001508,
         }
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        edbapp = get_edb_examples.load_edb(source_path)
-        json_path = os.path.join(self.local_scratch.path, "exported_stackup.json")
+
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
+        json_path = os.path.join(self.edb_examples.test_folder, "exported_stackup.json")
 
         assert edbapp.stackup.export(json_path)
         with open(json_path, "r") as json_file:
@@ -418,36 +415,40 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=GRPC, reason="Need to implement Configuration support with grpc")
-    def test_stackup_load_xml(self, get_edb_examples):
-        file_path = os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml")
-        edbapp = get_edb_examples.get_si_verse()
+    def test_stackup_load_xml(self):
+        file_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ansys_pcb_stackup.xml")[0]
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.stackup.load(file_path)
         assert "Inner1" in list(edbapp.stackup.layers.keys())  # Renamed layer
         assert "DE1" not in edbapp.stackup.layers.keys()  # Removed layer
-        assert edbapp.stackup.export(os.path.join(self.local_scratch.path, "stackup.xml"))
+        assert edbapp.stackup.export(os.path.join(self.edb_examples.test_folder, "stackup.xml"))
         assert round(edbapp.stackup.signal_layers["1_Top"].thickness, 6) == 3.5e-5
         assert edbapp.stackup.load_from_xml(file_path)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_stackup_load_layer_renamed(self, get_edb_examples):
+    def test_stackup_load_layer_renamed(self):
         """Import stackup from a file."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        fpath = os.path.join(local_path, "example_models", test_subfolder, "stackup_renamed.json")
-        edbapp = get_edb_examples.load_edb(source_path)
+        source_path, fpath = self.edb_examples.copy_test_files_into_local_folder(
+            ["TEDB/ANSYS-HSD_V1.aedb", "TEDB/stackup_renamed.json"]
+        )
+
+        edbapp = self.edb_examples.load_edb(source_path)
         edbapp.stackup.load(fpath, rename=True)
         assert "1_Top_renamed" in edbapp.stackup.layers
         assert "DE1_renamed" in edbapp.stackup.layers
         assert "16_Bottom_renamed" in edbapp.stackup.layers
         edbapp.close(terminate_rpc_session=False)
 
-    def test_stackup_place_in_3d_with_flipped_stackup(self, get_edb_examples):
+    def test_stackup_place_in_3d_with_flipped_stackup(self):
         """Place into another cell using 3d placement method with and
         without flipping the current layer stackup.
         """
-        edb_path = os.path.join(self.target_path2, "edb.def")
-        edb1 = get_edb_examples.load_edb(edb_path, copy_to_temp=False)
+        edb_path, edbpath2 = self.edb_examples.copy_test_files_into_local_folder(
+            ["TEDB/simple.aedb", "TEDB/example_package.aedb"]
+        )
+        edb1 = self.edb_examples.load_edb(edb_path)
 
-        edb2 = get_edb_examples.load_edb(self.target_path, copy_to_temp=False)
+        edb2 = self.edb_examples.load_edb(edbpath2)
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
             angle=0.0,
@@ -461,7 +462,7 @@ class TestClass(BaseTestClass):
             edb2.close(terminate_rpc_session=False)
         else:
             edb2.close(terminate_rpc_session=False)
-        edb2 = get_edb_examples.load_edb(self.target_path, copy_to_temp=False)
+        edb2 = self.edb_examples.load_edb(edbpath2 )
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
             angle=0.0,
@@ -475,7 +476,7 @@ class TestClass(BaseTestClass):
             edb2.close(terminate_rpc_session=False)
         else:
             edb2.close(terminate_rpc_session=False)
-        edb2 = get_edb_examples.load_edb(self.target_path, copy_to_temp=False)
+        edb2 = self.edb_examples.load_edb(edbpath2 )
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
             angle=0.0,
@@ -489,7 +490,7 @@ class TestClass(BaseTestClass):
             edb2.close(terminate_rpc_session=False)
         else:
             edb2.close(terminate_rpc_session=False)
-        edb2 = get_edb_examples.load_edb(self.target_path, copy_to_temp=False)
+        edb2 = self.edb_examples.load_edb(edbpath2)
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
             angle=0.0,
@@ -505,14 +506,14 @@ class TestClass(BaseTestClass):
             edb2.close(terminate_rpc_session=False)
         edb1.close(terminate_rpc_session=False)
 
-    def test_stackup_place_instance_with_flipped_stackup(self, get_edb_examples):
+    def test_stackup_place_instance_with_flipped_stackup(self):
         """Place into another cell using 3d placement method with and
         without flipping the current layer stackup.
         """
-        edb_path = os.path.join(self.target_path2, "edb.def")
-        edb1 = get_edb_examples.load_edb(edb_path, copy_to_temp=False)
+        edb_path,target_path = self.edb_examples.copy_test_files_into_local_folder(["TEDB/simple.aedb","TEDB/example_package.aedb"])
+        edb1 = self.edb_examples.load_edb(edb_path)
 
-        edb2 = get_edb_examples.load_edb(self.target_path, copy_to_temp=False)
+        edb2 = self.edb_examples.load_edb(target_path)
         assert edb1.stackup.place_instance(
             edb2,
             angle=0.0,
@@ -555,7 +556,7 @@ class TestClass(BaseTestClass):
             edb2.close(terminate_rpc_session=False)
         edb1.close(terminate_rpc_session=False)
 
-    def test_stackup_place_in_layout_with_flipped_stackup(self, get_edb_examples):
+    def test_stackup_place_in_layout_with_flipped_stackup(self):
         """Place into another cell using layer placement method with and
         without flipping the current layer stackup.
         """
@@ -572,16 +573,12 @@ class TestClass(BaseTestClass):
         # edb2.close(terminate_rpc_session=False)
         pass
 
-    def test_stackup_place_on_top_of_lam_with_mold(self, get_edb_examples):
+    def test_stackup_place_on_top_of_lam_with_mold(self):
         """Place on top lam with mold using 3d placement method"""
-        laminateEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
-            copy_to_temp=False,
-        )
-        chipEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "chip.aedb"),
-            copy_to_temp=False,
-        )
+        fpath, chip = self.edb_examples.copy_test_files_into_local_folder(["TEDB/lam_with_mold.aedb", "TEDB/chip.aedb"])
+        laminateEdb = self.edb_examples.load_edb(fpath)
+        chipEdb = self.edb_examples.load_edb(chip)
+            
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
@@ -659,17 +656,14 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    def test_stackup_place_on_bottom_of_lam_with_mold(self, get_edb_examples):
+    def test_stackup_place_on_bottom_of_lam_with_mold(self):
         """Place on lam with mold using 3d placement method"""
 
-        laminateEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
-            copy_to_temp=False,
+        laminateEdb_path, chipEdb_path = self.edb_examples.copy_test_files_into_local_folder(
+            ["TEDB/lam_with_mold.aedb", "TEDB/chip_flipped_stackup.aedb"]
         )
-        chipEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "chip_flipped_stackup.aedb"),
-            copy_to_temp=False,
-        )
+        laminateEdb = self.edb_examples.load_edb(laminateEdb_path)
+        chipEdb = self.edb_examples.load_edb(chipEdb_path)
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
@@ -739,6 +733,7 @@ class TestClass(BaseTestClass):
                 assert rotAxisFrom.IsEqual(xAxisPoint)
                 assert rotAxisTo.IsEqual(xAxisPoint)
                 assert angle.IsEqual(zeroValue)
+                assert loc.IsEqual(chipEdb.point_3d(0.0, 0.0, chipEdb.edb_value(170e-6)))
         finally:
             if chipEdb.grpc:
                 chipEdb.close(terminate_rpc_session=False)
@@ -746,16 +741,13 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    def test_stackup_place_on_top_of_lam_with_mold_solder(self, get_edb_examples):
+    def test_stackup_place_on_top_of_lam_with_mold_solder(self):
         """Place on top of lam with mold solder using 3d placement method."""
-        laminateEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
-            copy_to_temp=False,
+        path1 ,path2 = self.edb_examples.copy_test_files_into_local_folder(
+            ["TEDB/lam_with_mold.aedb", "TEDB/chip_solder.aedb"]
         )
-        chipEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "chip_solder.aedb"),
-            copy_to_temp=False,
-        )
+        laminateEdb = self.edb_examples.load_edb(path1        )
+        chipEdb = self.edb_examples.load_edb(path2        )
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
@@ -834,17 +826,14 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    def test_stackup_place_on_bottom_of_lam_with_mold_solder(self, get_edb_examples):
+    def test_stackup_place_on_bottom_of_lam_with_mold_solder(self):
         """Place on bottom of lam with mold solder using 3d placement method."""
 
-        laminateEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
-            copy_to_temp=False,
+        laminateEdb_path, chipEdb_path = self.edb_examples.copy_test_files_into_local_folder(
+            ["TEDB/lam_with_mold.aedb", "TEDB/chip_solder.aedb"]
         )
-        chipEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "chip_solder.aedb"),
-            copy_to_temp=False,
-        )
+        laminateEdb = self.edb_examples.load_edb(laminateEdb_path)
+        chipEdb = self.edb_examples.load_edb(chipEdb_path)
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
@@ -923,16 +912,13 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    def test_stackup_place_on_top_with_zoffset_chip(self, get_edb_examples):
+    def test_stackup_place_on_top_with_zoffset_chip(self):
         """Place on top of lam with mold chip zoffset using 3d placement method."""
-        laminateEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
-            copy_to_temp=False,
+        laminateEdb_path, chipEdb_path = self.edb_examples.copy_test_files_into_local_folder(
+            ["TEDB/lam_with_mold.aedb", "TEDB/chip_zoffset.aedb"]
         )
-        chipEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "chip_zoffset.aedb"),
-            copy_to_temp=False,
-        )
+        laminateEdb = self.edb_examples.load_edb(laminateEdb_path)
+        chipEdb = self.edb_examples.load_edb(chipEdb_path)
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
@@ -1010,17 +996,14 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    def test_stackup_place_on_bottom_with_zoffset_chip(self, get_edb_examples):
+    def test_stackup_place_on_bottom_with_zoffset_chip(self):
         """Place on bottom of lam with mold chip zoffset using 3d placement method."""
 
-        laminateEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
-            copy_to_temp=False,
+        laminateEdb_path, chipEdb_path = self.edb_examples.copy_test_files_into_local_folder(
+            ["TEDB/lam_with_mold.aedb", "TEDB/chip_zoffset.aedb"]
         )
-        chipEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "chip_zoffset.aedb"),
-            copy_to_temp=False,
-        )
+        laminateEdb = self.edb_examples.load_edb(laminateEdb_path)
+        chipEdb = self.edb_examples.load_edb(chipEdb_path)
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
@@ -1099,16 +1082,13 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    def test_stackup_place_on_top_with_zoffset_solder_chip(self, get_edb_examples):
+    def test_stackup_place_on_top_with_zoffset_solder_chip(self):
         """Place on top of lam with mold chip zoffset using 3d placement method."""
-        laminateEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
-            copy_to_temp=False,
+        laminateEdb_path, chipEdb_path = self.edb_examples.copy_test_files_into_local_folder(
+            ["TEDB/lam_with_mold.aedb", "TEDB/chip_zoffset_solder.aedb"]
         )
-        chipEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "chip_zoffset_solder.aedb"),
-            copy_to_temp=False,
-        )
+        laminateEdb = self.edb_examples.load_edb(laminateEdb_path)
+        chipEdb = self.edb_examples.load_edb(chipEdb_path)
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
@@ -1186,17 +1166,14 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    def test_stackup_place_on_bottom_with_zoffset_solder_chip(self, get_edb_examples):
+    def test_stackup_place_on_bottom_with_zoffset_solder_chip(self):
         """Place on bottom of lam with mold chip zoffset using 3d placement method."""
 
-        laminateEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
-            copy_to_temp=False,
+        laminateEdb_path, chipEdb_path = self.edb_examples.copy_test_files_into_local_folder(
+            ["TEDB/lam_with_mold.aedb", "TEDB/chip_zoffset_solder.aedb"]
         )
-        chipEdb = get_edb_examples.load_edb(
-            os.path.join(local_path, "example_models", test_subfolder, "chip_zoffset_solder.aedb"),
-            copy_to_temp=False,
-        )
+        laminateEdb = self.edb_examples.load_edb(laminateEdb_path)
+        chipEdb = self.edb_examples.load_edb(chipEdb_path)
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
@@ -1275,7 +1252,7 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    def test_18_stackup(self, get_edb_examples):
+    def test_18_stackup(self):
         # TODO
         # def validate_material(pedb_materials, material, delta):
         #     pedb_mat = pedb_materials[material["name"]]
@@ -1315,7 +1292,7 @@ class TestClass(BaseTestClass):
         # import json
         #
         # target_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        # out_edb = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_test.aedb")
+        # out_edb = os.path.join(self.edb_examples.test_folder, "ANSYS-HSD_V1_test.aedb")
         # self.local_scratch.copyfolder(target_path, out_edb)
         # json_path = os.path.join(local_path, "example_models", test_subfolder, "test_mat.json")
         # edbapp = Edb(out_edb, edbversion=desktop_version)
@@ -1358,8 +1335,8 @@ class TestClass(BaseTestClass):
         # edbapp.close(terminate_rpc_session=False)
         pass
 
-    def test_19(self, get_edb_examples):
-        edbapp = get_edb_examples.get_si_verse()
+    def test_19(self):
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.stackup.add_layer_top(name="add_layer_top")
         assert list(edbapp.stackup.layers.values())[0].name == "add_layer_top"
         assert edbapp.stackup.add_layer_bottom(name="add_layer_bottom")
@@ -1374,8 +1351,8 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.layers_by_id[l_id - 1][1] == "add_layer_above"
         edbapp.close(terminate_rpc_session=False)
 
-    def test_test_layers_consolidated(self, get_edb_examples):
-        edbapp = get_edb_examples.get_si_verse()
+    def test_test_layers_consolidated(self):
+        edbapp = self.edb_examples.get_si_verse()
         layers = edbapp.stackup.layers
         assert len(layers) == 15
         assert list(edbapp.stackup.layers.keys()) == [
