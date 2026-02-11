@@ -39,7 +39,6 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-
     def test_hfss_create_coax_port_on_component_from_hfss(self):
         """Create a coaxial port on a component from its pin."""
         edbapp = self.edb_examples.get_si_verse()

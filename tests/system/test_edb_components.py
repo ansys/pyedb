@@ -37,7 +37,6 @@ bom_example = "bom_example.csv"
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-
     def test_components_get_pin_from_component(self):
         """Evaluate access to a pin from a component."""
         edb = self.edb_examples.get_si_verse()

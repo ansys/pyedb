@@ -47,7 +47,6 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-
     def test_create_impedance_scan(self):
         edbapp = self.edb_examples.get_si_verse()
         xtalk_scan = edbapp.siwave.create_impedance_crosstalk_scan(scan_type="impedance")

@@ -34,7 +34,6 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-
     def test_definitions(self):
         edbapp = self.edb_examples.get_si_verse()
         assert isinstance(edbapp.definitions.components, dict)

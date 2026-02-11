@@ -28,7 +28,6 @@ from pyedb.extensions.via_design_backend import ViaDesignBackend
 from tests.conftest import GRPC, desktop_version
 from tests.system.base_test_class import BaseTestClass
 
-
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 STACKUP = [
@@ -106,7 +105,6 @@ PADSTACK_DEFS = [
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-
     def test_backend_single(self):
         cfg = {
             "title": "Test Design",
@@ -645,7 +643,6 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(condition=not GRPC, reason="Implemented only with grpc")
     def test_dxf_swap_backend(self):
-
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf
 
         layer_name = "Trace"

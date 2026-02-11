@@ -172,7 +172,7 @@ class EdbExamples:
         version = desktop_version if version is None else version
         return Edb(target_file, version=version, grpc=self.grpc)
 
-    def get_unit_cell(self,version=None):
+    def get_unit_cell(self, version=None):
         target_file = self.copy_test_files_into_local_folder("TEDB/unitcell.aedb")[0]
         version = desktop_version if version is None else version
         return Edb(target_file, version=version, grpc=self.grpc)

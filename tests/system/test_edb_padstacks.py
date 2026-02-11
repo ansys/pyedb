@@ -36,13 +36,13 @@ from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
-target_path  = "TEDB/example_package.aedb"
+target_path = "TEDB/example_package.aedb"
 target_path3 = "TEDB/ANSYS-HSD_V1_cut.aedb"
 target_path4 = "TEDB/Package.aedb"
 
+
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-
     def test_get_pad_parameters(self):
         """Access to pad parameters."""
         edbapp = self.edb_examples.get_si_verse()

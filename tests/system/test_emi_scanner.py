@@ -37,7 +37,6 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-
     def test_001_read_write_xml(self):
         emi_scanner = EMCRuleCheckerSettings()
         file = self.edb_examples.copy_test_files_into_local_folder("TEDB/emi_scanner.tgs")[0]

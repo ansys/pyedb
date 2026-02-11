@@ -36,7 +36,6 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-
     def test_modeler_polygons(self):
         """Evaluate modeler polygons"""
         # Done
@@ -531,7 +530,9 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(True, reason="This test fails randomly, needs to be fixed.")
     def test_arbitrary_wave_ports(self):
-        target_path_edb = self.edb_examples.copy_test_files_into_local_folder("TEDB/example_arbitrary_wave_ports.aedb")[0]
+        target_path_edb = self.edb_examples.copy_test_files_into_local_folder("TEDB/example_arbitrary_wave_ports.aedb")[
+            0
+        ]
         edbapp = self.edb_examples.load_edb(edb_path=target_path_edb)
         assert edbapp.create_model_for_arbitrary_wave_ports(
             temp_directory=os.path.join(self.edb_examples.test_folder, "_work"),

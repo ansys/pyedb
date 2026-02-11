@@ -31,7 +31,6 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-
     def test_differential_pairs_queries(self):
         """Evaluate differential pairs queries"""
         # Done

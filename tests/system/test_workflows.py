@@ -36,7 +36,6 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-
     @pytest.mark.skipif(True, reason="Unstable test.")
     def test_hfss_log_parser(self):
         from pyedb.workflows.utilities.hfss_log_parser import HFSSLogParser

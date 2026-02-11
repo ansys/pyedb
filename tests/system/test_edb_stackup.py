@@ -35,7 +35,6 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-
     def test_stackup_get_signal_layers(self):
         """Report residual copper area per layer."""
         edbapp = self.edb_examples.get_si_verse()
@@ -462,7 +461,7 @@ class TestClass(BaseTestClass):
             edb2.close(terminate_rpc_session=False)
         else:
             edb2.close(terminate_rpc_session=False)
-        edb2 = self.edb_examples.load_edb(edbpath2 )
+        edb2 = self.edb_examples.load_edb(edbpath2)
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
             angle=0.0,
@@ -476,7 +475,7 @@ class TestClass(BaseTestClass):
             edb2.close(terminate_rpc_session=False)
         else:
             edb2.close(terminate_rpc_session=False)
-        edb2 = self.edb_examples.load_edb(edbpath2 )
+        edb2 = self.edb_examples.load_edb(edbpath2)
         assert edb2.stackup.place_in_layout_3d_placement(
             edb1,
             angle=0.0,
@@ -510,7 +509,9 @@ class TestClass(BaseTestClass):
         """Place into another cell using 3d placement method with and
         without flipping the current layer stackup.
         """
-        edb_path,target_path = self.edb_examples.copy_test_files_into_local_folder(["TEDB/simple.aedb","TEDB/example_package.aedb"])
+        edb_path, target_path = self.edb_examples.copy_test_files_into_local_folder(
+            ["TEDB/simple.aedb", "TEDB/example_package.aedb"]
+        )
         edb1 = self.edb_examples.load_edb(edb_path)
 
         edb2 = self.edb_examples.load_edb(target_path)
@@ -578,7 +579,7 @@ class TestClass(BaseTestClass):
         fpath, chip = self.edb_examples.copy_test_files_into_local_folder(["TEDB/lam_with_mold.aedb", "TEDB/chip.aedb"])
         laminateEdb = self.edb_examples.load_edb(fpath)
         chipEdb = self.edb_examples.load_edb(chip)
-            
+
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:
@@ -743,11 +744,11 @@ class TestClass(BaseTestClass):
 
     def test_stackup_place_on_top_of_lam_with_mold_solder(self):
         """Place on top of lam with mold solder using 3d placement method."""
-        path1 ,path2 = self.edb_examples.copy_test_files_into_local_folder(
+        path1, path2 = self.edb_examples.copy_test_files_into_local_folder(
             ["TEDB/lam_with_mold.aedb", "TEDB/chip_solder.aedb"]
         )
-        laminateEdb = self.edb_examples.load_edb(path1        )
-        chipEdb = self.edb_examples.load_edb(path2        )
+        laminateEdb = self.edb_examples.load_edb(path1)
+        chipEdb = self.edb_examples.load_edb(path2)
         try:
             layout = laminateEdb.active_layout
             if chipEdb.grpc:

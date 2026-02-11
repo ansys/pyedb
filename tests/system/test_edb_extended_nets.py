@@ -31,7 +31,6 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-
     def test_nets_queries(self):
         """Evaluate nets queries"""
         edbapp = self.edb_examples.get_si_verse()

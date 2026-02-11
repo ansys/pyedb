@@ -69,9 +69,9 @@ class TestClass(BaseTestClass):
         assert Path(xml_parser.to_xml_file(Path(get_edb_examples.test_folder) / "test_xml_parser_create.xml")).exists()
 
     def test_load_from_xml(self):
-        xml_file = \
-        self.edb_examples.copy_test_files_into_local_folder("unit_test_xml_parser/ANSYS-SI-Verse-PCB_V1_1_CONTROL.xml")[
-            0]
+        xml_file = self.edb_examples.copy_test_files_into_local_folder(
+            "unit_test_xml_parser/ANSYS-SI-Verse-PCB_V1_1_CONTROL.xml"
+        )[0]
         xml_parser = XmlParser.load_xml_file(str(xml_file))
 
         assert len(xml_parser.stackup.materials.material) == 8
@@ -84,7 +84,8 @@ class TestClass(BaseTestClass):
         from pyedb.configuration.cfg_data import CfgStackup
 
         xml_file = self.edb_examples.copy_test_files_into_local_folder(
-            "unit_test_xml_parser/ANSYS-SI-Verse-PCB_V1_1_CONTROL.xml")[0]
+            "unit_test_xml_parser/ANSYS-SI-Verse-PCB_V1_1_CONTROL.xml"
+        )[0]
         xml_parser1 = XmlParser.load_xml_file(str(xml_file))
         stackup_data = xml_parser1.stackup.to_dict()
 

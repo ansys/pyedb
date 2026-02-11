@@ -36,7 +36,6 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 @pytest.mark.usefixtures("close_rpc_session")
 @pytest.mark.skipif(True, reason="skipping test on CI because they fail in non-graphical")
 class TestClass(BaseTestClass):
-
     def test_siwave(self):
         """Create Siwave."""
 
