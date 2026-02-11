@@ -534,7 +534,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_via_merge3(self):
-        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")[0]
         edbapp = self.edb_examples.load_edb(edb_path=source_path)
 
         merged_via = edbapp.padstacks.merge_via(
