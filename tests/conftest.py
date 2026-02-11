@@ -139,7 +139,7 @@ class EdbExamples:
             return target_file
 
     def get_wirebond_jedec4_project(self, edbapp=True, version=None):
-        target_file = self.copy_test_files_into_local_folder("wirebond_projects/ANSYS-test_wb_jedec4.aedb")[0]
+        target_file = self.copy_test_files_into_local_folder("wirebond_projects/test_wb_jedec4.aedb")[0]
         if edbapp:
             version = desktop_version if version is None else version
             return Edb(target_file, version=version, grpc=self.grpc)
@@ -147,7 +147,7 @@ class EdbExamples:
             return target_file
 
     def get_si_verse_sfp(self, edbapp=True, additional_files_folders="", version=None):
-        target_file = self.copy_test_files_into_local_folder("si_verse/ANSYS-ANSYS_SVP_V1_1_SFP.aedb")[0]
+        target_file = self.copy_test_files_into_local_folder("si_verse/ANSYS_SVP_V1_1_SFP.aedb")[0]
         if edbapp:
             version = desktop_version if version is None else version
             return Edb(target_file, version=version, grpc=self.grpc)

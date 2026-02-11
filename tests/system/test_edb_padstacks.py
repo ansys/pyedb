@@ -515,7 +515,7 @@ class TestClass(BaseTestClass):
 
     def test_reduce_via_in_bounding_box(self):
         source_path = self.edb_examples.example_models_path / "TEDB" / "vias_300.aedb"
-        edbapp = self.edb_examples.load_edb(edb_path=source_path)
+        edbapp = self.edb_examples.load_edb(edb_path=str(source_path))
         assert len(edbapp.padstacks.instances) == 301
         # empty bounding box
         assert edbapp.padstacks.reduce_via_in_bounding_box([-16e-3, -7e-3, -13e-3, -6e-3], 10, 10) is False
@@ -534,7 +534,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_via_merge3(self):
-        source_path = self.edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")
         edbapp = self.edb_examples.load_edb(edb_path=source_path)
 
         merged_via = edbapp.padstacks.merge_via(

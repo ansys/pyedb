@@ -622,9 +622,10 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
     def test_insert_3d_component_placement_3d(self):
-        edbapp = self.edb_examples.get_si_board(additional_files_folders=["si_board/SMA.a3dcomp"])
+        fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")
+        edbapp = self.edb_examples.get_si_board()
         cell_inst_1 = edbapp.modeler.insert_3d_component_placement_3d(
-            a3dcomp_path=Path(edbapp.edbpath).with_name("SMA.a3dcomp"),
+            a3dcomp_path=fpath,
             x="1mm",
             y="2mm",
             z="3mm",
@@ -638,9 +639,10 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
     def test_insert_3d_component_on_layer(self):
-        edbapp = self.edb_examples.get_si_board(additional_files_folders=["si_board/SMA.a3dcomp"])
+        fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")
+        edbapp = self.edb_examples.get_si_board()
         cell_inst_1 = edbapp.modeler.insert_3d_component_on_layer(
-            a3dcomp_path=Path(edbapp.edbpath).with_name("SMA.a3dcomp"), x="1mm", y="2mm", placement_layer="s1"
+            a3dcomp_path=fpath, x="1mm", y="2mm", placement_layer="s1"
         )
         assert not cell_inst_1.is_null
         cell_inst_2 = edbapp.modeler.insert_3d_component_on_layer(
