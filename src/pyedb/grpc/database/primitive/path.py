@@ -171,13 +171,10 @@ class Path(Primitive):
 
         # keeping cache synced
         new_path = cls(layout._pedb, _path)
-        layout._pedb.modeler._add_primitive(new_path)
         return new_path
 
     def delete(self):
         """Delete the path object."""
-        # keeping cache synced
-        self._pedb.modeler._remove_primitive(self)
         self.core.delete()
 
     def add_point(self, x, y, incremental=True) -> bool:

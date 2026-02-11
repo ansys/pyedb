@@ -120,85 +120,6 @@ class Modeler(object):
         self._primitives_by_layer = None
         self._primitives_by_layer_and_net = None
 
-    def _add_primitive(self, prim: Any):
-        """Add primitive wrapper to caches."""
-        try:
-            self._primitives[prim.id] = prim
-            if self._primitives_by_name is not None:
-                self._primitives_by_name[prim.aedt_name] = prim
-            if self._primitives_by_net is not None and hasattr(prim, "net"):
-                self._primitives_by_net.setdefault(prim.net, []).append(prim)
-            if hasattr(prim, "layer"):
-                if self._primitives_by_layer is not None and prim.layer_name:
-                    self._primitives_by_layer.setdefault(prim.layer_name, []).append(prim)
-        except:
-            self._reload_all()
-
-    def _remove_primitive(self, prim: Primitive):
-        """Remove primitive wrapper from all caches efficiently and safely."""
-        uid = prim.edb_uid
-
-        # 1. Remove from primary cache
-        self._primitives.pop(uid, None)
-
-        # 2. Remove from name cache if initialized
-        if self._primitives_by_name is not None:
-            self._primitives_by_name.pop(prim.aedt_name, None)
-
-        # 3. Remove from net cache if initialized
-        if self._primitives_by_net is not None and hasattr(prim, "net") and not prim.net.is_null:
-            net_name = prim.net.name
-            net_prims = self._primitives_by_net.get(net_name)
-            if net_prims:
-                try:
-                    net_prims.remove(prim)
-                except ValueError:
-                    pass  # Not found, skip
-                if not net_prims:
-                    self._primitives_by_net.pop(net_name, None)
-
-        # 4. Remove from layer cache if initialized
-        if self._primitives_by_layer is not None and hasattr(prim, "layer") and prim.layer_name:
-            layer_name = prim.layer.name
-            layer_prims = self._primitives_by_layer.get(layer_name)
-            if layer_prims:
-                try:
-                    layer_prims.remove(prim)
-                except ValueError:
-                    pass
-                if not layer_prims:
-                    self._primitives_by_layer.pop(layer_name, None)
-
-        # 5. Remove from layer+net cache if initialized
-        if self._primitives_by_layer_and_net is not None:
-            if hasattr(prim, "layer") and hasattr(prim, "net") and not prim.net.is_null:
-                layer_name = prim.layer.name
-                net_name = prim.net.name
-                layer_dict = self._primitives_by_layer_and_net.get(layer_name)
-                if layer_dict:
-                    net_list = layer_dict.get(net_name)
-                    if net_list:
-                        try:
-                            net_list.remove(prim)
-                        except ValueError:
-                            pass
-                        if not net_list:
-                            layer_dict.pop(net_name, None)
-                        if not layer_dict:
-                            self._primitives_by_layer_and_net.pop(layer_name, None)
-
-    def delete_batch_primitives(self, prim_list: List[Primitive]) -> None:
-        """Delete a batch of primitives and update caches.
-
-        Parameters
-        ----------
-        prim_list : list
-            List of primitive objects to delete.
-        """
-        for prim in prim_list:
-            prim.core.delete()
-        self._reload_all()
-
     @property
     def primitives(self) -> list[Primitive]:
         if not self._primitives:
@@ -752,7 +673,6 @@ class Modeler(object):
             end_cap_style=end_cap_style,
             corner_style=corner_style,
         )
-        self._add_primitive(primitive)  # update cache
         return primitive
 
     def create_polygon(
@@ -811,7 +731,6 @@ class Modeler(object):
         if polygon.is_null or polygon_data is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
-        self._add_primitive(polygon)
         return polygon
 
     def create_rectangle(
@@ -900,7 +819,6 @@ class Modeler(object):
                 rotation=Value(rotation),
             )
         if not rect.is_null:
-            self._add_primitive(rect)
             return rect
         return False
 
@@ -938,7 +856,6 @@ class Modeler(object):
             radius=Value(radius),
         )
         if not circle.is_null:
-            self._add_primitive(circle)
             return circle
         return False
 
@@ -1370,7 +1287,6 @@ class Modeler(object):
             end_cell_inst=end_cell_inst,
             start_cell_inst=start_cell_inst,
         )
-        self._add_primitive(bw)
         return bw
 
     def create_pin_group(

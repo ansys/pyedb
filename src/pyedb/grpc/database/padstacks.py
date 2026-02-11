@@ -659,7 +659,6 @@ class Padstacks(object):
     def delete_batch_instances(self, instances_to_delete):
         for inst in instances_to_delete:
             inst.core.delete()
-        self.clear_instances_cache()
 
     def delete_padstack_instances(self, net_names: Union[str, List[str]]) -> bool:
         """Delete padstack instances by net names.
@@ -687,7 +686,6 @@ class Padstacks(object):
             if p.net_name in net_names:
                 if not p.core.delete():  # pragma: no cover
                     return False
-        self.clear_instances_cache()
         return True
 
     @deprecate_argument_name(
@@ -1294,6 +1292,7 @@ class Padstacks(object):
         padstack_definition.data = self.definitions[target_padstack_name].core.data
         return new_padstack_name
 
+    @deprecate_argument_name({"fromlayer": "from_layer", "tolayer": "to_layer", "solderlayer": "solder_ball_layer"})
     def place(
         self,
         position: List[float],
@@ -1301,9 +1300,9 @@ class Padstacks(object):
         net_name: str = "",
         via_name: str = "",
         rotation: float = 0.0,
-        fromlayer: Optional[str] = None,
-        tolayer: Optional[str] = None,
-        solderlayer: Optional[str] = None,
+        from_layer: Optional[str] = None,
+        to_layer: Optional[str] = None,
+        solder_ball_layer: Optional[str] = None,
         is_pin: bool = False,
         layer_map: str = "two_way",
     ) -> PadstackInstance:
@@ -1321,11 +1320,11 @@ class Padstacks(object):
             Instance name. Default is ``""``.
         rotation : float, optional
             Rotation in degrees. Default is ``0.0``.
-        fromlayer : str, optional
+        from_layer : str, optional
             Starting layer name.
-        tolayer : str, optional
+        to_layer : str, optional
             Ending layer name.
-        solderlayer : str, optional
+        solder_ball_layer : str, optional
             Solder ball layer name.
         is_pin : bool, optional
             Whether the instance is a pin. Default is ``False``.
@@ -1345,27 +1344,27 @@ class Padstacks(object):
         position = CorePointData(
             [Value(position[0], self._pedb.active_cell), Value(position[1], self._pedb.active_cell)]
         )
-        net = self._pedb.nets.find_or_create_net(net_name)
+        self._pedb.nets.find_or_create_net(net_name)
         rotation = Value(rotation * math.pi / 180)
         sign_layers_values = {i: v for i, v in self._pedb.stackup.signal_layers.items()}
         sign_layers = list(sign_layers_values.keys())
-        if not fromlayer:
+        if not from_layer:
             try:
-                fromlayer = sign_layers_values[list(self.definitions[pad].pad_by_layer.keys())[0]]
+                from_layer = sign_layers_values[list(self.definitions[pad].pad_by_layer.keys())[0]]
             except KeyError:
-                fromlayer = sign_layers_values[sign_layers[0]]
+                from_layer = sign_layers_values[sign_layers[0]]
         else:
-            fromlayer = sign_layers_values[fromlayer]
+            from_layer = sign_layers_values[from_layer]
 
-        if not tolayer:
+        if not to_layer:
             try:
-                tolayer = sign_layers_values[list(self.definitions[pad].pad_by_layer.keys())[-1]]
+                to_layer = sign_layers_values[list(self.definitions[pad].pad_by_layer.keys())[-1]]
             except KeyError:
-                tolayer = sign_layers_values[sign_layers[-1]]
+                to_layer = sign_layers_values[sign_layers[-1]]
         else:
-            tolayer = sign_layers_values[tolayer]
-        if solderlayer:
-            solderlayer = sign_layers_values[solderlayer]
+            to_layer = sign_layers_values[to_layer]
+        if solder_ball_layer:
+            solder_ball_layer = sign_layers_values[solder_ball_layer]
         if not via_name:
             via_name = generate_unique_name(padstack_def.name)
         if padstack_def:
@@ -1376,14 +1375,13 @@ class Padstacks(object):
                 position_x=position.x.value,
                 position_y=position.y.value,
                 rotation=rotation,
-                top_layer=fromlayer,
-                bottom_layer=tolayer,
+                top_layer=from_layer,
+                bottom_layer=to_layer,
                 name=via_name,
-                solder_ball_layer=solderlayer,
+                solder_ball_layer=solder_ball_layer,
                 layer_map=layer_map,
             )
             padstack_instance.is_pin = is_pin
-            self.clear_instances_cache()
             return padstack_instance
         else:
             raise RuntimeError("Place padstack failed")
@@ -1920,7 +1918,6 @@ class Padstacks(object):
             )
             merged_via_ids.append(merged_instance.edb_uid)
             [self.instances[inst].delete() for inst in instances]
-        self.clear_instances_cache()
         return merged_via_ids
 
     def reduce_via_in_bounding_box(
@@ -1976,7 +1973,6 @@ class Padstacks(object):
                 for item in padstacks_inbox:
                     if item not in to_keep:
                         all_instances[item].delete()
-                self.clear_instances_cache()
                 return True
 
     @staticmethod
@@ -2132,5 +2128,4 @@ class Padstacks(object):
             to_delete = set(padstacks) - to_keep
             for _id in to_delete:
                 all_instances[_id].delete()
-        self.clear_instances_cache()
         return list(to_keep), grid

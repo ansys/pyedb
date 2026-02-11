@@ -153,15 +153,10 @@ class Polygon(Primitive):
             net = net.core
         edb_object = CorePolygon.create(layout=layout.core, layer=layer, net=net, polygon_data=polygon_data)
         new_polygon = cls(layout._pedb, edb_object)
-        # keep modeler cache in sync
-        layout._pedb.modeler._add_primitive(new_polygon)
-
         return new_polygon
 
     def delete(self):
         """Delete polygon from layout."""
-        # keeping cache in sync
-        self._pedb.modeler._remove_primitive(self)
         self.core.delete()
 
     def fix_self_intersections(self) -> list[any]:
