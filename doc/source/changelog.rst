@@ -9,6 +9,58 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.69.0 <https://github.com/ansys/pyedb/releases/tag/v0.69.0>`_ - February 11, 2026
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update nbconvert requirement from <7.17 to <7.18
+          - `#1814 <https://github.com/ansys/pyedb/pull/1814>`_
+
+        * - Bump range upper bound for ansys-edb-core
+          - `#1824 <https://github.com/ansys/pyedb/pull/1824>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Remove redundancies
+          - `#1819 <https://github.com/ansys/pyedb/pull/1819>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.68.3
+          - `#1817 <https://github.com/ansys/pyedb/pull/1817>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Conftest edb examples
+          - `#1820 <https://github.com/ansys/pyedb/pull/1820>`_
+
+        * - Save_as
+          - `#1823 <https://github.com/ansys/pyedb/pull/1823>`_
+
+
 `0.68.3 <https://github.com/ansys/pyedb/releases/tag/v0.68.3>`_ - February 06, 2026
 ===================================================================================
 
