@@ -31,9 +31,9 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    def test_net_classes_queries(self, edb_examples):
+    def test_net_classes_queries(self):
         """Evaluate net classes queries"""
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.net_classes.items
         assert edbapp.net_classes.create("DDR4_ADD", ["DDR4_A0", "DDR4_A1"])
         assert edbapp.net_classes["DDR4_ADD"].name == "DDR4_ADD"
