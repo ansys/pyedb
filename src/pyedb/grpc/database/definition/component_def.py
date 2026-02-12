@@ -246,7 +246,7 @@ class ComponentDef:
             List of reference files.
 
         """
-        return [model.reference_file for model in self.component_models]
+        return [model.reference_file for model in self.component_models.values()]
 
     @property
     def component_models(self):
@@ -254,7 +254,7 @@ class ComponentDef:
 
         Returns
         -------
-        list[:class:`ComponentModel <ansys.edb.core.definition.component_model.ComponentModel>`]
+        dict[str, :class:`ComponentModel <ansys.edb.core.definition.component_model.ComponentModel>`]
 
         """
         from pyedb.grpc.database.definition.component_model import ComponentModel
@@ -312,5 +312,5 @@ class ComponentDef:
         pin_order = kwargs.get("pin_order")
         if pin_order:
             old = {i.name: i for i in self.component_pins}
-            temp = [old[str(i)] for i in pin_order]
+            temp = [old[str(i)].core for i in pin_order]
             self.core.reorder_pins(temp)
