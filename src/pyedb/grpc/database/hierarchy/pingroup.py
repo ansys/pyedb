@@ -177,8 +177,11 @@ class PinGroup:
     @property
     def terminal(self) -> Union[PinGroupTerminal, None]:
         """Terminal."""
-        term = self.core.pin_group_terminal
-        if not term.is_null:
+        try:
+            term = self.core.terminal
+        except AttributeError:
+            return None
+        if term is not None and not term.is_null:
             term = PinGroupTerminal(self._pedb, term)
             return term
         else:

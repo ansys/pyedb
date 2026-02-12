@@ -763,9 +763,9 @@ class PadstackInstance:
         position = self.core.get_position_and_rotation()
         if self.component:
             out2 = self.component.core.transform.transform_point(CorePointData(position[:2]))
-            self._position = [Value(out2[0]), Value(out2[1])]
+            self._position = [out2.x.value, out2.y.value]
         else:
-            self._position = [Value(pt) for pt in position[:2]]
+            self._position = [Value(pt).value for pt in position[:2]]
         return self._position
 
     @position.setter

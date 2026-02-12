@@ -24,6 +24,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pyedb.generic.constants import TerminalTypeMapper, BoundaryTypeMapper, SourceTermMapper
 from pyedb.grpc.database.inner.conn_obj import ConnObj
 
 if TYPE_CHECKING:
@@ -40,22 +41,7 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.port_post_processing_prop import PortPostProcessingProp
 from pyedb.grpc.database.utility.value import Value
 
-mapping_boundary_type = {
-    "port": CoreBoundaryType.PORT,
-    "dc_terminal": CoreBoundaryType.DC_TERMINAL,
-    "voltage_probe": CoreBoundaryType.VOLTAGE_PROBE,
-    "voltage_source": CoreBoundaryType.VOLTAGE_SOURCE,
-    "current_source": CoreBoundaryType.CURRENT_SOURCE,
-    "rlc": CoreBoundaryType.RLC,
-    "pec": CoreBoundaryType.PEC,
-    "portboundary": CoreBoundaryType.PORT,
-    "kdcterminal": CoreBoundaryType.DC_TERMINAL,
-    "kvoltageprobe": CoreBoundaryType.VOLTAGE_PROBE,
-    "kvoltagesource": CoreBoundaryType.VOLTAGE_SOURCE,
-    "kcurrentsource": CoreBoundaryType.CURRENT_SOURCE,
-    "rlcboundary": CoreBoundaryType.RLC,
-    "pecboundary": CoreBoundaryType.PEC,
-}
+
 
 
 class Terminal(ConnObj):
@@ -64,14 +50,45 @@ class Terminal(ConnObj):
         self.core = core
         self._reference_object = None
 
-        self._terminal_type_mapping = {
+        self.__terminal_type_mapping = {
+            "invalid": None,
             "edge": CoreTerminalType.EDGE,
             "point": CoreTerminalType.POINT,
             "terminal_instance": CoreTerminalType.TERM_INST,
-            "padstack_instance": CoreTerminalType.PADSTACK_INST,
+            "padstack_inst": CoreTerminalType.PADSTACK_INST,
             "bundle": CoreTerminalType.BUNDLE,
             "pin_group": CoreTerminalType.PIN_GROUP,
         }
+        self.__boundary_type_mapping = {
+            "port": CoreBoundaryType.PORT,
+            "dc_terminal": CoreBoundaryType.DC_TERMINAL,
+            "voltage_probe": CoreBoundaryType.VOLTAGE_PROBE,
+            "voltage_source": CoreBoundaryType.VOLTAGE_SOURCE,
+            "current_source": CoreBoundaryType.CURRENT_SOURCE,
+            "rlc": CoreBoundaryType.RLC,
+            "pec": CoreBoundaryType.PEC,
+            "portboundary": CoreBoundaryType.PORT,
+            "kdcterminal": CoreBoundaryType.DC_TERMINAL,
+            "kvoltageprobe": CoreBoundaryType.VOLTAGE_PROBE,
+            "kvoltagesource": CoreBoundaryType.VOLTAGE_SOURCE,
+            "kcurrentsource": CoreBoundaryType.CURRENT_SOURCE,
+            "rlcboundary": CoreBoundaryType.RLC,
+            "pecboundary": CoreBoundaryType.PEC,
+        }
+
+    @property
+    def net(self):
+        """Terminal net.
+
+        Returns
+        -------
+        :class:`Net <pyedb.grpc.database.net.net.Net>`
+            Terminal Net object.
+
+        """
+        from pyedb.grpc.database.net.net import Net
+
+        return Net(self._pedb, self.core.net)
 
     @property
     def port_post_processing_prop(self):
@@ -181,7 +198,7 @@ class Terminal(ConnObj):
             self.core.net.name = val
 
     @property
-    def terminal_type(self) -> str:
+    def terminal_type(self) -> str | None:
         """Terminal Type. Accepted values for setter: `"edge"`, `"point"`, `"terminal_instance"`,
         `"padstack_instance"`, `"bundle_terminal"`, `"pin_group"`.
 
@@ -189,11 +206,19 @@ class Terminal(ConnObj):
         -------
         str
         """
-        return self.core.type.name.lower()
+        return TerminalTypeMapper.get_grpc(self.core.type.name)
 
     @terminal_type.setter
     def terminal_type(self, value):
-        self.core.type = self._terminal_type_mapping[value]
+        if isinstance(value, CoreTerminalType):
+            self.core.type = value
+        else:
+            value = TerminalTypeMapper.get_grpc(value)
+            if isinstance(value, str):
+                value = self.__terminal_type_mapping.get(value, None)
+            if not isinstance(value, CoreTerminalType):
+                raise ValueError("Value must be a string or BoundaryType enum.")
+            self.core.type = value
 
     @property
     def boundary_type(self) -> str:
@@ -204,15 +229,19 @@ class Terminal(ConnObj):
         str
             port, pec, rlc, current_source, voltage_source, nexxim_ground, nexxim_pPort, dc_terminal, voltage_probe.
         """
-        return self.core.boundary_type.name.lower()
+        return BoundaryTypeMapper.get_grpc(self.core.boundary_type.name)
 
     @boundary_type.setter
     def boundary_type(self, value):
-        if isinstance(value, str):
-            value = mapping_boundary_type.get(value.lower(), None)
-        if not isinstance(value, CoreBoundaryType):
-            raise ValueError("Value must be a string or BoundaryType enum.")
-        self.core.boundary_type = value
+        if isinstance(value, CoreBoundaryType):
+            self.core.boundary_type = value
+        else:
+            value = BoundaryTypeMapper.get_grpc(value)
+            if isinstance(value, str):
+                value = self.__boundary_type_mapping.get(value, None)
+            if not isinstance(value, CoreBoundaryType):
+                raise ValueError("Value must be a string or BoundaryType enum.")
+            self.core.boundary_type = value
 
     @property
     def source_amplitude(self) -> float:
@@ -517,17 +546,13 @@ class Terminal(ConnObj):
 
     @property
     def terminal_to_ground(self):
-        return self.core.term_to_ground.name.lower()
+        return SourceTermMapper.get_grpc(self.core.term_to_ground.name)
 
     @terminal_to_ground.setter
     def terminal_to_ground(self, value):
-        mapping = {
-            "kNoGround": "no_ground",
-            "kNegative": "negative",
-            "kPositive": "positive",
-        }
-        key = mapping.get(value, value)
-        self.core.term_to_ground = getattr(self.core.term_to_ground, key.upper())
+        map_val = SourceTermMapper.get_grpc(value)
+
+        self.core.term_to_ground = getattr(self.core.term_to_ground, map_val)
 
     @property
     def reference_terminal(self):

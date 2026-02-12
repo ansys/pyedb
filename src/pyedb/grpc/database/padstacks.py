@@ -1023,7 +1023,7 @@ class Padstacks(object):
         if net_list and not isinstance(net_list, list):
             net_list = [net_list]
         via_list = []
-        for inst_id, inst in self._layout.padstack_instances.items():
+        for inst in self._layout.padstack_instances:
             pad_layers_name = inst.padstack_def.data.layer_names
             if len(pad_layers_name) > 1:
                 if not net_list:
@@ -1714,8 +1714,8 @@ class Padstacks(object):
             raise Exception("No points defining polygon was provided")
         if not padstack_instances_index:
             padstack_instances_index = {}
-            for inst_id, inst in self.instances.items():
-                padstack_instances_index[inst_id] = inst.position
+            for inst in self.instances:
+                padstack_instances_index[inst.id] = inst.position
         _x = [pt[0] for pt in points]
         _y = [pt[1] for pt in points]
         points = [_x, _y]
