@@ -151,10 +151,3 @@ class CfgHFSSSetup(CfgSetupAC):
     def add_length_mesh_operation(self, mesh_op:CfgLengthMeshOperation):
         self.mesh_operations.append(mesh_op)
 
-    def add_adapt_frequency(self, frequency, max_passes, max_mag_delta_s):
-        adapt_freq = CfgHFSSSetup.CfgAdaptFrequency(
-            f_adapt=frequency,
-            max_passes=max_passes,
-            max_mag_delta_s=max_mag_delta_s,
-        )
-        self.adapt_frequencies.append(adapt_freq)
