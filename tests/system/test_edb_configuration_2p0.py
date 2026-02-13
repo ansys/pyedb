@@ -1341,15 +1341,14 @@ class TestClassSetups(BaseTestClass):
         "layer": None,
     }
 
-    def test_hfss(self):
+    def test_hfss_single(self):
         data = {
             "setups": [
                 {
-                    "name": "hfss_setup_1",
+                    "name": "single",
                     "type": "hfss",
-                    "f_adapt": "5GHz",
-                    "max_num_passes": 10,
-                    "max_mag_delta_s": 0.02,
+                    "adapt_type": "single",
+                    "adapt_frequencies": [{"f_adapt": "5GHz", "max_num_passes": 10, "max_mag_delta_s": 0.02, }],
                     "freq_sweep": [],
                     "auto_mesh_operation": {
                         "enabled": False,
@@ -1375,7 +1374,37 @@ class TestClassSetups(BaseTestClass):
         edbapp = self.edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        assert data == data_from_db
+        source = next(item for item in data["setups"] if item["name"] == "single")
+        target = next(item for item in data_from_db["setups"] if item["name"] == "single")
+        assert source == target
+
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_hfss_broadband(self):
+        data = {
+            "setups": [
+                {
+                    "name": "broadband",
+                    "type": "hfss",
+                    "adapt_type": "broadband",
+                    "adapt_frequencies": [{"f_adapt": "1GHz", "max_num_passes": 10, "max_mag_delta_s": 0.02, },
+                                          {"f_adapt": "5GHz", "max_num_passes": 10, "max_mag_delta_s": 0.02, },
+                                          ],
+                },
+            ]
+        }
+
+        edbapp = self.edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+
+        source = next(item for item in data["setups"] if item["name"] == "broadband")
+        target = next(item for item in data_from_db["setups"] if item["name"] == "broadband")
+        target.pop("freq_sweep")  # Remove freq_sweep since it's not defined in source but is returned from db with default value
+        target.pop("auto_mesh_operation")  # Remove auto_mesh_operation since it's not defined in source but is returned from db with default value
+        target.pop("mesh_operations") # Remove mesh_operations since it's not defined in source but is returned from db with default value
+        assert source == target
+
         edbapp.close(terminate_rpc_session=False)
 
     def test_hfss_auto_mesh_operation(self):

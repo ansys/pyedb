@@ -785,7 +785,7 @@ class CommonMapper:
                         return value
 
         raise ValueError(
-            f"Unknown terminal type {value!r}. "
+            f"Unknown type {value!r}. "
             f"Expected a value from GRPC ({[e.value for e in cls.GRPC]}) "
             f"or DOTNET ({[e.value for e in cls.DOTNET]}), "
             f"or their enum members."
@@ -833,3 +833,11 @@ class SourceTermMapper(CommonMapper):
 
     class DOTNET(Enum):
         (NO_GROUND, NEGATIVE, POSITIVE) = ("kNoGround", "kNegative", "kPositive")
+
+
+class FAdaptTypeMapper(CommonMapper):
+    class GRPC(Enum):
+        (SINGLE, MULTI_FREQUENCIES, BROADBAND, NUM_ADAPT_TYPE) = ("single", "multi_freq", "broadband", "num_adapt_type")
+
+    class DOTNET(Enum):
+        (SINGLE, MULTI_FREQUENCIES, BROADBAND, NUM_ADAPT_TYPE) = ("kSingle", "kMultiFrequencies", "kBroadband", "kNumAdaptTypes")

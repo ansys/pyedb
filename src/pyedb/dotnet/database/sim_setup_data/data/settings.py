@@ -58,6 +58,11 @@ class AdaptiveSettings(object):
         """
         return [AdaptiveFrequencyData(i) for i in list(self.adaptive_settings.AdaptiveFrequencyDataList)]
 
+    def clean_adaptive_frequency_data_list(self):
+        """Clean all adaptive frequency data from the list."""
+        self.adaptive_settings.AdaptiveFrequencyDataList.Clear()
+        return self._parent._update_setup()
+
     @property
     def adapt_type(self):
         """Adaptive type.
@@ -252,7 +257,6 @@ class AdaptiveSettings(object):
         low_freq_adapt_data.MaxDelta = self._parent._pedb.edb_value(max_delta_s).ToString()
         low_freq_adapt_data.MaxPasses = max_num_passes
         low_freq_adapt_data.AdaptiveFrequency = self._parent._pedb.edb_value(frequency).ToString()
-        self.adaptive_settings.AdaptiveFrequencyDataList.Clear()
         self.adaptive_settings.AdaptiveFrequencyDataList.Add(low_freq_adapt_data)
         return self._parent._update_setup()
 

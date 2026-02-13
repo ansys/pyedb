@@ -100,11 +100,16 @@ class CfgHFSSSetup(CfgSetupAC):
             ...,
             description="Mapping of nets to layers (or backend-specific structure).",
         )
+    class CfgAdaptFrequency(BaseModel):
+        f_adapt: float | str
+        max_num_passes: int
+        max_mag_delta_s: float | str
 
     type: str = "hfss"
-    f_adapt: float | str
-    max_num_passes: int
-    max_mag_delta_s: float | str
+    adapt_type: Literal["broadband", "single", "multi_frequencies"] = Field(
+        "single", description="Adaptation type, e.g., broadband, single, multi_frequencies."
+    )
+    adapt_frequencies: list[CfgAdaptFrequency] = Field(default_factory=list, description="List of frequencies for single/multi_frequencies adaptation.")
 
     auto_mesh_operation: CfgAutoMeshOperation | None = CfgAutoMeshOperation()
     mesh_operations: list[CfgMeshOperation] | None = list()
@@ -112,3 +117,11 @@ class CfgHFSSSetup(CfgSetupAC):
     def add_mesh_operation(self, **kwargs):
         mesh_op = CfgHFSSSetup.CfgMeshOperation(**kwargs)
         self.mesh_operations.append(mesh_op)
+
+    def add_adapt_frequency(self, frequency, max_num_passes, max_mag_delta_s):
+        adapt_freq = CfgHFSSSetup.CfgAdaptFrequency(
+            f_adapt=frequency,
+            max_num_passes=max_num_passes,
+            max_mag_delta_s=max_mag_delta_s,
+        )
+        self.adapt_frequencies.append(adapt_freq)

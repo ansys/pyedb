@@ -563,7 +563,7 @@ class HFSSGeneralSettings:
                 self.core.adaptive_solution_type = CoreAdaptType.SINGLE
             elif value.lower() == "multi_frequencies":
                 self.core.adaptive_solution_type = CoreAdaptType.MULTI_FREQUENCIES
-            elif value.lower() == "broad_band":
+            elif value.lower() == "broadband":
                 self.core.adaptive_solution_type = CoreAdaptType.BROADBAND
             elif value.lower() == "num_adapt_type":
                 self.core.adaptive_solution_type = CoreAdaptType.NUM_ADAPT_TYPE

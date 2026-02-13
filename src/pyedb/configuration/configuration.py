@@ -31,6 +31,8 @@ import toml
 from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
 from pyedb.misc.decorators import execution_timer
+from pyedb.generic.constants import FAdaptTypeMapper
+from pyedb.generic.settings import settings
 
 
 def set_padstack_definition(pdef, pdef_obj):
@@ -200,9 +202,13 @@ class Configuration:
                 edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
             else:
                 if setup.type == "hfss":
-                    edb_setup = self._pedb.create_hfss_setup(setup.name)
-                    edb_setup.set_solution_single_frequency(setup.f_adapt, setup.max_num_passes, setup.max_mag_delta_s)
+                    edb_setup = self._pedb.simulation_setups.create(name=setup.name, solver="hfss")
+                    edb_setup.adaptive_settings.adapt_type = FAdaptTypeMapper.get(setup.adapt_type, as_grpc=settings.is_grpc)
+                    edb_setup.adaptive_settings.clean_adaptive_frequency_data_list()
 
+                    for i in setup.adapt_frequencies:
+                        edb_setup.adaptive_settings.add_adaptive_frequency_data(i.f_adapt, i.max_num_passes,
+                                                                            i.max_mag_delta_s)
                     if setup.auto_mesh_operation.enabled:
                         args = dict(setup.auto_mesh_operation)
                         args.pop("enabled")
@@ -263,14 +269,10 @@ class Configuration:
                 )
             else:
                 if setup.type == "hfss":
-                    adaptive_frequency_data_list = list(setup.adaptive_settings.adaptive_frequency_data_list)[0]
-
-                    cfg_ac_setup = self.cfg_data.add_hfss_setup(
-                        name=setup.name,
-                        f_adapt=adaptive_frequency_data_list.adaptive_frequency,
-                        max_num_passes=adaptive_frequency_data_list.max_passes,
-                        max_mag_delta_s=adaptive_frequency_data_list.max_delta,
-                    )
+                    cfg_ac_setup = self.cfg_data.add_hfss_setup(name=setup.name)
+                    cfg_ac_setup.adapt_type = FAdaptTypeMapper.get(setup.adaptive_settings.adapt_type, as_grpc=True)
+                    for i in list(setup.adaptive_settings.adaptive_frequency_data_list)[-2:]:
+                        cfg_ac_setup.add_adapt_frequency(i.adaptive_frequency, i.max_passes,i.max_delta)
 
                     for name, mop in setup.mesh_operations.items():
                         cfg_ac_setup.add_mesh_operation(

@@ -103,6 +103,7 @@ from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflow import Workflow
 from pyedb.workflows.utilities.cutout import Cutout
+from pyedb.dotnet.database.simulation_setups import SimulationSetups
 
 
 class Edb:
@@ -3867,7 +3868,7 @@ class Edb:
             return False
         elif not name:
             name = generate_unique_name("setup")
-        setup = HfssSimulationSetup(self, name=name)
+        setup = HfssSimulationSetup.create(self, name=name)
         setup.set_solution_single_frequency("1Ghz")
         return setup
 
@@ -4883,3 +4884,8 @@ class Edb:
             raise RuntimeError(
                 "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
             ) from e
+
+    @property
+    def simulation_setups(self) -> SimulationSetups:
+        """Get all simulation setups object."""
+        return SimulationSetups(self)

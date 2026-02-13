@@ -172,15 +172,8 @@ class SimulationSetups:
         self,
         name=None,
         solver="hfss",
-        distribution="linear",
-        start_freq=0,
-        stop_freq=20e9,
-        step_freq=1e6,
-        discrete_sweep=False,
-        sweep_name: str = "frequency_sweep",
-        **kwargs,
     ) -> Union[BaseSimulationSetup, None]:
-        """Add HFSS analysis setup.
+        """Add analysis setup.
 
         Parameters
         ----------
@@ -188,41 +181,9 @@ class SimulationSetups:
             Setup name (auto-generated if None).
         solver : str, optional
             Simulation setup type ("hfss", "siwave", "siwave_dcir", "raptor_x", "q3d").
-        distribution : str, optional
-            Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
-        start_freq : float, str, optional
-            Starting frequency (Hz).
-        stop_freq : float, str, optional
-            Stopping frequency (Hz).
-        step_freq : float, str, int, optional
-            Frequency step (Hz) or count depending on distribution.
-        discrete_sweep : bool, optional
-            Use discrete sweep.
-        sweep_name : str, optional
-            Name of the frequency sweep.
 
         Returns
         -------
-        HfssSimulationSetup
-            Created setup object.
-
-        Examples
-        --------
-        .. code:: python
-
-            from pyedb import Edb
-
-            edb = Edb("my_aedb")
-            hfss_setup = edb.simulation_setups.create(
-                name="MySetup",
-                solver="hfss",
-                distribution="linear_count",
-                start_freq=1e9,
-                stop_freq=10e9,
-                step_freq=100,
-                discrete_sweep=False,
-                sweep_name="MyFrequencySweep",
-            )
         """
         if not name:
             name = generate_unique_name(f"{solver}_setup")
@@ -247,20 +208,6 @@ class SimulationSetups:
         else:
             setup = HfssSimulationSetup.create(self._pedb, name)
             self._pedb.logger.info(f"HFSS setup {name} created.")
-        if not setup.is_null:
-            if start_freq and stop_freq and step_freq:
-                setup.add_sweep(
-                    name=sweep_name,
-                    distribution=distribution,
-                    start_freq=start_freq,
-                    stop_freq=stop_freq,
-                    step=step_freq,
-                    discrete=discrete_sweep,
-                    frequency_set=None,
-                )
-            self._pedb.logger.info(f"Frequency sweep {sweep_name} added to simulation setup {name}.")
-        for k, v in kwargs.items():
-            setattr(setup, k, v)
         return setup
 
     @deprecate_argument_name({"freq_step": "step_freq"})
@@ -299,18 +246,24 @@ class SimulationSetups:
         HfssSimulationSetup
             Created setup object.
         """
-        result = self.create(
+        setup = self.create(
             name=name,
             solver="hfss",
-            distribution=distribution,
-            start_freq=start_freq,
-            stop_freq=stop_freq,
-            step_freq=step_freq,
-            discrete_sweep=discrete_sweep,
-            sweep_name=sweep_name,
-            **kwargs,
         )
-        return cast(HfssSimulationSetup, result)  # casting only for IDE type checking purposes
+        if start_freq and stop_freq and step_freq:
+            setup.add_sweep(
+                name=sweep_name,
+                distribution=distribution,
+                start_freq=start_freq,
+                stop_freq=stop_freq,
+                step=step_freq,
+                discrete=discrete_sweep,
+                frequency_set=None,
+            )
+        self._pedb.logger.info(f"Frequency sweep {sweep_name} added to simulation setup {name}.")
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
+        return cast(HfssSimulationSetup, setup)  # casting only for IDE type checking purposes
 
     def create_siwave_setup(
         self,
@@ -347,18 +300,24 @@ class SimulationSetups:
         SIWaveSimulationSetup
             Created setup object.
         """
-        result = self.create(
+        setup = self.create(
             name=name,
             solver="siwave",
-            distribution=distribution,
-            start_freq=start_freq,
-            stop_freq=stop_freq,
-            step_freq=step_freq,
-            discrete_sweep=discrete_sweep,
-            sweep_name=sweep_name,
-            **kwargs,
         )
-        return cast(SiwaveSimulationSetup, result)  # casting only for IDE type checking purposes
+        if start_freq and stop_freq and step_freq:
+            setup.add_sweep(
+                name=sweep_name,
+                distribution=distribution,
+                start_freq=start_freq,
+                stop_freq=stop_freq,
+                step=step_freq,
+                discrete=discrete_sweep,
+                frequency_set=None,
+            )
+        self._pedb.logger.info(f"Frequency sweep {sweep_name} added to simulation setup {name}.")
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
+        return cast(SiwaveSimulationSetup, setup)  # casting only for IDE type checking purposes
 
     def create_siwave_dcir_setup(self, name=None, **kwargs) -> SIWaveDCIRSimulationSetup:
         """Add SIWave DCIR analysis setup.
@@ -373,8 +332,10 @@ class SimulationSetups:
         SIWaveDCIRSimulationSetup
             Created setup object.
         """
-        result = self.create(name=name, solver="siwave_dcir", **kwargs)
-        return cast(SIWaveDCIRSimulationSetup, result)  # casting only for IDE type checking purposes
+        setup = self.create(name=name, solver="siwave_dcir")
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
+        return cast(SIWaveDCIRSimulationSetup, setup)  # casting only for IDE type checking purposes
 
     def create_siwave_cpa_setup(self, name=None, siwave_cpa_config=None, **kwargs) -> SIWaveCPASimulationSetup:
         """Add SIWave CPA analysis setup.
@@ -396,13 +357,15 @@ class SimulationSetups:
             return self.siwave_cpa[name]
 
         # Create the CPA setup through product property interface
-        cpa_setup = SIWaveCPASimulationSetup.create(self._pedb, name, siwave_cpa_config)
+        setup = SIWaveCPASimulationSetup.create(self._pedb, name, siwave_cpa_config)
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
         self._pedb.logger.info(f"SIWave CPA setup {name} created.")
 
         # Store the created setup in the internal dictionary
-        self._siwave_cpa_setup[name] = cpa_setup
+        self._siwave_cpa_setup[name] = setup
 
-        return cpa_setup
+        return setup
 
     def create_raptor_x_setup(
         self,
@@ -438,18 +401,24 @@ class SimulationSetups:
             Created setup object.
         """
 
-        result = self.create(
+        setup = self.create(
             name=name,
             solver="raptor_x",
-            distribution=distribution,
-            start_freq=start_freq,
-            stop_freq=stop_freq,
-            step_freq=step_freq,
-            discrete_sweep=discrete_sweep,
-            sweep_name=sweep_name,
-            **kwargs,
         )
-        return cast(RaptorXSimulationSetup, result)  # casting only for IDE type checking purposes
+        if start_freq and stop_freq and step_freq:
+            setup.add_sweep(
+                name=sweep_name,
+                distribution=distribution,
+                start_freq=start_freq,
+                stop_freq=stop_freq,
+                step=step_freq,
+                discrete=discrete_sweep,
+                frequency_set=None,
+            )
+        self._pedb.logger.info(f"Frequency sweep {sweep_name} added to simulation setup {name}.")
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
+        return cast(RaptorXSimulationSetup, setup)  # casting only for IDE type checking purposes
 
     def create_q3d_setup(
         self,
@@ -485,15 +454,21 @@ class SimulationSetups:
             Created setup object.
         """
 
-        result = self.create(
+        setup = self.create(
             name=name,
             solver="q3d",
-            distribution=distribution,
-            start_freq=start_freq,
-            stop_freq=stop_freq,
-            step_freq=step_freq,
-            discrete_sweep=discrete_sweep,
-            sweep_name=sweep_name,
-            **kwargs,
         )
-        return cast(Q3DSimulationSetup, result)  # casting only for IDE type checking purposes
+        if start_freq and stop_freq and step_freq:
+            setup.add_sweep(
+                name=sweep_name,
+                distribution=distribution,
+                start_freq=start_freq,
+                stop_freq=stop_freq,
+                step=step_freq,
+                discrete=discrete_sweep,
+                frequency_set=None,
+            )
+        self._pedb.logger.info(f"Frequency sweep {sweep_name} added to simulation setup {name}.")
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
+        return cast(Q3DSimulationSetup, setup)  # casting only for IDE type checking purposes

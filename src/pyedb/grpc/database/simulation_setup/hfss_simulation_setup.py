@@ -328,17 +328,13 @@ class HfssSimulationSetup(SimulationSetup):
         bool.
 
         """
-        try:
-            self.settings.general.adaptive_solution_type = "broad_band"
-            bfs = self.settings.general.broadband_adaptive_solution
-            bfs.low_frequency = low_frequency
-            bfs.high_frequency = high_frequency
-            bfs.max_delta = max_delta_s
-            bfs.max_num_passes = max_num_passes
-            self.core.settings.general.broadband_adaptive_solution = bfs
-            return True
-        except:
-            return False
+        self.settings.general.adaptive_solution_type = "broad_band"
+        bfs = self.settings.general.broadband_adaptive_solution
+        bfs.low_frequency = low_frequency
+        bfs.high_frequency = high_frequency
+        bfs.max_delta = max_delta_s
+        bfs.max_num_passes = max_num_passes
+        self.core.settings.general.broadband_adaptive_solution = bfs
 
     def add_adaptive_frequency_data(self, frequency="5GHz", max_delta_s="0.01"):
         """Add adaptive frequency data to simulation setup.
@@ -356,13 +352,10 @@ class HfssSimulationSetup(SimulationSetup):
         bool.
 
         """
-        try:
-            adapt_frequencies = self.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies
-            adapt_frequencies.append(CoreAdaptiveFrequency(frequency, str(max_delta_s)))
-            self.core.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = adapt_frequencies
-            return True
-        except:
-            return False
+
+        adapt_frequencies = self.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies
+        adapt_frequencies.append(CoreAdaptiveFrequency(frequency, str(max_delta_s)))
+        self.core.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = adapt_frequencies
 
     def add_length_mesh_operation(
         self,
