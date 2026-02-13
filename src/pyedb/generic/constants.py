@@ -797,7 +797,10 @@ class CommonMapper:
 
     @classmethod
     def get_dotnet(cls, value):
-        return cls.get(value, as_grpc=False)
+        try:
+            return cls.DOTNET(value).value
+        except ValueError:
+            return cls.get(value, as_grpc=False)
 
 
 class TerminalTypeMapper(CommonMapper):
