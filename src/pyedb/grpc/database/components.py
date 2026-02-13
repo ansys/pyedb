@@ -1080,7 +1080,7 @@ class Components(object):
         >>> new_comp = edbapp.components.create(pins, "R1")
         """
         from ansys.edb.core.hierarchy.component_group import (
-            ComponentGroup as GrpcComponentGroup,
+            ComponentGroup as CoreComponentGroup,
         )
 
         if not pins:
@@ -1094,7 +1094,7 @@ class Components(object):
             compdef = self._get_component_definition(component_name, pins)
         if not compdef:
             return False
-        new_cmp = GrpcComponentGroup.create(self._active_layout.core, component_name, compdef.name)
+        new_cmp = CoreComponentGroup.create(self._active_layout.core, component_name, compdef.name)
         if new_cmp.is_null:
             raise ValueError(f"Failed to create component {component_name}.")
         if hasattr(pins[0], "component") and pins[0].component:
@@ -1103,16 +1103,12 @@ class Components(object):
                 hosting_component_location = pins[0].component.core.transform
         else:
             hosting_component_location = None
-        if not len(pins) == len(compdef.component_pins):
-            self._pedb.logger.error(
-                f"Number on pins {len(pins)} does not match component definition number "
-                f"of pins {len(compdef.component_pins)}"
-            )
-            return False
         for padstack_instance, component_pin in zip(pins, compdef.component_pins):
             padstack_instance.is_layout_pin = True
             padstack_instance.name = component_pin.name
-            new_cmp.add_member(padstack_instance.core)
+            if hasattr(padstack_instance, "core"):
+                padstack_instance = padstack_instance.core
+            new_cmp.add_member(padstack_instance)
         if not placement_layer:
             new_cmp_layer_name = pins[0].padstack_def.data.layer_names[0]
         else:

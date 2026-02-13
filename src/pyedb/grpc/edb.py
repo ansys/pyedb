@@ -73,6 +73,7 @@ import traceback
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 if TYPE_CHECKING:
+    from pyedb import Edb
     from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
 import warnings
 from zipfile import ZipFile as Zpf
@@ -996,6 +997,17 @@ class Edb(EdbInit):
         else:
             self.logger.info("Translation successfully completed.")
         return ipc_path
+
+    @property
+    def layout_bounding_box(self) -> list[float]:
+        """Get the bounding box of the active layout.
+
+        Returns
+        -------
+        list[float]
+            Bounding box coordinates as [xmin, ymin, xmax, ymax].
+        """
+        return self.hfss.get_layout_bounding_box(self.active_layout)
 
     @property
     def configuration(self) -> Configuration:
@@ -3219,6 +3231,47 @@ class Edb(EdbInit):
 
         return CoreLayoutComponent.export_layout_component(
             layout=self.active_layout.core, output_aedb_comp_path=component_path
+        )
+
+    def physical_merge(
+        self,
+        merged_edb: Union[str, "Edb"],
+        on_top: bool = True,
+        vector: tuple = (0.0, 0.0),
+        prefix: str = "merged_",
+        show_progress: bool = True,
+    ):
+        """Merge two EDBs together by copying the primitives from the merged_edb into the hosting_edb.
+
+        Parameters
+        ----------
+        merged_edb : str, Edb
+            Edb folder path or The EDB that will be merged into the hosting_edb.
+        on_top : bool, optional
+            If True, the primitives from the merged_edb will be placed on top of the hosting_edb primitives.
+            If False, they will be placed below. Default is True.
+        vector : tuple, optional
+            A tuple (x, y) representing the offset to apply to the primitives from the merged. Default is (0.0, 0.0).
+        prefix : str, optional
+            A prefix to add to the layer names of the merged primitives to avoid name clashes. Default is "merged_."
+        show_progress : bool, optional
+            If True, print progress to stdout during long operations (primitives/padstacks merging). Default is True.
+
+        Returns
+        -------
+        bool
+            True if the merge was successful, False otherwise.
+
+        """
+        from pyedb.workflows.utilities.physical_merge import physical_merge
+
+        return physical_merge(
+            hosting_edb=self,
+            merged_edb=merged_edb,
+            on_top=on_top,
+            vector=vector,
+            prefix=prefix,
+            show_progress=show_progress,
         )
 
     def copy_cell_from_edb(self, edb_path: Union[Path, str]):

@@ -1261,7 +1261,7 @@ class Padstacks(object):
 
         padstack_definition = PadstackDef.create(self._pedb, padstackname)
         padstack_definition.data = padstack_data
-        self._logger.info(f"Padstack {padstackname} create correctly")
+        self._logger.info(f"Padstack {padstackname} successfully created.")
         return padstackname
 
     def _get_pin_layer_range(self, pin: PadstackInstance) -> Union[Tuple[str, str], bool]:

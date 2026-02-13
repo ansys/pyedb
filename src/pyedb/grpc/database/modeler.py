@@ -681,7 +681,7 @@ class Modeler(object):
         layer_name: str,
         voids: Optional[List[Any]] = [],
         net_name: str = "",
-    ) -> Optional[Primitive]:
+    ) -> Union[Optional[Primitive], bool]:
         """Create polygon primitive.
 
         Parameters

@@ -1397,6 +1397,17 @@ class Edb:
         """Edb Layout Instance."""
         return self.layout._edb_object.GetLayoutInstance()
 
+    @property
+    def layout_bounding_box(self) -> list[float]:
+        """Get the bounding box of the active layout.
+
+        Returns
+        -------
+        list[float]
+            Bounding box coordinates as [xmin, ymin, xmax, ymax].
+        """
+        return self.hfss.get_layout_bounding_box(self.active_layout)
+
     def get_connected_objects(self, layout_object_instance):
         """Get connected objects.
 

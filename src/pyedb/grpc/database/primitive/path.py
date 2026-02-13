@@ -485,3 +485,16 @@ class Path(Primitive):
                 "extended": CorePathEndCapType.EXTENDED,
             }
             self.core.set_end_cap_style(self.core.get_end_cap_style()[0].value, mapping[end_cap_style])
+
+    def move(self, vector):
+        """Move the path by a given vector.
+
+        Parameters
+        ----------
+        vector: list, tuple
+            A list or tuple of two floats representing the x and y components of the movement vector.
+
+        """
+        center_line = self.core.center_line
+        new_center_line = center_line.move(vector)
+        self.core.center_line = new_center_line

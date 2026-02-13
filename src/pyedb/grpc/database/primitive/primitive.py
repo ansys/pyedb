@@ -512,10 +512,11 @@ class Primitive:
         >>> for polygon in top_layer_polygon:
         >>>     polygon.move(vector=["2mm", "100um"])
         """
-        if vector and isinstance(vector, list) and len(vector) == 2:
-            _vector = [Value(pt) for pt in vector]
-            self.core.cast().polygon_data = self.polygon_data.move(_vector)
-            return True
+        if hasattr(self, "polygon_data"):
+            if vector and isinstance(vector, list) and len(vector) == 2:
+                _vector = [Value(pt) for pt in vector]
+                self.core.cast().polygon_data = self.core.cast().polygon_data.move(_vector)
+                return True
         return False
 
     def scale(self, factor, center=None) -> bool:
@@ -541,7 +542,7 @@ class Primitive:
                 center = CorePointData([Value(center[0]), Value(center[1])])
             else:
                 self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
-            self.cast().polygon_data = self.polygon_data.scale(factor, center)
+            self.core.cast().polygon_data = self.polygon_data.scale(factor, center)
             return True
         return False
 
