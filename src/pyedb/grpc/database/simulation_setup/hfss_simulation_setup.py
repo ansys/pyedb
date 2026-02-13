@@ -328,7 +328,7 @@ class HfssSimulationSetup(SimulationSetup):
         bool.
 
         """
-        self.settings.general.adaptive_solution_type = "broad_band"
+        self.settings.general.adaptive_solution_type = "broadband"
         bfs = self.settings.general.broadband_adaptive_solution
         bfs.low_frequency = low_frequency
         bfs.high_frequency = high_frequency
