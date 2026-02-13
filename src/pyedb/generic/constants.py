@@ -841,3 +841,11 @@ class FAdaptTypeMapper(CommonMapper):
 
     class DOTNET(Enum):
         (SINGLE, MULTI_FREQUENCIES, BROADBAND, NUM_ADAPT_TYPE) = ("kSingle", "kMultiFrequencies", "kBroadband", "kNumAdaptTypes")
+
+
+class MeshOperationTypeMapper(CommonMapper):
+    class GRPC(Enum):
+        (BASE, LENGTH, SKIN_DEPTH) = ("MeshOperation", "LengthMeshOperation", "SkinDepthMeshOperation")
+
+    class DOTNET(Enum):
+        (BASE, LENGTH, SKIN_DEPTH) = ("kMeshSetupBase", "kMeshSetupLength", "kMeshSetupSkinDepth")

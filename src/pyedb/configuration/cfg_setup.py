@@ -81,17 +81,49 @@ class CfgSIwaveDCSetup(CfgSetupDC):
 
 
 class CfgHFSSSetup(CfgSetupAC):
+    class CfgSingleFrequencyAdaptiveSolution(BaseModel):
+        adaptive_frequency: float | str = Field("5GHz", description="Frequency for single frequency adaptation.")
+        max_passes: int = Field(20, description="Maximum number of adaptation passes.")
+        max_delta: float | str = Field("0.02",
+                                       description="Maximum delta S for convergence in single frequency adaptation.")
+
+    class CfgBroadbandAdaptiveSolution(BaseModel):
+        low_frequency: float | str = Field("1GHz", description="Low frequency for broadband adaptation.")
+        high_frequency: float | str = Field("10GHz", description="High frequency for broadband.")
+        max_passes: int = Field(20, description="Maximum number of adaptation passes.")
+        max_delta: float | str = Field("0.02", description="Maximum delta S for convergence in broadband adaptation.")
+
     class CfgAutoMeshOperation(BaseModel):
         enabled: bool = False
         trace_ratio_seeding: float = 3
         signal_via_side_number: int = 12
         power_ground_via_side_number: int = 6
 
-    class CfgMeshOperation(BaseModel):
+    class CfgMultiFrequencyAdaptiveSolution(BaseModel):
+        class CfgAdaptFrequency(BaseModel):
+            adaptive_frequency: float | str = Field("5GHz", description="Frequency for single frequency adaptation.")
+            max_passes: int = Field(20, description="Maximum number of adaptation passes.")
+            max_delta: float | str = Field("0.02",
+                                           description="Maximum delta S for convergence in single frequency adaptation.")
+
+        adapt_frequencies: list[CfgAdaptFrequency] = Field(
+            default=[CfgAdaptFrequency(adaptive_frequency="1GHz"), CfgAdaptFrequency(adaptive_frequency="10GHz")],
+            description="List of frequencies for multi-frequency adaptation.")
+
+        def add_adaptive_frequency(self, frequency: Union[float, str], max_passes: int, max_delta: Union[float, str]):
+            adapt_freq = CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution.CfgAdaptFrequency(
+                adaptive_frequency=frequency,
+                max_passes=max_passes,
+                max_delta=max_delta,
+            )
+            self.adapt_frequencies.append(adapt_freq)
+
+
+    class CfgLengthMeshOperation(BaseModel):
         """Mesh operation export/import payload."""
+        mesh_operation_type: str = "length"
 
         name: str = Field(..., description="Mesh operation name.")
-        type: str | None = Field(None, description="Mesh operation type identifier.")
         max_elements: int | str | None = Field(1000, description="Maximum number of elements.")
         max_length: float | str | None = Field("1mm", description="Maximum element length (supports units).")
         restrict_length: bool | None = Field(True, description="Whether to restrict the maximum length.")
@@ -100,28 +132,29 @@ class CfgHFSSSetup(CfgSetupAC):
             ...,
             description="Mapping of nets to layers (or backend-specific structure).",
         )
-    class CfgAdaptFrequency(BaseModel):
-        f_adapt: float | str
-        max_num_passes: int
-        max_mag_delta_s: float | str
 
     type: str = "hfss"
     adapt_type: Literal["broadband", "single", "multi_frequencies"] = Field(
         "single", description="Adaptation type, e.g., broadband, single, multi_frequencies."
     )
-    adapt_frequencies: list[CfgAdaptFrequency] = Field(default_factory=list, description="List of frequencies for single/multi_frequencies adaptation.")
+    single_frequency_adaptive_solution: Optional[CfgSingleFrequencyAdaptiveSolution] = Field(
+        default_factory=CfgSingleFrequencyAdaptiveSolution)
+    broadband_adaptive_solution: Optional[CfgBroadbandAdaptiveSolution] = Field(
+        default_factory=CfgBroadbandAdaptiveSolution)
+    multi_frequency_adaptive_solution: Optional[CfgMultiFrequencyAdaptiveSolution] = Field(
+        default_factory=CfgMultiFrequencyAdaptiveSolution)
+    # adapt_frequencies: list[CfgAdaptFrequency] = Field(default_factory=list, description="List of frequencies for single/multi_frequencies adaptation.")
 
     auto_mesh_operation: CfgAutoMeshOperation | None = CfgAutoMeshOperation()
-    mesh_operations: list[CfgMeshOperation] | None = list()
+    mesh_operations: list[CfgLengthMeshOperation] | None = list()
 
-    def add_mesh_operation(self, **kwargs):
-        mesh_op = CfgHFSSSetup.CfgMeshOperation(**kwargs)
+    def add_length_mesh_operation(self, mesh_op:CfgLengthMeshOperation):
         self.mesh_operations.append(mesh_op)
 
-    def add_adapt_frequency(self, frequency, max_num_passes, max_mag_delta_s):
+    def add_adapt_frequency(self, frequency, max_passes, max_mag_delta_s):
         adapt_freq = CfgHFSSSetup.CfgAdaptFrequency(
             f_adapt=frequency,
-            max_num_passes=max_num_passes,
+            max_passes=max_passes,
             max_mag_delta_s=max_mag_delta_s,
         )
         self.adapt_frequencies.append(adapt_freq)

@@ -39,7 +39,7 @@ from ansys.edb.core.simulation_setup.hfss_simulation_setup import (
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.simulation_setup.hfss_general_settings import HFSSGeneralSettings
 from pyedb.grpc.database.simulation_setup.hfss_simulation_settings import HFSSSimulationSettings
-from pyedb.grpc.database.simulation_setup.length_mesh_operation import LengthMeshOperation
+from pyedb.grpc.database.simulation_setup.mesh_operation import LengthMeshOperation
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
 from pyedb.grpc.database.simulation_setup.skin_depth_mesh_operation import SkinDepthMeshOperation
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
@@ -167,7 +167,7 @@ class HfssSimulationSetup(SimulationSetup):
 
         """
 
-        return HFSSSimulationSettings(self, self.core.settings)
+        return HFSSSimulationSettings(self._pedb, self.core.settings)
 
     @property
     def adaptive_settings(self):
@@ -183,7 +183,7 @@ class HfssSimulationSetup(SimulationSetup):
             "The 'adaptive_settings' property is deprecated. Use 'settings.general' property instead.",
             DeprecationWarning,
         )
-        return HFSSGeneralSettings(self, self.core.settings.general)
+        return HFSSGeneralSettings(self._pedb, self.core.settings.general)
 
     @property
     def curve_approx_settings(self):

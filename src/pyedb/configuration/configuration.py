@@ -31,7 +31,7 @@ import toml
 from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
 from pyedb.misc.decorators import execution_timer
-from pyedb.generic.constants import FAdaptTypeMapper
+from pyedb.generic.constants import FAdaptTypeMapper, MeshOperationTypeMapper
 from pyedb.generic.settings import settings
 
 
@@ -203,27 +203,60 @@ class Configuration:
             else:
                 if setup.type == "hfss":
                     edb_setup = self._pedb.simulation_setups.create(name=setup.name, solver="hfss")
-                    edb_setup.adaptive_settings.adapt_type = FAdaptTypeMapper.get(setup.adapt_type, as_grpc=settings.is_grpc)
-                    edb_setup.adaptive_settings.clean_adaptive_frequency_data_list()
+                    edb_setup.adaptive_settings.adapt_type = FAdaptTypeMapper.get(setup.adapt_type,
+                                                                                  as_grpc=settings.is_grpc)
+                    if not settings.is_grpc:
+                        edb_setup.adaptive_settings.clean_adaptive_frequency_data_list()
+                        if setup.adapt_type == "single":
+                            edb_setup.adaptive_settings.add_adaptive_frequency_data(
+                                setup.single_frequency_adaptive_solution.adaptive_frequency,
+                                setup.single_frequency_adaptive_solution.max_passes,
+                                setup.single_frequency_adaptive_solution.max_delta)
+                        elif setup.adapt_type == "broadband":
+                            edb_setup.adaptive_settings.add_adaptive_frequency_data(
+                                setup.broadband_adaptive_solution.low_frequency,
+                                setup.broadband_adaptive_solution.max_passes,
+                                setup.broadband_adaptive_solution.max_delta)
+                            edb_setup.adaptive_settings.add_adaptive_frequency_data(
+                                setup.broadband_adaptive_solution.high_frequency,
+                                setup.broadband_adaptive_solution.max_passes,
+                                setup.broadband_adaptive_solution.max_delta)
+                        else:
+                            raise ValueError(f"Adapt type {setup.adapt_type} is not supported.")
 
-                    for i in setup.adapt_frequencies:
-                        edb_setup.adaptive_settings.add_adaptive_frequency_data(i.f_adapt, i.max_num_passes,
-                                                                            i.max_mag_delta_s)
+                    else:
+                        if setup.adapt_type == "single":
+                            s_f_adapt = edb_setup.settings.general.single_frequency_adaptive_solution
+                            s_f_adapt.adaptive_frequency = setup.single_frequency_adaptive_solution.adaptive_frequency
+                            s_f_adapt.max_passes = setup.single_frequency_adaptive_solution.max_passes
+                            s_f_adapt.max_delta = setup.single_frequency_adaptive_solution.max_delta
+                        elif setup.adapt_type == "broadband":
+                            b_f_adapt = edb_setup.settings.general.broadband_adaptive_solution
+                            b_f_adapt.low_frequency = setup.broadband_adaptive_solution.low_frequency
+                            b_f_adapt.high_frequency = setup.broadband_adaptive_solution.high_frequency
+                            b_f_adapt.max_delta = setup.broadband_adaptive_solution.max_delta
+                            b_f_adapt.max_passes = setup.broadband_adaptive_solution.max_passes
+                        else:
+                            raise ValueError(f"Adapt type {setup.adapt_type} is not supported.")
+
                     if setup.auto_mesh_operation.enabled:
                         args = dict(setup.auto_mesh_operation)
                         args.pop("enabled")
                         edb_setup.auto_mesh_operation(**args)
 
                     for mp in setup.mesh_operations:
-                        edb_setup.add_length_mesh_operation(
-                            name=mp.name,
-                            max_elements=mp.max_elements,
-                            max_length=mp.max_length,
-                            restrict_length=mp.restrict_length,
-                            refine_inside=mp.refine_inside,
-                            # mesh_region=mp.get(mesh_region),
-                            net_layer_list=mp.nets_layers_list,
-                        )
+                        if mp.mesh_operation_type == "length":
+                            edb_setup.add_length_mesh_operation(
+                                name=mp.name,
+                                max_elements=mp.max_elements,
+                                max_length=mp.max_length,
+                                restrict_length=mp.restrict_length,
+                                refine_inside=mp.refine_inside,
+                                # mesh_region=mp.get(mesh_region),
+                                net_layer_list=mp.nets_layers_list,
+                            )
+                        else:
+                            raise ValueError(f"Mesh operation type {mp.mesh_operation_type} is not supported.")
                 elif setup.type == "siwave_ac":  # siwave ac
                     edb_setup = self._pedb.create_siwave_syz_setup(name=setup.name)
                     if setup.si_slider_position is not None:
@@ -270,22 +303,51 @@ class Configuration:
             else:
                 if setup.type == "hfss":
                     cfg_ac_setup = self.cfg_data.add_hfss_setup(name=setup.name)
-                    cfg_ac_setup.adapt_type = FAdaptTypeMapper.get(setup.adaptive_settings.adapt_type, as_grpc=True)
-                    for i in list(setup.adaptive_settings.adaptive_frequency_data_list)[-2:]:
-                        cfg_ac_setup.add_adapt_frequency(i.adaptive_frequency, i.max_passes,i.max_delta)
+                    adapt_type = FAdaptTypeMapper.get(setup.adaptive_settings.adapt_type, as_grpc=True)
+                    cfg_ac_setup.adapt_type = adapt_type
+                    if not settings.is_grpc:
+                        if adapt_type == "single":
+                            i = setup.adaptive_settings.adaptive_frequency_data_list[0]
+                            cfg_ac_setup.single_frequency_adaptive_solution.adaptive_frequency = i.adaptive_frequency
+                            cfg_ac_setup.single_frequency_adaptive_solution.max_passes = i.max_passes
+                            cfg_ac_setup.single_frequency_adaptive_solution.max_delta = i.max_delta
+                        elif adapt_type == "broadband":
+                            lf = setup.adaptive_settings.adaptive_frequency_data_list[2]
+                            cfg_ac_setup.broadband_adaptive_solution.low_frequency = lf.adaptive_frequency
+                            cfg_ac_setup.broadband_adaptive_solution.max_passes =lf.max_passes
+                            cfg_ac_setup.broadband_adaptive_solution.max_delta =lf.max_delta
+                            hf = setup.adaptive_settings.adaptive_frequency_data_list[3]
+                            cfg_ac_setup.broadband_adaptive_solution.high_frequency = hf.adaptive_frequency
+                        else:
+                            self._pedb.logger.warning("Unsupported adapt type found in setup, skipping adaptive settings.")
+                    else:
+                        if setup.adaptive_settings.adapt_type == "single":
+                            s_f_adapt = setup.settings.general.single_frequency_adaptive_solution
+                            cfg_ac_setup.single_frequency_adaptive_solution.adaptive_frequency = s_f_adapt.adaptive_frequency
+                            cfg_ac_setup.single_frequency_adaptive_solution.max_passes = s_f_adapt.max_passes
+                            cfg_ac_setup.single_frequency_adaptive_solution.max_delta = s_f_adapt.max_delta
+                        elif setup.adaptive_settings.adapt_type == "broadband":
+                            b_f_adapt = setup.settings.general.broadband_adaptive_solution
+                            cfg_ac_setup.broadband_adaptive_solution.low_frequency = b_f_adapt.low_frequency
+                            cfg_ac_setup.broadband_adaptive_solution.high_frequency = b_f_adapt.high_frequency
+                            cfg_ac_setup.broadband_adaptive_solution.max_delta = b_f_adapt.max_delta
+                            cfg_ac_setup.broadband_adaptive_solution.max_passes = b_f_adapt.max_passes
 
-                    for name, mop in setup.mesh_operations.items():
-                        cfg_ac_setup.add_mesh_operation(
-                            **{
-                                "name": name,
-                                "type": mop.type,
-                                "max_elements": mop.max_elements,
-                                "max_length": mop.max_length,
-                                "restrict_length": mop.restrict_length,
-                                "refine_inside": mop.refine_inside,
-                                "nets_layers_list": mop.nets_layers_list,
-                            }
-                        )
+                    mops = setup.mesh_operations if settings.is_grpc else list(setup.mesh_operations.values())
+                    for mop in mops:
+                        if mop.mesh_operation_type == MeshOperationTypeMapper.get("length", as_grpc=settings.is_grpc):
+                            cfg_ac_setup.add_length_mesh_operation(
+                                cfg_ac_setup.CfgLengthMeshOperation(
+                                    name=mop.name,
+                                    max_elements=mop.max_elements,
+                                    max_length=mop.max_length,
+                                    restrict_length=mop.restrict_length,
+                                    refine_inside=mop.refine_inside,
+                                    nets_layers_list=mop.nets_layers_list,
+                                ))
+                        else:
+                            raise ValueError(f"Mesh operation type {mop.mesh_operation_type} is not supported.")
+
                 elif setup.type == "siwave_ac":  # siwave ac
                     cfg_ac_setup = self.cfg_data.add_siwave_ac_setup(
                         name=setup.name,
@@ -917,23 +979,23 @@ class Configuration:
                 raise RuntimeError(f"Terminal type {i.terminal_type} not supported.")
 
     def export(
-        self,
-        file_path,
-        stackup=True,
-        package_definitions=False,
-        setups=True,
-        sources=True,
-        ports=True,
-        nets=True,
-        pin_groups=True,
-        operations=True,
-        components=True,
-        boundaries=True,
-        s_parameters=True,
-        padstacks=True,
-        general=True,
-        variables=True,
-        terminals=False,
+            self,
+            file_path,
+            stackup=True,
+            package_definitions=False,
+            setups=True,
+            sources=True,
+            ports=True,
+            nets=True,
+            pin_groups=True,
+            operations=True,
+            components=True,
+            boundaries=True,
+            s_parameters=True,
+            padstacks=True,
+            general=True,
+            variables=True,
+            terminals=False,
     ):
         """Export the configuration data from layout to a file.
 

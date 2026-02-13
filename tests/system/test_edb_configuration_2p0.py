@@ -1348,7 +1348,7 @@ class TestClassSetups(BaseTestClass):
                     "name": "single",
                     "type": "hfss",
                     "adapt_type": "single",
-                    "adapt_frequencies": [{"f_adapt": "5GHz", "max_num_passes": 10, "max_mag_delta_s": 0.02, }],
+                    "single_frequency_adaptive_solution": {"adaptive_frequency": "5GHz", "max_passes": 10, "max_delta": 0.02},
                     "freq_sweep": [],
                     "auto_mesh_operation": {
                         "enabled": False,
@@ -1359,7 +1359,7 @@ class TestClassSetups(BaseTestClass):
                     "mesh_operations": [
                         {
                             "name": "mop_1",
-                            "type": "length",
+                            "mesh_operation_type": "length",
                             "max_length": "3mm",
                             "max_elements": 100,
                             "restrict_length": True,
@@ -1372,10 +1372,13 @@ class TestClassSetups(BaseTestClass):
         }
 
         edbapp = self.edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
+        edbapp.configuration.load(data)
+        edbapp.configuration.run()
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
         source = next(item for item in data["setups"] if item["name"] == "single")
         target = next(item for item in data_from_db["setups"] if item["name"] == "single")
+        target.pop("broadband_adaptive_solution")
+        target.pop("multi_frequency_adaptive_solution")
         assert source == target
 
         edbapp.close(terminate_rpc_session=False)
@@ -1387,9 +1390,12 @@ class TestClassSetups(BaseTestClass):
                     "name": "broadband",
                     "type": "hfss",
                     "adapt_type": "broadband",
-                    "adapt_frequencies": [{"f_adapt": "1GHz", "max_num_passes": 10, "max_mag_delta_s": 0.02, },
-                                          {"f_adapt": "5GHz", "max_num_passes": 10, "max_mag_delta_s": 0.02, },
-                                          ],
+                    "broadband_adaptive_solution": {
+                        "low_frequency": "1GHz",
+                        "high_frequency": "10GHz",
+                        "max_passes": 10,
+                        "max_delta": 0.02,
+                    },
                 },
             ]
         }
@@ -1403,6 +1409,8 @@ class TestClassSetups(BaseTestClass):
         target.pop("freq_sweep")  # Remove freq_sweep since it's not defined in source but is returned from db with default value
         target.pop("auto_mesh_operation")  # Remove auto_mesh_operation since it's not defined in source but is returned from db with default value
         target.pop("mesh_operations") # Remove mesh_operations since it's not defined in source but is returned from db with default value
+        target.pop("single_frequency_adaptive_solution")  # Remove single_frequency_adaptive_solution since it's not defined in source but is returned from db with default value
+        target.pop("multi_frequency_adaptive_solution")
         assert source == target
 
         edbapp.close(terminate_rpc_session=False)

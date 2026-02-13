@@ -543,6 +543,10 @@ class HFSSGeneralSettings:
         except Exception:
             return str(val).lower()
 
+    @adapt_type.setter
+    def adapt_type(self, value):
+        self.adaptive_solution_type = value
+
     @property
     def adaptive_solution_type(self) -> str:
         """Adaptive solution type.
