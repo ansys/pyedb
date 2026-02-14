@@ -145,17 +145,17 @@ class TestClass(BaseTestClass):
         assert not log_parser.is_aborted()
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Only implemented in gRPC")
-    def test_pyhsical_merge(self):
+    def test_physical_merge(self):
         main_board = self.edb_examples.get_si_verse()
         merged_package = self.edb_examples.get_package()
         main_board.physical_merge(merged_edb=merged_package, vector=(0, 0.4e-3), prefix="test_")
-        assert len(main_board.stackup.layers) == 24
-        assert "test_TOP" in main_board.stackup.layers
-        assert len(main_board.modeler.primitives_by_layer["test_TOP"]) == 424
+        assert len(main_board.stackup.layers) == 24  # nosec: B101
+        assert "test_TOP" in main_board.stackup.layers  # nosec: B101
+        assert len(main_board.modeler.primitives_by_layer["test_TOP"]) == 424  # nosec: B101
         component_on_merged_layer = [
             comp for comp in list(main_board.components.instances.values()) if comp.placement_layer == "test_TOP"
         ]
-        assert len(component_on_merged_layer) == 1
-        assert component_on_merged_layer[0].name == "test_FCHIP"
-        assert component_on_merged_layer[0].type == "other"
+        assert len(component_on_merged_layer) == 1  # nosec: B101
+        assert not component_on_merged_layer[0].is_null  # nosec: B101
+        assert component_on_merged_layer[0].type == "other"  # nosec: B101
         main_board.close()

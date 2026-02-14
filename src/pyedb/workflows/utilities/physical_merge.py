@@ -102,7 +102,7 @@ def _get_contact_layer(hosting_edb, on_top) -> str:
 
 
 def _add_definitions_to_hosting_edb(hosting_edb, merged_edb, prefix):
-    hosting_edb.logger.info(f"Loading merged EDB definitions.")
+    hosting_edb.logger.info("Loading merged EDB definitions.")
     for padstack_def_name, padstack_def in merged_edb.padstacks.definitions.items():
         new_def_name = hosting_edb.padstacks.create(f"{prefix}{padstack_def_name}")
         new_def = hosting_edb.padstacks.definitions[new_def_name]
