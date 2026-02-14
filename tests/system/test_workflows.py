@@ -37,7 +37,6 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_hfss_log_parser(self):
         from pyedb.workflows.utilities.hfss_log_parser import HFSSLogParser
 
@@ -74,7 +73,6 @@ class TestClass(BaseTestClass):
         hfss_auto_config.create_projects()
         assert sum(1 for item in Path(hfss_auto_config.batch_group_folder).iterdir() if item.is_dir()) == 2
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_drc_rules(self):
         from pyedb.workflows.drc.drc import Rules
 
@@ -130,7 +128,6 @@ class TestClass(BaseTestClass):
         assert os.path.isfile(output_file)
         edbapp.close()
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_siwave_log_parser(self):
         from pyedb.workflows.utilities.siwave_log_parser import SiwaveLogParser
 
