@@ -88,6 +88,16 @@ def resistor_value_parser(r_value) -> float:
     return r_value
 
 
+_mapping_component_type = {
+    "resistor": CoreComponentType.RESISTOR,
+    "capacitor": CoreComponentType.CAPACITOR,
+    "inductor": CoreComponentType.INDUCTOR,
+    "other": CoreComponentType.OTHER,
+    "ic": CoreComponentType.IC,
+    "io": CoreComponentType.IO,
+}
+
+
 class Components(object):
     """Manages EDB components and related methods accessible from `Edb.components`.
 
@@ -1116,50 +1126,59 @@ class Components(object):
         if new_cmp_layer_name in self._pedb.stackup.signal_layers:
             new_cmp_placement_layer = self._pedb.stackup.signal_layers[new_cmp_layer_name]
             new_cmp.placement_layer = new_cmp_placement_layer.core
-        if r_value:
-            new_cmp.component_type = CoreComponentType.RESISTOR
-            is_rlc = True
-        elif c_value:
-            new_cmp.component_type = CoreComponentType.CAPACITOR
-            is_rlc = True
-        elif l_value:
-            new_cmp.component_type = CoreComponentType.INDUCTOR
-            is_rlc = True
-        else:
-            new_cmp.component_type = CoreComponentType.OTHER
-            is_rlc = False
-        if is_rlc and len(pins) == 2:
-            rlc = CoreRlc()
-            rlc.is_parallel = is_parallel
-            if not r_value:
-                rlc.r_enabled = False
+
+            # Determine component type and create RLC if applicable
+            values = {"resistor": r_value, "capacitor": c_value, "inductor": l_value}
+            attr_map = {"resistor": "r", "capacitor": "c", "inductor": "l"}
+
+            # Find which values are present
+            present = [k for k, v in values.items() if v]
+            is_rlc = bool(present)
+
+            if is_rlc:
+                new_cmp.component_type = _mapping_component_type[present[0]]
             else:
-                rlc.r_enabled = True
-                rlc.r = Value(r_value)
-            if l_value is None:
-                rlc.l_enabled = False
-            else:
-                rlc.l_enabled = True
-                rlc.l = Value(l_value)
-            if c_value is None:
-                rlc.c_enabled = False
-            else:
-                rlc.c_enabled = True
-                rlc.c = Value(c_value)
-            if rlc.r_enabled and not rlc.c_enabled and not rlc.l_enabled:
-                new_cmp.component_type = CoreComponentType.RESISTOR
-            elif rlc.c_enabled and not rlc.r_enabled and not rlc.l_enabled:
-                new_cmp.component_type = CoreComponentType.CAPACITOR
-            elif rlc.l_enabled and not rlc.r_enabled and not rlc.c_enabled:
-                new_cmp.component_type = CoreComponentType.INDUCTOR
-            else:
-                new_cmp.component_type = CoreComponentType.RESISTOR
-            pin_pair = (pins[0].name, pins[1].name)
-            rlc_model = PinPairModel(self._pedb, new_cmp.component_property.model)
-            rlc_model.core.set_rlc(pin_pair, rlc)
-            component_property = new_cmp.component_property
-            component_property.model = rlc_model.core
-            new_cmp.component_property = component_property
+                new_cmp.component_type = CoreComponentType.OTHER
+
+            # Build RLC component for 2-pin components
+            if is_rlc and len(pins) == 2:
+                rlc = CoreRlc()
+                rlc.is_parallel = is_parallel
+
+                # Enable and set values
+                for key in values:
+                    attr = attr_map[key]
+                    enabled = bool(values[key])
+                    setattr(rlc, f"{attr}_enabled", enabled)
+                    if enabled:
+                        setattr(rlc, attr, Value(values[key]))
+
+                # Determine final type based on enabled components
+                enabled_count = sum(getattr(rlc, f"{attr_map[k]}_enabled") for k in values)
+                if enabled_count == 1:
+                    single = next(k for k in values if getattr(rlc, f"{attr_map[k]}_enabled"))
+                    new_cmp.component_type = _mapping_component_type[single]
+                else:
+                    new_cmp.component_type = CoreComponentType.CAPACITOR  # RLC type by default
+                pin_pair = (pins[0].name, pins[1].name)
+                rlc_model = PinPairModel(self._pedb, new_cmp.component_property.model)
+                rlc_model.core.set_rlc(pin_pair, rlc)
+                component_property = new_cmp.component_property
+                component_property.model = rlc_model.core
+                new_cmp.component_property = component_property
+            elif is_rlc:
+                if len(pins) > 2:
+                    self._logger.warning(
+                        f"RLC components {new_cmp.name} with more than 2 pins are not supported. "
+                        "Created component will be of type OTHER."
+                    )
+                    new_cmp.component_type = CoreComponentType.OTHER
+                if len(pins) < 2:
+                    self._logger.warning(
+                        f"RLC components with {new_cmp.name} less than 2 pins are not supported. "
+                        "Created component will be of type OTHER."
+                    )
+                    new_cmp.component_type = CoreComponentType.OTHER
         if hosting_component_location:
             new_cmp.transform = hosting_component_location
         new_edb_comp = Component(self._pedb, new_cmp)

@@ -20,9 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import sys
 from time import time
-from typing import Any, Union, cast
+from typing import Union
 
 from ansys.edb.core.primitive.padstack_instance import PadstackInstance as CorePadstackInstance
 from ansys.edb.core.utility.layer_map import (
@@ -31,6 +30,7 @@ from ansys.edb.core.utility.layer_map import (
 )
 
 from pyedb import Edb
+from pyedb.workflows.utilities.helpers import finish_progress, print_progress
 
 layer_mapping = {
     "two_way": CoreLayerMapUniqueDirection.TWOWAY_UNIQUE,
@@ -39,7 +39,6 @@ layer_mapping = {
 }
 cache_padstack_def = {}
 cache_layers = {}
-from pyedb.grpc.database.primitive.circle import Circle
 
 
 def _layer_mapping(direction):
@@ -126,7 +125,7 @@ def physical_merge(
     hosting_edb : Edb
         The EDB that will host the merged primitives.
     merged_edb : str, Edb
-        Edb folder path or The EDB that will be merged into the hosting_edb.
+        Aedb folder path or The EDB that will be merged into the hosting_edb.
     on_top : bool, optional
         If True, the primitives from the merged_edb will be placed on top of the hosting_edb primitives.
         If False, they will be placed below. Default is True.
@@ -150,59 +149,6 @@ def physical_merge(
         raise NotImplementedError(
             "Feature only available with gRPC EDB. Please initialize hosting_edb with grpc=True to use this function."
         )
-
-    # small helper to print progress to terminal
-    def _print_progress(current, total, start_time, prefix_desc="Progress"):
-        # respect caller preference to show progress
-        if not show_progress:
-            return
-        try:
-            # compute elapsed, rate and ETA
-            elapsed = time() - start_time
-            elapsed = max(elapsed, 1e-6)
-            rate = current / elapsed if current > 0 else 0.0
-
-            if total <= 0:
-                percent = 100.0
-                eta_seconds = 0.0
-            else:
-                percent = (current / total) * 100.0 if total > 0 else 100.0
-                eta_seconds = (total - current) / rate if rate > 0 else float("inf")
-
-            def _format_time(seconds):
-                if seconds == float("inf"):
-                    return "?"
-                s = int(round(seconds))
-                h = s // 3600
-                m = (s % 3600) // 60
-                sec = s % 60
-                if h > 0:
-                    return f"{h}h{m:02d}m{sec:02d}s"
-                if m > 0:
-                    return f"{m}m{sec:02d}s"
-                return f"{sec}s"
-
-            eta_str = _format_time(eta_seconds)
-            # carriage return to update the same line
-            sys.stdout.write(
-                f"\r{prefix_desc}: {current}/{total} ({percent:.1f}%) rate={rate:.1f}/s elapsed={elapsed:.1f}s"
-                f" eta={eta_str}"
-            )
-            sys.stdout.flush()
-        except Exception:
-            # if stdout isn't available or any error occurs, just ignore
-            pass
-
-    # helper to end a progress line cleanly
-    def _finish_progress():
-        if not show_progress:
-            return
-        try:
-            sys.stdout.write("\n")
-            sys.stdout.flush()
-        except Exception as e:
-            print(e)
-
     # Loading merged EDB if path provided, otherwise using the provided EDB object
     if isinstance(merged_edb, str):
         hosting_edb.logger.info(f"Loading merged EDB from path: {merged_edb}")
@@ -235,12 +181,14 @@ def physical_merge(
     total_primitives = len(primitives)
     primitive_count = 0
     # print initial progress (0/total)
-    _print_progress(0, total_primitives, start, prefix_desc="Merging primitives")
+    if show_progress:
+        print_progress(0, total_primitives, start, prefix_desc="Merging primitives")
     for primitive in primitives:
         primitive_count += 1
         # update terminal progress every 100 items or on last item
         if primitive_count % 100 == 0 or primitive_count == total_primitives:
-            _print_progress(primitive_count, total_primitives, start, prefix_desc="Merging primitives")
+            if show_progress:
+                print_progress(primitive_count, total_primitives, start, prefix_desc="Merging primitives")
         primitive_type = primitive.type
         if primitive_type in ["polygon", "rectangle"]:
             polygon_data = primitive.polygon_data
@@ -257,27 +205,28 @@ def physical_merge(
                 voids=voids,
             )
         elif primitive_type == "circle":
-            if hasattr(primitive, "get_parameters"):
+            if hasattr(primitive, "get_parameters") and hasattr(primitive, "set_parameters"):
                 center_x, center_y, radius = primitive.get_parameters()
                 center_x += vector[0]
                 center_y += vector[1]
                 primitive.set_parameters(center_x, center_y, radius)
 
         elif primitive_type == "path":
-            width = primitive.width
-            center_line = primitive.core.center_line
-            center_line = center_line.move(vector)
-            hosting_edb.modeler.create_trace(
-                path_list=center_line,
-                layer_name=f"{prefix}{primitive.layer.name}",
-                width=width,
-                net_name=primitive.net.name,
-            )
+            if hasattr(primitive, "width"):
+                width = primitive.width
+                center_line = primitive.core.center_line
+                center_line = center_line.move(vector)
+                hosting_edb.modeler.create_trace(
+                    path_list=center_line,
+                    layer_name=f"{prefix}{primitive.layer.name}",
+                    width=width,
+                    net_name=primitive.net.name,
+                )
         else:
             print(f"Primitive type {primitive_type} not supported for merging and will be skipped.")
     stop = time()
     # ensure progress line ends with newline so following logs don't continue the same line
-    _finish_progress()
+    finish_progress()
     elapsed = stop - start
     hosting_edb.logger.info(f"Merging primitives from merged EDB completed in {elapsed} seconds.")
 
@@ -289,21 +238,19 @@ def physical_merge(
     total_padstacks = len(padstack_instances)
     components_dict = {}
     padstack_count = 0
-    # print initial progress (0/total)
-    _print_progress(0, total_padstacks, start, prefix_desc="Merging padstacks")
+    if show_progress:
+        # print initial progress (0/total)
+        print_progress(0, total_padstacks, start, prefix_desc="Merging padstacks")
     for padstack_inst in padstack_instances:
         padstack_count += 1
         # update terminal progress every 50 items or on last item
         if padstack_count % 50 == 0 or padstack_count == total_padstacks:
-            _print_progress(padstack_count, total_padstacks, start, prefix_desc="Merging padstacks")
+            if show_progress:
+                print_progress(padstack_count, total_padstacks, start, prefix_desc="Merging padstacks")
 
         position = padstack_inst.position
-        if grpc:
-            x = hosting_edb.value(position[0] + vector[0])
-            y = hosting_edb.value(position[1] + vector[1])
-        else:
-            x = hosting_edb.value(position[0] + vector.X.ToDouble())
-            y = hosting_edb.value(position[1] + vector.Y.ToDouble())
+        x = hosting_edb.value(position[0] + vector[0])
+        y = hosting_edb.value(position[1] + vector[1])
         rotation = hosting_edb.value(padstack_inst.rotation)
         from_layer = cache_layers[f"{prefix}{padstack_inst.start_layer}"]
         to_layer = cache_layers[f"{prefix}{padstack_inst.stop_layer}"]
@@ -328,7 +275,7 @@ def physical_merge(
             if padstack_inst.component:
                 components_dict.setdefault(padstack_inst.component.name, []).append(inst)
     # finish progress line
-    _finish_progress()
+    finish_progress()
 
     if components_dict:
         for ref_des, pins in components_dict.items():
@@ -352,5 +299,5 @@ def physical_merge(
     stop = time()
     elapsed = stop - start
     hosting_edb.logger.info(f"Merging padstack instances from merged EDB completed in {elapsed} seconds.")
-    merged_edb.close(terminate_rpc_session=False)
+    merged_edb.close(terminate_rpc_session=False)  # do not terminate rpc session main edb is still open.
     return True
