@@ -39,6 +39,7 @@ _mapping_simulation_types = {
     CoreSimulationSetupType.Q3D_SIM: "q3d",
 }
 
+
 class SimulationSetupDeprecated:
     @property
     def type(self):

@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from ansys.edb.core.simulation_setup.mesh_operation import LengthMeshOperation as CoreLengthMeshOperation
+
 from pyedb.generic.constants import MeshOperationTypeMapper
 from pyedb.generic.settings import settings
 

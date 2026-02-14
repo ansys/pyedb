@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pyedb.generic.constants import TerminalTypeMapper, BoundaryTypeMapper, SourceTermMapper
+from pyedb.generic.constants import BoundaryTypeMapper, SourceTermMapper, TerminalTypeMapper
 from pyedb.grpc.database.inner.conn_obj import ConnObj
 
 if TYPE_CHECKING:
@@ -40,8 +40,6 @@ from ansys.edb.core.terminal.terminal import (
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.port_post_processing_prop import PortPostProcessingProp
 from pyedb.grpc.database.utility.value import Value
-
-
 
 
 class Terminal(ConnObj):

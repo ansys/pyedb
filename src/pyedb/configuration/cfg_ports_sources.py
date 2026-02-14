@@ -208,7 +208,7 @@ class CfgPorts:
             else:
                 port_type = "circuit"
             refdes = ""
-            pos_term_info ={}
+            pos_term_info = {}
             if p.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                 pg = self.get_pin_group(p)
                 pos_term_info = {"pin_group": pg.name}
@@ -217,14 +217,16 @@ class CfgPorts:
                 pos_term_info = {"padstack": p.padstack_instance.aedt_name}
             elif p.terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
                 pos_term_info = {"coordinates": {"layer": p.layer.name, "point": p.location, "net": p.net.name}}
-            neg_term_info ={}
+            neg_term_info = {}
             if port_type == "circuit":
                 neg_term = self._pedb.terminals[p.reference_terminal.name]
                 if neg_term.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                     pg = self.get_pin_group(neg_term)
                     # pg = self._pedb.siwave.pin_groups[neg_term._edb_object.GetPinGroup().GetName()]
                     neg_term_info = {"pin_group": pg.name}
-                elif neg_term.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
+                elif neg_term.terminal_type == TerminalTypeMapper.get(
+                    "PadstackInstanceTerminal", as_grpc=settings.is_grpc
+                ):
                     neg_term_info = {"padstack": neg_term.padstack_instance.aedt_name}
                 elif neg_term.terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
                     neg_term_info = {

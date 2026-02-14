@@ -21,10 +21,9 @@
 # SOFTWARE.
 
 
-from pyedb.generic.general_methods import generate_unique_name
 from pyedb.dotnet.database.utilities.hfss_simulation_setup import HfssSimulationSetup
-from pyedb.dotnet.database.utilities.siwave_simulation_setup import SiwaveSimulationSetup
-from pyedb.dotnet.database.utilities.siwave_simulation_setup import SiwaveDCSimulationSetup
+from pyedb.dotnet.database.utilities.siwave_simulation_setup import SiwaveDCSimulationSetup, SiwaveSimulationSetup
+from pyedb.generic.general_methods import generate_unique_name
 
 
 class SimulationSetups:
@@ -34,9 +33,9 @@ class SimulationSetups:
         self._pedb = pedb
 
     def create(
-            self,
-            name=None,
-            solver="hfss",
+        self,
+        name=None,
+        solver="hfss",
     ):
         """Add analysis setup.
 

@@ -84,8 +84,9 @@ class CfgHFSSSetup(CfgSetupAC):
     class CfgSingleFrequencyAdaptiveSolution(BaseModel):
         adaptive_frequency: float | str = Field("5GHz", description="Frequency for single frequency adaptation.")
         max_passes: int = Field(20, description="Maximum number of adaptation passes.")
-        max_delta: float | str = Field("0.02",
-                                       description="Maximum delta S for convergence in single frequency adaptation.")
+        max_delta: float | str = Field(
+            "0.02", description="Maximum delta S for convergence in single frequency adaptation."
+        )
 
     class CfgBroadbandAdaptiveSolution(BaseModel):
         low_frequency: float | str = Field("1GHz", description="Low frequency for broadband adaptation.")
@@ -103,12 +104,14 @@ class CfgHFSSSetup(CfgSetupAC):
         class CfgAdaptFrequency(BaseModel):
             adaptive_frequency: float | str = Field("5GHz", description="Frequency for single frequency adaptation.")
             max_passes: int = Field(20, description="Maximum number of adaptation passes.")
-            max_delta: float | str = Field("0.02",
-                                           description="Maximum delta S for convergence in single frequency adaptation.")
+            max_delta: float | str = Field(
+                "0.02", description="Maximum delta S for convergence in single frequency adaptation."
+            )
 
         adapt_frequencies: list[CfgAdaptFrequency] = Field(
             default=[CfgAdaptFrequency(adaptive_frequency="1GHz"), CfgAdaptFrequency(adaptive_frequency="10GHz")],
-            description="List of frequencies for multi-frequency adaptation.")
+            description="List of frequencies for multi-frequency adaptation.",
+        )
 
         def add_adaptive_frequency(self, frequency: Union[float, str], max_passes: int, max_delta: Union[float, str]):
             adapt_freq = CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution.CfgAdaptFrequency(
@@ -118,9 +121,9 @@ class CfgHFSSSetup(CfgSetupAC):
             )
             self.adapt_frequencies.append(adapt_freq)
 
-
     class CfgLengthMeshOperation(BaseModel):
         """Mesh operation export/import payload."""
+
         mesh_operation_type: str = "length"
 
         name: str = Field(..., description="Mesh operation name.")
@@ -138,16 +141,18 @@ class CfgHFSSSetup(CfgSetupAC):
         "single", description="Adaptation type, e.g., broadband, single, multi_frequencies."
     )
     single_frequency_adaptive_solution: Optional[CfgSingleFrequencyAdaptiveSolution] = Field(
-        default_factory=CfgSingleFrequencyAdaptiveSolution)
+        default_factory=CfgSingleFrequencyAdaptiveSolution
+    )
     broadband_adaptive_solution: Optional[CfgBroadbandAdaptiveSolution] = Field(
-        default_factory=CfgBroadbandAdaptiveSolution)
+        default_factory=CfgBroadbandAdaptiveSolution
+    )
     multi_frequency_adaptive_solution: Optional[CfgMultiFrequencyAdaptiveSolution] = Field(
-        default_factory=CfgMultiFrequencyAdaptiveSolution)
+        default_factory=CfgMultiFrequencyAdaptiveSolution
+    )
     # adapt_frequencies: list[CfgAdaptFrequency] = Field(default_factory=list, description="List of frequencies for single/multi_frequencies adaptation.")
 
     auto_mesh_operation: CfgAutoMeshOperation | None = CfgAutoMeshOperation()
     mesh_operations: list[CfgLengthMeshOperation] | None = list()
 
-    def add_length_mesh_operation(self, mesh_op:CfgLengthMeshOperation):
+    def add_length_mesh_operation(self, mesh_op: CfgLengthMeshOperation):
         self.mesh_operations.append(mesh_op)
-

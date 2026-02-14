@@ -30,9 +30,9 @@ import toml
 
 from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
-from pyedb.misc.decorators import execution_timer
 from pyedb.generic.constants import FAdaptTypeMapper, MeshOperationTypeMapper
 from pyedb.generic.settings import settings
+from pyedb.misc.decorators import execution_timer
 
 
 def set_padstack_definition(pdef, pdef_obj):
@@ -203,24 +203,28 @@ class Configuration:
             else:
                 if setup.type == "hfss":
                     edb_setup = self._pedb.simulation_setups.create(name=setup.name, solver="hfss")
-                    edb_setup.adaptive_settings.adapt_type = FAdaptTypeMapper.get(setup.adapt_type,
-                                                                                  as_grpc=settings.is_grpc)
+                    edb_setup.adaptive_settings.adapt_type = FAdaptTypeMapper.get(
+                        setup.adapt_type, as_grpc=settings.is_grpc
+                    )
                     if not settings.is_grpc:
                         edb_setup.adaptive_settings.clean_adaptive_frequency_data_list()
                         if setup.adapt_type == "single":
                             edb_setup.adaptive_settings.add_adaptive_frequency_data(
                                 setup.single_frequency_adaptive_solution.adaptive_frequency,
                                 setup.single_frequency_adaptive_solution.max_passes,
-                                setup.single_frequency_adaptive_solution.max_delta)
+                                setup.single_frequency_adaptive_solution.max_delta,
+                            )
                         elif setup.adapt_type == "broadband":
                             edb_setup.adaptive_settings.add_adaptive_frequency_data(
                                 setup.broadband_adaptive_solution.low_frequency,
                                 setup.broadband_adaptive_solution.max_passes,
-                                setup.broadband_adaptive_solution.max_delta)
+                                setup.broadband_adaptive_solution.max_delta,
+                            )
                             edb_setup.adaptive_settings.add_adaptive_frequency_data(
                                 setup.broadband_adaptive_solution.high_frequency,
                                 setup.broadband_adaptive_solution.max_passes,
-                                setup.broadband_adaptive_solution.max_delta)
+                                setup.broadband_adaptive_solution.max_delta,
+                            )
                         else:
                             raise ValueError(f"Adapt type {setup.adapt_type} is not supported.")
 
@@ -314,16 +318,20 @@ class Configuration:
                         elif adapt_type == "broadband":
                             lf = setup.adaptive_settings.adaptive_frequency_data_list[2]
                             cfg_ac_setup.broadband_adaptive_solution.low_frequency = lf.adaptive_frequency
-                            cfg_ac_setup.broadband_adaptive_solution.max_passes =lf.max_passes
-                            cfg_ac_setup.broadband_adaptive_solution.max_delta =lf.max_delta
+                            cfg_ac_setup.broadband_adaptive_solution.max_passes = lf.max_passes
+                            cfg_ac_setup.broadband_adaptive_solution.max_delta = lf.max_delta
                             hf = setup.adaptive_settings.adaptive_frequency_data_list[3]
                             cfg_ac_setup.broadband_adaptive_solution.high_frequency = hf.adaptive_frequency
                         else:
-                            self._pedb.logger.warning("Unsupported adapt type found in setup, skipping adaptive settings.")
+                            self._pedb.logger.warning(
+                                "Unsupported adapt type found in setup, skipping adaptive settings."
+                            )
                     else:
                         if setup.adaptive_settings.adapt_type == "single":
                             s_f_adapt = setup.settings.general.single_frequency_adaptive_solution
-                            cfg_ac_setup.single_frequency_adaptive_solution.adaptive_frequency = s_f_adapt.adaptive_frequency
+                            cfg_ac_setup.single_frequency_adaptive_solution.adaptive_frequency = (
+                                s_f_adapt.adaptive_frequency
+                            )
                             cfg_ac_setup.single_frequency_adaptive_solution.max_passes = s_f_adapt.max_passes
                             cfg_ac_setup.single_frequency_adaptive_solution.max_delta = s_f_adapt.max_delta
                         elif setup.adaptive_settings.adapt_type == "broadband":
@@ -344,7 +352,8 @@ class Configuration:
                                     restrict_length=mop.restrict_length,
                                     refine_inside=mop.refine_inside,
                                     nets_layers_list=mop.nets_layers_list,
-                                ))
+                                )
+                            )
                         else:
                             raise ValueError(f"Mesh operation type {mop.mesh_operation_type} is not supported.")
 
@@ -979,23 +988,23 @@ class Configuration:
                 raise RuntimeError(f"Terminal type {i.terminal_type} not supported.")
 
     def export(
-            self,
-            file_path,
-            stackup=True,
-            package_definitions=False,
-            setups=True,
-            sources=True,
-            ports=True,
-            nets=True,
-            pin_groups=True,
-            operations=True,
-            components=True,
-            boundaries=True,
-            s_parameters=True,
-            padstacks=True,
-            general=True,
-            variables=True,
-            terminals=False,
+        self,
+        file_path,
+        stackup=True,
+        package_definitions=False,
+        setups=True,
+        sources=True,
+        ports=True,
+        nets=True,
+        pin_groups=True,
+        operations=True,
+        components=True,
+        boundaries=True,
+        s_parameters=True,
+        padstacks=True,
+        general=True,
+        variables=True,
+        terminals=False,
     ):
         """Export the configuration data from layout to a file.
 
