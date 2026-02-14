@@ -1244,7 +1244,7 @@ class Edb(EdbInit):
         """
         if not self._modeler and self.active_db:
             self._modeler = Modeler(self)
-            self._modeler._reload_all()  # Reload primitives cache for the new active cell
+            self._modeler.clear_cache()  # Reload primitives cache for the new active cell
         return self._modeler
 
     @property
@@ -3302,7 +3302,7 @@ class Edb(EdbInit):
         self._hfss = Hfss(self)
         self._nets = Nets(self)
         self._modeler = Modeler(self)
-        self._modeler._reload_all()  # Reload primitives cache for the new active cell
+        self._modeler.clear_cache()  # Reload primitives cache for the new active cell
         # Materials and source excitation
         self._materials = Materials(self)
         self._source_excitation = SourceExcitation(self)

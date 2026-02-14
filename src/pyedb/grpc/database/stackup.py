@@ -947,7 +947,11 @@ class Stackup:
             material_properties = self._pedb.materials.read_syslib_material(material)
             if material_properties:
                 logger.info(f"Material {material} found in syslib. Adding it to aedb project.")
-                materials.add_material(material, **material_properties)
+                if not material.lower() in self._pedb.materials.materials:
+                    materials.add_material(material, **material_properties)
+                else:
+                    material = material.lower()
+                    logger.info(f"Material {material} already exists in aedb project.")
             else:
                 logger.warning(f"Material {material} not found. Check the library and retry.")
 

@@ -308,4 +308,5 @@ def physical_merge(
     elapsed = stop - start
     hosting_edb.logger.info(f"Merging padstack instances from merged EDB completed in {elapsed} seconds.")
     merged_edb.close(terminate_rpc_session=False)  # do not terminate rpc session main edb is still open.
+    hosting_edb.modeler.clear_cache()
     return True

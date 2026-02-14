@@ -28,6 +28,7 @@ from pathlib import Path
 import pytest
 
 from tests.conftest import config
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
@@ -35,16 +36,12 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-class TestClass:
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path2, target_path4):
-        self.local_scratch = local_scratch
-
+class TestClass(BaseTestClass):
     @pytest.mark.skipif(True, reason="Unstable test.")
-    def test_hfss_log_parser(self, edb_examples):
+    def test_hfss_log_parser(self):
         from pyedb.workflows.utilities.hfss_log_parser import HFSSLogParser
 
-        log_file = edb_examples.get_log_file_example()
+        log_file = self.edb_examples.get_log_file_example()
         log_parser = HFSSLogParser(log_file).parse()
         for nr, line in enumerate(Path(log_file).read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
             if "converge" in line.lower():
@@ -63,10 +60,10 @@ class TestClass:
         assert log_parser.adaptive_passes()
         assert log_parser.memory_on_convergence() == 263
 
-    def test_hfss_auto_setup(self, edb_examples):
+    def test_hfss_auto_setup(self):
         from pyedb.workflows.sipi.hfss_auto_configuration import create_hfss_auto_configuration
 
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         hfss_auto_config = create_hfss_auto_configuration(source_edb_path=edbapp.edbpath, edb=edbapp)
         hfss_auto_config.grpc = edbapp.grpc
         hfss_auto_config.ansys_version = edbapp.version
@@ -107,7 +104,7 @@ class TestClass:
         assert rules.copper_balance[0].max_percent == 15
 
     @pytest.mark.skipif(True, reason="Unstable test.")
-    def test_drc_rules_from_file(self, edb_examples):
+    def test_drc_rules_from_file(self):
         from pyedb.workflows.drc.drc import Drc, Rules
 
         RULES_DICT = {
@@ -124,7 +121,7 @@ class TestClass:
             "back_drill_stub_length": [{"name": "STUB", "value": "6mil"}],
             "copper_balance": [{"name": "CB", "max_percent": 15, "layers": ["L3", "L4"]}],
         }
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         rules = Rules.from_dict(RULES_DICT)
         drc = Drc(edbapp)
         drc.check(rules)
@@ -134,10 +131,10 @@ class TestClass:
         edbapp.close()
 
     @pytest.mark.skipif(True, reason="Unstable test.")
-    def test_siwave_log_parser(self, edb_examples):
+    def test_siwave_log_parser(self):
         from pyedb.workflows.utilities.siwave_log_parser import SiwaveLogParser
 
-        log_file = edb_examples.get_siwave_log_file_example()
+        log_file = self.edb_examples.get_siwave_log_file_example()
         parser = SiwaveLogParser(log_file)
         log_parser = parser.parse()
         assert log_parser.aedt
@@ -149,3 +146,19 @@ class TestClass:
         # Test helper methods
         assert log_parser.is_completed()
         assert not log_parser.is_aborted()
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Only implemented in gRPC")
+    def test_pyhsical_merge(self):
+        main_board = self.edb_examples.get_si_verse()
+        merged_package = self.edb_examples.get_package()
+        main_board.physical_merge(merged_edb=merged_package, vector=(0, 0.4e-3), prefix="test_")
+        assert len(main_board.stackup.layers) == 24
+        assert "test_TOP" in main_board.stackup.layers
+        assert len(main_board.modeler.primitives_by_layer["test_TOP"]) == 424
+        component_on_merged_layer = [
+            comp for comp in list(main_board.components.instances.values()) if comp.placement_layer == "test_TOP"
+        ]
+        assert len(component_on_merged_layer) == 1
+        assert component_on_merged_layer[0].name == "test_FCHIP"
+        assert component_on_merged_layer[0].type == "other"
+        main_board.close()

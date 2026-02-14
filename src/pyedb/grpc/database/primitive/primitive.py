@@ -382,7 +382,7 @@ class Primitive:
         if self.type == "path":
             polygon = self._pedb.modeler.create_polygon(self.polygon_data, self.layer_name, [], self.net.name)
             self.core.delete()
-            self._pedb.modeler._reload_all()
+            self._pedb.modeler.clear_cache()
             return polygon
         else:
             return False
@@ -593,7 +593,7 @@ class Primitive:
         for prim in primitives:
             if isinstance(prim, Primitive):
                 prim.core.delete()
-        self._pedb.modeler._reload_all()
+        self._pedb.modeler.clear_cache()
         return new_polys
 
     def intersect(self, primitives) -> list[Any]:

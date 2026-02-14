@@ -112,7 +112,7 @@ class Modeler(object):
     # Cache management
     # ============================================================
 
-    def _reload_all(self):
+    def clear_cache(self):
         """Force reload of all primitives and reset indexes."""
         self._primitives = {p.edb_uid: p for p in self._pedb.layout.primitives}
         self._primitives_by_name = None
@@ -123,7 +123,7 @@ class Modeler(object):
     @property
     def primitives(self) -> list[Primitive]:
         if not self._primitives:
-            self._reload_all()
+            self.clear_cache()
         return list(self._primitives.values())
 
     @property
@@ -1112,7 +1112,7 @@ class Modeler(object):
                 p1 = self._pedb.padstacks.definitions[pad].edb_padstack.data
                 if len(p1.get_layer_names()) > 1:
                     self._pedb.padstacks.remove_pads_from_padstack(pad)
-        self._reload_all()
+        self.clear_cache()
         return True
 
     def defeature_polygon(self, poly: Polygon, tolerance: float = 0.001) -> bool:

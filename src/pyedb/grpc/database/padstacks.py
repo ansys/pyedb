@@ -235,7 +235,7 @@ class Padstacks(object):
     @property
     def instances_by_net(self) -> Dict[Any, PadstackInstance]:
         if not self._instances_by_net:
-            for edb_padstack_instance in self.instances.values():
+            for edb_padstack_instance in list(self.instances.values()):
                 if edb_padstack_instance.net_name:
                     self._instances_by_net.setdefault(edb_padstack_instance.net_name, []).append(edb_padstack_instance)
         return self._instances_by_net
@@ -659,6 +659,7 @@ class Padstacks(object):
     def delete_batch_instances(self, instances_to_delete):
         for inst in instances_to_delete:
             inst.core.delete()
+        self._instances = None
 
     def delete_padstack_instances(self, net_names: Union[str, List[str]]) -> bool:
         """Delete padstack instances by net names.
