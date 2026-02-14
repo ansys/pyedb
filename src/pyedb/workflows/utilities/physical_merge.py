@@ -46,7 +46,7 @@ def _layer_mapping(direction):
     return core_layer_map
 
 
-def _add_layers_to_hosting_edb(hosting_edb, merged_edb, base_layer, prefix, on_top, grpc):
+def __add_layers_to_hosting_edb(hosting_edb, merged_edb, base_layer, prefix, on_top, grpc):
     if on_top:
         layers = dict(reversed(merged_edb.stackup.layers.items()))
         add_method = "add_on_top"
@@ -162,7 +162,7 @@ def physical_merge(
     contact_layer = _get_contact_layer(hosting_edb=hosting_edb, on_top=on_top)
 
     # adding layers from merged EDB to hosting EDB
-    _add_layers_to_hosting_edb(
+    __add_layers_to_hosting_edb(
         hosting_edb=hosting_edb,
         merged_edb=merged_edb,
         base_layer=contact_layer,
@@ -190,6 +190,12 @@ def physical_merge(
             if show_progress:
                 print_progress(primitive_count, total_primitives, start, prefix_desc="Merging primitives")
         primitive_type = primitive.type
+        layer_name = f"{prefix}{primitive.layer.name}"
+        if layer_name not in cache_layers:
+            if primitive.layer.name in hosting_edb.stackup.non_stackup_layers:
+                layer_name = primitive.layer.name
+            else:
+                layer_name = None
         if primitive_type in ["polygon", "rectangle"]:
             polygon_data = primitive.polygon_data
             polygon_data = polygon_data.core.move(vector)
@@ -198,19 +204,20 @@ def physical_merge(
                 void_polygon_data = void.polygon_data
                 void_polygon_data = void_polygon_data.core.move(vector)
                 voids.append(void_polygon_data)
-            hosting_edb.modeler.create_polygon(
-                points=polygon_data,
-                layer_name=f"{prefix}{primitive.layer.name}",
-                net_name=primitive.net.name,
-                voids=voids,
-            )
+            if layer_name:
+                hosting_edb.modeler.create_polygon(
+                    points=polygon_data,
+                    layer_name=layer_name,
+                    net_name=primitive.net.name,
+                    voids=voids,
+                )
         elif primitive_type == "circle":
             if hasattr(primitive, "get_parameters") and hasattr(primitive, "set_parameters"):
                 center_x, center_y, radius = primitive.get_parameters()
                 center_x += vector[0]
                 center_y += vector[1]
-                primitive.set_parameters(center_x, center_y, radius)
-
+                if layer_name:
+                    hosting_edb.modeler.create_circle(layer_name=layer_name, x=center_x, y=center_y, radius=radius)
         elif primitive_type == "path":
             if hasattr(primitive, "width"):
                 width = primitive.width
@@ -218,7 +225,7 @@ def physical_merge(
                 center_line = center_line.move(vector)
                 hosting_edb.modeler.create_trace(
                     path_list=center_line,
-                    layer_name=f"{prefix}{primitive.layer.name}",
+                    layer_name=layer_name,
                     width=width,
                     net_name=primitive.net.name,
                 )
@@ -279,6 +286,7 @@ def physical_merge(
 
     if components_dict:
         for ref_des, pins in components_dict.items():
+            hosting_edb.logger.info(f"Merging component {ref_des}.")
             origin_comp = merged_edb.components[ref_des]
             is_rlc = False
             if origin_comp.type.lower() in ["resistor", "capacitor", "inductor"]:
