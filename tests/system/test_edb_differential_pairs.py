@@ -31,17 +31,10 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path2, target_path4):
-        self.local_scratch = local_scratch
-        self.target_path = target_path
-        self.target_path2 = target_path2
-        self.target_path4 = target_path4
-
-    def test_differential_pairs_queries(self, edb_examples):
+    def test_differential_pairs_queries(self):
         """Evaluate differential pairs queries"""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         edbapp.differential_pairs.auto_identify()
         diff_pair = edbapp.differential_pairs.create("new_pair1", "PCIe_Gen4_RX1_P", "PCIe_Gen4_RX1_N")
         assert diff_pair.positive_net.name == "PCIe_Gen4_RX1_P"

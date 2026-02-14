@@ -138,9 +138,10 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_03_spice_models(self):
-        edbapp = self.edb_examples.get_si_verse(
-            additional_files_folders=["TEDB/GRM32_DC0V_25degC.mod", "TEDB/GRM32ER72A225KA35_25C_0V.sp"]
+        self.edb_examples.copy_test_files_into_local_folder(
+            ["TEDB/GRM32_DC0V_25degC.mod", "TEDB/GRM32ER72A225KA35_25C_0V.sp"]
         )
+        edbapp = self.edb_examples.get_si_verse()
         data = {
             "general": {"spice_model_library": self.edb_examples.test_folder},
             "spice_models": [
@@ -458,7 +459,8 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_06_s_parameters(self):
-        edbapp = self.edb_examples.get_si_verse(additional_files_folders="TEDB/GRM32_DC0V_25degC_series.s2p")
+        self.edb_examples.copy_test_files_into_local_folder("TEDB/GRM32_DC0V_25degC_series.s2p")
+        edbapp = self.edb_examples.get_si_verse()
         data = {
             "general": {"s_parameter_library": self.edb_examples.test_folder},
             "s_parameters": [

@@ -36,19 +36,16 @@ from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
+target_path = "TEDB/example_package.aedb"
+target_path3 = "TEDB/ANSYS-HSD_V1_cut.aedb"
+target_path4 = "TEDB/Package.aedb"
+
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path3, target_path4):
-        self.local_scratch = local_scratch
-        self.target_path = target_path
-        self.target_path3 = target_path3
-        self.target_path4 = target_path4
-
-    def test_get_pad_parameters(self, edb_examples):
+    def test_get_pad_parameters(self):
         """Access to pad parameters."""
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         pin = edbapp.components.get_pin_from_component("J1", pinName="1")
         if edbapp.grpc:
             parameters = edbapp.padstacks.get_pad_parameters(pin[0], "1_Top", edbapp.padstacks.pad_type.REGULAR_PAD)
@@ -57,17 +54,17 @@ class TestClass(BaseTestClass):
         assert isinstance(parameters[1], list)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_get_vias_from_nets(self, edb_examples):
+    def test_get_vias_from_nets(self):
         """Use padstacks' get_via_instance_from_net method."""
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.padstacks.get_via_instance_from_net("GND")
         assert not edbapp.padstacks.get_via_instance_from_net(["GND2"])
         edbapp.close(terminate_rpc_session=False)
 
-    def test_create_with_packstack_name(self, edb_examples):
+    def test_create_with_packstack_name(self):
         """Create a padstack"""
         # Create myVia
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         edbapp.padstacks.create(padstackname="myVia")
         assert "myVia" in list(edbapp.padstacks.definitions.keys())
         edbapp.padstacks.definitions["myVia"].hole_range = "begin_on_upper_pad"
@@ -119,17 +116,17 @@ class TestClass(BaseTestClass):
         }
         edbapp.close(terminate_rpc_session=False)
 
-    def test_padstacks_get_nets_from_pin_list(self, edb_examples):
+    def test_padstacks_get_nets_from_pin_list(self):
         """Retrieve pin list from component and net."""
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         cmp_pinlist = edbapp.padstacks.get_pinlist_from_component_and_net("U1", "GND")
         assert cmp_pinlist[0].net.name
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(True, reason="Unstable test.")
-    def test_padstack_properties_getter(self, edb_examples):
+    def test_padstack_properties_getter(self):
         """Evaluate properties"""
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         for el in edbapp.padstacks.definitions:
             padstack = edbapp.padstacks.definitions[el]
             assert padstack.hole_plating_thickness is not None or False
@@ -160,9 +157,9 @@ class TestClass(BaseTestClass):
                     assert polygon.GetBBox()
         edbapp.close()
 
-    def test_padstack_properties_setter(self, edb_examples):
+    def test_padstack_properties_setter(self):
         """Set padstack properties"""
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         pad = edbapp.padstacks.definitions["c180h127"]
         hole_pad = 8
         tol = 1e-12
@@ -214,8 +211,8 @@ class TestClass(BaseTestClass):
             pad.pad_by_layer[pad.via_stop_layer].parameters = [1, 1, 1]
         edbapp.close(terminate_rpc_session=False)
 
-    def test_padstack_get_instance(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_padstack_get_instance(self):
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.padstacks.get_instances(name="Via1961")
         assert edbapp.padstacks.get_instances(definition_name="v35h15")
         assert edbapp.padstacks.get_instances(net_name="1V0")
@@ -236,9 +233,9 @@ class TestClass(BaseTestClass):
                 break
         edbapp.close(terminate_rpc_session=False)
 
-    def test_padstack_duplicate_padstack(self, edb_examples):
+    def test_padstack_duplicate_padstack(self):
         """Duplicate a padstack."""
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         edbapp.padstacks.duplicate(
             target_padstack_name="c180h127",
             new_padstack_name="c180h127_NEW",
@@ -246,9 +243,9 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["c180h127_NEW"]
         edbapp.close(terminate_rpc_session=False)
 
-    def test_padstack_set_pad_property(self, edb_examples):
+    def test_padstack_set_pad_property(self):
         """Set pad and antipad properties of the padstack."""
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         edbapp.padstacks.set_pad_property(
             padstack_name="c180h127",
             layer_name="new",
@@ -258,10 +255,10 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["c180h127"].pad_by_layer["new"]
         edbapp.close(terminate_rpc_session=False)
 
-    def test_microvias(self, edb_examples):
+    def test_microvias(self):
         """Convert padstack to microvias 3D objects."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
-        edbapp = edb_examples.load_edb(source_path)
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/padstacks.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
         assert edbapp.padstacks.definitions["Padstack_Circle"].convert_to_3d_microvias(False)
         assert edbapp.padstacks.definitions["Padstack_Rectangle"].convert_to_3d_microvias(False, hole_wall_angle=10)
         assert edbapp.padstacks.definitions["Padstack_Polygon_p12"].convert_to_3d_microvias(False)
@@ -279,25 +276,26 @@ class TestClass(BaseTestClass):
         )
         edbapp.close(terminate_rpc_session=False)
 
-    def test_split_microvias(self, edb_examples):
+    def test_split_microvias(self):
         """Convert padstack definition to multiple microvias definitions."""
-        edbapp = edb_examples.load_edb(self.target_path4, copy_to_temp=False)
+        fpath = self.edb_examples.copy_test_files_into_local_folder(target_path4)[0]
+        edbapp = self.edb_examples.load_edb(fpath)
         assert len(edbapp.padstacks.instances_by_name["via219"].split()) > 1
         assert "via219_2" in [i.name for i in edbapp.padstacks.definitions["BALL_VIA_1"].instances]
         edbapp.padstacks.instances_by_name["via218"].convert_hole_to_conical_shape()
         assert len(edbapp.padstacks.definitions["C4_POWER_1"].split_to_microvias()) > 0
         edbapp.close(terminate_rpc_session=False)
 
-    def test_padstack_plating_ratio_fixing(self, edb_examples):
+    def test_padstack_plating_ratio_fixing(self):
         """Fix hole plating ratio."""
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.padstacks.check_and_fix_via_plating()
         edbapp.close(terminate_rpc_session=False)
 
-    def test_padstack_search_reference_pins(self, edb_examples):
+    def test_padstack_search_reference_pins(self):
         """Search for reference pins using given criteria."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        edbapp = edb_examples.load_edb(source_path)
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
         pin = edbapp.components.instances["J5"].pins["19"]
         assert pin
         ref_pins = pin.get_reference_pins(reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True)
@@ -316,9 +314,9 @@ class TestClass(BaseTestClass):
         assert len(reference_pins) == 11
         edbapp.close(terminate_rpc_session=False)
 
-    def test_vias_metal_volume(self, edb_examples):
+    def test_vias_metal_volume(self):
         """Metal volume of the via hole instance."""
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         vias = [via for via in list(edbapp.padstacks.instances.values()) if not via.start_layer == via.stop_layer]
         assert vias[0].metal_volume
         assert vias[1].metal_volume
@@ -328,10 +326,10 @@ class TestClass(BaseTestClass):
         reason="This is a bug deep in the code. This pass should never pass but it passes as try-else hides the bug."
     )
     @pytest.mark.parametrize("return_points", [True, False])
-    def test_padstacks_create_rectangle_in_pad(self, return_points: bool, edb_examples):
+    def test_padstacks_create_rectangle_in_pad(self, return_points: bool):
         """Create a rectangle inscribed inside a padstack instance pad."""
-        example_model = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
-        edb = edb_examples.load_edb(
+        example_model = self.edb_examples.copy_test_files_into_local_folder("TEDB/padstacks.aedb")[0]
+        edb = self.edb_examples.load_edb(
             edb_path=example_model,
             isreadonly=True,
         )
@@ -366,9 +364,9 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(True, reason="Unstable test.")
-    def test_padstaks_plot_on_matplotlib(self, edb_examples):
+    def test_padstaks_plot_on_matplotlib(self):
         """Plot a Net to Matplotlib 2D Chart."""
-        edb_plot = edb_examples.load_edb(self.target_path3, copy_to_temp=False)
+        edb_plot = self.edb_examples.load_edb(self.target_path3)
 
         local_png1 = os.path.join(self.local_scratch.path, "test1.png")
         edb_plot.nets.plot(
@@ -421,10 +419,9 @@ class TestClass(BaseTestClass):
         assert os.path.exists(local_png4)
         edb_plot.close(terminate_rpc_session=False)
 
-    def test_update_padstacks_after_layer_name_changed(self, edb_examples):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-
-        edbapp = edb_examples.load_edb(source_path)
+    def test_update_padstacks_after_layer_name_changed(self):
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
         signal_layer_list = [layer for layer in list(edbapp.stackup.layers.values()) if layer.type == "signal"]
         old_layers = []
         for n_layer, layer in enumerate(signal_layer_list):
@@ -437,15 +434,15 @@ class TestClass(BaseTestClass):
             assert not [lay for lay in padstack_inst.layer_range_names if lay in old_layers]
         edbapp.close_edb()
 
-    def test_hole(self, edb_examples):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        edbapp = edb_examples.load_edb(source_path)
+    def test_hole(self):
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
         edbapp.padstacks.definitions["v35h15"].hole_diameter = "0.16mm"
         assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
 
-    def test_padstack_instances_rtree_index(self, edb_examples):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        edbapp = edb_examples.load_edb(source_path)
+    def test_padstack_instances_rtree_index(self):
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
         index = edbapp.padstacks.get_padstack_instances_rtree_index()
         assert [round(val, 6) for val in index.bounds] == [-0.013785, -0.00225, 0.148, 0.078]
         stats = edbapp.get_statistics()
@@ -461,9 +458,9 @@ class TestClass(BaseTestClass):
         assert len(test) == 194
         edbapp.close(terminate_rpc_session=False)
 
-    def test_polygon_based_padstack(self, edb_examples):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        edbapp = edb_examples.load_edb(source_path)
+    def test_polygon_based_padstack(self):
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
         polygon_data = edbapp.modeler.paths[0].polygon_data
         edbapp.padstacks.create(
             padstackname="test",
@@ -496,13 +493,9 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=GRPC, reason="Needs to be checked with grpc")
-    def test_via_fence(self, edb_examples):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "via_fence_generic_project.aedb")
-        target_path1 = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence1.aedb")
-        target_path2 = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence2.aedb")
-        self.local_scratch.copyfolder(source_path, target_path1)
-        self.local_scratch.copyfolder(source_path, target_path2)
-        edbapp = edb_examples.load_edb(target_path1, copy_to_temp=False)
+    def test_via_fence(self):
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/via_fence_generic_project.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
         assert edbapp.padstacks.merge_via_along_lines(net_name="GND", distance_threshold=2e-3, minimum_via_number=6)
         assert not edbapp.padstacks.merge_via_along_lines(
             net_name="test_dummy", distance_threshold=2e-3, minimum_via_number=6
@@ -510,15 +503,19 @@ class TestClass(BaseTestClass):
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions
         edbapp.close(terminate_rpc_session=False)
-        edbapp = edb_examples.load_edb(target_path2, copy_to_temp=False)
+
+    @pytest.mark.skipif(condition=GRPC, reason="Needs to be checked with grpc")
+    def test_via_fence2(self):
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/via_fence_generic_project.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
         assert edbapp.padstacks.merge_via_along_lines(net_name="GND", distance_threshold=2e-3, minimum_via_number=6)
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions
         edbapp.close(terminate_rpc_session=False)
 
-    def test_reduce_via_in_bounding_box(self, edb_examples):
-        source_path = edb_examples.example_models_path / "TEDB" / "vias_300.aedb"
-        edbapp = edb_examples.load_edb(edb_path=source_path)
+    def test_reduce_via_in_bounding_box(self):
+        source_path = self.edb_examples.example_models_path / "TEDB" / "vias_300.aedb"
+        edbapp = self.edb_examples.load_edb(edb_path=str(source_path))
         assert len(edbapp.padstacks.instances) == 301
         # empty bounding box
         assert edbapp.padstacks.reduce_via_in_bounding_box([-16e-3, -7e-3, -13e-3, -6e-3], 10, 10) is False
@@ -529,16 +526,16 @@ class TestClass(BaseTestClass):
         assert len(edbapp.padstacks.instances) == 96
         edbapp.close_edb()
 
-    def test_via_merge(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_via_merge(self):
+        edbapp = self.edb_examples.get_si_verse()
         polygon = [[[118e-3, 60e-3], [125e-3, 60e-3], [124e-3, 56e-3], [118e-3, 56e-3]]]
         result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
         assert len(result) == 1
         edbapp.close(terminate_rpc_session=False)
 
-    def test_via_merge3(self, edb_examples):
-        source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
-        edbapp = edb_examples.load_edb(edb_path=source_path)
+    def test_via_merge3(self):
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")[0]
+        edbapp = self.edb_examples.load_edb(edb_path=source_path)
 
         merged_via = edbapp.padstacks.merge_via(
             contour_boxes=[[[11e-3, -5e-3], [17e-3, -5e-3], [17e-3, 1e-3], [11e-3, 1e-3], [11e-3, -5e-3]]],
@@ -553,9 +550,9 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
-    def test_dbscan(self, edb_examples):
-        source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
-        edbapp = edb_examples.load_edb(source_path)
+    def test_dbscan(self):
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
 
         # "NET_1" one cluster with 20 vias
         net_vias = [i for i in edbapp.nets["NET_1"].padstack_instances]
@@ -573,9 +570,9 @@ class TestClass(BaseTestClass):
         assert len(clusters2[1]) == 21
         edbapp.close(terminate_rpc_session=False)
 
-    def test_reduce_via_by_density(self, edb_examples):
-        source_path = edb_examples.example_models_path / "TEDB" / "merge_via_4layers.aedb"
-        edbapp = edb_examples.load_edb(source_path)
+    def test_reduce_via_by_density(self):
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
 
         inst = edbapp.padstacks.instances
         all_vias = {id_: i.position for id_, i in inst.items()}
@@ -594,8 +591,8 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(True, reason="Unstable test.")
-    def test_create_backdrill_dielectric_fill_via(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_create_backdrill_dielectric_fill_via(self):
+        edbapp = self.edb_examples.get_si_verse()
         backdrill_layer = "Inner1(GND1)"
         edbapp.padstacks.create_dielectric_filled_backdrills(
             layer=backdrill_layer,
@@ -619,8 +616,8 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(True, reason="Unstable test.")
-    def test_create_backdrill_dielectric_fill_via2(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_create_backdrill_dielectric_fill_via2(self):
+        edbapp = self.edb_examples.get_si_verse()
         backdrill_layer = "Inner1(GND1)"
         edbapp.padstacks.create_dielectric_filled_backdrills(
             layer=backdrill_layer,
@@ -641,8 +638,8 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(True, reason="Unstable test.")
-    def test_create_backdrill_dielectric_fill_via3(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_create_backdrill_dielectric_fill_via3(self):
+        edbapp = self.edb_examples.get_si_verse()
         instances = edbapp.padstacks.definitions["v40h20-1"].instances
         backdrill_layer = "Inner1(GND1)"
         edbapp.padstacks.create_dielectric_filled_backdrills(

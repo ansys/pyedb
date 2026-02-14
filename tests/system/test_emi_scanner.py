@@ -37,21 +37,17 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path2, target_path4):
-        self.local_scratch = local_scratch
-        self.local_temp_dir = Path(self.local_scratch.path)
-        self.fdir_model = Path(local_path) / "example_models" / "TEDB"
-
     def test_001_read_write_xml(self):
         emi_scanner = EMCRuleCheckerSettings()
-        emi_scanner.read_xml(self.fdir_model / "emi_scanner.tgs")
-        emi_scanner.write_xml(self.local_temp_dir / "test_001_write_xml.tgs")
+        file = self.edb_examples.copy_test_files_into_local_folder("TEDB/emi_scanner.tgs")[0]
+        emi_scanner.read_xml(file)
+        emi_scanner.write_xml(self.edb_examples.test_folder / "test_001_write_xml.tgs")
 
     def test_002_json(self):
+        file = self.edb_examples.copy_test_files_into_local_folder("TEDB/emi_scanner.tgs")[0]
         emi_scanner = EMCRuleCheckerSettings()
-        emi_scanner.read_xml(self.fdir_model / "emi_scanner.tgs")
-        emi_scanner.write_json(self.local_temp_dir / "test_002_write_json.json")
+        emi_scanner.read_xml(file)
+        emi_scanner.write_json(self.edb_examples.test_folder / "test_002_write_json.json")
 
     def test_003_system(self):
         emi_scanner = EMCRuleCheckerSettings()
@@ -69,4 +65,4 @@ class TestClass(BaseTestClass):
             y_loc="-41.91",
             cap_type="Decoupling",
         )
-        emi_scanner.write_xml(self.local_temp_dir / "test_003.tgs")
+        emi_scanner.write_xml(self.edb_examples.test_folder / "test_003.tgs")

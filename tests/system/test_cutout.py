@@ -32,11 +32,10 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    def test_create_custom_cutout_0(self, edb_examples):
+    def test_create_custom_cutout_0(self):
         """Create custom cutout 0."""
-        # Done
-        edbapp = edb_examples.get_si_verse()
-        output = str(Path(edb_examples.test_folder) / "cutout.aedb")
+        edbapp = self.edb_examples.get_si_verse()
+        output = str(Path(self.edb_examples.test_folder) / "cutout.aedb")
         assert edbapp.cutout(
             ["DDR4_DQS0_P", "DDR4_DQS0_N"],
             ["GND"],
@@ -57,10 +56,9 @@ class TestClass(BaseTestClass):
         points.append([bounding[0][0], bounding[0][1]])
         edbapp.close(terminate_rpc_session=False)
 
-    def test_create_custom_cutout_1(self, edb_examples):
+    def test_create_custom_cutout_1(self):
         """Create custom cutout 1."""
-        # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
         assert edbapp.components.instances["R8"].assign_spice_model(spice_path)
         assert edbapp.nets.nets
@@ -88,10 +86,9 @@ class TestClass(BaseTestClass):
         assert edbapp.layout_validation.fix_self_intersections()
         edbapp.close(terminate_rpc_session=False)
 
-    def test_create_custom_cutout_2(self, edb_examples):
+    def test_create_custom_cutout_2(self):
         """Create custom cutout 2."""
-        # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         bounding = edbapp.get_bounding_box()
         assert bounding
         cutout_line_x = 41
@@ -111,10 +108,9 @@ class TestClass(BaseTestClass):
         )
         edbapp.close(terminate_rpc_session=False)
 
-    def test_create_custom_cutout_3(self, edb_examples):
+    def test_create_custom_cutout_3(self):
         """Create custom cutout 3."""
-        # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         edbapp.components.create_port_on_component(
             "U1",
             ["5V"],
@@ -136,10 +132,9 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    def test_create_custom_cutout_4(self, edb_examples):
+    def test_create_custom_cutout_4(self):
         """Create custom cutout 4."""
-        # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         edbapp.components.create_pingroup_from_pins(
             [i for i in list(edbapp.components.instances["U1"].pins.values()) if i.net_name == "GND"]
         )
@@ -155,10 +150,9 @@ class TestClass(BaseTestClass):
         )
         edbapp.close(terminate_rpc_session=False)
 
-    def test_create_custom_cutout_5(self, edb_examples):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "MicrostripSpliGnd.aedb")
-
-        edbapp = edb_examples.load_edb(source_path)
+    def test_create_custom_cutout_5(self):
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/MicrostripSpliGnd.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
 
         assert edbapp.cutout(
             signal_nets=["trace_n"],
@@ -171,10 +165,9 @@ class TestClass(BaseTestClass):
         )
         edbapp.close(terminate_rpc_session=False)
 
-    def test_create_custom_cutout_6(self, edb_examples):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "Multizone_GroundVoids.aedb")
-
-        edbapp = edb_examples.load_edb(source_path)
+    def test_create_custom_cutout_6(self):
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/Multizone_GroundVoids.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
 
         assert edbapp.cutout(
             signal_nets=["DIFF_N", "DIFF_P"],
