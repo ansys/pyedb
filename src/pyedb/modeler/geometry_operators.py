@@ -27,7 +27,6 @@ import re
 import sys
 
 import numpy as np
-from scipy.spatial import KDTree
 
 from pyedb.generic.constants import AXIS, PLANE, SWEEPDRAFT, scale_units
 
@@ -2246,6 +2245,14 @@ class GeometryOperators(object):
         >>> smallest_distance_between_polygons(polygon1, polygon2)
         1.4142135623730951
         """
+        try:
+            from scipy.spatial import KDTree
+        except ImportError:
+            raise ImportError(
+                "Scipy library is required for KDTree functionality. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install scipy'."
+            )
+
         # Convert lists of points to numpy arrays
         points1 = np.array(polygon1)
         points2 = np.array(polygon2)

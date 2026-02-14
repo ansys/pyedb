@@ -30,8 +30,6 @@ from typing import Dict, List, Optional, Union
 import warnings
 
 import numpy as np
-import rtree
-from scipy.spatial import ConvexHull
 
 from pyedb.dotnet.clr_module import Array
 from pyedb.dotnet.database.edb_data.padstacks_data import (
@@ -1741,6 +1739,14 @@ class EdbPadstacks(object):
         Rtree index object.
 
         """
+        try:
+            import rtree
+        except ImportError:
+            raise ImportError(
+                "Rtree library is required for spatial indexing. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install rtree'."
+            )
+
         if isinstance(nets, str):
             nets = [nets]
         padstack_instances_index = rtree.index.Index()
@@ -1830,6 +1836,14 @@ class EdbPadstacks(object):
         List[str], list of created padstack instances ID.
 
         """
+        try:
+            from scipy.spatial import ConvexHull
+        except ImportError:
+            raise ImportError(
+                "Scipy library is required for convex hull calculations. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install scipy'."
+            )
+
         merged_via_ids = []
         if not contour_boxes:
             raise Exception("No contour box provided, you need to pass a nested list as argument.")

@@ -22,17 +22,20 @@
 
 import os
 
-from matplotlib.patches import PathPatch
-from matplotlib.path import Path
-import numpy  # noqa: F401
+try:
+    import matplotlib
+    from matplotlib.patches import PathPatch
+    from matplotlib.path import Path
+    import matplotlib.pyplot as plt
+except ImportError:
+    raise ImportError(
+        "Matplotlib library is required for plotting. "
+        "Please install it using 'pip install pyedb[graphics]' or 'pip install matplotlib'."
+    )
 
 # Use matplotlib agg backend (non-interactive) when the CI is running.
 if bool(int(os.getenv("PYEDB_CI_NO_DISPLAY", "0"))):  # pragma: no cover
-    import matplotlib
-
     matplotlib.use("Agg")
-
-import matplotlib.pyplot as plt
 
 
 def plot_matplotlib(

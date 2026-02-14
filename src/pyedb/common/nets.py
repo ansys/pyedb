@@ -25,6 +25,22 @@ import time
 
 from pyedb.generic.constants import CSS4_COLORS
 
+try:
+    from shapely import affinity
+    from shapely.geometry import (
+        LinearRing,
+        MultiLineString,
+        MultiPolygon,
+        Point,
+        Polygon,
+    )
+    from shapely.plotting import plot_line, plot_polygon
+except ImportError:
+    raise ImportError(
+        "Shapely library is required for plotting. "
+        "Please install it using 'pip install pyedb[geometry]' or 'pip install shapely'."
+    )
+
 
 class CommonNets:
     def __init__(self, _pedb):
@@ -91,6 +107,14 @@ class CommonNets:
         (ax, fig)
             Matplotlib ax and figures.
         """
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            raise ImportError(
+                "Matplotlib library is required for plotting. "
+                "Please install it using 'pip install pyedb[graphics]' or 'pip install matplotlib'."
+            )
+
         if "plot_components_on_top" in kwargs and top_view:
             plot_components = kwargs["plot_components_on_top"]
         if "plot_components_on_bottom" in kwargs and not top_view:
@@ -102,22 +126,11 @@ class CommonNets:
                 sign = -1
             return [[sign * i[0], i[1]] for i in poly]
 
-        import matplotlib.pyplot as plt
-
         dpi = 100.0
         figsize = (size[0] / dpi, size[1] / dpi)
 
         fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(1, 1, 1)
-        from shapely import affinity
-        from shapely.geometry import (
-            LinearRing,
-            MultiLineString,
-            MultiPolygon,
-            Point,
-            Polygon,
-        )
-        from shapely.plotting import plot_line, plot_polygon
 
         start_time = time.time()
         if not nets:
