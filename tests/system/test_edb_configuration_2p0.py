@@ -60,9 +60,10 @@ def _assert_final_ic_die_properties(component: dict):
     assert component["solder_ball_properties"]["diameter"] == "244um"
 
 
+# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_13b_stackup_materials(self):
         data = {
             "stackup": {
@@ -118,7 +119,7 @@ class TestClass(BaseTestClass):
                 assert value == target_mat[p]
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_02_pin_groups(self):
         edbapp = self.edb_examples.get_si_verse()
         pin_groups = [
@@ -136,7 +137,7 @@ class TestClass(BaseTestClass):
         assert data_from_db[0]["pins"] == ["32", "33"]
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_03_spice_models(self):
         self.edb_examples.copy_test_files_into_local_folder(
             ["TEDB/GRM32_DC0V_25degC.mod", "TEDB/GRM32ER72A225KA35_25C_0V.sp"]
@@ -177,7 +178,7 @@ class TestClass(BaseTestClass):
         assert edbapp.components["C142"].model.spice_file_path
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_04_nets(self):
         edbapp = self.edb_examples.get_si_verse()
         data = {"nets": {"power_ground_nets": ["1.2V_DVDDL"], "signal_nets": ["SFPA_VCCR"]}}
@@ -186,7 +187,7 @@ class TestClass(BaseTestClass):
         assert not edbapp.nets["SFPA_VCCR"].is_power_ground
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_05_ports(self):
         data = {
             "ports": [
@@ -238,7 +239,7 @@ class TestClass(BaseTestClass):
         assert data_from_db["ports"]
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_05b_ports_coax(self):
         ports = [
             {
@@ -272,7 +273,7 @@ class TestClass(BaseTestClass):
         assert edbapp.ports["coax_X1_5V_A17"]
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_05c_ports_circuit_pin_net(self):
         data = {
             "ports": [
@@ -291,7 +292,7 @@ class TestClass(BaseTestClass):
         assert edbapp.ports["CIRCUIT_X1_B8_GND"].is_circuit_port
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_05c_ports_circuit_net_net_distributed(self):
         ports = [
             {
@@ -309,7 +310,7 @@ class TestClass(BaseTestClass):
         assert len(edbapp.ports) > 1
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_05d_ports_pin_group(self):
         edbapp = self.edb_examples.get_si_verse()
         pin_groups = [
@@ -333,7 +334,7 @@ class TestClass(BaseTestClass):
         assert "U9_pin_group_port" in edbapp.ports
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_05e_ports_circuit_net_net_distributed_nearest_ref(self):
         ports = [
             {
@@ -351,7 +352,7 @@ class TestClass(BaseTestClass):
         assert len(edbapp.ports) > 1
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_05f_ports_between_two_points(self):
         data = {
             "ports": [
@@ -374,7 +375,7 @@ class TestClass(BaseTestClass):
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_05g_edge_port(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
@@ -415,7 +416,7 @@ class TestClass(BaseTestClass):
         edbapp.configuration.get_data_from_db(ports=True)
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_05h_diff_wave_port(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
@@ -457,7 +458,7 @@ class TestClass(BaseTestClass):
         assert edbapp.ports["diff_wave_1"].horizontal_extent_factor == 6
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_06_s_parameters(self):
         self.edb_examples.copy_test_files_into_local_folder("TEDB/GRM32_DC0V_25degC_series.s2p")
         edbapp = self.edb_examples.get_si_verse()
@@ -493,7 +494,7 @@ class TestClass(BaseTestClass):
         edbapp.configuration.get_data_from_db(s_parameters=True)
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_operations_cutout_auto_identify_nets(self):
         data = {
             "ports": [
@@ -538,7 +539,7 @@ class TestClass(BaseTestClass):
         assert {"PCIe_Gen4_TX3_CAP_P", "PCIe_Gen4_TX3_P", "PCIe_Gen4_RX3_N"}.issubset(edbapp.nets.nets.keys())
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_10_general(self):
         edbapp = self.edb_examples.get_si_verse()
         data = {"general": {"spice_model_library": "", "s_parameter_library": ""}}
@@ -546,7 +547,7 @@ class TestClass(BaseTestClass):
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_11_package_definitions(self):
         data = {
             "package_definitions": [
@@ -614,7 +615,7 @@ class TestClass(BaseTestClass):
                     assert value == target_pdef[p]
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_13c_stackup_create_stackup(self):
         data = {
             "stackup": {
@@ -661,7 +662,7 @@ class TestClass(BaseTestClass):
                 assert value == target_mat[p]
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_15b_sources_net_net(self):
         edbapp = self.edb_examples.get_si_verse()
         sources_v = [
@@ -694,7 +695,7 @@ class TestClass(BaseTestClass):
         assert pg_from_db[1]["name"] == "pg_VSOURCE_U2_1V0_GND_U2_ref"
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_15c_sources_net_net_distributed(self):
         edbapp = self.edb_examples.get_si_verse()
         sources_i = [
@@ -720,7 +721,7 @@ class TestClass(BaseTestClass):
             assert s1["type"] == "current"
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_15c_sources_nearest_ref(self):
         edbapp = self.edb_examples.get_si_verse()
         sources_i = [
@@ -738,7 +739,7 @@ class TestClass(BaseTestClass):
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_15d_sources_equipotential(self):
         edbapp = self.edb_examples.get_si_verse()
         sources_i = [
@@ -790,36 +791,7 @@ class TestClass(BaseTestClass):
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
-    def test_16_components_rlc(self):
-        components = [
-            {
-                "reference_designator": "C375",
-                "enabled": False,
-                "pin_pair_model": [
-                    {
-                        "first_pin": "2",
-                        "second_pin": "1",
-                        "is_parallel": False,
-                        "resistance": "10ohm",
-                        "resistance_enabled": True,
-                        "inductance": "1nH",
-                        "inductance_enabled": False,
-                        "capacitance": "10nF",
-                        "capacitance_enabled": True,
-                    }
-                ],
-            },
-        ]
-        data = {"components": components}
-        edbapp = self.edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        data_from_db = edbapp.configuration.get_data_from_db(components=True)
-        c375 = [i for i in data_from_db["components"] if i["reference_designator"] == "C375"][0]
-        assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
-        edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_16_export_to_external_file(self):
         edbapp = self.edb_examples.get_si_verse()
         data_file_path = Path(self.edb_examples.test_folder) / "test.json"
@@ -840,193 +812,7 @@ class TestClass(BaseTestClass):
             assert len(data["nets"]["power_ground_nets"]) == 6
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
-    def test_16b_export_cutout(self):
-        data = {
-            "operations": {
-                "cutout": {
-                    "signal_nets": ["SFPA_RX_P", "SFPA_RX_N"],
-                    "reference_nets": ["GND"],
-                }
-            }
-        }
-        edbapp = self.edb_examples.get_si_verse()
-        edbapp.configuration.load(data, apply_file=True)
-        data_from_db = edbapp.configuration.get_data_from_db(operations=True)
-        assert len(data_from_db["operations"]["cutout"]["signal_nets"]) == 3
-        assert len(data_from_db["operations"]["cutout"]["custom_extent"]) > 0
-        edbapp.close(terminate_rpc_session=False)
 
-        data_from_db["operations"]["cutout"]["signal_nets"].remove("GND")
-        data_from_db["operations"]["cutout"]["reference_nets"].append("GND")
-        edbapp = self.edb_examples.get_si_verse()
-        edbapp.configuration.load(data_from_db, apply_file=True)
-        edbapp.close(terminate_rpc_session=False)
-
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
-    def test_17_ic_die_properties(self):
-        db = self.edb_examples.get_si_verse()
-
-        comps_edb = db.configuration.get_data_from_db(components=True)["components"]
-        component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
-        _assert_initial_ic_die_properties(component)
-
-        db.configuration.load(U8_IC_DIE_PROPERTIES, apply_file=True)
-        comps_edb = db.configuration.get_data_from_db(components=True)["components"]
-        component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
-        _assert_final_ic_die_properties(component)
-
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
-    def test_18_modeler(self):
-        data = {
-            "modeler": {
-                "traces": [
-                    {
-                        "name": "trace_1",
-                        "layer": "TOP",
-                        "width": "0.1mm",
-                        "path": [[0, 0], [0, "10mm"]],
-                        "net_name": "SIG",
-                        "start_cap_style": "flat",
-                        "end_cap_style": "flat",
-                        "corner_style": "round",
-                    },
-                    {
-                        "name": "trace_1_void",
-                        "layer": "TOP",
-                        "width": "0.3mm",
-                        "incremental_path": [[0, 0], [0, "10mm"]],
-                    },
-                ],
-                "padstack_definitions": [
-                    {
-                        "name": "via",
-                        "hole_plating_thickness": "0.025mm",
-                        "material": "copper",
-                        "pad_parameters": {
-                            "regular_pad": [
-                                {
-                                    "layer_name": "TOP",
-                                    "shape": "circle",
-                                    "offset_x": "0mm",
-                                    "offset_y": "0",
-                                    "rotation": "0",
-                                    "diameter": "0.5mm",
-                                },
-                                {
-                                    "layer_name": "BOT",
-                                    "shape": "circle",
-                                    "offset_x": "0mm",
-                                    "offset_y": "0",
-                                    "rotation": "0",
-                                    "diameter": "0.5mm",
-                                },
-                            ],
-                            "anti_pad": [
-                                {
-                                    "layer_name": "TOP",
-                                    "shape": "circle",
-                                    "offset_x": "0",
-                                    "offset_y": "0",
-                                    "rotation": "0",
-                                    "diameter": "1mm",
-                                },
-                                {
-                                    "layer_name": "BOT",
-                                    "shape": "circle",
-                                    "offset_x": "0",
-                                    "offset_y": "0",
-                                    "rotation": "0",
-                                    "diameter": "1mm",
-                                },
-                            ],
-                        },
-                        "hole_range": "through",
-                        "hole_parameters": {
-                            "shape": "circle",
-                            "diameter": "0.25mm",
-                        },
-                    }
-                ],
-                "padstack_instances": [
-                    {
-                        "name": "via_1",
-                        "definition": "via",
-                        "layer_range": ["TOP", "BOT"],
-                        "position": [0, 0],
-                        "net_name": "SIG",
-                    },
-                    {
-                        "name": "pin_1",
-                        "definition": "via",
-                        "layer_range": ["TOP", "TOP"],
-                        "position": [0, "1mm"],
-                        "net_name": "SIG",
-                        "is_pin": True,
-                    },
-                ],
-                "planes": [
-                    {
-                        "type": "rectangle",
-                        "name": "GND_TOP",
-                        "layer": "TOP",
-                        "net_name": "GND",
-                        "lower_left_point": [0, 0],
-                        "upper_right_point": ["12mm", "12mm"],
-                        "voids": ["trace_1_void"],
-                    },
-                    {
-                        "type": "polygon",
-                        "name": "GND_TOP_POLY",
-                        "layer": "TOP",
-                        "net_name": "GND",
-                        "points": [["12mm", 0], ["13mm", 0], ["12mm", "12mm"]],
-                    },
-                ],
-                "components": [
-                    {
-                        "reference_designator": "U1",
-                        "pins": ["pin_1"],
-                        "part_type": "io",
-                        "definition": "BGA",
-                        "placement_layer": "TOP",
-                        "solder_ball_properties": {
-                            "shape": "cylinder",
-                            "diameter": "244um",
-                            "height": "406um",
-                            "material": "air",
-                        },
-                        "port_properties": {
-                            "reference_offset": "0.1mm",
-                            "reference_size_auto": False,
-                            "reference_size_x": 0,
-                            "reference_size_y": 0,
-                        },
-                    },
-                ],
-            }
-        }
-        edbapp = self.edb_examples.create_empty_edb()
-        edbapp.stackup.create_symmetric_stackup(2)
-        edbapp.configuration.load(data, apply_file=True)
-        assert [i for i in edbapp.layout.primitives if i.aedt_name == "trace_1"]
-        rect = [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP"][0]
-        assert rect.voids
-        assert [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP_POLY"][0]
-        assert edbapp.components["U1"]
-        assert edbapp.components["U1"].component_property.GetSolderBallProperty().Clone().GetMaterialName() == "air"
-        edbapp.close(terminate_rpc_session=False)
-
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
-    def test_modeler_delete(self):
-        edbapp = self.edb_examples.get_si_verse()
-        assert edbapp.layout.find_primitive(name="line_163")
-        data = {"modeler": {"primitives_to_delete": {"name": ["line_163"]}}}
-        edbapp.configuration.load(data, apply_file=True)
-        assert len(edbapp.layout.find_primitive(name="line_163")) == 0
-        edbapp.close(terminate_rpc_session=False)
-
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_19_variables(self):
         data = {
             "variables": [
@@ -1043,7 +829,7 @@ class TestClass(BaseTestClass):
         assert Counter(edbapp2.configuration.get_data_from_db(variables=True)) == Counter(data)
         edbapp2.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+
     def test_probes(self):
         edbapp = self.edb_examples.get_si_verse()
         probe = [
@@ -1057,42 +843,6 @@ class TestClass(BaseTestClass):
         data = {"probes": probe}
         assert edbapp.configuration.load(data, apply_file=True)
         assert "probe1" in edbapp.probes
-        edbapp.close(terminate_rpc_session=False)
-
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
-    def test_08a_operations_cutout(self):
-        data = {
-            "operations": {
-                "cutout": {
-                    "signal_nets": ["SFPA_RX_P", "SFPA_RX_N"],
-                    "reference_nets": ["GND"],
-                    "extent_type": "ConvexHull",
-                    "expansion_size": 0.002,
-                    "use_round_corner": False,
-                    "output_aedb_path": "",
-                    "open_cutout_at_end": True,
-                    "use_pyaedt_cutout": True,
-                    "number_of_threads": 4,
-                    "use_pyaedt_extent_computing": True,
-                    "extent_defeature": 0,
-                    "remove_single_pin_components": False,
-                    "custom_extent": "",
-                    "custom_extent_units": "mm",
-                    "include_partial_instances": False,
-                    "keep_voids": True,
-                    "check_terminals": False,
-                    "include_pingroups": False,
-                    "expansion_factor": 0,
-                    "maximum_iterations": 10,
-                    "preserve_components_with_model": False,
-                    "simple_pad_check": False,
-                    "keep_lines_as_path": False,
-                }
-            }
-        }
-        edbapp = self.edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND", "pyedb_cutout"])
         edbapp.close(terminate_rpc_session=False)
 
 
@@ -1914,3 +1664,264 @@ class TestClassPadstacks(BaseTestClass):
         cfg_hfss_single.adaptive_frequency = "5GHz"
         cfg_hfss_single.max_passes = 10
         cfg_hfss_single.max_delta = 0.02
+
+
+# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+@pytest.mark.usefixtures("close_rpc_session")
+class TestModeler(BaseTestClass):
+    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+    def test_18_modeler(self):
+        data = {
+            "modeler": {
+                "traces": [
+                    {
+                        "name": "trace_1",
+                        "layer": "TOP",
+                        "width": "0.1mm",
+                        "path": [[0, 0], [0, "10mm"]],
+                        "net_name": "SIG",
+                        "start_cap_style": "flat",
+                        "end_cap_style": "flat",
+                        "corner_style": "round",
+                    },
+                    {
+                        "name": "trace_1_void",
+                        "layer": "TOP",
+                        "width": "0.3mm",
+                        "incremental_path": [[0, 0], [0, "10mm"]],
+                    },
+                ],
+                "padstack_definitions": [
+                    {
+                        "name": "via",
+                        "hole_plating_thickness": "0.025mm",
+                        "material": "copper",
+                        "pad_parameters": {
+                            "regular_pad": [
+                                {
+                                    "layer_name": "TOP",
+                                    "shape": "circle",
+                                    "offset_x": "0mm",
+                                    "offset_y": "0",
+                                    "rotation": "0",
+                                    "diameter": "0.5mm",
+                                },
+                                {
+                                    "layer_name": "BOT",
+                                    "shape": "circle",
+                                    "offset_x": "0mm",
+                                    "offset_y": "0",
+                                    "rotation": "0",
+                                    "diameter": "0.5mm",
+                                },
+                            ],
+                            "anti_pad": [
+                                {
+                                    "layer_name": "TOP",
+                                    "shape": "circle",
+                                    "offset_x": "0",
+                                    "offset_y": "0",
+                                    "rotation": "0",
+                                    "diameter": "1mm",
+                                },
+                                {
+                                    "layer_name": "BOT",
+                                    "shape": "circle",
+                                    "offset_x": "0",
+                                    "offset_y": "0",
+                                    "rotation": "0",
+                                    "diameter": "1mm",
+                                },
+                            ],
+                        },
+                        "hole_range": "through",
+                        "hole_parameters": {
+                            "shape": "circle",
+                            "diameter": "0.25mm",
+                        },
+                    }
+                ],
+                "padstack_instances": [
+                    {
+                        "name": "via_1",
+                        "definition": "via",
+                        "layer_range": ["TOP", "BOT"],
+                        "position": [0, 0],
+                        "net_name": "SIG",
+                    },
+                    {
+                        "name": "pin_1",
+                        "definition": "via",
+                        "layer_range": ["TOP", "TOP"],
+                        "position": [0, "1mm"],
+                        "net_name": "SIG",
+                        "is_pin": True,
+                    },
+                ],
+                "planes": [
+                    {
+                        "type": "rectangle",
+                        "name": "GND_TOP",
+                        "layer": "TOP",
+                        "net_name": "GND",
+                        "lower_left_point": [0, 0],
+                        "upper_right_point": ["12mm", "12mm"],
+                        "voids": ["trace_1_void"],
+                    },
+                    {
+                        "type": "polygon",
+                        "name": "GND_TOP_POLY",
+                        "layer": "TOP",
+                        "net_name": "GND",
+                        "points": [["12mm", 0], ["13mm", 0], ["12mm", "12mm"]],
+                    },
+                ],
+                "components": [
+                    {
+                        "reference_designator": "U1",
+                        "pins": ["pin_1"],
+                        "part_type": "io",
+                        "definition": "BGA",
+                        "placement_layer": "TOP",
+                        "solder_ball_properties": {
+                            "shape": "cylinder",
+                            "diameter": "244um",
+                            "height": "406um",
+                            "material": "air",
+                        },
+                        "port_properties": {
+                            "reference_offset": "0.1mm",
+                            "reference_size_auto": False,
+                            "reference_size_x": 0,
+                            "reference_size_y": 0,
+                        },
+                    },
+                ],
+            }
+        }
+        edbapp = self.edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp.configuration.load(data, apply_file=True)
+        assert [i for i in edbapp.layout.primitives if i.aedt_name == "trace_1"]
+        rect = [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP"][0]
+        assert rect.voids
+        assert [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP_POLY"][0]
+        assert edbapp.components["U1"]
+        assert edbapp.components["U1"].component_property.GetSolderBallProperty().Clone().GetMaterialName() == "air"
+        edbapp.close(terminate_rpc_session=False)
+
+    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+    def test_modeler_delete(self):
+        edbapp = self.edb_examples.get_si_verse()
+        assert edbapp.layout.find_primitive(name="line_163")
+        data = {"modeler": {"primitives_to_delete": {"name": ["line_163"]}}}
+        edbapp.configuration.load(data, apply_file=True)
+        assert len(edbapp.layout.find_primitive(name="line_163")) == 0
+        edbapp.close(terminate_rpc_session=False)
+
+
+# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+@pytest.mark.usefixtures("close_rpc_session")
+class TestComponent(BaseTestClass):
+
+    def test_17_ic_die_properties(self):
+        db = self.edb_examples.get_si_verse()
+
+        comps_edb = db.configuration.get_data_from_db(components=True)["components"]
+        component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
+        _assert_initial_ic_die_properties(component)
+
+        db.configuration.load(U8_IC_DIE_PROPERTIES, apply_file=True)
+        comps_edb = db.configuration.get_data_from_db(components=True)["components"]
+        component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
+        _assert_final_ic_die_properties(component)
+
+
+# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+@pytest.mark.usefixtures("close_rpc_session")
+class TestOperations(BaseTestClass):
+
+    def test_08a_operations_cutout(self):
+        data = {
+            "operations": {
+                "cutout": {
+                    "signal_nets": ["SFPA_RX_P", "SFPA_RX_N"],
+                    "reference_nets": ["GND"],
+                    "extent_type": "ConvexHull",
+                    "expansion_size": 0.002,
+                    "use_round_corner": False,
+                    "output_aedb_path": "",
+                    "open_cutout_at_end": True,
+                    "use_pyaedt_cutout": True,
+                    "number_of_threads": 4,
+                    "use_pyaedt_extent_computing": True,
+                    "extent_defeature": 0,
+                    "remove_single_pin_components": False,
+                    "custom_extent": "",
+                    "custom_extent_units": "mm",
+                    "include_partial_instances": False,
+                    "keep_voids": True,
+                    "check_terminals": False,
+                    "include_pingroups": False,
+                    "expansion_factor": 0,
+                    "maximum_iterations": 10,
+                    "preserve_components_with_model": False,
+                    "simple_pad_check": False,
+                    "keep_lines_as_path": False,
+                }
+            }
+        }
+        edbapp = self.edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND", "pyedb_cutout"])
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_16b_export_cutout(self):
+        data = {
+            "operations": {
+                "cutout": {
+                    "signal_nets": ["SFPA_RX_P", "SFPA_RX_N"],
+                    "reference_nets": ["GND"],
+                }
+            }
+        }
+        edbapp = self.edb_examples.get_si_verse()
+        edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(operations=True)
+        assert len(data_from_db["operations"]["cutout"]["signal_nets"]) == 3
+        assert len(data_from_db["operations"]["cutout"]["custom_extent"]) > 0
+        edbapp.close(terminate_rpc_session=False)
+
+        data_from_db["operations"]["cutout"]["signal_nets"].remove("GND")
+        data_from_db["operations"]["cutout"]["reference_nets"].append("GND")
+        edbapp = self.edb_examples.get_si_verse()
+        edbapp.configuration.load(data_from_db, apply_file=True)
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_16_components_rlc(self):
+        components = [
+            {
+                "reference_designator": "C375",
+                "enabled": False,
+                "pin_pair_model": [
+                    {
+                        "first_pin": "2",
+                        "second_pin": "1",
+                        "is_parallel": False,
+                        "resistance": "10ohm",
+                        "resistance_enabled": True,
+                        "inductance": "1nH",
+                        "inductance_enabled": False,
+                        "capacitance": "10nF",
+                        "capacitance_enabled": True,
+                    }
+                ],
+            },
+        ]
+        data = {"components": components}
+        edbapp = self.edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(components=True)
+        c375 = [i for i in data_from_db["components"] if i["reference_designator"] == "C375"][0]
+        assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
+        edbapp.close(terminate_rpc_session=False)
