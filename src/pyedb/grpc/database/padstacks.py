@@ -229,7 +229,7 @@ class Padstacks(object):
         ...     print(f"Instance {inst_id}: {instance.name}")
         """
         if self._instances is None:
-            self._instances = {i.id:i for i in self._pedb.layout.padstack_instances}
+            self._instances = {i.id: i for i in self._pedb.layout.padstack_instances}
         return self._instances
 
     @property

@@ -822,7 +822,7 @@ class TestClass(BaseTestClass):
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-#@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassTerminals(BaseTestClass):
     terminal1 = {
         "name": "terminal1",
