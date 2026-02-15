@@ -1889,6 +1889,7 @@ class TestClassPadstacks(BaseTestClass):
 
     def test_deprecated_methods_hfss_single(self):
         from pyedb.configuration.cfg_data import CfgData
+
         data = {
             "setups": [
                 {

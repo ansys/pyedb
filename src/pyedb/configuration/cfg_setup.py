@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from typing import List, Literal, Optional, Union
+
 from pydantic import AliasChoices, Field
 
 from pyedb.configuration.cfg_common import CfgBaseModel
@@ -85,8 +86,9 @@ class CfgHFSSSetup(CfgSetupAC):
     class CfgSingleFrequencyAdaptiveSolution(CfgBaseModel):
         adaptive_frequency: float | str = Field("5GHz", description="Frequency for single frequency adaptation.")
         max_passes: int = Field(20, description="Maximum number of adaptation passes.")
-        max_delta: float | str = Field("0.02",
-                                       description="Maximum delta S for convergence in single frequency adaptation.")
+        max_delta: float | str = Field(
+            "0.02", description="Maximum delta S for convergence in single frequency adaptation."
+        )
 
     class CfgBroadbandAdaptiveSolution(CfgBaseModel):
         low_frequency: float | str = Field("1GHz", description="Low frequency for broadband adaptation.")
@@ -104,12 +106,14 @@ class CfgHFSSSetup(CfgSetupAC):
         class CfgAdaptFrequency(CfgBaseModel):
             adaptive_frequency: float | str = Field("5GHz", description="Frequency for single frequency adaptation.")
             max_passes: int = Field(20, description="Maximum number of adaptation passes.")
-            max_delta: float | str = Field("0.02",
-                                           description="Maximum delta S for convergence in single frequency adaptation.")
+            max_delta: float | str = Field(
+                "0.02", description="Maximum delta S for convergence in single frequency adaptation."
+            )
 
         adapt_frequencies: list[CfgAdaptFrequency] = Field(
             default=[CfgAdaptFrequency(adaptive_frequency="1GHz"), CfgAdaptFrequency(adaptive_frequency="10GHz")],
-            description="List of frequencies for multi-frequency adaptation.")
+            description="List of frequencies for multi-frequency adaptation.",
+        )
 
         def add_adaptive_frequency(self, frequency: Union[float, str], max_passes: int, max_delta: Union[float, str]):
             adapt_freq = CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution.CfgAdaptFrequency(
@@ -121,9 +125,10 @@ class CfgHFSSSetup(CfgSetupAC):
 
     class CfgLengthMeshOperation(CfgBaseModel):
         """Mesh operation export/import payload."""
-        mesh_operation_type: str = Field("length",
-                                         validation_alias=AliasChoices("type"),
-                                         description="Type of mesh operation, e.g., length.")
+
+        mesh_operation_type: str = Field(
+            "length", validation_alias=AliasChoices("type"), description="Type of mesh operation, e.g., length."
+        )
 
         name: str = Field(..., description="Mesh operation name.")
         max_elements: int | str | None = Field(1000, description="Maximum number of elements.")

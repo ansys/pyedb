@@ -87,4 +87,3 @@ class CfgData(object):
         self.variables = CfgVariables(variables=kwargs.get("variables", []))
 
         self.probes = CfgProbes(self._pedb, data=kwargs.get("probes", []))
-

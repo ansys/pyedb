@@ -581,8 +581,7 @@ class Configuration:
                     mat.set_thermal_modifier(**i.to_dict())
 
     def get_materials(self):
-        """Retrieve materials from the current design.
-        """
+        """Retrieve materials from the current design."""
 
         self.cfg_data.stackup.materials = []
         for name, mat in self._pedb.materials.materials.items():

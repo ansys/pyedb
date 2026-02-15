@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from typing import List, Literal, Optional, Union
+
 from pyedb.configuration.cfg_common import CfgBaseModel
 
 
