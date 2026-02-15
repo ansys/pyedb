@@ -63,7 +63,6 @@ def _assert_final_ic_die_properties(component: dict):
 @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-
     def test_13b_stackup_materials(self):
         data = {
             "stackup": {
@@ -119,7 +118,6 @@ class TestClass(BaseTestClass):
                 assert value == target_mat[p]
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_02_pin_groups(self):
         edbapp = self.edb_examples.get_si_verse()
         pin_groups = [
@@ -136,7 +134,6 @@ class TestClass(BaseTestClass):
         assert data_from_db[0]["name"] == "U9_5V_1"
         assert data_from_db[0]["pins"] == ["32", "33"]
         edbapp.close(terminate_rpc_session=False)
-
 
     def test_03_spice_models(self):
         self.edb_examples.copy_test_files_into_local_folder(
@@ -178,7 +175,6 @@ class TestClass(BaseTestClass):
         assert edbapp.components["C142"].model.spice_file_path
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_04_nets(self):
         edbapp = self.edb_examples.get_si_verse()
         data = {"nets": {"power_ground_nets": ["1.2V_DVDDL"], "signal_nets": ["SFPA_VCCR"]}}
@@ -186,7 +182,6 @@ class TestClass(BaseTestClass):
         assert edbapp.nets["1.2V_DVDDL"].is_power_ground
         assert not edbapp.nets["SFPA_VCCR"].is_power_ground
         edbapp.close(terminate_rpc_session=False)
-
 
     def test_05_ports(self):
         data = {
@@ -239,7 +234,6 @@ class TestClass(BaseTestClass):
         assert data_from_db["ports"]
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_05b_ports_coax(self):
         ports = [
             {
@@ -273,7 +267,6 @@ class TestClass(BaseTestClass):
         assert edbapp.ports["coax_X1_5V_A17"]
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_05c_ports_circuit_pin_net(self):
         data = {
             "ports": [
@@ -292,7 +285,6 @@ class TestClass(BaseTestClass):
         assert edbapp.ports["CIRCUIT_X1_B8_GND"].is_circuit_port
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_05c_ports_circuit_net_net_distributed(self):
         ports = [
             {
@@ -309,7 +301,6 @@ class TestClass(BaseTestClass):
         assert edbapp.configuration.load(data, apply_file=True)
         assert len(edbapp.ports) > 1
         edbapp.close(terminate_rpc_session=False)
-
 
     def test_05d_ports_pin_group(self):
         edbapp = self.edb_examples.get_si_verse()
@@ -334,7 +325,6 @@ class TestClass(BaseTestClass):
         assert "U9_pin_group_port" in edbapp.ports
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_05e_ports_circuit_net_net_distributed_nearest_ref(self):
         ports = [
             {
@@ -351,7 +341,6 @@ class TestClass(BaseTestClass):
         assert edbapp.configuration.load(data, apply_file=True)
         assert len(edbapp.ports) > 1
         edbapp.close(terminate_rpc_session=False)
-
 
     def test_05f_ports_between_two_points(self):
         data = {
@@ -374,7 +363,6 @@ class TestClass(BaseTestClass):
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["layer"] == "1_Top"
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
         edbapp.close(terminate_rpc_session=False)
-
 
     def test_05g_edge_port(self):
         edbapp = self.edb_examples.create_empty_edb()
@@ -415,7 +403,6 @@ class TestClass(BaseTestClass):
         assert edbapp.ports["gap_port_1"].hfss_type == "Gap"
         edbapp.configuration.get_data_from_db(ports=True)
         edbapp.close(terminate_rpc_session=False)
-
 
     def test_05h_diff_wave_port(self):
         edbapp = self.edb_examples.create_empty_edb()
@@ -458,7 +445,6 @@ class TestClass(BaseTestClass):
         assert edbapp.ports["diff_wave_1"].horizontal_extent_factor == 6
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_06_s_parameters(self):
         self.edb_examples.copy_test_files_into_local_folder("TEDB/GRM32_DC0V_25degC_series.s2p")
         edbapp = self.edb_examples.get_si_verse()
@@ -493,7 +479,6 @@ class TestClass(BaseTestClass):
         assert len(edbapp.components.nport_comp_definition["CAPC3216X190X55ML30T25"].components) == 12
         edbapp.configuration.get_data_from_db(s_parameters=True)
         edbapp.close(terminate_rpc_session=False)
-
 
     def test_operations_cutout_auto_identify_nets(self):
         data = {
@@ -539,14 +524,12 @@ class TestClass(BaseTestClass):
         assert {"PCIe_Gen4_TX3_CAP_P", "PCIe_Gen4_TX3_P", "PCIe_Gen4_RX3_N"}.issubset(edbapp.nets.nets.keys())
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_10_general(self):
         edbapp = self.edb_examples.get_si_verse()
         data = {"general": {"spice_model_library": "", "s_parameter_library": ""}}
 
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
-
 
     def test_11_package_definitions(self):
         data = {
@@ -615,7 +598,6 @@ class TestClass(BaseTestClass):
                     assert value == target_pdef[p]
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_13c_stackup_create_stackup(self):
         data = {
             "stackup": {
@@ -662,7 +644,6 @@ class TestClass(BaseTestClass):
                 assert value == target_mat[p]
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_15b_sources_net_net(self):
         edbapp = self.edb_examples.get_si_verse()
         sources_v = [
@@ -695,7 +676,6 @@ class TestClass(BaseTestClass):
         assert pg_from_db[1]["name"] == "pg_VSOURCE_U2_1V0_GND_U2_ref"
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_15c_sources_net_net_distributed(self):
         edbapp = self.edb_examples.get_si_verse()
         sources_i = [
@@ -721,7 +701,6 @@ class TestClass(BaseTestClass):
             assert s1["type"] == "current"
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_15c_sources_nearest_ref(self):
         edbapp = self.edb_examples.get_si_verse()
         sources_i = [
@@ -738,7 +717,6 @@ class TestClass(BaseTestClass):
         data = {"sources": sources_i}
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
-
 
     def test_15d_sources_equipotential(self):
         edbapp = self.edb_examples.get_si_verse()
@@ -791,7 +769,6 @@ class TestClass(BaseTestClass):
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_16_export_to_external_file(self):
         edbapp = self.edb_examples.get_si_verse()
         data_file_path = Path(self.edb_examples.test_folder) / "test.json"
@@ -812,7 +789,6 @@ class TestClass(BaseTestClass):
             assert len(data["nets"]["power_ground_nets"]) == 6
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_19_variables(self):
         data = {
             "variables": [
@@ -828,7 +804,6 @@ class TestClass(BaseTestClass):
         edbapp2 = self.edb_examples.load_edb(edbapp.edbpath)
         assert Counter(edbapp2.configuration.get_data_from_db(variables=True)) == Counter(data)
         edbapp2.close(terminate_rpc_session=False)
-
 
     def test_probes(self):
         edbapp = self.edb_examples.get_si_verse()
@@ -1823,7 +1798,6 @@ class TestModeler(BaseTestClass):
 @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestComponent(BaseTestClass):
-
     def test_17_ic_die_properties(self):
         db = self.edb_examples.get_si_verse()
 
@@ -1840,7 +1814,6 @@ class TestComponent(BaseTestClass):
 @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestOperations(BaseTestClass):
-
     def test_08a_operations_cutout(self):
         data = {
             "operations": {
