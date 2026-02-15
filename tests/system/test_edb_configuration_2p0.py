@@ -1146,7 +1146,8 @@ class TestClassSetups(BaseTestClass):
         )  # Remove mesh_operations since it's not defined in source but is returned from db with default value
         target.pop(
             "single_frequency_adaptive_solution"
-        )  # Remove single_frequency_adaptive_solution since it's not defined in source but is returned from db with default value
+        )  # Remove single_frequency_adaptive_solution since it's not defined in source but is returned from db with
+        # default value
         target.pop("multi_frequency_adaptive_solution")
         assert source == target
 
