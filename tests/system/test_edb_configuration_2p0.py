@@ -1874,3 +1874,30 @@ class TestClassPadstacks(BaseTestClass):
             for p, value in lay.items():
                 assert value == target_mat[p]
         edbapp.close(terminate_rpc_session=False)
+
+    def test_deprecated_methods_hfss_single(self):
+        from pyedb.configuration.cfg_data import CfgData
+        data = {
+            "setups": [
+                {
+                    "name": "hfss_setup_1",
+                    "type": "hfss",
+                    "f_adapt": "5GHz",
+                    "max_num_passes": 10,
+                    "max_mag_delta_s": 0.02,
+                    "mesh_operations": [
+                        {
+                            "name": "mop_1",
+                            "type": "length",
+                            "nets_layers_list": {"GND": ["1_Top", "16_Bottom"]},
+                        }
+                    ],
+                },
+            ]
+        }
+
+        cfg_data = CfgData(None, **data)
+        cfg_hfss_single = cfg_data.setups.setups[0].single_frequency_adaptive_solution
+        cfg_hfss_single.adaptive_frequency = "5GHz"
+        cfg_hfss_single.max_passes = 10
+        cfg_hfss_single.max_delta = 0.02

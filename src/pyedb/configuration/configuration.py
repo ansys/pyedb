@@ -191,7 +191,7 @@ class Configuration:
 
     @execution_timer("Applying setups")
     def apply_setups(self):
-        cfg_setups = self.cfg_data.setups
+        cfg_setups = self.cfg_data.setups.setups
         for setup in cfg_setups:
             if setup.type == "siwave_dc":
                 edb_setup = self._pedb.create_siwave_dc_setup(
@@ -292,17 +292,17 @@ class Configuration:
                         sweep.hfss_solver_region_sweep_name = sw.hfss_solver_region_sweep_name
 
     def get_setups(self):
-        self.cfg_data.setups = []
+        self.cfg_data.setups.setups = []
         for _, setup in self._pedb.setups.items():
             if setup.type == "siwave_dc":
-                self.cfg_data.add_siwave_dc_setup(
+                self.cfg_data.setups.add_siwave_dc_setup(
                     name=setup.name,
                     dc_slider_position=setup.dc_settings.dc_slider_position,
                     dc_ir_settings={"export_dc_thermal_data": setup.dc_ir_settings.export_dc_thermal_data},
                 )
             else:
                 if setup.type == "hfss":
-                    cfg_ac_setup = self.cfg_data.add_hfss_setup(name=setup.name)
+                    cfg_ac_setup = self.cfg_data.setups.add_hfss_setup(name=setup.name)
                     adapt_type = FAdaptTypeMapper.get(setup.adaptive_settings.adapt_type, as_grpc=True)
                     cfg_ac_setup.adapt_type = adapt_type
                     if not settings.is_grpc:
@@ -349,7 +349,7 @@ class Configuration:
                             raise ValueError(f"Mesh operation type {mop.mesh_operation_type} is not supported.")
 
                 elif setup.type == "siwave_ac":  # siwave ac
-                    cfg_ac_setup = self.cfg_data.add_siwave_ac_setup(
+                    cfg_ac_setup = self.cfg_data.setups.add_siwave_ac_setup(
                         name=setup.name,
                         use_si_settings=setup.use_si_settings,
                         si_slider_position=setup.si_slider_position,
@@ -573,11 +573,6 @@ class Configuration:
 
     def get_materials(self):
         """Retrieve materials from the current design.
-
-        Parameters
-        ----------
-        append: bool, optional
-            If `True`, append materials to the current material list.
         """
 
         self.cfg_data.stackup.materials = []
@@ -741,10 +736,6 @@ class Configuration:
     def get_data_from_db(self, **kwargs):
         """Get configuration data from layout.
 
-        Parameters
-        ----------
-        stackup
-
         Returns
         -------
 
@@ -766,7 +757,7 @@ class Configuration:
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):
             self.get_setups()
-            data["setups"] = [i.model_dump(exclude_none=True) for i in self.cfg_data.setups]
+            data["setups"] = [i.model_dump(exclude_none=True) for i in self.cfg_data.setups.setups]
         if kwargs.get("terminals", False):
             self.get_terminals()
             data.update(self.cfg_data.terminals.model_dump(exclude_none=True))

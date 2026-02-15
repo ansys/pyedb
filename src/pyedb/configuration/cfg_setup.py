@@ -20,11 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from typing import List, Literal, Optional, Union
+from pydantic import AliasChoices, Field
 
-from pydantic import AliasChoices, BaseModel, Field
+from pyedb.configuration.cfg_common import CfgBaseModel
 
 
-class CfgFrequencies(BaseModel):
+class CfgFrequencies(CfgBaseModel):
     start: float | str = Field(..., description="Start frequency in Hz")
     stop: float | str = Field(..., description="Stop frequency in Hz")
     increment: int | str = Field(..., validation_alias=AliasChoices("increment", "points", "samples", "step"))
@@ -35,12 +36,12 @@ class CfgFrequencies(BaseModel):
     )
 
 
-class CfgSetupDC(BaseModel):
+class CfgSetupDC(CfgBaseModel):
     name: str
 
 
 class CfgSetupAC(CfgSetupDC):
-    class CfgFrequencySweep(BaseModel):
+    class CfgFrequencySweep(CfgBaseModel):
         name: str
         type: Literal["discrete", "interpolation"]
         frequencies: list[CfgFrequencies | str] = Field(list(), description="List of frequency definitions or strings")
@@ -72,7 +73,7 @@ class CfgSIwaveACSetup(CfgSetupAC):
 
 
 class CfgSIwaveDCSetup(CfgSetupDC):
-    class CfgDCIRSettings(BaseModel):
+    class CfgDCIRSettings(CfgBaseModel):
         export_dc_thermal_data: bool = Field(False, description="Whether to export DC thermal data.")
 
     type: str = "siwave_dc"
@@ -81,26 +82,26 @@ class CfgSIwaveDCSetup(CfgSetupDC):
 
 
 class CfgHFSSSetup(CfgSetupAC):
-    class CfgSingleFrequencyAdaptiveSolution(BaseModel):
+    class CfgSingleFrequencyAdaptiveSolution(CfgBaseModel):
         adaptive_frequency: float | str = Field("5GHz", description="Frequency for single frequency adaptation.")
         max_passes: int = Field(20, description="Maximum number of adaptation passes.")
         max_delta: float | str = Field("0.02",
                                        description="Maximum delta S for convergence in single frequency adaptation.")
 
-    class CfgBroadbandAdaptiveSolution(BaseModel):
+    class CfgBroadbandAdaptiveSolution(CfgBaseModel):
         low_frequency: float | str = Field("1GHz", description="Low frequency for broadband adaptation.")
         high_frequency: float | str = Field("10GHz", description="High frequency for broadband.")
         max_passes: int = Field(20, description="Maximum number of adaptation passes.")
         max_delta: float | str = Field("0.02", description="Maximum delta S for convergence in broadband adaptation.")
 
-    class CfgAutoMeshOperation(BaseModel):
+    class CfgAutoMeshOperation(CfgBaseModel):
         enabled: bool = False
         trace_ratio_seeding: float = 3
         signal_via_side_number: int = 12
         power_ground_via_side_number: int = 6
 
-    class CfgMultiFrequencyAdaptiveSolution(BaseModel):
-        class CfgAdaptFrequency(BaseModel):
+    class CfgMultiFrequencyAdaptiveSolution(CfgBaseModel):
+        class CfgAdaptFrequency(CfgBaseModel):
             adaptive_frequency: float | str = Field("5GHz", description="Frequency for single frequency adaptation.")
             max_passes: int = Field(20, description="Maximum number of adaptation passes.")
             max_delta: float | str = Field("0.02",
@@ -118,10 +119,11 @@ class CfgHFSSSetup(CfgSetupAC):
             )
             self.adapt_frequencies.append(adapt_freq)
 
-
-    class CfgLengthMeshOperation(BaseModel):
+    class CfgLengthMeshOperation(CfgBaseModel):
         """Mesh operation export/import payload."""
-        mesh_operation_type: str = "length"
+        mesh_operation_type: str = Field("length",
+                                         validation_alias=AliasChoices("type"),
+                                         description="Type of mesh operation, e.g., length.")
 
         name: str = Field(..., description="Mesh operation name.")
         max_elements: int | str | None = Field(1000, description="Maximum number of elements.")
@@ -146,8 +148,65 @@ class CfgHFSSSetup(CfgSetupAC):
     # adapt_frequencies: list[CfgAdaptFrequency] = Field(default_factory=list, description="List of frequencies for single/multi_frequencies adaptation.")
 
     auto_mesh_operation: CfgAutoMeshOperation | None = CfgAutoMeshOperation()
-    mesh_operations: list[CfgLengthMeshOperation] | None = list()
+    mesh_operations: list[CfgLengthMeshOperation] | None = Field(default_factory=list,
+                                                                 description="List of mesh operations.")
 
-    def add_length_mesh_operation(self, mesh_op:CfgLengthMeshOperation):
+    def add_length_mesh_operation(self, mesh_op: CfgLengthMeshOperation):
         self.mesh_operations.append(mesh_op)
 
+
+class CfgSetups(CfgBaseModel):
+    setups: List[Union[CfgHFSSSetup, CfgSIwaveACSetup, CfgSIwaveDCSetup]] = Field(
+        default_factory=list, description="List of simulation setups."
+    )
+
+    @classmethod
+    def create(cls, setups: List[dict]):
+        manager = cls()
+        for stp in setups:
+            setup_type = stp.get("type", "hfss").lower()
+            if setup_type == "hfss":
+                if "f_adapt" in stp:
+                    # Backward compatibility for single frequency adaptation using "f_adapt" key
+                    f_adatp = stp.pop("f_adapt")
+                    max_passes = stp.pop("max_num_passes", 20)
+                    max_delta = stp.pop("max_mag_delta_s", "0.02")
+
+                    hfs = manager.add_hfss_setup(CfgHFSSSetup.model_validate(stp))
+                    hfs.single_frequency_adaptive_solution.adaptive_frequency = f_adatp
+                    hfs.single_frequency_adaptive_solution.max_passes = max_passes
+                    hfs.single_frequency_adaptive_solution.max_delta = max_delta
+                else:
+                    manager.add_hfss_setup(CfgHFSSSetup.model_validate(stp))
+
+            elif setup_type in ["siwave_ac", "siwave_syz"]:
+                manager.add_siwave_ac_setup(CfgSIwaveACSetup.model_validate(stp))
+            elif setup_type == "siwave_dc":
+                manager.add_siwave_dc_setup(CfgSIwaveDCSetup.model_validate(stp))
+            else:
+                raise ValueError(f"Unknown setup type: {setup_type}")
+        return manager
+
+    def add_hfss_setup(self, config: CfgHFSSSetup = None, **kwargs):
+        if config:
+            hfss_setup = config
+        else:
+            hfss_setup = CfgHFSSSetup.model_validate(kwargs)
+        self.setups.append(hfss_setup)
+        return hfss_setup
+
+    def add_siwave_ac_setup(self, config: CfgSIwaveACSetup = None, **kwargs):
+        if config:
+            siwave_ac_setup = config
+        else:
+            siwave_ac_setup = CfgSIwaveACSetup.model_validate(kwargs)
+        self.setups.append(siwave_ac_setup)
+        return siwave_ac_setup
+
+    def add_siwave_dc_setup(self, config: CfgSIwaveDCSetup = None, **kwargs):
+        if config:
+            siwave_dc_setup = config
+        else:
+            siwave_dc_setup = CfgSIwaveDCSetup.model_validate(kwargs)
+        self.setups.append(siwave_dc_setup)
+        return siwave_dc_setup
